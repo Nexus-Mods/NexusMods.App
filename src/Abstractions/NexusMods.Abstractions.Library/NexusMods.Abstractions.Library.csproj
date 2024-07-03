@@ -17,8 +17,8 @@
       <Compile Update="LibraryFile.cs">
         <DependentUpon>LibraryItem.cs</DependentUpon>
       </Compile>
-      <Compile Update="ArchiveFile.cs">
-        <DependentUpon>Archive.cs</DependentUpon>
+      <Compile Update="LibraryArchiveFileEntry.cs">
+        <DependentUpon>LibraryArchive.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

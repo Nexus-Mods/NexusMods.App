@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Library;
 
 /// <summary>
-/// Represents a <see cref="LibraryItem"/> that is a file on disk.
+/// Represents a <see cref="LibraryItem"/> that is a file in the library.
 /// </summary>
 [PublicAPI]
 [Include<LibraryItem>]

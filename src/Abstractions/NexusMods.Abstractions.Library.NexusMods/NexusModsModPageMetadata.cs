@@ -27,7 +27,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The game of the mod page.
     /// </summary>
-    public static readonly GameDomainAttribute Game = new(Namespace, nameof(Game)) { IsIndexed = true };
+    public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true };
 
     /// <summary>
     /// Back-reference to all files from this page.

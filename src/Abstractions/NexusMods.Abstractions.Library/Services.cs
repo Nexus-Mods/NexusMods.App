@@ -16,8 +16,8 @@ public static class Services
     public static IServiceCollection AddLibraryAttributes(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddModelDefinition<Archive>()
-            .AddModelDefinition<ArchiveFile>()
+            .AddModelDefinition<LibraryArchive>()
+            .AddModelDefinition<LibraryArchiveFileEntry>()
             .AddModelDefinition<LibraryItem>()
             .AddModelDefinition<LibraryFile>()
             .AddModelDefinition<LocalFile>();

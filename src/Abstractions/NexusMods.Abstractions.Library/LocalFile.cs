@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Library;
 
 /// <summary>
-/// Represents a local file added to the library.
+/// Represents a local file in the library.
 /// </summary>
 [PublicAPI]
 [Include<LibraryFile>]

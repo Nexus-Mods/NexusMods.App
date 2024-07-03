@@ -5,12 +5,12 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Library;
 
 /// <summary>
-/// Represents an archive.
+/// Represents an archive in the library.
 /// </summary>
 [PublicAPI]
-public partial class Archive : IModelDefinition
+public partial class LibraryArchive : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.Archive";
+    private const string Namespace = "NexusMods.Library.LibraryArchive";
 
     /// <summary>
     /// Reference to the actual file in the library.
@@ -20,5 +20,5 @@ public partial class Archive : IModelDefinition
     /// <summary>
     /// Back-reference to all files inside the archive.
     /// </summary>
-    public static readonly BackReferenceAttribute<ArchiveFile> Children = new(ArchiveFile.Parent);
+    public static readonly BackReferenceAttribute<LibraryArchiveFileEntry> Children = new(LibraryArchiveFileEntry.Parent);
 }

@@ -6,17 +6,17 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Library;
 
 /// <summary>
-/// Represents a file inside an archive.
+/// Represents a file inside a library archive.
 /// </summary>
 [PublicAPI]
-public partial class ArchiveFile : IModelDefinition
+public partial class LibraryArchiveFileEntry : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.ArchiveFile";
+    private const string Namespace = "NexusMods.Library.LibraryArchiveFileEntry";
 
     /// <summary>
     /// Reference to the parent archive that contains this file.
     /// </summary>
-    public static readonly ReferenceAttribute<Archive> Parent = new(Namespace, nameof(Parent));
+    public static readonly ReferenceAttribute<LibraryArchive> Parent = new(Namespace, nameof(Parent));
 
     /// <summary>
     /// Hash of the file.
