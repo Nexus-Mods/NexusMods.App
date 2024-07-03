@@ -60,11 +60,14 @@ nav:
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
     - Adding a Game: users/AddGames.md
-    # - Features: 
-    #   - Health Check: users/features/HealthCheck.md
-    #   - Workspaces: users/features/Workspaces.md
+    - Features: 
+      # - Loadouts: users/features/Loadouts.md
+      - Health Check: users/features/HealthCheck.md
+      # - Global Undo: users/features/Undo.md
+      - Workspaces: users/features/Workspaces.md
+      # - Collections: users/features/Collections.md
     - Games:
-      # - users/games/index.md
+      - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
     - Frequently Asked Questions: 
