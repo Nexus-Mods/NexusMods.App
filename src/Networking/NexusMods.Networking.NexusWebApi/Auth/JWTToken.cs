@@ -57,7 +57,7 @@ public partial class JWTToken : IModelDefinition
         if (reply.AccessToken is null || reply.RefreshToken is null) 
             return null;
             
-        var existingId = db.Find(JWTToken.AccessToken).FirstOrDefault();
+        var existingId = db.Datoms(JWTToken.AccessToken).FirstOrDefault().E;
         if (existingId == EntityId.From(0))
             existingId = tx.TempId();
         

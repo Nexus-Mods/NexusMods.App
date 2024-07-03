@@ -357,9 +357,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var item in toAddDelete)
         {
-            var delete = new DeletedFile.New(tx)
+            var delete = new DeletedFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = item.Path,
                     ModId = overridesMod,
@@ -461,9 +461,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
-            var storedFile = new StoredFile.New(tx)
+            var storedFile = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = file.Path,
                     ModId = overridesMod,
@@ -692,9 +692,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
             
-            allStoredFileModels.Add(new StoredFile.New(tx)
+            allStoredFileModels.Add(new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = path,
                     LoadoutId = loadout,
@@ -861,9 +861,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
             
-            _ = new StoredFile.New(tx)
+            _ = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     LoadoutId = loadout,
                     ModId = gameFiles,

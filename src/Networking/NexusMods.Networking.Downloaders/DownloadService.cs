@@ -61,8 +61,8 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     {
         var db = _conn.Db;
 
-        var tasks = db.Find(DownloaderState.Status)
-            .Select(x => DownloaderState.Load(db, x))
+        var tasks = db.Datoms(DownloaderState.Status)
+            .AsModels<DownloaderState.ReadOnly>(db)
             .Where(x => x.Status != DownloadTaskStatus.Completed && 
                              x.Status != DownloadTaskStatus.Cancelled)
             .Select(GetTaskFromState)

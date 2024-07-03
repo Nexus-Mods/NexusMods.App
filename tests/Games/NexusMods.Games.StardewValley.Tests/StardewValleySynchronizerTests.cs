@@ -38,9 +38,9 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var manifestData = "{}";
         var manifestHash = manifestData.XxHash64AsUtf8();
         
-        var manfiestFile = new StoredFile.New(tx)
+        var manfiestFile = new StoredFile.New(tx, out var id)
         {
-            File = new File.New(tx)
+            File = new File.New(tx, id)
             {
                 To = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
                 ModId = mod,
