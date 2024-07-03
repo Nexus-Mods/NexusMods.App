@@ -8,14 +8,10 @@ namespace NexusMods.Abstractions.Library;
 /// Represents an archive in the library.
 /// </summary>
 [PublicAPI]
+[Include<LibraryFile>]
 public partial class LibraryArchive : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.LibraryArchive";
-
-    /// <summary>
-    /// Reference to the actual file in the library.
-    /// </summary>
-    public static readonly ReferenceAttribute<LibraryFile> LibraryFile = new(Namespace, nameof(LibraryFile));
 
     /// <summary>
     /// Back-reference to all files inside the archive.
