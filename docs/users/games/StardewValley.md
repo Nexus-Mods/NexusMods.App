@@ -39,6 +39,6 @@ This game can be managed via the app on the following operating systems and plat
 | :fontawesome-brands-xbox: [Xbox Game Pass (PC)](https://www.xbox.com/en-GB/games/store/stardew-valley/c3d891z6tnqm) | :material-close-thick:** | :material-close-thick: | :material-close-thick: |
 | <img src="../../images/wegame.svg" alt="drawing" width="14"/> [WeGame (China only)](https://www.wegame.com.cn/store/2000064/Stardew_Valley) | :material-close-thick: | :material-close-thick: | :material-close-thick: |
 
-<sub>\* Manual DRM-free installs from GOG.com cannot be detected automatically.</sub>
+<sub>\* Offline backup installs from GOG.com cannot be detected automatically.</sub>
 
 <sub>\*\* Xbox Game Pass for PC is not yet supported. <a href="https://github.com/Nexus-Mods/NexusMods.App/issues/1476">More.</a></sub>
