@@ -10,7 +10,7 @@ Adding support for a wide range of games it not a practical decision at this sta
 Our plan is to go game-by-game and work with the modding community at each step to ensure we're building something great. To see which games are supported, coming next and planned for the future please see the [roadmap](https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap).
 
 ## How do I find my log files?
-To find your log files, please see [this guide](./faq/LogFiles.md). 
+To find your log files, please see [this guide](./LogFiles.md). 
 
 ## Why can't I log into the app or download from Nexus Mods?
 
@@ -35,6 +35,6 @@ Depending on your choice of browser, there may be additional considerations when
 
     To access these settings click the menu button to the right of the address bar and select "Settings". Under the "General" category locate the section entitled "Files and Applications". 
 
-    ![The settings page in Mozilla Firefox 127.0.1 showing the Files and Applications section](./images/FirefoxProtocols.webp)
+    ![The settings page in Mozilla Firefox 127.0.1 showing the Files and Applications section](../images/FirefoxProtocols.webp)
 
     Here you will see the `nxm` protocol and the default app which will be used to open it. Using the drop-down you can select the default application for Firefox to use. Setting it to whichever option is set as "Default" will use the application specified by your operating system. 
