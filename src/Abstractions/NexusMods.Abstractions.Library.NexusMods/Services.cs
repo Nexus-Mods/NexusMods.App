@@ -16,8 +16,8 @@ public static class Services
     public static IServiceCollection AddNexusModsLibraryAttributes(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddModelDefinition<NexusModsLibraryFile>()
-            .AddModelDefinition<NexusModsFileMetadata>()
-            .AddModelDefinition<NexusModsModPageMetadata>();
+            .AddNexusModsFileMetadataModel()
+            .AddNexusModsModPageMetadataModel()
+            .AddNexusModsLibraryFileModel();
     }
 }

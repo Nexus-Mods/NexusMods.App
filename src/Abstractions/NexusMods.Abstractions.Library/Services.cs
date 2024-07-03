@@ -16,10 +16,10 @@ public static class Services
     public static IServiceCollection AddLibraryAttributes(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddModelDefinition<LibraryArchive>()
-            .AddModelDefinition<LibraryArchiveFileEntry>()
-            .AddModelDefinition<LibraryItem>()
-            .AddModelDefinition<LibraryFile>()
-            .AddModelDefinition<LocalFile>();
+            .AddLibraryItemModel()
+            .AddLibraryFileModel()
+            .AddLocalFileModel()
+            .AddLibraryArchiveModel()
+            .AddLibraryArchiveFileEntryModel();
     }
 }
