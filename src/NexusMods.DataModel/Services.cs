@@ -11,8 +11,6 @@ using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Messaging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
@@ -20,7 +18,6 @@ using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Extensions.DependencyInjection;
@@ -82,10 +79,6 @@ public static class Services
                 return sp.GetRequiredService<MnemonicDB.Storage.RocksDbBackend.Backend>();
             }
         });
-        
-        coll.AddSingleton<MessageBus>();
-        coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
-        coll.AddSingleton(typeof(IMessageProducer<>), typeof(MessageProducer<>));
 
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
