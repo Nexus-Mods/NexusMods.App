@@ -1,13 +1,22 @@
-﻿<UserControl
-    d:DesignHeight="60"
-    d:DesignWidth="60"
-    mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Controls.Spinner.Spinner"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Arc Height="{Binding $parent.Width}"
-         Width="{Binding $parent.Height}" />
+﻿<UserControl mc:Ignorable="d"
+             d:DesignHeight="60"
+             d:DesignWidth="60"
+             x:Class="NexusMods.App.UI.Controls.Spinner.Spinner"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner">
+    
+    <!-- Source: https://www.figma.com/design/8pjtQeNggvVi7RWoLNGV80/%F0%9F%A7%B0-Nexus-Mods-Design-System?node-id=137-1575&m=dev -->
+    <Path
+        Data="M60.5 30C60.5 24.0666 58.7405 18.2664 55.4441 13.3329C52.1476 8.39942 47.4623 4.55424 41.9805 2.28361C36.4987 0.012985 30.4667 -0.581115 24.6473 0.576442C18.8279 1.734 13.4824 4.59122 9.2868 8.7868C5.09122 12.9824 2.234 18.3279 1.07644 24.1473C-0.0811151 29.9667 0.512985 35.9987 2.78361 41.4805C5.05424 46.9623 8.89942 51.6476 13.8329 54.9441C18.7664 58.2405 24.5666 60 30.5 60V52.8071C25.9892 52.8071 21.5796 51.4695 17.829 48.9634C14.0784 46.4574 11.1552 42.8954 9.42895 38.7279C7.70274 34.5605 7.25108 29.9747 8.1311 25.5505C9.01111 21.1264 11.1833 17.0626 14.3729 13.8729C17.5626 10.6833 21.6264 8.51112 26.0505 7.6311C30.4747 6.75108 35.0605 7.20273 39.2279 8.92895C43.3954 10.6552 46.9574 13.5784 49.4634 17.329C51.9695 21.0796 53.3071 25.4892 53.3071 30H60.5Z"
+        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type spinner:Spinner}}}"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Stretch="Uniform">
+        <Path.RenderTransform>
+            <RotateTransform />
+        </Path.RenderTransform>
+    </Path>
 </UserControl>
-
