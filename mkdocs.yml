@@ -137,3 +137,9 @@ nav:
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
         - Drawbacks of Nexus App Approach: developers/misc/DrawbacksOfNexusApproach.md
     - Contributing to Docs: Nexus/Pages/contributing.md
+
+validation: 
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: info
