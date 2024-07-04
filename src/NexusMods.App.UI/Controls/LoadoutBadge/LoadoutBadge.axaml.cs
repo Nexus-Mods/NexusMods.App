@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.LoadoutBadge;
 
-[PseudoClasses(":selected", ":applied", ":in-progress")]
+[PseudoClasses(":selected", ":in-progress", ":applied")]
 public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeVM>
 {
     public LoadoutBadge()
@@ -16,14 +16,17 @@ public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeVM>
         this.WhenActivated(d =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.IsLoadoutSelected)
+                    .OnUI()
                     .Subscribe(SetSelected)
                     .DisposeWith(d);
 
                 this.WhenAnyValue(x => x.ViewModel!.IsLoadoutApplied)
+                    .OnUI()
                     .Subscribe(SetApplied)
                     .DisposeWith(d);
 
                 this.WhenAnyValue(x => x.ViewModel!.IsLoadoutInProgress)
+                    .OnUI()
                     .Subscribe(SetInProgress)
                     .DisposeWith(d);
                 
