@@ -18,6 +18,11 @@ public interface IDownloadActivity : IReactiveObject
     PersistedDownloadStateId PersistedStateId { get; }
 
     /// <summary>
+    /// Gets the downloader.
+    /// </summary>
+    IDownloader Downloader { get; }
+
+    /// <summary>
     /// Gets the status of the download.
     /// </summary>
     PersistedDownloadStatus Status { get; set; }
@@ -46,21 +51,4 @@ public interface IDownloadActivity : IReactiveObject
     /// Gets the current download speed.
     /// </summary>
     Bandwidth Bandwidth { get; set; }
-
-    /// <summary>
-    /// Asynchronously starts the download.
-    /// </summary>
-    Task StartAsync();
-
-    /// <summary>
-    /// Asynchronously pauses the download.
-    /// </summary>
-    /// <returns></returns>
-    Task PauseAsync();
-
-    /// <summary>
-    /// Asynchronously cancels the download.
-    /// </summary>
-    /// <returns></returns>
-    Task CancelAsync();
 }
