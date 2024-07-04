@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -284,7 +285,7 @@ public class NxFileStore : IFileStore
         var fileHashes = new HashSet<ulong>();
         
         // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
-        fileHashes.AddRange(_conn.Db.Find(ArchivedFile.Hash).Select(f => f.Value));
+        fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved().OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
         
         return fileHashes;
     }
