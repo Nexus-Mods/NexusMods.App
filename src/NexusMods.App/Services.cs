@@ -117,9 +117,9 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            Games.RedEngine.Services.AddRedEngineGames(services);
         }
         
+        Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         return services;
     }
