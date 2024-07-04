@@ -12,7 +12,7 @@ public static class Services
     /// <summary>
     /// Extension method.
     /// </summary>
-    public static IServiceCollection AddNexusModsLibraryAttributes(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddNexusModsLibraryModels(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddNexusModsFileMetadataModel()

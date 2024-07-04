@@ -23,6 +23,11 @@ public interface IDownloadActivity : IReactiveObject
     IDownloader Downloader { get; }
 
     /// <summary>
+    /// Gets the title of the download.
+    /// </summary>
+    string Title { get; }
+
+    /// <summary>
     /// Gets the status of the download.
     /// </summary>
     PersistedDownloadStatus Status { get; set; }

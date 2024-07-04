@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Library;
 /// Represents the library.
 /// </summary>
 [PublicAPI]
-public interface ILibrary
+public interface ILibraryService
 {
     /// <summary>
     /// Gets an observable collection containing all download activities.

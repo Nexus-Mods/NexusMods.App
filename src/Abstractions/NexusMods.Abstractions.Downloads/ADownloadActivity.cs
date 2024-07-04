@@ -21,10 +21,13 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
     /// <inheritdoc/>
     public IDownloader Downloader { get; }
 
+    /// <inheritdoc/>
+    public string Title { get; }
+
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected ADownloadActivity(PersistedDownloadState.ReadOnly persistedState, IDownloader downloader)
+    protected ADownloadActivity(PersistedDownloadState.ReadOnly persistedState, IDownloader downloader, string title)
     {
         _connection = persistedState.Db.Connection;
 
@@ -32,6 +35,7 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
         _status = persistedState.Status;
 
         Downloader = downloader;
+        Title = title;
     }
 
     private PersistedDownloadStatus _status;
@@ -85,4 +89,6 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
             this.RaisePropertyChanged(nameof(Status));
         }
     }
+
+    public override string ToString() => Title;
 }

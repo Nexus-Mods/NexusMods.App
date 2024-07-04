@@ -13,7 +13,7 @@ public static class Services
     /// <summary>
     /// Extension method.
     /// </summary>
-    public static IServiceCollection AddLibraryAttributes(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddLibraryModels(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddLibraryItemModel()

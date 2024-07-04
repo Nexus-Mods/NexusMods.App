@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Library;
 
-namespace NexusMods.Abstractions.Downloads;
+namespace NexusMods.Library;
 
 /// <summary>
 /// Extension methods.
@@ -12,9 +13,8 @@ public static class Services
     /// <summary>
     /// Extension method.
     /// </summary>
-    public static IServiceCollection AddDownloadModels(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddLibrary(this IServiceCollection serviceCollection)
     {
-        return serviceCollection
-            .AddPersistedDownloadStateModel();
+        return serviceCollection.AddSingleton<ILibraryService, LibraryService>();
     }
 }
