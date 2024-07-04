@@ -15,7 +15,7 @@ public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeVM>
 
         this.WhenActivated(d =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.IsLoadouotSelected)
+                this.WhenAnyValue(x => x.ViewModel!.IsLoadoutSelected)
                     .Subscribe(SetSelected)
                     .DisposeWith(d);
 
