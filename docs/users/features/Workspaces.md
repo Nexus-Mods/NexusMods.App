@@ -1,5 +1,7 @@
 The Workspace feature allows incredible flexibility and customisation when managing your mods. Different pages in the app can be opened in new tabs or panels to help arrange the most relevant information in the most useful way. 
 
+![An example of a workspace set up with multiple tabs and panels](../images/0.5.2/WorkspacesExample.webp)
+
 ## What are Workspaces?
 Workspaces are a collection of arranged tabs and panels. A new workspace is created with each loadout added to the app, along with two additional workspaces on the home page and downloads page. The state of these workspaces is saved so you can continue from where you left off next time the app is opened. 
 
