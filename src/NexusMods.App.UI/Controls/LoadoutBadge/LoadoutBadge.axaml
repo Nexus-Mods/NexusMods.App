@@ -7,14 +7,22 @@
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.App.UI.Controls.LoadoutBadge.LoadoutBadge">
+                                mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="120"
+                                x:Class="NexusMods.App.UI.Controls.LoadoutBadge.LoadoutBadge"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+    <Design.DataContext>
+        <loadoutBadge:LoadoutBadgeDesignVM />
+    </Design.DataContext>
+    
     <Border x:Name="OuterBorder">
         <StackPanel x:Name="ContentsStackPanel" 
                     Orientation="Horizontal">
-            <icons:UnifiedIcon x:Name="Icon" Classes="Check"/>
             <spinner:Spinner x:Name="Spinner" />
-            <TextBlock x:Name="ShortName" />
+            <icons:UnifiedIcon x:Name="Icon" 
+                               Classes="Check" />
+            <TextBlock x:Name="ShortName"
+                       Classes="BodyLGBold"/>
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>

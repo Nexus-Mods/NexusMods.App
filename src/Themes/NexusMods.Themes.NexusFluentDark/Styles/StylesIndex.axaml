@@ -44,5 +44,6 @@
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/EmptyStateStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml"/>
 
 </Styles>
