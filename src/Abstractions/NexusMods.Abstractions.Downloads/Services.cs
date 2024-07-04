@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NexusMods.Abstractions.NexusModsLibrary;
+namespace NexusMods.Abstractions.Downloads;
 
 /// <summary>
 /// Extension methods.
@@ -15,9 +15,6 @@ public static class Services
     public static IServiceCollection AddNexusModsLibraryAttributes(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddNexusModsFileMetadataModel()
-            .AddNexusModsModPageMetadataModel()
-            .AddNexusModsLibraryFileModel()
-            .AddNXMDownloadStateModel();
+            .AddPersistedDownloadStateModel();
     }
 }

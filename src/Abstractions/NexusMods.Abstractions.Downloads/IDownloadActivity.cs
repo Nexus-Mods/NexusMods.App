@@ -18,7 +18,7 @@ public interface IDownloadActivity : IReactiveObject
     PersistedDownloadStateId PersistedStateId { get; }
 
     /// <summary>
-    /// Gets the downloader.
+    /// Gets the downloader that handles this activity.
     /// </summary>
     IDownloader Downloader { get; }
 
