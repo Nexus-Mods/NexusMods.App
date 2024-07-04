@@ -4,8 +4,16 @@
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.MnemonicDB.Storage" />
+        <PackageReference Include="ReactiveUI" />
+        <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ADownloadActivity.cs">
+        <DependentUpon>IDownloadActivity.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

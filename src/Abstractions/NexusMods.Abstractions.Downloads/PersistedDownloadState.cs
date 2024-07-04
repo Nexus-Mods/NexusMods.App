@@ -5,8 +5,9 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Downloads;
 
 /// <summary>
-/// Represents a download.
+/// Represents persisted data about downloads.
 /// </summary>
+/// <seealso cref="IDownloadActivity"/>
 [PublicAPI]
 public partial class PersistedDownloadState : IModelDefinition
 {
