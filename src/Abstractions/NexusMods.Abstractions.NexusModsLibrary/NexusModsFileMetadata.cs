@@ -3,7 +3,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Abstractions.Library.NexusModsLibrary;
+namespace NexusMods.Abstractions.NexusModsLibrary;
 
 /// <summary>
 /// Represents a remote file on Nexus Mods.

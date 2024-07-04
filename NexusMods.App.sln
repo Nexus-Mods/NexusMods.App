@@ -216,7 +216,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Settings.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Library", "src\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj", "{0044D340-E435-489C-A425-139AAB2EA205}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Library.NexusMods", "src\Abstractions\NexusMods.Abstractions.Library.NexusMods\NexusMods.Abstractions.Library.NexusMods.csproj", "{5D85EBB2-755F-4148-BFC4-8D2245A3105B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.NexusModsLibrary", "src\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj", "{5D85EBB2-755F-4148-BFC4-8D2245A3105B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Downloads", "src\Abstractions\NexusMods.Abstractions.Downloads\NexusMods.Abstractions.Downloads.csproj", "{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}"
 EndProject

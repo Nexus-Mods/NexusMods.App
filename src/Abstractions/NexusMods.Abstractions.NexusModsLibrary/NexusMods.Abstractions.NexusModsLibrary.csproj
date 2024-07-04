@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <RootNamespace>NexusMods.Abstractions.Library.NexusModsLibrary</RootNamespace>
-    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
