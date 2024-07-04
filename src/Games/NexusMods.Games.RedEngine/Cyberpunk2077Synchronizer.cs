@@ -7,10 +7,14 @@ namespace NexusMods.Games.RedEngine;
 
 public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
 {
-    private readonly Cyberpunk2077Settings _settings;
+    private Cyberpunk2077Settings _settings;
+
     protected internal Cyberpunk2077Synchronizer(IServiceProvider provider) : base(provider)
     {
-        _settings = provider.GetRequiredService<ISettingsManager>().Get<Cyberpunk2077Settings>();
+        var settingsManager = provider.GetRequiredService<ISettingsManager>();
+
+        _settings = settingsManager.Get<Cyberpunk2077Settings>();
+        settingsManager.GetChanges<Cyberpunk2077Settings>().Subscribe(value => _settings = value);
     }
 
     private static readonly GamePath[] IgnoredFolders =
