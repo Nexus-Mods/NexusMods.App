@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>NexusMods.Abstractions.Library.NexusModsLibrary</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
+    </ItemGroup>
+</Project>
