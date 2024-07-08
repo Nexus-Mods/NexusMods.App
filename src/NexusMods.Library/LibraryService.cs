@@ -45,17 +45,14 @@ public class LibraryService : ILibraryService
     }
 
     /// <inheritdoc/>
-    public async Task AddDownloadAsync(
-        IDownloadActivity downloadActivity,
-        bool addPaused = false,
-        CancellationToken cancellationToken = default)
+    public void EnqueueDownload(IDownloadActivity downloadActivity, bool addPaused = false)
     {
         _logger.LogInformation("Adding download `{Title}` to the library", downloadActivity.Title);
 
         _downloadActivitySourceCache.AddOrUpdate(downloadActivity);
 
         if (addPaused) return;
-        await downloadActivity.Downloader.StartAsync(downloadActivity, cancellationToken: cancellationToken);
+        downloadActivity.Downloader.Start(downloadActivity);
     }
 
     /// <inheritdoc/>

@@ -9,17 +9,20 @@ namespace NexusMods.Abstractions.Downloads;
 public interface IDownloader
 {
     /// <summary>
-    /// Asynchronously starts a download.
+    /// Starts a download.
     /// </summary>
-    Task StartAsync(IDownloadActivity downloadActivity, CancellationToken cancellationToken = default);
+    /// <remarks>
+    /// This method is non-blocking and returns instantly after the download has been enqueued.
+    /// </remarks>
+    void Start(IDownloadActivity downloadActivity);
 
     /// <summary>
-    /// Asynchronously pauses a download.
+    /// Pauses a download.
     /// </summary>
-    Task PauseAsync(IDownloadActivity downloadActivity, CancellationToken cancellationToken = default);
+    void Pause(IDownloadActivity downloadActivity);
 
     /// <summary>
-    /// Asynchronously cancels a download.
+    /// Cancels a download.
     /// </summary>
-    Task CancelAsync(IDownloadActivity downloadActivity, CancellationToken cancellationToken = default);
+    void Cancel(IDownloadActivity downloadActivity);
 }

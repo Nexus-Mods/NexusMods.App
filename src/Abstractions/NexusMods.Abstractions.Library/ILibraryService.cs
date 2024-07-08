@@ -18,12 +18,15 @@ public interface ILibraryService
     ReadOnlyObservableCollection<IDownloadActivity> DownloadActivities { get; }
 
     /// <summary>
-    /// Adds a download to the library.
+    /// Enqueues a download.
     /// </summary>
+    /// <remarks>
+    /// This enqueues the download and optionally starts it, but this call is non-blocking and won't return
+    /// after the download has finished.
+    /// </remarks>
     /// <param name="downloadActivity">The download.</param>
     /// <param name="addPaused">Whether to add the download paused or start it immediately.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    Task AddDownloadAsync(IDownloadActivity downloadActivity, bool addPaused = false, CancellationToken cancellationToken = default);
+    void EnqueueDownload(IDownloadActivity downloadActivity, bool addPaused = false);
 
     /// <summary>
     /// Adds a local file to the library.
