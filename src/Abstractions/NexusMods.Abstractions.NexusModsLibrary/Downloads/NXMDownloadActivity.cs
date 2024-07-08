@@ -17,13 +17,5 @@ public class NXMDownloadActivity : ADownloadActivity
         NXMDownloadState.ReadOnly persistedState,
         INXMDownloader downloader,
         AbsolutePath downloadPath
-    ) : base(persistedState.AsPersistedDownloadState(), downloader, title: ToTitle(persistedState), downloadPath: downloadPath) { }
-
-    private static string ToTitle(NXMDownloadState.ReadOnly state)
-    {
-        var fileMetadata = state.FileMetadata;
-        var modPageMetadata = fileMetadata.ModPage;
-
-        return $"{modPageMetadata.Name} - {fileMetadata.Name}";
-    }
+    ) : base(persistedState.AsPersistedDownloadState(), downloader, downloadPath: downloadPath) { }
 }

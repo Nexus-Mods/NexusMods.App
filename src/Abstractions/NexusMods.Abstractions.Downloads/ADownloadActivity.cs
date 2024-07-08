@@ -33,7 +33,6 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
     protected ADownloadActivity(
         PersistedDownloadState.ReadOnly persistedState,
         IDownloader downloader,
-        string title,
         AbsolutePath downloadPath)
     {
         _connection = persistedState.Db.Connection;
@@ -42,7 +41,7 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
         _status = persistedState.Status;
 
         Downloader = downloader;
-        Title = title;
+        Title = persistedState.Title;
         Downloader = downloader;
     }
 
