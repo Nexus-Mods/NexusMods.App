@@ -13,8 +13,6 @@ namespace NexusMods.Abstractions.Downloads;
 [PublicAPI]
 public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
 {
-    private readonly IConnection _connection;
-
     /// <inheritdoc/>
     public PersistedDownloadStateId PersistedStateId { get; }
 
@@ -35,24 +33,16 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
         IDownloader downloader,
         AbsolutePath downloadPath)
     {
-        _connection = persistedState.Db.Connection;
-
         PersistedStateId = persistedState.PersistedDownloadStateId;
-        _status = persistedState.Status;
+        Status = persistedState.Status;
 
         Downloader = downloader;
         Title = persistedState.Title;
         Downloader = downloader;
     }
 
-    private PersistedDownloadStatus _status;
-
     /// <inheritdoc/>
-    public PersistedDownloadStatus Status
-    {
-        get => GetStatus();
-        set => SetStatus(value);
-    }
+    public PersistedDownloadStatus Status { get; private set; }
 
     /// <inheritdoc/>
     [Reactive] public Size BytesTotal { get; set; }
@@ -70,31 +60,17 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
     [Reactive] public Bandwidth Bandwidth { get; set; }
 
     /// <summary>
-    /// Gets the current status.
-    /// </summary>
-    protected virtual PersistedDownloadStatus GetStatus() => _status;
-
-    /// <summary>
     /// Sets the current status.
     /// </summary>
     /// <remarks>
     /// This updates <see cref="PersistedDownloadState.Status"/> for <see cref="PersistedStateId"/>.
     /// </remarks>
-    protected virtual void SetStatus(PersistedDownloadStatus status, ITransaction? transaction = null)
+    public void SetStatus(ITransaction tx, PersistedDownloadStatus status)
     {
-        _status = status;
+        Status = status;
+        tx.Add(PersistedStateId, PersistedDownloadState.Status, status);
 
-        var tx = transaction ?? _connection.BeginTransaction();
-        try
-        {
-            tx.Add(PersistedStateId, PersistedDownloadState.Status, status);
-            tx.Commit();
-        }
-        finally
-        {
-            if (transaction is null) tx.Dispose();
-            this.RaisePropertyChanged(nameof(Status));
-        }
+        this.RaisePropertyChanged(nameof(Status));
     }
 
     public override string ToString() => Title;
