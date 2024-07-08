@@ -11,7 +11,7 @@
     <table style="width: 100%">
         <tbody>
             <tr>
-                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: top">
                     <a href="./users/">
                     <div><img src="./images/support.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">
@@ -20,7 +20,7 @@
                     </a>
                     <p>Tutorials and guides to help you get started with the Nexus Mods app.</p>
                 </th>
-                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: top">
                     <a href="./developers/">
                     <div><img src="./images/developer_mode.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">

@@ -4,7 +4,7 @@ Use the Nexus Mods app to manage your Stardew Valley mods!
 On top of the basic mod management features, players also benefit from these dedicated features:
 
 ### SMAPI Installer
-Manage your installatioon of Stardew Modding API (SMAPI) by simply downloading and installing it as you would with any other mod. Once installed, your SMAPI version and game version are compared to ensure that they are compatible. 
+Manage your installation of Stardew Modding API (SMAPI) by simply downloading and installing it as you would with any other mod. Once installed, your SMAPI version and game version are compared to ensure that they are compatible. 
 
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). 
@@ -30,7 +30,7 @@ Easily edit mod config files in your loadout(s). When new config files are creat
 ![Using the app to edit a config.json](../images/0.6.0/SDVEditConfig.webp)
 
 ## Compatibility
-This game can be managed via the app on the following operating systems and platforms. The applicatioon will automatically detect valid installations from supported game stores if possible. 
+This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
 
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
 |---|---|---|---|
