@@ -5,6 +5,9 @@ The Workspace feature allows incredible flexibility and customisation when manag
 ## What are Workspaces?
 Workspaces are a collection of arranged tabs and panels. A new workspace is created with each loadout added to the app, along with two additional workspaces on the home page and downloads page. The state of these workspaces is saved so you can continue from where you left off next time the app is opened. 
 
+!!! tip "Did you know?"
+    You can right-click on any toolbar button or left-menu item to open it in a new panel or tab.
+
 
 ### Tabs
 At the top of the workspace, there is a tab bar. New tabs can be opened by pressing the :material-plus: icon and closed by pressing the :material-close: icon.
