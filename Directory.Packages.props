@@ -1,6 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.Labs.Panels" Version="11.0.10.1" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.0.6" />
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />

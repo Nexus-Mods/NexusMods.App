@@ -1,0 +1,114 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutCard:ILoadoutCardVM" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
+                                mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
+                                x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
+    <Border x:Name="OuterBorder"
+            Classes="Mid Rounded-lg"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Padding="4,4,4,0">
+
+        <panels:FlexPanel x:Name="OuterFlexPanel"
+                          Direction="Column">
+
+            <Border x:Name="ImageSectionBorder"
+                    Classes="Rounded-lg"
+                    ClipToBounds="True"
+                    Height="184">
+                <Grid>
+                    <Image x:Name="GameImage"
+                           Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
+                    <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
+                </Grid>
+            </Border>
+
+            <Border x:Name="DetailsSectionBorder"
+                    Padding="8,12"
+                    Width="184">
+
+                <panels:FlexPanel x:Name="DetailsSectionFlexPanel"
+                                  Direction="Column"
+                                  AlignItems="FlexStart"
+                                  AlignContent="Stretch"
+                                  RowSpacing="4">
+
+                    <TextBlock x:Name="LoadoutNameTextBlock"
+                               panels:Flex.AlignSelf="Stretch"
+                               Classes="BodyLGBold"
+                               Text="Loadout A" />
+
+                    <panels:FlexPanel x:Name="SubtitlesAndButtonsFlexPanel"
+                                      panels:Flex.AlignSelf="Stretch"
+                                      AlignItems="Stretch"
+                                      AlignContent="Stretch"
+                                      Direction="Column"
+                                      RowSpacing="12">
+
+                        <panels:FlexPanel x:Name="SubtitlesFlexPanel"
+                                          Direction="Column"
+                                          RowSpacing="2">
+
+                            <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel"
+                                              Direction="Row"
+                                              ColumnSpacing="4">
+                                <TextBlock x:Name="CurrentlyAppliedTextBlock"
+                                           Classes="BodySMBold"
+                                           Text="Currently Applied" />
+                                <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
+                                                   Classes="CheckBox"
+                                                   Size="16" />
+                            </panels:FlexPanel>
+
+                            <TextBlock x:Name="LastAppliedTimeTextBlock"
+                                       Classes="BodySMNormal ForegroundSubdued"
+                                       Text="Last applied 2 months ago"
+                                       IsVisible="False" />
+
+                            <TextBlock x:Name="CreatedTimeTextBlock"
+                                       Classes="BodySMNormal ForegroundSubdued"
+                                       Text="Created 10 months ago" />
+
+                            <TextBlock x:Name="NumberOfModsTextBlock"
+                                       Classes="BodySMNormal ForegroundSubdued"
+                                       Text="Mods 276" />
+                        </panels:FlexPanel>
+
+                        <panels:FlexPanel x:Name="ActionsFlexPanel"
+                                          Direction="Row"
+                                          AlignItems="FlexStart"
+                                          AlignContent="Stretch"
+                                          ColumnSpacing="8">
+                            
+                            <Button x:Name="CreateCopyButton"
+                                    Classes="Rounded Primary"
+                                    Padding="12,0,8,0"
+                                    HorizontalAlignment="Stretch"
+                                    panels:Flex.Grow="1">
+                                <StackPanel>
+                                    <TextBlock Classes="BodySMBold" Text="Create Copy" />
+                                </StackPanel>
+                            </Button>
+                            
+
+                            <Button x:Name="DeleteButton"
+                                    Classes="Rounded Primary"
+                                    HorizontalAlignment="Stretch">
+                                <icons:UnifiedIcon Classes="TrashCanOutline" />
+                            </Button>
+                        </panels:FlexPanel>
+
+                    </panels:FlexPanel>
+
+                </panels:FlexPanel>
+            </Border>
+
+        </panels:FlexPanel>
+    </Border>
+</reactiveUi:ReactiveUserControl>
