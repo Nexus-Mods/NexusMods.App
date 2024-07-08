@@ -35,30 +35,30 @@ public interface IDownloadActivity : IReactiveObject
     /// <summary>
     /// Gets the status of the download.
     /// </summary>
-    PersistedDownloadStatus Status { get; set; }
+    PersistedDownloadStatus Status { get; }
 
     /// <summary>
     /// Gets the total amount of bytes of the download.
     /// </summary>
-    Size BytesTotal { get; set; }
+    Size BytesTotal { get; }
 
     /// <summary>
     /// Gets the amount of bytes that have been downloaded.
     /// </summary>
-    Size BytesDownloaded { get; set; }
+    Size BytesDownloaded { get; }
 
     /// <summary>
     /// Gets the amount of bytes that still need to be downloaded.
     /// </summary>
-    Size BytesRemaining { get; set; }
+    Size BytesRemaining { get; }
 
     /// <summary>
     /// Gets the current progress as a percentage.
     /// </summary>
-    Percent Progress { get; set; }
+    Percent Progress { get; }
 
     /// <summary>
     /// Gets the current download speed.
     /// </summary>
-    Bandwidth Bandwidth { get; set; }
+    Bandwidth Bandwidth { get; }
 }
