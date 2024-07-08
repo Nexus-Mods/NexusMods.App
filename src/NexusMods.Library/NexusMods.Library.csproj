@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.DiskState\NexusMods.Abstractions.DiskState.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
     </ItemGroup>
 </Project>

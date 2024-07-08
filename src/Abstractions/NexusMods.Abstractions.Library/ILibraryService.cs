@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Paths;
@@ -27,5 +28,5 @@ public interface ILibraryService
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    Task<LocalFile.ReadOnly> AddLocalFileAsync(AbsolutePath absolutePath, CancellationToken cancellationToken = default);
+    Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(AbsolutePath absolutePath, CancellationToken cancellationToken = default);
 }
