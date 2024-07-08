@@ -28,6 +28,11 @@ public interface IDownloadActivity : IReactiveObject
     string Title { get; }
 
     /// <summary>
+    /// Gets the download path.
+    /// </summary>
+    AbsolutePath DownloadPath { get; }
+
+    /// <summary>
     /// Gets the status of the download.
     /// </summary>
     PersistedDownloadStatus Status { get; set; }

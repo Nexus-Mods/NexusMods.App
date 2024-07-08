@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
@@ -15,9 +17,10 @@ namespace NexusMods.Library;
 /// <summary>
 /// Implementation of <see cref="ILibraryService"/>.
 /// </summary>
-public class LibraryService : ILibraryService
+public sealed class LibraryService : ILibraryService, IDisposable
 {
     private readonly ILogger _logger;
+    private readonly CompositeDisposable _compositeDisposable = new();
 
     private readonly IConnection _connection;
     private readonly IFileExtractor _fileExtractor;
@@ -41,7 +44,20 @@ public class LibraryService : ILibraryService
         _fileExtractor = fileExtractor;
         _temporaryFileManager = temporaryFileManager;
 
-        _downloadActivitySourceCache.Connect().Bind(out _downloadActivities).Subscribe();
+        _downloadActivitySourceCache
+            .Connect()
+            .Bind(out _downloadActivities)
+            .Subscribe()
+            .DisposeWith(_compositeDisposable);
+
+        _downloadActivitySourceCache
+            .Connect()
+            .WhenPropertyChanged(downloadActivity => downloadActivity.Status)
+            .Where(propertyValue => propertyValue.Value == PersistedDownloadStatus.Completed)
+            .Select(propertyValue => propertyValue.Sender)
+            .SelectMany(AddCompletedDownloadAsync)
+            .Subscribe()
+            .DisposeWith(_compositeDisposable);
     }
 
     /// <inheritdoc/>
@@ -53,6 +69,22 @@ public class LibraryService : ILibraryService
 
         if (addPaused) return;
         downloadActivity.Downloader.Start(downloadActivity);
+    }
+
+    private async Task<LibraryFile.ReadOnly> AddCompletedDownloadAsync(
+        IDownloadActivity downloadActivity,
+        CancellationToken cancellationToken)
+    {
+        _downloadActivitySourceCache.Remove(downloadActivity);
+
+        using var tx = _connection.BeginTransaction();
+        var entityId = tx.TempId();
+
+        // TODO: create download specific library item
+        var libraryFile = await AddLibraryFile(tx, entityId, downloadActivity.DownloadPath, cancellationToken: cancellationToken);
+
+        var result = await tx.Commit();
+        return result.Remap(libraryFile);
     }
 
     /// <inheritdoc/>
@@ -74,10 +106,13 @@ public class LibraryService : ILibraryService
         }
 
         using var tx = _connection.BeginTransaction();
+        var entityId = tx.TempId();
 
-        var localFile = new LocalFile.New(tx, out var entityId)
+        var libraryFile = await AddLibraryFile(tx, entityId, absolutePath, cancellationToken: cancellationToken);
+
+        var localFile = new LocalFile.New(tx, entityId)
         {
-            LibraryFile = await AddLibraryFile(tx, entityId, absolutePath, cancellationToken: cancellationToken),
+            LibraryFile = libraryFile,
             OriginalPath = absolutePath.GetFullPath(),
         };
 
@@ -155,5 +190,10 @@ public class LibraryService : ILibraryService
                 ParentId = libraryArchive.Id,
             };
         });
+    }
+
+    public void Dispose()
+    {
+        _compositeDisposable.Dispose();
     }
 }

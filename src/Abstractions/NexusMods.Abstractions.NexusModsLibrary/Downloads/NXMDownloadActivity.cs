@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -14,8 +15,9 @@ public class NXMDownloadActivity : ADownloadActivity
     /// </summary>
     public NXMDownloadActivity(
         NXMDownloadState.ReadOnly persistedState,
-        INXMDownloader downloader
-    ) : base(persistedState.AsPersistedDownloadState(), downloader, title: ToTitle(persistedState)) { }
+        INXMDownloader downloader,
+        AbsolutePath downloadPath
+    ) : base(persistedState.AsPersistedDownloadState(), downloader, title: ToTitle(persistedState), downloadPath: downloadPath) { }
 
     private static string ToTitle(NXMDownloadState.ReadOnly state)
     {

@@ -24,10 +24,17 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
     /// <inheritdoc/>
     public string Title { get; }
 
+    /// <inheritdoc/>
+    public AbsolutePath DownloadPath { get; }
+
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected ADownloadActivity(PersistedDownloadState.ReadOnly persistedState, IDownloader downloader, string title)
+    protected ADownloadActivity(
+        PersistedDownloadState.ReadOnly persistedState,
+        IDownloader downloader,
+        string title,
+        AbsolutePath downloadPath)
     {
         _connection = persistedState.Db.Connection;
 
@@ -36,6 +43,7 @@ public abstract class ADownloadActivity : ReactiveObject, IDownloadActivity
 
         Downloader = downloader;
         Title = title;
+        Downloader = downloader;
     }
 
     private PersistedDownloadStatus _status;
