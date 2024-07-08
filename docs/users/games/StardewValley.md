@@ -7,13 +7,14 @@ On top of the basic mod management features, players also benefit from these ded
 Manage your installation of Stardew Modding API (SMAPI) by simply downloading and installing it as you would with any other mod. Once installed, your SMAPI version and game version are compared to ensure that they are compatible. 
 
 ### Loadout Health Check
-Get information on potential issues in your loadout(s). 
+Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
 ![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)
 
 Diagnostics are shown in the following situations: 
 
 - SMAPI is recommended when no mods are installed yet.
+- One or more mods requiring SMAPI are installed but SMAPI is missing.
 - The installed SMAPI version is too old to work with the game version.
 - The game version is too old to work with the installed SMAPI version.
 - An installed mod's dependencies are installed, but they are outdated.
