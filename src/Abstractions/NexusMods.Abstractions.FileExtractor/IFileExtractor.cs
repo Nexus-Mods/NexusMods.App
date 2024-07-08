@@ -41,11 +41,24 @@ public interface IFileExtractor
     public Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory source,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default);
 
+    /// <summary>
+    /// Tests if a specific file can be extracted with this extractor.
+    /// </summary>
+    /// <param name="path">The path to the file to test.</param>
+    /// <returns>True if the extractor can extract this file, else false.</returns>
+    public ValueTask<bool> CanExtract(AbsolutePath path);
+
+    /// <summary>
+    /// Tests if a specific file can be extracted with this extractor.
+    /// </summary>
+    /// <param name="stream">The stream to test..</param>
+    /// <returns>True if the extractor can extract this file, else false.</returns>
+    public ValueTask<bool> CanExtract(Stream stream);
 
     /// <summary>
     /// Tests if a specific file can be extracted with this extractor.
     /// </summary>
     /// <param name="sFn">The stream to test.</param>
     /// <returns>True if the extractor can extract this stream, else false.</returns>
-    public Task<bool> CanExtract(IStreamFactory sFn);
+    public ValueTask<bool> CanExtract(IStreamFactory sFn);
 }
