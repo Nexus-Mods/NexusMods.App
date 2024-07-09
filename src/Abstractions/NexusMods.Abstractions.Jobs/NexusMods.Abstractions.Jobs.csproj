@@ -12,6 +12,9 @@
       <Compile Update="IIndeterminateProgress.cs">
         <DependentUpon>IProgress.cs</DependentUpon>
       </Compile>
+      <Compile Update="IProgressRateFormatter.cs">
+        <DependentUpon>ProgressRate.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

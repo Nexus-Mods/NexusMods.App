@@ -16,6 +16,11 @@ public interface IDeterminateProgress : IProgress
     Percent Percent { get; }
 
     /// <summary>
+    /// Gets the current rate at which work is being done.
+    /// </summary>
+    ProgressRate ProgressRate { get; }
+
+    /// <summary>
     /// Gets the estimated finish time.
     /// </summary>
     /// <remarks>
