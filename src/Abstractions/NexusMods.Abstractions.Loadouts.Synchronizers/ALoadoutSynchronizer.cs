@@ -476,7 +476,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
                     
-        if (overridesMod.Value.InPartition(PartitionId.Temp))
+        if (!overridesMod.Value.InPartition(PartitionId.Temp))
         {
             var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
             mod.Revise(tx);
