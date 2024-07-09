@@ -25,6 +25,25 @@ public static class JobStatusExtensions
     }
 
     /// <summary>
+    /// Converts <see cref="JobStatus"/> into <see cref="JobResultType"/>.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="status"/> is not considered finished.
+    /// Use <see cref="IsFinished"/> to verify that the status is considered finished.
+    /// </exception>
+    public static JobResultType ToResultType(this JobStatus status)
+    {
+        return status switch
+        {
+            JobStatus.Completed => JobResultType.Completed,
+            JobStatus.Cancelled => JobResultType.Cancelled,
+            JobStatus.Failed => JobResultType.Failed,
+            JobStatus.None or JobStatus.Created or JobStatus.Running or JobStatus.Paused =>
+                throw new ArgumentException($"Status `{status}` is not considered finished and can't be converted into a {nameof(JobResultType)}", nameof(status)),
+        };
+    }
+
+    /// <summary>
     /// Returns whether a transition from one status to another is valid.
     /// </summary>
     public static bool CanTransition(this JobStatus from, JobStatus to)
