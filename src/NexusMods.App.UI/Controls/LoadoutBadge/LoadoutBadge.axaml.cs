@@ -7,7 +7,7 @@ using ReactiveUI;
 namespace NexusMods.App.UI.Controls.LoadoutBadge;
 
 [PseudoClasses(":selected", ":in-progress", ":applied")]
-public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeVM>
+public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeViewModel>
 {
     public LoadoutBadge()
     {

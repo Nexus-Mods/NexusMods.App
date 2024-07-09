@@ -5,7 +5,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.LoadoutBadge;
 
-public class LoadoutBadgeDesignVM : AViewModel<ILoadoutBadgeVM>, ILoadoutBadgeVM
+public class LoadoutBadgeDesignViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadoutBadgeViewModel
 {
     private enum LoadoutAppliedState
     {
@@ -15,7 +15,7 @@ public class LoadoutBadgeDesignVM : AViewModel<ILoadoutBadgeVM>, ILoadoutBadgeVM
     }
     private LoadoutAppliedState _loadoutAppliedState = LoadoutAppliedState.NotApplied;
     
-    public LoadoutBadgeDesignVM()
+    public LoadoutBadgeDesignViewModel()
     {
         this.WhenActivated(d =>
             {

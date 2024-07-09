@@ -1,6 +1,6 @@
 namespace NexusMods.App.UI.Controls.LoadoutBadge;
 
-public interface ILoadoutBadgeVM : IViewModelInterface
+public interface ILoadoutBadgeViewModel : IViewModelInterface
 {
     string LoadoutShortName { get; }
     
