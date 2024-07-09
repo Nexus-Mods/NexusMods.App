@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="IDeterminateProgress.cs">
+        <DependentUpon>IProgress.cs</DependentUpon>
+      </Compile>
+      <Compile Update="IIndeterminateProgress.cs">
+        <DependentUpon>IProgress.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>
