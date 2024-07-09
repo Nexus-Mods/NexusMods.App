@@ -23,11 +23,17 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
         </Style>
+        
+        <Style Selector="^ panels|FlexPanel#CardOuterFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="AlignItems" Value="FlexStart" />
+        </Style>
 
         <Style Selector="^ Border#ImageSectionBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
             <Setter Property="ClipToBounds" Value="True" />
             <Setter Property="Height" Value="184" />
+            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
         </Style>
 
         <Style Selector="^ Border#DetailsSectionBorder">
@@ -37,26 +43,25 @@
 
         <Style Selector="^ panels|FlexPanel#DetailsSectionFlexPanel">
             <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch" />
-            <Setter Property="AlignContent" Value="Stretch" />
+            <Setter Property="AlignItems" Value="Stretch"/>
             <Setter Property="RowSpacing" Value="4" />
         </Style>
 
-        <Style Selector="^ panels|FlexPanel#CurrentlyAppliedFlexPanel">
-            <Setter Property="Direction" Value="Row" />
-            <Setter Property="ColumnSpacing" Value="4" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#SubtitlesAndButtonsFlexPanel">
+        <Style Selector="^ panels|FlexPanel#BodyAndActionsGroupFlexPanel">
             <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch" />
-            <Setter Property="AlignContent" Value="Stretch" />
+            <Setter Property="AlignItems" Value="Stretch"/>
             <Setter Property="RowSpacing" Value="12" />
         </Style>
 
-        <Style Selector="^ panels|FlexPanel#SubtitlesFlexPanel">
+        <Style Selector="^ panels|FlexPanel#DetailsBodyFlexPanel">
             <Setter Property="Direction" Value="Column" />
             <Setter Property="RowSpacing" Value="2" />
+            <Setter Property="AlignItems" Value="Stretch"/>
+        </Style>
+        
+        <Style Selector="^ panels|FlexPanel#CurrentlyAppliedFlexPanel">
+            <Setter Property="ColumnSpacing" Value="4" />
+            <Setter Property="AlignItems" Value="FlexStart"/>
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">

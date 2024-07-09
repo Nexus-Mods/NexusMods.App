@@ -11,9 +11,7 @@
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
     <Button x:Name="CardOuterButton">
 
-        <panels:FlexPanel x:Name="CardOuterFlexPanel"
-                          AlignContent="Stretch"
-                          Direction="Column">
+        <panels:FlexPanel x:Name="CardOuterFlexPanel">
 
             <Border x:Name="ImageSectionBorder">
                 <Grid>
@@ -31,9 +29,9 @@
                                Classes="BodyLGBold"
                                Text="Loadout A" />
 
-                    <panels:FlexPanel x:Name="SubtitlesAndButtonsFlexPanel">
+                    <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel" >
 
-                        <panels:FlexPanel x:Name="SubtitlesFlexPanel">
+                        <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
 
                             <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
                                 
