@@ -70,7 +70,7 @@ public class ProcessFactory : IProcessFactory
 
         var fileName = GetFileName(command);
 
-        var logFileName = $"{fileName}-{DateTime.Now:s}";
+        var logFileName = $"{fileName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
         var stdOutFilePath = _processLogsFolder.Combine(logFileName + ".stdout.log");
         var stdErrFilePath = _processLogsFolder.Combine(logFileName + ".stderr.log");
         _logger.LogInformation("Using process logs {StdOutLogPath} and {StdErrLogPath}", stdOutFilePath, stdErrFilePath);

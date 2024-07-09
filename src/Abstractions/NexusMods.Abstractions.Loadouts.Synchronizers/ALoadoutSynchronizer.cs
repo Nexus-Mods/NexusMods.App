@@ -80,6 +80,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     }
     
+    
+    
     private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskStateTree newTree, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
@@ -239,7 +241,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
                 PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
                 LoadoutArchived = item.LoadoutFile.HasValue && HaveArchive(item.LoadoutFile.Value.Hash),
-                PathIsIgnored = false,
+                PathIsIgnored = IsIgnoredBackupPath(entry.GamePath()),
             }.Build();
             
             item.Signature = signature;
@@ -355,9 +357,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var item in toAddDelete)
         {
-            var delete = new DeletedFile.New(tx)
+            var delete = new DeletedFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = item.Path,
                     ModId = overridesMod,
@@ -459,9 +461,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
-            var storedFile = new StoredFile.New(tx)
+            var storedFile = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = file.Path,
                     ModId = overridesMod,
@@ -687,10 +689,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var path = file.GamePath();
             
-            filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            allStoredFileModels.Add(new StoredFile.New(tx)
+            if (!IsIgnoredBackupPath(path)) 
+                filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+            
+            allStoredFileModels.Add(new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     To = path,
                     LoadoutId = loadout,
@@ -757,6 +761,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
         
         await _diskStateRegistry.ClearInitialState(installation);
+    }
+    
+    /// <inheritdoc />
+    public virtual bool IsIgnoredBackupPath(GamePath path)
+    {
+        return false;
     }
 
     /// <inheritdoc />
@@ -847,10 +857,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         foreach (var file in initialState.GetAllDescendentFiles())
         {
             var path = file.GamePath();
-            filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            _ = new StoredFile.New(tx)
+
+            if (!IsIgnoredBackupPath(path)) 
+                filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+            
+            _ = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx)
+                File = new File.New(tx, id)
                 {
                     LoadoutId = loadout,
                     ModId = gameFiles,

@@ -32,16 +32,6 @@ public interface IFileHashCache
     IAsyncEnumerable<HashedEntryWithName> IndexFolderAsync(AbsolutePath path, CancellationToken token = default);
 
     /// <summary>
-    ///     Asynchronously indexes the folders specified by <paramref name="paths" />; putting them in the cache.
-    /// </summary>
-    /// <remarks>
-    ///     Entries are pulled from cache if they already exist and we
-    ///     can verify cached entry is accurate.
-    /// </remarks>
-    IAsyncEnumerable<HashedEntryWithName> IndexFoldersAsync(IEnumerable<AbsolutePath> paths,
-        CancellationToken token = default);
-
-    /// <summary>
     ///     Asynchronously indexes the file specified by <paramref name="file" />; putting them in the cache.
     /// </summary>
     /// <remarks>
@@ -54,12 +44,6 @@ public interface IFileHashCache
     ///     Indexes the folders a game installation and returns the disk state tree.
     /// </summary>
     ValueTask<DiskStateTree> IndexDiskState(GameInstallation installation);
-
-
-    /// <summary>
-    ///     Puts the entries into the cache, replacing any existing entries.
-    /// </summary>
-    public Task PutCached(IReadOnlyCollection<HashedEntryWithName> entries);
 }
 
 /// <summary>

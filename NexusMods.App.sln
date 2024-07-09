@@ -130,8 +130,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Seri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games", "src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj", "{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Messaging", "src\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj", "{85B930AE-F36D-471E-AF35-A722B87488CA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games.Diagnostics", "src\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj", "{CE7D28B9-41E3-4E30-A819-32198568B4E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DependencyInjection", "src\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj", "{551A637D-C777-4115-A844-5A5E35B5D099}"
@@ -176,8 +174,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.File
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.DiskState", "src\Abstractions\NexusMods.Abstractions.DiskState\NexusMods.Abstractions.DiskState.csproj", "{2558DEF1-213D-4A99-92B6-57A417AF70E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Triggers", "src\Abstractions\NexusMods.Abstractions.Triggers\NexusMods.Abstractions.Triggers.csproj", "{83843BDF-870C-462E-95E4-8AE305E22B68}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Loadouts.Synchronizers", "src\Abstractions\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj", "{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GameLocators", "src\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj", "{4334BE5B-C476-415D-B4FA-183723C4D4D5}"
@@ -217,6 +213,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interprocess", "Interprocess", "{92AC7C89-5265-4D51-AB15-0EB9F3C168B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Settings.Tests", "tests\NexusMods.Settings.Tests\NexusMods.Settings.Tests.csproj", "{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Library", "src\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj", "{0044D340-E435-489C-A425-139AAB2EA205}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.NexusModsLibrary", "src\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj", "{5D85EBB2-755F-4148-BFC4-8D2245A3105B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Downloads", "src\Abstractions\NexusMods.Abstractions.Downloads\NexusMods.Abstractions.Downloads.csproj", "{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Library", "src\NexusMods.Library\NexusMods.Library.csproj", "{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -396,10 +400,6 @@ Global
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85B930AE-F36D-471E-AF35-A722B87488CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85B930AE-F36D-471E-AF35-A722B87488CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85B930AE-F36D-471E-AF35-A722B87488CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85B930AE-F36D-471E-AF35-A722B87488CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE7D28B9-41E3-4E30-A819-32198568B4E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE7D28B9-41E3-4E30-A819-32198568B4E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE7D28B9-41E3-4E30-A819-32198568B4E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -480,10 +480,6 @@ Global
 		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83843BDF-870C-462E-95E4-8AE305E22B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83843BDF-870C-462E-95E4-8AE305E22B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83843BDF-870C-462E-95E4-8AE305E22B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83843BDF-870C-462E-95E4-8AE305E22B68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -556,6 +552,22 @@ Global
 		{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0044D340-E435-489C-A425-139AAB2EA205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0044D340-E435-489C-A425-139AAB2EA205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0044D340-E435-489C-A425-139AAB2EA205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0044D340-E435-489C-A425-139AAB2EA205}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D85EBB2-755F-4148-BFC4-8D2245A3105B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D85EBB2-755F-4148-BFC4-8D2245A3105B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D85EBB2-755F-4148-BFC4-8D2245A3105B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D85EBB2-755F-4148-BFC4-8D2245A3105B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -609,7 +621,6 @@ Global
 		{EAA331DB-7E01-4215-BE2E-1D52B3EE4F49} = {789C12BC-EE6D-4374-B7EA-70FA81CA99BF}
 		{B90CC2ED-3C8D-4806-A231-395CF9EF6DEF} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
-		{85B930AE-F36D-471E-AF35-A722B87488CA} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{CE7D28B9-41E3-4E30-A819-32198568B4E4} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{551A637D-C777-4115-A844-5A5E35B5D099} = {3C8B4F7A-1964-4166-9E5A-2490BB0DF102}
 		{15FB0F0C-8D31-4B0C-84FC-D591759186B8} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
@@ -634,7 +645,6 @@ Global
 		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{2558DEF1-213D-4A99-92B6-57A417AF70E1} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
-		{83843BDF-870C-462E-95E4-8AE305E22B68} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{4334BE5B-C476-415D-B4FA-183723C4D4D5} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{76F37CC8-994C-4A43-AB99-C1618FF83272} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
@@ -655,6 +665,10 @@ Global
 		{92AC7C89-5265-4D51-AB15-0EB9F3C168B5} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{355955A6-F508-493E-A08A-40626D2E4CFE} = {92AC7C89-5265-4D51-AB15-0EB9F3C168B5}
 		{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{0044D340-E435-489C-A425-139AAB2EA205} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{5D85EBB2-755F-4148-BFC4-8D2245A3105B} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{9C39540A-D44A-4FD7-B5C9-AA2D46E5638F} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{D4D857EC-5D2F-4F6A-8254-EA47B160E1B2} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
