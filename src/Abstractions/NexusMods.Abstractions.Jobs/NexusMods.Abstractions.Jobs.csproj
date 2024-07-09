@@ -2,6 +2,7 @@
 
     <ItemGroup>
         <PackageReference Include="DynamicData" />
+        <PackageReference Include="OneOf" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
@@ -27,6 +28,18 @@
       </Compile>
       <Compile Update="JobStatusExtensions.cs">
         <DependentUpon>JobStatus.cs</DependentUpon>
+      </Compile>
+      <Compile Update="JobResultType.cs">
+        <DependentUpon>JobResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="JobResultCancelled.cs">
+        <DependentUpon>JobResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="JobResultCompleted.cs">
+        <DependentUpon>JobResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="JobResultFailed.cs">
+        <DependentUpon>JobResult.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

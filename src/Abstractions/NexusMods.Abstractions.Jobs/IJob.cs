@@ -35,5 +35,5 @@ public interface IJob
     /// Optional cancellation token to stop the waiting. Note that this only
     /// cancels the proxy task, it does not cancel the job.
     /// </param>
-    Task WaitToFinishAsync(CancellationToken cancellationToken = default);
+    Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default);
 }
