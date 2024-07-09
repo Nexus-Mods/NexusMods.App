@@ -135,7 +135,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         var newOverrides = new Mod.New(tx)
         {
-            LoadoutId = loadout,
+            LoadoutId = loadout.LoadoutId,
             Category = ModCategory.Overrides,
             Name = "Overrides",
             Enabled = true,
@@ -359,7 +359,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var delete = new DeletedFile.New(tx, out var id)
             {
-                File = new File.New(tx, id)
+                File = new File.New(tx, eid: id)
                 {
                     To = item.Path,
                     ModId = overridesMod,
@@ -463,7 +463,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var storedFile = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx, id)
+                File = new File.New(tx, eid: id)
                 {
                     To = file.Path,
                     ModId = overridesMod,
@@ -476,7 +476,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
                     
-        if (overridesMod.Value.InPartition(PartitionId.Temp))
+        if (!overridesMod.Value.InPartition(PartitionId.Temp))
         {
             var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
             mod.Revise(tx);
@@ -694,10 +694,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
             allStoredFileModels.Add(new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx, id)
+                File = new File.New(tx, eid: id)
                 {
                     To = path,
-                    LoadoutId = loadout,
+                    LoadoutId = loadout.LoadoutId,
                     ModId = gameFiles,
                 },
                 Hash = file.Item.Value.Hash,
@@ -739,7 +739,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             Version = installation.Version.ToString(),
             Category = ModCategory.GameFiles,
             Enabled = true,
-            LoadoutId = loadout,
+            LoadoutId = loadout.LoadoutId,
             Status = ModStatus.Installed,
             Revision = 0,
         };
@@ -863,9 +863,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
             _ = new StoredFile.New(tx, out var id)
             {
-                File = new File.New(tx, id)
+                File = new File.New(tx, eid: id)
                 {
-                    LoadoutId = loadout,
+                    LoadoutId = loadout.LoadoutId,
                     ModId = gameFiles,
                     To = path,
                 },
