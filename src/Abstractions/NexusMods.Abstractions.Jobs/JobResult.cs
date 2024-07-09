@@ -5,6 +5,9 @@ using OneOf;
 namespace NexusMods.Abstractions.Jobs;
 using Union = OneOf<JobResultCompleted, JobResultCancelled, JobResultFailed>;
 
+/// <summary>
+/// Result of a job.
+/// </summary>
 [PublicAPI]
 public class JobResult
 {
@@ -15,6 +18,9 @@ public class JobResult
     /// </summary>
     public JobResultType ResultType { get; }
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public JobResult(Union value)
     {
         _value = value;
@@ -26,6 +32,9 @@ public class JobResult
         );
     }
 
+    /// <summary>
+    /// Returns the result as a <see cref="JobResultCompleted"/> using the try-get pattern.
+    /// </summary>
     public bool TryGetCompleted([NotNullWhen(true)] out JobResultCompleted? completed)
     {
         if (ResultType != JobResultType.Completed)
@@ -38,6 +47,9 @@ public class JobResult
         return true;
     }
 
+    /// <summary>
+    /// Returns the result as a <see cref="JobResultCancelled"/> using the try-get pattern.
+    /// </summary>
     public bool TryGetCancelled([NotNullWhen(true)] out JobResultCancelled? cancelled)
     {
         if (ResultType != JobResultType.Cancelled)
@@ -50,6 +62,9 @@ public class JobResult
         return true;
     }
 
+    /// <summary>
+    /// Returns the result as a <see cref="JobResultFailed"/> using the try-get pattern.
+    /// </summary>
     public bool TryGetFailed([NotNullWhen(true)] out JobResultFailed? failed)
     {
         if (ResultType != JobResultType.Failed)
