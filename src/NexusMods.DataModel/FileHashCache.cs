@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DiskState;
@@ -24,23 +24,21 @@ namespace NexusMods.DataModel;
 ///
 ///     Related reading: <a href="https://en.wikipedia.org/wiki/Birthday_problem">Birthday Problem</a>
 /// </remarks>
+[UsedImplicitly]
 public class FileHashCache : IFileHashCache
 {
     /// <summary>
     /// The activity group for file hash cache activities.
     /// </summary>
-    public static readonly ActivityGroup Group = ActivityGroup.From("FileHashCache");
+    private static readonly ActivityGroup Group = ActivityGroup.From("FileHashCache");
 
     private readonly IActivityFactory _activityFactory;
     private readonly IConnection _conn;
-    private readonly ILogger<FileHashCache> _logger;
+    private readonly ILogger _logger;
 
-    /// <summary/>
-    /// <param name="activityFactory">Limits CPU utilization where possible.</param>
-    /// <param name="store">The store inside which the file hashes are kept within.</param>
-    /// <remarks>
-    ///    This constructor is usually called from DI.
-    /// </remarks>
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public FileHashCache(IActivityFactory activityFactory, IConnection conn, ILogger<FileHashCache> logger)
     {
         _logger = logger;
@@ -71,10 +69,9 @@ public class FileHashCache : IFileHashCache
         return IndexFoldersAsync(new[] { path }, token);
     }
 
-    /// <inheritdoc/>
-    public async IAsyncEnumerable<HashedEntryWithName> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
+    private async IAsyncEnumerable<HashedEntryWithName> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
     {
-        // Don't want to error via a empty folder
+        // Don't want to error via an empty folder
         var validPaths = paths.Where(p => p.DirectoryExists()).ToList();
 
         var allFiles = validPaths.SelectMany(p => p.EnumerateFiles())
@@ -87,7 +84,7 @@ public class FileHashCache : IFileHashCache
 
         var toPersist = new ConcurrentBag<HashedEntryWithName>();
         var results = new ConcurrentBag<HashedEntryWithName>();
-        await Parallel.ForEachAsync(allFiles, (info, _) =>
+        await Parallel.ForEachAsync(allFiles, token, (info, _) =>
         {
             if (TryGetCached(info.Path, out var found))
             {
@@ -104,8 +101,7 @@ public class FileHashCache : IFileHashCache
             toPersist.Add(result);
             results.Add(result);
             return ValueTask.CompletedTask;
-        }
-        );
+        });
 
         // Insert all cached items into the DB.
         await PutCached(toPersist);
@@ -144,8 +140,7 @@ public class FileHashCache : IFileHashCache
             DiskStateEntry.From(h))));
     }
 
-    /// <inheritdoc />
-    public async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
+    internal async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
     {
         if (toPersist.Count == 0) return;
         var db = _conn.Db;

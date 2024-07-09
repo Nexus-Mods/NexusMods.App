@@ -1,8 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 
-namespace NexusMods.Abstractions.Library.NexusModsLibrary;
+namespace NexusMods.Abstractions.NexusModsLibrary;
 
 /// <summary>
 /// Extension methods.
@@ -13,11 +12,12 @@ public static class Services
     /// <summary>
     /// Extension method.
     /// </summary>
-    public static IServiceCollection AddNexusModsLibraryAttributes(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddNexusModsLibraryModels(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddNexusModsFileMetadataModel()
             .AddNexusModsModPageMetadataModel()
-            .AddNexusModsLibraryFileModel();
+            .AddNexusModsLibraryFileModel()
+            .AddNXMDownloadStateModel();
     }
 }

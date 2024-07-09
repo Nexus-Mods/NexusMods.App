@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Abstractions.Downloads\NexusMods.Abstractions.Downloads.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.MnemonicDB.Storage" />
+        <PackageReference Include="ReactiveUI" />
+        <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="LocalFile.cs">
-        <DependentUpon>LibraryItem.cs</DependentUpon>
+      <Compile Update="ADownloadActivity.cs">
+        <DependentUpon>IDownloadActivity.cs</DependentUpon>
       </Compile>
-      <Compile Update="LibraryFile.cs">
-        <DependentUpon>LibraryItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LibraryArchiveFileEntry.cs">
-        <DependentUpon>LibraryArchive.cs</DependentUpon>
+      <Compile Update="PersistedDownloadStatus.cs">
+        <DependentUpon>PersistedDownloadState.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+
 </Project>
