@@ -9,27 +9,32 @@ namespace NexusMods.Abstractions.Downloads;
 public enum PersistedDownloadStatus : byte
 {
     /// <summary>
-    /// Default status, the download is paused.
+    /// Default status, the download has been created but not started.
     /// </summary>
-    Paused = 0,
+    Created = 0,
 
     /// <summary>
-    /// The download is progressing.
+    /// The download is running.
     /// </summary>
-    Downloading = 1,
+    Running = 1,
+
+    /// <summary>
+    /// The download is paused.
+    /// </summary>
+    Paused = 2,
 
     /// <summary>
     /// The download is completed.
     /// </summary>
-    Completed = 2,
+    Completed = 3,
 
     /// <summary>
     /// The download was cancelled by the user.
     /// </summary>
-    Cancelled = 3,
+    Cancelled = 4,
 
     /// <summary>
     /// The download failed.
     /// </summary>
-    Failed = 4,
+    Failed = 5,
 }

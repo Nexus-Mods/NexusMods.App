@@ -11,9 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="ADownloadActivity.cs">
-        <DependentUpon>IDownloadActivity.cs</DependentUpon>
-      </Compile>
       <Compile Update="PersistedDownloadStatus.cs">
         <DependentUpon>PersistedDownloadState.cs</DependentUpon>
       </Compile>

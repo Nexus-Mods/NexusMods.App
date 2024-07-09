@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Downloads;
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
 /// <summary>
-/// Represents a downloader for <see cref="INXMDownloadActivity"/>.
+/// Represents an NXM download.
 /// </summary>
 [PublicAPI]
-public interface INXMDownloader : IDownloader;
+public interface INXMDownloadActivity : IDownloadActivity;
