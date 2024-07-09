@@ -25,6 +25,9 @@
       <Compile Update="IPersistedJob.cs">
         <DependentUpon>IJob.cs</DependentUpon>
       </Compile>
+      <Compile Update="JobStatusExtensions.cs">
+        <DependentUpon>JobStatus.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

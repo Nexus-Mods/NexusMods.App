@@ -27,4 +27,13 @@ public interface IJob
     /// Gets the progress of the job.
     /// </summary>
     IProgress Progress { get; }
+
+    /// <summary>
+    /// Returns a proxy task that completes when the job is finished.
+    /// </summary>
+    /// <param name="cancellationToken">
+    /// Optional cancellation token to stop the waiting. Note that this only
+    /// cancels the proxy task, it does not cancel the job.
+    /// </param>
+    Task WaitToFinishAsync(CancellationToken cancellationToken = default);
 }

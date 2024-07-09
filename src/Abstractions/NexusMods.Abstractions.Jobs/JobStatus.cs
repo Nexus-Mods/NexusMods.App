@@ -34,7 +34,7 @@ public enum JobStatus : byte
     /// The job is paused.
     /// </summary>
     /// <remarks>
-    /// Jobs in this status can transition to <see cref="Running"/>,
+    /// Jobs in this status can transition to <see cref="Running"/> or
     /// <see cref="Cancelled"/>.
     /// </remarks>
     Paused = 3,
