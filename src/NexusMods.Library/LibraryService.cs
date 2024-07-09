@@ -50,12 +50,14 @@ public sealed class LibraryService : ILibraryService, IDisposable
             .Subscribe()
             .DisposeWith(_compositeDisposable);
 
+        // handle completed downloads
         _downloadActivitySourceCache
             .Connect()
             .WhenPropertyChanged(downloadActivity => downloadActivity.Status)
             .Where(propertyValue => propertyValue.Value == PersistedDownloadStatus.Completed)
             .Select(propertyValue => propertyValue.Sender)
-            .SelectMany(AddCompletedDownloadAsync)
+            .Select(downloadActivity => Observable.FromAsync(cancellationToken => AddCompletedDownloadAsync(downloadActivity, cancellationToken)))
+            .SelectMany(sequences => sequences)
             .Subscribe()
             .DisposeWith(_compositeDisposable);
     }
@@ -75,7 +77,8 @@ public sealed class LibraryService : ILibraryService, IDisposable
         IDownloadActivity downloadActivity,
         CancellationToken cancellationToken)
     {
-        _downloadActivitySourceCache.Remove(downloadActivity);
+        // TODO: figure out when to remove activity from the cache
+        // _downloadActivitySourceCache.Remove(downloadActivity);
 
         using var tx = _connection.BeginTransaction();
         var entityId = tx.TempId();
