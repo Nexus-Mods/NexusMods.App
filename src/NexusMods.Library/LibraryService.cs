@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -86,8 +87,12 @@ public sealed class LibraryService : ILibraryService, IDisposable
     //     return result.Remap(libraryFile);
     // }
 
-    /// <inheritdoc/>
-    public async Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(
+    public IJob AddLocalFile(AbsolutePath absolutePath, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(
         AbsolutePath absolutePath,
         CancellationToken cancellationToken = default)
     {

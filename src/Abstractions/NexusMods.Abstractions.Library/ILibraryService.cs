@@ -1,5 +1,5 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Library;
@@ -13,5 +13,5 @@ public interface ILibraryService
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(AbsolutePath absolutePath, CancellationToken cancellationToken = default);
+    IJob AddLocalFile(AbsolutePath absolutePath, CancellationToken cancellationToken = default);
 }

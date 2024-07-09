@@ -14,9 +14,9 @@ public interface IJob
     JobId Id { get; }
 
     /// <summary>
-    /// Gets the parent job.
+    /// Gets the parent job group.
     /// </summary>
-    IJob? ParentJob { get; }
+    IJobGroup? Group { get; }
 
     /// <summary>
     /// Gets the status of the job.
