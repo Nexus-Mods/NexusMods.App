@@ -81,7 +81,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
         var entityId = tx.TempId();
 
         // TODO: create download specific library item
-        var libraryFile = await AddLibraryFile(tx, entityId, downloadActivity.DownloadPath, cancellationToken: cancellationToken);
+        var libraryFile = await AddLibraryFileAsync(tx, entityId, downloadActivity.DownloadPath, cancellationToken: cancellationToken);
 
         var result = await tx.Commit();
         return result.Remap(libraryFile);
@@ -108,7 +108,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
         using var tx = _connection.BeginTransaction();
         var entityId = tx.TempId();
 
-        var libraryFile = await AddLibraryFile(tx, entityId, absolutePath, cancellationToken: cancellationToken);
+        var libraryFile = await AddLibraryFileAsync(tx, entityId, absolutePath, cancellationToken: cancellationToken);
 
         var localFile = new LocalFile.New(tx, entityId)
         {
@@ -120,7 +120,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
         return result.Remap(localFile);
     }
 
-    private async Task<LibraryFile.New> AddLibraryFile(
+    private async Task<LibraryFile.New> AddLibraryFileAsync(
         ITransaction tx,
         EntityId entityId,
         AbsolutePath filePath,
@@ -183,7 +183,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
             CancellationToken = cancellationToken,
         }, async (file, innerCancellationToken) =>
         {
-            var libraryFile = await AddLibraryFile(tx, tx.TempId(), file.Path, innerCancellationToken);
+            var libraryFile = await AddLibraryFileAsync(tx, tx.TempId(), file.Path, innerCancellationToken);
             var archiveFileEntry = new LibraryArchiveFileEntry.New(tx, libraryFile.Id)
             {
                 LibraryFile = libraryFile,
