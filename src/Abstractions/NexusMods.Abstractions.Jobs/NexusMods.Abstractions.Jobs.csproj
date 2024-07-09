@@ -3,8 +3,15 @@
     <ItemGroup>
         <PackageReference Include="DynamicData" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+        <PackageReference Include="NexusMods.MnemonicDB.Storage" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+    </ItemGroup>
+    
     <ItemGroup>
       <Compile Update="IDeterminateProgress.cs">
         <DependentUpon>IProgress.cs</DependentUpon>
@@ -14,6 +21,9 @@
       </Compile>
       <Compile Update="IProgressRateFormatter.cs">
         <DependentUpon>ProgressRate.cs</DependentUpon>
+      </Compile>
+      <Compile Update="IPersistedJob.cs">
+        <DependentUpon>IJob.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

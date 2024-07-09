@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.MnemonicDB.Storage" />
@@ -8,12 +9,6 @@
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="PersistedDownloadStatus.cs">
-        <DependentUpon>PersistedDownloadState.cs</DependentUpon>
-      </Compile>
     </ItemGroup>
 
 </Project>

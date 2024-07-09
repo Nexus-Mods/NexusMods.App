@@ -26,10 +26,6 @@ public sealed class LibraryService : ILibraryService, IDisposable
     private readonly IFileExtractor _fileExtractor;
     private readonly TemporaryFileManager _temporaryFileManager;
 
-    private readonly SourceCache<IDownloadActivity, PersistedDownloadStateId> _downloadActivitySourceCache = new(x => x.PersistedStateId);
-    private readonly ReadOnlyObservableCollection<IDownloadActivity> _downloadActivities;
-    public ReadOnlyObservableCollection<IDownloadActivity> DownloadActivities => _downloadActivities;
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -44,51 +40,51 @@ public sealed class LibraryService : ILibraryService, IDisposable
         _fileExtractor = fileExtractor;
         _temporaryFileManager = temporaryFileManager;
 
-        _downloadActivitySourceCache
-            .Connect()
-            .Bind(out _downloadActivities)
-            .Subscribe()
-            .DisposeWith(_compositeDisposable);
+        // _downloadActivitySourceCache
+        //     .Connect()
+        //     .Bind(out _downloadActivities)
+        //     .Subscribe()
+        //     .DisposeWith(_compositeDisposable);
 
-        // handle completed downloads
-        _downloadActivitySourceCache
-            .Connect()
-            .WhenPropertyChanged(downloadActivity => downloadActivity.Status)
-            .Where(propertyValue => propertyValue.Value == PersistedDownloadStatus.Completed)
-            .Select(propertyValue => propertyValue.Sender)
-            .Select(downloadActivity => Observable.FromAsync(cancellationToken => AddCompletedDownloadAsync(downloadActivity, cancellationToken)))
-            .SelectMany(sequences => sequences)
-            .Subscribe()
-            .DisposeWith(_compositeDisposable);
+        // // handle completed downloads
+        // _downloadActivitySourceCache
+        //     .Connect()
+        //     .WhenPropertyChanged(downloadActivity => downloadActivity.Status)
+        //     .Where(propertyValue => propertyValue.Value == PersistedDownloadStatus.Completed)
+        //     .Select(propertyValue => propertyValue.Sender)
+        //     .Select(downloadActivity => Observable.FromAsync(cancellationToken => AddCompletedDownloadAsync(downloadActivity, cancellationToken)))
+        //     .SelectMany(sequences => sequences)
+        //     .Subscribe()
+        //     .DisposeWith(_compositeDisposable);
     }
 
-    /// <inheritdoc/>
-    public void EnqueueDownload(IDownloadActivity downloadActivity, bool addPaused = false)
-    {
-        _logger.LogInformation("Adding download `{Title}` to the library", downloadActivity.Title);
-
-        _downloadActivitySourceCache.AddOrUpdate(downloadActivity);
-
-        if (addPaused) return;
-        downloadActivity.Downloader.Start(downloadActivity);
-    }
-
-    private async Task<LibraryFile.ReadOnly> AddCompletedDownloadAsync(
-        IDownloadActivity downloadActivity,
-        CancellationToken cancellationToken)
-    {
-        // TODO: figure out when to remove activity from the cache
-        // _downloadActivitySourceCache.Remove(downloadActivity);
-
-        using var tx = _connection.BeginTransaction();
-        var entityId = tx.TempId();
-
-        // TODO: create download specific library item
-        var libraryFile = await AddLibraryFileAsync(tx, entityId, downloadActivity.DownloadPath, cancellationToken: cancellationToken);
-
-        var result = await tx.Commit();
-        return result.Remap(libraryFile);
-    }
+    // /// <inheritdoc/>
+    // public void EnqueueDownload(IDownloadActivity downloadActivity, bool addPaused = false)
+    // {
+    //     _logger.LogInformation("Adding download `{Title}` to the library", downloadActivity.Title);
+    //
+    //     _downloadActivitySourceCache.AddOrUpdate(downloadActivity);
+    //
+    //     if (addPaused) return;
+    //     downloadActivity.Downloader.Start(downloadActivity);
+    // }
+    //
+    // private async Task<LibraryFile.ReadOnly> AddCompletedDownloadAsync(
+    //     IDownloadActivity downloadActivity,
+    //     CancellationToken cancellationToken)
+    // {
+    //     // TODO: figure out when to remove activity from the cache
+    //     // _downloadActivitySourceCache.Remove(downloadActivity);
+    //
+    //     using var tx = _connection.BeginTransaction();
+    //     var entityId = tx.TempId();
+    //
+    //     // TODO: create download specific library item
+    //     var libraryFile = await AddLibraryFileAsync(tx, entityId, downloadActivity.DownloadPath, cancellationToken: cancellationToken);
+    //
+    //     var result = await tx.Commit();
+    //     return result.Remap(libraryFile);
+    // }
 
     /// <inheritdoc/>
     public async Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(

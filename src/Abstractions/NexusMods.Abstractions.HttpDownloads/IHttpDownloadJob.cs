@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.HttpDownloads;
 /// Represents an HTTP download.
 /// </summary>
 [PublicAPI]
-public interface IHttpDownloadActivity : IDownloadActivity
+public interface IHttpDownloadJob : IDownloadJob
 {
     /// <summary>
     /// Gets the URI to download.

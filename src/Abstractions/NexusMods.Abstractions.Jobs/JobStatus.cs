@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Jobs;
 /// Represents the status of a job.
 /// </summary>
 [PublicAPI]
-public enum JobStatus
+public enum JobStatus : byte
 {
     /// <summary>
     /// Default value.
