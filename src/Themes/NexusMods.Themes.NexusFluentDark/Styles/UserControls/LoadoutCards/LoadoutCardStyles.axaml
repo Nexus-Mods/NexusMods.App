@@ -12,12 +12,16 @@
     <!-- Add Styles Here -->
     <Style Selector="loadoutCard|LoadoutCardView">
 
-        <Style Selector="^ Border#CardOuterBorder">
+        <Style Selector="^ Button#CardOuterButton">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Padding" Value="4,4,4,0" />
+            
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+            </Style>
         </Style>
 
         <Style Selector="^ Border#ImageSectionBorder">
