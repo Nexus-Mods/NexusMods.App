@@ -58,7 +58,7 @@
 
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
                                 <Border Grid.Row="0" x:Name="PreviewTitleBorder"
-                                        Classes="RoundedTop OutlineStrong">
+                                        Classes="Rounded-t-lg OutlineStrong">
                                     <Grid ColumnDefinitions="*, Auto, Auto">
 
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"

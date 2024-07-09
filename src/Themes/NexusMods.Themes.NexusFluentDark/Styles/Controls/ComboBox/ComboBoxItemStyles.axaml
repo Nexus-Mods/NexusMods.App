@@ -19,7 +19,7 @@
 
         <!-- Hover State -->
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SurfaceTop}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceHigh}"/>
         </Style>
 
         <!-- Disabled State -->

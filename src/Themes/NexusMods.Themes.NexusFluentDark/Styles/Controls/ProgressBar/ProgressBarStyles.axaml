@@ -47,7 +47,7 @@
 
         <Style Selector="^.DisabledDownloadBar">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource SurfaceTopBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
 
         <Style Selector="^ TextBlock">

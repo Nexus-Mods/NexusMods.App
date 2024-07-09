@@ -79,7 +79,7 @@
         <!-- Hover state (yes, this is using :selected) -->
         <Style Selector="^:selected">
             <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                <Setter Property="Background" Value="{StaticResource SurfaceTop}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceHigh}" />
             </Style>
 
             <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">

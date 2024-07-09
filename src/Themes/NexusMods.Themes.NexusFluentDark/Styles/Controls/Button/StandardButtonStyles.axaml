@@ -272,7 +272,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource PrimaryStrongBrush}" />
         </Style>
 
@@ -319,7 +319,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource NeutralStrongBrush}" />
         </Style>
 
@@ -340,7 +340,7 @@
         <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">

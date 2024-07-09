@@ -20,7 +20,7 @@
             <Setter Property="Padding" Value="4,4,4,0" />
             
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
         </Style>
 
