@@ -9,19 +9,13 @@
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
-    <Border x:Name="OuterBorder"
-            Classes="Mid Rounded-lg"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Padding="4,4,4,0">
+    <Border x:Name="CardOuterBorder">
 
-        <panels:FlexPanel x:Name="OuterFlexPanel"
+        <panels:FlexPanel x:Name="CardOuterFlexPanel"
+                          AlignContent="Stretch"
                           Direction="Column">
 
-            <Border x:Name="ImageSectionBorder"
-                    Classes="Rounded-lg"
-                    ClipToBounds="True"
-                    Height="184">
+            <Border x:Name="ImageSectionBorder">
                 <Grid>
                     <Image x:Name="GameImage"
                            Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
@@ -29,41 +23,26 @@
                 </Grid>
             </Border>
 
-            <Border x:Name="DetailsSectionBorder"
-                    Padding="8,12"
-                    Width="184">
+            <Border x:Name="DetailsSectionBorder">
 
-                <panels:FlexPanel x:Name="DetailsSectionFlexPanel"
-                                  Direction="Column"
-                                  AlignItems="FlexStart"
-                                  AlignContent="Stretch"
-                                  RowSpacing="4">
+                <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
 
                     <TextBlock x:Name="LoadoutNameTextBlock"
-                               panels:Flex.AlignSelf="Stretch"
                                Classes="BodyLGBold"
                                Text="Loadout A" />
 
-                    <panels:FlexPanel x:Name="SubtitlesAndButtonsFlexPanel"
-                                      panels:Flex.AlignSelf="Stretch"
-                                      AlignItems="Stretch"
-                                      AlignContent="Stretch"
-                                      Direction="Column"
-                                      RowSpacing="12">
+                    <panels:FlexPanel x:Name="SubtitlesAndButtonsFlexPanel">
 
-                        <panels:FlexPanel x:Name="SubtitlesFlexPanel"
-                                          Direction="Column"
-                                          RowSpacing="2">
+                        <panels:FlexPanel x:Name="SubtitlesFlexPanel">
 
-                            <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel"
-                                              Direction="Row"
-                                              ColumnSpacing="4">
+                            <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
+                                
                                 <TextBlock x:Name="CurrentlyAppliedTextBlock"
                                            Classes="BodySMBold"
                                            Text="Currently Applied" />
                                 <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
-                                                   Classes="CheckBox"
-                                                   Size="16" />
+                                                   Classes="CheckBox"/>
+                                
                             </panels:FlexPanel>
 
                             <TextBlock x:Name="LastAppliedTimeTextBlock"
@@ -78,28 +57,21 @@
                             <TextBlock x:Name="NumberOfModsTextBlock"
                                        Classes="BodySMNormal ForegroundSubdued"
                                        Text="Mods 276" />
+                            
                         </panels:FlexPanel>
 
-                        <panels:FlexPanel x:Name="ActionsFlexPanel"
-                                          Direction="Row"
-                                          AlignItems="FlexStart"
-                                          AlignContent="Stretch"
-                                          ColumnSpacing="8">
+                        <panels:FlexPanel x:Name="ActionsFlexPanel">
                             
                             <Button x:Name="CreateCopyButton"
-                                    Classes="Rounded Primary"
-                                    Padding="12,0,8,0"
-                                    HorizontalAlignment="Stretch"
-                                    panels:Flex.Grow="1">
-                                <StackPanel>
+                                    Classes="Rounded Primary">
+                                <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Classes="BodySMBold" Text="Create Copy" />
                                 </StackPanel>
                             </Button>
                             
 
                             <Button x:Name="DeleteButton"
-                                    Classes="Rounded Primary"
-                                    HorizontalAlignment="Stretch">
+                                    Classes="Rounded Primary">
                                 <icons:UnifiedIcon Classes="TrashCanOutline" />
                             </Button>
                         </panels:FlexPanel>

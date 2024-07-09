@@ -1,0 +1,75 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    <Design.PreviewWith>
+        <Border Margin="20" >
+            <loadoutCard:LoadoutCardView />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="loadoutCard|LoadoutCardView">
+
+        <Style Selector="^ Border#CardOuterBorder">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="4,4,4,0" />
+        </Style>
+
+        <Style Selector="^ Border#ImageSectionBorder">
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Height" Value="184" />
+        </Style>
+
+        <Style Selector="^ Border#DetailsSectionBorder">
+            <Setter Property="Padding" Value="8,12" />
+            <Setter Property="Width" Value="184" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#DetailsSectionFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="AlignItems" Value="Stretch" />
+            <Setter Property="AlignContent" Value="Stretch" />
+            <Setter Property="RowSpacing" Value="4" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#CurrentlyAppliedFlexPanel">
+            <Setter Property="Direction" Value="Row" />
+            <Setter Property="ColumnSpacing" Value="4" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#SubtitlesAndButtonsFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="AlignItems" Value="Stretch" />
+            <Setter Property="AlignContent" Value="Stretch" />
+            <Setter Property="RowSpacing" Value="12" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#SubtitlesFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="2" />
+        </Style>
+
+        <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
+            <Setter Property="Size" Value="16" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#ActionsFlexPanel">
+            <Setter Property="Direction" Value="Row" />
+            <Setter Property="AlignItems" Value="FlexStart" />
+            <Setter Property="AlignContent" Value="Stretch" />
+            <Setter Property="ColumnSpacing" Value="8" />
+        </Style>
+
+        <Style Selector="^ Button#CreateCopyButton">
+            <Setter Property="Padding" Value="12,0,8,0" />
+            <Setter Property="panels:Flex.Grow" Value="1" />
+        </Style>
+
+    </Style>
+</Styles>
