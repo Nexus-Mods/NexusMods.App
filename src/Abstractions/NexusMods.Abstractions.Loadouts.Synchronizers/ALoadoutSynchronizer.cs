@@ -755,8 +755,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // All database information, including loadouts, initial game state and
         // TODO: Garbage Collect unused files.
 
+        var installationLoadouts = Loadout.All(Connection.Db).
+            Where(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installation.LocationsRegister[LocationId.Game]);
         using var tx = Connection.BeginTransaction();
-        foreach (var loadout in Loadout.All(Connection.Db))
+        foreach (var loadout in installationLoadouts)
             tx.Delete(loadout, true);
         await tx.Commit();
         
