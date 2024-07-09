@@ -22,5 +22,10 @@ public partial class PersistedDownloadState : IModelDefinition
     /// <summary>
     /// Status of the download.
     /// </summary>
-    public static readonly EnumByteAttribute<PersistedDownloadStatus> Status = new(Namespace, nameof(PersistedDownloadStatus));
+    public static readonly EnumByteAttribute<PersistedDownloadStatus> Status = new(Namespace, nameof(PersistedDownloadStatus)) { IsIndexed = true };
+
+    /// <summary>
+    /// Optional reason explaining the current status.
+    /// </summary>
+    public static readonly StringAttribute StatusReason = new(Namespace, nameof(StatusReason)) { IsOptional = true };
 }

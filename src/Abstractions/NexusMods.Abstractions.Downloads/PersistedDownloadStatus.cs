@@ -19,12 +19,17 @@ public enum PersistedDownloadStatus : byte
     Downloading = 1,
 
     /// <summary>
-    /// The download is cancelled.
-    /// </summary>
-    Cancelled = 2,
-
-    /// <summary>
     /// The download is completed.
     /// </summary>
-    Completed = 3,
+    Completed = 2,
+
+    /// <summary>
+    /// The download was cancelled by the user.
+    /// </summary>
+    Cancelled = 3,
+
+    /// <summary>
+    /// The download failed.
+    /// </summary>
+    Failed = 4,
 }
