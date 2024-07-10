@@ -62,6 +62,6 @@ jobs:
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
       RetentionDays: 1
-      SignExecutable: false
+      SignExecutable: true
       BuildInnoSetup: true
       BuildArchive: true
