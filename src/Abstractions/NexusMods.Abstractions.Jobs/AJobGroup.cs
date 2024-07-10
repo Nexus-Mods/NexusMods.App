@@ -1,19 +1,18 @@
 using System.Collections;
 using System.Collections.ObjectModel;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public abstract class AJobGroup : AJob, IMutableJobGroup
+public abstract class AJobGroup : AJob, IJobGroup
 {
     private readonly List<IJob> _collection;
     private readonly ObservableCollection<IJob> _observableCollection;
 
     protected AJobGroup(
         IJobGroup? group = default,
-        Optional<IJobWorker> worker = default) : base(CreateGroupProgress(), group, worker)
+        IJobWorker? worker = default) : base(CreateGroupProgress(), group, worker)
     {
         _collection = [];
         _observableCollection = new ObservableCollection<IJob>(_collection);
@@ -28,7 +27,7 @@ public abstract class AJobGroup : AJob, IMutableJobGroup
 
     public ReadOnlyObservableCollection<IJob> ObservableCollection { get; }
 
-    public void AddJob(IControllableJob job)
+    internal void AddJob(AJob job)
     {
         // TODO: sanity checks and other stuff
         _observableCollection.Add(job);

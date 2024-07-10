@@ -19,6 +19,15 @@ public interface IJob
     IJobGroup? Group { get; }
 
     /// <summary>
+    /// Gets the worker of this job.
+    /// </summary>
+    /// <remarks>
+    /// This value may not be unavailable if the job isn't ready to be run yet,
+    /// or if the job finished.
+    /// </remarks>
+    IJobWorker? Worker { get; }
+
+    /// <summary>
     /// Gets the status of the job.
     /// </summary>
     JobStatus Status { get; }
@@ -41,4 +50,19 @@ public interface IJob
     /// cancels the proxy task, it does not cancel the job.
     /// </param>
     Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Starts the job.
+    /// </summary>
+    Task StartAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Pauses the job.
+    /// </summary>
+    Task PauseAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Cancels the job.
+    /// </summary>
+    Task CancelAsync(CancellationToken cancellationToken = default);
 }

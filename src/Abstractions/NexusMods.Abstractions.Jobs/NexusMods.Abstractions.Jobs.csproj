@@ -44,29 +44,8 @@
       <Compile Update="IProgress.cs">
         <DependentUpon>Progress.cs</DependentUpon>
       </Compile>
-      <Compile Update="IControllableJob.cs">
-        <DependentUpon>IJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IMutableJob.cs">
-        <DependentUpon>IJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IMutableProgress.cs">
-        <DependentUpon>MutableProgress.cs</DependentUpon>
-      </Compile>
       <Compile Update="MutableProgress.cs">
         <DependentUpon>Progress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IMutableDeterminateProgress.cs">
-        <DependentUpon>IMutableProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IMutableIndeterminateProgress.cs">
-        <DependentUpon>IMutableProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IMutableJobGroup.cs">
-        <DependentUpon>IJobGroup.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IControllableJobGroup.cs">
-        <DependentUpon>IJobGroup.cs</DependentUpon>
       </Compile>
       <Compile Update="AJobWorker.cs">
         <DependentUpon>IJobWorker.cs</DependentUpon>
@@ -78,9 +57,12 @@
         <DependentUpon>IJobGroup.cs</DependentUpon>
       </Compile>
       <Compile Update="DeterminateProgress.cs">
-        <DependentUpon>Progress.cs</DependentUpon>
+        <DependentUpon>AProgress.cs</DependentUpon>
       </Compile>
       <Compile Update="IndeterminateProgress.cs">
+        <DependentUpon>AProgress.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AProgress.cs">
         <DependentUpon>Progress.cs</DependentUpon>
       </Compile>
     </ItemGroup>

@@ -13,5 +13,5 @@ public interface ILibraryService
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    IControllableJob AddLocalFile(AbsolutePath absolutePath);
+    IJob AddLocalFile(AbsolutePath absolutePath);
 }

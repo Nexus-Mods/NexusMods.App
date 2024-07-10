@@ -1,10 +1,6 @@
-using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
@@ -87,7 +83,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
     //     return result.Remap(libraryFile);
     // }
 
-    public IControllableJob AddLocalFile(AbsolutePath absolutePath)
+    public IJob AddLocalFile(AbsolutePath absolutePath)
     {
         var group = new AddLocalFileJobGroup
         {

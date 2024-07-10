@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public abstract class AProgress : IMutableProgress
+public abstract class AProgress : IProgress
 {
     public Optional<DateTime> FirstStartTime { get; private set; } = Optional<DateTime>.None;
     public Optional<DateTime> LastStartTime { get; private set; } = Optional<DateTime>.None;
@@ -15,25 +15,25 @@ public abstract class AProgress : IMutableProgress
     private readonly Subject<TimeSpan> _subjectTotalDuration = new();
     public IObservable<TimeSpan> ObservableTotalDuration => _subjectTotalDuration;
 
-    public void SetFirstStartTime(DateTime value)
+    internal void SetFirstStartTime(DateTime value)
     {
         // TODO: sanity checks
         FirstStartTime = value;
     }
 
-    public void SetLastStartTime(DateTime value)
+    internal void SetLastStartTime(DateTime value)
     {
         // TODO: sanity checks
         LastStartTime = value;
     }
 
-    public void SetFinishTime(DateTime value)
+    internal void SetFinishTime(DateTime value)
     {
         // TODO: sanity checks
         FinishTime = value;
     }
 
-    public void IncreaseTotalDuration(TimeSpan amount)
+    internal void IncreaseTotalDuration(TimeSpan amount)
     {
         // TODO: sanity checks
         TotalDuration += amount;

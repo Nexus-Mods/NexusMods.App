@@ -11,7 +11,7 @@ public interface IJobWorker
     /// <summary>
     /// Gets the job
     /// </summary>
-    IControllableJob Job { get; }
+    IJob Job { get; }
 
     /// <summary>
     /// Starts a job.

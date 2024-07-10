@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public abstract class AJob : IMutableJob, IDisposable, IAsyncDisposable
+public abstract class AJob : IJob, IDisposable, IAsyncDisposable
 {
     public JobId Id { get; }
 
@@ -16,9 +16,9 @@ public abstract class AJob : IMutableJob, IDisposable, IAsyncDisposable
     public JobStatus Status { get; }
 
     Progress IJob.Progress => Progress;
-    public MutableProgress Progress { get; }
+    internal MutableProgress Progress { get; }
 
-    public Optional<IJobWorker> Worker { get; private set; }
+    public IJobWorker? Worker { get; private set; }
 
     private readonly Subject<JobStatus> _subjectStatus;
     private readonly IConnectableObservable<JobStatus> _connectableObservableStatus;
@@ -30,7 +30,7 @@ public abstract class AJob : IMutableJob, IDisposable, IAsyncDisposable
     protected AJob(
         MutableProgress progress,
         IJobGroup? group = default,
-        Optional<IJobWorker> worker = default)
+        IJobWorker? worker = default)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
@@ -44,16 +44,16 @@ public abstract class AJob : IMutableJob, IDisposable, IAsyncDisposable
         _disposable.Add(_connectableObservableStatus.Connect());
     }
 
-    public void SetStatus(JobStatus value)
+    internal void SetStatus(JobStatus value)
     {
         if (Status.CanTransition(value)) _subjectStatus.OnNext(value);
         else throw new InvalidOperationException($"Transitioning from `{Status}` to `{value}` is invalid!");
     }
 
-    public void SetWorker(IJobWorker? value)
+    internal void SetWorker(IJobWorker? value)
     {
         // TODO: sanity checks
-        Worker = Optional<IJobWorker>.ToOptional(value);
+        Worker = value;
     }
 
     public Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default)

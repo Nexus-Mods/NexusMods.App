@@ -59,7 +59,6 @@ file class AddLocalFileJobWorker : AJobGroupWorker<AddLocalFileJobGroup>
             return hash;
         });
 
-        hashJob.SetWorker(hashWorker);
         var hashJobResult = await AddJobAndWaitAsync(hashJob);
     }
 }

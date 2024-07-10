@@ -3,4 +3,4 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public class IndeterminateProgress : AProgress, IMutableIndeterminateProgress;
+public class IndeterminateProgress : AProgress, IIndeterminateProgress;

@@ -1,11 +1,10 @@
-using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Library;
 
 internal class HashJob : AJob
 {
-    public HashJob(IJobGroup? group = default, Optional<IJobWorker> worker = default)
+    public HashJob(IJobGroup? group = default, IJobWorker? worker = default)
         : base(new MutableProgress(new IndeterminateProgress()), group, worker) { }
 
     private Stream? _stream;

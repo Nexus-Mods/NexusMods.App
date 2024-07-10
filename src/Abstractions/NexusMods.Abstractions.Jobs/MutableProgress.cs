@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
-using Union = OneOf.OneOf<IMutableIndeterminateProgress, IMutableDeterminateProgress>;
+using Union = OneOf.OneOf<IndeterminateProgress, DeterminateProgress>;
 
 [PublicAPI]
 public class MutableProgress : Progress
@@ -22,16 +22,9 @@ public class MutableProgress : Progress
     }
 
     /// <summary>
-    /// Gets the value as <see cref="IMutableProgress"/>.
+    /// Returns the progress as a <see cref="IndeterminateProgress"/> using the try-get pattern.
     /// </summary>
-    /// <seealso cref="TryGetIndeterminateProgress"/>
-    /// <seealso cref="TryGetDeterminateProgress"/>
-    public new IMutableProgress Value => _value.IsT0 ? _value.AsT0 : _value.AsT1;
-
-    /// <summary>
-    /// Returns the progress as a <see cref="IMutableIndeterminateProgress"/> using the try-get pattern.
-    /// </summary>
-    public bool TryGetIndeterminateProgress([NotNullWhen(true)] out IMutableIndeterminateProgress? progress)
+    public bool TryGetIndeterminateProgress([NotNullWhen(true)] out IndeterminateProgress? progress)
     {
         if (!_value.IsT0)
         {
@@ -44,9 +37,9 @@ public class MutableProgress : Progress
     }
 
     /// <summary>
-    /// Returns the progress as a <see cref="IMutableDeterminateProgress"/> using the try-get pattern.
+    /// Returns the progress as a <see cref="DeterminateProgress"/> using the try-get pattern.
     /// </summary>
-    public bool TryGetDeterminateProgress([NotNullWhen(true)] out IMutableDeterminateProgress? progress)
+    public bool TryGetDeterminateProgress([NotNullWhen(true)] out DeterminateProgress? progress)
     {
         if (!_value.IsT1)
         {

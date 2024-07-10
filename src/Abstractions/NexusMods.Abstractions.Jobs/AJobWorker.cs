@@ -6,9 +6,10 @@ namespace NexusMods.Abstractions.Jobs;
 [PublicAPI]
 public abstract class AJobWorker : IJobWorker
 {
-    public IControllableJob Job { get; }
+    IJob IJobWorker.Job => Job;
+    internal AJob Job { get; }
 
-    protected AJobWorker(IControllableJob job)
+    protected AJobWorker(AJob job)
     {
         Job = job;
     }
@@ -42,7 +43,7 @@ public abstract class AJobWorker : IJobWorker
 }
 
 public abstract class AJobWorker<TJob> : AJobWorker
-    where TJob : IMutableJob
+    where TJob : AJob
 {
     protected new TJob Job { get; }
 
@@ -53,7 +54,7 @@ public abstract class AJobWorker<TJob> : AJobWorker
 }
 
 public abstract class AJobGroupWorker<TJobGroup> : AJobWorker<TJobGroup>
-    where TJobGroup : IMutableJobGroup
+    where TJobGroup : AJobGroup
 {
     protected TJobGroup JobGroup { get; }
 
@@ -62,7 +63,7 @@ public abstract class AJobGroupWorker<TJobGroup> : AJobWorker<TJobGroup>
         JobGroup = jobGroup;
     }
 
-    protected Task<JobResult> AddJobAndWaitAsync(IMutableJob job)
+    protected Task<JobResult> AddJobAndWaitAsync(AJob job)
     {
         throw new NotImplementedException();
     }
@@ -71,7 +72,7 @@ public abstract class AJobGroupWorker<TJobGroup> : AJobWorker<TJobGroup>
 public static class Worker
 {
     public static IJobWorker CreateFromStaticFunction<TJob, TOutput>(TJob job, Func<TJob, CancellationToken, Task<TOutput>> func)
-        where TJob : IMutableJob
+        where TJob : AJob
     {
         throw new NotImplementedException();
     }

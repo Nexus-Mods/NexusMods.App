@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public class DeterminateProgress : AProgress, IMutableDeterminateProgress
+public class DeterminateProgress : AProgress, IDeterminateProgress
 {
     public Percent Percent { get; private set; } = Percent.Zero;
     public ProgressRate ProgressRate { get; private set; }
@@ -25,21 +25,21 @@ public class DeterminateProgress : AProgress, IMutableDeterminateProgress
         ProgressRate = new ProgressRate(value: 0.0, formatter);
     }
 
-    public void SetPercent(Percent value)
+    internal void SetPercent(Percent value)
     {
         // TODO: sanity checks
         Percent = value;
         _subjectPercent.OnNext(value);
     }
 
-    public void SetProgressRate(ProgressRate value)
+    internal void SetProgressRate(ProgressRate value)
     {
         // TODO: sanity checks
         ProgressRate = value;
         _subjectProgressRate.OnNext(value);
     }
 
-    public void SetEstimatedFinishTime(DateTime value)
+    internal void SetEstimatedFinishTime(DateTime value)
     {
         // TODO: sanity checks
         EstimatedFinishTime = value;
