@@ -41,6 +41,9 @@
       <Compile Update="JobResultFailed.cs">
         <DependentUpon>JobResult.cs</DependentUpon>
       </Compile>
+      <Compile Update="IProgress.cs">
+        <DependentUpon>Progress.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

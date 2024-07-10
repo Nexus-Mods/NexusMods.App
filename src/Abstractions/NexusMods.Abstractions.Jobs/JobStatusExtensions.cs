@@ -50,7 +50,7 @@ public static class JobStatusExtensions
     {
         return (from, to) switch
         {
-            (JobStatus.None, _ ) => true,
+            (JobStatus.None, _) => true,
 
             (JobStatus.Created, JobStatus.Running) => true,
             (JobStatus.Created, _) => false,

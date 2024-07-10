@@ -26,7 +26,7 @@ public interface IJob
     /// <summary>
     /// Gets the progress of the job.
     /// </summary>
-    IProgress Progress { get; }
+    Progress Progress { get; }
 
     /// <summary>
     /// Returns a proxy task that completes when the job is finished.
