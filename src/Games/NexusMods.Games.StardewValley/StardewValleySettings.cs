@@ -16,7 +16,7 @@ public class StardewValleySettings : ISettings
     {
         return settingsBuilder.AddToUI<StardewValleySettings>(builder => builder
             .AddPropertyToUI(x => x.DoFullGameBackup, propertyBuilder => propertyBuilder
-                .AddToSection(Sections.GameSpecific)
+                .AddToSection(Sections.Experimental)
                 .WithDisplayName("Stardew Valley: Full game backup")
                 .WithDescription("Backup all game folders, including the Content folder. This experimental setting is intended for developers testing the upcoming restore feature. Please note that this will increase disk space usage.")
                 .UseBooleanContainer()

@@ -15,7 +15,7 @@ public class Cyberpunk2077Settings : ISettings
     {
         return settingsBuilder.AddToUI<Cyberpunk2077Settings>(builder => builder
             .AddPropertyToUI(x => x.DoFullGameBackup, propertyBuilder => propertyBuilder
-                .AddToSection(Sections.GameSpecific)
+                .AddToSection(Sections.Experimental)
                 .WithDisplayName("Cyberpunk 2077: Full game backup")
                 .WithDescription("Backup all game folders, including the game asset folders. This experimental setting is intended for developers testing the upcoming restore feature. Please note that this will increase disk space usage.")
                 .UseBooleanContainer()
