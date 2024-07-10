@@ -16,7 +16,7 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
     {
         // Get the settings
         var settings = ServiceProvider.GetRequiredService<ISettingsManager>().Get<Cyberpunk2077Settings>();
-        settings.DoFullGameBackup = true;
+        settings.DoFullGameBackup = false;
         
         // Setup the paths we want to edit, one will be in the `Content` folder, thus not backed up
         var ignoredGamePath = new GamePath(LocationId.Game, "archive/pc/content/foo.dat".ToRelativePath());
@@ -42,7 +42,7 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
         // Now disable the ignore setting
-        settings.DoFullGameBackup = false;
+        settings.DoFullGameBackup = true;
 
         var loadout2 = await CreateLoadout();
         
