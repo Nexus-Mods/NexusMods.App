@@ -16,8 +16,8 @@
             <Border x:Name="ImageSectionBorder">
                 <Grid>
                     <Image x:Name="GameImage"
-                           Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
-                    <Rectangle x:Name="GradientLayerRectangle"/>
+                           Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png" />
+                    <Rectangle x:Name="GradientLayerRectangle" />
                     <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
                 </Grid>
             </Border>
@@ -30,18 +30,18 @@
                                Classes="BodyLGBold"
                                Text="Loadout A" />
 
-                    <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel" >
+                    <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
 
                         <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
 
                             <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
-                                
+
                                 <TextBlock x:Name="CurrentlyAppliedTextBlock"
                                            Classes="BodySMBold"
                                            Text="Currently Applied" />
                                 <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
-                                                   Classes="CheckBox"/>
-                                
+                                                   Classes="CheckBox" />
+
                             </panels:FlexPanel>
 
                             <TextBlock x:Name="LastAppliedTimeTextBlock"
@@ -56,18 +56,18 @@
                             <TextBlock x:Name="NumberOfModsTextBlock"
                                        Classes="BodySMNormal ForegroundSubdued"
                                        Text="Mods 276" />
-                            
+
                         </panels:FlexPanel>
 
                         <panels:FlexPanel x:Name="ActionsFlexPanel">
-                            
+
                             <Button x:Name="CreateCopyButton"
                                     Classes="Rounded Primary">
                                 <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Classes="BodySMBold" Text="Create Copy" />
                                 </StackPanel>
                             </Button>
-                            
+
 
                             <Button x:Name="DeleteButton"
                                     Classes="Rounded Primary">

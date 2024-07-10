@@ -1,0 +1,50 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
+    <!-- Figma: https://www.figma.com/design/8pjtQeNggvVi7RWoLNGV80/%F0%9F%A7%B0-Nexus-Mods-Design-System?node-id=5364-21422&m=dev -->
+
+    <!-- Drop Shadow SM -->
+    <extensions:BoxShadows x:Key="DropShadowSM"
+                           HorizontalLength="0"
+                           VerticalLength="2"
+                           BlurRadius="4"
+                           SpreadRadius="0"
+                           ShadowColor="#24000000"
+                           HorizontalLength1="0"
+                           VerticalLength1="3"
+                           BlurRadius1="4"
+                           SpreadRadius1="0"
+                           ShadowColor1="#1F000000"
+                           HorizontalLength2="0"
+                           VerticalLength2="1"
+                           BlurRadius2="5"
+                           SpreadRadius2="0"
+                           ShadowColor2="#80000000" />
+    
+    <!-- Drop Shadow MD -->
+    <extensions:BoxShadows x:Key="DropShadowMD"
+                           HorizontalLength="0"
+                           VerticalLength="6"
+                           BlurRadius="10"
+                           SpreadRadius="0"
+                           ShadowColor="#24000000"
+                           HorizontalLength1="0"
+                           VerticalLength1="1"
+                           BlurRadius1="18"
+                           SpreadRadius1="0"
+                           ShadowColor1="#1F000000"
+                           HorizontalLength2="0"
+                           VerticalLength2="3"
+                           BlurRadius2="5"
+                           SpreadRadius2="0"
+                           ShadowColor2="#80000000" />
+    
+    
+    <!-- :focus BoxShadow style -->
+    <extensions:BoxShadows x:Key="FocusBoxShadow"
+                           BlurRadius="0"
+                           SpreadRadius="3"
+                           ShadowColor="{StaticResource FocusSubdued}" />
+
+
+</ResourceDictionary>
