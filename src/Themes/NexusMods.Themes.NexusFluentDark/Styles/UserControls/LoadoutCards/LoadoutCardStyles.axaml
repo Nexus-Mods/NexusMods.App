@@ -4,9 +4,13 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Padding="20" Background="White">
+        <panels:FlexPanel Background="{StaticResource SurfaceLow}" 
+                          Width="500" 
+                          Height="500" 
+                          ColumnSpacing="10">
             <loadoutCard:LoadoutCardView />
-        </Border>
+            <loadoutCard:LoadoutCardView  IsEnabled="False"/>
+        </panels:FlexPanel>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
@@ -29,6 +33,21 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
             </Style>
+            
+            <Style Selector="^:pointerover Rectangle#GradientLayerRectangle">
+                <Setter Property="Fill">
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="0" />
+                        <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter>
+            </Style>
+            
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+            </Style>
         </Style>
 
         <Style Selector="^ panels|FlexPanel#CardOuterFlexPanel">
@@ -43,14 +62,7 @@
             <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
         </Style>
 
-        <Style Selector="^:pointerover Rectangle#GradientLayerRectangle">
-            <Setter Property="Fill">
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="0" />
-                    <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="1" />
-                </LinearGradientBrush>
-            </Setter>
-        </Style>
+        
 
         <Style Selector="^ Border#DetailsSectionBorder">
             <Setter Property="Padding" Value="8,12" />

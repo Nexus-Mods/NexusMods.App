@@ -9,7 +9,7 @@
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
-    <Button x:Name="CardOuterButton">
+    <Button x:Name="CardOuterButton" >
 
         <panels:FlexPanel x:Name="CardOuterFlexPanel">
 
