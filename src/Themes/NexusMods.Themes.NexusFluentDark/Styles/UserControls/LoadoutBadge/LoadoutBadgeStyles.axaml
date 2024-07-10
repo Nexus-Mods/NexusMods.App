@@ -6,9 +6,11 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
     
     <Design.PreviewWith>
-        <Border Padding="20" Height="120" Width="120">
+        <WrapPanel Margin="20" Height="120" Width="120">
+            <loadoutBadge:LoadoutBadge Classes=":selected"/>
             <loadoutBadge:LoadoutBadge />
-        </Border>
+            <loadoutBadge:LoadoutBadge />
+        </WrapPanel>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
@@ -20,11 +22,12 @@
         <Setter Property="MinWidth" Value="24" />
 
         <Style Selector="^ Border#OuterBorder">
-            <Setter Property="Padding" Value="6.5,0,6.5,0" />
+            <Setter Property="Padding" Value="1,2,4,2" />
         </Style>
 
-        <Style Selector="^:in-progress panels|FlexPanel#ContentsFlexPanel">
-            <Setter Property="Margin" Value="0" />
+        <Style Selector="^ panels|FlexPanel#ContentsFlexPanel">
+            <Setter Property="JustifyContent" Value="Center" />
+            <Setter Property="AlignItems" Value="Center" />
         </Style>
 
         <Style Selector="^ spinner|Spinner#Spinner">
@@ -33,6 +36,7 @@
             <Setter Property="Width" Value="12" />
             <Setter Property="Margin" Value="2" />
             <Setter Property="IsVisible" Value="False" />
+            <Setter Property="panels:Flex.Shrink" Value="0" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#Icon">
@@ -41,7 +45,7 @@
         </Style>
 
         <Style Selector="^ TextBlock#ShortName">
-            <Setter Property="Width" Value="11" />
+            <!-- <Setter Property="Width" Value="11" /> -->
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
