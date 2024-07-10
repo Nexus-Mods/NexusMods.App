@@ -1,35 +1,30 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
-/// Represents a controllable job.
+/// Represents a worker.
 /// </summary>
 [PublicAPI]
-public interface IControllableJob : IJob
+public interface IJobWorker
 {
     /// <summary>
-    /// Gets the worker of this job.
+    /// Gets the job
     /// </summary>
-    /// <remarks>
-    /// This value may not be unavailable if the job isn't ready to be run yet,
-    /// or if the job finished.
-    /// </remarks>
-    Optional<IJobWorker> Worker { get; }
+    IControllableJob Job { get; }
 
     /// <summary>
-    /// Starts the job.
+    /// Starts a job.
     /// </summary>
     Task StartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Pauses the job.
+    /// Pauses a job.
     /// </summary>
     Task PauseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Cancels the job.
+    /// Cancels a job.
     /// </summary>
     Task CancelAsync(CancellationToken cancellationToken = default);
 }

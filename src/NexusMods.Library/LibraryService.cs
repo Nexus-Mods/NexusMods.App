@@ -87,9 +87,14 @@ public sealed class LibraryService : ILibraryService, IDisposable
     //     return result.Remap(libraryFile);
     // }
 
-    public IControllableJob AddLocalFile(AbsolutePath absolutePath, CancellationToken cancellationToken = default)
+    public IControllableJob AddLocalFile(AbsolutePath absolutePath)
     {
-        throw new NotImplementedException();
+        var group = new AddLocalFileJobGroup
+        {
+            FilePath = absolutePath,
+        };
+
+        return group;
     }
 
     private async Task<Optional<LocalFile.ReadOnly>> AddLocalFileAsync(

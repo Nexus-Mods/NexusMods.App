@@ -28,6 +28,11 @@ public readonly struct ProgressRate
         Formatter = formatter;
     }
 
+    public ProgressRate Add(double increase)
+    {
+        return new ProgressRate(Value + increase, Formatter!);
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {

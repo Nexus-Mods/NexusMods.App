@@ -21,4 +21,9 @@ public interface IMutableJob : IControllableJob
     /// before changing the status.
     /// </exception>
     void SetStatus(JobStatus value);
+
+    /// <summary>
+    /// Setter for <see cref="IControllableJob.Worker"/>.
+    /// </summary>
+    void SetWorker(IJobWorker? value);
 }

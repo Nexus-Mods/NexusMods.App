@@ -10,7 +10,7 @@ public class MutableProgress : Progress
     private readonly Union _value;
 
     /// <summary>
-    /// Contructor.
+    /// Constructor.
     /// </summary>
     public MutableProgress(Union value) :
         base(value

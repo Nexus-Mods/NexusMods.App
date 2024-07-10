@@ -68,6 +68,21 @@
       <Compile Update="IControllableJobGroup.cs">
         <DependentUpon>IJobGroup.cs</DependentUpon>
       </Compile>
+      <Compile Update="AJobWorker.cs">
+        <DependentUpon>IJobWorker.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AJob.cs">
+        <DependentUpon>IJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AJobGroup.cs">
+        <DependentUpon>IJobGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DeterminateProgress.cs">
+        <DependentUpon>Progress.cs</DependentUpon>
+      </Compile>
+      <Compile Update="IndeterminateProgress.cs">
+        <DependentUpon>Progress.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Jobs;
 /// Mutable variant of <see cref="IJobGroup"/>.
 /// </summary>
 [PublicAPI]
-public interface IMutableJobGroup : IControllableJobGroup
+public interface IMutableJobGroup : IControllableJobGroup, IMutableJob
 {
     /// <summary>
     /// Adds a job to the group.

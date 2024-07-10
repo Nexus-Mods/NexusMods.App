@@ -36,7 +36,7 @@ public interface IDeterminateProgress : IProgress
     /// <summary>
     /// Gets the observable stream for changes to <see cref="ProgressRate"/>.
     /// </summary>
-    IObservable<Percent> ObservableProgressRate { get; }
+    IObservable<ProgressRate> ObservableProgressRate { get; }
 
     /// <summary>
     /// Gets the observable stream for changes to <see cref="EstimatedFinishTime"/>.
