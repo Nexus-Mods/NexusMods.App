@@ -35,6 +35,7 @@ public abstract class AJobGroup : AJob, IJobGroup
 
     private static MutableProgress CreateGroupProgress()
     {
+        // TODO: figure out what to use here
         throw new NotImplementedException();
     }
 }

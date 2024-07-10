@@ -14,6 +14,8 @@ public abstract class AJobWorker : IJobWorker
         Job = job;
     }
 
+    protected abstract Task<JobResult> ExecuteAsync(CancellationToken cancellationToken);
+
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
@@ -29,14 +31,17 @@ public abstract class AJobWorker : IJobWorker
         throw new NotImplementedException();
     }
 
-    [DoesNotReturn]
-    protected void FailJob(Exception exception)
+    protected JobResult FailJob(Exception exception)
     {
         throw new NotImplementedException();
     }
 
-    [DoesNotReturn]
-    protected void FailJob(string message)
+    protected JobResult FailJob(string message)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected JobResult CompleteJob<TData>(TData data)
     {
         throw new NotImplementedException();
     }
@@ -63,7 +68,12 @@ public abstract class AJobGroupWorker<TJobGroup> : AJobWorker<TJobGroup>
         JobGroup = jobGroup;
     }
 
-    protected Task<JobResult> AddJobAndWaitAsync(AJob job)
+    protected Task<JobResult> AddJobAndWaitForResultAsync(AJob job)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected TData RequireDataFromResult<TData>(JobResult result)
     {
         throw new NotImplementedException();
     }
@@ -71,7 +81,7 @@ public abstract class AJobGroupWorker<TJobGroup> : AJobWorker<TJobGroup>
 
 public static class Worker
 {
-    public static IJobWorker CreateFromStaticFunction<TJob, TOutput>(TJob job, Func<TJob, CancellationToken, Task<TOutput>> func)
+    public static void AddFromStaticFunction<TJob, TOutput>(TJob job, Func<TJob, CancellationToken, Task<TOutput>> func)
         where TJob : AJob
     {
         throw new NotImplementedException();
