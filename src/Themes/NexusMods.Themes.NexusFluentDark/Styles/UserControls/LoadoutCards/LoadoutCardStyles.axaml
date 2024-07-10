@@ -4,7 +4,7 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Margin="20" >
+        <Border Margin="20">
             <loadoutCard:LoadoutCardView />
         </Border>
     </Design.PreviewWith>
@@ -18,12 +18,12 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Padding" Value="4,4,4,0" />
-            
+
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
         </Style>
-        
+
         <Style Selector="^ panels|FlexPanel#CardOuterFlexPanel">
             <Setter Property="Direction" Value="Column" />
             <Setter Property="AlignItems" Value="FlexStart" />
@@ -36,6 +36,15 @@
             <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
         </Style>
 
+        <Style Selector="^:pointerover Rectangle#GradientLayerRectangle">
+            <Setter Property="Fill">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="0" />
+                    <GradientStop Color="{StaticResource SurfaceTranslucentHigh}" Offset="1" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
         <Style Selector="^ Border#DetailsSectionBorder">
             <Setter Property="Padding" Value="8,12" />
             <Setter Property="Width" Value="184" />
@@ -43,25 +52,25 @@
 
         <Style Selector="^ panels|FlexPanel#DetailsSectionFlexPanel">
             <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch"/>
+            <Setter Property="AlignItems" Value="Stretch" />
             <Setter Property="RowSpacing" Value="4" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#BodyAndActionsGroupFlexPanel">
             <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch"/>
+            <Setter Property="AlignItems" Value="Stretch" />
             <Setter Property="RowSpacing" Value="12" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#DetailsBodyFlexPanel">
             <Setter Property="Direction" Value="Column" />
             <Setter Property="RowSpacing" Value="2" />
-            <Setter Property="AlignItems" Value="Stretch"/>
+            <Setter Property="AlignItems" Value="Stretch" />
         </Style>
-        
+
         <Style Selector="^ panels|FlexPanel#CurrentlyAppliedFlexPanel">
             <Setter Property="ColumnSpacing" Value="4" />
-            <Setter Property="AlignItems" Value="FlexStart"/>
+            <Setter Property="AlignItems" Value="FlexStart" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">

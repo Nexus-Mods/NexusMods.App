@@ -17,6 +17,7 @@
                 <Grid>
                     <Image x:Name="GameImage"
                            Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
+                    <Rectangle x:Name="GradientLayerRectangle"/>
                     <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
                 </Grid>
             </Border>
