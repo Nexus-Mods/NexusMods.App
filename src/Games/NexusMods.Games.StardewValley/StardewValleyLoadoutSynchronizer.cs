@@ -30,7 +30,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
     public override bool IsIgnoredBackupPath(GamePath path)
     {
-        if (!_settings.IgnoreContentFolder) return false;
+        if (_settings.DoFullGameBackup) return false;
         if (path.LocationId != LocationId.Game) return false;
         return path.Path.InFolder(ContentFolder.Path);
     }

@@ -79,7 +79,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
     {
         // Get the settings
         var settings = ServiceProvider.GetRequiredService<ISettingsManager>().Get<StardewValleySettings>();
-        settings.IgnoreContentFolder = true;
+        settings.DoFullGameBackup = false;
         
         // Setup the paths we want to edit, one will be in the `Content` folder, thus not backed up
         var ignoredGamePath = new GamePath(LocationId.Game, "Content/foo.dat".ToRelativePath());
@@ -105,7 +105,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
         // Now disable the ignore setting
-        settings.IgnoreContentFolder = false;
+        settings.DoFullGameBackup = true;
 
         var loadout2 = await CreateLoadout();
         
