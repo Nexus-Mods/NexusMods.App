@@ -65,6 +65,9 @@
       <Compile Update="IMutableJobGroup.cs">
         <DependentUpon>IJobGroup.cs</DependentUpon>
       </Compile>
+      <Compile Update="IControllableJobGroup.cs">
+        <DependentUpon>IJobGroup.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

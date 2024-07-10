@@ -11,15 +11,15 @@ public interface IControllableJob : IJob
     /// <summary>
     /// Starts the job.
     /// </summary>
-    ValueTask StartAsync(CancellationToken cancellationToken = default);
+    Task StartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Pauses the job.
     /// </summary>
-    ValueTask PauseAsync(CancellationToken cancellationToken = default);
+    Task PauseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Cancels the job.
     /// </summary>
-    ValueTask CancelAsync(CancellationToken cancellationToken = default);
+    Task CancelAsync(CancellationToken cancellationToken = default);
 }

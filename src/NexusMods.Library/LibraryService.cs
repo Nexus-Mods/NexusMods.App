@@ -87,7 +87,7 @@ public sealed class LibraryService : ILibraryService, IDisposable
     //     return result.Remap(libraryFile);
     // }
 
-    public IJob AddLocalFile(AbsolutePath absolutePath, CancellationToken cancellationToken = default)
+    public IControllableJob AddLocalFile(AbsolutePath absolutePath, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
