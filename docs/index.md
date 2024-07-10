@@ -1,5 +1,5 @@
 <div align="center">
-	<h1>The Nexus Mods App</h1>
+	<h1>The Nexus Mods app</h1>
 	<img src="./Nexus/Images/Nexus-Icon.png" width="150" align="center" />
 	<br/> <br/>
     Mod With Confidence
@@ -11,16 +11,16 @@
     <table style="width: 100%">
         <tbody>
             <tr>
-                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: top">
                     <a href="./users/">
                     <div><img src="./images/support.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">
                         User Guides
                     </span>
                     </a>
-                    <p>Tutorials and guides to help you get started with the Nexus Mods App.</p>
+                    <p>Tutorials and guides to help you get started with the Nexus Mods app.</p>
                 </th>
-                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: top">
                     <a href="./developers/">
                     <div><img src="./images/developer_mode.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">

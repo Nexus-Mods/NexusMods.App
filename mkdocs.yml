@@ -1,4 +1,4 @@
-site_name: Nexus Mods App
+site_name: Nexus Mods app
 site_url: https://github.com/Nexus-Mods/NexusMods.App
 
 repo_name: Nexus-Mods/NexusMods.App
@@ -50,6 +50,7 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.indexes
+    - content.footnote.tooltips
 
 plugins:
   - search
@@ -60,14 +61,19 @@ nav:
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
     - Adding a Game: users/AddGames.md
-    # - Features: 
-    #   - Health Check: users/features/HealthCheck.md
-    #   - Workspaces: users/features/Workspaces.md
+    - Features: 
+      # - Loadouts: users/features/Loadouts.md
+      - Health Check: users/features/HealthCheck.md
+      # - Global Undo: users/features/Undo.md
+      - Workspaces: users/features/Workspaces.md
+      # - Collections: users/features/Collections.md
     - Games:
-      # - users/games/index.md
+      - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
-    - Frequently Asked Questions: users/FAQ.md
+    - Frequently Asked Questions: 
+      - users/faq/index.md
+      - How to find the log files: users/faq/LogFiles.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
@@ -131,3 +137,9 @@ nav:
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
         - Drawbacks of Nexus App Approach: developers/misc/DrawbacksOfNexusApproach.md
     - Contributing to Docs: Nexus/Pages/contributing.md
+
+validation: 
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: info
