@@ -7,79 +7,97 @@
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
+                                xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
-    <Button x:Name="CardOuterButton" >
+    <Border x:Name="ContainerBorder">
+        <Grid>
+            <Button x:Name="CardOuterButton">
 
-        <panels:FlexPanel x:Name="CardOuterFlexPanel">
+                <panels:FlexPanel x:Name="CardOuterFlexPanel">
 
-            <Border x:Name="ImageSectionBorder">
-                <Grid>
-                    <Image x:Name="GameImage"
-                           Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png" />
-                    <Rectangle x:Name="GradientLayerRectangle" />
-                    <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
-                </Grid>
-            </Border>
+                    <Border x:Name="ImageSectionBorder">
+                        <Grid>
+                            <Image x:Name="GameImage"
+                                   Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png" />
+                            <Rectangle x:Name="GradientLayerRectangle" />
+                            <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
+                        </Grid>
+                    </Border>
 
-            <Border x:Name="DetailsSectionBorder">
+                    <Border x:Name="DetailsSectionBorder">
 
-                <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
+                        <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
 
-                    <TextBlock x:Name="LoadoutNameTextBlock"
-                               Classes="BodyLGBold"
-                               Text="Loadout A" />
+                            <TextBlock x:Name="LoadoutNameTextBlock"
+                                       Classes="BodyLGBold"
+                                       Text="Loadout A" />
 
-                    <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
+                            <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
 
-                        <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
+                                <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
 
-                            <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
+                                    <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
 
-                                <TextBlock x:Name="CurrentlyAppliedTextBlock"
-                                           Classes="BodySMBold"
-                                           Text="Currently Applied" />
-                                <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
-                                                   Classes="CheckBox" />
+                                        <TextBlock x:Name="CurrentlyAppliedTextBlock"
+                                                   Classes="BodySMBold"
+                                                   Text="Currently Applied" />
+                                        <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
+                                                           Classes="CheckBox" />
+
+                                    </panels:FlexPanel>
+
+                                    <TextBlock x:Name="LastAppliedTimeTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued"
+                                               Text="Last applied 2 months ago"
+                                               IsVisible="False" />
+
+                                    <TextBlock x:Name="CreatedTimeTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued"
+                                               Text="Created 10 months ago" />
+
+                                    <TextBlock x:Name="NumberOfModsTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued"
+                                               Text="Mods 276" />
+
+                                </panels:FlexPanel>
+
+                                <panels:FlexPanel x:Name="ActionsFlexPanel">
+
+                                    <Button x:Name="CreateCopyButton"
+                                            Classes="Rounded Primary">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Classes="BodySMBold" Text="Create Copy" />
+                                        </StackPanel>
+                                    </Button>
+
+
+                                    <Button x:Name="DeleteButton"
+                                            Classes="Rounded Primary">
+                                        <icons:UnifiedIcon Classes="TrashCanOutline" />
+                                    </Button>
+                                </panels:FlexPanel>
 
                             </panels:FlexPanel>
 
-                            <TextBlock x:Name="LastAppliedTimeTextBlock"
-                                       Classes="BodySMNormal ForegroundSubdued"
-                                       Text="Last applied 2 months ago"
-                                       IsVisible="False" />
-
-                            <TextBlock x:Name="CreatedTimeTextBlock"
-                                       Classes="BodySMNormal ForegroundSubdued"
-                                       Text="Created 10 months ago" />
-
-                            <TextBlock x:Name="NumberOfModsTextBlock"
-                                       Classes="BodySMNormal ForegroundSubdued"
-                                       Text="Mods 276" />
-
                         </panels:FlexPanel>
-
-                        <panels:FlexPanel x:Name="ActionsFlexPanel">
-
-                            <Button x:Name="CreateCopyButton"
-                                    Classes="Rounded Primary">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Classes="BodySMBold" Text="Create Copy" />
-                                </StackPanel>
-                            </Button>
-
-
-                            <Button x:Name="DeleteButton"
-                                    Classes="Rounded Primary">
-                                <icons:UnifiedIcon Classes="TrashCanOutline" />
-                            </Button>
-                        </panels:FlexPanel>
-
-                    </panels:FlexPanel>
+                    </Border>
 
                 </panels:FlexPanel>
-            </Border>
+            </Button>
+            
+            <!-- Needs to be on top of the card button to avoid the disabled opacity -->
+            <panels:FlexPanel x:Name="OverlayFlexPanel" IsVisible="False">
+                <panels:FlexPanel x:Name="DeletingSpinnerFlexPanel" >
+                    <spinner:Spinner x:Name="DeletingSpinner" />
+                    <TextBlock x:Name="DeletingTextBlock"
+                               Classes="BodyXLNormal ForegroundSubdued"
+                               Text="Deleting..." />
+                </panels:FlexPanel>
+                <Border/>
+            </panels:FlexPanel>
+        </Grid>
+    </Border>
 
-        </panels:FlexPanel>
-    </Button>
+
 </reactiveUi:ReactiveUserControl>
