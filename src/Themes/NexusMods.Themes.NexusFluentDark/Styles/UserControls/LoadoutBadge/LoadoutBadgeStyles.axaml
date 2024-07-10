@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
+        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
     
     <Design.PreviewWith>
         <Border Padding="20" Height="120" Width="120">
@@ -22,9 +23,8 @@
             <Setter Property="Padding" Value="6.5,0,6.5,0" />
         </Style>
 
-        <Style Selector="^:in-progress StackPanel#ContentsStackPanel">
+        <Style Selector="^:in-progress panels|FlexPanel#ContentsFlexPanel">
             <Setter Property="Margin" Value="0" />
-            <Setter Property="Spacing" Value="0" />
         </Style>
 
         <Style Selector="^ spinner|Spinner#Spinner">
