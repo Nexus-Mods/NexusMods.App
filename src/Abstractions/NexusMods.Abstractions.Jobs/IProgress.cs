@@ -39,4 +39,9 @@ public interface IProgress
     /// resumed again.
     /// </remarks>
     TimeSpan TotalDuration { get; }
+
+    /// <summary>
+    /// Gets the observable stream for changes to <see cref="TotalDuration"/>.
+    /// </summary>
+    IObservable<TimeSpan> ObservableTotalDuration { get; }
 }

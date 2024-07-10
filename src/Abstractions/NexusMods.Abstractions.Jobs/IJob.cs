@@ -29,6 +29,11 @@ public interface IJob
     Progress Progress { get; }
 
     /// <summary>
+    /// Gets the observable stream for changes to <see cref="Status"/>.
+    /// </summary>
+    IObservable<JobStatus> ObservableStatus { get; }
+
+    /// <summary>
     /// Returns a proxy task that completes when the job is finished.
     /// </summary>
     /// <param name="cancellationToken">

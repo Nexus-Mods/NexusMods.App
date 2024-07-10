@@ -27,4 +27,19 @@ public interface IDeterminateProgress : IProgress
     /// This value is unavailable if the job isn't running.
     /// </remarks>
     Optional<DateTime> EstimatedFinishTime { get; }
+
+    /// <summary>
+    /// Gets the observable stream for changes to <see cref="Percent"/>.
+    /// </summary>
+    IObservable<Percent> ObservablePercent { get; }
+
+    /// <summary>
+    /// Gets the observable stream for changes to <see cref="ProgressRate"/>.
+    /// </summary>
+    IObservable<Percent> ObservableProgressRate { get; }
+
+    /// <summary>
+    /// Gets the observable stream for changes to <see cref="EstimatedFinishTime"/>.
+    /// </summary>
+    IObservable<DateTime> ObservableEstimatedFinishTime { get; }
 }
