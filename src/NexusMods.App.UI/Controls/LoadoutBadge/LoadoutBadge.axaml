@@ -1,4 +1,4 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutBadge:ILoadoutBadgeViewModel" 
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutBadge:ILoadoutBadgeViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,14 +15,14 @@
     <Design.DataContext>
         <loadoutBadge:LoadoutBadgeDesignViewModel />
     </Design.DataContext>
-    
-    <Border x:Name="OuterBorder">
-        <panels:FlexPanel x:Name="ContentsFlexPanel">
+
+    <panels:FlexPanel x:Name="ContentsFlexPanel">
+        <Border>
             <spinner:Spinner x:Name="Spinner" />
-            <icons:UnifiedIcon x:Name="Icon" 
-                               Classes="Check" />
-            <TextBlock x:Name="ShortName"
-                       Classes="BodyLGBold"/>
-        </panels:FlexPanel>
-    </Border>
+        </Border>
+        <icons:UnifiedIcon x:Name="Icon"
+                           Classes="Check" />
+        <TextBlock x:Name="ShortName"
+                   Text="A" />
+    </panels:FlexPanel>
 </reactiveUi:ReactiveUserControl>
