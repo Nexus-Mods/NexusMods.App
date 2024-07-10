@@ -9,15 +9,15 @@ public class Cyberpunk2077Settings : ISettings
     /// the loadout may become invalid. If mods are installed into this folder via the app they
     /// will still be backed up as needed
     /// </summary>
-    public bool IgnoreContentFolder { get; set; } = true;
+    public bool DoFullGameBackup { get; set; } = false;
     
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         return settingsBuilder.AddToUI<Cyberpunk2077Settings>(builder => builder
-            .AddPropertyToUI(x => x.IgnoreContentFolder, propertyBuilder => propertyBuilder
+            .AddPropertyToUI(x => x.DoFullGameBackup, propertyBuilder => propertyBuilder
                 .AddToSection(Sections.GameSpecific)
-                .WithDisplayName("Cyberpunk 2077: Ignore Content Folder")
-                .WithDescription("Don't back up the game asset folders. If the game updates this may render the loadout invalid.")
+                .WithDisplayName("Cyberpunk 2077: Full game backup")
+                .WithDescription("Backup all game folders, including the game asset folders. This experimental setting is intended for developers testing the upcoming restore feature. Please note that this will increase disk space usage.")
                 .UseBooleanContainer()
             )
         );
