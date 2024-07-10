@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.5.3](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.3) - 2024-07-09
+## [v0.5.3](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.3) - 2024-07-10
 
 This is another minor release with tons of bugfixes and UI improvements.
 
