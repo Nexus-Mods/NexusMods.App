@@ -4,14 +4,18 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:element="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
+
     <Design.PreviewWith>
         <panels:FlexPanel Background="{StaticResource SurfaceLow}"
                           Width="500"
                           Height="500"
                           ColumnSpacing="10"
                           JustifyContent="SpaceAround">
-            <loadoutCard:LoadoutCardView />
-            <loadoutCard:LoadoutCardView IsEnabled="False" />
+            <panels:FlexPanel.Resources>
+                <loadoutCard:LoadoutCardDesignViewModel x:Key="LoadoutCardDesignViewModel" />
+            </panels:FlexPanel.Resources>
+            
+            <loadoutCard:LoadoutCardView DataContext="{StaticResource LoadoutCardDesignViewModel}" />
         </panels:FlexPanel>
     </Design.PreviewWith>
 

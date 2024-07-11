@@ -10,6 +10,10 @@
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
+    <Design.DataContext>
+        <loadoutCard:LoadoutCardDesignViewModel />
+    </Design.DataContext>
+    
     <Border x:Name="ContainerBorder">
         <Grid>
             <Button x:Name="CardOuterButton">
@@ -18,8 +22,7 @@
 
                     <Border x:Name="ImageSectionBorder">
                         <Grid>
-                            <Image x:Name="GameImage"
-                                   Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png" />
+                            <Image x:Name="GameImage" />
                             <Rectangle x:Name="GradientLayerRectangle" />
                             <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" Classes="CardSize" />
                         </Grid>
@@ -30,8 +33,7 @@
                         <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
 
                             <TextBlock x:Name="LoadoutNameTextBlock"
-                                       Classes="BodyLGBold"
-                                       Text="Loadout A" />
+                                       Classes="BodyLGBold" />
 
                             <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
 
@@ -49,16 +51,13 @@
 
                                     <TextBlock x:Name="LastAppliedTimeTextBlock"
                                                Classes="BodySMNormal ForegroundSubdued"
-                                               Text="Last applied 2 months ago"
                                                IsVisible="False" />
 
                                     <TextBlock x:Name="CreatedTimeTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued"
-                                               Text="Created 10 months ago" />
+                                               Classes="BodySMNormal ForegroundSubdued"/>
 
                                     <TextBlock x:Name="NumberOfModsTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued"
-                                               Text="Mods 276" />
+                                               Classes="BodySMNormal ForegroundSubdued"/>
 
                                 </panels:FlexPanel>
 
@@ -85,16 +84,16 @@
 
                 </panels:FlexPanel>
             </Button>
-            
+
             <!-- Needs to be on top of the card button to avoid the disabled opacity -->
             <panels:FlexPanel x:Name="OverlayFlexPanel" IsVisible="False">
-                <panels:FlexPanel x:Name="DeletingSpinnerFlexPanel" >
+                <panels:FlexPanel x:Name="DeletingSpinnerFlexPanel">
                     <spinner:Spinner x:Name="DeletingSpinner" />
                     <TextBlock x:Name="DeletingTextBlock"
                                Classes="BodyXLNormal ForegroundSubdued"
                                Text="Deleting..." />
                 </panels:FlexPanel>
-                <Border/>
+                <Border />
             </panels:FlexPanel>
         </Grid>
     </Border>

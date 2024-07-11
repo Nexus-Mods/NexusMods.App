@@ -561,6 +561,12 @@
         <Compile Update="Controls\Settings\Section\SettingSectionViewModel.cs">
           <DependentUpon>ISettingSectionViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\LoadoutBadge\LoadoutBadgeDesignViewModel.cs">
+          <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\LoadoutCardDesignViewModel.cs">
+          <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
