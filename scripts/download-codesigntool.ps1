@@ -3,7 +3,9 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = 'SilentlyContinue' #'Continue
 
 $rootDir = Resolve-Path "."
-$downloadUrl = "https://www.ssl.com/download/codesigntool-for-windows/"
+
+# https://github.com/SSLcom/CodeSignTool/releases
+$downloadUrl = "https://github.com/SSLcom/CodeSignTool/releases/download/v1.3.0/CodeSignTool-v1.3.0-windows.zip"
 $downloadedFile = Join-Path $rootDir "CodeSignTool.zip"
 $extractFolder = Join-Path $rootDir "CodeSignTool"
 
