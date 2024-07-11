@@ -54,15 +54,25 @@ public interface IJob
     /// <summary>
     /// Starts the job.
     /// </summary>
+    /// <returns>
+    /// A task that completes when the job has been started, not when the job
+    /// has completed.
+    /// </returns>
     Task StartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Pauses the job.
     /// </summary>
+    /// <remarks>
+    /// A task that completes when the job has been paused.
+    /// </remarks>
     Task PauseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Cancels the job.
     /// </summary>
+    /// <returns>
+    /// A task that completes when the job has been cancelled.
+    /// </returns>
     Task CancelAsync(CancellationToken cancellationToken = default);
 }
