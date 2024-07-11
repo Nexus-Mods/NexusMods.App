@@ -28,6 +28,12 @@ public readonly struct ProgressRate
         Formatter = formatter;
     }
 
+    /// <summary>
+    /// Returns a new instance with <see cref="Value"/> increased by
+    /// <paramref name="increase"/> and the same <see cref="Formatter"/>
+    /// instance.
+    /// </summary>
+    [Pure]
     public ProgressRate Add(double increase)
     {
         return new ProgressRate(Value + increase, Formatter!);
