@@ -11,5 +11,8 @@
       <Compile Update="ExtractArchiveJobGroupWorker.cs">
         <DependentUpon>ExtractArchiveJobGroup.cs</DependentUpon>
       </Compile>
+      <Compile Update="AddLibraryFileJobGroupWorker.cs">
+        <DependentUpon>AddLibraryFileJobGroup.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
