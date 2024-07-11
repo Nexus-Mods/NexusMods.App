@@ -46,7 +46,7 @@ TestDirectory($codeSignToolDir)
 $javaPath = Join-Path -Path $codeSignToolDir -ChildPath "jdk-11.0.2" | Join-Path -ChildPath "bin" | Join-Path -ChildPath "java.exe"
 TestFile($javaPath)
 
-$jarPath = Join-Path -Path $codeSignToolDir -ChildPath "jar" | Join-Path -ChildPath "code_sign_tool-1.3.1.jar"
+$jarPath = Join-Path -Path $codeSignToolDir -ChildPath "jar" | Join-Path -ChildPath "code_sign_tool-1.3.0.jar"
 TestFile($jarPath)
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
