@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -17,6 +18,15 @@ public partial class LoadoutItem : IModelDefinition
     /// Name of the item.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
+
+    /// <summary>
+    /// Whether the item is disabled. A disabled loadout item will not participate
+    /// in actions.
+    /// </summary>
+    /// <remarks>
+    /// The exact meaning of a "disabled" loadout item is up to the implementations.
+    /// </remarks>
+    public static readonly BooleanAttribute IsDisabled = new(Namespace, nameof(IsDisabled));
 
     /// <summary>
     /// Loadout that contains the item.
