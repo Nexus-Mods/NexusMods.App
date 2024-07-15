@@ -87,7 +87,6 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                         IsEnabled = !isSkeleton;
                         OverlayFlexPanel.IsVisible = isSkeleton;
                         BodyAndActionsGroupFlexPanel.IsVisible = !isSkeleton;
-                        Classes.ToggleIf("Skeleton", isSkeleton);
                     })
                     .DisposeWith(d);
 

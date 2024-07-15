@@ -12,13 +12,11 @@
                           RowSpacing="8">
             <panels:FlexPanel.Resources>
                 <loadoutCard:LoadoutCardDesignViewModel x:Key="LoadoutCardDesignViewModel" />
-                <loadoutCard:SkeletonLoadoutCardViewModel x:Key="SkeletonLoadoutCardViewModel" />
             </panels:FlexPanel.Resources>
 
             <!-- Standard loadout card -->
             <loadoutCard:LoadoutCardView DataContext="{StaticResource LoadoutCardDesignViewModel}" />
-            <loadoutCard:LoadoutCardView DataContext="{StaticResource SkeletonLoadoutCardViewModel}"
-                                         Classes="Skeleton"/>
+
             <!-- Add loadout card -->
             <loadoutCard:CreateNewLoadoutCardView />
             <loadoutCard:CreateNewLoadoutCardView IsEnabled="False" />
