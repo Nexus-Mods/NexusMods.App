@@ -4,4 +4,15 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="AddLocalFileJobWorker.cs">
+        <DependentUpon>AddLocalFileJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ExtractArchiveJobWorker.cs">
+        <DependentUpon>ExtractArchiveJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AddLibraryFileJobWorker.cs">
+        <DependentUpon>AddLibraryFileJob.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>
