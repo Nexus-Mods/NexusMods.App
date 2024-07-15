@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
@@ -117,14 +118,10 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
     public async Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default)
     {
         if (Result is not null) return Result;
-        var tsc = new TaskCompletionSource<JobResult>();
+        var result = await ObservableResult
+            .FirstAsync()
+            .ToTask(cancellationToken);
 
-        using var disposable = ObservableResult.SubscribeSafe(Observer.Create<JobResult>(onNext: value =>
-        {
-            tsc.SetResult(value);
-        }));
-
-        var result = await tsc.Task.WaitAsync(cancellationToken: cancellationToken);
         return result;
     }
 

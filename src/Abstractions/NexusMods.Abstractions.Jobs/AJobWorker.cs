@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using JetBrains.Annotations;
 using OneOf;
 
@@ -130,15 +132,13 @@ public abstract class AJobWorker : IJobWorker
         cancellationToken.ThrowIfCancellationRequested();
         job.Status.AssertTransition(JobStatus.Paused);
 
-        var tsc = new TaskCompletionSource();
-        using var disposable = job.ObservableStatus.Subscribe(status =>
-        {
-            if (status == JobStatus.Paused) tsc.SetResult();
-        });
+        var task = job.ObservableStatus
+            .FirstAsync(status => status == JobStatus.Paused)
+            .ToTask(cancellationToken);
 
         job.IsRequestingPause = true;
         await job.CancellationTokenSource.CancelAsync();
-        await tsc.Task.WaitAsync(cancellationToken: cancellationToken);
+        await task;
     }
 
     /// <inheritdoc/>
@@ -148,15 +148,13 @@ public abstract class AJobWorker : IJobWorker
         cancellationToken.ThrowIfCancellationRequested();
         job.Status.AssertTransition(JobStatus.Cancelled);
 
-        var tsc = new TaskCompletionSource();
-        using var disposable = job.ObservableStatus.Subscribe(status =>
-        {
-            if (status == JobStatus.Cancelled) tsc.SetResult();
-        });
+        var task = job.ObservableStatus
+            .FirstAsync(status => status == JobStatus.Paused)
+            .ToTask(cancellationToken);
 
         job.IsRequestingPause = false;
         await job.CancellationTokenSource.CancelAsync();
-        await tsc.Task.WaitAsync(cancellationToken: cancellationToken);
+        await task;
     }
 }
 
