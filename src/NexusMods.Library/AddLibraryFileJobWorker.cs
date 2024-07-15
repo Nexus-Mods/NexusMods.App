@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
@@ -10,6 +11,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
+[UsedImplicitly]
 internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
 {
     private readonly ILogger _logger;
@@ -49,7 +51,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         cancellationToken.ThrowIfCancellationRequested();
         if (!job.HashJobResult.HasValue)
         {
-            job.HashJobResult = await HashAsync(job.FilePath);
+            job.HashJobResult = await HashAsync(job.FilePath, cancellationToken);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -92,25 +94,32 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 job.ExtractedFiles = await ExtractArchiveAsync(
                     job,
                     job.FilePath,
-                    job.ExtractionDirectory.Value
+                    job.ExtractionDirectory.Value,
+                    cancellationToken
                 );
             }
 
             cancellationToken.ThrowIfCancellationRequested();
             if (!job.AddExtractedFileJobResults.HasValue)
             {
-                job.AddExtractedFileJobResults = await AddJobsAndWaitParallelAsync(job.ExtractedFiles.Value.Select(fileEntry =>
+                var extractedFiles = job.ExtractedFiles.Value;
+                var results = new JobResult[extractedFiles.Length];
+
+                await Parallel.ForAsync(fromInclusive: 0, toExclusive: extractedFiles.Length, cancellationToken, async (i, innerCancellationToken) =>
                 {
                     var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
-                    var job = new AddLibraryFileJob(job, worker)
+                    var childJob = new AddLibraryFileJob(job, worker)
                     {
                         Transaction = job.Transaction,
-                        FilePath = fileEntry.Path,
+                        FilePath = extractedFiles[i].Path,
                         DoCommit = false,
                     };
 
-                    return (AJob)job;
-                }).ToArray());
+                    await worker.StartAsync(childJob, cancellationToken: innerCancellationToken);
+                    var result = await childJob.WaitToFinishAsync(cancellationToken: innerCancellationToken);
+
+                    results[i] = result;
+                });
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -141,25 +150,34 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         return await _fileExtractor.CanExtract(stream);
     }
 
-    private async Task<JobResult> HashAsync(AbsolutePath filePath)
+    private static async Task<JobResult> HashAsync(AbsolutePath filePath, CancellationToken cancellationToken)
     {
-        var hashJob = new HashJob
-        {
-            Stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None),
-        };
+        await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+        stream.Position = 0;
 
-        var worker = JobWorker.Create(hashJob, async static (job, _, cancellationToken) =>
-        {
-            var stream = job.Stream;
-            stream.Position = 0;
+        var hash = await stream.XxHash64Async(token: cancellationToken);
+        stream.Position = 0;
 
-            var hash = await stream.XxHash64Async(token: cancellationToken);
-            stream.Position = 0;
+        return JobResult.CreateCompleted(hash);
 
-            return hash;
-        });
-
-        return await AddJobAndWaitForResultAsync(hashJob);
+        // TODO:
+        // var hashJob = new HashJob
+        // {
+        //     Stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None),
+        // };
+        //
+        // var worker = JobWorker.Create(hashJob, async static (job, _, cancellationToken) =>
+        // {
+        //     var stream = job.Stream;
+        //     stream.Position = 0;
+        //
+        //     var hash = await stream.XxHash64Async(token: cancellationToken);
+        //     stream.Position = 0;
+        //
+        //     return hash;
+        // });
+        //
+        // return await AddJobAndWaitForResultAsync(hashJob);
     }
 
     private static LibraryFile.New CreateLibraryFile(ITransaction tx, EntityId entityId, AbsolutePath filePath, Hash hash)
@@ -181,7 +199,8 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     private async Task<IFileEntry[]> ExtractArchiveAsync(
         AJob job,
         AbsolutePath archivePath,
-        AbsolutePath outputPath)
+        AbsolutePath outputPath,
+        CancellationToken cancellationToken)
     {
         await using var tempDirectory = _temporaryFileManager.CreateFolder();
 
@@ -192,7 +211,8 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             OutputPath = outputPath,
         };
 
-        await AddJobAndWaitForResultAsync(extractArchiveJob);
+        await worker.StartAsync(extractArchiveJob, cancellationToken: cancellationToken);
+        await extractArchiveJob.WaitToFinishAsync(cancellationToken: cancellationToken);
         return outputPath.EnumerateFileEntries().ToArray();
     }
 }

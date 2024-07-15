@@ -19,16 +19,18 @@ internal class AddLocalFileJobWorker : AJobWorker<AddLocalFileJob>
     {
         var absolutePath = job.FilePath;
 
-        var addLibraryFileJob = new AddLibraryFileJob(job, _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>())
+        var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
+        var addLibraryFileJob = new AddLibraryFileJob(job, worker)
         {
             Transaction = job.Transaction,
             FilePath = job.FilePath,
             DoCommit = false,
         };
 
-        var jobResult = await AddJobAndWaitForResultAsync(addLibraryFileJob);
-        var libraryFile = RequireDataFromResult<LibraryFile.New>(jobResult);
+        await worker.StartAsync(addLibraryFileJob, cancellationToken: cancellationToken);
+        var jobResult = await addLibraryFileJob.WaitToFinishAsync(cancellationToken: cancellationToken);
 
+        var libraryFile = jobResult.RequireData<LibraryFile.New>();
         var localFile = new LocalFile.New(job.Transaction, libraryFile.LibraryFileId)
         {
             LibraryFile = libraryFile,
