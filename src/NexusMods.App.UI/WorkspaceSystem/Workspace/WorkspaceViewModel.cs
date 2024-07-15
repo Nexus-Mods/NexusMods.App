@@ -112,7 +112,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 {
                     for (var i = 0; i < Panels.Count; i++)
                     {
-                        Panels[i].IsNotAlone = hasMultiplePanels;
+                        Panels[i].IsAlone = !hasMultiplePanels;
                     }
                 })
                 .SubscribeWithErrorLogging()

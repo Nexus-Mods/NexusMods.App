@@ -41,7 +41,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] public bool IsSelected { get; set; }
 
-    [Reactive] public bool IsNotAlone { get; set; }
+    [Reactive] public bool IsAlone { get; set; }
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
@@ -53,7 +53,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
-        var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
+        var canExecute = this.WhenAnyValue(vm => vm.IsAlone).Select(b => !b);
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 

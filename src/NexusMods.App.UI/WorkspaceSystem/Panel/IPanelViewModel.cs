@@ -46,7 +46,7 @@ public interface IPanelViewModel : IViewModelInterface
     /// <summary>
     /// Gets or sets whether the current panel is not the only panel in the workspace.
     /// </summary>
-    public bool IsNotAlone { get; set; }
+    public bool IsAlone { get; set; }
 
     /// <summary>
     /// Gets or sets the logical bounds the panel.

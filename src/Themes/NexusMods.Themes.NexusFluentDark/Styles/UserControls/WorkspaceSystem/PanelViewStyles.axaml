@@ -7,33 +7,54 @@
             <Setter Property="Padding" Value="0" />
         </Style>
 
-        <Style Selector="^ Border#PanelBorder:not(.OneTab)">
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
-        </Style>
-
         <Style Selector="^ Border#TabHeaderBorder">
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
 
-            <Style Selector="^ Border#AddTabButton1Container, ^ Border#TabHeaderAddAndScrollBorder, ^ Border#TabHeaderSideAreaBorder, ^ Border#ScrollLeftButtonBorder">
-                <Setter Property="BorderThickness" Value="0 0 0 1"/>
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
+        <!-- single panel -->
+        <Style Selector="^:alone">
+            <Style Selector="^ Border#PanelBorder">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+            </Style>
+        </Style>
+
+        <!-- multiple panels -->
+        <Style Selector="^:not(:alone)">
+            <!-- selected -->
+            <Style Selector="^:selected">
+                <Style Selector="^ Border#PanelBorder">
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600}" />
+                </Style>
+            </Style>
+
+            <!-- not selected -->
+            <Style Selector="^:not(:selected)">
+                <Style Selector="^ Border#PanelBorder">
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                </Style>
             </Style>
         </Style>
 
         <!-- one tab -->
-        <Style Selector="^ Border#TabHeaderBorder.OneTab">
-            <Style Selector="^ ui|PanelTabHeaderView Border#Container">
-                <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}"/>
-
+        <Style Selector="^:one-tab">
+            <Style Selector="^ Border#TabHeaderBorder">
+                <Setter Property="BorderThickness" Value="0 0 0 1" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
-                <Setter Property="BorderThickness" Value="0 0 1 0" />
+
+                <Style Selector="^ ui|PanelTabHeaderView Border#Container">
+                    <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}"/>
+                    <Setter Property="BorderThickness" Value="0 0 1 0"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
+                </Style>
             </Style>
         </Style>
 
         <!-- multiple tabs -->
-        <Style Selector="^ Border#TabHeaderBorder:not(.OneTab)">
+        <Style Selector="^:not(:one-tab) Border#TabHeaderBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
             <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
 
@@ -45,14 +66,8 @@
                         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
                     </Style>
 
-                    <!-- selected tab -->
-                    <Style Selector="^ Border#Container.Selected">
-                        <Setter Property="BorderThickness" Value="1 0 0 0" />
-                    </Style>
-
-                    <!-- not selected tab -->
-                    <Style Selector="^ Border#Container:not(.Selected)">
-                        <Setter Property="BorderThickness" Value="1 0 0 1" />
+                    <Style Selector="^ Border#Container">
+                        <Setter Property="BorderThickness" Value="0" />
                     </Style>
                 </Style>
 
@@ -62,27 +77,15 @@
                         <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}" />
                     </Style>
 
-                    <!-- selected tab -->
-                    <Style Selector="^ Border#Container.Selected">
-                        <Setter Property="BorderThickness" Value="0 0 0 0" />
-                    </Style>
-
-                    <!-- not selected tab -->
-                    <Style Selector="^ Border#Container:not(.Selected)">
-                        <Setter Property="BorderThickness" Value="0 0 0 1" />
+                    <Style Selector="^ Border#Container">
+                        <Setter Property="BorderThickness" Value="0" />
                     </Style>
                 </Style>
 
                 <!-- last tab -->
                 <Style Selector="^ ContentPresenter:nth-last-child(1) ui|PanelTabHeaderView">
-                    <!-- selected tab -->
-                    <Style Selector="^ Border#Container.Selected">
-                        <Setter Property="BorderThickness" Value="1 0 1 0" />
-                    </Style>
-
-                    <!-- not selected tab -->
-                    <Style Selector="^ Border#Container:not(.Selected)">
-                        <Setter Property="BorderThickness" Value="1 0 1 1" />
+                    <Style Selector="^ Border#Container">
+                        <Setter Property="BorderThickness" Value="0" />
                     </Style>
                 </Style>
             </Style>

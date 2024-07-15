@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-[PseudoClasses(":one-tab", ":selected")]
+[PseudoClasses(":one-tab", ":selected", ":alone")]
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
     private const double ScrollOffset = 250;
@@ -43,14 +43,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.AddDisposableHandler(PointerExitedEvent, (_, _) =>
             {
                 if (ViewModel is not null) ViewModel.IsSelected = false;
-            }, routes: RoutingStrategies.Direct, handledEventsToo: true).DisposeWith(disposables);
-
-            this.WhenAnyValue(view => view.IsKeyboardFocusWithin)
-                .SubscribeWithErrorLogging(value =>
-                {
-                    if (ViewModel is not null) ViewModel.IsSelected = value;
-                })
-                .DisposeWith(disposables);
+            }, routes: RoutingStrategies.Direct | RoutingStrategies.Bubble, handledEventsToo: true).DisposeWith(disposables);
 
             // update scroll buttons and AddTab button (show left aligned or right aligned, depending on the scrollbar visibility)
             Observable.FromEventPattern<ScrollChangedEventArgs>(
@@ -141,7 +134,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .BindToView(this, view => view.TabHeaderScrollViewer.Offset)
                 .DisposeWith(disposables);
 
-            // classes
+            // pseudo classes
             this.WhenAnyValue(view => view.ViewModel!.Tabs.Count)
                 .Select(count => count == 1)
                 .SubscribeWithErrorLogging(hasOneTab => PseudoClasses.Set(":one-tab", hasOneTab))
@@ -149,6 +142,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
             this.WhenAnyValue(view => view.ViewModel!.IsSelected)
                 .SubscribeWithErrorLogging(isSelected => PseudoClasses.Set(":selected", isSelected))
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.ViewModel!.IsAlone)
+                .SubscribeWithErrorLogging(isAlone => PseudoClasses.Set(":alone", isAlone))
                 .DisposeWith(disposables);
         });
     }
