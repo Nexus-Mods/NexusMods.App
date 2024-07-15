@@ -6,9 +6,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddLibraryFileJobGroup : AJobGroup
+internal class AddLibraryFileJob : AJob
 {
-    public AddLibraryFileJobGroup(IJobGroup? group = null, IJobWorker? worker = null) : base(group, worker) { }
+    public AddLibraryFileJob(IJobGroup? group = null, IJobWorker? worker = null)
+        : base(null!, group, worker) { }
 
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }

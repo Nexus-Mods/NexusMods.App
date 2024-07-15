@@ -38,9 +38,23 @@ public interface IJob
     Progress Progress { get; }
 
     /// <summary>
+    /// Gets the result of the job.
+    /// </summary>
+    /// <remarks>
+    /// This value is only available when the job has finished.
+    /// </remarks>
+    JobResult? Result { get; }
+
+    /// <summary>
     /// Gets the observable stream for changes to <see cref="Status"/>.
     /// </summary>
     IObservable<JobStatus> ObservableStatus { get; }
+
+    /// <summary>
+    /// Gets the observable stream that will contain a single value when
+    /// the job finishes.
+    /// </summary>
+    IObservable<JobResult> ObservableResult { get; }
 
     /// <summary>
     /// Returns a proxy task that completes when the job is finished.
@@ -58,7 +72,7 @@ public interface IJob
     /// A task that completes when the job has been started, not when the job
     /// has completed.
     /// </returns>
-    Task StartAsync(CancellationToken cancellationToken = default);
+    ValueTask StartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Pauses the job.
@@ -66,7 +80,7 @@ public interface IJob
     /// <remarks>
     /// A task that completes when the job has been paused.
     /// </remarks>
-    Task PauseAsync(CancellationToken cancellationToken = default);
+    ValueTask PauseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Cancels the job.
@@ -74,5 +88,5 @@ public interface IJob
     /// <returns>
     /// A task that completes when the job has been cancelled.
     /// </returns>
-    Task CancelAsync(CancellationToken cancellationToken = default);
+    ValueTask CancelAsync(CancellationToken cancellationToken = default);
 }

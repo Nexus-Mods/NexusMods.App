@@ -53,9 +53,6 @@
       <Compile Update="AJob.cs">
         <DependentUpon>IJob.cs</DependentUpon>
       </Compile>
-      <Compile Update="AJobGroup.cs">
-        <DependentUpon>IJobGroup.cs</DependentUpon>
-      </Compile>
       <Compile Update="DeterminateProgress.cs">
         <DependentUpon>AProgress.cs</DependentUpon>
       </Compile>
@@ -65,7 +62,7 @@
       <Compile Update="AProgress.cs">
         <DependentUpon>Progress.cs</DependentUpon>
       </Compile>
-      <Compile Update="AJobGroupWorker.cs">
+      <Compile Update="JobWorker.cs">
         <DependentUpon>IJobWorker.cs</DependentUpon>
       </Compile>
     </ItemGroup>

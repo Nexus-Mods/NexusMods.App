@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using OneOf;
@@ -75,5 +76,33 @@ public class JobResult
 
         failed = _value.AsT2;
         return true;
+    }
+
+    [StackTraceHidden]
+    public static JobResult CreateFailed(Exception exception)
+    {
+        return new JobResult(new JobResultFailed
+        {
+            Exception = exception,
+        });
+    }
+
+    [StackTraceHidden]
+    public static JobResult CreateFailed(string message)
+    {
+        return CreateFailed(new Exception(message));
+    }
+
+    [StackTraceHidden] public static JobResult CreateCancelled() => new(new JobResultCancelled());
+    [StackTraceHidden] public static JobResult CreateCompleted() => new(new JobResultCompleted());
+
+    [StackTraceHidden]
+    public static JobResult CreateCompleted<TData>(TData data)
+        where TData : notnull
+    {
+        return new JobResult(new JobResultCompleted<TData>
+        {
+            Data = data,
+        });
     }
 }

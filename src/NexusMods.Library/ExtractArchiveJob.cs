@@ -4,9 +4,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class ExtractArchiveJobGroup : AJobGroup
+internal class ExtractArchiveJob : AJob
 {
-    public ExtractArchiveJobGroup(IJobGroup? group = null, IJobWorker? worker = null) : base(group, worker) { }
+    public ExtractArchiveJob(IJobGroup? group = null, IJobWorker? worker = null) : base(null!, group, worker) { }
 
     public required IStreamFactory FileStreamFactory { get; init; }
     public required AbsolutePath OutputPath { get; init; }

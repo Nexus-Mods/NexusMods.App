@@ -28,7 +28,7 @@ public sealed class LibraryService : ILibraryService
 
     public IJob AddLocalFile(AbsolutePath absolutePath)
     {
-        var group = new AddLocalFileJobGroup(worker: _serviceProvider.GetRequiredService<AddLocalFileJobGroupWorker>())
+        var group = new AddLocalFileJob(worker: _serviceProvider.GetRequiredService<AddLocalFileJobWorker>())
         {
             Transaction = _connection.BeginTransaction(),
             FilePath = absolutePath,

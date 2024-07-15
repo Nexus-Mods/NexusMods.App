@@ -4,20 +4,20 @@ using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Library;
 
-internal class ExtractArchiveJobGroupWorker : AJobGroupWorker<ExtractArchiveJobGroup>
+internal class ExtractArchiveJobWorker : AJobWorker<ExtractArchiveJob>
 {
     private readonly IFileExtractor _fileExtractor;
 
-    public ExtractArchiveJobGroupWorker(
+    public ExtractArchiveJobWorker(
         IServiceProvider serviceProvider,
-        ExtractArchiveJobGroup jobGroup) : base(jobGroup)
+        ExtractArchiveJob jobGroup) : base(jobGroup)
     {
         _fileExtractor = serviceProvider.GetRequiredService<IFileExtractor>();
     }
 
     protected override async Task<JobResult> ExecuteAsync(CancellationToken cancellationToken)
     {
-        await _fileExtractor.ExtractAllAsync(JobGroup.FileStreamFactory, dest: JobGroup.OutputPath, token: cancellationToken);
-        return CompleteJob(JobGroup.OutputPath);
+        await _fileExtractor.ExtractAllAsync(Job.FileStreamFactory, dest: Job.OutputPath, token: cancellationToken);
+        return CompleteJob(Job.OutputPath);
     }
 }

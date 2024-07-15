@@ -72,4 +72,10 @@ public static class JobStatusExtensions
             (JobStatus.Failed, _) => false,
         };
     }
+
+    public static void AssertTransition(this JobStatus from, JobStatus to)
+    {
+        if (from.CanTransition(to)) return;
+        throw new InvalidOperationException($"Transitioning from `{from}` to `{to}` is invalid!");
+    }
 }

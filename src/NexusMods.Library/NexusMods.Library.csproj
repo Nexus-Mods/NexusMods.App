@@ -5,13 +5,13 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Update="AddLocalFileJobGroupWorker.cs">
+      <Compile Update="AddLocalFileJobWorker.cs">
         <DependentUpon>AddLocalFileJobGroup.cs</DependentUpon>
       </Compile>
-      <Compile Update="ExtractArchiveJobGroupWorker.cs">
-        <DependentUpon>ExtractArchiveJobGroup.cs</DependentUpon>
+      <Compile Update="ExtractArchiveJobWorker.cs">
+        <DependentUpon>ExtractArchiveJob.cs</DependentUpon>
       </Compile>
-      <Compile Update="AddLibraryFileJobGroupWorker.cs">
+      <Compile Update="AddLibraryFileJobWorker.cs">
         <DependentUpon>AddLibraryFileJobGroup.cs</DependentUpon>
       </Compile>
     </ItemGroup>

@@ -1,29 +1,40 @@
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public abstract class AJob : IJob, IDisposable, IAsyncDisposable
+public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
 {
     public JobId Id { get; }
-
     public IJobGroup? Group { get; }
-
-    public JobStatus Status { get; }
+    public JobStatus Status { get; private set; }
+    public IJobWorker? Worker { get; private set; }
+    public JobResult? Result { get; private set; }
 
     Progress IJob.Progress => Progress;
     internal MutableProgress Progress { get; }
 
-    public IJobWorker? Worker { get; private set; }
+    private readonly List<IJob> _collection;
+    private readonly ObservableCollection<IJob> _observableCollection;
+    public ReadOnlyObservableCollection<IJob> ObservableCollection { get; }
 
     private readonly Subject<JobStatus> _subjectStatus;
     private readonly IConnectableObservable<JobStatus> _connectableObservableStatus;
-
     public IObservable<JobStatus> ObservableStatus => _connectableObservableStatus;
+
+    private readonly Subject<JobResult> _subjectResult;
+    private readonly IConnectableObservable<JobResult> _connectableObservableResult;
+    public IObservable<JobResult> ObservableResult => _connectableObservableResult;
+
+    internal CancellationTokenSource CancellationTokenSource { get; } = new();
+    internal Task? Task { get; set; }
+    internal bool IsRequestingPause { get; set; }
 
     private readonly CompositeDisposable _disposable = new();
 
@@ -41,13 +52,41 @@ public abstract class AJob : IJob, IDisposable, IAsyncDisposable
 
         _subjectStatus = new Subject<JobStatus>();
         _connectableObservableStatus = _subjectStatus.Replay(bufferSize: 1);
+        _disposable.Add(_subjectStatus);
         _disposable.Add(_connectableObservableStatus.Connect());
+
+        _subjectResult = new Subject<JobResult>();
+        _connectableObservableResult = _subjectResult.Replay(bufferSize: 1);
+        _disposable.Add(_subjectResult);
+        _disposable.Add(_connectableObservableStatus.Connect());
+
+        _collection = [];
+        _observableCollection = new ObservableCollection<IJob>(_collection);
+        ObservableCollection = new ReadOnlyObservableCollection<IJob>(_observableCollection);
+    }
+
+    public IEnumerator<IJob> GetEnumerator() => _collection.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
+    public int Count => _observableCollection.Count;
+    public IJob this[int index] => _collection[index];
+
+    internal void AddJob(AJob job)
+    {
+        // TODO: sanity checks and other stuff
+        _observableCollection.Add(job);
+    }
+
+    private static MutableProgress CreateGroupProgress()
+    {
+        // TODO: figure out what to use here
+        throw new NotImplementedException();
     }
 
     internal void SetStatus(JobStatus value)
     {
-        if (Status.CanTransition(value)) _subjectStatus.OnNext(value);
-        else throw new InvalidOperationException($"Transitioning from `{Status}` to `{value}` is invalid!");
+        Status.AssertTransition(value);
+        Status = value;
+        _subjectStatus.OnNext(value);
     }
 
     internal void SetWorker(IJobWorker? value)
@@ -56,24 +95,55 @@ public abstract class AJob : IJob, IDisposable, IAsyncDisposable
         Worker = value;
     }
 
-    public Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default)
+    internal void SetResult(JobResult value, bool inferStatus)
     {
-        throw new NotImplementedException();
+        // TODO: sanity checks
+        Result = value;
+        _subjectResult.OnNext(value);
+
+        if (!inferStatus) return;
+        if (value.TryGetCompleted(out _))
+        {
+            SetStatus(JobStatus.Completed);
+        } else if (value.TryGetCancelled(out _))
+        {
+            SetStatus(JobStatus.Cancelled);
+        } else if (value.TryGetFailed(out _))
+        {
+            SetStatus(JobStatus.Failed);
+        }
     }
 
-    public Task StartAsync(CancellationToken cancellationToken = default)
+    public async Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (Result is not null) return Result;
+        var tsc = new TaskCompletionSource<JobResult>();
+
+        using var disposable = ObservableResult.SubscribeSafe(Observer.Create<JobResult>(onNext: value =>
+        {
+            tsc.SetResult(value);
+        }));
+
+        var result = await tsc.Task.WaitAsync(cancellationToken: cancellationToken);
+        return result;
     }
 
-    public Task PauseAsync(CancellationToken cancellationToken = default)
+    public ValueTask StartAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (Worker is null) throw new InvalidOperationException("Worker is null, unable to start job");
+        return Worker.StartAsync(job: this, cancellationToken: cancellationToken);
     }
 
-    public Task CancelAsync(CancellationToken cancellationToken = default)
+    public ValueTask PauseAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (Worker is null) throw new InvalidOperationException("Worker is null, unable to pause job");
+        return Worker.PauseAsync(job: this, cancellationToken: cancellationToken);
+    }
+
+    public ValueTask CancelAsync(CancellationToken cancellationToken = default)
+    {
+        if (Worker is null) throw new InvalidOperationException("Worker is null, unable to cancel job");
+        return Worker.CancelAsync(job: this, cancellationToken: cancellationToken);
     }
 
     public void Dispose()
@@ -94,7 +164,6 @@ public abstract class AJob : IJob, IDisposable, IAsyncDisposable
     {
         if (disposing)
         {
-            _subjectStatus.Dispose();
             _disposable.Dispose();
         }
     }

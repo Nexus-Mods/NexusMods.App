@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Remove="Xunit.DependencyInjection" />
+        <PackageReference Remove="Xunit.DependencyInjection.Logging" />
+        <PackageReference Remove="Xunit.DependencyInjection.SkippableFact" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="SynchronousTests.CompletedJob.cs">
+        <DependentUpon>SynchronousTests.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>

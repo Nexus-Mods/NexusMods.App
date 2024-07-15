@@ -4,9 +4,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddLocalFileJobGroup : AJobGroup
+internal class AddLocalFileJob : AJob
 {
-    public AddLocalFileJobGroup(IJobGroup? group = null, IJobWorker? worker = null) : base(group, worker) { }
+    public AddLocalFileJob(IJobGroup? group = null, IJobWorker? worker = null) : base(null!, group, worker) { }
 
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
