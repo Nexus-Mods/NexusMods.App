@@ -40,10 +40,12 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 if (ViewModel is not null) ViewModel.IsSelected = true;
             }, routes: RoutingStrategies.Direct | RoutingStrategies.Bubble, handledEventsToo: true).DisposeWith(disposables);
 
-            this.AddDisposableHandler(PointerExitedEvent, (_, _) =>
-            {
-                if (ViewModel is not null) ViewModel.IsSelected = false;
-            }, routes: RoutingStrategies.Direct | RoutingStrategies.Bubble, handledEventsToo: true).DisposeWith(disposables);
+            this.WhenAnyValue(view => view.IsKeyboardFocusWithin)
+                .Where(isFocused => isFocused)
+                .SubscribeWithErrorLogging(_ =>
+                {
+                    if (ViewModel is not null) ViewModel.IsSelected = true;
+                }).DisposeWith(disposables);
 
             // update scroll buttons and AddTab button (show left aligned or right aligned, depending on the scrollbar visibility)
             Observable.FromEventPattern<ScrollChangedEventArgs>(

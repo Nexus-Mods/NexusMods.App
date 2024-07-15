@@ -27,11 +27,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public WindowId WindowId => _workspaceController.WindowId;
 
     /// <inheritdoc/>
-    public string Title { get; set; } = string.Empty;
+    [Reactive] public string Title { get; set; } = string.Empty;
 
     /// <inheritdoc/>
     public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
 
+    /// <inheritdoc/>
+    [Reactive] public IPanelViewModel SelectedPanel { get; private set; } = null!;
+
+    /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
@@ -101,6 +105,36 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .SubscribeWithErrorLogging(ClosePanel)
                 .DisposeWith(disposables);
 
+            // handle when a tab gets removed
+            _panelSource
+                .Connect()
+                .ForEachChange(itemChange =>
+                {
+                    if (itemChange.Reason != ChangeReason.Remove) return;
+                    if (!itemChange.Current.IsSelected) return;
+                    SelectedPanel = Panels.First();
+                })
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
+            // selecting a panel
+            _panelSource
+                .Connect()
+                .WhenPropertyChanged(panel => panel.IsSelected)
+                .Where(propertyValue => propertyValue.Value)
+                .Select(propertyValue => propertyValue.Sender)
+                .BindToVM(this, vm => vm.SelectedPanel);
+
+            this.WhenAnyValue(vm => vm.SelectedPanel)
+                .SubscribeWithErrorLogging(selectedPanel =>
+                {
+                    foreach (var panel in Panels)
+                    {
+                        panel.IsSelected = panel.Id == selectedPanel.Id;
+                    }
+                })
+                .DisposeWith(disposables);
+
             // TODO: popout command
 
             // Disabling certain features when there is only one panel
@@ -108,14 +142,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .Count()
                 .Select(panelCount => panelCount > 1)
-                .Do(hasMultiplePanels =>
+                .SubscribeWithErrorLogging(hasMultiplePanels =>
                 {
                     for (var i = 0; i < Panels.Count; i++)
                     {
                         Panels[i].IsAlone = !hasMultiplePanels;
                     }
                 })
-                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // Finished Resizing
