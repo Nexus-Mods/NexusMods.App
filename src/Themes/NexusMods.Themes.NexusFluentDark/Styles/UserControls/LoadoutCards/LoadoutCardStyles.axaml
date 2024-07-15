@@ -20,8 +20,8 @@
             <loadoutCard:LoadoutCardView DataContext="{StaticResource SkeletonLoadoutCardViewModel}"
                                          Classes="Skeleton"/>
             <!-- Add loadout card -->
-            <loadoutCard:AddLoadoutCardView />
-            <loadoutCard:AddLoadoutCardView IsEnabled="False" />
+            <loadoutCard:CreateNewLoadoutCardView />
+            <loadoutCard:CreateNewLoadoutCardView IsEnabled="False" />
         </panels:FlexPanel>
     </Design.PreviewWith>
 
@@ -140,7 +140,7 @@
     </Style>
 
     <!-- Add loadout card -->
-    <Style Selector="loadoutCard|AddLoadoutCardView">
+    <Style Selector="loadoutCard|CreateNewLoadoutCardView">
         <Setter Property="Width" Value="192" />
         <Setter Property="Height" Value="343" />
         <Setter Property="ClipToBounds" Value="False" />

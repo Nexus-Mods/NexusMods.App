@@ -574,6 +574,9 @@
         <Compile Update="Controls\LoadoutCard\Standard\SkeletonLoadoutCardViewModel.cs">
           <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\LoadoutCard\AddLoadoutCard\AddLoadoutCardViewModel.cs">
+          <DependentUpon>IAddLoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
