@@ -17,7 +17,7 @@
         <Style Selector="^ Border#GameWidgetBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="BoxShadow">
-                <extensions:BoxShadow
+                <extensions:BoxShadows
                     BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
                     VerticalLength1="3" BlurRadius1="4" ShadowColor1="{StaticResource BrandTranslucentDark100}"
                     VerticalLength2="2" BlurRadius2="4" ShadowColor2="{StaticResource BrandTranslucentDark100}" />

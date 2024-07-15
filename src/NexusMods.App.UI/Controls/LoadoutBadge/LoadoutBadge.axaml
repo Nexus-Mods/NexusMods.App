@@ -1,0 +1,28 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutBadge:ILoadoutBadgeViewModel" 
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
+                                mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="120"
+                                x:Class="NexusMods.App.UI.Controls.LoadoutBadge.LoadoutBadge"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+    <Design.DataContext>
+        <loadoutBadge:LoadoutBadgeDesignViewModel />
+    </Design.DataContext>
+    
+    <Border x:Name="OuterBorder">
+        <StackPanel x:Name="ContentsStackPanel" 
+                    Orientation="Horizontal">
+            <spinner:Spinner x:Name="Spinner" />
+            <icons:UnifiedIcon x:Name="Icon" 
+                               Classes="Check" />
+            <TextBlock x:Name="ShortName"
+                       Classes="BodyLGBold"/>
+        </StackPanel>
+    </Border>
+</reactiveUi:ReactiveUserControl>

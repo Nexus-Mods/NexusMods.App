@@ -57,7 +57,7 @@
                 </Border>
 
                 <!-- 'Suggested' -->
-                <Border Classes="Top Rounded-lg Padding16 SuggestedAreaBorder">
+                <Border Classes="High Rounded-lg Padding16 SuggestedAreaBorder">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
                             <!-- Header: 'SUGGESTED' -->

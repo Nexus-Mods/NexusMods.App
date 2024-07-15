@@ -13,14 +13,14 @@
     <StaticResource x:Key="SurfaceBase" ResourceKey="BrandNeutral950" />
     <StaticResource x:Key="SurfaceLow" ResourceKey="BrandNeutral900" />
     <StaticResource x:Key="SurfaceMid" ResourceKey="BrandNeutral800" />
-    <StaticResource x:Key="SurfaceTop" ResourceKey="BrandNeutral700" />
+    <StaticResource x:Key="SurfaceHigh" ResourceKey="BrandNeutral700" />
     <StaticResource x:Key="SurfaceInverted" ResourceKey="BrandNeutral50" />
 
     <!-- SolidColorBrushes -->
     <SolidColorBrush x:Key="SurfaceBaseBrush" Color="{StaticResource SurfaceBase}" />
     <SolidColorBrush x:Key="SurfaceLowBrush" Color="{StaticResource SurfaceLow}" />
     <SolidColorBrush x:Key="SurfaceMidBrush" Color="{StaticResource SurfaceMid}" />
-    <SolidColorBrush x:Key="SurfaceTopBrush" Color="{StaticResource SurfaceTop}" />
+    <SolidColorBrush x:Key="SurfaceHighBrush" Color="{StaticResource SurfaceHigh}" />
     <SolidColorBrush x:Key="SurfaceInvertedBrush" Color="{StaticResource SurfaceInverted}" />
 
 

@@ -303,6 +303,9 @@ public static class IconValues
 #endregion
 
 #region Toggle
+    
+    // https://pictogrammers.com/library/mdi/icon/checkbox-marked/
+    public static readonly IconValue CheckBox = new ProjektankerIcon("mdi-checkbox-marked");
 
     // https://pictogrammers.com/library/mdi/icon/star/
     public static readonly IconValue Star = new ProjektankerIcon("mdi-star");

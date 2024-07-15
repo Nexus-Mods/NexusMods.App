@@ -11,7 +11,7 @@ namespace NexusMods.Themes.NexusFluentDark.Extensions;
 /// <example>
 ///     <Border BoxShadow="{extensions:BoxShadow BlurRadius=2, SpreadRadius=2, ShadowColor={DynamicResource AccentColor}, IsInset=False}"/>
 /// </example>
-public class BoxShadowExtension : MarkupExtension
+public class BoxShadowsExtension : MarkupExtension
 {
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
@@ -25,10 +25,10 @@ public class BoxShadowExtension : MarkupExtension
             Color = ShadowColor,
         };
 
+        if (ShadowColor1 == default(Color) && ShadowColor2 == default(Color) && ShadowColor3 == default(Color))
+            return new BoxShadows(bx); 
+        
         var bxArray = new BoxShadow[3];
-
-        if (ShadowColor1 == default && ShadowColor2 == default && ShadowColor3 == default)
-            return new BoxShadows(bx);
 
         var bx1 = new BoxShadow()
         {
@@ -37,7 +37,7 @@ public class BoxShadowExtension : MarkupExtension
             Spread = SpreadRadius1,
             Color = ShadowColor1,
             OffsetX = HorizontalLength1,
-            OffsetY = VerticalLength1
+            OffsetY = VerticalLength1,
         };
         bxArray[0] = bx1;
 
@@ -48,7 +48,7 @@ public class BoxShadowExtension : MarkupExtension
             Spread = SpreadRadius2,
             Color = ShadowColor2,
             OffsetX = HorizontalLength2,
-            OffsetY = VerticalLength2
+            OffsetY = VerticalLength2,
         };
         bxArray[1] = bx2;
 
@@ -59,7 +59,7 @@ public class BoxShadowExtension : MarkupExtension
             Spread = SpreadRadius3,
             Color = ShadowColor3,
             OffsetX = HorizontalLength3,
-            OffsetY = VerticalLength3
+            OffsetY = VerticalLength3,
         };
         bxArray[2] = bx3;
 

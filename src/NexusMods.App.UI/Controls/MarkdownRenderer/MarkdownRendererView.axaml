@@ -105,7 +105,7 @@
                 <Setter Property="FontSize" Value="13" />
                 <!-- <Setter Property="LineHeight" Value="19.5" /> -->
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
 
             <Style Selector="ctxt|CHyperlink">

@@ -37,8 +37,8 @@
             <Border Classes="Rounded-lg Mid" Padding="16">
                 <TextBlock Text="MID" />
             </Border>
-            <Border Classes="Rounded-lg Top" Padding="16">
-                <TextBlock Text="TOP" />
+            <Border Classes="Rounded-lg High" Padding="16">
+                <TextBlock Text="HIGH" />
             </Border>
             <Border Classes="Rounded-lg DangerWeak" Padding="16">
                 <TextBlock Text="DANGER weak" />
@@ -201,8 +201,8 @@
         <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
     </Style>
 
-    <Style Selector="Border.Top">
-        <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+    <Style Selector="Border.High">
+        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
     </Style>
 
     <Style Selector="Border.DangerWeak">

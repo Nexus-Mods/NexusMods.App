@@ -164,7 +164,7 @@
         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">

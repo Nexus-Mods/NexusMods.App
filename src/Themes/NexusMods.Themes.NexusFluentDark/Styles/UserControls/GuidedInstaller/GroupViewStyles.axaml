@@ -31,10 +31,10 @@
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
         <Style Selector="^ ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
         <Style Selector="^ ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
     </Style>
 </Styles>
