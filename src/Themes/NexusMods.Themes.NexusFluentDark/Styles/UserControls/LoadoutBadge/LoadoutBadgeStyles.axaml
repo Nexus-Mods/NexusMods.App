@@ -7,8 +7,12 @@
 
     <Design.PreviewWith>
         <WrapPanel Margin="20" Height="120" Width="120">
-            <loadoutBadge:LoadoutBadge />
-            <loadoutBadge:LoadoutBadge Classes="CardSize" />
+            <WrapPanel.Resources >
+                <loadoutBadge:LoadoutBadgeDesignViewModel x:Key="LoadoutBadgeDesignViewModel"/>
+            </WrapPanel.Resources>
+            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"/>
+            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"
+                                       Classes="CardSize" />
         </WrapPanel>
     </Design.PreviewWith>
 

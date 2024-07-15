@@ -22,7 +22,6 @@
         </Border>
         <icons:UnifiedIcon x:Name="Icon"
                            Classes="Check" />
-        <TextBlock x:Name="ShortName"
-                   Text="A" />
+        <TextBlock x:Name="ShortName"/>
     </panels:FlexPanel>
 </reactiveUi:ReactiveUserControl>
