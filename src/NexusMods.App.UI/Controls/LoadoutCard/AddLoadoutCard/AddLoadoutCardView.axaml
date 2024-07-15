@@ -9,10 +9,10 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.AddLoadoutCardView">
 
-    <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12">
-        <panels:FlexPanel Direction="Column" RowSpacing="4" JustifyContent="Center" AlignItems="Center">
-            <TextBlock Text="Create new loadout" />
-            <icons:UnifiedIcon Classes="Add" />
+    <Button x:Name="CreateNewLoadoutButton">
+        <panels:FlexPanel x:Name="CreateNewLoadoutFlexPanel">
+            <TextBlock x:Name="CreateNewLoadoutTexBlock" Text="Create new loadout" />
+            <icons:UnifiedIcon x:Name="AddIcon" Classes="Add" />
         </panels:FlexPanel>
     </Button>
 </reactiveUi:ReactiveUserControl>

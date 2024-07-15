@@ -138,11 +138,41 @@
 
     <!-- Add loadout card -->
     <Style Selector="loadoutCard|AddLoadoutCardView">
-        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-        <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Width" Value="192" />
         <Setter Property="Height" Value="343" />
+        <Setter Property="ClipToBounds" Value="False" />
+
+        <Style Selector="^ Button#CreateNewLoadoutButton">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+            <Setter Property="Padding" Value="12" />
+            
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+            </Style>
+        </Style>
+        
+        <Style Selector="^ panels|FlexPanel#CreateNewLoadoutFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="JustifyContent" Value="Center" />
+            <Setter Property="AlignItems" Value="Center" />
+            <Setter Property="RowSpacing" Value="4" />
+        </Style>
+        
+        <Style Selector="^ TextBlock#CreateNewLoadoutTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+        </Style>
+        
+        <Style Selector="^ icons|UnifiedIcon#AddIcon">
+            <Setter Property="Size" Value="56" />
+        </Style>
     </Style>
 </Styles>
