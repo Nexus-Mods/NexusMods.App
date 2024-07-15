@@ -35,7 +35,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .DisposeWith(disposables);
 
             // panel selection
-            this.AddDisposableHandler(PointerEnteredEvent, (_, _) =>
+            this.AddDisposableHandler(PointerPressedEvent, (_, _) =>
             {
                 if (ViewModel is not null) ViewModel.IsSelected = true;
             }, routes: RoutingStrategies.Direct | RoutingStrategies.Bubble, handledEventsToo: true).DisposeWith(disposables);
