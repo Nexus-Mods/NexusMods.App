@@ -87,9 +87,9 @@
 
             <!-- Needs to be on top of the card button to avoid the disabled opacity -->
             <panels:FlexPanel x:Name="OverlayFlexPanel" IsVisible="False">
-                <panels:FlexPanel x:Name="DeletingSpinnerFlexPanel">
-                    <spinner:Spinner x:Name="DeletingSpinner" />
-                    <TextBlock x:Name="DeletingTextBlock"
+                <panels:FlexPanel x:Name="OverlaySpinnerFlexPanel">
+                    <spinner:Spinner x:Name="OverlaySpinner" />
+                    <TextBlock x:Name="OverlayTextBlock"
                                Classes="BodyXLNormal ForegroundSubdued"
                                Text="Deleting..." />
                 </panels:FlexPanel>
