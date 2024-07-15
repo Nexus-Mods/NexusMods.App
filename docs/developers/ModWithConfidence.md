@@ -6,7 +6,7 @@ One of the biggest complaints from users over the years about modding is that th
 
 Every step of the ***classic modding approach*** is fraught with pitfalls and destructive changes.
 
-The Nexus Mods App intends to solve these problems. In addition to being a great mod installer, manager and builder,
+The Nexus Mods app intends to solve these problems. In addition to being a great mod installer, manager and builder,
 this project aims to always provide an *undo* feature for users. Not just on a metadata level (like most mod managers
 offer today) but on a per-file basis as well.
 
@@ -39,11 +39,11 @@ Virtual FileSystems:
 * You have to run xEdit through [Mod Organizer 2][mod-organizer-2] for it to see your mod list (Bethesda Games)
 * Files end up in a different place from where the end user expects them.
 
-#### Nexus Mods App Approach
+#### Nexus Mods app Approach
 
-!!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding with the hygiene of existing mod installers and a promise that "you can always go back to what last worked""
+!!! nexus "The Nexus Mods app aims to merge the mental simplicity of manual modding with the hygiene of existing mod installers and a promise that "you can always go back to what last worked""
 
-The 'Data Model' of the Nexus Mods App can be thought of as an extension of lessons learned from the development of
+The 'Data Model' of the Nexus Mods app can be thought of as an extension of lessons learned from the development of
 Nexus Collections and Wabbajack.
 
 When you make a mod list, we don't directly manipulate files. Instead, we manipulate the 'instructions' used to deploy

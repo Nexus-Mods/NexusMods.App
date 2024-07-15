@@ -1,5 +1,5 @@
 <div align="center">
-	<h1>The Nexus Mods App</h1>
+	<h1>The Nexus Mods app</h1>
 	<img src="../Nexus/Images/Nexus-Icon.png" width="150" align="center" />
 	<br/> <br/>
     Mod With Confidence
@@ -18,9 +18,9 @@ If you want to know how the App works, see [Mod With Confidence](./ModWithConfid
 
 ## The Team
 
-### Nexus Mods App Team
+### Nexus Mods app Team
 
-- [halgari](https://github.com/halgari): Team lead of the Nexus Mods App, creator of [Wabbajack](https://www.wabbajack.org) and former developer of [Clojure](https://clojure.org/).
+- [halgari](https://github.com/halgari): Team lead of the Nexus Mods app, creator of [Wabbajack](https://www.wabbajack.org) and former developer of [Clojure](https://clojure.org/).
 - [Al12rs](https://github.com/Al12rs): Lead developer of [Mod Organizer 2](https://www.modorganizer.org/).
 - [erri120](https://github.com/erri120): Developer of [Wabbajack](https://www.wabbajack.org) and creator of [GameFinder](https://github.com/erri120/GameFinder).
 - [Sewer56](https://github.com/Sewer56): Creator of [Reloaded-II](https://reloaded-project.github.io/Reloaded-II/).

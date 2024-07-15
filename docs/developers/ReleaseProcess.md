@@ -1,7 +1,7 @@
 # Release Process and Workflow
 
 ## Overview
-The Nexus Mods App follows a strict release process which assumes that the
+The Nexus Mods app follows a strict release process which assumes that the
 `main` branch is the development branch and will always be kept in a releasable
 state. This means that any major overhauls of feature development should either
 be done in a single PR or be developed behind an optional setting or feature flag.
@@ -15,7 +15,7 @@ will be applied to the release branch, the release branch is deleted. Often, thi
 sometime after the next release is made.
 
 ## Release Schedule
-The Nexus Mods App developer team follows a 3-week iteration cycle, so releases are expected
+The Nexus Mods app developer team follows a 3-week iteration cycle, so releases are expected
 to be made at the same interval. Most often, releases will be cut by the team lead, [halgari](https://github.com/halgari),
 who lives in the MST timezone. The cutoff point for a release is sometime in the early morning on Wednesday
 of the release week (MST). Due to the requirement that main kept in an "always releasable" state, 

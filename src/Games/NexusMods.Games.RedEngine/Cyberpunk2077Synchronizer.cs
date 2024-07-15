@@ -26,7 +26,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
 
     public override bool IsIgnoredBackupPath(GamePath path)
     {
-        if (!_settings.IgnoreContentFolder)
+        if (_settings.DoFullGameBackup)
             return false;
         
         if (path.LocationId != LocationId.Game)

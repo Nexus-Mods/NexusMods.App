@@ -31,12 +31,11 @@ This page lists the recommended system requirements to install and run the app o
 <sub>\* Storage space required does not factor in the number of games managed, the size of the managed games and the mods installed.</sub> -->
 
 ### Linux Dependencies
-
 The App requires the following programs to be available on the system `PATH` at runtime:
 
-- `xdg-open` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
+- `xdg-open` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/)) to open URLs in your browser.
 - `xdg-settings` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
-- `update-desktop-database` (part of [desktop-file-utils](https://www.freedesktop.org/wiki/Software/desktop-file-utils/))
+- `update-desktop-database` (part of [desktop-file-utils](https://www.freedesktop.org/wiki/Software/desktop-file-utils/)) to update the MIME cache after creating a desktop entry file for the NXM link handler.
 
 In addition, the following libraries are required:
 

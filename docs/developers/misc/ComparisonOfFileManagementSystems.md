@@ -13,7 +13,7 @@ files, that interact with the game via their presence in game folders. This incl
 supported by the game, and proxy DLLs that override certain methods in the game engine (such as ENBs).
 
 
-|                        | Nexus Mod Manager                   | Vortex                          | Mod Organizer 2                                | Nexus Mods App                                             |
+|                        | Nexus Mod Manager                   | Vortex                          | Mod Organizer 2                                | Nexus Mods app                                             |
 |------------------------|-------------------------------------|---------------------------------|------------------------------------------------|------------------------------------------------------------|
 | Deployment Method      | Hard/Sym Links                      | Hard/Sym Links                  | UVFS                                           | File Copy / Hashing                                        |
 | File Deleted / Created | Changes are left in Game Folder     | Changes are left in Game Folder | File exists after create, original is replaced | Detected, new modlist with changes is created              |

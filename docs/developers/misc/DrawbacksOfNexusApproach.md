@@ -1,4 +1,4 @@
-!!! warning "The Nexus Mods App approach requires more book-keeping than traditional approaches"
+!!! warning "The Nexus Mods app approach requires more book-keeping than traditional approaches"
 
 - Keeping backup of original game files.
 - Watching for changes in game folder. (Backup user/game generated files)
@@ -11,7 +11,7 @@ This takes considerable CPU and Disk resources.
 
 This typically results in an increase in disk usage of 60-100% compared to regular game size.
 
-!!! tip "For a 10 GB game, an additional 6-10 GB of space will be used once 'managed' with the Nexus Mods App."
+!!! tip "For a 10 GB game, an additional 6-10 GB of space will be used once 'managed' with the Nexus Mods app."
 
 For desktops, storage today is fairly cheap, however, there are still limitations.
 
@@ -34,7 +34,7 @@ This may be problematic if the user wants to immediately play their game, as the
 
 ## Footnote
 
-!!! nexus "The Nexus Mods App is built with the hardware of today in mind. Taking advantage of fast CPUs and SSDs."
+!!! nexus "The Nexus Mods app is built with the hardware of today in mind. Taking advantage of fast CPUs and SSDs."
 
 With sufficient optimization and planning, we hope these processes become mostly 'transparent' to end users,
 so they don't really notice a difference.

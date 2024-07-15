@@ -1,5 +1,5 @@
 <div align="center">
-	<h1>The Nexus Mods App</h1>
+	<h1>The Nexus Mods app</h1>
 	<img src="https://github.com/Nexus-Mods/NexusMods.MkDocsMaterial.Themes.Next/blob/2b49cf1fdd0f15684c6057259b52210e73705b98/Images/Nexus-Icon.png?raw=true" width="150" align="center" />
 	<br/> <br/>
     Mod With Confidence
@@ -14,7 +14,7 @@
     </a>
 </div>
 
-Nexus Mods App is a mod installer, creator and manager for all your popular games.
+Nexus Mods app is a mod installer, creator and manager for all your popular games.
 
 Easy to use, runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting, play your games,
 fill those knees with arrows and most importantly, ***Have Fun***!
