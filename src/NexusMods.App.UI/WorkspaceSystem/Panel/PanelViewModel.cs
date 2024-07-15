@@ -39,8 +39,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, PanelId> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
-    [Reactive]
-    public bool IsNotAlone { get; set; }
+    [Reactive] public bool IsSelected { get; set; }
+
+    [Reactive] public bool IsNotAlone { get; set; }
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 

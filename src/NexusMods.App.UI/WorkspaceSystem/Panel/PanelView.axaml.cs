@@ -2,12 +2,14 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[PseudoClasses(":one-tab", ":selected")]
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
     private const double ScrollOffset = 250;
@@ -30,6 +32,24 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     Padding = new Thickness(left, top, right, bottom);
                 })
                 .Subscribe()
+                .DisposeWith(disposables);
+
+            // panel selection
+            this.AddDisposableHandler(PointerEnteredEvent, (_, _) =>
+            {
+                if (ViewModel is not null) ViewModel.IsSelected = true;
+            }, routes: RoutingStrategies.Direct | RoutingStrategies.Bubble, handledEventsToo: true).DisposeWith(disposables);
+
+            this.AddDisposableHandler(PointerExitedEvent, (_, _) =>
+            {
+                if (ViewModel is not null) ViewModel.IsSelected = false;
+            }, routes: RoutingStrategies.Direct, handledEventsToo: true).DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.IsKeyboardFocusWithin)
+                .SubscribeWithErrorLogging(value =>
+                {
+                    if (ViewModel is not null) ViewModel.IsSelected = value;
+                })
                 .DisposeWith(disposables);
 
             // update scroll buttons and AddTab button (show left aligned or right aligned, depending on the scrollbar visibility)
@@ -121,23 +141,14 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .BindToView(this, view => view.TabHeaderScrollViewer.Offset)
                 .DisposeWith(disposables);
 
-            // styling:
+            // classes
             this.WhenAnyValue(view => view.ViewModel!.Tabs.Count)
                 .Select(count => count == 1)
-                .Do(hasOneTab =>
-                {
-                    if (hasOneTab)
-                    {
-                        TabHeaderBorder.Classes.Add("OneTab");
-                        PanelBorder.Classes.Add("OneTab");
-                    }
-                    else
-                    {
-                        TabHeaderBorder.Classes.Remove("OneTab");
-                        PanelBorder.Classes.Remove("OneTab");
-                    }
-                })
-                .SubscribeWithErrorLogging()
+                .SubscribeWithErrorLogging(hasOneTab => PseudoClasses.Set(":one-tab", hasOneTab))
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.ViewModel!.IsSelected)
+                .SubscribeWithErrorLogging(isSelected => PseudoClasses.Set(":selected", isSelected))
                 .DisposeWith(disposables);
         });
     }

@@ -39,6 +39,11 @@ public interface IPanelViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
     /// <summary>
+    /// Gets or sets whether the current panel is selected.
+    /// </summary>
+    public bool IsSelected { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the current panel is not the only panel in the workspace.
     /// </summary>
     public bool IsNotAlone { get; set; }
