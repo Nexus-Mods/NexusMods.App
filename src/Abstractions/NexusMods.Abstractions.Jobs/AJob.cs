@@ -58,7 +58,7 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         _subjectResult = new Subject<JobResult>();
         _connectableObservableResult = _subjectResult.Replay(bufferSize: 1);
         _disposable.Add(_subjectResult);
-        _disposable.Add(_connectableObservableStatus.Connect());
+        _disposable.Add(_connectableObservableResult.Connect());
 
         _collection = [];
         _observableCollection = new ObservableCollection<IJob>(_collection);

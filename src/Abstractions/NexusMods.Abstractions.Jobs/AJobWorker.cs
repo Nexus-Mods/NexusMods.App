@@ -17,7 +17,7 @@ public abstract class AJobWorker : IJobWorker
 
     private record struct Paused;
 
-    private async Task<OneOf<JobResult, Paused>> ExecuteAsyncInner(AJob job, CancellationToken cancellationToken)
+    private async Task<OneOf<JobResult, Paused>> ExecuteAsyncWrapper(AJob job, CancellationToken cancellationToken)
     {
         try
         {
@@ -76,7 +76,21 @@ public abstract class AJobWorker : IJobWorker
         Task<OneOf<JobResult, Paused>> task;
         try
         {
-            task = ExecuteAsyncInner(job, job.CancellationTokenSource.Token);
+            task = Task.Run(async () =>
+            {
+                var result = await ExecuteAsyncWrapper(job, job.CancellationTokenSource.Token);
+                if (result.IsT0)
+                {
+                    job.SetResult(result.AsT0, inferStatus: true);
+                }
+                else
+                {
+                    job.SetStatus(JobStatus.Paused);
+                }
+
+                job.Task = null;
+                return result;
+            }, cancellationToken: CancellationToken.None);
         }
         catch (Exception e)
         {
@@ -85,25 +99,6 @@ public abstract class AJobWorker : IJobWorker
             return ValueTask.CompletedTask;
         }
 
-        // task might complete synchronously
-        if (task.IsCompleted)
-        {
-            Debug.Assert(task.IsCompletedSuccessfully, "wrapper task should always complete successfully");
-            var result = task.Result;
-            if (result.IsT0)
-            {
-                job.SetResult(result.AsT0, inferStatus: true);
-            }
-            else
-            {
-                job.SetStatus(JobStatus.Paused);
-            }
-
-            job.Task = null;
-            return ValueTask.CompletedTask;
-        }
-
-        task.Start();
         job.Task = task;
         return ValueTask.CompletedTask;
     }
