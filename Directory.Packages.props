@@ -13,7 +13,7 @@
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.60" />
     <PackageVersion Include="NexusMods.MnemonicDB.Storage" Version="0.9.60" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.5" />
-    <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
+    <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.2" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.5" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
