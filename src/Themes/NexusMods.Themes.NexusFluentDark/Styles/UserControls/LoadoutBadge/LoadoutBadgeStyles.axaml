@@ -2,12 +2,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
-    
+        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+
     <Design.PreviewWith>
-        <Border Padding="20" Height="120" Width="120">
-            <loadoutBadge:LoadoutBadge />
-        </Border>
+        <WrapPanel Margin="20" Height="120" Width="120">
+            <WrapPanel.Resources >
+                <loadoutBadge:LoadoutBadgeDesignViewModel x:Key="LoadoutBadgeDesignViewModel"/>
+            </WrapPanel.Resources>
+            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"/>
+            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"
+                                       Classes="CardSize" />
+        </WrapPanel>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
@@ -15,34 +21,33 @@
         <Setter Property="Background" Value="{StaticResource NeutralStrong}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         <Setter Property="CornerRadius" Value="0,8,0,4" />
+
         <Setter Property="Height" Value="24" />
         <Setter Property="MinWidth" Value="24" />
+        <Setter Property="Padding" Value="1,2,4,2" />
 
-        <Style Selector="^ Border#OuterBorder">
-            <Setter Property="Padding" Value="6.5,0,6.5,0" />
-        </Style>
-
-        <Style Selector="^:in-progress StackPanel#ContentsStackPanel">
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Spacing" Value="0" />
+        <Style Selector="^ panels|FlexPanel#ContentsFlexPanel">
+            <Setter Property="JustifyContent" Value="Center" />
+            <Setter Property="AlignItems" Value="Stretch" />
         </Style>
 
         <Style Selector="^ spinner|Spinner#Spinner">
             <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+            <Setter Property="IsVisible" Value="False" />
+
             <Setter Property="Height" Value="12" />
             <Setter Property="Width" Value="12" />
             <Setter Property="Margin" Value="2" />
-            <Setter Property="IsVisible" Value="False" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#Icon">
-            <Setter Property="Size" Value="16" />
             <Setter Property="IsVisible" Value="False" />
+            <Setter Property="Size" Value="16" />
         </Style>
 
         <Style Selector="^ TextBlock#ShortName">
-            <Setter Property="Width" Value="11" />
-            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <!-- Selected state -->
@@ -52,10 +57,6 @@
 
         <!-- Applied state -->
         <Style Selector="^:applied:not(:in-progress)">
-            <Style Selector="^ Border#OuterBorder">
-                <Setter Property="Padding" Value="1,0,4,0" />
-            </Style>
-
             <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
@@ -63,10 +64,6 @@
 
         <!-- In progress state -->
         <Style Selector="^:in-progress">
-            <Style Selector="^ Border#OuterBorder">
-                <Setter Property="Padding" Value="1,0,4,0" />
-            </Style>
-
             <Style Selector="^ spinner|Spinner#Spinner">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
@@ -76,5 +73,30 @@
             </Style>
         </Style>
 
+    </Style>
+
+
+    <!-- Large version (for LoadoutCards) -->
+    <Style Selector="loadoutBadge|LoadoutBadge.CardSize">
+        <Setter Property="Height" Value="NaN" />
+        <Setter Property="Padding" Value="12,4" />
+
+        <Style Selector="^ panels|FlexPanel#ContentsFlexPanel">
+            <Setter Property="ColumnSpacing" Value="4" />
+        </Style>
+
+        <Style Selector="^ spinner|Spinner#Spinner">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+
+        <Style Selector="^ icons|UnifiedIcon#Icon">
+            <Setter Property="Size" Value="20" />
+        </Style>
+
+        <Style Selector="^ TextBlock#ShortName">
+            <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}" />
+        </Style>
     </Style>
 </Styles>
