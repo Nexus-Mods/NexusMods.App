@@ -18,9 +18,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     private readonly IFileExtractor _fileExtractor;
     private readonly TemporaryFileManager _temporaryFileManager;
 
-    public AddLibraryFileJobWorker(
-        IServiceProvider serviceProvider,
-        AddLibraryFileJob job) : base(job)
+    public AddLibraryFileJobWorker(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<AddLibraryFileJobWorker>>();
 
@@ -29,76 +27,84 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
     }
 
-    protected override async Task<JobResult> ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task<JobResult> ExecuteAsync(AddLibraryFileJob job, CancellationToken cancellationToken)
     {
-        var absolutePath = Job.FilePath;
+        var absolutePath = job.FilePath;
         if (!absolutePath.FileExists)
         {
             if (absolutePath.DirectoryExists())
             {
-                return FailJob($"File at `{absolutePath}` can't be added to the library because it's a directory");
+                return JobResult.CreateFailed($"File at `{absolutePath}` can't be added to the library because it's a directory");
             }
 
-            return FailJob($"File at `{absolutePath}` can't be added to the library because it doesn't exist");
+            return JobResult.CreateFailed($"File at `{absolutePath}` can't be added to the library because it doesn't exist");
         }
 
-        ThrowIsPausedOrCancelled(cancellationToken);
-        if (!Job.IsArchive.HasValue)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!job.IsArchive.HasValue)
         {
-            Job.IsArchive = await CheckIfArchiveAsync(Job.FilePath);
+            job.IsArchive = await CheckIfArchiveAsync(job.FilePath);
         }
 
-        if (!Job.HashJobResult.HasValue)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!job.HashJobResult.HasValue)
         {
-            Job.HashJobResult = await HashAsync(Job.FilePath);
+            job.HashJobResult = await HashAsync(job.FilePath);
         }
 
-        if (!Job.EntityId.HasValue)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!job.EntityId.HasValue)
         {
-            Job.EntityId = Job.Transaction.TempId();
+            job.EntityId = job.Transaction.TempId();
         }
 
-        if (!Job.LibraryFile.HasValue)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!job.LibraryFile.HasValue)
         {
-            Job.LibraryFile = CreateLibraryFile(
-                Job.Transaction,
-                Job.EntityId.Value,
-                Job.FilePath,
-                hash: RequireDataFromResult<Hash>(Job.HashJobResult.Value)
+            job.LibraryFile = CreateLibraryFile(
+                job.Transaction,
+                job.EntityId.Value,
+                job.FilePath,
+                hash: job.HashJobResult.Value.RequireData<Hash>()
             );
         }
 
-        if (Job.IsArchive.Value)
+        if (job.IsArchive.Value)
         {
-            if (!Job.LibraryArchive.HasValue)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.LibraryArchive.HasValue)
             {
-                Job.LibraryArchive = new LibraryArchive.New(Job.Transaction, Job.EntityId.Value)
+                job.LibraryArchive = new LibraryArchive.New(job.Transaction, job.EntityId.Value)
                 {
-                    LibraryFile = Job.LibraryFile.Value,
+                    LibraryFile = job.LibraryFile.Value,
                 };
             }
 
-            if (!Job.ExtractionDirectory.HasValue)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.ExtractionDirectory.HasValue)
             {
-                Job.ExtractionDirectory = _temporaryFileManager.CreateFolder();
+                job.ExtractionDirectory = _temporaryFileManager.CreateFolder();
             }
 
-            if (!Job.ExtractedFiles.HasValue)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.ExtractedFiles.HasValue)
             {
-                Job.ExtractedFiles = await ExtractArchiveAsync(
-                    Job.FilePath,
-                    Job.ExtractionDirectory.Value
+                job.ExtractedFiles = await ExtractArchiveAsync(
+                    job,
+                    job.FilePath,
+                    job.ExtractionDirectory.Value
                 );
             }
 
-            if (!Job.AddExtractedFileJobResults.HasValue)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.AddExtractedFileJobResults.HasValue)
             {
-                Job.AddExtractedFileJobResults = await AddJobsAndWaitParallelAsync(Job.ExtractedFiles.Value.Select(fileEntry =>
+                job.AddExtractedFileJobResults = await AddJobsAndWaitParallelAsync(job.ExtractedFiles.Value.Select(fileEntry =>
                 {
                     var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
-                    var job = new AddLibraryFileJob(Job, worker)
+                    var job = new AddLibraryFileJob(job, worker)
                     {
-                        Transaction = Job.Transaction,
+                        Transaction = job.Transaction,
                         FilePath = fileEntry.Path,
                         DoCommit = false,
                     };
@@ -107,24 +113,26 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 }).ToArray());
             }
 
-            foreach (var jobResult in Job.AddExtractedFileJobResults.Value)
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var jobResult in job.AddExtractedFileJobResults.Value)
             {
-                var libraryFile = RequireDataFromResult<LibraryFile.New>(jobResult);
-                var archiveFileEntry = new LibraryArchiveFileEntry.New(Job.Transaction, libraryFile.Id)
+                var libraryFile = jobResult.RequireData<LibraryFile.New>();
+                var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
                     LibraryFile = libraryFile,
-                    ParentId = Job.LibraryArchive.Value,
+                    ParentId = job.LibraryArchive.Value,
                 };
             }
         }
 
-        if (Job.DoCommit)
+        cancellationToken.ThrowIfCancellationRequested();
+        if (job.DoCommit)
         {
-            var transactionResult = await Job.Transaction.Commit();
-            return CompleteJob(transactionResult.Remap(Job.LibraryFile.Value));
+            var transactionResult = await job.Transaction.Commit();
+            return JobResult.CreateCompleted(transactionResult.Remap(job.LibraryFile.Value));
         }
 
-        return CompleteJob(Job.LibraryFile.Value);
+        return JobResult.CreateCompleted(job.LibraryFile.Value);
     }
 
     private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
@@ -140,18 +148,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             Stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None),
         };
 
-        // Worker.Create(hashJob, async static (job, controller, cancellationToken) =>
-        // {
-        //     var stream = job.Stream;
-        //     stream.Position = 0;
-        //
-        //     var hash = await stream.XxHash64Async(token: cancellationToken);
-        //     stream.Position = 0;
-        //
-        //     return hash;
-        // });
-
-        Worker.AddFromStaticFunction(hashJob, async static (job, cancellationToken) =>
+        var worker = JobWorker.Create(hashJob, async static (job, _, cancellationToken) =>
         {
             var stream = job.Stream;
             stream.Position = 0;
@@ -182,13 +179,14 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     }
 
     private async Task<IFileEntry[]> ExtractArchiveAsync(
+        AJob job,
         AbsolutePath archivePath,
         AbsolutePath outputPath)
     {
         await using var tempDirectory = _temporaryFileManager.CreateFolder();
 
         var worker = _serviceProvider.GetRequiredService<ExtractArchiveJobWorker>();
-        var extractArchiveJob = new ExtractArchiveJob(Job, worker)
+        var extractArchiveJob = new ExtractArchiveJob(job, worker)
         {
             FileStreamFactory = new NativeFileStreamFactory(archivePath),
             OutputPath = outputPath,

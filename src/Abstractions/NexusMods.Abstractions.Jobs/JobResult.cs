@@ -78,6 +78,18 @@ public class JobResult
         return true;
     }
 
+    public TData RequireData<TData>()
+    where TData : notnull
+    {
+        if (!TryGetCompleted(out var completed))
+            throw new InvalidOperationException($"JobResult is of type `{ResultType}` but expected `{JobResultType.Completed}`");
+
+        if (!completed.TryGetData<TData>(out var data))
+            throw new InvalidOperationException("Completed JobResult doesn't have data!");
+
+        return data;
+    }
+
     [StackTraceHidden]
     public static JobResult CreateFailed(Exception exception)
     {

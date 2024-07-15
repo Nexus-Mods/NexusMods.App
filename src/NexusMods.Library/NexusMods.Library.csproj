@@ -6,13 +6,13 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Update="AddLocalFileJobWorker.cs">
-        <DependentUpon>AddLocalFileJobGroup.cs</DependentUpon>
+        <DependentUpon>AddLocalFileJob.cs</DependentUpon>
       </Compile>
       <Compile Update="ExtractArchiveJobWorker.cs">
         <DependentUpon>ExtractArchiveJob.cs</DependentUpon>
       </Compile>
       <Compile Update="AddLibraryFileJobWorker.cs">
-        <DependentUpon>AddLibraryFileJobGroup.cs</DependentUpon>
+        <DependentUpon>AddLibraryFileJob.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

@@ -16,13 +16,13 @@ public static class JobWorker
     where TJob : AJob
     where TData : notnull
     {
-        return new DummyWorker<TJob, TData>(func);
+        return new DummyWorker<TJob, TData>(job, func);
     }
 
     public static AJobWorker<TJob> Create<TJob>(TJob job, ExecuteAsyncDelegate<TJob> func)
         where TJob : AJob
     {
-        return new DummyWorker<TJob>(func);
+        return new DummyWorker<TJob>(job, func);
     }
 
     private class DummyWorker<TJob> : AJobWorker<TJob>
@@ -30,9 +30,10 @@ public static class JobWorker
     {
         private readonly ExecuteAsyncDelegate<TJob> _func;
 
-        public DummyWorker(ExecuteAsyncDelegate<TJob> func)
+        public DummyWorker(TJob job, ExecuteAsyncDelegate<TJob> func)
         {
             _func = func;
+            SetWorker(job);
         }
 
         protected override Task<JobResult> ExecuteAsync(TJob job, CancellationToken cancellationToken)
@@ -47,9 +48,10 @@ public static class JobWorker
     {
         private readonly ExecuteAsyncDelegateWithData<TJob, TData> _func;
 
-        public DummyWorker(ExecuteAsyncDelegateWithData<TJob, TData> func)
+        public DummyWorker(TJob job, ExecuteAsyncDelegateWithData<TJob, TData> func)
         {
             _func = func;
+            SetWorker(job);
         }
 
         protected override async Task<JobResult> ExecuteAsync(TJob job, CancellationToken cancellationToken)

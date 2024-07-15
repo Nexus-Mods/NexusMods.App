@@ -40,7 +40,7 @@ public abstract class AJobWorker : IJobWorker
         }
     }
 
-    private void SetWorker(AJob job)
+    protected void SetWorker(AJob job)
     {
         if (job.Worker is null)
         {
