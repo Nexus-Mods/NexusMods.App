@@ -8,13 +8,11 @@
                                 xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.AddLoadoutCardView">
-    
-    <Border BorderThickness="1" CornerRadius="8" Background="{StaticResource SurfaceMidBrush}" Width="192" Height="343">
-        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12">
-            <panels:FlexPanel Direction="Column" RowSpacing="4" JustifyContent="Center" AlignItems="Center">
-                <TextBlock Text="Create new loadout" />
-                <icons:UnifiedIcon Classes="Add" />
-            </panels:FlexPanel>
-        </Button>
-    </Border>
+
+    <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12">
+        <panels:FlexPanel Direction="Column" RowSpacing="4" JustifyContent="Center" AlignItems="Center">
+            <TextBlock Text="Create new loadout" />
+            <icons:UnifiedIcon Classes="Add" />
+        </panels:FlexPanel>
+    </Button>
 </reactiveUi:ReactiveUserControl>
