@@ -7,10 +7,9 @@
 
     <Design.PreviewWith>
         <panels:FlexPanel Background="{StaticResource SurfaceLow}"
-                          Width="500"
-                          Height="500"
-                          ColumnSpacing="10"
-                          JustifyContent="SpaceAround">
+                          ColumnSpacing="8"
+                          Wrap="Wrap"
+                          RowSpacing="8">
             <panels:FlexPanel.Resources>
                 <loadoutCard:LoadoutCardDesignViewModel x:Key="LoadoutCardDesignViewModel" />
             </panels:FlexPanel.Resources>
@@ -19,6 +18,7 @@
             <loadoutCard:LoadoutCardView DataContext="{StaticResource LoadoutCardDesignViewModel}" />
             <!-- Add loadout card -->
             <loadoutCard:AddLoadoutCardView />
+            <loadoutCard:AddLoadoutCardView IsEnabled="False" />
         </panels:FlexPanel>
     </Design.PreviewWith>
 
@@ -156,6 +156,14 @@
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
             </Style>
+            
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+            </Style>
         </Style>
         
         <Style Selector="^ panels|FlexPanel#CreateNewLoadoutFlexPanel">
@@ -174,5 +182,6 @@
         <Style Selector="^ icons|UnifiedIcon#AddIcon">
             <Setter Property="Size" Value="56" />
         </Style>
+        
     </Style>
 </Styles>
