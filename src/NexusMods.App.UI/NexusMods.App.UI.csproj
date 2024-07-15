@@ -564,8 +564,9 @@
         <Compile Update="Controls\LoadoutBadge\LoadoutBadgeDesignViewModel.cs">
           <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\LoadoutCard\LoadoutCardDesignViewModel.cs">
-          <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
+        <Compile Update="Controls\LoadoutCard\Standard\LoadoutCardView.axaml.cs">
+          <DependentUpon>LoadoutCardView.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 

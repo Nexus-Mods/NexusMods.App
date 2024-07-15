@@ -1,0 +1,20 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutCard:IAddLoadoutCardViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Controls.LoadoutCard.AddLoadoutCardView">
+    
+    <Border BorderThickness="1" CornerRadius="8" Background="{StaticResource SurfaceMidBrush}" Width="192" Height="343">
+        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12">
+            <panels:FlexPanel Direction="Column" RowSpacing="4" JustifyContent="Center" AlignItems="Center">
+                <TextBlock Text="Create new loadout" />
+                <icons:UnifiedIcon Classes="Add" />
+            </panels:FlexPanel>
+        </Button>
+    </Border>
+</reactiveUi:ReactiveUserControl>
