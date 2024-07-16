@@ -68,7 +68,10 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
-        _serviceProvider.GetRequiredService<Red4ExtMissingDiagnosticEmitter>(),
+        _serviceProvider.GetRequiredService<ArchiveXLMissingEmitter>(),
+        _serviceProvider.GetRequiredService<CyberEngineTweaksMissingEmitter>(),
+        _serviceProvider.GetRequiredService<Red4ExtMissingEmitter>(),
+        _serviceProvider.GetRequiredService<TweakXLMissingEmitter>()
     ];
 
     /// <inheritdoc />

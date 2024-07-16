@@ -20,50 +20,55 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 /// and enabled.
 /// 
 /// </summary>
-public abstract class APathBasedDependencyEmitter : IDiagnosticEmitter
+public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
 {
     /// <summary>
     /// The link to download the dependency.
     /// </summary>
-    public abstract NamedLink DownloadLink { get; }
+    protected abstract NamedLink DownloadLink { get; }
     
     /// <summary>
     /// The name of the dependency.
     /// </summary>
-    public abstract string DependencyName { get; }
+    protected abstract string DependencyName { get; }
     
     /// <summary>
     /// All the paths returned by this property must exist for the dependency to be considered installed.
     /// </summary>
-    public abstract IEnumerable<GamePath> DependencyPaths { get; }
+    protected abstract IEnumerable<GamePath> DependencyPaths { get; }
     
     /// <summary>
-    /// The folder that contains the dependant mods for example `bin/x64/plugins/cyber_engine_tweaks`.
+    /// The folders that contain the dependant mods, for example `bin/x64/plugins/cyber_engine_tweaks`.
     /// </summary>
-    public abstract GamePath DependantPath { get; }
+    protected abstract GamePath[] DependantPaths { get; }
     
     /// <summary>
-    /// The file extension of the dependant mods, for example `.lua` or `.dll`.
+    /// The file extensions of the dependant files, for example `.lua` or `.dll`.
     /// </summary>
-    public abstract Extension DependantExtension { get; }
+    protected abstract Extension[] DependantExtensions { get; }
     
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        // Cache the properties
+        var dependantPaths = DependantPaths;
+        var dependantExtensions = DependantExtensions;
+        
         var mods = loadout
             .GetEnabledMods()
             .Where(mod => mod.Files
-                .Any(file => IsDependant(file.To)))
+                .Any(file => IsDependant(dependantPaths, dependantExtensions, file.To)))
             .ToList();
 
-        if (mods.Count > 0 || DependencyIsInstalled(loadout))
+        if (mods.Count == 0)
+            yield break;
+        
+        if (DependencyIsInstalled(loadout))
             yield break;
         
         foreach (var mod in mods)
         {
-            yield return Diagnostics.CreateRed4ExtMissing(mod, CETDownloadLink);
+            yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod, DependencyName, DownloadLink);
         }
-        
-        
     }
 
     private bool DependencyIsInstalled(Loadout.ReadOnly loadout)
@@ -72,7 +77,6 @@ public abstract class APathBasedDependencyEmitter : IDiagnosticEmitter
         return DependencyPaths.All(dependencyPath => loadout.GetEnabledMods().Any(mod => mod.Files.Any(file => file.To == dependencyPath)));
     }
 
-    public bool IsDependant(GamePath path) => 
-        path.Extension == DependantExtension && 
-        path.InFolder(DependantPath);
+    private bool IsDependant(GamePath[] dependantPaths, Extension[] dependantExtensions, GamePath path) =>
+        dependantExtensions.Contains(path.Extension) && dependantPaths.Any(path.InFolder);
 }

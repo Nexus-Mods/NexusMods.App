@@ -30,7 +30,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         
         // The diagnostic should be emitted.
         var diagnostics = await DiagnosticManager.Run(loadout);
-        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingDiagnosticEmitter.Id);
+        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingEmitter.Id);
         
         Abstractions.Loadouts.Mods.ModId red4ExtModId = default;
         
@@ -61,6 +61,6 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         Refresh(ref loadout);
         
         diagnostics = await DiagnosticManager.Run(loadout);
-        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingDiagnosticEmitter.Id);
+        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingEmitter.Id);
     }
 }
