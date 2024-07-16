@@ -7,10 +7,15 @@
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
+    <Design.DataContext>
+        <myLoadouts:MyLoadoutsDesignViewModel />
+    </Design.DataContext>
+
+
     <ScrollViewer Padding="24">
         <panels:FlexPanel Direction="Column" RowSpacing="24">
             <TextBlock Classes="BodyLGBold" TextWrapping="Wrap"
-                Text="Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play." />
+                       Text="Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play." />
             <ItemsControl x:Name="GameSectionsItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -27,14 +32,14 @@
                                               Direction="Column"
                                               AlignItems="FlexStart"
                                               RowSpacing="24">
-                                
+
                                 <panels:FlexPanel x:Name="HeadingSectionFlexPanel"
                                                   Direction="Column"
                                                   panels:Flex.AlignSelf="Stretch"
                                                   RowSpacing="12">
                                     <TextBlock x:Name="GameHeadingTextBlock"
                                                Text="Stardew Valley Loadouts"
-                                               
+
                                                Classes="HeadingSMSemi" />
 
                                     <panels:FlexPanel x:Name="SupportedDetails"
@@ -47,20 +52,20 @@
                                                    Text="Loadouts share: Mod library, Saved games." />
                                     </panels:FlexPanel>
                                 </panels:FlexPanel>
-                                
+
                                 <ItemsControl x:Name="LoadoutCardsItemsControl">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <panels:FlexPanel Wrap="Wrap"/>
+                                            <panels:FlexPanel Wrap="Wrap" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
-                                    
+
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <reactiveUi:ViewModelViewHost />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                    
+
                                 </ItemsControl>
 
                             </panels:FlexPanel>
