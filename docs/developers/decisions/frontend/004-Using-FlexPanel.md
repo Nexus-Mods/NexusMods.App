@@ -2,7 +2,7 @@
 
 ## Context and Problem Statement
 WPF, and sadly Avalonia, are missing a very important panel type: a flex box container.
-See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for details on how this is used to style components in CSS.
+See [this guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) for details on how this is used to style components in CSS.
 
 Figma, the design tool we are using, uses FlexBox for all of its lay-outing. 
 Being able to efficiently replicate the behavior in our application as designed in Figma is the driver for this decision.
@@ -28,7 +28,7 @@ Being able to efficiently replicate the behavior in our application as designed 
 - Much easier time emulating Figma designs since it uses FlexBox everywhere.
 - Currently, to emulate the behavior a mix of Grid, StackPanel and WrapPanel are needed and even then it is not always possible to get the same behavior if conditions change (resizing).
 - Overcomes many of the limitations of Grid when it comes to distributing items while keeping spacing consistent.
-- Single Panel instead of 3
+- Single panel covering most cases instead of having to choose or combine 3 panels (Grid, StackPanel, WrapPanel).
 - Entire behavior and contents arrangements be defined form Styles without requiring changes to the actual View
 - Possible to define Grow, Shrink, SelfAlignment and base size of child elements without even knowing the type of control of the child elements (could be heterogeneous).
 - Should eventually become part of Avalonia proper
