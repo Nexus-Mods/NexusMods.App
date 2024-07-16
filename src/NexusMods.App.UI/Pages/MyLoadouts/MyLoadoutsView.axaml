@@ -5,6 +5,8 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts"
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                xmlns:gameLoadoutsSectionEntry="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry"
+                                xmlns:ui="clr-namespace:NexusMods.App.UI"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
     <Design.DataContext>
@@ -12,7 +14,7 @@
     </Design.DataContext>
 
 
-    <ScrollViewer Padding="24">
+    <ScrollViewer Padding="24" HorizontalScrollBarVisibility="Disabled">
         <panels:FlexPanel Direction="Column" RowSpacing="24">
             <TextBlock Classes="BodyLGBold" TextWrapping="Wrap"
                        Text="Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play." />
@@ -26,8 +28,8 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border x:Name="GameBorder">
+                    <DataTemplate DataType="gameLoadoutsSectionEntry:IGameLoadoutsSectionEntryViewModel">
+                        <Border x:Name="GameBorder" Padding="24">
                             <panels:FlexPanel x:Name="GameSectionFlexPanel"
                                               Direction="Column"
                                               AlignItems="FlexStart"
@@ -38,8 +40,7 @@
                                                   panels:Flex.AlignSelf="Stretch"
                                                   RowSpacing="12">
                                     <TextBlock x:Name="GameHeadingTextBlock"
-                                               Text="Stardew Valley Loadouts"
-
+                                               Text="{CompiledBinding HeadingText}"
                                                Classes="HeadingSMSemi" />
 
                                     <panels:FlexPanel x:Name="SupportedDetails"
@@ -53,16 +54,19 @@
                                     </panels:FlexPanel>
                                 </panels:FlexPanel>
 
-                                <ItemsControl x:Name="LoadoutCardsItemsControl">
+                                <ItemsControl x:Name="LoadoutCardsItemsControl" ItemsSource="{CompiledBinding CardVMs}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <panels:FlexPanel Wrap="Wrap" />
+                                            <panels:FlexPanel Wrap="Wrap" 
+                                                              AlignContent="FlexStart"
+                                                              ColumnSpacing="12"
+                                                              RowSpacing="48"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
 
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <reactiveUi:ViewModelViewHost />
+                                        <DataTemplate DataType="ui:IViewModelInterface">
+                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
 
