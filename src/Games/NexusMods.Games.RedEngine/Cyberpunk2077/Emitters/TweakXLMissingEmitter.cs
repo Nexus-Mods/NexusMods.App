@@ -18,6 +18,6 @@ public class TweakXLMissingEmitter : APathBasedDependencyEmitterWithNexusDownloa
     };
     protected override GamePath[] DependantPaths => [new(LocationId.Game, "r6/tweaks")];
     protected override Extension[] DependantExtensions => [new(".tweak"), new Extension(".yml"), new Extension(".yaml")];
-    protected override GameDomain Domain { get; }
-    protected override ModId ModId { get; }
+    protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
+    protected override ModId ModId => ModId.From(4197);
 }
