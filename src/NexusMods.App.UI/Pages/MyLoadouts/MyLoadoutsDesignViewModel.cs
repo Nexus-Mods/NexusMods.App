@@ -16,7 +16,7 @@ public class MyLoadoutsDesignViewModel : APageViewModel<IMyLoadoutsViewModel>, I
     {
     }
 
-    public ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> GameSectionVMs { get; } = new([
+    public ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> GameSectionViewModels { get; } = new([
             new GameLoadoutsSectionEntryDesignViewModel(),
             new GameLoadoutsSectionEntryDesignViewModel(),
         ]

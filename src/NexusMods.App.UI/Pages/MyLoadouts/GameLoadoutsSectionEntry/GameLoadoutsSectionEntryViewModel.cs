@@ -11,5 +11,5 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
         HeadingText = gameInstallation.Game.Name + " Loadouts";
     }
     public string HeadingText { get; }
-    public ReadOnlyObservableCollection<IViewModelInterface> CardVMs { get; } = new([]);
+    public ReadOnlyObservableCollection<IViewModelInterface> CardViewModels { get; } = new([]);
 }

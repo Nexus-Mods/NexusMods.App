@@ -45,7 +45,7 @@
                                 </panels:FlexPanel>
 
                                 <ItemsControl x:Name="LoadoutCardsItemsControl"
-                                              ItemsSource="{CompiledBinding CardVMs}">
+                                              ItemsSource="{CompiledBinding CardViewModels}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <panels:FlexPanel x:Name="CardsFlexPanel" />

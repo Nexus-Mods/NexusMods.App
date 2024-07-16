@@ -6,5 +6,5 @@ namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 public interface IGameLoadoutsSectionEntryViewModel : IViewModelInterface
 {
     string HeadingText { get; }
-    ReadOnlyObservableCollection<IViewModelInterface> CardVMs { get; }
+    ReadOnlyObservableCollection<IViewModelInterface> CardViewModels { get; }
 }

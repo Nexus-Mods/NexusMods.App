@@ -12,7 +12,7 @@ public partial class MyLoadoutsView : ReactiveUserControl<IMyLoadoutsViewModel>
 
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.GameSectionVMs, v => v.GameSectionsItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.GameSectionViewModels, v => v.GameSectionsItemsControl.ItemsSource)
                 .DisposeWith(d);
             
         });

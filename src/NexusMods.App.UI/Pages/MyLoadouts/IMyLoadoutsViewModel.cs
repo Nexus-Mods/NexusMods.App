@@ -7,5 +7,5 @@ namespace NexusMods.App.UI.Pages.MyLoadouts;
 
 public interface IMyLoadoutsViewModel : IPageViewModelInterface
 {
-    ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> GameSectionVMs { get; }
+    ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> GameSectionViewModels { get; }
 }

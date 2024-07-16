@@ -9,7 +9,7 @@ public class GameLoadoutsSectionEntryDesignViewModel : AViewModel<IGameLoadoutsS
 {
     public string HeadingText { get; } = "Stardew Valley Loadouts";
 
-    public ReadOnlyObservableCollection<IViewModelInterface> CardVMs { get; } = new([
+    public ReadOnlyObservableCollection<IViewModelInterface> CardViewModels { get; } = new([
             new CreateNewLoadoutCardViewModel()
             {
                 AddLoadoutCommand = ReactiveCommand.Create(() => { }),
