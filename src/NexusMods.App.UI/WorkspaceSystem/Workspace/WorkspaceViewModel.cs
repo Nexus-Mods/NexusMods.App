@@ -500,8 +500,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     WorkspaceId = Id,
                 };
 
-                vm.FromData(panel);
                 updater.AddOrUpdate(vm);
+                vm.FromData(panel);
             }
         });
 
