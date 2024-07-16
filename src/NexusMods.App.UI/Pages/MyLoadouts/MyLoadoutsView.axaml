@@ -14,39 +14,29 @@
     </Design.DataContext>
 
 
-    <ScrollViewer Padding="24" HorizontalScrollBarVisibility="Disabled">
-        <panels:FlexPanel Direction="Column" RowSpacing="24">
-            <TextBlock Classes="BodyLGBold" TextWrapping="Wrap"
+    <ScrollViewer>
+        <panels:FlexPanel x:Name="MyLoadoutsOuterFlexPanel">
+
+            <TextBlock x:Name="PageDescriptionTextBlock"
                        Text="Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play." />
+
             <ItemsControl x:Name="GameSectionsItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <panels:FlexPanel x:Name="GameSectionsItemsFlexPanel"
-                                          Direction="Column"
-                                          RowSpacing="24" />
+                        <panels:FlexPanel x:Name="GameSectionsItemsFlexPanel" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="gameLoadoutsSectionEntry:IGameLoadoutsSectionEntryViewModel">
-                        <Border x:Name="GameBorder" Padding="24">
-                            <panels:FlexPanel x:Name="GameSectionFlexPanel"
-                                              Direction="Column"
-                                              AlignItems="FlexStart"
-                                              RowSpacing="24">
+                        <Border x:Name="GameSectionBorder">
+                            <panels:FlexPanel x:Name="GameSectionFlexPanel">
 
-                                <panels:FlexPanel x:Name="HeadingSectionFlexPanel"
-                                                  Direction="Column"
-                                                  panels:Flex.AlignSelf="Stretch"
-                                                  RowSpacing="12">
+                                <panels:FlexPanel x:Name="HeadingSectionFlexPanel">
                                     <TextBlock x:Name="GameHeadingTextBlock"
-                                               Text="{CompiledBinding HeadingText}"
-                                               Classes="HeadingSMSemi" />
+                                               Text="{CompiledBinding HeadingText}" />
 
-                                    <panels:FlexPanel x:Name="SupportedDetails"
-                                                      Direction="Column"
-                                                      AlignItems="FlexStart"
-                                                      RowSpacing="4">
+                                    <panels:FlexPanel x:Name="SupportedDetails">
                                         <TextBlock x:Name="LoadoutsContainTextBlock"
                                                    Text="Loadouts contain unique: Mod lists, Mod preferences, Configs." />
                                         <TextBlock x:Name="LoadoutsShareTextBlock"
@@ -54,19 +44,17 @@
                                     </panels:FlexPanel>
                                 </panels:FlexPanel>
 
-                                <ItemsControl x:Name="LoadoutCardsItemsControl" ItemsSource="{CompiledBinding CardVMs}">
+                                <ItemsControl x:Name="LoadoutCardsItemsControl"
+                                              ItemsSource="{CompiledBinding CardVMs}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <panels:FlexPanel Wrap="Wrap" 
-                                                              AlignContent="FlexStart"
-                                                              ColumnSpacing="12"
-                                                              RowSpacing="48"/>
+                                            <panels:FlexPanel x:Name="CardsFlexPanel" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
 
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="ui:IViewModelInterface">
-                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}"/>
+                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
 
