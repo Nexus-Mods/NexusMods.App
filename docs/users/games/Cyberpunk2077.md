@@ -1,7 +1,19 @@
-!!! tip "Coming Soon"
-    Cyberpunk 2077 is not supported yet, but will be one of the next games we add to the app. Stay tuned!
+Use the Nexus Mods app to manage your Cyberpunk 2077 mods!
 
 ## Features
+!!! example "We're working on it"
+    Cyberpunk 2077 support is currently in development. Get involved by joining us on [GitHub](https://github.com/Nexus-Mods/NexusMods.App/issues/new/choose), [Discord](https://discord.gg/ReWTxb93jS) or the [forums](https://forums.nexusmods.com/forum/9052-nexus-mods-app/)!
+
+On top of the basic mod management features, players also benefit from these dedicated features:
+
+### Loadout Health Check
+Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
+
+<!--![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)-->
+
+Diagnostics are shown in the following situations: 
+
+- TBC
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
