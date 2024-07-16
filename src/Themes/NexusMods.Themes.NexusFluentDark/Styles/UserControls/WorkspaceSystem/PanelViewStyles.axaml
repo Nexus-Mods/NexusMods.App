@@ -10,6 +10,13 @@
         <Style Selector="^ Border#TabHeaderBorder">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="Transparent"/>
+
+            <Style Selector="^ Separator#OneTabLine">
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="Width" Value="1"/>
+                <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeak}"/>
+            </Style>
         </Style>
 
         <!-- single panel -->
@@ -47,8 +54,12 @@
 
                 <Style Selector="^ ui|PanelTabHeaderView Border#Container">
                     <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}"/>
-                    <Setter Property="BorderThickness" Value="0 0 1 0"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Style>
+
+                <Style Selector="^ Separator#OneTabLine">
+                    <Setter Property="IsVisible" Value="True"/>
                 </Style>
             </Style>
         </Style>
@@ -57,6 +68,10 @@
         <Style Selector="^:not(:one-tab) Border#TabHeaderBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
             <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+
+            <Style Selector="^ Separator#OneTabLine">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
 
             <Style Selector="^ ItemsControl#TabHeaders">
                 <!-- every tab -->
