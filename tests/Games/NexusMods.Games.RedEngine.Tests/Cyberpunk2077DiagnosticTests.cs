@@ -2,8 +2,10 @@ using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.TestFramework;
 
@@ -13,54 +15,103 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
 {
     public static readonly string Source = "NexusMods.Games.RedEngine.Cyberpunk2077";
     
-    [Fact]
-    public async Task Red4ExtMissingDiagnostic()
+    /// <summary>
+    /// The types of all the known path based diagnostics for Cyberpunk 2077, this is used to
+    /// drive the tests for the diagnostics.
+    /// </summary>
+    public static Type[] PathBasedDiagnosticTypes =>
+    [
+        typeof(ArchiveXLMissingEmitter),
+        typeof(CyberEngineTweaksMissingEmitter),
+        typeof(Red4ExtMissingEmitter),
+        typeof(TweakXLMissingEmitter),
+    ];
+    
+    /// <summary>
+    /// Wrap the types in a theory data source.
+    /// </summary>
+    public static IEnumerable<object[]> PathBasedDiagnosticArgs 
+        => PathBasedDiagnosticTypes.Select(t => new object[] { t });
+
+    [Theory]
+    [MemberData(nameof(PathBasedDiagnosticArgs))]
+    public void CyberpunkGameExposesAllPathBasedDiagnostics(Type diagnosticType)
     {
-        // Install a mod that needs Red4Ext, but Red4Ext is missing.
+        Game.DiagnosticEmitters.Should().ContainSingle(e => e.GetType() == diagnosticType);
+    }
+
+    [Fact]
+    public void AllPathBasedDiagnosticEmittersAreRegistered()
+    {
+        foreach (var emitter in Game.DiagnosticEmitters.OfType<APathBasedDependencyEmitter>())
+        {
+            PathBasedDiagnosticTypes.Should().ContainSingle(t => t == emitter.GetType());
+        }
+    }
+    
+    [Theory]
+    [MemberData(nameof(PathBasedDiagnosticArgs))]
+    public async Task PathBasedDiagnosticEmittersLookAtTheCorrectPaths(Type diagnosticType)
+    {
+        var emitter = Game.DiagnosticEmitters.First(t => t.GetType() == diagnosticType) as APathBasedDependencyEmitterWithNexusDownload;
+        
+        emitter.Should().NotBeNull();
+        
+        emitter!.DependencyPaths.Should().NotBeEmpty();
+        emitter.DependantPaths.Should().NotBeEmpty();
+        emitter.DependantExtensions.Should().NotBeEmpty();
+        
         var loadout = await CreateLoadout();
+        
+        // Install the dependant but not the dependency
         {
             using var tx = Connection.BeginTransaction();
             var pluginMod = AddEmptyMod(tx, loadout, "PluginMod");
-            AddFile(tx, loadout, pluginMod, new GamePath(LocationId.Game, "red4ext/plugins/PinkCyberware/pluginFile.dll"));
-
+            foreach (var dependantPath in emitter.DependantPaths)
+            {
+                foreach (var dependantExtension in emitter.DependantExtensions)
+                {
+                    var relativePath = dependantPath.Path.Join("testFile").WithExtension(dependantExtension);
+                    var gamePath = new GamePath(dependantPath.LocationId, relativePath);
+                    AddFile(tx, loadout, pluginMod, gamePath);
+                }
+            }
             await tx.Commit();
         }
-
+        
         Refresh(ref loadout);
+
+        var diagnostics = await emitter.Diagnose(loadout, CancellationToken.None).ToListAsync();
+        var diagnostic = diagnostics.OfType<Diagnostic<Diagnostics.MissingModWithKnownNexusUriMessageData>>();
+        diagnostic.Should().ContainSingle();
         
-        // The diagnostic should be emitted.
-        var diagnostics = await DiagnosticManager.Run(loadout);
-        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingEmitter.Id);
-        
-        Abstractions.Loadouts.Mods.ModId red4ExtModId = default;
-        
-        // Install Red4Ext and the diagnostic should disappear.
+        // Install the dependency and the diagnostic should disappear
         {
             using var tx = Connection.BeginTransaction();
-            red4ExtModId = AddEmptyMod(tx, loadout, "Red4ExtMod");
-            AddFile(tx, loadout, red4ExtModId, new GamePath(LocationId.Game, "red4ext/red4ext.dll"));
-            AddFile(tx, loadout, red4ExtModId, new GamePath(LocationId.Game, "bin/x64/winmm.dll"));
-
-            var results = await tx.Commit();
-            
-            red4ExtModId = results[red4ExtModId];
+            var dependencyMod = AddEmptyMod(tx, loadout, "DependencyMod");
+            foreach (var dependencyPath in emitter.DependencyPaths)
+            {
+                var gamePath = new GamePath(dependencyPath.LocationId, dependencyPath.Path);
+                AddFile(tx, loadout, dependencyMod, gamePath);
+            }
+            await tx.Commit();
         }
         
         Refresh(ref loadout);
         
-        diagnostics = await DiagnosticManager.Run(loadout);
+        diagnostics = await emitter.Diagnose(loadout, CancellationToken.None).ToListAsync();
         diagnostics.Should().BeEmpty();
         
-        // Disable Red4Ext and the diagnostic should reappear.
+        // Disable the dependency and the diagnostic should reappear
         {
-            var red4ExtMod = Mod.Load(Connection.Db, red4ExtModId);
-
-            await red4ExtMod.ToggleEnabled();
+            var dependencyMod = Mod.Load(Connection.Db, loadout.GetEnabledMods().First(m => m.Name == "DependencyMod").Id);
+            await dependencyMod.ToggleEnabled();
         }
         
         Refresh(ref loadout);
         
-        diagnostics = await DiagnosticManager.Run(loadout);
-        diagnostics.Should().ContainSingle(d => d.Id == Red4ExtMissingEmitter.Id);
+        diagnostics = await emitter.Diagnose(loadout, CancellationToken.None).ToListAsync();
+        diagnostic = diagnostics.OfType<Diagnostic<Diagnostics.MissingModWithKnownNexusUriMessageData>>();
+        diagnostic.Should().ContainSingle();
     }
 }

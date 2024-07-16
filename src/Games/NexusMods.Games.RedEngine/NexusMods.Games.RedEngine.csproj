@@ -7,6 +7,12 @@
       <ProjectReference Include="..\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
       <ProjectReference Include="..\..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>NexusMods.Games.RedEngine.Tests</_Parameter1>
+        </AssemblyAttribute>        
+    </ItemGroup>
 
     <ItemGroup>
         <None Remove="Resources\Cyberpunk2077\icon.png" />

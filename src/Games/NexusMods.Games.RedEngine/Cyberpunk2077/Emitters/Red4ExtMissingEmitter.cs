@@ -12,7 +12,7 @@ public class Red4ExtMissingEmitter : APathBasedDependencyEmitterWithNexusDownloa
 {
     protected override string DependencyName => "Red4Ext";
 
-    protected override IEnumerable<GamePath> DependencyPaths => new[]
+    protected internal override IEnumerable<GamePath> DependencyPaths => new[]
     {
         // DLL hook file
         new GamePath(LocationId.Game, "bin/x64/winmm.dll"),
@@ -20,8 +20,8 @@ public class Red4ExtMissingEmitter : APathBasedDependencyEmitterWithNexusDownloa
         new GamePath(LocationId.Game, "red4ext/RED4ext.dll"),
     };
 
-    protected override GamePath[] DependantPaths => [new(LocationId.Game, "red4ext/plugins")];
-    protected override Extension[] DependantExtensions => [new(".dll")];
+    protected internal override GamePath[] DependantPaths => [new(LocationId.Game, "red4ext/plugins")];
+    protected internal override Extension[] DependantExtensions => [new(".dll")];
     protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
     protected override ModId ModId => ModId.From(2380);
 }

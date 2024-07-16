@@ -35,17 +35,17 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     /// <summary>
     /// All the paths returned by this property must exist for the dependency to be considered installed.
     /// </summary>
-    protected abstract IEnumerable<GamePath> DependencyPaths { get; }
+    protected internal abstract IEnumerable<GamePath> DependencyPaths { get; }
     
     /// <summary>
     /// The folders that contain the dependant mods, for example `bin/x64/plugins/cyber_engine_tweaks`.
     /// </summary>
-    protected abstract GamePath[] DependantPaths { get; }
+    protected internal abstract GamePath[] DependantPaths { get; }
     
     /// <summary>
     /// The file extensions of the dependant files, for example `.lua` or `.dll`.
     /// </summary>
-    protected abstract Extension[] DependantExtensions { get; }
+    protected internal abstract Extension[] DependantExtensions { get; }
     
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
