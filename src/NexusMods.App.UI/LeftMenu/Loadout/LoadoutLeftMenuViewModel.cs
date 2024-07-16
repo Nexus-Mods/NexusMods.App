@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
@@ -59,7 +58,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }
             ),
@@ -82,7 +81,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -102,7 +101,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };

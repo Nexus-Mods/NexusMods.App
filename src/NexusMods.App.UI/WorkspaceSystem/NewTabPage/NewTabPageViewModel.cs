@@ -96,7 +96,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                     }
                     else
                     {
-                        behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                        behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     }
 
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);

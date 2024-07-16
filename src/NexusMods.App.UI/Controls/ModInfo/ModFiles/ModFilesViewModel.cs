@@ -65,7 +65,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
             var workspaceController = windowManager.ActiveWorkspaceController;
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, _pageIdBundle);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             var workspaceId = workspaceController.ActiveWorkspaceId;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         }, this.WhenAnyValue(vm => vm.SelectedItem).WhereNotNull().Select(item => item.IsFile));

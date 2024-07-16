@@ -123,8 +123,7 @@ public interface IWorkspaceController
     /// </summary>
     public OpenPageBehavior GetOpenPageBehavior(
         PageData requestedPage,
-        NavigationInformation navigationInformation,
-        Optional<PageIdBundle> currentPage);
+        NavigationInformation navigationInformation);
 
     /// <summary>
     /// Returns the default <see cref="OpenPageBehavior"/> for the inputs.
@@ -135,6 +134,5 @@ public interface IWorkspaceController
     /// </remarks>
     public OpenPageBehavior GetDefaultOpenPageBehavior(
         PageData requestedPage,
-        NavigationInput input,
-        Optional<PageIdBundle> currentPage);
+        NavigationInput input);
 }
