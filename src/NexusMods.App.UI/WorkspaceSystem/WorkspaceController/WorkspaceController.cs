@@ -95,8 +95,21 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception while restoring Workspace {WorkspaceId}", workspaceData.Id);
-                if (vm.Panels.Count == 0) AddDefaultPanel((WorkspaceViewModel)vm);
+                _logger.LogError(e, "Exception while restoring Workspace `{WorkspaceId}`, resetting to default", workspaceData.Id);
+
+                vm.FromData(new WorkspaceData
+                {
+                    Context = vm.Context,
+                    Id = vm.Id,
+                    Panels = [
+                        new PanelData
+                        {
+                            LogicalBounds = MathUtils.One,
+                            Tabs = [],
+                            SelectedTabId = PanelTabId.DefaultValue,
+                        },
+                    ],
+                });
             }
 
             if (isActiveWorkspace) activeWorkspace = vm;
