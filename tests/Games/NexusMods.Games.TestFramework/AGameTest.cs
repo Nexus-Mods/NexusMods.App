@@ -110,6 +110,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
         return mod.Id;
     }
     
+    /// <summary>
+    /// Creates a file in the loadout for the given mod. The file will be named with the given path, the hash will be the hash
+    /// of the name, and the size will be the length of the name. 
+    /// </summary>
     public StoredFileId AddFile(ITransaction tx, LoadoutId loadoutId, NexusMods.Abstractions.Loadouts.Mods.ModId modId, GamePath path)
     {
         var file = new StoredFile.New(tx, out var id)
