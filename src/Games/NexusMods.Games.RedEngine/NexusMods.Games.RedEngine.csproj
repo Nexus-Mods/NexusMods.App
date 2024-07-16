@@ -2,6 +2,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
       <ProjectReference Include="..\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
       <ProjectReference Include="..\..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

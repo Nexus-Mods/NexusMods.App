@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -14,7 +15,7 @@ public class Red4ExtMissingDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     public static readonly DiagnosticId Id = new(Diagnostics.Source, 1);
     
-    private static readonly NamedLink Red4ExtDownloadLink = new("RED4ext", new("https://www.nexusmods.com/cyberpunk2077/mods/2380"));
+    private static readonly NamedLink Red4ExtDownloadLink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(Cyberpunk2077Game.StaticDomain.Value, "2380"));
     
     private static readonly Extension DllExtension = new(".dll");
     
@@ -49,7 +50,7 @@ public class Red4ExtMissingDiagnosticEmitter : ILoadoutDiagnosticEmitter
         
         foreach (var mod in mods)
         {
-            yield return Diagnostics.CreateRed4ExtMissing(mod, Red4ExtDownloadLink);
+            yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod, "Red4Ext", Red4ExtDownloadLink);
         }
     }
 

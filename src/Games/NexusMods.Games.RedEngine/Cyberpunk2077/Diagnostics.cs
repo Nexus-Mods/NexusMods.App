@@ -13,14 +13,35 @@ public static partial class Diagnostics
 
     [DiagnosticTemplate] 
     [UsedImplicitly] 
-    internal static IDiagnosticTemplate Red4ExtMissing = DiagnosticTemplateBuilder
+    internal static IDiagnosticTemplate MissingModWithKnownNexusUri = DiagnosticTemplateBuilder
         .Start()
         // Red4ExtMissingDiagnosticEmitter.Id
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Red4Ext is missing")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("A installed mod requires Red4Ext to function properly, but it is missing.")
-        .WithDetails("The mod '{0}' requires Red4Ext to function properly, but either Read4Ext is not installed or the mod has been disabled.")
+        .WithSummary("The mod '{Mod}' requires {DependencyName} to function properly, but it is missing.")
+        .WithDetails("""
+Either {DependencyName} is not installed or has been disabled. We've detected that  
+
+You can download the latest version of `{DependencyName}` from [Nexus Mods]({NexusModsDependencyUri}).
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("DependencyName")
+            .AddValue<NamedLink>("NexusModsDependencyUri")
+        )
+        .Finish();
+
+    [DiagnosticTemplate] 
+    [UsedImplicitly] 
+    internal static IDiagnosticTemplate CyberEngineTweaksMissing = DiagnosticTemplateBuilder
+        .Start()
+        // CyberEngineTweaksMissingDiagnosticEmitter.Id
+        .WithId(new DiagnosticId(Source, number: 2))
+        .WithTitle("Red4Ext is missing")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("A installed mod requires {1} to function properly, but it is missing.")
+        .WithDetails("The mod '{0}' requires Red4Ext to function properly, but either {1} is not installed or the mod has been disabled.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")
             .AddValue<NamedLink>("Red4ExtDownloadLink")

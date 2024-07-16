@@ -13,15 +13,16 @@ public static class Services
 {
     public static IServiceCollection AddRedEngineGames(this IServiceCollection services)
     {
-        services.AddGame<Cyberpunk2077.Cyberpunk2077Game>()
+        services.AddGame<Cyberpunk2077Game>()
             .AddSingleton<IModInstaller, SimpleOverlayModInstaller>()
             .AddSingleton<IModInstaller, FolderlessModInstaller>()
             .AddSingleton<IModInstaller, AppearancePreset>()
             .AddSingleton<IModInstaller, RedModInstaller>()
-            .AddSingleton<ITool, RunGameTool<Cyberpunk2077.Cyberpunk2077Game>>()
+            .AddSingleton<ITool, RunGameTool<Cyberpunk2077Game>>()
             .AddSingleton<ITool, RedModDeployTool>()
 
             // Diagnostics
+            .AddSingleton<CyberEngineTweaksMissingDiagnosticEmitter>()
             .AddSingleton<Red4ExtMissingDiagnosticEmitter>()
             
             .AddSettings<Cyberpunk2077Settings>();
