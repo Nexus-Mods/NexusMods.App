@@ -352,8 +352,27 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
+    private bool TrySelectPage(PageData pageData)
+    {
+        var openTab = Panels
+            .Select(panel => (panel, tab: panel.Tabs.FirstOrDefault(tab => tab.Contents.PageData.Context.Equals(pageData.Context))))
+            .FirstOrOptional(tuple => tuple.tab is not null);
+
+        if (!openTab.HasValue) return false;
+        var (targetPanel, targetTab) = openTab.Value;
+        targetPanel.SelectTab(targetTab!.Id);
+        targetPanel.IsSelected = true;
+
+        return true;
+    }
+
     internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab)
     {
+        if (optionalPageData.HasValue)
+        {
+            if (TrySelectPage(optionalPageData.Value)) return;
+        }
+
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
         behavior.Switch(
