@@ -1,0 +1,73 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="myLoadouts:IMyLoadoutsViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
+    <ScrollViewer Padding="24">
+        <panels:FlexPanel Direction="Column" RowSpacing="24">
+            <TextBlock Classes="BodyLGBold" TextWrapping="Wrap"
+                Text="Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play." />
+            <ItemsControl x:Name="GameSectionsItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <panels:FlexPanel x:Name="GameSectionsItemsFlexPanel"
+                                          Direction="Column"
+                                          RowSpacing="24" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="GameBorder">
+                            <panels:FlexPanel x:Name="GameSectionFlexPanel"
+                                              Direction="Column"
+                                              AlignItems="FlexStart"
+                                              RowSpacing="24">
+                                
+                                <panels:FlexPanel x:Name="HeadingSectionFlexPanel"
+                                                  Direction="Column"
+                                                  panels:Flex.AlignSelf="Stretch"
+                                                  RowSpacing="12">
+                                    <TextBlock x:Name="GameHeadingTextBlock"
+                                               Text="Stardew Valley Loadouts"
+                                               
+                                               Classes="HeadingSMSemi" />
+
+                                    <panels:FlexPanel x:Name="SupportedDetails"
+                                                      Direction="Column"
+                                                      AlignItems="FlexStart"
+                                                      RowSpacing="4">
+                                        <TextBlock x:Name="LoadoutsContainTextBlock"
+                                                   Text="Loadouts contain unique: Mod lists, Mod preferences, Configs." />
+                                        <TextBlock x:Name="LoadoutsShareTextBlock"
+                                                   Text="Loadouts share: Mod library, Saved games." />
+                                    </panels:FlexPanel>
+                                </panels:FlexPanel>
+                                
+                                <ItemsControl x:Name="LoadoutCardsItemsControl">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <panels:FlexPanel Wrap="Wrap"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <reactiveUi:ViewModelViewHost />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    
+                                </ItemsControl>
+
+                            </panels:FlexPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </panels:FlexPanel>
+    </ScrollViewer>
+</reactiveUi:ReactiveUserControl>
