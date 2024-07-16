@@ -36,6 +36,7 @@ public class LoadoutCardDesignViewModel : AViewModel<ILoadoutCardViewModel>, ILo
     public string HumanizedLoadoutCreationTime { get; } = "Created 10 months ago";
     public string LoadoutModCount { get; } = "Mods 276";
     [Reactive] public bool IsDeleting { get; private set; } = true;
+    public bool IsSkeleton { get; } = false;
     public ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> DeleteLoadoutCommand { get; } = ReactiveCommand.Create(() => { });

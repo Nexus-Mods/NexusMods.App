@@ -23,6 +23,8 @@ public interface ILoadoutCardViewModel : IViewModelInterface
     
     bool IsDeleting { get; }
     
+    bool IsSkeleton { get; }
+    
     ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; }
     
     ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; }
