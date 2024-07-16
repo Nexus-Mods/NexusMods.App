@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
@@ -23,6 +24,16 @@ public record ModReference : IDataReference<ModId, Mod.ReadOnly>
         var db = dataStore.AsOf(TxId);
         return Mod.Load(db, DataId.Value);
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="ModReference"/> from the specified read-only <see cref="Mod"/>.
+    /// </summary>
+    public static ModReference From(Mod.ReadOnly data) => new() { TxId = data.MostRecentTxId(), DataId = data.Id };
+    
+    /// <summary>
+    /// Implicitly converts a <see cref="Mod.ReadOnly"/> to a <see cref="ModReference"/>.
+    /// </summary>
+    public static implicit operator ModReference(Mod.ReadOnly data) => From(data);
 
     /// <inheritdoc/>
     public string ToStringRepresentation(Mod.ReadOnly data) => data.Name;

@@ -1,11 +1,12 @@
 using FluentAssertions;
 using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
-public class DownloadServiceDataStoreTests : AGameTest<Cyberpunk2077>
+public class DownloadServiceDataStoreTests : AGameTest<Cyberpunk2077Game>
 {
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _server;

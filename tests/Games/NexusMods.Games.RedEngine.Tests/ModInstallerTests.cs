@@ -11,7 +11,7 @@ using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 namespace NexusMods.Games.RedEngine.Tests;
 
 [Trait("RequiresNetworking", "True")]
-public class ModInstallerTests : AGameTest<Cyberpunk2077>
+public class ModInstallerTests : AGameTest<Cyberpunk2077.Cyberpunk2077Game>
 {
     public ModInstallerTests(IServiceProvider provider) : base(provider) { }
 

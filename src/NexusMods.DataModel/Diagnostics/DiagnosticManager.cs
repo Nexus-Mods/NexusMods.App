@@ -73,6 +73,11 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         }
     }
 
+    public Task<Diagnostic[]> Run(Loadout.ReadOnly loadout, CancellationToken cancellationToken = default)
+    {
+        return GetLoadoutDiagnostics(loadout, cancellationToken);
+    }
+
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;

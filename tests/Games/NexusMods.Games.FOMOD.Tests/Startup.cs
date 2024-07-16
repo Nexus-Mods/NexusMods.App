@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -23,7 +24,7 @@ public class Startup
             .AddRedEngineGames()
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.6.659.0"))
+            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.659.0"))
             .AddGenericGameSupport()
             .AddFileStoreAbstractions()
             .AddFomod()

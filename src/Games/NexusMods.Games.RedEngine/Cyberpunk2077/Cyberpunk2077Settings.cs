@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.Settings;
 
-namespace NexusMods.Games.RedEngine;
+namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
 public class Cyberpunk2077Settings : ISettings
 {

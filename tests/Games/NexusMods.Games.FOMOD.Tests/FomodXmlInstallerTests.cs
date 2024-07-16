@@ -5,13 +5,14 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests : AModInstallerTest<Cyberpunk2077, FomodXmlInstaller>
+public class FomodXmlInstallerTests : AModInstallerTest<Cyberpunk2077Game, FomodXmlInstaller>
 {
     public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 

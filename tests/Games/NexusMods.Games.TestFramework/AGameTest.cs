@@ -4,6 +4,7 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
@@ -13,6 +14,7 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -24,6 +26,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
@@ -51,6 +54,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
     private readonly ILogger<AGameTest<TGame>> _logger;
+    
+    public IDiagnosticManager DiagnosticManager { get; set; }
+
 
     /// <summary>
     /// Constructor.
@@ -72,6 +78,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
 
+        DiagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
+
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
 
@@ -82,6 +90,40 @@ public abstract class AGameTest<TGame> where TGame : AGame
             ResetGameFolders();
         }
 
+    }
+
+
+    /// <summary>
+    /// Adds an empty mod to the loadout in the given transaction.
+    /// </summary>
+    protected NexusMods.Abstractions.Loadouts.Mods.ModId AddEmptyMod(ITransaction tx, LoadoutId loadoutId, string name)
+    {
+        var mod = new Mod.New(tx)
+        {
+            LoadoutId = loadoutId,
+            Name = name,
+            Enabled = true,
+            Status = ModStatus.Installed,
+            Revision = 0,
+            Category = ModCategory.Mod,
+        };
+        return mod.Id;
+    }
+    
+    public StoredFileId AddFile(ITransaction tx, LoadoutId loadoutId, NexusMods.Abstractions.Loadouts.Mods.ModId modId, GamePath path)
+    {
+        var file = new StoredFile.New(tx, out var id)
+        {
+            File = new File.New(tx, id)
+            {
+                LoadoutId = loadoutId,
+                ModId = modId,
+                To = path,
+            },
+            Hash = path.ToString().XxHash64AsUtf8(),
+            Size = Size.FromLong(path.ToString().Length),
+        };
+        return file.Id;
     }
 
     

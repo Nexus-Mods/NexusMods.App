@@ -6,6 +6,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -22,7 +23,7 @@ public class Startup
         services
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
+            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
             .AddStubbedGameLocators()
             .AddGenericGameSupport()
             .AddRedEngineGames()

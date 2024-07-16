@@ -7,7 +7,7 @@ using NexusMods.Games.TestFramework;
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
 public class
-    RedModInstallerTests : AModInstallerTest<Cyberpunk2077, RedModInstaller>
+    RedModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, RedModInstaller>
 {
     public RedModInstallerTests(IServiceProvider serviceProvider) : base(
         serviceProvider) { }

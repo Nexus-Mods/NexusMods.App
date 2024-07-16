@@ -5,7 +5,7 @@ using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
-public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, FolderlessModInstaller>
+public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, FolderlessModInstaller>
 {
     public FolderlessModInstallerTests(IServiceProvider serviceProvider) : base(
         serviceProvider)

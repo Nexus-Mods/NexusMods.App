@@ -14,6 +14,11 @@ public interface IDiagnosticManager : IDisposable
     /// Returns an observable stream of all diagnostics for a loadout.
     /// </summary>
     IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId);
+    
+    /// <summary>
+    /// Runs the diagnostics for the given loadout.
+    /// </summary>
+    Task<Diagnostic[]> Run(Loadout.ReadOnly loadout, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns the counts of the diagnostics per severity level.

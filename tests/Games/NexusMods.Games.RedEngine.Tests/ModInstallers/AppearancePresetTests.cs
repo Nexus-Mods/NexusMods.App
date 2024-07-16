@@ -6,7 +6,7 @@ using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
-public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, AppearancePreset>
+public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, AppearancePreset>
 {
     public AppearancePresetTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
