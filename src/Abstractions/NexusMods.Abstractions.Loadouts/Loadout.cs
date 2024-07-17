@@ -58,7 +58,12 @@ public partial class Loadout : IModelDefinition
     /// All the files that are part of this loadout point to this entity via File.Loadout
     /// </summary>
     public static readonly BackReferenceAttribute<File> Files = new(File.Loadout);
-    
+
+    /// <summary>
+    /// All items in the Loadout.
+    /// </summary>
+    public static readonly BackReferenceAttribute<LoadoutItem> Items = new(LoadoutItem.Loadout);
+
     public partial struct ReadOnly
     {
         /// <summary>

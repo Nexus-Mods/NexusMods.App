@@ -7,6 +7,7 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
       <PackageReference Include="FlatSharp.Compiler">
         <PrivateAssets>all</PrivateAssets>
@@ -17,6 +18,24 @@
       <PackageReference Include="NexusMods.MnemonicDB.Storage" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="LoadoutFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutItemGroup.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutItemWithTargetPath.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DeletedFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LibraryLinkedLoadoutItem.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
