@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
@@ -49,6 +50,7 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        await Task.Yield();
         // Cache the properties
         var dependantPaths = DependantPaths;
         var dependantExtensions = DependantExtensions;
@@ -67,7 +69,7 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         
         foreach (var mod in mods)
         {
-            yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod, DependencyName, DownloadLink);
+            yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod.ToReference(loadout), DependencyName, DownloadLink);
         }
     }
 

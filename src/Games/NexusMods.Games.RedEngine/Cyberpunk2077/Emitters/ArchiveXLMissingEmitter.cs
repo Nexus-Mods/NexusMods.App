@@ -12,15 +12,15 @@ public class ArchiveXLMissingEmitter : APathBasedDependencyEmitterWithNexusDownl
 {
     protected override string DependencyName => "ArchiveXL";
 
-    protected internal override IEnumerable<GamePath> DependencyPaths => new[]
+    protected internal override IEnumerable<GamePath> DependencyPaths { get; } = new[]
     {
         // ArchiveXL DLL
         new GamePath(LocationId.Game, "red4ext/plugins/ArchiveXL/ArchiveXL.dll"),
     };
 
-    protected internal override GamePath[] DependantPaths => [new GamePath(LocationId.Game, "")];
+    protected internal override GamePath[] DependantPaths { get; } = [new GamePath(LocationId.Game, "")];
     
-    protected internal override Extension[] DependantExtensions => [new(".xl")];
-    protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
-    protected override ModId ModId => ModId.From(4198);
+    protected internal override Extension[] DependantExtensions { get; } = [new(".xl")];
+    protected override GameDomain Domain { get; } = Cyberpunk2077Game.StaticDomain;
+    protected override ModId ModId { get; } = ModId.From(4198);
 }

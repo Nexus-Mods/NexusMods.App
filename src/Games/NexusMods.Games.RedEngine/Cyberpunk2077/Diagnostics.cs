@@ -16,8 +16,8 @@ public static partial class Diagnostics
     internal static IDiagnosticTemplate MissingModWithKnownNexusUri = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("{DependencyName} is missing")
-        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithTitle("Missing Mod with Known Nexus URI")
+        .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("The mod '{Mod}' requires {DependencyName} to function properly, but it is missing.")
         .WithDetails("""
 Either {DependencyName} is not installed or has been disabled.

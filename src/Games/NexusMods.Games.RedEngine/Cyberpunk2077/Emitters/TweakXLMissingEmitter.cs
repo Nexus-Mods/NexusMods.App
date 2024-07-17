@@ -11,13 +11,13 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 public class TweakXLMissingEmitter : APathBasedDependencyEmitterWithNexusDownload
 {
     protected override string DependencyName => "TweakXL";
-    protected internal override IEnumerable<GamePath> DependencyPaths => new[]
+    protected internal override IEnumerable<GamePath> DependencyPaths { get; } = new[]
     {
         // TweakXL DLL
         new GamePath(LocationId.Game, "red4ext/plugins/TweakXL/TweakXL.dll"),
     };
-    protected internal override GamePath[] DependantPaths => [new(LocationId.Game, "r6/tweaks")];
-    protected internal override Extension[] DependantExtensions => [new(".tweak"), new Extension(".yml"), new Extension(".yaml")];
-    protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
-    protected override ModId ModId => ModId.From(4197);
+    protected internal override GamePath[] DependantPaths { get; } = [new(LocationId.Game, "r6/tweaks")];
+    protected internal override Extension[] DependantExtensions { get; } = [new(".tweak"), new Extension(".yml"), new Extension(".yaml")];
+    protected override GameDomain Domain { get; } = Cyberpunk2077Game.StaticDomain;
+    protected override ModId ModId { get; } = ModId.From(4197);
 }

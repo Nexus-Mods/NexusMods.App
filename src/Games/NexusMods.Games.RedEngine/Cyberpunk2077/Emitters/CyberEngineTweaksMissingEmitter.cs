@@ -12,15 +12,15 @@ public class CyberEngineTweaksMissingEmitter : APathBasedDependencyEmitterWithNe
 {
     protected override string DependencyName => "Cyber Engine Tweaks";
 
-    protected internal override IEnumerable<GamePath> DependencyPaths => new[]
+    protected internal override IEnumerable<GamePath> DependencyPaths { get; } = new[]
     {
         // Hook file
         new GamePath(LocationId.Game, "bin/x64/version.dll"),
     };
 
-    protected internal override GamePath[] DependantPaths => [new(LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks")];
-    protected internal override Extension[] DependantExtensions => [new(".lua")];
-    protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
-    protected override ModId ModId => ModId.From(107);
+    protected internal override GamePath[] DependantPaths { get; } = [new(LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks")];
+    protected internal override Extension[] DependantExtensions { get; } = [new(".lua")];
+    protected override GameDomain Domain { get; } = Cyberpunk2077Game.StaticDomain;
+    protected override ModId ModId { get; } = ModId.From(107);
 }
 
