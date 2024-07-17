@@ -352,19 +352,33 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
-    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab)
+    /// <summary>
+    /// Tries to select the first panel where the selected tab shows the same page.
+    /// </summary>
+    private bool TrySelectPage(PageData pageData)
+    {
+        var panel = Panels.FirstOrDefault(panel => panel.SelectedTab.Contents.PageData.Context.Equals(pageData.Context));
+        if (panel is null) return false;
+
+        panel.IsSelected = true;
+        return true;
+    }
+
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab, bool checkOtherPanels)
     {
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
         behavior.Switch(
-            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab, checkOtherPanels),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
             f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
         );
     }
 
-    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab, bool checkOtherPanels)
     {
+        if (checkOtherPanels) if (TrySelectPage(pageData)) return;
+
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 

@@ -1,7 +1,6 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
@@ -73,7 +72,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
             var workspaceController = windowManager.ActiveWorkspaceController;
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             var workspaceId = workspaceController.ActiveWorkspaceId;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         });

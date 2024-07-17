@@ -123,7 +123,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         }
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
                 }
             );

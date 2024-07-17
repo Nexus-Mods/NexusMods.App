@@ -17,7 +17,7 @@ public class SettingsPageFactory : APageFactory<ISettingsPageViewModel, Settings
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("3DE311A0-0AB0-4191-9CA5-5CE8EA76C393"));
     public override PageFactoryId Id => StaticId;
 
-    public override Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithoutData => OpenPageBehaviorType.NewPanel;
+    public override Optional<OpenPageBehaviorType> DefaultOpenPageBehavior => OpenPageBehaviorType.NewPanel;
 
     public override ISettingsPageViewModel CreateViewModel(SettingsPageContext context)
     {

@@ -39,6 +39,11 @@ public interface IPanelViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
     /// <summary>
+    /// Gets the currently selected tab.
+    /// </summary>
+    public IPanelTabViewModel SelectedTab { get; }
+
+    /// <summary>
     /// Gets or sets whether the current panel is selected.
     /// </summary>
     public bool IsSelected { get; set; }

@@ -43,6 +43,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] public bool IsAlone { get; set; }
 
+    [Reactive] public IPanelTabViewModel SelectedTab { get; private set; } = null!;
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly IWorkspaceController _workspaceController;
@@ -128,7 +129,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender.Id)
+                .Select(propertyValue => propertyValue.Sender)
+                .Do(vm => SelectedTab = vm)
+                .Select(vm => vm.Id)
                 .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 

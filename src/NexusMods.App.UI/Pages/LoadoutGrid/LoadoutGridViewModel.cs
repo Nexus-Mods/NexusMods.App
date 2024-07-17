@@ -121,7 +121,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             };
 
             var workspaceController = GetWorkspaceController();
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         }, hasSelection);
         
@@ -138,7 +138,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             };
 
             var workspaceController = GetWorkspaceController();
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         });
 

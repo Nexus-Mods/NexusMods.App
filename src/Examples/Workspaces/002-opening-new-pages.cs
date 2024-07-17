@@ -57,11 +57,7 @@ file class Example
             requestedPage: pageData.Value,
             // Depending on the input, different behaviors are desired.
             // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/942
-            input: NavigationInput.Default,
-            // Most of the time, the request to open a new page comes from
-            // an existing Page. An exception would be something like the
-            // Left Menu, which is outside the Workspace system.
-            currentPage: Optional<PageIdBundle>.None
+            input: NavigationInput.Default
         );
 
         // 1) ReplaceTab will replace the page inside an existing tab.
