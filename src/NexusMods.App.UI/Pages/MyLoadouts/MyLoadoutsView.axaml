@@ -38,9 +38,9 @@
 
                                     <panels:FlexPanel x:Name="SupportedDetails">
                                         <TextBlock x:Name="LoadoutsContainTextBlock"
-                                                   Text="Loadouts contain unique: Mod lists, Mod preferences, Configs." />
+                                                   Text="Loadouts contain unique: Mods and mod configurations." />
                                         <TextBlock x:Name="LoadoutsShareTextBlock"
-                                                   Text="Loadouts share: Mod library, Saved games." />
+                                                   Text="Loadouts share: Library and saved games." />
                                     </panels:FlexPanel>
                                 </panels:FlexPanel>
 
