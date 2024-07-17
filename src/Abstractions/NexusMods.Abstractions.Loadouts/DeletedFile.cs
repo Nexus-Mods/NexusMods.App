@@ -4,17 +4,19 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Loadouts;
 
-/// <summary>
-/// Represents a deleted file.
-/// </summary>
-[PublicAPI]
-[Include<LoadoutItemWithTargetPath>]
-public partial class DeletedFile : IModelDefinition
-{
-    private const string Namespace = "NexusMods.Loadouts.DeletedFile";
+// TODO: replace old DeletedFile with this new one
 
-    /// <summary>
-    /// Marker.
-    /// </summary>
-    public static readonly MarkerAttribute DeletedFileMarker = new(Namespace, nameof(DeletedFileMarker));
-}
+// <summary>
+// Represents a deleted file.
+// </summary>
+// [PublicAPI]
+// [Include<LoadoutItemWithTargetPath>]
+// public partial class DeletedFile : IModelDefinition
+// {
+//     private const string Namespace = "NexusMods.Loadouts.DeletedFile";
+//
+//     /// <summary>
+//     /// Marker.
+//     /// </summary>
+//     public static readonly MarkerAttribute DeletedFileMarker = new(Namespace, nameof(DeletedFileMarker));
+// }

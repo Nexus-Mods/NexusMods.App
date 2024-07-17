@@ -16,19 +16,19 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddLoadoutAbstractions(this IServiceCollection services)
     {
-        services
+        return services
             .AddLoadoutItemModel()
             .AddLoadoutItemGroupModel()
             .AddLibraryLinkedLoadoutItemModel()
             .AddLoadoutItemWithTargetPathModel()
             .AddLoadoutFileModel()
-            .AddDeletedFileModel()
+            // .AddDeletedFileModel()
 
             // deprecated:
             .AddFileModel()
             .AddStoredFileModel()
             .AddModModel()
-            .AddLoadoutModel();
-        return Files.DeletedFileExtensions.AddDeletedFileModel(services);
+            .AddLoadoutModel()
+            .AddDeletedFileModel();
     }
 }
