@@ -22,6 +22,6 @@ public interface ILibraryArchiveInstaller : ILibraryFileInstaller
     ValueTask<LoadoutItem.New[]> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         ITransaction transaction,
-        LoadoutDetails loadoutDetails,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
 }

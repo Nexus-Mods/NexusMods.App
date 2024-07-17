@@ -34,7 +34,7 @@ public abstract class ALibraryArchiveInstaller : ALibraryFileInstaller, ILibrary
     public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
         LibraryFile.ReadOnly libraryFile,
         ITransaction transaction,
-        LoadoutDetails loadoutDetails,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
@@ -43,13 +43,13 @@ public abstract class ALibraryArchiveInstaller : ALibraryFileInstaller, ILibrary
             return new ValueTask<LoadoutItem.New[]>([]);
         }
 
-        return ExecuteAsync(libraryArchive, transaction, loadoutDetails, cancellationToken);
+        return ExecuteAsync(libraryArchive, transaction, loadout, cancellationToken);
     }
 
     /// <inheritdoc/>
     public abstract ValueTask<LoadoutItem.New[]> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         ITransaction transaction,
-        LoadoutDetails loadoutDetails,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
 }

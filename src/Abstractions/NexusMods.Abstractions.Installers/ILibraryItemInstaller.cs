@@ -22,6 +22,6 @@ public interface ILibraryItemInstaller
     ValueTask<LoadoutItem.New[]> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
         ITransaction transaction,
-        LoadoutDetails loadoutDetails,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
 }
