@@ -14,52 +14,52 @@ public enum Signature : ushort
     /// <summary>
     /// True if the file exists on disk.
     /// </summary>
-    DiskExists = 1,
+    DiskExists = 1 << 0,
     
     /// <summary>
     /// True if the file exists in the previous state.
     /// </summary>
-    PrevExists = 2,
+    PrevExists = 1 << 1,
     
     /// <summary>
     /// True if the file exists in the loadout.
     /// </summary>
-    LoadoutExists = 4,
+    LoadoutExists = 1 << 2,
     
     /// <summary>
     /// True if the hashes of the disk and previous state are equal.
     /// </summary>
-    DiskEqualsPrev = 8,
+    DiskEqualsPrev = 1 << 3,
     
     /// <summary>
     /// True if the hashes of the previous state and loadout are equal.
     /// </summary>
-    PrevEqualsLoadout = 16,
+    PrevEqualsLoadout = 1 << 4,
     
     /// <summary>
     /// True if the hashes of the disk and loadout are equal.
     /// </summary>
-    DiskEqualsLoadout = 32,
+    DiskEqualsLoadout = 1 << 5,
     
     /// <summary>
     /// True if the file on disk is already archived.
     /// </summary>
-    DiskArchived = 64,
+    DiskArchived = 1 << 6,
     
     /// <summary>
     /// True if the file in the previous state is archived.
     /// </summary>
-    PrevArchived = 128,
+    PrevArchived = 1 << 7,
     
     /// <summary>
     /// True if the file in the loadout is archived.
     /// </summary>
-    LoadoutArchived = 256,
+    LoadoutArchived = 1 << 8,
     
     /// <summary>
     /// True if the path is ignored, i.e. it is on a game-specific ignore list.
     /// </summary>
-    PathIsIgnored = 512,
+    PathIsIgnored = 1 << 9,
 }
 
 
