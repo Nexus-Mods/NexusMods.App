@@ -90,9 +90,15 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             if (DependencyPaths.All(dependencyPath => mod.Files.Any(file => file.To == dependencyPath)))
             {
                 if (mod.Enabled)
-                   enabled = mod;
-                else 
-                   disabled = mod;
+                {
+                    // If it's enabled, we don't need to check for disabled mods or anything else.
+                    enabled = mod;
+                    break;
+                }
+                else
+                {
+                    disabled = mod;
+                }
             }
         }
         
