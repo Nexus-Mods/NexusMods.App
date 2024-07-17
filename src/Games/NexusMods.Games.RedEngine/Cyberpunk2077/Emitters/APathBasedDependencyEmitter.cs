@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
@@ -6,6 +7,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -64,19 +66,37 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         if (mods.Count == 0)
             yield break;
         
-        if (DependencyIsInstalled(loadout))
+        var (enabled, disabled) = FindDependency(loadout);
+
+        if (enabled.HasValue)
             yield break;
         
         foreach (var mod in mods)
         {
-            yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod.ToReference(loadout), DependencyName, DownloadLink);
+            if (disabled.HasValue)
+                yield return Diagnostics.CreateDisabledModDependency(mod.ToReference(loadout), disabled.Value.ToReference(loadout));
+            else 
+                yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod.ToReference(loadout), DependencyName, DownloadLink);
         }
     }
 
-    private bool DependencyIsInstalled(Loadout.ReadOnly loadout)
+    private (Optional<Mod.ReadOnly> Enabled, Optional<Mod.ReadOnly> Disabled) FindDependency(Loadout.ReadOnly loadout)
     {
-        // This is absolute shit for performance, but we need a solid query/logic engine before I want to optimize it
-        return DependencyPaths.All(dependencyPath => loadout.GetEnabledMods().Any(mod => mod.Files.Any(file => file.To == dependencyPath)));
+        var enabled = Optional<Mod.ReadOnly>.None;
+        var disabled = Optional<Mod.ReadOnly>.None;
+        
+        foreach (var mod in loadout.Mods)
+        {
+            if (DependencyPaths.All(dependencyPath => mod.Files.Any(file => file.To == dependencyPath)))
+            {
+                if (mod.Enabled)
+                   enabled = mod;
+                else 
+                   disabled = mod;
+            }
+        }
+        
+        return (enabled, disabled);
     }
 
     private bool IsDependant(GamePath[] dependantPaths, Extension[] dependantExtensions, GamePath path) =>
