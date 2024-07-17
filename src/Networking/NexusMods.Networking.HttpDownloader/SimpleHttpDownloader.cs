@@ -1,3 +1,4 @@
+using Downloader;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
@@ -14,48 +15,35 @@ namespace NexusMods.Networking.HttpDownloader;
 [Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
 public class SimpleHttpDownloader : IHttpDownloader
 {
-    private readonly ILogger<SimpleHttpDownloader> _logger;
-    private readonly HttpClient _client;
-    private readonly IActivityFactory _activityFactory;
-
-    /// <summary/>
-    /// <param name="logger">Logger for the download operations.</param>
-    /// <param name="client">The client which will be used to issue download requests.</param>
-    /// <param name="activityFactory">Limiter for the concurrent jobs we can run at once.</param>
-    /// <remarks>This constructor is usually called from DI container.</remarks>
-    public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger, HttpClient client,
-        IActivityFactory activityFactory)
-    {
-        _logger = logger;
-        _client = client;
-        _activityFactory = activityFactory;
-    }
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger) { }
 
     /// <inheritdoc />
-    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? state, Size? size, CancellationToken token)
+    public async Task<Hash> DownloadAsync(
+        IReadOnlyList<HttpRequestMessage> sources,
+        AbsolutePath destination,
+        HttpDownloaderState? state,
+        Size? size,
+        CancellationToken cancellationToken)
     {
-        state ??= new HttpDownloaderState();
-        foreach (var source in sources)
+        var downloadService = new DownloadService(new DownloadConfiguration
         {
-            using var job = _activityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", destination.FileName);
+            ChunkCount = 8,
+            ParallelDownload = true,
+            Timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds,
+            ReserveStorageSpaceBeforeStartingDownload = true,
+        });
 
-            // Note: If download fails, job will be reported as 'failed', and will not participate in throughput calculations.
-            state.Activity = job;
+        var urls = sources.Select(source => source.RequestUri!.ToString()).ToArray();
 
-            var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Failed to download {Source} to {Destination}: {StatusCode}", source.RequestUri, destination, response.StatusCode);
-                continue;
-            }
+        await downloadService.DownloadFileTaskAsync(
+            urls: urls,
+            fileName: destination.ToNativeSeparators(OSInformation.Shared),
+            cancellationToken: cancellationToken
+        );
 
-            job.SetMax(size ?? Size.FromLong(response.Content.Headers.ContentLength ?? 1));
-
-            await using var stream = await response.Content.ReadAsStreamAsync(token);
-            await using var file = destination.Create();
-            return await stream.HashingCopyAsync(file, job, token);
-        }
-
-        throw new Exception($"Could not download {destination.FileName}");
+        return await destination.XxHash64Async(token: cancellationToken);
     }
 }
