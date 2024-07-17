@@ -18,7 +18,7 @@ public class RedModDeployTool : ITool
         _logger = logger;
     }
 
-    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
+    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {

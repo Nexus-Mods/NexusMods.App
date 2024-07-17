@@ -5,7 +5,7 @@ using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
-public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, SimpleOverlayModInstaller>
+public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, SimpleOverlayModInstaller>
 {
     public SimpleOverlayModInstallerTests(IServiceProvider provider) : base(provider)
     {

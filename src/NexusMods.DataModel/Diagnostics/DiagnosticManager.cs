@@ -72,7 +72,6 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             return connectableObservable;
         }
     }
-
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;

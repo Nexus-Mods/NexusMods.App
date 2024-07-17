@@ -3,12 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077>(serviceProvider)
+public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077.Cyberpunk2077Game>(serviceProvider)
 {
 
     [Fact]
