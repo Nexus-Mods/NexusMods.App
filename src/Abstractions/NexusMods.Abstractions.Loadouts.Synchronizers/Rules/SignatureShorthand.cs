@@ -2,376 +2,514 @@
 namespace NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 
 /// <summary>
-/// Summary of all 92 possible signatures in a somewhat readable format
+/// Summary of all 92 possible <see cref="Signature"/> combinations in a somewhat readable format.
 /// </summary>
 public enum SignatureShorthand : ushort
 {
 	/// <summary>
-	/// LoadoutExists
+	/// File exists only in loadout.
+	/// File is not archived.
 	/// </summary>
-	xxA_xxx_i = 0x0004,
+	xxA_xxx_i = Signature.LoadoutExists,
 	/// <summary>
-	/// LoadoutExists, LoadoutArchived
+	/// File exists only in loadout.
+	/// File is archived.
 	/// </summary>
-	xxA_xxX_i = 0x0104,
+	xxA_xxX_i = Signature.LoadoutExists | Signature.LoadoutArchived,
 	/// <summary>
-	/// LoadoutExists, PathIsIgnored
+	/// File exists only in loadout.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xxA_xxx_I = 0x0204,
+	xxA_xxx_I = Signature.LoadoutExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// LoadoutExists, LoadoutArchived, PathIsIgnored
+	/// File exists only in loadout.
+	/// File is archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xxA_xxX_I = 0x0304,
+	xxA_xxX_I = Signature.LoadoutExists | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists
+	/// File exists only in previous state.
+	/// File is not archived.
 	/// </summary>
-	xAx_xxx_i = 0x0002,
+	xAx_xxx_i = Signature.PrevExists,
 	/// <summary>
-	/// PrevExists, PrevArchived
+	/// File exists only in previous state.
+	/// File is archived.
 	/// </summary>
-	xAx_xXx_i = 0x0082,
+	xAx_xXx_i = Signature.PrevExists | Signature.PrevArchived,
 	/// <summary>
-	/// PrevExists, PathIsIgnored
+	/// File exists only in previous state.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAx_xxx_I = 0x0202,
+	xAx_xxx_I = Signature.PrevExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, PrevArchived, PathIsIgnored
+	/// File exists only in previous state.
+	/// File is archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAx_xXx_I = 0x0282,
+	xAx_xXx_I = Signature.PrevExists | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevEqualsLoadout
+	/// File exists in loadout and previous state. Both hashes match.
+	/// File is not archived.
 	/// </summary>
-	xAA_xxx_i = 0x0016,
+	xAA_xxx_i = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived
+	/// File exists in loadout and previous state. Both hashes match.
+	/// File is archived for both sources.
 	/// </summary>
-	xAA_xXX_i = 0x0196,
+	xAA_xXX_i = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored
+	/// File exists in loadout and previous state. Both hashes match.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAA_xxx_I = 0x0216,
+	xAA_xxx_I = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and previous state. Both hashes match.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAA_xXX_I = 0x0396,
+	xAA_xXX_I = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is not archived.
 	/// </summary>
-	xAB_xxx_i = 0x0006,
+	xAB_xxx_i = Signature.PrevExists | Signature.LoadoutExists,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevArchived
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for previous state.
 	/// </summary>
-	xAB_xXx_i = 0x0086,
+	xAB_xXx_i = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived,
 	/// <summary>
-	/// PrevExists, LoadoutExists, LoadoutArchived
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for loadout.
 	/// </summary>
-	xAB_xxX_i = 0x0106,
+	xAB_xxX_i = Signature.PrevExists | Signature.LoadoutExists | Signature.LoadoutArchived,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for both sources.
 	/// </summary>
-	xAB_xXX_i = 0x0186,
+	xAB_xXX_i = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PathIsIgnored
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAB_xxx_I = 0x0206,
+	xAB_xxx_I = Signature.PrevExists | Signature.LoadoutExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevArchived, PathIsIgnored
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for previous state.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAB_xXx_I = 0x0286,
+	xAB_xXx_I = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAB_xxX_I = 0x0306,
+	xAB_xxX_I = Signature.PrevExists | Signature.LoadoutExists | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and previous state but hashes for both of them are different.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	xAB_xXX_I = 0x0386,
+	xAB_xXX_I = Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists
+	/// File exists only on disk.
+	/// File is not archived.
 	/// </summary>
-	Axx_xxx_i = 0x0001,
+	Axx_xxx_i = Signature.DiskExists,
 	/// <summary>
-	/// DiskExists, DiskArchived
+	/// File exists only on disk.
+	/// File is archived.
 	/// </summary>
-	Axx_Xxx_i = 0x0041,
+	Axx_Xxx_i = Signature.DiskExists | Signature.DiskArchived,
 	/// <summary>
-	/// DiskExists, PathIsIgnored
+	/// File exists only on disk.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	Axx_xxx_I = 0x0201,
+	Axx_xxx_I = Signature.DiskExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, DiskArchived, PathIsIgnored
+	/// File exists only on disk.
+	/// File is archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	Axx_Xxx_I = 0x0241,
+	Axx_Xxx_I = Signature.DiskExists | Signature.DiskArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskEqualsLoadout
+	/// File exists in loadout and disk. Both hashes match.
+	/// File is not archived.
 	/// </summary>
-	AxA_xxx_i = 0x0025,
+	AxA_xxx_i = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived
+	/// File exists in loadout and disk. Both hashes match.
+	/// File is archived for both sources.
 	/// </summary>
-	AxA_XxX_i = 0x0165,
+	AxA_XxX_i = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored
+	/// File exists in loadout and disk. Both hashes match.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxA_xxx_I = 0x0225,
+	AxA_xxx_I = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and disk. Both hashes match.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxA_XxX_I = 0x0365,
+	AxA_XxX_I = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is not archived.
 	/// </summary>
-	AxB_xxx_i = 0x0005,
+	AxB_xxx_i = Signature.DiskExists | Signature.LoadoutExists,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskArchived
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for disk.
 	/// </summary>
-	AxB_Xxx_i = 0x0045,
+	AxB_Xxx_i = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskArchived,
 	/// <summary>
-	/// DiskExists, LoadoutExists, LoadoutArchived
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for loadout.
 	/// </summary>
-	AxB_xxX_i = 0x0105,
+	AxB_xxX_i = Signature.DiskExists | Signature.LoadoutExists | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for both sources.
 	/// </summary>
-	AxB_XxX_i = 0x0145,
+	AxB_XxX_i = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, LoadoutExists, PathIsIgnored
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxB_xxx_I = 0x0205,
+	AxB_xxx_I = Signature.DiskExists | Signature.LoadoutExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskArchived, PathIsIgnored
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxB_Xxx_I = 0x0245,
+	AxB_Xxx_I = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxB_xxX_I = 0x0305,
+	AxB_xxX_I = Signature.DiskExists | Signature.LoadoutExists | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout and disk but hashes for both of them are different.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AxB_XxX_I = 0x0345,
+	AxB_XxX_I = Signature.DiskExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev
+	/// File exists on disk and previous state. Both hashes match.
+	/// File is not archived.
 	/// </summary>
-	AAx_xxx_i = 0x000B,
+	AAx_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.DiskEqualsPrev,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived
+	/// File exists on disk and previous state. Both hashes match.
+	/// File is archived for both sources.
 	/// </summary>
-	AAx_XXx_i = 0x00CB,
+	AAx_XXx_i = Signature.DiskExists | Signature.PrevExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored
+	/// File exists on disk and previous state. Both hashes match.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAx_xxx_I = 0x020B,
+	AAx_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.DiskEqualsPrev | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored
+	/// File exists on disk and previous state. Both hashes match.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAx_XXx_I = 0x02CB,
+	AAx_XXx_I = Signature.DiskExists | Signature.PrevExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout
+	/// File exists in loadout, disk and previous state. All hashes match.
+	/// File is not archived.
 	/// </summary>
-	AAA_xxx_i = 0x003F,
+	AAA_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.PrevEqualsLoadout | Signature.DiskEqualsLoadout,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state. All hashes match.
+	/// File is archived for all sources.
 	/// </summary>
-	AAA_XXX_i = 0x01FF,
+	AAA_XXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.PrevEqualsLoadout | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, PathIsIgnored
+	/// File exists in loadout, disk and previous state. All hashes match.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAA_xxx_I = 0x023F,
+	AAA_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.PrevEqualsLoadout | Signature.DiskEqualsLoadout | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state. All hashes match.
+	/// File is archived for all sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAA_XXX_I = 0x03FF,
+	AAA_XXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.PrevEqualsLoadout | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is not archived.
 	/// </summary>
-	AAB_xxx_i = 0x000F,
+	AAB_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for previous state and disk.
 	/// </summary>
-	AAB_XXx_i = 0x00CF,
+	AAB_XXx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for loadout.
 	/// </summary>
-	AAB_xxX_i = 0x010F,
+	AAB_xxX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for all sources.
 	/// </summary>
-	AAB_XXX_i = 0x01CF,
+	AAB_XXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAB_xxx_I = 0x020F,
+	AAB_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for previous state and disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAB_XXx_I = 0x02CF,
+	AAB_XXx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAB_xxX_I = 0x030F,
+	AAB_xxX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for loadout differs from disk and previous state.
+	/// File is archived for all sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	AAB_XXX_I = 0x03CF,
+	AAB_XXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsPrev | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is not archived.
 	/// </summary>
-	ABx_xxx_i = 0x0003,
+	ABx_xxx_i = Signature.DiskExists | Signature.PrevExists,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for disk.
 	/// </summary>
-	ABx_Xxx_i = 0x0043,
+	ABx_Xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.DiskArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, PrevArchived
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for previous state.
 	/// </summary>
-	ABx_xXx_i = 0x0083,
+	ABx_xXx_i = Signature.DiskExists | Signature.PrevExists | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PrevArchived
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for both sources.
 	/// </summary>
-	ABx_XXx_i = 0x00C3,
+	ABx_XXx_i = Signature.DiskExists | Signature.PrevExists | Signature.DiskArchived | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, PathIsIgnored
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABx_xxx_I = 0x0203,
+	ABx_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABx_Xxx_I = 0x0243,
+	ABx_Xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.DiskArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for previous state.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABx_xXx_I = 0x0283,
+	ABx_xXx_I = Signature.DiskExists | Signature.PrevExists | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored
+	/// File exists on disk and previous state but hashes for both of them are different.
+	/// File is archived for both sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABx_XXx_I = 0x02C3,
+	ABx_XXx_I = Signature.DiskExists | Signature.PrevExists | Signature.DiskArchived | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is not archived.
 	/// </summary>
-	ABA_xxx_i = 0x0027,
+	ABA_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for disk and loadout.
 	/// </summary>
-	ABA_XxX_i = 0x0167,
+	ABA_XxX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for previous state.
 	/// </summary>
-	ABA_xXx_i = 0x00A7,
+	ABA_xXx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for all sources.
 	/// </summary>
-	ABA_XXX_i = 0x01E7,
+	ABA_XXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABA_xxx_I = 0x0227,
+	ABA_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for disk and loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABA_XxX_I = 0x0367,
+	ABA_XxX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for previous state.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABA_xXx_I = 0x02A7,
+	ABA_xXx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for previous state differs from loadout and disk.
+	/// File is archived for all sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABA_XXX_I = 0x03E7,
+	ABA_XXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is not archived.
 	/// </summary>
-	ABB_xxx_i = 0x0017,
+	ABB_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for disk.
 	/// </summary>
-	ABB_Xxx_i = 0x0057,
+	ABB_Xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.DiskArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for previous state and loadout.
 	/// </summary>
-	ABB_xXX_i = 0x0197,
+	ABB_xXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for all sources.
 	/// </summary>
-	ABB_XXX_i = 0x01D7,
+	ABB_XXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABB_xxx_I = 0x0217,
+	ABB_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABB_Xxx_I = 0x0257,
+	ABB_Xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.DiskArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for previous state and loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABB_xXX_I = 0x0397,
+	ABB_xXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hash for disk differs from loadout and previous state.
+	/// File is archived for all sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABB_XXX_I = 0x03D7,
+	ABB_XXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevEqualsLoadout | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is not archived.
 	/// </summary>
-	ABC_xxx_i = 0x0007,
+	ABC_xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for disk.
 	/// </summary>
-	ABC_Xxx_i = 0x0047,
+	ABC_Xxx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state.
 	/// </summary>
-	ABC_xXx_i = 0x0087,
+	ABC_xXx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for loadout.
 	/// </summary>
-	ABC_xxX_i = 0x0107,
+	ABC_xxX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state and disk.
 	/// </summary>
-	ABC_XXx_i = 0x00C7,
+	ABC_XXx_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PrevArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for disk and loadout.
 	/// </summary>
-	ABC_XxX_i = 0x0147,
+	ABC_XxX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state and loadout.
 	/// </summary>
-	ABC_xXX_i = 0x0187,
+	ABC_xXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for all sources.
 	/// </summary>
-	ABC_XXX_i = 0x01C7,
+	ABC_XXX_i = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is not archived.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_xxx_I = 0x0207,
+	ABC_xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_Xxx_I = 0x0247,
+	ABC_Xxx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_xXx_I = 0x0287,
+	ABC_xXx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_xxX_I = 0x0307,
+	ABC_xxX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state and disk.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_XXx_I = 0x02C7,
+	ABC_XXx_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PrevArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for disk and loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_XxX_I = 0x0347,
+	ABC_XxX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for previous state and loadout.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_xXX_I = 0x0387,
+	ABC_xXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 	/// <summary>
-	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
+	/// File exists in loadout, disk and previous state but hashes for all of them are different.
+	/// File is archived for all sources.
+	/// Path is on game-specific ingnore list.
 	/// </summary>
-	ABC_XXX_I = 0x03C7,
+	ABC_XXX_I = Signature.DiskExists | Signature.PrevExists | Signature.LoadoutExists | Signature.DiskArchived | Signature.PrevArchived | Signature.LoadoutArchived | Signature.PathIsIgnored,
 }

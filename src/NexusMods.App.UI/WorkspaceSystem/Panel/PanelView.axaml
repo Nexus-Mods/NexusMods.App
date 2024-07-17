@@ -25,7 +25,7 @@
                                       x:Name="TabHeaderScrollViewer"
                                       VerticalScrollBarVisibility="Disabled"
                                       HorizontalScrollBarVisibility="Auto">
-                            <Grid ColumnDefinitions="Auto, *">
+                            <Grid ColumnDefinitions="Auto, Auto, *">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <ItemsControl x:Name="TabHeaders" Height="52">
                                         <ItemsControl.ItemsPanel>
@@ -42,7 +42,8 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                 </StackPanel>
-                                <Border Grid.Column="1" x:Name="AddTabButton1Container"
+                                <Separator x:Name="OneTabLine" Grid.Column="1"/>
+                                <Border Grid.Column="2" x:Name="AddTabButton1Container"
                                         HorizontalAlignment="Stretch">
                                     <Button x:Name="AddTabButton1"
                                             Margin="12 12 10 12"
