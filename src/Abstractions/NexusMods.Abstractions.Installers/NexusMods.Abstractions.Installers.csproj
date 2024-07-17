@@ -15,4 +15,34 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="ILibraryFileInstaller.cs">
+        <DependentUpon>ILibraryItemInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ILibraryArchiveInstaller.cs">
+        <DependentUpon>ILibraryItemInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ALibraryItemInstaller.cs">
+        <DependentUpon>ILibraryItemInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ALibraryFileInstaller.cs">
+        <DependentUpon>ILibraryFileInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ALibraryArchiveInstaller.cs">
+        <DependentUpon>ILibraryArchiveInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AModInstaller.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ModInstallerInfo.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ModInstallerResult.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutDetails.cs">
+        <DependentUpon>ILibraryItemInstaller.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
