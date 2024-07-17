@@ -99,7 +99,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                         behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     }
 
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
                 })
                 .DisposeWith(disposables);
         });

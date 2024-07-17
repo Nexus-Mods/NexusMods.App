@@ -96,7 +96,8 @@ public interface IWorkspaceController
     /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
     /// <param name="behavior"></param>
     /// <param name="selectTab"> Whether to auto select the tab</param>
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true);
+    /// <param name="checkOtherPanels">Whether to check other panels and their selected tab for <paramref name="pageData"/>.</param>
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true, bool checkOtherPanels = true);
 
     /// <summary>
     /// Swaps the positions of two panels.
