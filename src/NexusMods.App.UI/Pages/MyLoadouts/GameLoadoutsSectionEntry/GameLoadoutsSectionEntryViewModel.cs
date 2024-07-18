@@ -56,8 +56,10 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
         var createNewLoadoutCard = new CreateNewLoadoutCardViewModel()
         {
-            AddLoadoutCommand = ReactiveCommand.CreateFromTask(async () => { await _gameInstallation.GetGame().Synchronizer.CreateLoadout(_gameInstallation); }
-            ),
+            AddLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                await _gameInstallation.GetGame().Synchronizer.CreateLoadout(_gameInstallation);
+            }),
         };
 
         _cardViewModelsSourceList.Add(createNewLoadoutCard);
