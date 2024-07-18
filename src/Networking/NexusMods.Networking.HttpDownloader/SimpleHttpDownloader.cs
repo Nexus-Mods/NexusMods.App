@@ -28,15 +28,35 @@ public class SimpleHttpDownloader : IHttpDownloader
         Size? size,
         CancellationToken cancellationToken)
     {
+        state ??= new HttpDownloaderState();
+        var activity = (IActivitySource<Size>?)state.Activity;
+
         var downloadService = new DownloadService(new DownloadConfiguration
         {
-            ChunkCount = 8,
+            // TODO: find good values, probably put some in settings
+            ChunkCount = 4,
             ParallelDownload = true,
             Timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds,
+
             ReserveStorageSpaceBeforeStartingDownload = true,
         });
 
-        var urls = sources.Select(source => source.RequestUri!.ToString()).ToArray();
+        downloadService.DownloadStarted += (_, args) =>
+        {
+            activity?.SetMax(Size.FromLong(args.TotalBytesToReceive));
+        };
+
+        var lastUpdate = DateTime.MinValue;
+        downloadService.DownloadProgressChanged += (_, args) =>
+        {
+            // TODO: remove this, this is a hack to keep our UI from exploding
+            var now = DateTime.Now;
+            if (now - lastUpdate < TimeSpan.FromMilliseconds(700)) return;
+            activity?.SetProgress(Size.FromLong(args.ReceivedBytesSize));
+        };
+
+        // TODO: figure out what do with multiple sources
+        var urls = sources.Select(source => source.RequestUri!.ToString()).Take(1).ToArray();
 
         await downloadService.DownloadFileTaskAsync(
             urls: urls,
