@@ -120,6 +120,8 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
 
                     results[i] = result;
                 });
+
+                job.AddExtractedFileJobResults = results;
             }
 
             cancellationToken.ThrowIfCancellationRequested();

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.LibraryModels;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
@@ -21,6 +22,8 @@ using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -56,6 +59,10 @@ public static class Services
         {
             services
                 .AddDataModel()
+                .AddLibrary()
+                .AddLibraryModels()
+                .AddJobMonitor()
+
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
