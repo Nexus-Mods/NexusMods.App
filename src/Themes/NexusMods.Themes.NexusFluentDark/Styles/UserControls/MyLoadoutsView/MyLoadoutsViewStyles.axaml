@@ -72,8 +72,8 @@
         
         <Style Selector="^ panels|FlexPanel#CardsFlexPanel">
             <Setter Property="Wrap" Value="Wrap" />
-            <Setter Property="ColumnSpacing" Value="12" />
-            <Setter Property="RowSpacing" Value="48" />
+            <Setter Property="ColumnSpacing" Value="24" />
+            <Setter Property="RowSpacing" Value="24" />
             <Setter Property="AlignContent" Value="FlexStart" />
         </Style>
     </Style>
