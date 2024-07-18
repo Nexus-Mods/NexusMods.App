@@ -43,9 +43,10 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                     {
                         VisitLoadoutCommand = ReactiveCommand.Create(() => NavigateToLoadout(loadout)),
                         CloneLoadoutCommand = ReactiveCommand.Create(() =>
-                        {
-                            // TODO: Implement Loadout cloning
-                        }),
+                            {
+                                // TODO: Implement Loadout cloning
+                            }
+                        ),
                     };
                 }
             )
@@ -53,23 +54,43 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
             .Subscribe()
             .DisposeWith(_compositeDisposable);
 
-        var CreateNewLoadoutCard = new CreateNewLoadoutCardViewModel()
+        var createNewLoadoutCard = new CreateNewLoadoutCardViewModel()
         {
-            AddLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
-                {
-                    await _gameInstallation.GetGame().Synchronizer.CreateLoadout(_gameInstallation);
-                }
+            AddLoadoutCommand = ReactiveCommand.CreateFromTask(async () => { await _gameInstallation.GetGame().Synchronizer.CreateLoadout(_gameInstallation); }
             ),
         };
-        
-        _cardViewModelsSourceList.Add(CreateNewLoadoutCard);
-        
+
+        _cardViewModelsSourceList.Add(createNewLoadoutCard);
+
         _cardViewModelsSourceList.Connect()
             .Merge(_loadoutCardViewModels.ToObservableChangeSet())
+            .Sort(new CardViewModelComparer())
             .OnUI()
             .Bind(out _cardViewModels)
             .SubscribeWithErrorLogging()
             .DisposeWith(_compositeDisposable);
+    }
+
+    private class CardViewModelComparer : IComparer<IViewModelInterface>
+    {
+        public int Compare(IViewModelInterface? x, IViewModelInterface? y)
+        {
+            if (x == null) return y == null ? 0 : -1;
+            if (y == null) return 1;
+
+            // Prioritize CreateNewLoadoutCardViewModel to always come first.
+            if (x is CreateNewLoadoutCardViewModel) return -1;
+            if (y is CreateNewLoadoutCardViewModel) return 1;
+
+            return (x, y) switch
+            {
+                (LoadoutCardViewModel lx, LoadoutCardViewModel ly) => string.Compare(lx.LoadoutName, ly.LoadoutName, StringComparison.Ordinal),
+                (SkeletonLoadoutCardViewModel sx, SkeletonLoadoutCardViewModel sy) => string.Compare(sx.LoadoutName, sy.LoadoutName, StringComparison.Ordinal),
+                (LoadoutCardViewModel lxs, SkeletonLoadoutCardViewModel sys) => string.Compare(lxs.LoadoutName, sys.LoadoutName, StringComparison.Ordinal),
+                (SkeletonLoadoutCardViewModel sxs, LoadoutCardViewModel lys) => string.Compare(sxs.LoadoutName, lys.LoadoutName, StringComparison.Ordinal),
+                _ => 0,
+            };
+        }
     }
 
 
