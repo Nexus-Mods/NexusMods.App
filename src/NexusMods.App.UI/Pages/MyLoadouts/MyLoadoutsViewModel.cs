@@ -15,8 +15,7 @@ namespace NexusMods.App.UI.Pages.MyLoadouts;
 public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoadoutsViewModel
 {
     private ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> _gameSectionViewModels = new([]);
-    private readonly IConnection _conn;
-    
+
     public ReadOnlyObservableCollection<IGameLoadoutsSectionEntryViewModel> GameSectionViewModels => _gameSectionViewModels;
 
     public MyLoadoutsViewModel(
@@ -24,19 +23,18 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
         IConnection conn,
         IServiceProvider serviceProvider) : base(windowManager)
     {
-        _conn = conn;
         TabTitle = Language.MyLoadoutsPageTitle;
         TabIcon = IconValues.ViewCarousel;
         
         this.WhenActivated(d =>
         {
-            Loadout.ObserveAll(_conn)
+            Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
                 .GroupOn(loadout => loadout.Installation.Path)
                 .Transform(group => group.List.Items.First().InstallationInstance)
                 .Transform(managedGameInstall =>
                     {
-                        return (IGameLoadoutsSectionEntryViewModel) new GameLoadoutsSectionEntryViewModel(managedGameInstall, _conn, serviceProvider, windowManager);
+                        return (IGameLoadoutsSectionEntryViewModel) new GameLoadoutsSectionEntryViewModel(managedGameInstall, conn, serviceProvider, windowManager);
                     }
                 )
                 .OnUI()
