@@ -11,7 +11,7 @@ public interface ILoadoutCardViewModel : IViewModelInterface
     
     string LoadoutName { get; }
     
-    IImage LoadoutImage { get; }
+    IImage? LoadoutImage { get; }
     
     bool IsLoadoutApplied { get; }
     

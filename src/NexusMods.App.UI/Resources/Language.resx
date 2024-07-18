@@ -583,4 +583,16 @@
     <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
         <value>Ready for gaming.</value>
     </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Created {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Last applied {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Mods {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
 </root>

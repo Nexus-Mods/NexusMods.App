@@ -104,8 +104,8 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                 
                 // Visit loadout command
                 this.BindCommand(ViewModel,
-                        vm => vm.DeleteLoadoutCommand,
-                        view => view.DeleteButton)
+                        vm => vm.VisitLoadoutCommand,
+                        view => view.CardOuterButton)
                     .DisposeWith(d);
             }
         );

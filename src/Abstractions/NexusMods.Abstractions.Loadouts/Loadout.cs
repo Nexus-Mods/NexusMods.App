@@ -1,5 +1,3 @@
-
-using System.Reactive.Linq;
 using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
@@ -9,7 +7,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -114,6 +112,20 @@ public partial class Loadout : IModelDefinition
         /// especially, when it comes to displaying elements the user can edit.
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
+        
+        
+        /// <summary>
+        /// Returns the timestamp of the transaction that created this loadout.
+        /// </summary>
+        public DateTime CreatedAt
+        {
+            get
+            {
+                var lowestTx = this.Min(d => d.T);
+                var tx = Transaction.Load(Db, EntityId.From(lowestTx.Value));
+                return tx.Timestamp;
+            }
+        }
     }
 }
 

@@ -190,7 +190,10 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
+            
+            
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
+            .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
             .AddView<CreateNewLoadoutCardView, ICreateNewLoadoutCardViewModel>()
             
@@ -257,6 +260,8 @@ public static class Services
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
+            .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
+            
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
