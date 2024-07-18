@@ -25,6 +25,7 @@ internal class AddLocalFileJobWorker : AJobWorker<AddLocalFileJob>
             Transaction = job.Transaction,
             FilePath = job.FilePath,
             DoCommit = false,
+            DoBackup = true,
         };
 
         await worker.StartAsync(addLibraryFileJob, cancellationToken: cancellationToken);

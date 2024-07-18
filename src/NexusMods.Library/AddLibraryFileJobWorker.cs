@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.LibraryModels;
@@ -19,6 +20,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     private readonly IServiceProvider _serviceProvider;
     private readonly IFileExtractor _fileExtractor;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IFileStore _fileStore;
 
     public AddLibraryFileJobWorker(IServiceProvider serviceProvider)
     {
@@ -27,6 +29,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         _serviceProvider = serviceProvider;
         _fileExtractor = serviceProvider.GetRequiredService<IFileExtractor>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        _fileStore = serviceProvider.GetRequiredService<IFileStore>();
     }
 
     protected override async Task<JobResult> ExecuteAsync(AddLibraryFileJob job, CancellationToken cancellationToken)
@@ -103,36 +106,78 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             if (!job.AddExtractedFileJobResults.HasValue)
             {
                 var extractedFiles = job.ExtractedFiles.Value;
-                var results = new JobResult[extractedFiles.Length];
+                var results = new ValueTuple<JobResult, IFileEntry>[extractedFiles.Length];
 
                 await Parallel.ForAsync(fromInclusive: 0, toExclusive: extractedFiles.Length, cancellationToken, async (i, innerCancellationToken) =>
                 {
+                    var fileEntry = extractedFiles[i];
+
                     var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
                     var childJob = new AddLibraryFileJob(job, worker)
                     {
                         Transaction = job.Transaction,
-                        FilePath = extractedFiles[i].Path,
+                        FilePath = fileEntry.Path,
                         DoCommit = false,
+                        DoBackup = false,
                     };
 
                     await worker.StartAsync(childJob, cancellationToken: innerCancellationToken);
                     var result = await childJob.WaitToFinishAsync(cancellationToken: innerCancellationToken);
 
-                    results[i] = result;
+                    results[i] = (result, fileEntry);
                 });
 
                 job.AddExtractedFileJobResults = results;
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            foreach (var jobResult in job.AddExtractedFileJobResults.Value)
+            if (!job.HasBackup.HasValue)
             {
+                var filesToBackup = job.AddExtractedFileJobResults.Value
+                    .Select(tuple =>
+                    {
+                        var (jobResult, fileEntry) = tuple;
+                        var data = jobResult.RequireData<LibraryFile.New>();
+
+                        return new ArchivedFileEntry
+                        {
+                            Hash = data.Hash,
+                            Size = data.Size,
+                            StreamFactory = new NativeFileStreamFactory(fileEntry.Path),
+                        };
+                    })
+                    .ToArray();
+
+                await _fileStore.BackupFiles(filesToBackup, token: cancellationToken);
+                job.HasBackup = true;
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var tuple in job.AddExtractedFileJobResults.Value)
+            {
+                var (jobResult, _) = tuple;
                 var libraryFile = jobResult.RequireData<LibraryFile.New>();
                 var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
                     LibraryFile = libraryFile,
                     ParentId = job.LibraryArchive.Value,
                 };
+            }
+        }
+        else
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (job is { DoBackup: true, HasBackup.HasValue: false })
+            {
+                var archivedFileEntry = new ArchivedFileEntry
+                {
+                    Hash = job.HashJobResult.Value.RequireData<Hash>(),
+                    Size = job.FilePath.FileInfo.Size,
+                    StreamFactory = new NativeFileStreamFactory(job.FilePath),
+                };
+
+                await _fileStore.BackupFiles([archivedFileEntry], token: cancellationToken);
+                job.HasBackup = true;
             }
         }
 

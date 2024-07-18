@@ -14,15 +14,17 @@ internal class AddLibraryFileJob : AJob
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
     public required bool DoCommit { get; init; }
+    public required bool DoBackup { get; init; }
 
     public Optional<EntityId> EntityId { get; set; }
     public Optional<bool> IsArchive { get; set; }
+    public Optional<bool> HasBackup { get; set; }
     public Optional<JobResult> HashJobResult { get; set; }
     public Optional<LibraryFile.New> LibraryFile { get; set; }
     public Optional<LibraryArchive.New> LibraryArchive { get; set; }
     public Optional<TemporaryPath> ExtractionDirectory { get; set; }
     public Optional<IFileEntry[]> ExtractedFiles { get; set; }
-    public Optional<JobResult[]> AddExtractedFileJobResults { get; set; }
+    public Optional<ValueTuple<JobResult, IFileEntry>[]> AddExtractedFileJobResults { get; set; }
 
     protected override void Dispose(bool disposing)
     {
