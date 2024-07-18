@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Library;

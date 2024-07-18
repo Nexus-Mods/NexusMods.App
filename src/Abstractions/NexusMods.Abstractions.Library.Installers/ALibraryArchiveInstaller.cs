@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.Abstractions.Installers;
+namespace NexusMods.Abstractions.Library.Installers;
 
 /// <summary>
 /// Base implementation of <see cref="ILibraryArchiveInstaller"/>.

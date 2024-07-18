@@ -3,24 +3,24 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.Abstractions.Installers;
+namespace NexusMods.Abstractions.Library.Installers;
 
 /// <summary>
-/// Turns <see cref="LibraryItem"/> into <see cref="LoadoutItem"/>.
+/// Variant of <see cref="ILibraryFileInstaller"/> for <see cref="LibraryArchive"/>
 /// </summary>
 [PublicAPI]
-public interface ILibraryItemInstaller
+public interface ILibraryArchiveInstaller : ILibraryFileInstaller
 {
     /// <summary>
-    /// Checks whether the provided library item is supported by this installer.
+    /// Checks whether the provided library archive is supported by this installer.
     /// </summary>
-    ValueTask<bool> IsSupportedAsync(LibraryItem.ReadOnly libraryItem, CancellationToken cancellationToken);
+    ValueTask<bool> IsSupportedAsync(LibraryArchive.ReadOnly libraryArchive, CancellationToken cancellationToken);
 
     /// <summary>
     /// Executes the installer.
     /// </summary>
     ValueTask<LoadoutItem.New[]> ExecuteAsync(
-        LibraryItem.ReadOnly libraryItem,
+        LibraryArchive.ReadOnly libraryArchive,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
