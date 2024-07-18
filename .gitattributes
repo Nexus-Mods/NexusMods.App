@@ -36,7 +36,6 @@
 *.sln       text eol=crlf
 *.csproj    text eol=crlf
 
-*.props     text eol=crlf
 *.targets   text eol=crlf
 *.filters   text eol=crlf
 *.filters   text eol=crlf
