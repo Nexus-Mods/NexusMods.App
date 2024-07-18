@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 
 namespace NexusMods.Library;
 
@@ -25,6 +25,7 @@ internal class AddLocalFileJobWorker : AJobWorker<AddLocalFileJob>
             Transaction = job.Transaction,
             FilePath = job.FilePath,
             DoCommit = false,
+            DoBackup = true,
         };
 
         await worker.StartAsync(addLibraryFileJob, cancellationToken: cancellationToken);

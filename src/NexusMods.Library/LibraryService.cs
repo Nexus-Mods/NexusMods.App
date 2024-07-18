@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -26,6 +29,11 @@ public sealed class LibraryService : ILibraryService
         _serviceProvider = serviceProvider;
     }
 
+    public IJob AddDownload(IDownloadJob downloadJob)
+    {
+        throw new NotImplementedException();
+    }
+
     public IJob AddLocalFile(AbsolutePath absolutePath)
     {
         var group = new AddLocalFileJob(worker: _serviceProvider.GetRequiredService<AddLocalFileJobWorker>())
@@ -35,5 +43,17 @@ public sealed class LibraryService : ILibraryService
         };
 
         return group;
+    }
+
+    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout)
+    {
+        var job = new InstallLoadoutItemJob(worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
+        {
+            Transaction = _connection.BeginTransaction(),
+            LibraryItem = libraryItem,
+            Loadout = targetLoadout,
+        };
+
+        return job;
     }
 }

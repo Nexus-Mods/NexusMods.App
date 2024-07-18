@@ -1,11 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Abstractions.Downloads\NexusMods.Abstractions.Downloads.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="ALibraryArchiveInstaller.cs">
+            <DependentUpon>ILibraryArchiveInstaller.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ALibraryFileInstaller.cs">
+            <DependentUpon>ILibraryFileInstaller.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ALibraryItemInstaller.cs">
+            <DependentUpon>ILibraryItemInstaller.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

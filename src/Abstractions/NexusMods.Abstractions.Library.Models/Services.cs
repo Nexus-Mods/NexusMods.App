@@ -1,8 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 
-namespace NexusMods.Abstractions.Library;
+namespace NexusMods.Abstractions.Library.Models;
 
 /// <summary>
 /// Extension methods.

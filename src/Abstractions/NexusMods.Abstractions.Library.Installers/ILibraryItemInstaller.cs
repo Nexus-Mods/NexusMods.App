@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.Abstractions.Installers;
+namespace NexusMods.Abstractions.Library.Installers;
 
 /// <summary>
 /// Turns <see cref="LibraryItem"/> into <see cref="LoadoutItem"/>.

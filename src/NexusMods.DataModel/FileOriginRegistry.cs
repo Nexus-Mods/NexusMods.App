@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
@@ -7,6 +8,8 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library;
+using NexusMods.App.BuildInfo;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -23,6 +26,7 @@ namespace NexusMods.DataModel;
 public class FileOriginRegistry : IFileOriginRegistry
 {
     private readonly ILogger<FileOriginRegistry> _logger;
+    private readonly ILibraryService _libraryService;
     private readonly IFileExtractor _extractor;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
@@ -30,17 +34,19 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
-    /// DI Constructor
+    /// Constructor.
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="extractor"></param>
-    /// <param name="fileStore"></param>
-    /// <param name="temporaryFileManager"></param>
-    /// <param name="store"></param>
-    public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
-        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IConnection conn, IFileHashCache fileHashCache)
+    public FileOriginRegistry(
+        ILogger<FileOriginRegistry> logger,
+        ILibraryService library,
+        IFileExtractor extractor,
+        IFileStore fileStore,
+        TemporaryFileManager temporaryFileManager,
+        IConnection conn,
+        IFileHashCache fileHashCache)
     {
         _logger = logger;
+        _libraryService = library;
         _extractor = extractor;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
@@ -72,9 +78,28 @@ public class FileOriginRegistry : IFileOriginRegistry
         }
     }
 
+    private async Task ShadowTrafficTestLibraryService(AbsolutePath path, CancellationToken cancellationToken)
+    {
+        // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/1763
+        if (!CompileConstants.IsDebug) return;
+        try
+        {
+            var job = _libraryService.AddLocalFile(path);
+            await job.StartAsync(cancellationToken: cancellationToken);
+            var result = await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+            _logger.LogInformation("AddLocalFile result: `{Result}`", result.ToString());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception adding local file to library");
+        }
+    }
+
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default)
     {
+        await ShadowTrafficTestLibraryService(path, token);
+
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
@@ -88,8 +113,11 @@ public class FileOriginRegistry : IFileOriginRegistry
         return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
     }
 
+    /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId id, string modName, CancellationToken token = default)
     {
+        await ShadowTrafficTestLibraryService(path, token);
+
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
         

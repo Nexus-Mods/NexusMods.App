@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+        <PackageReference Include="NexusMods.MnemonicDB.Storage" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="LocalFile.cs">
+        <DependentUpon>LibraryItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LibraryFile.cs">
+        <DependentUpon>LibraryItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LibraryArchiveFileEntry.cs">
+        <DependentUpon>LibraryArchive.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>
