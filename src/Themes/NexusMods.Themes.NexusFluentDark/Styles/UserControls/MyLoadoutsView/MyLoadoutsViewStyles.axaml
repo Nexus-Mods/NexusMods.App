@@ -1,0 +1,80 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <myLoadouts:MyLoadoutsView Height="600" Width="600">
+                <myLoadouts:MyLoadoutsView.DataContext>
+                    <myLoadouts:MyLoadoutsDesignViewModel />
+                </myLoadouts:MyLoadoutsView.DataContext>
+            </myLoadouts:MyLoadoutsView>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="myLoadouts|MyLoadoutsView">
+        <Setter Property="Padding" Value="24" />
+
+        <Style Selector="^ panels|FlexPanel#MyLoadoutsOuterFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="24" />
+        </Style>
+
+        <Style Selector="^ TextBlock#PageDescriptionTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#GameSectionsItemsFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="24" />
+        </Style>
+
+        <Style Selector="^ Border#GameSectionBorder">
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#GameSectionFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="24" />
+            <Setter Property="AlignItems" Value="FlexStart" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#HeadingSectionFlexPanel">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="12" />
+            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+        </Style>
+
+        <Style Selector="^ TextBlock#GameHeadingTextBlock">
+            <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#SupportedDetails">
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="RowSpacing" Value="4" />
+            <Setter Property="AlignItems" Value="FlexStart" />
+        </Style>
+
+        <Style Selector="^ TextBlock#LoadoutsContainTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"  />
+        </Style>
+        
+        <Style Selector="^ TextBlock#LoadoutsShareTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"  />
+        </Style>
+        
+        <Style Selector="^ panels|FlexPanel#CardsFlexPanel">
+            <Setter Property="Wrap" Value="Wrap" />
+            <Setter Property="ColumnSpacing" Value="12" />
+            <Setter Property="RowSpacing" Value="48" />
+            <Setter Property="AlignContent" Value="FlexStart" />
+        </Style>
+    </Style>
+</Styles>

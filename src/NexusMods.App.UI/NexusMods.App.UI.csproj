@@ -577,6 +577,18 @@
         <Compile Update="Controls\LoadoutCard\AddLoadoutCard\AddLoadoutCardViewModel.cs">
           <DependentUpon>IAddLoadoutCardViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryDesignViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\CreateNewLoadoutCard\CreateNewLoadoutCardViewModel.cs">
+          <DependentUpon>ICreateNewLoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\MyLoadoutsDesignViewModel.cs">
+          <DependentUpon>IMyLoadoutsViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
