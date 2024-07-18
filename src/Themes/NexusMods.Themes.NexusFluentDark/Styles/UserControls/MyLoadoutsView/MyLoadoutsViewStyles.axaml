@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
-        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:reactiveUi="http://reactiveui.net">
     <Design.PreviewWith>
         <Border Padding="20">
             <myLoadouts:MyLoadoutsView Height="600" Width="600">
@@ -48,6 +49,10 @@
             <Setter Property="Direction" Value="Column" />
             <Setter Property="RowSpacing" Value="12" />
             <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+        </Style>
+        
+        <Style Selector="^ ItemsControl#LoadoutCardsItemsControl">
+            <Setter Property="ClipToBounds" Value="False" />
         </Style>
 
         <Style Selector="^ TextBlock#GameHeadingTextBlock">

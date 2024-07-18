@@ -47,7 +47,8 @@
 
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="ui:IViewModelInterface">
-                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}" />
+                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}" 
+                                                                          ClipToBounds="False"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
 
