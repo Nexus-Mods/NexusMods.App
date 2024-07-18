@@ -61,6 +61,9 @@ public class UnknownGame : IGame
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 
     /// <inheritdoc />
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
+
+    /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
     {
         return new GameInstallation
