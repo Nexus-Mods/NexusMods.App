@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.LibraryModels;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

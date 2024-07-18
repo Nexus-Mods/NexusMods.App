@@ -1,7 +1,6 @@
 ﻿using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.Installers;

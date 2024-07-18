@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Abstractions.Library;
+namespace NexusMods.Abstractions.LibraryModels;
 
 /// <summary>
 /// Represents a <see cref="LibraryItem"/> that is a file in the library.

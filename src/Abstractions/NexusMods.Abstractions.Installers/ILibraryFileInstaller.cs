@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.LibraryModels;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 
