@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.LibraryModels;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
+using LibraryItem = NexusMods.Abstractions.Library.Models.LibraryItem;
 
 namespace NexusMods.Abstractions.Library;
 

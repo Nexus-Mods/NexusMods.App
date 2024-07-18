@@ -5,7 +5,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.LibraryModels;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

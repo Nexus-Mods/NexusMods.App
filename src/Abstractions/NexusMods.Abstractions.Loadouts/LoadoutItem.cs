@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.LibraryModels;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -37,9 +37,4 @@ public partial class LoadoutItem : IModelDefinition
     /// Optional parent of the item.
     /// </summary>
     public static readonly ReferenceAttribute<LoadoutItemGroup> Parent = new(Namespace, nameof(Parent)) { IsIndexed = true, IsOptional = true };
-
-    /// <summary>
-    /// Optional source of the item.
-    /// </summary>
-    public static readonly ReferenceAttribute<LibraryItem> Source = new(Namespace, nameof(Source)) { IsIndexed = true, IsOptional = true };
 }

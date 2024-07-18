@@ -1,7 +1,7 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.LibraryModels;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 

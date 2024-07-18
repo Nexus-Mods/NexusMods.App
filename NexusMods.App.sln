@@ -214,7 +214,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interprocess", "Interproces
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Settings.Tests", "tests\NexusMods.Settings.Tests\NexusMods.Settings.Tests.csproj", "{0D289DCE-1B17-4B63-B8B3-47CB852BF5B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.LibraryModels", "src\Abstractions\NexusMods.Abstractions.LibraryModels\NexusMods.Abstractions.LibraryModels.csproj", "{0044D340-E435-489C-A425-139AAB2EA205}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Library.Models", "src\Abstractions\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj", "{0044D340-E435-489C-A425-139AAB2EA205}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.NexusModsLibrary", "src\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj", "{5D85EBB2-755F-4148-BFC4-8D2245A3105B}"
 EndProject
