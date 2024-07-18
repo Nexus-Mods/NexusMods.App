@@ -7,6 +7,7 @@
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 xmlns:gameLoadoutsSectionEntry="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry"
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
     <Design.DataContext>
@@ -18,7 +19,7 @@
         <panels:FlexPanel x:Name="MyLoadoutsOuterFlexPanel">
 
             <TextBlock x:Name="PageDescriptionTextBlock"
-                       Text="Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use." />
+                       Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}" />
 
             <ItemsControl x:Name="GameSectionsItemsControl">
                 <ItemsControl.ItemsPanel>

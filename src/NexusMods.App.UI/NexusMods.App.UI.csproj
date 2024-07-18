@@ -595,6 +595,9 @@
         <Compile Update="Pages\MyLoadouts\MyLoadoutsViewModel.cs">
           <DependentUpon>IMyLoadoutsViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
+          <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

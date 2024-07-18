@@ -598,4 +598,26 @@
     <data name="MyLoadoutsPageTitle" xml:space="preserve">
         <value>My Loadouts</value>
     </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>{0} Loadouts</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Create new loadout</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Currently Applied</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Create Copy</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Deleting...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Creating...</value>
+    </data>
 </root>

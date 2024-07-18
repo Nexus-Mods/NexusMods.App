@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.LoadoutCard;
@@ -69,7 +70,7 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                     .Subscribe(isDeleting =>
                     {
                         if (isDeleting) 
-                            OverlayTextBlock.Text = "Deleting...";
+                            OverlayTextBlock.Text = Language.LoadoutCardViewDeletingText;
                         IsEnabled = !isDeleting;
                         OverlayFlexPanel.IsVisible = isDeleting;
                         CreateCopyButton.IsVisible = !isDeleting;
@@ -83,7 +84,7 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                     .Subscribe(isSkeleton =>
                     {
                         if (isSkeleton) 
-                            OverlayTextBlock.Text = "Creating...";
+                            OverlayTextBlock.Text = Language.LoadoutCardViewCreatingText;
                         IsEnabled = !isSkeleton;
                         OverlayFlexPanel.IsVisible = isSkeleton;
                         BodyAndActionsGroupFlexPanel.IsVisible = !isSkeleton;

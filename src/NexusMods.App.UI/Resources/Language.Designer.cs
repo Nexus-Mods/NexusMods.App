@@ -222,6 +222,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new loadout.
+        /// </summary>
+        public static string CreateNewLoadoutCarViewTexBlock {
+            get {
+                return ResourceManager.GetString("CreateNewLoadoutCarViewTexBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CRITICAL ERROR.
         /// </summary>
         public static string DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR {
@@ -1167,6 +1176,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Copy.
+        /// </summary>
+        public static string LoadoutCardViewCreateCopyButton {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCreateCopyButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating....
+        /// </summary>
+        public static string LoadoutCardViewCreatingText {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCreatingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currently Applied.
+        /// </summary>
+        public static string LoadoutCardViewCurrentlyAppliedTextBlock {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCurrentlyAppliedTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting....
+        /// </summary>
+        public static string LoadoutCardViewDeletingText {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewDeletingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created {0}.
         /// </summary>
         public static string LoadoutCardViewModel_CreationTimeConverter_Created__0_ {
@@ -1410,6 +1455,24 @@ namespace NexusMods.App.UI.Resources {
         public static string MyGamesView__Ready_to_mod {
             get {
                 return ResourceManager.GetString("MyGamesView__Ready_to_mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} Loadouts.
+        /// </summary>
+        public static string MyLoadoutsGameSectionHeading {
+            get {
+                return ResourceManager.GetString("MyLoadoutsGameSectionHeading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use..
+        /// </summary>
+        public static string MyLoadoutsPageDescriptionText {
+            get {
+                return ResourceManager.GetString("MyLoadoutsPageDescriptionText", resourceCulture);
             }
         }
         

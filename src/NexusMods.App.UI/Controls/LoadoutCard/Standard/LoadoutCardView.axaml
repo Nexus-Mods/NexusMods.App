@@ -8,6 +8,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
     <Design.DataContext>
@@ -43,7 +44,7 @@
 
                                         <TextBlock x:Name="CurrentlyAppliedTextBlock"
                                                    Classes="BodySMBold"
-                                                   Text="Currently Applied" />
+                                                   Text="{x:Static resources:Language.LoadoutCardViewCurrentlyAppliedTextBlock}" />
                                         <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
                                                            Classes="CheckBox" />
 
@@ -66,7 +67,7 @@
                                     <Button x:Name="CreateCopyButton"
                                             Classes="Rounded Primary">
                                         <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Classes="BodySMBold" Text="Create Copy" />
+                                            <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
                                         </StackPanel>
                                     </Button>
 
@@ -91,7 +92,7 @@
                     <spinner:Spinner x:Name="OverlaySpinner" />
                     <TextBlock x:Name="OverlayTextBlock"
                                Classes="BodyXLNormal ForegroundSubdued"
-                               Text="Deleting..." />
+                               Text="{x:Static resources:Language.LoadoutCardViewDeletingText}" />
                 </panels:FlexPanel>
                 <Border />
             </panels:FlexPanel>

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
@@ -21,9 +22,9 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
     private readonly CompositeDisposable _compositeDisposable;
     private readonly GameInstallation _gameInstallation;
     private readonly IWindowManager _windowManager;
-    private ReadOnlyObservableCollection<IViewModelInterface> _loadoutCardViewModels = new([]);
-    private ReadOnlyObservableCollection<IViewModelInterface> _cardViewModels = new([]);
-    private SourceList<IViewModelInterface> _cardViewModelsSourceList = new();
+    private readonly ReadOnlyObservableCollection<IViewModelInterface> _loadoutCardViewModels;
+    private readonly ReadOnlyObservableCollection<IViewModelInterface> _cardViewModels;
+    private readonly SourceList<IViewModelInterface> _cardViewModelsSourceList = new();
     public string HeadingText { get; }
     public ReadOnlyObservableCollection<IViewModelInterface> CardViewModels => _cardViewModels;
 
@@ -33,7 +34,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
         _compositeDisposable = new CompositeDisposable();
         _gameInstallation = gameInstallation;
         _windowManager = windowManager;
-        HeadingText = _gameInstallation.Game.Name + " Loadouts";
+        HeadingText = string.Format(Language.MyLoadoutsGameSectionHeading, _gameInstallation.Game.Name);
 
         Loadout.ObserveAll(conn)
             .Filter(l => l.IsVisible() && l.InstallationInstance.LocationsRegister[LocationId.Game] == _gameInstallation.LocationsRegister[LocationId.Game])
