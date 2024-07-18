@@ -35,13 +35,6 @@
                                 <panels:FlexPanel x:Name="HeadingSectionFlexPanel">
                                     <TextBlock x:Name="GameHeadingTextBlock"
                                                Text="{CompiledBinding HeadingText}" />
-
-                                    <panels:FlexPanel x:Name="SupportedDetails">
-                                        <TextBlock x:Name="LoadoutsContainTextBlock"
-                                                   Text="Loadouts contain unique: Mods and mod configurations." />
-                                        <TextBlock x:Name="LoadoutsShareTextBlock"
-                                                   Text="Loadouts share: Library and saved games." />
-                                    </panels:FlexPanel>
                                 </panels:FlexPanel>
 
                                 <ItemsControl x:Name="LoadoutCardsItemsControl"

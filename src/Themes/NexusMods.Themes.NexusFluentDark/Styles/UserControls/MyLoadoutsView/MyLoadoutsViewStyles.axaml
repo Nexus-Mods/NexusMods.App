@@ -53,22 +53,6 @@
         <Style Selector="^ TextBlock#GameHeadingTextBlock">
             <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
         </Style>
-
-        <Style Selector="^ panels|FlexPanel#SupportedDetails">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="RowSpacing" Value="4" />
-            <Setter Property="AlignItems" Value="FlexStart" />
-        </Style>
-
-        <Style Selector="^ TextBlock#LoadoutsContainTextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"  />
-        </Style>
-        
-        <Style Selector="^ TextBlock#LoadoutsShareTextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"  />
-        </Style>
         
         <Style Selector="^ panels|FlexPanel#CardsFlexPanel">
             <Setter Property="Wrap" Value="Wrap" />
