@@ -46,11 +46,13 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             
             Loadout.Observe(conn, loadout.Id)
                 .Select(l => l.Name)
+                .OnUI()
                 .BindToVM(this, x => x.LoadoutName)
                 .DisposeWith(d);
             
             applyService.LastAppliedRevisionFor(loadout.InstallationInstance)
                 .Select(rev => rev.Id == loadout.LoadoutId)
+                .OnUI()
                 .BindToVM(this, x => x.IsLoadoutApplied)
                 .DisposeWith(d);
 
