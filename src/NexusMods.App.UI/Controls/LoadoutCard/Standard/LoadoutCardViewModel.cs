@@ -26,7 +26,9 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutCardViewModel>>();
         var applyService = serviceProvider.GetRequiredService<IApplyService>();
         LoadoutName = loadout.Name;
-        LoadoutBadgeViewModel = new LoadoutBadgeDesignViewModel();
+        var badgeVm = serviceProvider.GetRequiredService<ILoadoutBadgeViewModel>();
+        badgeVm.LoadoutValue = loadout;
+        LoadoutBadgeViewModel = badgeVm;
         
         DeleteLoadoutCommand = ReactiveCommand.CreateFromTask(() =>
             {

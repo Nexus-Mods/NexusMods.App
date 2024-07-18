@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using NexusMods.Abstractions.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -58,6 +59,7 @@ public class LoadoutBadgeDesignViewModel : AViewModel<ILoadoutBadgeViewModel>, I
         );
     }
 
+    public Loadout.ReadOnly? LoadoutValue { get; set; } = null!;
     [Reactive] public string LoadoutShortName { get; set; } = "A";
     [Reactive] public bool IsLoadoutSelected { get; set; } = false;
     [Reactive] public bool IsLoadoutApplied { get; set; } = false;
