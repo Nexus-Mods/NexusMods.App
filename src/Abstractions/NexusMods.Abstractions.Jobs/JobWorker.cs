@@ -12,7 +12,7 @@ public static class JobWorker
     public delegate Task<JobResult> ExecuteAsyncDelegate<TJob>(TJob job, AJobWorker<TJob> worker, CancellationToken cancellationToken)
         where TJob : AJob;
 
-    public static AJobWorker<TJob> Create<TJob, TData>(TJob job, ExecuteAsyncDelegateWithData<TJob, TData> func)
+    public static AJobWorker<TJob> CreateWithData<TJob, TData>(TJob job, ExecuteAsyncDelegateWithData<TJob, TData> func)
     where TJob : AJob
     where TData : notnull
     {

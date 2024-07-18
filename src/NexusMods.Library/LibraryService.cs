@@ -47,6 +47,13 @@ public sealed class LibraryService : ILibraryService
 
     public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout)
     {
-        throw new NotImplementedException();
+        var job = new InstallLoadoutItemJob(worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
+        {
+            Transaction = _connection.BeginTransaction(),
+            LibraryItem = libraryItem,
+            Loadout = targetLoadout,
+        };
+
+        return job;
     }
 }

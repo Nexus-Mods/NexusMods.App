@@ -32,6 +32,11 @@ public interface IGame : ILocatableGame
     public IEnumerable<IModInstaller> Installers { get; }
 
     /// <summary>
+    /// Gets all available installers this game supports.
+    /// </summary>
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+
+    /// <summary>
     /// An array of all instances of <see cref="IDiagnosticEmitter"/> supported
     /// by the game.
     /// </summary>

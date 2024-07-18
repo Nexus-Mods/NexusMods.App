@@ -70,6 +70,9 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
 
+    /// <inheritdoc />
+    public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
+
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
 
