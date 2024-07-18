@@ -39,9 +39,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, PanelId> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
-    [Reactive]
-    public bool IsNotAlone { get; set; }
+    [Reactive] public bool IsSelected { get; set; } = true;
 
+    [Reactive] public bool IsAlone { get; set; }
+
+    [Reactive] public IPanelTabViewModel SelectedTab { get; private set; } = null!;
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly IWorkspaceController _workspaceController;
@@ -52,7 +54,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
-        var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
+        var canExecute = this.WhenAnyValue(vm => vm.IsAlone).Select(b => !b);
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
@@ -111,14 +113,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                     else
                         SelectedTabId = Tabs[removedIndex].Id;
                 })
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // handle the close command on tabs
             _tabsList
                 .Connect()
                 .MergeMany(item => item.Header.CloseTabCommand)
-                .Subscribe(CloseTab)
+                .SubscribeWithErrorLogging(CloseTab)
                 .DisposeWith(disposables);
 
             // handle when a tab gets selected
@@ -127,15 +129,15 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender.Id)
-                // NOTE(erri120): this throws an exception, see #751
-                // .BindToVM(this, vm => vm.SelectedTabId)
-                .Subscribe(selectedTabId => SelectedTabId = selectedTabId)
+                .Select(propertyValue => propertyValue.Sender)
+                .Do(vm => SelectedTab = vm)
+                .Select(vm => vm.Id)
+                .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 
             // 2) update the visibility of the tabs
             this.WhenAnyValue(vm => vm.SelectedTabId)
-                .Do(selectedTabId =>
+                .SubscribeWithErrorLogging(selectedTabId =>
                 {
                     foreach (var tab in Tabs)
                     {
@@ -143,7 +145,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                         tab.Header.IsSelected = tab.Id == selectedTabId;
                     }
                 })
-                .Subscribe()
                 .DisposeWith(disposables);
         });
     }

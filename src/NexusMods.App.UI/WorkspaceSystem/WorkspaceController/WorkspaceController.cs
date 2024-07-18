@@ -95,8 +95,21 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception while restoring Workspace {WorkspaceId}", workspaceData.Id);
-                if (vm.Panels.Count == 0) AddDefaultPanel((WorkspaceViewModel)vm);
+                _logger.LogError(e, "Exception while restoring Workspace `{WorkspaceId}`, resetting to default", workspaceData.Id);
+
+                vm.FromData(new WorkspaceData
+                {
+                    Context = vm.Context,
+                    Id = vm.Id,
+                    Panels = [
+                        new PanelData
+                        {
+                            LogicalBounds = MathUtils.One,
+                            Tabs = [],
+                            SelectedTabId = PanelTabId.DefaultValue,
+                        },
+                    ],
+                });
             }
 
             if (isActiveWorkspace) activeWorkspace = vm;
@@ -312,13 +325,17 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior,
-        bool selectTab = true)
+    public void OpenPage(
+        WorkspaceId workspaceId,
+        Optional<PageData> pageData,
+        OpenPageBehavior behavior,
+        bool selectTab = true,
+        bool checkOtherPanels = true)
     {
         Dispatcher.UIThread.VerifyAccess();
 
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
-        workspaceViewModel.OpenPage(pageData, behavior, selectTab);
+        workspaceViewModel.OpenPage(pageData, behavior, selectTab, checkOtherPanels);
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)
@@ -360,88 +377,46 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     }
 
     /// <inheritdoc/>
-    public OpenPageBehavior GetOpenPageBehavior(
-        PageData requestedPage,
-        NavigationInformation navigationInformation,
-        Optional<PageIdBundle> optionalCurrentPage)
+    public OpenPageBehavior GetOpenPageBehavior(PageData requestedPage, NavigationInformation navigationInformation)
     {
-        if (!navigationInformation.OpenPageBehaviorType.HasValue)
+        if (navigationInformation.OpenPageBehaviorType.TryGet(out var behaviorType))
         {
-            return GetDefaultOpenPageBehavior(requestedPage, navigationInformation.Input, optionalCurrentPage);
+            return CreateOpenPageBehavior(behaviorType);
         }
 
-        return CreateOpenPageBehavior(
-            navigationInformation.OpenPageBehaviorType.Value,
-            optionalCurrentPage
-        );
+        return GetDefaultOpenPageBehavior(requestedPage, navigationInformation.Input);
     }
 
     /// <inheritdoc/>
-    public OpenPageBehavior GetDefaultOpenPageBehavior(
-        PageData requestedPage,
-        NavigationInput input,
-        Optional<PageIdBundle> optionalCurrentPage)
+    public OpenPageBehavior GetDefaultOpenPageBehavior(PageData requestedPage, NavigationInput input)
     {
-        const OpenPageBehaviorType fallback = OpenPageBehaviorType.NewTab;
+        const OpenPageBehaviorType fallback = OpenPageBehaviorType.ReplaceTab;
 
         var requestedPageFactory = _pageFactoryController.GetFactory(requestedPage);
 
-        var hasData = optionalCurrentPage.HasValue;
         var isPrimaryInput = input.IsPrimaryInput();
+        var globalSettings = OpenPageBehaviorSettings.Default;
+        var pageDefaultBehavior = requestedPageFactory.DefaultOpenPageBehavior;
 
-        // TODO: fetch this from settings depending on hasData
-        var globalSettings = hasData
-            ? OpenPageBehaviorSettings.DefaultWithData
-            : OpenPageBehaviorSettings.DefaultWithoutData;
-
-        var pageDefaultBehavior = hasData
-            ? requestedPageFactory.DefaultOpenPageBehaviorWithData
-            : requestedPageFactory.DefaultOpenPageBehaviorWithoutData;
+        var globalBehaviorType = globalSettings.GetValueOrDefault(input, fallback);
 
         var behaviorType = isPrimaryInput
-            ? pageDefaultBehavior.ValueOr(globalSettings.GetValueOrDefault(input, fallback))
-            : globalSettings.GetValueOrDefault(input, fallback);
+            ? pageDefaultBehavior.ValueOr(globalBehaviorType)
+            : globalBehaviorType;
 
-        return CreateOpenPageBehavior(behaviorType, optionalCurrentPage);
+        return CreateOpenPageBehavior(behaviorType);
     }
 
-    private OpenPageBehavior CreateOpenPageBehavior(
-        OpenPageBehaviorType behaviorType,
-        Optional<PageIdBundle> optionalCurrentPage)
+    private OpenPageBehavior CreateOpenPageBehavior(OpenPageBehaviorType behaviorType)
     {
-        const OpenPageBehaviorType fallback = OpenPageBehaviorType.NewTab;
-
-        var hasData = optionalCurrentPage.HasValue;
-        if (!hasData)
-        {
-            return behaviorType switch
-            {
-                OpenPageBehaviorType.ReplaceTab => new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None),
-                OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(Optional<PanelId>.None),
-                OpenPageBehaviorType.NewPanel => new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None),
-            };
-        }
-
-        var currentPage = optionalCurrentPage.Value;
-
-        var isPoppedOutWorkspace = IsPoppedOutWorkspace(optionalCurrentPage.Value);
-        if (isPoppedOutWorkspace)
-        {
-            // TODO: default behavior for popped out workspaces
-            behaviorType = fallback;
-        }
+        var selectedPanel = ActiveWorkspace.SelectedPanel;
+        var selectedTab = selectedPanel.SelectedTab;
 
         return behaviorType switch
         {
-            OpenPageBehaviorType.ReplaceTab => new OpenPageBehavior.ReplaceTab(currentPage.PanelId, currentPage.TabId),
-            OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(currentPage.PanelId),
+            OpenPageBehaviorType.ReplaceTab => new OpenPageBehavior.ReplaceTab(selectedPanel.Id, selectedTab.Id),
+            OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(selectedPanel.Id),
             OpenPageBehaviorType.NewPanel => new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None),
         };
-    }
-
-    private static bool IsPoppedOutWorkspace(PageIdBundle currentPage)
-    {
-        // TODO:
-        return false;
     }
 }

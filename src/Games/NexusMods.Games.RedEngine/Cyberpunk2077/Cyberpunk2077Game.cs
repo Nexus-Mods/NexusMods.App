@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
@@ -10,18 +12,19 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.FOMOD;
+using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.RedEngine;
+namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
-public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
+public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
     private readonly IFileSystem _fileSystem;
     private readonly IServiceProvider _serviceProvider;
 
-    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(provider)
+    public Cyberpunk2077Game(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(provider)
     {
         _fileSystem = fileSystem;
         _serviceProvider = provider;
@@ -58,11 +61,18 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.icon.png");
+        new EmbededResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.icon.png");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.game_image.jpg");
-
+        new EmbededResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.game_image.jpg");
+    
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        _serviceProvider.GetRequiredService<ArchiveXLMissingEmitter>(),
+        _serviceProvider.GetRequiredService<CyberEngineTweaksMissingEmitter>(),
+        _serviceProvider.GetRequiredService<Red4ExtMissingEmitter>(),
+        _serviceProvider.GetRequiredService<TweakXLMissingEmitter>()
+    ];
 
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]

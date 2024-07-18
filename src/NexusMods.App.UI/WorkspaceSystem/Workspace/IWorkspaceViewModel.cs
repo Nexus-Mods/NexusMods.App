@@ -33,6 +33,8 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// </summary>
     public bool IsActive { get; set; }
 
+    public IPanelViewModel SelectedPanel { get; }
+
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers { get; }

@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
@@ -200,7 +199,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                             FactoryId = FileOriginsPageFactory.StaticId,
                             Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
                         };
-                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo, Optional<PageIdBundle>.None);
+                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo);
                         
                         controller.OpenPage(workspace.Id, pageData, behavior);
                         controller.ChangeActiveWorkspace(workspace.Id);

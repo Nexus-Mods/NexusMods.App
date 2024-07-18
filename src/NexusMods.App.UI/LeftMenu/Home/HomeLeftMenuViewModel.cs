@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -37,7 +36,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
                         Context = new MyGamesPageContext(),
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }),
             },

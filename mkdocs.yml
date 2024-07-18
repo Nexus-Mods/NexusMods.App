@@ -125,13 +125,8 @@ nav:
         - '02: Data Model Triggers': developers/concepts/0002-datamodel-triggers.md
     - Games:
         - '00: Template': developers/games/0000-Template.md
-        - '01: Skyrim SE': developers/games/0001-SkyrimSE.md
-        - '02: Stardew Valley': developers/games/0002-StardewValley.md
-        - '03: Sifu': developers/games/0003-Sifu.md
-        - '04: Darkest Dungeon': developers/games/0004-DarkestDungeon.md
-        - '05: Skyrim LE': developers/games/0005-SkyrimLE.md
-        - '06: Blade And Sorcery': developers/games/0006-BladeAndSorcery.md
-        - '07: Bannerlord': developers/games/0007-Bannerlord.md
+        - '01: Stardew Valley': developers/games/0001-StardewValley.md
+        - '02: Cyberpunk 2077': developers/games/0002-Cyberpunk2077.md
     - Misc:
         - About Fomod: developers/misc/AboutFomod.md
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md

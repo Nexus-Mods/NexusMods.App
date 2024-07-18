@@ -27,11 +27,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public WindowId WindowId => _workspaceController.WindowId;
 
     /// <inheritdoc/>
-    public string Title { get; set; } = string.Empty;
+    [Reactive] public string Title { get; set; } = string.Empty;
 
     /// <inheritdoc/>
     public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
 
+    /// <inheritdoc/>
+    [Reactive] public IPanelViewModel SelectedPanel { get; private set; } = null!;
+
+    /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
@@ -101,6 +105,36 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .SubscribeWithErrorLogging(ClosePanel)
                 .DisposeWith(disposables);
 
+            // handle when a tab gets removed
+            _panelSource
+                .Connect()
+                .ForEachChange(itemChange =>
+                {
+                    if (itemChange.Reason != ChangeReason.Remove) return;
+                    if (!itemChange.Current.IsSelected) return;
+                    SelectedPanel = Panels.First();
+                })
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
+            // selecting a panel
+            _panelSource
+                .Connect()
+                .WhenPropertyChanged(panel => panel.IsSelected)
+                .Where(propertyValue => propertyValue.Value)
+                .Select(propertyValue => propertyValue.Sender)
+                .BindToVM(this, vm => vm.SelectedPanel);
+
+            this.WhenAnyValue(vm => vm.SelectedPanel)
+                .SubscribeWithErrorLogging(selectedPanel =>
+                {
+                    foreach (var panel in Panels)
+                    {
+                        panel.IsSelected = panel.Id == selectedPanel.Id;
+                    }
+                })
+                .DisposeWith(disposables);
+
             // TODO: popout command
 
             // Disabling certain features when there is only one panel
@@ -108,14 +142,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .Count()
                 .Select(panelCount => panelCount > 1)
-                .Do(hasMultiplePanels =>
+                .SubscribeWithErrorLogging(hasMultiplePanels =>
                 {
                     for (var i = 0; i < Panels.Count; i++)
                     {
-                        Panels[i].IsNotAlone = hasMultiplePanels;
+                        Panels[i].IsAlone = !hasMultiplePanels;
                     }
                 })
-                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // Finished Resizing
@@ -319,19 +352,33 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
-    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab)
+    /// <summary>
+    /// Tries to select the first panel where the selected tab shows the same page.
+    /// </summary>
+    private bool TrySelectPage(PageData pageData)
+    {
+        var panel = Panels.FirstOrDefault(panel => panel.SelectedTab.Contents.PageData.Context.Equals(pageData.Context));
+        if (panel is null) return false;
+
+        panel.IsSelected = true;
+        return true;
+    }
+
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab, bool checkOtherPanels)
     {
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
         behavior.Switch(
-            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab, checkOtherPanels),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
             f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
         );
     }
 
-    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab, bool checkOtherPanels)
     {
+        if (checkOtherPanels) if (TrySelectPage(pageData)) return;
+
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
@@ -500,8 +547,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     WorkspaceId = Id,
                 };
 
-                vm.FromData(panel);
                 updater.AddOrUpdate(vm);
+                vm.FromData(panel);
             }
         });
 
