@@ -595,4 +595,7 @@
         <value>Mods {0}</value>
         <comment>Where {0} is the number of mods in a loadout</comment>
     </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>My Loadouts</value>
+    </data>
 </root>

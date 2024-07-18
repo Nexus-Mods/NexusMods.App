@@ -1414,6 +1414,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My Loadouts.
+        /// </summary>
+        public static string MyLoadoutsPageTitle {
+            get {
+                return ResourceManager.GetString("MyLoadoutsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open in new panel.
         /// </summary>
         public static string NavigationControl_NavigationControl_Open_in_new_panel {

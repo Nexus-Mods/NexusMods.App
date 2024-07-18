@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Pages.ModLibrary;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 
@@ -33,7 +34,7 @@ public class MyLoadoutsPageFactory : APageFactory<IMyLoadoutsViewModel, MyLoadou
         {
             // TODO: Update with design mandate names
             SectionName = "Loadouts",
-            ItemName = "My Loadouts",
+            ItemName = Language.MyLoadoutsPageTitle,
             Icon = IconValues.ModLibrary, // TODO: Change this to a Loadouts icon
             PageData = new PageData
             {
