@@ -664,17 +664,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // to the original state before NMA touched it, if we don't already
         // have one.
         var installLocation = installation.LocationsRegister[LocationId.Game];
-        if (!Loadout.All(db)
-                .Any(x => 
-                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
-                && x.IsVanillaStateLoadout()))
+        var existingLoadouts = Loadout.All(db)
+            .Where(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation)
+            .ToArray();
+        
+        if (existingLoadouts.Any(x => x.IsVanillaStateLoadout()))
         {
             await CreateVanillaStateLoadout(installation);
         }
-
+        
+        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadouts.Where(l => l.IsVisible()).ToArray());
+        
         var loadout = new Loadout.New(tx)
         {
-            Name = suggestedName ?? installation.Game.Name,
+            Name = suggestedName ?? installation.Game.Name + " " + shortName,
+            ShortName = shortName,
             InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.Default,
@@ -845,6 +849,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var loadout = new Loadout.New(tx)
         {
             Name = $"Vanilla State Loadout for {installation.Game.Name}",
+            ShortName = "-",
             InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.VanillaState,
