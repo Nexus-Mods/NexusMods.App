@@ -97,7 +97,7 @@
                               Classes="Spacing-1"
                               Margin="4,16,-6,0">
                             <Button Classes="Rounded Primary" x:Name="ViewGameButton"
-                                    Margin="-6,0,4,0"
+                                    Margin="-6,0,8,0"
                                     HorizontalAlignment="Stretch"
                                     Grid.Column="0">
                                 <StackPanel Orientation="Horizontal">
@@ -105,14 +105,6 @@
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__View}"/>
                                 </StackPanel>
-                            </Button>
-                            <Button Classes="Rounded Primary"
-                                    HorizontalAlignment="Right"
-                                    x:Name="AddLoadoutButton"
-                                    IsVisible="True"
-                                    Margin="0,0,4,0"
-                                    Grid.Column="1">
-                                <icons:UnifiedIcon Classes="Add" />
                             </Button>
                             <Button Classes="Rounded Primary" 
                                     HorizontalAlignment="Right"

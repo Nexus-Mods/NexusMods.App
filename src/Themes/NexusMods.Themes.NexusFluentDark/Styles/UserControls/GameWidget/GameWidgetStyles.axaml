@@ -6,6 +6,9 @@
     <Design.PreviewWith>
         <Border Classes="Mid" Padding="20">
             <ui:GameWidget>
+                <ui:GameWidget.DataContext>
+                    <ui:GameWidgetDesignViewModel />
+                </ui:GameWidget.DataContext>
             </ui:GameWidget>
         </Border>
     </Design.PreviewWith>

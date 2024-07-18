@@ -15,12 +15,10 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public Bitmap Image { get; }
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; } = ReactiveCommand.Create(() => { });
-    // TODO: This is temporary, to speed up development. Until design comes up with UX for deleting loadouts.
     public ReactiveCommand<Unit, Unit> RemoveAllLoadoutsCommand { get; set; } = ReactiveCommand.Create(() => { });
 
     [Reactive]
     public GameWidgetState State { get; set; }
-    public bool CanAddMoreThanOneLoadout { get; }
 
     public GameWidgetDesignViewModel()
     {
