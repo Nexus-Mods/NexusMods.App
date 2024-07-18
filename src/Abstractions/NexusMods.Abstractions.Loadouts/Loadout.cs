@@ -28,6 +28,11 @@ public partial class Loadout : IModelDefinition
     public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
     
     /// <summary>
+    /// A capital one-letter name for the loadout, for spine labels and other places where space is limited.
+    /// </summary>
+    public static readonly StringAttribute ShortName = new(Namespace, nameof(ShortName)) { IsIndexed = true, DefaultValue = "-"};
+    
+    /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
     public static readonly ReferenceAttribute<GameMetadata> Installation = new(Namespace, nameof(Installation));
