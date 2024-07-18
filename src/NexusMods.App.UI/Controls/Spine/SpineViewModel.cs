@@ -81,6 +81,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         this.WhenActivated(disposables =>
             {
                 var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, _conn.Registry))
+                    .SuppressRefresh()
                     .Transform(id => Loadout.Load(_conn.Db, id.E));
                 
                     loadouts
