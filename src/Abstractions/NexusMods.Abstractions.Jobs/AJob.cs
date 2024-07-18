@@ -42,7 +42,8 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
     protected AJob(
         MutableProgress progress,
         IJobGroup? group = default,
-        IJobWorker? worker = default)
+        IJobWorker? worker = default,
+        IJobMonitor? monitor = default)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
@@ -64,6 +65,8 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         _collection = [];
         _observableCollection = new ObservableCollection<IJob>(_collection);
         ObservableCollection = new ReadOnlyObservableCollection<IJob>(_observableCollection);
+
+        monitor?.RegisterJob(this);
     }
 
     public IEnumerator<IJob> GetEnumerator() => _collection.GetEnumerator();
