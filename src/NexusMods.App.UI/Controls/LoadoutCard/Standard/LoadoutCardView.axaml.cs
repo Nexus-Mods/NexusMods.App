@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
@@ -62,6 +61,12 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                 this.OneWayBind(ViewModel,
                         vm => vm.LoadoutModCount,
                         view => view.NumberOfModsTextBlock.Text)
+                    .DisposeWith(d);
+                
+                // Hide Delete button if last loadout
+                this.WhenAnyValue(view => view.ViewModel!.IsLastLoadout)
+                    .Select(isLastLoadout => !isLastLoadout)
+                    .BindToView(this, view => view.DeleteButton.IsVisible)
                     .DisposeWith(d);
                 
                 // Deleting state

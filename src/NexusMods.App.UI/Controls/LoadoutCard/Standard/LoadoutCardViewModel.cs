@@ -3,6 +3,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using DynamicData;
+using DynamicData.Aggregation;
+using DynamicData.Alias;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -72,6 +75,14 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .OnUI()
                 .BindToVM(this, x => x.LoadoutModCount)
                 .DisposeWith(d);
+            
+            Loadout.ObserveAll(conn)
+                .Filter(l => l.IsVisible() && l.Installation.Path == loadout.Installation.Path && l.LoadoutId != loadout.LoadoutId)
+                .Count()
+                .Select(count => count == 0)
+                .OnUI()
+                .BindToVM(this, x => x.IsLastLoadout)
+                .DisposeWith(d);
 
         });
         
@@ -89,6 +100,8 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     public required ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; init; }
     public required ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; init; } 
     public ReactiveCommand<Unit, Unit> DeleteLoadoutCommand { get; }
+    
+    [Reactive] public bool IsLastLoadout { get; set; } = true;
     
     
     private string FormatNumMods(int numMods)

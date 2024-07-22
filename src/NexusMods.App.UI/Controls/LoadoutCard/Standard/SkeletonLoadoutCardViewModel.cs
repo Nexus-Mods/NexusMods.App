@@ -16,6 +16,7 @@ public class SkeletonLoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, I
     public string LoadoutModCount { get; } = "";
     public bool IsDeleting { get; } = false;
     public bool IsSkeleton { get; } = true;
+    public bool IsLastLoadout { get; } = false;
     public ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> DeleteLoadoutCommand { get; } = ReactiveCommand.Create(() => { });
