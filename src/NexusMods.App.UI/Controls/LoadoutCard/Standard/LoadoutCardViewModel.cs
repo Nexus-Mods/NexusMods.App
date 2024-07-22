@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
@@ -61,7 +62,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
 
             var interval = Observable.Interval(TimeSpan.FromMinutes(1)).Prepend(0);
             
-            interval.Select(_ => FormatCreatedTime(loadout.CreatedAt))
+            interval.Select(_ => FormatCreatedTime(loadout.GetCreatedAt()))
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutCreationTime);
             

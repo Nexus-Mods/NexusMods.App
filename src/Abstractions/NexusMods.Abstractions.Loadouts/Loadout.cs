@@ -123,19 +123,6 @@ public partial class Loadout : IModelDefinition
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
         
-        
-        /// <summary>
-        /// Returns the timestamp of the transaction that created this loadout.
-        /// </summary>
-        public DateTime CreatedAt
-        {
-            get
-            {
-                var lowestTx = this.Min(d => d.T);
-                var tx = Transaction.Load(Db, EntityId.From(lowestTx.Value));
-                return tx.Timestamp;
-            }
-        }
     }
 }
 
