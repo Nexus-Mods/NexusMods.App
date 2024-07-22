@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -10,7 +11,7 @@ namespace NexusMods.App.UI.Controls.LoadoutBadge;
 public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadoutBadgeViewModel
 {
  
-    [Reactive] public Loadout.ReadOnly? LoadoutValue { get; set; }
+    [Reactive] public Optional<Loadout.ReadOnly> LoadoutValue { get; set; }
     
     public LoadoutBadgeViewModel(IConnection conn, IApplyService applyService)
     {
