@@ -73,8 +73,7 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                             OverlayTextBlock.Text = Language.LoadoutCardViewDeletingText;
                         IsEnabled = !isDeleting;
                         OverlayFlexPanel.IsVisible = isDeleting;
-                        CreateCopyButton.IsVisible = !isDeleting;
-                        DeleteButton.IsVisible = !isDeleting;
+                        ActionsBorder.IsVisible = !isDeleting;
                     })
                     .DisposeWith(d);
                 

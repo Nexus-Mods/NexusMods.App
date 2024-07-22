@@ -118,6 +118,7 @@
 
         <Style Selector="^ panels|FlexPanel#ActionsFlexPanel">
             <Setter Property="Direction" Value="Row" />
+            <Setter Property="JustifyContent" Value="SpaceBetween" />
             <Setter Property="AlignItems" Value="FlexStart" />
             <Setter Property="AlignContent" Value="Stretch" />
             <Setter Property="ColumnSpacing" Value="8" />
