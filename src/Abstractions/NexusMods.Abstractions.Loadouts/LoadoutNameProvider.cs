@@ -13,9 +13,9 @@ public static class LoadoutNameProvider
     /// If all letters are used,'Z' will be returned.
     /// Short names should not be assumed to be unique, they are only used for user disambiguation.
     /// </summary>
-    public static string GetNewShortName(Loadout.ReadOnly[] existingLoadouts)
+    public static string GetNewShortName(string[] existingLoadoutsShortNames)
     {
-        var usedLetters = new HashSet<string>(existingLoadouts.Select(loadout => loadout.ShortName));
+        var usedLetters = new HashSet<string>(existingLoadoutsShortNames);
         foreach (var letter in Alphabet)
         {
             if (!usedLetters.Contains(letter))

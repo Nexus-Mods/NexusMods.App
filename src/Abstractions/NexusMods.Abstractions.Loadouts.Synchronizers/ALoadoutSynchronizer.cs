@@ -672,7 +672,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             await CreateVanillaStateLoadout(installation);
         }
         
-        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadouts.Where(l => l.IsVisible()).ToArray());
+        var shortName = LoadoutNameProvider.GetNewShortName(
+            existingLoadouts.Where(l => l.IsVisible()).Select(l=> l.ShortName).ToArray());
         
         using var tx = Connection.BeginTransaction();
         
