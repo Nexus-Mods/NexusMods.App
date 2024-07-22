@@ -8,7 +8,6 @@
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
-        <PackageReference Include="NexusMods.MnemonicDB.Storage" />
     </ItemGroup>
 
     <ItemGroup>
