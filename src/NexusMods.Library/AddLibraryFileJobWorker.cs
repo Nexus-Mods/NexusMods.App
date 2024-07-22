@@ -70,7 +70,6 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 job.Transaction,
                 job.EntityId.Value,
                 job.FilePath,
-                job.RelativeTo,
                 hash: job.HashJobResult.Value.RequireData<Hash>()
             );
         }
@@ -119,7 +118,6 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                     {
                         Transaction = job.Transaction,
                         FilePath = fileEntry.Path,
-                        RelativeTo = job.ExtractionDirectory.Value,
                         DoCommit = false,
                         DoBackup = false,
                     };
@@ -159,9 +157,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             foreach (var tuple in job.AddExtractedFileJobResults.Value)
             {
                 var (jobResult, _) = tuple;
-                
                 var libraryFile = jobResult.RequireData<LibraryFile.New>();
-                
                 var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
                     LibraryFile = libraryFile,
@@ -232,11 +228,11 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         // return await AddJobAndWaitForResultAsync(hashJob);
     }
 
-    private static LibraryFile.New CreateLibraryFile(ITransaction tx, EntityId entityId, AbsolutePath filePath, AbsolutePath relativeTo, Hash hash)
+    private static LibraryFile.New CreateLibraryFile(ITransaction tx, EntityId entityId, AbsolutePath filePath, Hash hash)
     {
         var libraryFile = new LibraryFile.New(tx, entityId)
         {
-            FileName = filePath.RelativeTo(relativeTo),
+            FileName = filePath.FileName,
             Hash = hash,
             Size = filePath.FileInfo.Size,
             LibraryItem = new LibraryItem.New(tx, entityId)
