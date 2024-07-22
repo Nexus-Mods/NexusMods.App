@@ -64,7 +64,8 @@
 
                                 <panels:FlexPanel x:Name="ActionsFlexPanel">
 
-                                    <Button x:Name="CreateCopyButton"
+                                    <!-- TODO: Show button after LoadoutCloning is implemented -->
+                                    <Button x:Name="CreateCopyButton" IsVisible="False"
                                             Classes="Rounded Primary">
                                         <StackPanel HorizontalAlignment="Center">
                                             <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
