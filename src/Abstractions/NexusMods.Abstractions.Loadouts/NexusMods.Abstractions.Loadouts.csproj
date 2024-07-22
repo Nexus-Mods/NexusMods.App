@@ -15,7 +15,6 @@
       </PackageReference>
       <PackageReference Include="FlatSharp.Runtime" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
-      <PackageReference Include="NexusMods.MnemonicDB.Storage" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
