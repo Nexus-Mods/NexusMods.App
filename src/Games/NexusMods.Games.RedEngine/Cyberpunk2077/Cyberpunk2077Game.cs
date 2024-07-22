@@ -80,7 +80,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new RedModInstaller(),
         new SimpleOverlayModInstaller(_serviceProvider),
         new AppearancePreset(_serviceProvider),
-        new FolderlessModInstaller(),
+        new FolderlessModInstaller(_serviceProvider),
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
     };
 

@@ -16,8 +16,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Tests.LibraryArchiveInstallerTests;
 
-public abstract class ALibraryArchiveInstallerTests<TInstaller> : AGameTest<Cyberpunk2077.Cyberpunk2077Game>
-    where TInstaller : ALibraryArchiveInstaller
+public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cyberpunk2077Game>
 {
     private readonly ILibraryService _libraryService;
     private readonly TemporaryFileManager _tempFileManager;
@@ -63,14 +62,17 @@ public abstract class ALibraryArchiveInstallerTests<TInstaller> : AGameTest<Cybe
         return LibraryFile.FindByHash(Connection.Db, archiveHash).OfTypeLibraryArchive().First();
     }
 
-    protected async Task<LoadoutItem.ReadOnly[]> Install(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    protected async Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
     {
-        var installer = Game.Installers.OfType<TInstaller>().FirstOrDefault();
+        var installer = Game.Installers.FirstOrDefault(i => i.GetType() == installerType);
         if (installer == null)
-            throw new InvalidOperationException($"No installer of type {typeof(TInstaller).Name} found for game {Game.Name}.");
+            throw new InvalidOperationException($"No installer of type {installerType.Name} found for game {Game.Name}.");
+        
+        if (installer is not ALibraryArchiveInstaller archiveInstaller)
+            throw new InvalidOperationException($"The installer of type {installerType.Name} is not an archive installer.");
 
         using var tx = Connection.BeginTransaction();
-        var results = await installer.ExecuteAsync(archive, tx, loadout, CancellationToken.None);
+        var results = await archiveInstaller.ExecuteAsync(archive, tx, loadout, CancellationToken.None);
         
         results.Length.Should().BePositive("The installer should have installed at least one file.");
         
