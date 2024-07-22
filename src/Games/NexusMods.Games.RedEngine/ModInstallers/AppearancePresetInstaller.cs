@@ -1,6 +1,12 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
@@ -12,7 +18,7 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 /// This mod installer is used to install appearance presets for Cyberpunk 2077, they are installed into a specific
 /// folder under the cyber engine tweaks mod's subfolder for the appearance change unlocker.
 /// </summary>
-public class AppearancePreset : AModInstaller
+public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
 {
     private static readonly RelativePath[] Paths = {
         "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female".ToRelativePath(),
@@ -23,9 +29,11 @@ public class AppearancePreset : AModInstaller
     /// DI Constructor
     /// </summary>
     /// <param name="serviceProvider"></param>
-    public AppearancePreset(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public AppearancePresetInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<AppearancePresetInstaller>>())
+    {
+    }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
@@ -36,12 +44,34 @@ public class AppearancePreset : AModInstaller
             ))).ToArray();
 
         if (!modFiles.Any())
-            return NoResults;
+            return [];
 
         return new ModInstallerResult[] { new()
         {
             Id = info.BaseModId,
-            Files = modFiles
+            Files = modFiles,
         }};
+    }
+
+    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    {
+        var tree = libraryArchive.GetTree();
+        var extensionPreset = new Extension(".preset");
+
+        var group = libraryArchive.ToGroup(loadout.Id, tx);
+        
+        var modFiles = tree.GetFiles()
+            .Where(kv => kv.Key().Extension == extensionPreset)
+            .SelectMany(kv => Paths.Select(relPath => kv.ToLoadoutFile(
+                loadout.Id,
+                group.Id,
+                tx,
+                new GamePath(LocationId.Game, relPath.Join(kv.Key()))
+            ))).ToArray();
+
+        if (!modFiles.Any())
+            return [];
+
+        return [group];
     }
 }

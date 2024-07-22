@@ -12,6 +12,7 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Tests.LibraryArchiveInstallerTests;
@@ -45,9 +46,14 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             }
         }
 
-        var archiveHash = await file.Path.XxHash64Async();
+        return await RegisterLocalArchive(file);
+    }
+
+    public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
+    {
+        var archiveHash = await file.XxHash64Async();
         
-        var job = _libraryService.AddLocalFile(file.Path);
+        var job = _libraryService.AddLocalFile(file);
         await job.StartAsync();
         var result = await job.WaitToFinishAsync();
         
@@ -103,5 +109,71 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             var libraryFile = LibraryFile.FindByHash(db, file.Hash).First();
             yield return (libraryFile.FileName, libraryFile.Hash, itemWithTargetPath.TargetPath);
         }
+    }
+
+    public SettingsTask VerifyTx(TxId tx)
+    {
+        return Verify(ToTable(Connection.Db.Datoms(tx)));
+    }
+    
+    public static string ToTable(IndexSegment datoms)
+    {
+
+        string TruncateOrPad(string val, int length)
+        {
+            if (val.Length > length)
+            {
+                var midPoint = length / 2;
+                return (val[..(midPoint - 2)] + "..." + val[^(midPoint - 2)..]).PadRight(length);
+            }
+
+            return val.PadRight(length);
+        }
+
+        var dateTimeCount = 0;
+
+        var sb = new StringBuilder();
+        foreach (var datom in datoms.Resolved())
+        {
+            var isRetract = datom.IsRetract;
+
+            var symColumn = TruncateOrPad(datom.A.Id.Name, 24);
+            sb.Append(isRetract ? "-" : "+");
+            sb.Append(" | ");
+            sb.Append(datom.E.Value.ToString("X16"));
+            sb.Append(" | ");
+            sb.Append(symColumn);
+            sb.Append(" | ");
+
+
+
+            switch (datom.ObjectValue)
+            {
+                case EntityId eid:
+                    sb.Append(eid.Value.ToString("X16").PadRight(48));
+                    break;
+                case ulong ul:
+                    sb.Append(ul.ToString("X16").PadRight(48));
+                    break;
+                case byte[] byteArray:
+                    var code = byteArray.XxHash64().Value;
+                    var hash = code.ToString("X16");
+                    sb.Append($"Blob 0x{hash} {byteArray.Length} bytes".PadRight(48));
+                    break;
+                case DateTime dateTime:
+                    sb.Append($"DateTime : {dateTimeCount++}".PadRight(48));
+                    break;
+                default:
+                    sb.Append(TruncateOrPad(datom.ObjectValue.ToString()!, 48));
+                    break;
+            }
+
+            sb.Append(" | ");
+            sb.Append(datom.T.Value.ToString("X16"));
+
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
 }

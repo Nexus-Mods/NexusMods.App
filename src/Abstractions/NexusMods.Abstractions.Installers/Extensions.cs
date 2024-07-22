@@ -27,7 +27,7 @@ public static class Extensions
     /// <summary>
     /// Convert as LibraryArchiveTree node to a LoadoutFile with the given metadata
     /// </summary>
-    public static LoadoutFile.New ToLoadoutfile(this KeyedBox<RelativePath, LibraryArchiveTree> input, LoadoutId loadoutId, LoadoutItemGroupId parent, ITransaction tx, GamePath to)
+    public static LoadoutFile.New ToLoadoutFile(this KeyedBox<RelativePath, LibraryArchiveTree> input, LoadoutId loadoutId, LoadoutItemGroupId parent, ITransaction tx, GamePath to)
     {
         var libraryFile = input.Item.LibraryFile.Value;
 
@@ -47,6 +47,29 @@ public static class Extensions
             Hash = libraryFile.Hash,
             Size = libraryFile.Size,
         };
+    }
+
+    /// <summary>
+    /// Creates a group loadout item for the given library archive. Often used by installers to group files from a single archive together
+    /// </summary>
+    public static LoadoutItem.New ToGroup(this LibraryArchive.ReadOnly archive, LoadoutId loadout, ITransaction tx, string? name = null)
+    {
+        var groupId = tx.TempId();
+        
+        var item = new LoadoutItem.New(tx, groupId)
+        {
+            LoadoutId = loadout,
+            IsDisabled = false,
+            Name = name ?? archive.AsLibraryFile().FileName,
+        };
+        
+        var group = new LoadoutItemGroup.New(tx, groupId)
+        {
+            LoadoutItem = item, 
+            IsGroupMarker = true,
+        };
+
+        return item;
     }
 
     /// <summary>

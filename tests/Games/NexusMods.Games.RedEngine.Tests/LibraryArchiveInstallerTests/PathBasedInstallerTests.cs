@@ -22,6 +22,8 @@ public class PathBasedInstallerTests : ALibraryArchiveInstallerTests
         ( "Files Under Sub Folders", typeof(SimpleOverlayModInstaller), ["mymod/bin/x64/foo.exe", "mymod/archive/pc/mod/foo.archive"] ),
         ( "All Common Prefixes", typeof(SimpleOverlayModInstaller), ["bin/x64/foo.exe", "engine/foo.exe", "r6/foo.exe", "red4ext/foo.exe", "archive/pc/mod/foo.archive"] ),
         ( "Files with no folder", typeof(FolderlessModInstaller), ["folder/filea.archive", "fileb.archive"] ),
+        ( "Ignored Extensions", typeof(FolderlessModInstaller), ["folder/filea.archive", "file.txt", "docs/file.md", "bin/x64/file.pdf", "bin/x64/file.png"] ),
+        ( "Appearance Preset", typeof(AppearancePresetInstaller), ["cool_choom.preset"] ),
     };
 
     public static IEnumerable<object[]> TestCaseData()
@@ -49,7 +51,6 @@ public class PathBasedInstallerTests : ALibraryArchiveInstallerTests
     private SettingsTask VerifyChildren(IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> childrenFilesAndHashes, string[] archivePaths)
     {
         var asArray = childrenFilesAndHashes.ToArray();
-        asArray.Length.Should().Be(archivePaths.Length, "The number of files should match the number of files in the archive.");
         
         return Verify(asArray.Select(row =>
                 new

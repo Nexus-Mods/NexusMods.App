@@ -16,7 +16,7 @@ public static class Services
         services.AddGame<Cyberpunk2077Game>()
             .AddSingleton<IModInstaller, SimpleOverlayModInstaller>()
             .AddSingleton<IModInstaller, FolderlessModInstaller>()
-            .AddSingleton<IModInstaller, AppearancePreset>()
+            .AddSingleton<IModInstaller, AppearancePresetInstaller>()
             .AddSingleton<IModInstaller, RedModInstaller>()
             .AddSingleton<ITool, RunGameTool<Cyberpunk2077Game>>()
             .AddSingleton<ITool, RedModDeployTool>()

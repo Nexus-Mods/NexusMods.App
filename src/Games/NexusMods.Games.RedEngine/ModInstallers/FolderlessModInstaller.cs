@@ -57,34 +57,20 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller, IModInstaller
     }
 
     
-
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
 
-        var groupId = tx.TempId();
+        var group = libraryArchive.ToGroup(loadout, tx);
         
         var modFiles = tree.EnumerateFilesBfs()
             .Where(f => !IgnoreExtensions.Contains(f.Value.Item.Path.Extension))
-            .Select(f => f.Value.ToLoadoutfile(loadout.Id, groupId, tx, new GamePath(LocationId.Game, Destination.Join(f.Value.Item.Path.FileName))))
+            .Select(f => f.Value.ToLoadoutFile(loadout.Id, group.Id, tx, new GamePath(LocationId.Game, Destination.Join(f.Value.Item.Path.FileName))))
             .ToArray();
 
         if (!modFiles.Any())
-            return [];
-
-        var item = new LoadoutItem.New(tx, groupId)
-        {
-            LoadoutId = loadout,
-            IsDisabled = false,
-            Name = libraryArchive.AsLibraryFile().FileName,
-        };
+            return ValueTask.FromResult<LoadoutItem.New[]>([]);
         
-        var group = new LoadoutItemGroup.New(tx, groupId)
-        {
-            LoadoutItem = item, 
-            IsGroupMarker = true,
-        };
-
-        return [ item ];
+        return ValueTask.FromResult<LoadoutItem.New[]>([ group ]);
     }
 }

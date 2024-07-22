@@ -97,9 +97,9 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
             return [];
 
         var highestRoot = roots.First();
-        var groupId = tx.TempId();
+        var group = libraryArchive.ToGroup(loadout.Id, tx);
         
-        int newFiles = 0;
+        var newFiles = 0;
 
         // Enumerate over all directories with the same depth as the most rooted item.
         foreach (var node in roots.Where(root => root.Depth() == highestRoot.Depth()))
@@ -117,7 +117,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
                     {
                         Name = relativePath.Name,
                         LoadoutId = loadout.Id,
-                        ParentId = groupId,
+                        ParentId = group.Id,
                         IsDisabled = false,
                     },
                 },
@@ -130,21 +130,6 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
         if (newFiles == 0)
             return [];
         
-        // Create the group entity
-        
-        var item = new LoadoutItem.New(tx, groupId)
-        {
-            LoadoutId = loadout.Id,
-            Name = libraryArchive.AsLibraryFile().FileName,
-            IsDisabled = false,
-        };
-        
-        var group = new LoadoutItemGroup.New(tx, groupId)
-        {
-            LoadoutItem = item,
-            IsGroupMarker = true,
-        };
-
-        return [item];
+        return [group];
     }
 }
