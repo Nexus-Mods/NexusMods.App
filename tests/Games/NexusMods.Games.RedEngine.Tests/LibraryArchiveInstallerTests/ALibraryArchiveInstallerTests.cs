@@ -130,6 +130,21 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             return val.PadRight(length);
         }
 
+        var remaps = new Dictionary<EntityId, EntityId>();
+        
+        // Makes all entity Ids local to this table. This allows us to run several tests and the results of one
+        // result won't clobber the others
+        EntityId Remap(EntityId id)
+        {
+            if (remaps.TryGetValue(id, out var remapped)) 
+                return remapped;
+            
+            remapped = PartitionId.Entity.MakeEntityId((ulong)remaps.Count);
+            remaps.Add(id, remapped);
+
+            return remapped;
+        }
+
         var dateTimeCount = 0;
 
         var sb = new StringBuilder();
@@ -140,7 +155,7 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             var symColumn = TruncateOrPad(datom.A.Id.Name, 24);
             sb.Append(isRetract ? "-" : "+");
             sb.Append(" | ");
-            sb.Append(datom.E.Value.ToString("X16"));
+            sb.Append(Remap(datom.E).Value.ToString("X16"));
             sb.Append(" | ");
             sb.Append(symColumn);
             sb.Append(" | ");
@@ -150,7 +165,7 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             switch (datom.ObjectValue)
             {
                 case EntityId eid:
-                    sb.Append(eid.Value.ToString("X16").PadRight(48));
+                    sb.Append(Remap(eid).Value.ToString("X16").PadRight(48));
                     break;
                 case ulong ul:
                     sb.Append(ul.ToString("X16").PadRight(48));
@@ -169,7 +184,7 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
             }
 
             sb.Append(" | ");
-            sb.Append(datom.T.Value.ToString("X16"));
+            sb.Append(Remap(EntityId.From(datom.T.Value)).Value.ToString("X16"));
 
             sb.AppendLine();
         }

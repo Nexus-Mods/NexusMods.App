@@ -9,6 +9,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -83,7 +84,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
     public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
-        var infosList = new List<(KeyedBox<RelativePath, LibraryArchiveTree>  File, RedModInfo? InfoJson)>();
+        var infosList = new List<(KeyedBox<RelativePath, LibraryArchiveTree>  File, RedModInfo InfoJson)>();
         foreach (var f in tree.GetFiles())
         {
             if (f.Key().FileName != InfoJson)
@@ -96,16 +97,16 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
         
         var topLevelGroup = libraryArchive.ToGroup(loadout.Id, tx);
         
-        foreach (var node in infosList.OrderBy(x => x.InfoJson!.Name))
+        foreach (var (file, infoJson) in infosList.OrderBy(x => x.InfoJson.Name))
         {
-            var modFolder = node.File.Parent();
+            var modFolder = file.Parent();
             var parentName = modFolder!.Segment();
-
+            
             var loadoutItem = new LoadoutItem.New(tx)
             {
                 LoadoutId = loadout.Id,
                 IsDisabled = false,
-                Name = node.InfoJson?.Name ?? "<unknown>",
+                Name = infoJson?.Name ?? "<unknown>",
                 ParentId = topLevelGroup.Id,
             };
             
@@ -113,6 +114,14 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 LoadoutItem = loadoutItem,
                 IsGroupMarker = true,
+            };
+
+            var redModItem = new RedModLoadoutGroup.New(tx, loadoutItem.Id)
+            {
+                LoadoutItemGroup = groupItem,
+                Name = infoJson!.Name,
+                Version = infoJson.Version,
+                Description = string.IsNullOrWhiteSpace(infoJson.Description) ? null : infoJson.Description
             };
             
             foreach (var childNode in modFolder!.GetFiles().OrderBy(f => f.Item.Path))
@@ -132,4 +141,10 @@ internal class RedModInfo
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+    
+    [JsonPropertyName("version")]
+    public string Version { get; set; } = string.Empty;
+    
+    [JsonPropertyName("description")]
+    public string? Description { get; set; } = string.Empty;
 }
