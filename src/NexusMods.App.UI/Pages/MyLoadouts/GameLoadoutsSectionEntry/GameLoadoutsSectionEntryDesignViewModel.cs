@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 
-public class GameLoadoutsSectionEntryDesignViewModel : AViewModel<IGameLoadoutsSectionEntryViewModel> , IGameLoadoutsSectionEntryViewModel
+public class GameLoadoutsSectionEntryDesignViewModel : AViewModel<IGameLoadoutsSectionEntryViewModel>, IGameLoadoutsSectionEntryViewModel
 {
     public string HeadingText { get; } = "Stardew Valley Loadouts";
 
@@ -18,4 +18,6 @@ public class GameLoadoutsSectionEntryDesignViewModel : AViewModel<IGameLoadoutsS
             new LoadoutCardDesignViewModel(),
         ]
     );
+    
+    void IDisposable.Dispose() { }
 }

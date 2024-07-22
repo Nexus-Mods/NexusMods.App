@@ -39,6 +39,7 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
                     }
                 )
                 .Bind(out _gameSectionViewModels)
+                .DisposeMany()
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
         });
