@@ -34,7 +34,7 @@ public class MyLoadoutsPageFactory : APageFactory<IMyLoadoutsViewModel, MyLoadou
             // TODO: Update with design mandate names
             SectionName = "Loadouts",
             ItemName = Language.MyLoadoutsPageTitle,
-            Icon = IconValues.ModLibrary, // TODO: Change this to a Loadouts icon
+            Icon = IconValues.ViewCarousel,
             PageData = new PageData
             {
                 FactoryId = Id,
