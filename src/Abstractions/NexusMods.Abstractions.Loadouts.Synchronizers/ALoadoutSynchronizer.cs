@@ -782,9 +782,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
         var isLastLoadout = Loadout.All(Connection.Db)
-            .Count(x => 
-                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
-                && !x.IsVisible()) <= 1;
+            .Count(x => x.IsVisible() &&
+                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation) <= 1;
 
         if (isLastLoadout)
         {
