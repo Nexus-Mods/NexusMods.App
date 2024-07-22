@@ -11,6 +11,7 @@ namespace NexusMods.Networking.HttpDownloader;
 /// A simple implementation of <see cref="IHttpDownloader"/> used for diagnostic
 /// purposes, or as a fallback.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
 public class SimpleHttpDownloader : IHttpDownloader
 {
     private readonly ILogger<SimpleHttpDownloader> _logger;

@@ -9,6 +9,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// Represents an individual file which belongs to a <see cref="Loadout"/>, all files
 /// should at least have the <see cref="Loadout"/> reference, and optionally a reference to a <see cref="Mod"/>,
 /// </summary>
+[Obsolete(message: "This will be replaced with `LoadoutFile`")]
 public partial class File : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Mods.ModFile";

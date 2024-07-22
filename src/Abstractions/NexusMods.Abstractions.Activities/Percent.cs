@@ -4,6 +4,7 @@ namespace NexusMods.Abstractions.Activities;
 /// Represents a percentage; used for reporting progress of various operations
 /// throughout.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public readonly struct Percent : IComparable, IEquatable<Percent>
 {
     /// <summary>

@@ -12,6 +12,7 @@ using MetadataFn = Action<NexusMods.MnemonicDB.Abstractions.ITransaction, NexusM
 /// <summary>
 /// A service for linking downloads with files in the file store
 /// </summary>
+[Obsolete(message: "This will be replaced by ILibraryService")]
 public interface IFileOriginRegistry
 {
     /// <summary>

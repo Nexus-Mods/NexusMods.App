@@ -52,11 +52,13 @@ public partial class Loadout : IModelDefinition
     /// <summary>
     /// Mods that are part of this loadout point to this entity via Mod.Loadout
     /// </summary>
+    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
     public static readonly BackReferenceAttribute<Mod> Mods = new(Mod.Loadout);
     
     /// <summary>
     /// All the files that are part of this loadout point to this entity via File.Loadout
     /// </summary>
+    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
     public static readonly BackReferenceAttribute<File> Files = new(File.Loadout);
 
     /// <summary>

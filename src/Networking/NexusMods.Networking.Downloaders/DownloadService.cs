@@ -19,7 +19,8 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IDownloadService"/>
+[Obsolete(message: "To be replaced with ILibraryService")]
 public class DownloadService : IDownloadService, IDisposable, IHostedService
 {
     /// <inheritdoc />

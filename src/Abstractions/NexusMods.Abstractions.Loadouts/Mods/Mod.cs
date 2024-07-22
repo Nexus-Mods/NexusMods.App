@@ -24,6 +24,7 @@ namespace NexusMods.Abstractions.Loadouts.Mods;
 ///
 ///    This will change some time in the future.
 /// </remarks>
+[Obsolete(message: "This will be replaced with `LoadoutItem`")]
 public partial class Mod : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Mods.Mod";

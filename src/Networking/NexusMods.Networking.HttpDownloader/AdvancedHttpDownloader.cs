@@ -34,6 +34,7 @@ namespace NexusMods.Networking.HttpDownloader
     /// so they don't result in many allocations, but each read block will result in a write and flush to disk and the
     /// saving to disk, which could result in slowdown with slow HDDs if this buffer is too slow.
     /// </remarks>
+    [Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
     public class AdvancedHttpDownloader : IHttpDownloader
     {
         private readonly ILogger<AdvancedHttpDownloader> _logger;

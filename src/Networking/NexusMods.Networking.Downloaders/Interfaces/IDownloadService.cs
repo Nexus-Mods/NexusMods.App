@@ -13,6 +13,7 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 ///
 /// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
+[Obsolete(message: "To be replaced with ILibraryService")]
 public interface IDownloadService
 {
     /// <summary>

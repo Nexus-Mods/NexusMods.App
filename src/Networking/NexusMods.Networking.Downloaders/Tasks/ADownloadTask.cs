@@ -13,6 +13,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Networking.Downloaders.Tasks;
 
+[Obsolete(message: "To be replaced with Jobs")]
 public abstract class ADownloadTask : ReactiveObject, IDownloadTask
 {
     private const int PollTimeMilliseconds = 1000;
