@@ -5,6 +5,7 @@ namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 /// <summary>
 /// Archive metadata for a download that was installed from a file path.
 /// </summary>
+[Obsolete(message: "To be replaced with LocalFile (Library Items)")]
 public static class FilePathMetadata
 {
     private const string Namespace = "NexusMods.Abstractions.FileStore.ArchiveMetadata";

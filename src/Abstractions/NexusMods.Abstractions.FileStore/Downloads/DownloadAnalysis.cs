@@ -16,6 +16,7 @@ namespace NexusMods.Abstractions.FileStore.Downloads;
 /// <summary>
 /// Attributes for the analysis data for a downloaded file
 /// </summary>
+[Obsolete(message: "To be replaced with Library Items and Jobs")]
 public partial class DownloadAnalysis : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.FileStore.Downloads.DownloadAnalysis";

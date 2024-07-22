@@ -5,6 +5,7 @@ namespace NexusMods.Abstractions.Activities;
 /// <summary>
 /// An abstract factory for creating activities.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IActivityFactory
 {
     /// <summary>

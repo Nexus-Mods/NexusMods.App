@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.DiskState;
 /// <summary>
 ///     Provides access to a cache where all datamodel recognised data lives.
 /// </summary>
+[Obsolete(message: "This will be removed")]
 public interface IFileHashCache
 {
     /// <summary>

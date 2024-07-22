@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.Installers;
 /// <summary>
 /// A component that can index and install archives.
 /// </summary>
+[Obsolete(message: "This will be removed with ILibraryService")]
 public interface IArchiveInstaller
 {
     /// <summary>

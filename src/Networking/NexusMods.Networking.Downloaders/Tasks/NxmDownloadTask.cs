@@ -17,6 +17,7 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddTask(NexusMods.Abstractions.NexusWebApi.Types.NXMUrl)"/>.
 /// </remarks>
+[Obsolete(message: "To be replaced with Jobs")]
 public class NxmDownloadTask : ADownloadTask
 {
     private readonly INexusApiClient _nexusApiClient;

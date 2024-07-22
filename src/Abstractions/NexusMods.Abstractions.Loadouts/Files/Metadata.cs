@@ -7,6 +7,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// <summary>
 /// Metadata are additonal entities attached to files that provide additional information about the file.
 /// </summary>
+[Obsolete(message: "This will be removed when moving to Loadout Items")]
 public partial class Metadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.Metadata";

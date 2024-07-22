@@ -15,6 +15,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// the final say on what is installed.
 /// </summary>
 [Include<File>]
+[Obsolete(message: "This will be replaced with `DeletedFile` (LoadoutItem)")]
 public partial class DeletedFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.DeletedFile";
