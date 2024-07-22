@@ -38,6 +38,7 @@
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="4,4,4,0" />
             <Setter Property="ClipToBounds" Value="False" />
 
