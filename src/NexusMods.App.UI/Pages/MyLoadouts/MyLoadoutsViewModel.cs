@@ -32,12 +32,12 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
                 .Filter(l => l.IsVisible())
                 .GroupOn(loadout => loadout.Installation.Path)
                 .Transform(group => group.List.Items.First().InstallationInstance)
+                .OnUI()
                 .Transform(managedGameInstall =>
                     {
                         return (IGameLoadoutsSectionEntryViewModel) new GameLoadoutsSectionEntryViewModel(managedGameInstall, conn, serviceProvider, windowManager);
                     }
                 )
-                .OnUI()
                 .Bind(out _gameSectionViewModels)
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
