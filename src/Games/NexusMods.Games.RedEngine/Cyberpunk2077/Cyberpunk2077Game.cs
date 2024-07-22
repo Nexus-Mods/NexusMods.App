@@ -78,7 +78,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
         new RedModInstaller(),
-        new SimpleOverlayModInstaller(),
+        new SimpleOverlayModInstaller(_serviceProvider),
         new AppearancePreset(_serviceProvider),
         new FolderlessModInstaller(),
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),

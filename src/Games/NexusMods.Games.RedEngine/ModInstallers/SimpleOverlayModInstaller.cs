@@ -1,8 +1,14 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -11,15 +17,21 @@ using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
-public class SimpleOverlayModInstaller : IModInstaller
+public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
 {
+    
+    public SimpleOverlayModInstaller(IServiceProvider serviceProvider) : 
+        base(serviceProvider, serviceProvider.GetRequiredService<ILogger<SimpleOverlayModInstaller>>())
+    {
+    }
+    
     private static readonly RelativePath[] RootPaths = new[]
         {
             "bin/x64",
             "engine",
             "r6",
             "red4ext",
-            "archive/pc/mod"
+            "archive/pc/mod",
         }
         .Select(x => x.ToRelativePath())
         .ToArray();
@@ -67,5 +79,72 @@ public class SimpleOverlayModInstaller : IModInstaller
             Id = info.BaseModId,
             Files = newFiles
         }};
+    }
+
+
+    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    {
+        var tree = libraryArchive.GetTree();
+        
+        // Note: Expected search space here is small, highest expected overhead is in FindSubPathRootsByKeyUpward.
+        // Find all paths which match a known base/root directory.
+        var roots = RootPaths
+            .SelectMany(x => tree.FindSubPathRootsByKeyUpward(x.Parts.ToArray()))
+            .OrderBy(node => node.Depth())
+            .ToArray();
+
+        if (roots.Length == 0)
+            return [];
+
+        var highestRoot = roots.First();
+        var groupId = tx.TempId();
+        
+        int newFiles = 0;
+
+        // Enumerate over all directories with the same depth as the most rooted item.
+        foreach (var node in roots.Where(root => root.Depth() == highestRoot.Depth()))
+        foreach (var file in node.Item.GetFiles<LibraryArchiveTree, RelativePath>())
+        {
+            var fullPath = file.Item.Path; // all the way up to root
+            var relativePath = fullPath.DropFirst(node.Depth() - 1); // get relative path
+
+            var _ = new LoadoutFile.New(tx, out var id)
+            {
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
+                {
+                    TargetPath = new GamePath(LocationId.Game, relativePath),
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        Name = relativePath.Name,
+                        LoadoutId = loadout.Id,
+                        ParentId = groupId,
+                        IsDisabled = false,
+                    },
+                },
+                Hash = file.Item.LibraryFile.Value.Hash,
+                Size = file.Item.LibraryFile.Value.Size,
+            };
+            newFiles++;
+        }
+
+        if (newFiles == 0)
+            return [];
+        
+        // Create the group entity
+        
+        var item = new LoadoutItem.New(tx, groupId)
+        {
+            LoadoutId = loadout.Id,
+            Name = libraryArchive.AsLibraryFile().FileName,
+            IsDisabled = false,
+        };
+        
+        var group = new LoadoutItemGroup.New(tx, groupId)
+        {
+            LoadoutItem = item,
+            IsGroupMarker = true,
+        };
+
+        return [item];
     }
 }

@@ -13,6 +13,8 @@ internal class AddLibraryFileJob : AJob
 
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
+    
+    public required AbsolutePath RelativeTo { get; init; }
     public required bool DoCommit { get; init; }
     public required bool DoBackup { get; init; }
 

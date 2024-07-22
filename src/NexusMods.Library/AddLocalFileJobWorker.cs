@@ -24,6 +24,7 @@ internal class AddLocalFileJobWorker : AJobWorker<AddLocalFileJob>
         {
             Transaction = job.Transaction,
             FilePath = job.FilePath,
+            RelativeTo = job.FilePath.Parent,
             DoCommit = false,
             DoBackup = true,
         };
