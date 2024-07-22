@@ -19,6 +19,7 @@ namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 
 public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSectionEntryViewModel>, IGameLoadoutsSectionEntryViewModel
 {
+    private static readonly CardViewModelComparer CardComparerInstance = new();
     private readonly CompositeDisposable _compositeDisposable;
     private readonly GameInstallation _gameInstallation;
     private readonly IWindowManager _windowManager;
@@ -67,7 +68,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
         _cardViewModelsSourceList.Connect()
             .Merge(_loadoutCardViewModels.ToObservableChangeSet())
-            .Sort(new CardViewModelComparer())
+            .Sort(CardComparerInstance)
             .OnUI()
             .Bind(out _cardViewModels)
             .SubscribeWithErrorLogging()
