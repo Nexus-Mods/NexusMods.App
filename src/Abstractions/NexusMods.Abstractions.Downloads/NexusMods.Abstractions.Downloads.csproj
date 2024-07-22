@@ -6,7 +6,6 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
-        <PackageReference Include="NexusMods.MnemonicDB.Storage" />
         <PackageReference Include="ReactiveUI" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

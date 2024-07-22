@@ -39,7 +39,6 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddMnemonicDB();
-        coll.AddMnemonicDBStorage();
 
         // Settings
         coll.AddSettings<DataModelSettings>();
