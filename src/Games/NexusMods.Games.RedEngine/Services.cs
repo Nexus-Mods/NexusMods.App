@@ -16,6 +16,7 @@ public static class Services
     {
         services.AddGame<Cyberpunk2077Game>()
             .AddRedModLoadoutGroupModel()
+            .AddRedModInfoFileModel()
             .AddSingleton<IModInstaller, SimpleOverlayModInstaller>()
             .AddSingleton<IModInstaller, FolderlessModInstaller>()
             .AddSingleton<IModInstaller, AppearancePresetInstaller>()

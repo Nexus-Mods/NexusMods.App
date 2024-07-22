@@ -116,21 +116,35 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
                 IsGroupMarker = true,
             };
 
-            var redModItem = new RedModLoadoutGroup.New(tx, loadoutItem.Id)
-            {
-                LoadoutItemGroup = groupItem,
-                Name = infoJson!.Name,
-                Version = infoJson.Version,
-                Description = string.IsNullOrWhiteSpace(infoJson.Description) ? null : infoJson.Description
-            };
+ 
+            RedModInfoFile.New redModInfoFile = null!;
             
             foreach (var childNode in modFolder!.GetFiles().OrderBy(f => f.Item.Path))
             {
                 var relativePath = childNode.Item.Path.RelativeTo(modFolder!.Item.Path);
                 var joinedPath = Mods.Join(parentName).Join(relativePath);
                 
-                childNode.ToLoadoutFile(loadout.Id, groupItem.Id, tx, new GamePath(LocationId.Game, joinedPath));
+                var newFile = childNode.ToLoadoutFile(loadout.Id, groupItem.Id, tx, new GamePath(LocationId.Game, joinedPath));
+
+                if (file.Item.Path == childNode.Item.Path)
+                {
+                    redModInfoFile = new RedModInfoFile.New(tx, newFile.Id)
+                    {
+                        Name = infoJson!.Name,
+                        Version = infoJson.Version,
+                        LoadoutFile = newFile,
+                    };
+                }
             }
+            
+            if (redModInfoFile == null)
+                throw new InvalidOperationException("Failed to find the info.json file in the mod archive, this should never happen");
+            
+            var redModItem = new RedModLoadoutGroup.New(tx, loadoutItem.Id)
+            {
+                LoadoutItemGroup = groupItem,
+                RedModInfoFileId = redModInfoFile.Id,
+            };
         }
 
         return [topLevelGroup];
