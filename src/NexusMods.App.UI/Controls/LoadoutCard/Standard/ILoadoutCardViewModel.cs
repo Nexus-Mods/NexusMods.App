@@ -11,7 +11,7 @@ public interface ILoadoutCardViewModel : IViewModelInterface
     
     string LoadoutName { get; }
     
-    IImage LoadoutImage { get; }
+    IImage? LoadoutImage { get; }
     
     bool IsLoadoutApplied { get; }
     
@@ -24,6 +24,8 @@ public interface ILoadoutCardViewModel : IViewModelInterface
     bool IsDeleting { get; }
     
     bool IsSkeleton { get; }
+    
+    bool IsLastLoadout { get; }
     
     ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; }
     

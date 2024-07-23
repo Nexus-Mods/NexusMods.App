@@ -7,6 +7,8 @@
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 xmlns:gameLoadoutsSectionEntry="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry"
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
     <Design.DataContext>
@@ -15,56 +17,54 @@
 
 
     <ScrollViewer>
-        <panels:FlexPanel x:Name="MyLoadoutsOuterFlexPanel">
+        <controls:EmptyState x:Name="MyLoadoutsEmptyState" 
+                             Header="{x:Static resources:Language.MyLoadoutsEmptyState_Header}"
+                             Subtitle="{x:Static resources:Language.MyLoadoutsEmptyState_Subtitle}">
+            <panels:FlexPanel x:Name="MyLoadoutsOuterFlexPanel">
 
-            <TextBlock x:Name="PageDescriptionTextBlock"
-                       Text="Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use." />
+                <TextBlock x:Name="PageDescriptionTextBlock"
+                           Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}" />
 
-            <ItemsControl x:Name="GameSectionsItemsControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <panels:FlexPanel x:Name="GameSectionsItemsFlexPanel" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                <ItemsControl x:Name="GameSectionsItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <panels:FlexPanel x:Name="GameSectionsItemsFlexPanel" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="gameLoadoutsSectionEntry:IGameLoadoutsSectionEntryViewModel">
-                        <Border x:Name="GameSectionBorder">
-                            <panels:FlexPanel x:Name="GameSectionFlexPanel">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="gameLoadoutsSectionEntry:IGameLoadoutsSectionEntryViewModel">
+                            <Border x:Name="GameSectionBorder">
+                                <panels:FlexPanel x:Name="GameSectionFlexPanel">
 
-                                <panels:FlexPanel x:Name="HeadingSectionFlexPanel">
-                                    <TextBlock x:Name="GameHeadingTextBlock"
-                                               Text="{CompiledBinding HeadingText}" />
-
-                                    <panels:FlexPanel x:Name="SupportedDetails">
-                                        <TextBlock x:Name="LoadoutsContainTextBlock"
-                                                   Text="Loadouts contain unique: Mods and mod configurations." />
-                                        <TextBlock x:Name="LoadoutsShareTextBlock"
-                                                   Text="Loadouts share: Library and saved games." />
+                                    <panels:FlexPanel x:Name="HeadingSectionFlexPanel">
+                                        <TextBlock x:Name="GameHeadingTextBlock"
+                                                   Text="{CompiledBinding HeadingText}" />
                                     </panels:FlexPanel>
+
+                                    <ItemsControl x:Name="LoadoutCardsItemsControl"
+                                                  ItemsSource="{CompiledBinding CardViewModels}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <panels:FlexPanel x:Name="CardsFlexPanel" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="ui:IViewModelInterface">
+                                                <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}"
+                                                                              ClipToBounds="False" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+
+                                    </ItemsControl>
+
                                 </panels:FlexPanel>
-
-                                <ItemsControl x:Name="LoadoutCardsItemsControl"
-                                              ItemsSource="{CompiledBinding CardViewModels}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <panels:FlexPanel x:Name="CardsFlexPanel" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="ui:IViewModelInterface">
-                                            <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-
-                                </ItemsControl>
-
-                            </panels:FlexPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </panels:FlexPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </panels:FlexPanel>
+        </controls:EmptyState>
     </ScrollViewer>
 </reactiveUi:ReactiveUserControl>

@@ -105,7 +105,7 @@ public class DiskStateRegistry : IDiskStateRegistry
 
         return InitialDiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
             .Select(x => x.State)
-            .FirstOrDefault();
+            .FirstOrDefault(defaultValue: null);
     }
 
     /// <inheritdoc />

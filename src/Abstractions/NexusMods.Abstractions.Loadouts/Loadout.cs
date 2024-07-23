@@ -1,5 +1,3 @@
-
-using System.Reactive.Linq;
 using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
@@ -9,7 +7,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -28,6 +26,11 @@ public partial class Loadout : IModelDefinition
     /// The human friendly name for this loadout.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
+    
+    /// <summary>
+    /// A capital one-letter name for the loadout, for spine labels and other places where space is limited.
+    /// </summary>
+    public static readonly StringAttribute ShortName = new(Namespace, nameof(ShortName)) { IsIndexed = true, DefaultValue = "-"};
     
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
@@ -121,6 +124,7 @@ public partial class Loadout : IModelDefinition
         /// especially, when it comes to displaying elements the user can edit.
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
+        
     }
 }
 

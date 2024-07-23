@@ -657,24 +657,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
-        using var tx = Connection.BeginTransaction();
-        var db = Connection.Db;
+
         
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
         // have one.
         var installLocation = installation.LocationsRegister[LocationId.Game];
-        if (!Loadout.All(db)
-                .Any(x => 
-                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
-                && x.IsVanillaStateLoadout()))
+        var existingLoadouts = Loadout.All(Connection.Db)
+            .Where(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation)
+            .ToArray();
+        
+        if (!existingLoadouts.Any(x => x.IsVanillaStateLoadout()))
         {
             await CreateVanillaStateLoadout(installation);
         }
-
+        
+        var shortName = LoadoutNameProvider.GetNewShortName(
+            existingLoadouts.Where(l => l.IsVisible()).Select(l=> l.ShortName).ToArray());
+        
+        using var tx = Connection.BeginTransaction();
+        
         var loadout = new Loadout.New(tx)
         {
-            Name = suggestedName ?? installation.Game.Name,
+            Name = suggestedName ?? installation.Game.Name + " " + shortName,
+            ShortName = shortName,
             InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.Default,
@@ -778,9 +784,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
         var isLastLoadout = Loadout.All(Connection.Db)
-            .Count(x => 
-                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
-                && !x.IsVisible()) <= 1;
+            .Count(x => x.IsVisible() &&
+                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation) <= 1;
 
         if (isLastLoadout)
         {
@@ -845,6 +850,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var loadout = new Loadout.New(tx)
         {
             Name = $"Vanilla State Loadout for {installation.Game.Name}",
+            ShortName = "-",
             InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.VanillaState,
@@ -922,20 +928,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private async Task ApplyVanillaStateLoadout(GameInstallation installation)
     {
-        var db = Connection.Db;
         var installLocation = installation.LocationsRegister[LocationId.Game];
 
-        // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
-        // should never return null. But, if due to some issue or bug we don't,
-        // this is a recoverable error. We can just create a new vanilla state loadout.
-        // as that is based on the initial state of the game folder.
-        var vanillaStateLoadout = Loadout.All(db)
-            .FirstOrDefault(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation && x.IsVanillaStateLoadout());
+        var vanillaStateLoadout = Loadout.All(Connection.Db)
+            .FirstOrOptional(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation
+                                 && x.IsVanillaStateLoadout());
         
-        if (!vanillaStateLoadout.IsValid())
-            await CreateVanillaStateLoadout(installation);
-
-        await Synchronize(vanillaStateLoadout);
+        if (!vanillaStateLoadout.HasValue)
+            vanillaStateLoadout = await CreateVanillaStateLoadout(installation);
+        
+        await Synchronize(vanillaStateLoadout.Value);
     }
     #endregion
 
