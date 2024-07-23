@@ -25,9 +25,6 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                         ManagedGameGrid.IsVisible = state == GameWidgetState.ManagedGame;
                         RemovingGameStackPanel.IsVisible = state == GameWidgetState.RemovingGame;
                         GameWidgetBorder.Classes.ToggleIf("Disabled", state is GameWidgetState.AddingGame or GameWidgetState.RemovingGame);
-                        
-                        if (!ViewModel!.CanAddMoreThanOneLoadout)
-                            AddLoadoutButton.IsVisible = !ManagedGameGrid.IsVisible;
                     })
                     .DisposeWith(d);
 
@@ -52,10 +49,6 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                     .DisposeWith(d);
                 
                 this.BindCommand(ViewModel, vm => vm.ViewGameCommand, v => v.ViewGameButton)
-                    .DisposeWith(d);
-                
-                // Adding a game is same as adding a loadout for now
-                this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddLoadoutButton)
                     .DisposeWith(d);
             }
         );

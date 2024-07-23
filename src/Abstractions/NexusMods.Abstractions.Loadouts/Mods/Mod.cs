@@ -97,18 +97,5 @@ public partial class Mod : IModelDefinition
             Loadout.Revise(tx);
         }
 
-        /// <summary>
-        /// Returns the timestamp of the transaction that created this mod.
-        /// </summary>
-        public DateTime CreatedAt
-        {
-            get
-            {
-                var lowestTx = this.Min(d => d.T);
-                var tx = Transaction.Load(Db, EntityId.From(lowestTx.Value));
-                return tx.Timestamp;
-            }
-        }
-
     }
 }

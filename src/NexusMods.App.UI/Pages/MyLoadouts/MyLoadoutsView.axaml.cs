@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -14,7 +15,10 @@ public partial class MyLoadoutsView : ReactiveUserControl<IMyLoadoutsViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.GameSectionViewModels, v => v.GameSectionsItemsControl.ItemsSource)
                 .DisposeWith(d);
-            
+
+            this.WhenAnyValue(v => v.ViewModel!.GameSectionViewModels.Count)
+                .Select(count => count == 0)
+                .BindToView(this, view => view.MyLoadoutsEmptyState.IsActive);
         });
     }
 }

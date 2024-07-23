@@ -6,12 +6,13 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.CreateNewLoadoutCardView">
 
     <Button x:Name="CreateNewLoadoutButton">
         <panels:FlexPanel x:Name="CreateNewLoadoutFlexPanel">
-            <TextBlock x:Name="CreateNewLoadoutTexBlock" Text="Create new loadout" />
+            <TextBlock x:Name="CreateNewLoadoutTexBlock" Text="{x:Static resources:Language.CreateNewLoadoutCarViewTexBlock}" />
             <icons:UnifiedIcon x:Name="AddIcon" Classes="Add" />
         </panels:FlexPanel>
     </Button>

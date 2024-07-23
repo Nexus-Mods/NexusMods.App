@@ -8,12 +8,13 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
     <Design.DataContext>
         <loadoutCard:LoadoutCardDesignViewModel />
     </Design.DataContext>
-    
+
     <Border x:Name="ContainerBorder">
         <Grid>
             <Button x:Name="CardOuterButton">
@@ -43,7 +44,7 @@
 
                                         <TextBlock x:Name="CurrentlyAppliedTextBlock"
                                                    Classes="BodySMBold"
-                                                   Text="Currently Applied" />
+                                                   Text="{x:Static resources:Language.LoadoutCardViewCurrentlyAppliedTextBlock}" />
                                         <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
                                                            Classes="CheckBox" />
 
@@ -54,28 +55,33 @@
                                                IsVisible="False" />
 
                                     <TextBlock x:Name="CreatedTimeTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued"/>
+                                               Classes="BodySMNormal ForegroundSubdued" />
 
                                     <TextBlock x:Name="NumberOfModsTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued"/>
+                                               Classes="BodySMNormal ForegroundSubdued" />
 
                                 </panels:FlexPanel>
 
-                                <panels:FlexPanel x:Name="ActionsFlexPanel">
+                                <Border x:Name="ActionsBorder">
+                                    <panels:FlexPanel x:Name="ActionsFlexPanel">
 
-                                    <Button x:Name="CreateCopyButton"
-                                            Classes="Rounded Primary">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Classes="BodySMBold" Text="Create Copy" />
-                                        </StackPanel>
-                                    </Button>
+                                        <!-- TODO: Make button visible after LoadoutCloning is implemented and remove border -->
+                                        <!-- CreateCopyBorder is used to maintain the layout of the buttons in the meantime  -->
+                                        <Border x:Name="CreateCopyBorder">
+                                            <Button x:Name="CreateCopyButton" IsVisible="False"
+                                                    Classes="Rounded Primary">
+                                                <StackPanel HorizontalAlignment="Center">
+                                                    <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
 
-
-                                    <Button x:Name="DeleteButton"
-                                            Classes="Rounded Primary">
-                                        <icons:UnifiedIcon Classes="TrashCanOutline" />
-                                    </Button>
-                                </panels:FlexPanel>
+                                        <Button x:Name="DeleteButton"
+                                                Classes="Rounded Primary">
+                                            <icons:UnifiedIcon Classes="TrashCanOutline" />
+                                        </Button>
+                                    </panels:FlexPanel>
+                                </Border>
 
                             </panels:FlexPanel>
 
@@ -91,7 +97,7 @@
                     <spinner:Spinner x:Name="OverlaySpinner" />
                     <TextBlock x:Name="OverlayTextBlock"
                                Classes="BodyXLNormal ForegroundSubdued"
-                               Text="Deleting..." />
+                               Text="{x:Static resources:Language.LoadoutCardViewDeletingText}" />
                 </panels:FlexPanel>
                 <Border />
             </panels:FlexPanel>

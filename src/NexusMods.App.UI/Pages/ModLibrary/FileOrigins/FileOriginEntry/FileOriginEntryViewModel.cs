@@ -78,7 +78,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         _lastInstalledDate = loadout.Revisions()
             .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
                                                  && mod.SourceId.Equals(fileOrigin.Id))
-                .Select(mod => mod.CreatedAt)
+                .Select(mod => mod.GetCreatedAt())
                 .DefaultIfEmpty(DateTime.MinValue)
                 .Max()
             )
