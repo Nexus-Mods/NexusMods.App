@@ -16,7 +16,7 @@ public partial class LoadoutItemGroup : IModelDefinition
     /// <summary>
     /// Marker.
     /// </summary>
-    public static readonly MarkerAttribute GroupMarker = new(Namespace, nameof(GroupMarker));
+    public static readonly MarkerAttribute IsLoadoutItemGroupMarker = new(Namespace, nameof(IsLoadoutItemGroupMarker));
 
     /// <summary>
     /// Children of the group.
