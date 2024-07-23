@@ -114,7 +114,7 @@
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
-            <Setter Property="LineHeight" Value="20" />
+            <Setter Property="LineHeight" Value="21" />
         </Style>
 
         <Style Selector="^ /template/ PathIcon#DropDownGlyph">

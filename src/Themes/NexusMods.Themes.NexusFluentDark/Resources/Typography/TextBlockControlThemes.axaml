@@ -142,31 +142,7 @@
         <Setter Property="LetterSpacing" Value="0.3" />
         <Setter Property="LineHeight" Value="16.5" />
     </ControlTheme>
-
-    <!-- Legacy Text Themes -->
-    <!-- Don't use these themes directly! Use the aliases underneath instead. -->
-
-    <ControlTheme x:Key="ButtonMontserratSemiTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LetterSpacing" Value="0.7" />
-        <Setter Property="LineHeight" Value="14" />
-    </ControlTheme>
-
-    <ControlTheme x:Key="PillLabelBoldTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesBold}" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="FontSize" Value="10" />
-        <Setter Property="LetterSpacing" Value="0.25" />
-        <Setter Property="LineHeight" Value="12" />
-    </ControlTheme>
-
-    <!-- Control Specific Themes -->
-    <StaticResource x:Key="TextBlockButtonStandardTheme" ResourceKey="ButtonMontserratSemiTheme"/>
-    <StaticResource x:Key="TextBlockPillLabelTheme" ResourceKey="PillLabelBoldTheme"/>
-
-
+    
     <!-- Preview -->
    <Design.PreviewWith>
         <Border Padding="20">
