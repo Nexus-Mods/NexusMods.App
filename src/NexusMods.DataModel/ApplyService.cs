@@ -40,8 +40,8 @@ public class ApplyService : IApplyService
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
             
         var syncrhonizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        
-        return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
+        throw new NotImplementedException();
+        //return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
     }
 
     /// <inheritdoc />

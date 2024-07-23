@@ -32,9 +32,16 @@ public class DiskStateRegistry : IDiskStateRegistry
         _connection = connection;
     }
 
-    /// <inheritdoc />
-    public async Task SaveState(GameInstallation installation, DiskStateTree diskState)
+    public IEnumerable<FileState> EnumerateGameFilesFromDisk(GameInstallation gameInstallation)
     {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public async Task SaveState(GameInstallation installation, IEnumerable<FileStateWithHash> diskState)
+    {
+        throw new NotImplementedException();
+        /*
         Debug.Assert(diskState.LoadoutId != EntityId.From(0), "diskState.LoadoutId must be set");
         Debug.Assert(diskState.LoadoutId.Partition != PartitionId.Temp, "diskState.LoadoutId must not be a temporary id");
         Debug.Assert(diskState.TxId != TxId.From(0), "diskState.LoadoutId must be set");
@@ -73,6 +80,7 @@ public class DiskStateRegistry : IDiskStateRegistry
 
         var id = new LoadoutWithTxId { Id = diskState.LoadoutId, Tx = diskState.TxId };
         _lastAppliedRevisionSubject.OnNext((installation, id));
+        */
     }
 
     /// <inheritdoc />
@@ -83,8 +91,10 @@ public class DiskStateRegistry : IDiskStateRegistry
     }
 
     /// <inheritdoc />
-    public async Task SaveInitialState(GameInstallation installation, DiskStateTree diskState)
+    public async Task SaveInitialState(GameInstallation installation, IEnumerable<FileStateWithHash> diskState)
     {
+        throw new NotImplementedException();
+        /*
         var tx = _connection.BeginTransaction();
         var domain = installation.Game.Domain;
         var diskStateId = tx.TempId();
@@ -104,6 +114,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         newDiskState.AddAll(tx, diskState);
         
         await tx.Commit();
+        */
     }
 
     /// <inheritdoc />

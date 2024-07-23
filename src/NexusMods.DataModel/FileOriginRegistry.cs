@@ -31,7 +31,6 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IConnection _conn;
-    private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
     /// Constructor.
@@ -42,8 +41,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         IFileExtractor extractor,
         IFileStore fileStore,
         TemporaryFileManager temporaryFileManager,
-        IConnection conn,
-        IFileHashCache fileHashCache)
+        IConnection conn)
     {
         _logger = logger;
         _libraryService = library;
@@ -51,7 +49,6 @@ public class FileOriginRegistry : IFileOriginRegistry
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
         _conn = conn;
-        _fileHashCache = fileHashCache;
     }
 
     /// <inheritdoc />
@@ -102,6 +99,8 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
+        throw new NotImplementedException();
+        /*
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
@@ -111,6 +110,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
         return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
+        */
     }
 
     /// <inheritdoc />
@@ -120,7 +120,10 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
-        
+
+        throw new NotImplementedException();
+
+        /*
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
@@ -130,6 +133,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
         return await RegisterFolderInternal(tmpFolder.Path, null, id, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
+        */
     }
 
     /// <inheritdoc />

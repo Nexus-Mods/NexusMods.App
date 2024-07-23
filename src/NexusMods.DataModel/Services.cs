@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.DiskState.Models;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
@@ -13,7 +14,6 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.DiskState;
@@ -101,12 +101,12 @@ public static class Services
         
         // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
-        coll.AddAttributeCollection(typeof(DiskStateModels));
-        coll.AddAttributeCollection(typeof(InitialDiskState));
-
+        coll.AddDiskStateEntryModel();
+        coll.AddDiskStateModel();
+        coll.AddLoadoutDiskStateModel();
+        coll.AddInitialDiskStateModel();
+        
         // File Hash Cache
-        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
-        coll.AddAttributeCollection(typeof(HashCacheEntry));
         
         coll.AddAllSingleton<IApplyService, ApplyService>();
 
@@ -127,7 +127,6 @@ public static class Services
         // Verbs
         coll.AddLoadoutManagementVerbs()
             .AddToolVerbs()
-            .AddFileHashCacheVerbs()
             .AddArchiveVerbs();
 
         return coll;

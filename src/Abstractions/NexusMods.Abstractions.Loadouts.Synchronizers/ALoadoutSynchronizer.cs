@@ -29,7 +29,6 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     private readonly ILogger _logger;
-    private readonly IFileHashCache _hashCache;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
     protected readonly IConnection Connection;
@@ -47,7 +46,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="sorter"></param>
     /// <param name="os"></param>
     protected ALoadoutSynchronizer(ILogger logger,
-        IFileHashCache hashCache,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
         ISorter sorter,
@@ -55,7 +53,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IOSInformation os)
     {
         _logger = logger;
-        _hashCache = hashCache;
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
@@ -69,7 +66,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="provider"></param>
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
-        provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
@@ -79,7 +75,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
 
     }
-    
     
     
     private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskStateTree newTree, GameInstallation installation)
@@ -118,12 +113,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             // Could have other empty directories as children, so we need to delete recursively
             installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
         }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<DiskStateTree> GetDiskState(GameInstallation installation)
-    {
-        return await _hashCache.IndexDiskState(installation);
     }
     
     #region ILoadoutSynchronizer Implementation
@@ -200,18 +189,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        foreach (var node in currentState.GetAllDescendentFiles())
+        foreach (var node in currentState)
         {
-            if (tree.TryGetValue(node.GamePath(), out var found))
+            if (tree.TryGetValue(node.Path, out var found))
             {
-                found.Disk = node.Item.Value;
+                found.Disk = node;
             }
             else
             {
-                tree.Add(node.GamePath(), new SyncTreeNode
+                tree.Add(node.Path, new SyncTreeNode
                 {
-                    Path = node.GamePath(),
-                    Disk = node.Item.Value,
+                    Path = node.Path,
+                    Disk = node,
                 });
             }
         }
@@ -219,10 +208,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return new SyncTree(tree);
     }
 
+    public SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
     {
-        var diskState = await GetDiskState(loadout.InstallationInstance);
+        var diskState = _diskStateRegistry.EnumerateGameFilesFromDisk(loadout.InstallationInstance);
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
         
         return BuildSyncTree(diskState, prevDiskState, loadout);
@@ -239,7 +233,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             var signature = new SignatureBuilder
             {
-                DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
+                DiskHash = item.Disk.HasValue ? item.Disk.Hash : Optional<Hash>.None,
                 PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
                 LoadoutHash = item.LoadoutFile.HasValue ? item.LoadoutFile.Value.Hash : Optional<Hash>.None,
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
@@ -517,7 +511,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var groupings = ProcessSyncTree(tree);
         return await RunGroupings(tree, groupings, loadout);
     }
-    
+
+    public Task<DiskStateTree> GetDiskState(GameInstallation installationInstance)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// All actions, in execution order.
     /// </summary>
@@ -654,7 +653,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         await _fileStore.BackupFiles(archivedFiles);
     }
-    
+
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, IEnumerable<FileState> diskState)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
