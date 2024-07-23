@@ -17,7 +17,6 @@
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}"/>
-        <Setter Property="Margin" Value="4,2"/>
 
         <!-- Hover State -->
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
