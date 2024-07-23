@@ -13,15 +13,6 @@
         Issue on Avalonia's variable font weight support:
         https://github.com/AvaloniaUI/Avalonia/issues/11092
     -->
-
-    <FontFamily x:Key="MontserratRegular">/Assets/Fonts/Regular#Montserrat</FontFamily>
-    <FontFamily x:Key="MontserratSemiBold">/Assets/Fonts/SemiBold#Montserrat</FontFamily>
-    <FontFamily x:Key="MontserratBold">/Assets/Fonts/Bold#Montserrat</FontFamily>
-
-    <FontFamily x:Key="RobotoRegular">/Assets/Fonts/Regular#Roboto</FontFamily>
-    <FontFamily x:Key="RobotoSemiBold">/Assets/Fonts/SemiBold#Roboto</FontFamily>
-    <FontFamily x:Key="RobotoBold">/Assets/Fonts/Bold#Roboto</FontFamily>
-
     <FontFamily x:Key="InterRegular">/Assets/Fonts/Regular#Inter</FontFamily>
     <FontFamily x:Key="InterSemiBold">/Assets/Fonts/SemiBold#Inter</FontFamily>
 </ResourceDictionary>
