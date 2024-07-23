@@ -1459,6 +1459,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You need to add a game before using Loadouts.
+        /// </summary>
+        public static string MyLoadoutsEmptyState_Header {
+            get {
+                return ResourceManager.GetString("MyLoadoutsEmptyState_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loadouts enable you to switch between various play styles by customising each with different mods and configurations..
+        /// </summary>
+        public static string MyLoadoutsEmptyState_Subtitle {
+            get {
+                return ResourceManager.GetString("MyLoadoutsEmptyState_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} Loadouts.
         /// </summary>
         public static string MyLoadoutsGameSectionHeading {

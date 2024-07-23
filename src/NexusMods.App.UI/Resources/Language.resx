@@ -620,4 +620,10 @@
     <data name="LoadoutCardViewCreatingText" xml:space="preserve">
         <value>Creating...</value>
     </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>You need to add a game before using Loadouts</value>
+    </data>
 </root>

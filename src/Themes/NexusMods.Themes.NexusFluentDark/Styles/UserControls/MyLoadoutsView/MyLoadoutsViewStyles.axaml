@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
-        xmlns:reactiveUi="http://reactiveui.net">
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <myLoadouts:MyLoadoutsView Height="600" Width="600">
@@ -16,6 +17,10 @@
     <!-- Add Styles Here -->
     <Style Selector="myLoadouts|MyLoadoutsView">
         <Setter Property="Padding" Value="24" />
+        
+        <Style Selector="^ controls|EmptyState#MyLoadoutsEmptyState">
+            <Setter Property="Icon" Value="{x:Static icons:IconValues.ViewCarousel}" />
+        </Style>
 
         <Style Selector="^ panels|FlexPanel#MyLoadoutsOuterFlexPanel">
             <Setter Property="Direction" Value="Column" />
