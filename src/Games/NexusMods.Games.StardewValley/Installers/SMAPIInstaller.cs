@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices.Marshalling;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
@@ -7,9 +9,14 @@ using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
@@ -27,7 +34,7 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// <see cref="IModInstaller"/> for SMAPI itself. This is different from <see cref="SMAPIModInstaller"/>,
 /// which is an implementation of <see cref="IModInstaller"/> for mods that use SMAPI.
 /// </summary>
-public class SMAPIInstaller : AModInstaller
+public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
 {
     private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
     private static readonly RelativePath LinuxFolder = "linux".ToRelativePath();
@@ -49,7 +56,7 @@ public class SMAPIInstaller : AModInstaller
         IFileOriginRegistry fileOriginRegistry,
         TemporaryFileManager temporaryFileManager,
         IFileStore fileStore)
-        : base(serviceProvider)
+        : base(serviceProvider, logger)
     {
         _logger = logger;
         _osInformation = osInformation;
@@ -78,7 +85,7 @@ public class SMAPIInstaller : AModInstaller
         return installDataFiles;
     }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
@@ -101,7 +108,7 @@ public class SMAPIInstaller : AModInstaller
                 _logger.LogError("SMAPI doesn't contain three install.dat files, unable to install SMAPI. This might be a bug with the installer");
             }
 
-            return NoResults;
+            return [];
         }
 
         var installDataFile = _osInformation.MatchPlatform(
@@ -238,5 +245,133 @@ public class SMAPIInstaller : AModInstaller
                 Version = version,
             },
         };
+    }
+
+    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        ITransaction transaction,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
+    {
+        var targetParentName = _osInformation.MatchPlatform(
+            onWindows: static () => WindowsFolder,
+            onLinux: static () => LinuxFolder,
+            onOSX: static () => MacOSFolder
+        );
+
+        var foundInstallDataFile = libraryArchive.Children.TryGetFirst(fileEntry =>
+        {
+            var path = fileEntry.Path;
+            var fileName = path.FileName;
+            if (!fileName.Equals(InstallDatFile)) return false;
+            var parentName = path.Parent.FileName;
+            return parentName.Equals(targetParentName);
+        }, out var installDataFile);
+
+        if (!foundInstallDataFile) return [];
+        if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
+        {
+            _logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
+            return [];
+        }
+
+        var isUnix = _osInformation.IsUnix();
+
+        // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
+        RelativePath unixLauncherPath = _osInformation.IsOSX
+            ? "Contents/MacOS/StardewValley"
+            : "StardewValley";
+
+        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem);
+        var modDatabaseEntityId = Optional<EntityId>.None;
+        var version = Optional<string>.None;
+
+        foreach (var fileEntry in installDataArchive.Children)
+        {
+            var to = new GamePath(LocationId.Game, fileEntry.Path);
+            var fileName = fileEntry.Path.FileName;
+
+            var entityId = transaction.TempId();
+            var loadoutItem = new LoadoutItem.New(transaction, entityId)
+            {
+                Name = fileName,
+                LoadoutId = loadout,
+                ParentId = group,
+            };
+
+            // NOTE(erri120): This is a more reliable approach for getting
+            // the SMAPI version.
+            if (!version.HasValue && fileName.Equals("StardewModdingAPI.dll"))
+            {
+                try
+                {
+                    await using var tempFile = _temporaryFileManager.CreateFile();
+                    await using (var stream = await _fileStore.GetFileStream(fileEntry.AsLibraryFile().Hash, token: cancellationToken))
+                    {
+                        await using var fs = tempFile.Path.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                        await stream.CopyToAsync(fs, cancellationToken);
+                    }
+
+                    var fvi = tempFile.Path.FileInfo.GetFileVersionInfo();
+                    version = fvi.FileVersionString;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception while getting version of SMAPI from DLL");
+                }
+            }
+
+            // For Linux & macOS: replace the game launcher executable "StardewValley" with "unix-launcher.sh"
+            // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
+            if (isUnix && fileName.Equals("unix-launcher.sh"))
+            {
+                to = new GamePath(LocationId.Game, unixLauncherPath);
+            }
+
+            // NOTE(erri120): The official installer doesn't replace "Stardew Valley.exe" with
+            // "StardewModdingAPI.exe" to allow players to run the vanilla game without having
+            // to uninstall SMAPI. However, we don't need this behavior.
+            // https://github.com/Nexus-Mods/NexusMods.App/issues/1012#issuecomment-1971039971
+            if (!isUnix && fileName.Equals("StardewModdingAPI.exe"))
+            {
+                to = new GamePath(LocationId.Game, "Stardew Valley.exe");
+            }
+
+            var loadoutFile = new LoadoutFile.New(transaction, entityId)
+            {
+                Hash = fileEntry.AsLibraryFile().Hash,
+                Size = fileEntry.AsLibraryFile().Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
+                {
+                    TargetPath = to,
+                    LoadoutItem = loadoutItem,
+                },
+            };
+
+            if (!modDatabaseEntityId.HasValue &&
+                fileName.Equals("metadata.json") &&
+                fileEntry.Path.Parent.FileName.Equals("smapi-internal"))
+            {
+                _ = new SMAPIModDatabaseLoadoutFile.New(transaction, entityId)
+                {
+                    IsIsModDatabaseFileMarker = true,
+                    LoadoutFile = loadoutFile,
+                };
+
+                modDatabaseEntityId = entityId;
+            }
+        }
+
+        // TODO: copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
+        // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
+
+        var smapi = new SMAPILoadoutItem.New(transaction, group.Id)
+        {
+            LoadoutItemGroup = group,
+            Version = version.ValueOrDefault(),
+            ModDatabaseId = modDatabaseEntityId.ValueOrDefault(),
+        };
+
+        return [groupLoadoutItem];
     }
 }

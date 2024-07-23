@@ -14,10 +14,10 @@ public partial class SMAPILoadoutItem : IModelDefinition
     /// <summary>
     /// The version of SMAPI.
     /// </summary>
-    public static readonly StringAttribute Version = new(Namespace, nameof(Version));
+    public static readonly StringAttribute Version = new(Namespace, nameof(Version)) { IsOptional = true };
 
     /// <summary>
     /// Reference to the mod database loadout file.
     /// </summary>
-    public static readonly ReferenceAttribute<SMAPIModDatabaseLoadoutFile> ModDatabase = new(Namespace, nameof(ModDatabase));
+    public static readonly ReferenceAttribute<SMAPIModDatabaseLoadoutFile> ModDatabase = new(Namespace, nameof(ModDatabase)) { IsOptional = true};
 }
