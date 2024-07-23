@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.Marshalling;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
@@ -30,10 +29,6 @@ using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley.Installers;
 
-/// <summary>
-/// <see cref="IModInstaller"/> for SMAPI itself. This is different from <see cref="SMAPIModInstaller"/>,
-/// which is an implementation of <see cref="IModInstaller"/> for mods that use SMAPI.
-/// </summary>
 public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
 {
     private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
@@ -41,7 +36,6 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
     private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
-    private readonly ILogger<SMAPIInstaller> _logger;
     private readonly IOSInformation _osInformation;
     private readonly IFileHashCache _fileHashCache;
     private readonly IFileOriginRegistry _fileOriginRegistry;
@@ -58,7 +52,6 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         IFileStore fileStore)
         : base(serviceProvider, logger)
     {
-        _logger = logger;
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
         _fileOriginRegistry = fileOriginRegistry;
@@ -105,7 +98,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         {
             if (isSMAPI)
             {
-                _logger.LogError("SMAPI doesn't contain three install.dat files, unable to install SMAPI. This might be a bug with the installer");
+                Logger.LogError("SMAPI doesn't contain three install.dat files, unable to install SMAPI. This might be a bug with the installer");
             }
 
             return [];
@@ -175,7 +168,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Exception while getting version of {Path}", item.Path);
+                    Logger.LogError(e, "Exception while getting version of {Path}", item.Path);
                 }
             }
 
@@ -226,7 +219,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         }
         else
         {
-            _logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
+            Logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
         }
 
         version ??= "0.0.0";
@@ -271,7 +264,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         if (!foundInstallDataFile) return [];
         if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
         {
-            _logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
+            Logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
             return [];
         }
 
@@ -317,7 +310,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Exception while getting version of SMAPI from DLL");
+                    Logger.LogError(e, "Exception while getting version of SMAPI from DLL");
                 }
             }
 
