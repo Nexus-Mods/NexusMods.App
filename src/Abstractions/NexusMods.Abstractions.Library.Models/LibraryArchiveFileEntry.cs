@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -12,6 +13,11 @@ namespace NexusMods.Abstractions.Library.Models;
 public partial class LibraryArchiveFileEntry : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.LibraryArchiveFileEntry";
+
+    /// <summary>
+    /// Path to the file inside the archive.
+    /// </summary>
+    public static readonly RelativePathAttribute Path = new(Namespace, nameof(Path));
 
     /// <summary>
     /// Reference to the parent archive that contains this file.

@@ -155,10 +155,13 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             cancellationToken.ThrowIfCancellationRequested();
             foreach (var tuple in job.AddExtractedFileJobResults.Value)
             {
-                var (jobResult, _) = tuple;
+                var (jobResult, fileEntry) = tuple;
                 var libraryFile = jobResult.RequireData<LibraryFile.New>();
+                var path = fileEntry.Path.RelativeTo(job.ExtractionDirectory.Value.Path);
+
                 var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
+                    Path = path,
                     LibraryFile = libraryFile,
                     ParentId = job.LibraryArchive.Value,
                 };
