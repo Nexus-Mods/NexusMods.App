@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using NexusMods.Abstractions.DiskState.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
 
@@ -9,19 +10,26 @@ namespace NexusMods.Abstractions.DiskState;
 /// </summary>
 public interface IDiskStateRegistry
 {
+    
+    /// <summary>
+    /// Enumerate all the game files from disk for a given game installation
+    /// </summary>
+    IEnumerable<FileState> EnumerateGameFilesFromDisk(GameInstallation gameInstallation);
+    
+    
     /// <summary>
     /// Saves a disk state to the data store for the given game installation
     /// </summary>
     /// <param name="installation">The game installation associated with the disk state</param>
     /// <param name="diskState">The disk state to save</param>
-    Task SaveState(GameInstallation installation, DiskStateTree diskState);
+    Task SaveState(GameInstallation installation, IEnumerable<FileStateWithHash> diskState);
 
     /// <summary>
     /// Gets the disk state associated with a specific game installation, returns false if no state is found
     /// </summary>
     /// <param name="gameInstallation">The game installation to retrieve the disk state for</param>
     /// <returns>The disk state associated with the game installation, or null if not found</returns>
-    Optional<InitialDiskState.ReadOnly> GetState(GameInstallation gameInstallation);
+    Optional<LoadoutDiskState.ReadOnly> GetState(GameInstallation gameInstallation);
     
     /// <summary>
     /// Gets the Loadout Revision Id of the last applied state for a given game installation
@@ -38,7 +46,7 @@ public interface IDiskStateRegistry
     /// </summary>
     /// <param name="installation">The game installation associated with the initial disk state</param>
     /// <param name="diskState">The initial disk state to save</param>
-    Task SaveInitialState(GameInstallation installation, DiskStateTree diskState);
+    Task SaveInitialState(GameInstallation installation, IEnumerable<FileStateWithHash> diskState);
 
     /// <summary>
     /// Retrieves the initial disk state for a given game installation.

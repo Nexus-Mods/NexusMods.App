@@ -146,7 +146,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
+    public SyncTree BuildSyncTree(IEnumerable<FileState> currentState, Optional<DiskState.Models.DiskState.ReadOnly> previousTree, Loadout.ReadOnly loadoutTree)
     {
         var tree = new Dictionary<GamePath, SyncTreeNode>();
 
@@ -180,22 +180,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             });
         }
 
-        foreach (var node in previousTree.GetAllDescendentFiles())
+        if (previousTree.HasValue)
         {
-            if (tree.TryGetValue(node.GamePath(), out var found))
+            foreach (var node in previousTree.Value.Entries)
             {
-                found.Previous = node.Item.Value;
-            }
-            else
-            {
-                tree.Add(node.GamePath(), new SyncTreeNode
+                if (tree.TryGetValue(node.Path, out var found))
                 {
-                    Path = node.GamePath(),
-                    Previous = node.Item.Value,
-                });
+                    found.Previous = node;
+                }
+                else
+                {
+                    tree.Add(node.Path, new SyncTreeNode
+                        {
+                            Path = node.Path,
+                            Previous = node,
+                        }
+                    );
+                }
             }
         }
-        
+
         foreach (var node in currentState.GetAllDescendentFiles())
         {
             if (tree.TryGetValue(node.GamePath(), out var found))

@@ -2,7 +2,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.DataModel.DiskState.Models;
+namespace NexusMods.Abstractions.DiskState.Models;
 
 
 /// <summary>
@@ -15,7 +15,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The disk state associated with this entry.
     /// </summary>
-    public static readonly ReferenceAttribute<DiskState> DiskState = new(Namespace, nameof(DiskState));
+    public static readonly ReferenceAttribute<Abstractions.DiskState.Models.DiskState> DiskState = new(Namespace, nameof(DiskState));
 
     /// <summary>
     /// The path of the file

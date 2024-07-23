@@ -1,12 +1,10 @@
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
-namespace NexusMods.DataModel.DiskState.Models;
+namespace NexusMods.Abstractions.DiskState.Models;
 
 /// <summary>
 /// Disk state for a loadout.
@@ -33,7 +31,7 @@ public static class LoadoutDiskStateHelpers
     /// <summary>
     /// Update the state of the disk state to match the given tree
     /// </summary>
-    public static void Update(this LoadoutDiskState.ReadOnly readOnly, ITransaction tx, DiskStateTree tree)
+    public static void Update(this LoadoutDiskState.ReadOnly readOnly, ITransaction tx, IEnumerable<FileStateWithHash> tree)
     {
         
         tx.Add(readOnly.Id, LoadoutDiskState.Loadout, readOnly.LoadoutId);
@@ -53,16 +51,16 @@ public static class LoadoutDiskStateHelpers
     /// <summary>
     /// Add all the entries in the tree to the disk state
     /// </summary>
-    public static void AddAll(this DiskState.New diskState, ITransaction tx, DiskStateTree tree)
+    public static void AddAll(this DiskState.New diskState, ITransaction tx, IEnumerable<FileStateWithHash> states)
     {
-        foreach (var entry in tree.GetAllDescendentFiles())
+        foreach (var entry in states)
         {
             _ = new DiskStateEntry.New(tx)
             {
                 DiskStateId = diskState.Id,
-                Path = entry.Item.GamePath,
-                Hash = entry.Item.Value.Hash,
-                LastModified = entry.Item.Value.LastModified,
+                Path = entry.State.Path,
+                Hash = entry.Hash,
+                LastModified = entry.State.LastModified,
             };
         }
     }

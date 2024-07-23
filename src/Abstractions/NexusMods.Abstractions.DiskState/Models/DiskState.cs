@@ -2,7 +2,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.DataModel.DiskState.Models;
+namespace NexusMods.Abstractions.DiskState.Models;
 
 /// <summary>
 /// Base attributes for the DiskState registry.
@@ -25,5 +25,5 @@ public partial class DiskState : IModelDefinition
     /// <summary>
     /// The entries in the disk state.
     /// </summary>
-    public static readonly BackReferenceAttribute<DataModel.DiskState.Models.DiskStateEntry> Entries = new(DataModel.DiskState.Models.DiskStateEntry.DiskState);
+    public static readonly BackReferenceAttribute<DiskStateEntry> Entries = new(DiskStateEntry.DiskState);
 }

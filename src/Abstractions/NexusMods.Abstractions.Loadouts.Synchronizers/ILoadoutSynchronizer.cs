@@ -65,7 +65,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
+    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, IEnumerable<FileState> diskState);
     
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously

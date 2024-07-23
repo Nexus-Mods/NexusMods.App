@@ -11,6 +11,7 @@
     <ItemGroup>
       <PackageReference Include="NexusMods.Hashing.xxHash64" />
       <PackageReference Include="System.Text.Json" />
+      <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 

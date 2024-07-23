@@ -2,7 +2,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.DataModel.DiskState.Models;
+namespace NexusMods.Abstractions.DiskState.Models;
 
 /// <summary>
 ///     A sibling of <see cref="DiskStateModels"/>, but only for the initial state.
@@ -14,7 +14,7 @@ namespace NexusMods.DataModel.DiskState.Models;
 ///
 ///     This will also make cleaning out loadouts in MneumonicDB easier in the future.
 /// </remarks>
-[Include<DataModel.DiskState.Models.DiskState>]
+[Include<Abstractions.DiskState.Models.DiskState>]
 public partial class InitialDiskState : IModelDefinition
 {
     private static readonly string Namespace = "NexusMods.DataModel.InitialDiskStates";

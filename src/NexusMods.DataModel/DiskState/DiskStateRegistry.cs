@@ -2,13 +2,14 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.DiskState.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.DataModel.DiskState.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using DiskStateEntry = NexusMods.Abstractions.DiskState.DiskStateEntry;
+using InitialDiskState = NexusMods.Abstractions.DiskState.Models.InitialDiskState;
+using LoadoutDiskState = NexusMods.Abstractions.DiskState.Models.LoadoutDiskState;
 
 namespace NexusMods.DataModel.DiskState;
 
@@ -46,12 +47,12 @@ public class DiskStateRegistry : IDiskStateRegistry
         // If we have a previous state, update it
         if (previous.HasValue)
         {
-            previous.Value.Update(tx, diskState);
+            LoadoutDiskStateHelpers.Update(previous.Value, tx, diskState);
         }
         else
         {
             var newId = tx.TempId();
-            var newState = new DiskState.Models.DiskState.New(tx, newId)
+            var newState = new Abstractions.DiskState.Models.DiskState.New(tx, newId)
             {
                 Game = installation.Game.Domain,
                 Root = installation.LocationsRegister[LocationId.Game].ToString(),
@@ -88,7 +89,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         var domain = installation.Game.Domain;
         var diskStateId = tx.TempId();
 
-        var newDiskState = new Models.DiskState.New(tx, diskStateId)
+        var newDiskState = new Abstractions.DiskState.Models.DiskState.New(tx, diskStateId)
         {
             Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
@@ -110,7 +111,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         var db = _connection.Db;
 
-        var result = DiskState.Models.DiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
+        var result = Abstractions.DiskState.Models.DiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
             .OfTypeInitialDiskState()
             .FirstOrDefault();
 
@@ -150,7 +151,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     
     private static Optional<LoadoutDiskState.ReadOnly> PreviousStateEntity(IDb db, GameInstallation gameInstallation)
     {
-        var result =  Models.DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
+        var result =  Abstractions.DiskState.Models.DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
             .Where(state => state.Game == gameInstallation.Game.Domain)
             .OfTypeLoadoutDiskState()
             .First();
