@@ -157,10 +157,10 @@
         <value>Download history</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>PLEASE CLICK "AUTHORIZE" ON THE WEBSITE</value>
+        <value>Please click "Authorize" on the website</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
-        <value>BROWSER DIDN'T OPEN AUTOMATICALLY?</value>
+        <value>Browser didn't open automatically?</value>
     </data>
     <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
         <value>Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge.</value>

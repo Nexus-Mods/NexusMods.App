@@ -21,7 +21,7 @@
     <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
         <TextBlock Grid.Column="0"
-                   Classes="TitleMDSemi ForegroundSubdued"
+                   Classes="HeadingXSSemi ForegroundSubdued"
                    VerticalAlignment="Center"
                    Margin="16,0"
                    x:Name="ActiveWorkspaceTitleTextBlock" />

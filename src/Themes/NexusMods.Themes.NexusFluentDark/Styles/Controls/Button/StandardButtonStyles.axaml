@@ -37,7 +37,7 @@
                     <Button Classes="Standard Primary">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Play" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
@@ -210,7 +210,7 @@
 
         <!-- If text is at top level -->
         <Style Selector="^ > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
@@ -220,7 +220,7 @@
         </Style>
 
         <Style Selector="^ > StackPanel > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
