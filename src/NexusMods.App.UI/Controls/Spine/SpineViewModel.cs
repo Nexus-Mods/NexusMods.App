@@ -24,6 +24,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -56,8 +57,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
-        IRepository<Loadout.Model> loadoutRepository)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -76,19 +76,20 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
         
-        if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
-        var workspaceController = currentWindow.WorkspaceController;
-
+        var workspaceController = windowManager.ActiveWorkspaceController;
         
         this.WhenActivated(disposables =>
             {
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, _conn.Registry))
+                    .SuppressRefresh()
+                    .Transform(id => Loadout.Load(_conn.Db, id.E));
+                
+                    loadouts
                     .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
                             
-                            await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
+                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
@@ -130,12 +131,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
 
                 // Navigate away from the Loadout workspace if the Loadout is removed
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                loadouts
                     .OnUI()
                     .OnItemRemoved(loadout =>
                     {
-                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                        if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                             activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
                             workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
@@ -150,7 +150,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Id)
+                    .Select(workspace => workspace.Id)
                     .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
@@ -158,7 +158,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 // Update the active spine item when the active workspace changes
                 workspaceController
                     .WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Context)
+                    .Select(workspace => workspace.Context)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(context =>
                         {
@@ -216,8 +216,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public void NavigateToHome()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
             {
@@ -229,8 +228,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
@@ -251,8 +249,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToDownloads()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {

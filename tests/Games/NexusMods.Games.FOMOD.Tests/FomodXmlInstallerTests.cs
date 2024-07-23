@@ -1,21 +1,18 @@
 using FluentAssertions;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
+using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
-using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, FomodXmlInstaller>
+public class FomodXmlInstallerTests : AModInstallerTest<Cyberpunk2077Game, FomodXmlInstaller>
 {
     public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
@@ -32,9 +29,14 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
 
         var install = GameInstallation;
         using var tx = Connection.BeginTransaction();
-        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.Model(tx)
+        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.New(tx)
         {
             Name = "Test Mod",
+            Revision = 0,
+            LoadoutId = LoadoutId.From(0),
+            Enabled = true,
+            Status = ModStatus.Installed,
+            Category = ModCategory.Mod,
         };
         var result = await tx.Commit();
         

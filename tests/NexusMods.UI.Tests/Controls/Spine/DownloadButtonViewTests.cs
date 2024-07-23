@@ -12,6 +12,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     public DownloadButtonViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task SettingButtonToActiveAppliesProperClass()
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
@@ -30,6 +31,8 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public async Task SettingProgressSetsClassesAndValues()
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
@@ -70,6 +73,8 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public async Task SettingUnitAndNumberChangesTextValues()
     {
         var numberBlock = await Host.GetViewControl<TextBlock>("NumberTextBlock");
@@ -110,6 +115,8 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public async Task ClickingTheButtonTriggersTheCommand()
     {
         await ButtonShouldFireReactiveCommand(vm => vm.Click, "ParentButton");

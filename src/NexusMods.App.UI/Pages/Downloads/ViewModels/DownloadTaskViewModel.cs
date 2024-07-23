@@ -20,8 +20,11 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
-        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-                   && task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
+
+        var isCompleted = task.PersistentState.TryGetAsCompletedDownloadState(out var completed);
+
+        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed)
+                   && isCompleted && completed.Hidden;
         
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
@@ -33,7 +36,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
                 .BindTo(this, x => x.Name)
                 .DisposeWith(d);
             
-            _task.WhenAnyValue(t => t.PersistentState.Version)
+            _task.WhenAnyValue(t => t.PersistentState)
+                .Select(state => DownloaderState.Version.TryGet(state, out var version) ? version : "-" )
                 .OnUI()
                 .BindTo(this, x => x.Version)
                 .DisposeWith(d);
@@ -69,11 +73,21 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             
             _task.WhenAnyValue(t => t.PersistentState.Status)
                 .Where(s => s.Equals(DownloadTaskStatus.Completed))
+                .Select(_ =>
+                {
+                	var dlIsCompleted = _task.PersistentState.TryGetAsCompletedDownloadState(out var completedDl);
+
+                	return _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) && dlIsCompleted
+                        ? completedDl.CompletedDateTime
+                        : DateTime.MinValue;
+                })
+                .OnUI()
+                .BindTo(this, x => x.CompletedTime)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(vm => vm.CompletedTime)
                 .CombineLatest(interval)
-                .Select(_ => _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-                    ? _task.PersistentState.Remap<CompletedDownloadState.Model>().CompletedAt.Humanize()
-                    : "-"
-                )
+                .Select(tuple => tuple.First.Equals(DateTime.MinValue) ? "-" : tuple.First.Humanize())
                 .OnUI()
                 .BindTo(this, x => x.HumanizedCompletedTime)
                 .DisposeWith(d);
@@ -88,6 +102,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     [Reactive] public string Game { get; set; } = "";
 
     public string HumanizedSize => ByteSize.FromBytes(SizeBytes).ToString();
+    
+    [Reactive] public DateTime CompletedTime { get; set; }
     
     [Reactive] public string HumanizedCompletedTime { get; set; } = "-";
 

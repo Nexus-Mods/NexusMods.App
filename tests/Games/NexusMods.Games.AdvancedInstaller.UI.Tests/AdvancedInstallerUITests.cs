@@ -30,7 +30,7 @@ public class AdvancedInstallerUITests
             { LocationId.AppData, fs.FromUnsanitizedFullPath(appdataDir.GetFullPath()) }
         });
 
-        Loadout.Model? loadout = null;
+        Loadout.ReadOnly? loadout = null;
         return new BodyViewModel(deploymentData, "some-mod-name", fileTreeNode, gameLocationsRegister, loadout,
             "some-game-name");
     }

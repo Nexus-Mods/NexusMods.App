@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.Activities;
 /// turning an activity into a stream of update events. We do this so that events can be throttled and have a maximum
 /// update time. Some properties such as "Elapsed" will be updated on a regular basis, even if no activity has happened.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IReadOnlyActivity
 {
     /// <summary>

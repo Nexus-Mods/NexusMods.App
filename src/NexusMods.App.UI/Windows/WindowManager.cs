@@ -3,10 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -14,31 +14,43 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
     private readonly IConnection _conn;
-    private readonly IRepository<WindowDataAttributes.Model> _repository;
 
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
     private readonly SourceList<WindowId> _allWindowIdSource = new();
 
     public WindowManager(
         ILogger<WindowManager> logger,
-        IRepository<WindowDataAttributes.Model> repository,
         IConnection conn)
     {
         _logger = logger;
         _conn = conn;
-        _repository = repository;
-
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
 
-    [Reactive] public WindowId ActiveWindowId { get; set; } = WindowId.DefaultValue;
+    private WindowId _activeWindowId = WindowId.DefaultValue;
+    public IWorkspaceWindow ActiveWindow {
+        get => GetActiveWindow();
+        set => SetActiveWindow(value);
+    }
 
     private readonly ReadOnlyObservableCollection<WindowId> _allWindowIds;
     public ReadOnlyObservableCollection<WindowId> AllWindowIds => _allWindowIds;
 
-    public bool TryGetActiveWindow([NotNullWhen(true )] out IWorkspaceWindow? window)
+    private IWorkspaceWindow GetActiveWindow()
     {
-        return TryGetWindow(ActiveWindowId, out window);
+        if (TryGetWindow(_activeWindowId, out var window)) return window;
+        throw new InvalidOperationException("There is no active window");
+    }
+
+    private void SetActiveWindow(IWorkspaceWindow window)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+
+        if (!TryGetWindow(window.WindowId, out _))
+            throw new InvalidOperationException($"Can't change active window to unregistered window `{window.WindowId}`");
+
+        _activeWindowId = window.WindowId;
+        this.RaisePropertyChanged(nameof(ActiveWindow));
     }
 
     public bool TryGetWindow(WindowId windowId, [NotNullWhen(true)] out IWorkspaceWindow? window)
@@ -71,7 +83,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         _allWindowIdSource.Edit(list => list.Add(window.WindowId));
-        ActiveWindowId = window.WindowId;
+        SetActiveWindow(window);
     }
 
     public void UnregisterWindow(IWorkspaceWindow window)
@@ -91,19 +103,17 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             var data = window.WorkspaceController.ToData();
 
             using var tx = _conn.BeginTransaction();
-            if (!_repository.TryFindFirst(out var found))
+            var found = WindowDataAttributes.All(_conn.Db).FirstOrDefault();
+            if (!found.IsValid())
             {
-                var model = new WindowDataAttributes.Model(tx)
+                _ = new WindowDataAttributes.New(tx)
                 {
-                    Db = _conn.Db,
+                    Data = WindowDataAttributes.Encode(_conn.Db, data),
                 };
-
-                model.SetData(data);
             }
             else
             {
-                found.Tx = tx;
-                found.SetData(data);
+                tx.Add(found.Id, WindowDataAttributes.Data, WindowDataAttributes.Encode(_conn.Db, data));
             }
             tx.Commit();
         }
@@ -117,11 +127,10 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         try
         {
-            if (!_repository.TryFindFirst(out var found))
+            if (!WindowDataAttributes.All(_conn.Db).TryGetFirst(out var found))
                 return false;
 
-            var windowData = found.GetData();
-            window.WorkspaceController.FromData(windowData);
+            window.WorkspaceController.FromData(found.WindowData);
             return true;
         }
         catch (Exception e)
@@ -133,9 +142,10 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             try
             {
                 using var tx = _conn.BeginTransaction();
-                if (!_repository.TryFindFirst(out var found))
+                var found = WindowDataAttributes.All(_conn.Db).First();
+                if (!found.IsValid())
                     return false;
-                WindowDataAttributes.Data.Retract(found);
+                tx.Delete(found.Id, true);
                 tx.Commit();
             }
             catch (Exception otherException)

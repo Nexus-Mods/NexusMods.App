@@ -4,6 +4,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Storage;
@@ -15,7 +16,8 @@ namespace NexusMods.Abstractions.FileStore.Downloads;
 /// <summary>
 /// Attributes for the analysis data for a downloaded file
 /// </summary>
-public static class DownloadAnalysis
+[Obsolete(message: "To be replaced with Library Items and Jobs")]
+public partial class DownloadAnalysis : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.FileStore.Downloads.DownloadAnalysis";
     /// <summary>
@@ -46,73 +48,21 @@ public static class DownloadAnalysis
     /// for example "the_awesome_mod_v1.0.zip"
     /// </summary>
     public static readonly StringAttribute SuggestedName = new(Namespace, nameof(SuggestedName));
+
+    /// <summary>
+    /// The contents of the download
+    /// </summary>
+    public static readonly BackReferenceAttribute<DownloadContentEntry> Contents = new(DownloadContentEntry.DownloadAnalysis);
+
     
-    
-    public class Model(ITransaction tx) : Entity(tx)
+    public partial struct ReadOnly
     {
-        
-        /// <summary>
-        /// The hash of the downloaded archive from which this download is sourced from.
-        /// </summary>
-        public Hash Hash
-        {
-            get => DownloadAnalysis.Hash.Get(this);
-            set => DownloadAnalysis.Hash.Add(this, value);
-        } 
-        
-        /// <summary>
-        /// Size of the downloaded archive from which this download is sourced from.
-        /// </summary>
-        public Size Size
-        {
-            get => DownloadAnalysis.Size.Get(this);
-            set => DownloadAnalysis.Size.Add(this, value);
-        }
-        
-
-        /// <summary>
-        /// The number of entries in the download
-        /// </summary>
-        public ulong Count
-        {
-            get => NumberOfEntries.Get(this);
-            set => NumberOfEntries.Add(this, value);
-        }
-
-        /// <summary>
-        /// The human-readable, friendly name for this download
-        /// </summary>
-        public string SuggestedName
-        {
-            get => DownloadAnalysis.SuggestedName.Get(this, "<Unknown>");
-            set => DownloadAnalysis.SuggestedName.Add(this, value);
-        }
-
-        /// <summary>
-        /// The contents of the download
-        /// </summary>
-        public Entities<EntityIds, DownloadContentEntry.Model> Contents
-            => GetReverse<DownloadContentEntry.Model>(DownloadContentEntry.DownloadAnalysis);
-        
-        
         /// <summary>
         /// Get a file tree of the download's contents
         /// </summary>
         public ModFileTreeNode GetFileTree(IFileStore? fs = null)
         {
             return TreeCreator.Create(Contents, fs);
-        }
-
-        /// <summary>
-        /// The timestamp of the creation of this <see cref="DownloadAnalysis"/> entity
-        /// Download start time or first manual installation time
-        /// </summary>
-        public DateTime GetCreatedAt()
-        {
-            // Get the lowest transaction id, then get the timestamp of that transaction
-            var t = this.Select(d => d.T).Min();
-            var txEntity = Db.Get<Entity>(EntityId.From(t.Value));
-            return BuiltInAttributes.TxTimestanp.Get(txEntity);
         }
     }
 }
@@ -121,7 +71,7 @@ public static class DownloadAnalysis
 /// <summary>
 /// A single entry in the download analysis, this is a file that is contained in the download
 /// </summary>
-public static class DownloadContentEntry
+public partial class DownloadContentEntry : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.FileStore.Downloads.DownloadContentEntry";
     
@@ -143,46 +93,13 @@ public static class DownloadContentEntry
     /// <summary>
     /// The DownloadAnalysis that this entry is a part of
     /// </summary>
-    public static readonly ReferenceAttribute DownloadAnalysis = new(Namespace, nameof(DownloadAnalysis));
-    
-    public class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DownloadAnalysis), TreeCreator.ITreeCreatorNode
+    public static readonly ReferenceAttribute<DownloadAnalysis> DownloadAnalysis = new(Namespace, nameof(DownloadAnalysis));
+
+    /// <inheritdoc />
+    public partial struct ReadOnly : TreeCreator.ITreeCreatorNode
     {
         
-        /// <summary>
-        /// Hash of the file
-        /// </summary>
-        public Hash Hash
-        {
-            get => DownloadContentEntry.Hash.Get(this);
-            set => DownloadContentEntry.Hash.Add(this, value);
-        } 
-        
-        /// <summary>
-        /// Size of the file
-        /// </summary>
-        public Size Size
-        {
-            get => DownloadContentEntry.Size.Get(this);
-            set => DownloadContentEntry.Size.Add(this, value);
-        }
-        
-        /// <summary>
-        /// Path of the file
-        /// </summary>
-        public RelativePath Path
-        {
-            get => DownloadContentEntry.Path.Get(this);
-            set => DownloadContentEntry.Path.Add(this, value);
-        }
-        
-        public DownloadId DownloadAnalysisId
-        {
-            get => DownloadId.From(DownloadAnalysis.Get(this));
-            set => DownloadAnalysis.Add(this, value.Value);
-        }
-
     }
-    
 }
 
 /// <summary>

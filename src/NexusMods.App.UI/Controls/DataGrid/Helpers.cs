@@ -26,7 +26,9 @@ public static class Helpers
         foreach (var column in columns)
         {
             var generatedColumn = column.Generate();
-            generatedColumn.Header = GenerateHeader(column.Type);
+            var header = GenerateHeader(column.Type);
+            generatedColumn.Header = header;
+            generatedColumn.MinWidth = header.MinWidth;
             target.Columns.Add(generatedColumn);
         }
     }
@@ -42,6 +44,9 @@ public static class Helpers
                 LoadoutColumn.Category => new TextBlock { Text = Language.Helpers_GenerateHeader_CATEGORY },
                 LoadoutColumn.Installed => new TextBlock { Text = Language.Helpers_GenerateHeader_INSTALLED },
                 LoadoutColumn.Enabled => new ModEnabledHeader()
+                {
+                    MinWidth = 65,
+                }
             },
             DownloadColumn downloadColumn => downloadColumn switch
             {

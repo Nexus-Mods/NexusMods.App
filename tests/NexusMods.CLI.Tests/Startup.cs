@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
@@ -11,6 +12,8 @@ using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
@@ -33,6 +36,9 @@ public class Startup
                 .AddFileSystem()
                 .AddSettingsManager()
                 .AddDataModel()
+                .AddLibrary()
+                .AddLibraryModels()
+                .AddJobMonitor()
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,

@@ -1,4 +1,4 @@
-site_name: Nexus Mods App
+site_name: Nexus Mods app
 site_url: https://github.com/Nexus-Mods/NexusMods.App
 
 repo_name: Nexus-Mods/NexusMods.App
@@ -50,6 +50,7 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.indexes
+    - content.footnote.tooltips
 
 plugins:
   - search
@@ -60,12 +61,19 @@ nav:
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
     - Adding a Game: users/AddGames.md
-    # - Features: 
-    #   - Health Check: users/features/HealthCheck.md
+    - Features: 
+      # - Loadouts: users/features/Loadouts.md
+      - Health Check: users/features/HealthCheck.md
+      # - Global Undo: users/features/Undo.md
+      - Workspaces: users/features/Workspaces.md
+      # - Collections: users/features/Collections.md
     - Games:
-      # - users/games/index.md
+      - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
+    - Frequently Asked Questions: 
+      - users/faq/index.md
+      - How to find the log files: users/faq/LogFiles.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
@@ -117,15 +125,16 @@ nav:
         - '02: Data Model Triggers': developers/concepts/0002-datamodel-triggers.md
     - Games:
         - '00: Template': developers/games/0000-Template.md
-        - '01: Skyrim SE': developers/games/0001-SkyrimSE.md
-        - '02: Stardew Valley': developers/games/0002-StardewValley.md
-        - '03: Sifu': developers/games/0003-Sifu.md
-        - '04: Darkest Dungeon': developers/games/0004-DarkestDungeon.md
-        - '05: Skyrim LE': developers/games/0005-SkyrimLE.md
-        - '06: Blade And Sorcery': developers/games/0006-BladeAndSorcery.md
-        - '07: Bannerlord': developers/games/0007-Bannerlord.md
+        - '01: Stardew Valley': developers/games/0001-StardewValley.md
+        - '02: Cyberpunk 2077': developers/games/0002-Cyberpunk2077.md
     - Misc:
         - About Fomod: developers/misc/AboutFomod.md
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
         - Drawbacks of Nexus App Approach: developers/misc/DrawbacksOfNexusApproach.md
     - Contributing to Docs: Nexus/Pages/contributing.md
+
+validation: 
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: info

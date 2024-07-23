@@ -28,6 +28,7 @@
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
@@ -43,6 +44,9 @@
     <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/EmptyStateStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/LoadoutCards/LoadoutCardStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/MyLoadoutsView/MyLoadoutsViewStyles.axaml"/>
 
 </Styles>

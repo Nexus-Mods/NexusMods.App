@@ -53,25 +53,25 @@ public class RunGameTool<T> : IRunGameTool
     public string Name => $"Run {_game.Name}";
 
     /// <inheritdoc />
-    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
+    public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
         
         var program = await GetGamePath(loadout);
-        var primaryFile = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation);
+        var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.Store).CombineChecked(loadout.InstallationInstance);
 
-        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile) && loadout.Installation.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
+        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile) && loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
         {
             await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken);
             return;
         }
 
-        var names = new HashSet<string>()
+        var names = new HashSet<string>
         {
             program.FileName,
             program.GetFileNameWithoutExtension(),
             primaryFile.FileName,
-            primaryFile.GetFileNameWithoutExtension()
+            primaryFile.GetFileNameWithoutExtension(),
         };
 
         // In the case of a preloader, we need to wait for the actual game file to exit
@@ -227,9 +227,9 @@ public class RunGameTool<T> : IRunGameTool
     /// <param name="loadout"></param>
     /// <param name="applyPlan"></param>
     /// <returns></returns>
-    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.Model loadout)
+    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
-        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.Installation.Store)
-            .Combine(loadout.Installation.LocationsRegister[LocationId.Game]));
+        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.Store)
+            .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
     }
 }

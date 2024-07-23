@@ -2,12 +2,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -18,8 +20,10 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
+            .AddUniversalGameLocator<Cyberpunk2077.Cyberpunk2077Game>(new Version("1.61"))
+            .AddFomod()
             .AddRedEngineGames()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()

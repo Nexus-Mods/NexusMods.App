@@ -50,7 +50,7 @@ public class Program
 
         var startupMode = StartupMode.Parse(args);
         
-        var host = BuildHost(
+        using var host = BuildHost(
             startupMode,
             telemetrySettings,
             loggingSettings,
@@ -67,7 +67,7 @@ public class Program
         cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
 
         _logger = services.GetRequiredService<ILogger<Program>>();
-        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
+        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription, CompileConstants.InstallationMethod);
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
             LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());

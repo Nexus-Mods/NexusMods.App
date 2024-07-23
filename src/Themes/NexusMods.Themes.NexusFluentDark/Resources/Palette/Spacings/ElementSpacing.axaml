@@ -5,7 +5,7 @@
     <!-- ReSharper disable InconsistentNaming -->
     <x:Double x:Key="Spacing-none">0</x:Double>
     <x:Double x:Key="Spacing-px">1</x:Double>
-    <x:Double x:Key="Spacing-0.5">1</x:Double>
+    <x:Double x:Key="Spacing-0.5">2</x:Double>
     <x:Double x:Key="Spacing-1">4</x:Double>
     <x:Double x:Key="Spacing-1.5">6</x:Double>
     <x:Double x:Key="Spacing-2">8</x:Double>

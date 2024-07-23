@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -23,7 +24,7 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
-    private readonly Lazy<IStandardizedLoadoutSynchronizer> _synchronizer;
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     private readonly Lazy<IEnumerable<IModInstaller>> _installers;
     private readonly IServiceProvider _provider;
 
@@ -35,7 +36,7 @@ public abstract class AGame : IGame
         _provider = provider;
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
-        _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => MakeSynchronizer(provider));
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
         _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
     }
 
@@ -45,7 +46,7 @@ public abstract class AGame : IGame
     /// </summary>
     /// <param name="provider"></param>
     /// <returns></returns>
-    protected virtual IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);
     }
@@ -69,6 +70,9 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
+
+    /// <inheritdoc />
+    public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();

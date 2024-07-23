@@ -60,7 +60,7 @@ jobs:
       artifactUrl: ${{ steps.upload.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
@@ -113,7 +113,7 @@ jobs:
       artifactUrl: ${{ steps.upload.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: "recursive"
 

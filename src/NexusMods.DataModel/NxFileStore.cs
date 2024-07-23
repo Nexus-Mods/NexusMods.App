@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -104,7 +105,7 @@ public class NxFileStore : IFileStore
     {
         using var tx = _conn.BeginTransaction();
 
-        var container = new ArchivedFileContainer.Model(tx)
+        var container = new ArchivedFileContainer.New(tx)
         {
             Path = finalPath.Name,
         };
@@ -113,11 +114,11 @@ public class NxFileStore : IFileStore
 
         foreach (var entry in entries)
         {
-            _ = new ArchivedFile.Model(tx)
+            _ = new ArchivedFile.New(tx)
             {
                 Hash = Hash.FromHex(entry.FileName),
                 NxFileEntry = entry.Entry,
-                Container = container,
+                ContainerId = container,
             };
         }
 
@@ -125,7 +126,7 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public async Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
@@ -284,7 +285,7 @@ public class NxFileStore : IFileStore
         var fileHashes = new HashSet<ulong>();
         
         // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
-        fileHashes.AddRange(_conn.Db.Find(ArchivedFile.Hash).Select(f => f.Value));
+        fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved().OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
         
         return fileHashes;
     }
@@ -462,8 +463,7 @@ public class NxFileStore : IFileStore
     private bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var result = false;
-        var entries = from id in db.FindIndexed(hash, ArchivedFile.Hash)
-            let entry = db.Get<ArchivedFile.Model>(id)
+        var entries = from entry in ArchivedFile.FindByHash(db, hash)
             from location in _archiveLocations
             let combined = location.Combine(entry.Container.Path)
             where existsCache?.GetOrAdd(combined, combined.FileExists) ?? combined.FileExists

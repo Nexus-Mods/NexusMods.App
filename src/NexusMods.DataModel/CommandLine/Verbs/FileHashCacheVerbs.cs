@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -16,7 +17,7 @@ public static class FileHashCacheVerbs
     [Verb("hash-folder", "Hashes all files in a folder and stores them in a cache")]
     private static async Task<int> HashFolder([Injected] IRenderer renderer,
         [Option("i", "inputFolder", "Input folder to hash")] AbsolutePath inputFolder,
-        [Injected] FileHashCache fileHashCache,
+        [Injected] IFileHashCache fileHashCache,
         [Injected] CancellationToken token)
     {
         var sw = Stopwatch.StartNew();

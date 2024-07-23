@@ -165,7 +165,8 @@
                                   Width="1">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_MOD_NAME}" 
-                                                        Width="*"> 
+                                                        Width="*"
+                                                        SortMemberPath="Name"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -175,7 +176,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_VERSION}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_VERSION}"
+                                                        SortMemberPath="Version"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -185,7 +187,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_GAME}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_GAME}"
+                                                        SortMemberPath="Game"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -195,7 +198,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_SIZE}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_SIZE}"
+                                                        SortMemberPath="SizeBytes"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -205,7 +209,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.DownloadCompleted_COMPLETED}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.DownloadCompleted_COMPLETED}"
+                                                        SortMemberPath="CompletedTime"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"

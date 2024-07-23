@@ -31,21 +31,7 @@ public class ASynchronizerBenchmark
         if (_defaultSynchronizer == null)
             throw new Exception($"Can't cast synchronizer to {typeof(DefaultSynchronizer)}. Did the test StubbedGame code change?");
 
-        _installation = _datamodel.BaseLoadout.Installation;
+        _installation = _datamodel.BaseLoadout.InstallationInstance;
         _diskStateRegistry = _serviceProvider.GetRequiredService<IDiskStateRegistry>();
-    }
-    
-    protected void InitForIngest()
-    {
-        // We apply the files of a new loadout (without updating the loadout itself)
-        // This way we have loose files to ingest.
-        Task.Run(async () =>
-        {
-            // Do an apply, but without updating the loadout revision.
-            var flattenedLoadout = await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseLoadout);
-            var fileTree = await _defaultSynchronizer.FlattenedLoadoutToFileTree(flattenedLoadout, _datamodel.BaseLoadout);
-            var prevState = _datamodel.DiskStateRegistry.GetState(_installation)!;
-            await _defaultSynchronizer.FileTreeToDiskImpl(fileTree, _datamodel.BaseLoadout, flattenedLoadout, prevState, _installation,false);
-        }).Wait();
     }
 }

@@ -1,16 +1,15 @@
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData.Binding;
+using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -55,7 +54,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IRepository<JWTToken.Model> jwtTokenRepository,
         IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
@@ -63,19 +61,23 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _jwtTokenRepository = jwtTokenRepository;
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfoObservable = _jwtTokenRepository.Observable
-            .ToObservableChangeSet()
+        UserInfoObservable = JWTToken.ObserveAll(_conn)
+            // We only care that it has changed, not the actual value
+            .QueryWhenChanged(values => values.Count > 0)
             .ObserveOn(TaskPoolScheduler.Default)
-            .SelectMany(async _ => await Verify(CancellationToken.None));
+            .SelectMany(async hasValue  =>
+                {
+                    if (!hasValue) return null;
+                    return await Verify(CancellationToken.None);
+                }
+            );
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
-    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
     private readonly IConnection _conn;
 
     private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
@@ -108,9 +110,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <param name="token"></param>
     public async Task LoginAsync(CancellationToken token = default)
     {
-        // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        await _protocolRegistration.RegisterSelf("nxm");
-
         JwtTokenReply? jwtToken;
         try
         {
@@ -135,7 +134,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         
         using var tx = _conn.BeginTransaction();
 
-        var newTokenEntity = JWTToken.Model.Create(_conn.Db, tx, jwtToken!);
+        var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken);
         if (newTokenEntity is null)
         {
             _logger.LogError("Invalid new token data");
@@ -151,7 +150,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
+        using var tx = _conn.BeginTransaction();
+        foreach (var token in JWTToken.All(_conn.Db))
+        {
+            tx.Delete(token.Id, true);
+        }
+        await tx.Commit();
     }
     
     

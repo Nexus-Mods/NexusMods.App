@@ -54,7 +54,6 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         this.WhenActivated(disposables =>
         {
             var workspace = GetWorkspaceController().ActiveWorkspace;
-            Debug.Assert(workspace is not null);
 
             if (!BannerSettingsWrapper.IsDismissed)
             {
@@ -97,10 +96,10 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                     }
                     else
                     {
-                        behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                        behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     }
 
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
                 })
                 .DisposeWith(disposables);
         });

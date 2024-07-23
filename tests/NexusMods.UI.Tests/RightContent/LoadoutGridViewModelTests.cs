@@ -33,12 +33,15 @@ public class LoadoutGridViewModelTests(IServiceProvider provider) : AVmTest<ILoa
         for (var x = 0; x < 10; x++)
         {
             using var tx = Connection.BeginTransaction();
-            var mod = new Mod.Model(tx)
+            var mod = new Mod.New(tx)
             {
                 Name = "Mod",
                 Version = "1.0." + x,
                 Enabled = true,
-                Loadout = Loadout,
+                LoadoutId = Loadout,
+                Revision = 0,
+                Status = ModStatus.Installed,
+                Category = ModCategory.Mod,
             };
             Loadout.Revise(tx);
             var result = await tx.Commit();

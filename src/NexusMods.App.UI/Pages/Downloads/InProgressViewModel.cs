@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
@@ -184,8 +183,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                                     {
                                         return false;
                                     }
-                                    var loadout = conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value);
-                                    return loadout.IsVisible() && loadout.Installation.Game.Domain.Equals(vm.Game);
+                                    var loadout = Loadout.Load(conn.Db, loadoutContext.LoadoutId.Value);
+                                    return loadout.IsVisible() && loadout.InstallationInstance.Game.Domain.Equals(vm.Game);
                                 }
                             )
                             .Select(w => (w.Id, Context: (LoadoutContext)w.Context)).ToArray();
@@ -200,7 +199,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                             FactoryId = FileOriginsPageFactory.StaticId,
                             Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
                         };
-                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo, Optional<PageIdBundle>.None);
+                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo);
                         
                         controller.OpenPage(workspace.Id, pageData, behavior);
                         controller.ChangeActiveWorkspace(workspace.Id);

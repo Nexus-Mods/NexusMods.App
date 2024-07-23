@@ -7,4 +7,5 @@ namespace NexusMods.Abstractions.Activities;
 /// a group could be "Download" or "Mod Install".
 /// </summary>
 [ValueObject<String>]
+[Obsolete(message: "To be replaced with Jobs")]
 public readonly partial struct ActivityGroup;

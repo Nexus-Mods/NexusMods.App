@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -64,12 +63,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger = logger;
         _loginManager = loginManager;
 
-        if (!windowManager.TryGetActiveWindow(out var window))
-        {
-            throw new NotImplementedException();
-        }
-
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = windowManager.ActiveWorkspaceController;
 
         OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
@@ -79,7 +73,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 FactoryId = SettingsPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
             var workspace = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => page);
             workspaceController.OpenPage(workspace.Id, page, behavior);
         });
@@ -95,8 +89,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 FactoryId = ChangelogPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
         });
 
         ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -104,8 +98,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var loggingSettings = settingsManager.Get<LoggingSettings>();
             var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
             await osInterop.OpenDirectory(logDirectory);
-        }, // TODO: enable this once OpenDirectory has been implemented
-            Observable.Return(false));
+        });
 
         GiveFeedbackCommand = ReactiveCommand.Create(() =>
         {
@@ -154,7 +147,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .BindToVM(this, vm => vm.IsPremium)
                 .DisposeWith(d);
 
-            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
                 .Select(title => title.ToUpperInvariant())
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);

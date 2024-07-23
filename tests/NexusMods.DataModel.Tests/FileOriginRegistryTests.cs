@@ -6,6 +6,7 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NSubstitute;
@@ -21,6 +22,7 @@ public class FileOriginRegistryTests(IServiceProvider provider)
         // Arrange
         IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
+            ServiceProvider.GetRequiredService<ILibraryService>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             FileStore,
             TemporaryFileManager,
@@ -52,6 +54,7 @@ public class FileOriginRegistryTests(IServiceProvider provider)
         fileStore.GetFileHashes().Returns(new HashSet<ulong>()); // not needed here
         IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
+            ServiceProvider.GetRequiredService<ILibraryService>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,
@@ -78,6 +81,7 @@ public class FileOriginRegistryTests(IServiceProvider provider)
 
         IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
+            ServiceProvider.GetRequiredService<ILibraryService>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,

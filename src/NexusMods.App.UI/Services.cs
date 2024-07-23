@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
@@ -54,6 +55,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Settings;
@@ -188,6 +190,9 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
+            .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
+            .AddView<LoadoutCardView, ILoadoutCardViewModel>()
+            .AddView<CreateNewLoadoutCardView, ICreateNewLoadoutCardViewModel>()
             
             .AddView<SettingsView, ISettingsPageViewModel>()
             .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
@@ -219,10 +224,10 @@ public static class Services
 
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
+            
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
-            .AddRepository<WindowDataAttributes.Model>([WindowDataAttributes.Data])
             .AddAttributeCollection(typeof(WindowDataAttributes))
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
@@ -278,10 +283,7 @@ public static class Services
 
             // Other
             .AddSingleton<InjectedViewLocator>()
-            .AddFileSystem()
-
-            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
-            .AddRepository<StoredFile.Model>([StoredFile.Hash]);
+            .AddFileSystem();
     }
 
 }

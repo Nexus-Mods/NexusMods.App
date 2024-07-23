@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.App.BuildInfo;
 
 namespace NexusMods.App;
 
@@ -19,12 +20,13 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventId = 1, EventName = nameof(RuntimeInformation),
         Level = LogLevel.Information,
-        Message = "Operating System is `{os}` running `{framework}`"
+        Message = "Operating System is `{os}` running `{framework}` with installation method `{installationMethod}`"
     )]
     public static partial void RuntimeInformation(
         ILogger logger,
         string os,
-        string framework
+        string framework,
+        InstallationMethod installationMethod
     );
 
     [LoggerMessage(

@@ -31,8 +31,8 @@
 
         </Grid.Styles>
 
-        <Border Grid.Row="0" Classes="Top RoundedTop" HorizontalAlignment="Stretch">
-            <Border Classes="Top RoundedTop TopPart" x:Name="TopContentBorder">
+        <Border Grid.Row="0" Classes="High RoundedTop" HorizontalAlignment="Stretch">
+            <Border Classes="High RoundedTop TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
                     <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">

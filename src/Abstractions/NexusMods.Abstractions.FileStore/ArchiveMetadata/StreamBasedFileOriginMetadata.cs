@@ -5,6 +5,7 @@ namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 /// <summary>
 /// DownloadAnalysis metadata for a download that was registered from a stream.
 /// </summary>
+[Obsolete(message: "To be replaced with Library Items")]
 public static class StreamBasedFileOriginMetadata
 {
     private const string Namespace = "NexusMods.Abstractions.FileStore.ArchiveMetadata";

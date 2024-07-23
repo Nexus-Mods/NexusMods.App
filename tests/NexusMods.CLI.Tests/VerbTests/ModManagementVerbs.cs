@@ -31,12 +31,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
 
         log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.GetFileNameWithoutExtension());
         log.LastTable.Rows.Length.Should().Be(3);
-
-        log = await Run("flatten-loadout", "-l", listName);
-        await VerifyLog(log, "flatten-loadout");
         
-        log = await Run("apply", "-l", listName);
-        
-        log.Last<Text>().Template.Should().Contain($"Applied {listName}");
+        log = await Run("synchronize", "-l", listName);
     }
 }

@@ -34,6 +34,7 @@ namespace NexusMods.Networking.HttpDownloader
     /// so they don't result in many allocations, but each read block will result in a write and flush to disk and the
     /// saving to disk, which could result in slowdown with slow HDDs if this buffer is too slow.
     /// </remarks>
+    [Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
     public class AdvancedHttpDownloader : IHttpDownloader
     {
         private readonly ILogger<AdvancedHttpDownloader> _logger;
@@ -163,12 +164,12 @@ namespace NexusMods.Networking.HttpDownloader
 
         private static async Task<Hash> FinalizeDownload(DownloadState state, CancellationToken cancel)
         {
-            var tempPath = state.TempFilePath;
+            var progressPath = state.ProgressFilePath;
 
             if (state.HasIncompleteChunk) return Hash.Zero;
 
             state.StateFilePath.Delete();
-            File.Move(tempPath.ToString(), state.Destination.ToString(), true);
+            File.Move(progressPath.ToString(), state.Destination.ToString(), true);
             return await state.Destination.XxHash64Async(token: cancel);
         }
 
@@ -177,8 +178,8 @@ namespace NexusMods.Networking.HttpDownloader
         private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes,
             IActivitySource<Size> job, CancellationToken cancel)
         {
-            var tempPath = state.TempFilePath;
-            await using var file = tempPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
+            var progressPath = state.ProgressFilePath;
+            await using var file = progressPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
             file.SetLength((long)(ulong)state.TotalSize);
 
             while (true)
@@ -471,7 +472,7 @@ namespace NexusMods.Networking.HttpDownloader
         {
             DownloadState? state = null;
             var stateFilePath = DownloadState.GetStateFilePath(destination);
-            if (stateFilePath.FileExists && DownloadState.GetTempFilePath(destination).FileExists)
+            if (stateFilePath.FileExists && DownloadState.GetProgressFilePath(destination).FileExists)
             {
                 _logger.LogInformation("Resuming prior download {FilePath}", destination);
                 state = await DeserializeDownloadState(stateFilePath, cancel);

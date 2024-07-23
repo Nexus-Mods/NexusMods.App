@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
@@ -20,6 +22,8 @@ using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -41,10 +45,24 @@ public static class Services
         ExperimentalSettings? experimentalSettings = null,
         GameLocatorSettings? gameLocatorSettings = null)
     {
+        services.Configure<HostOptions>(options =>
+        {
+            // Sequential execution can lead to long startup times depending on number of hostedServices.
+            options.ServicesStartConcurrently = true;
+            // If executed sequentially, one service taking a long time can trigger the timeout,
+            // preventing StopAsync of other services from being called. 
+            options.ServicesStopConcurrently = true;
+        });
+        
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
         {
             services
+                .AddDataModel()
+                .AddLibrary()
+                .AddLibraryModels()
+                .AddJobMonitor()
+
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
@@ -62,7 +80,6 @@ public static class Services
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
-                .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddSupportedGames(experimentalSettings)
@@ -107,14 +124,9 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
-            Games.RedEngine.Services.AddRedEngineGames(services);
-            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
-            Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-            Games.Sifu.Services.AddSifu(services);
-            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
         }
         
+        Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         return services;
     }

@@ -56,13 +56,13 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
 
     public async Task Refresh()
     {
-        var loadout = _conn.Db.Get(_loadoutId);
-        if (loadout is null)
+        var loadout = Loadout.Load(_conn.Db, _loadoutId);
+        if (!loadout.IsValid())
         {
             throw new KeyNotFoundException($"Loadout with ID {_loadoutId} not found.");
         }
 
-        var diffTree = await _applyService.GetApplyDiffTree(loadout);
+        var diffTree = _applyService.GetApplyDiffTree(loadout);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
@@ -76,7 +76,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         ulong operationSize = 0;
 
 
-        var locationsRegister = loadout.Installation.LocationsRegister;
+        var locationsRegister = loadout.InstallationInstance.LocationsRegister;
 
         // Add the root directories
         foreach (var rootNode in diffTree.GetRoots())
@@ -207,9 +207,9 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             Columns =
             {
                 FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
                 FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
             },
         };
     }

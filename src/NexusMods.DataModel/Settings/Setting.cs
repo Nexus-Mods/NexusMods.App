@@ -7,7 +7,7 @@ namespace NexusMods.DataModel.Settings;
 /// <summary>
 /// Settings are stored as a simple key-value pair.
 /// </summary>
-public static class Setting
+public partial class Setting : IModelDefinition
 {
     private const string Namespace = "NexusMods.DataModel.Settings";
 
@@ -20,29 +20,4 @@ public static class Setting
     /// Value of the setting
     /// </summary>
     public static readonly StringAttribute Value = new(Namespace, nameof(Value));
-    
-    /// <summary>
-    /// Model for a specific setting
-    /// </summary>
-    /// <param name="tx"></param>
-    public class Model(ITransaction tx) : Entity(tx)
-    {
-        /// <summary>
-        /// Name of the setting
-        /// </summary>
-        public string Name
-        {
-            get => Setting.Name.Get(this);
-            set => Setting.Name.Add(this, value);
-        }
-        
-        /// <summary>
-        /// Value of the setting
-        /// </summary>
-        public string Value
-        {
-            get => Setting.Value.Get(this);
-            set => Setting.Value.Add(this, value);
-        }
-    }
 }

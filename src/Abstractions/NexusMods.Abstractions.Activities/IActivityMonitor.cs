@@ -5,6 +5,7 @@ namespace NexusMods.Abstractions.Activities;
 /// <summary>
 /// The central registry for all active activities in the process.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IActivityMonitor
 {
     /// <summary>

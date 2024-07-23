@@ -1,9 +1,6 @@
-using System.Collections.Immutable;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;

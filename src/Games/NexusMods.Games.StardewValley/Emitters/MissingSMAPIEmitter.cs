@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.StardewValley.Models;
@@ -10,7 +9,7 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
@@ -28,8 +27,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var smapiMod = optionalSmapiMod.Value.Item1;
-        if (!smapiMod.Enabled)
+        if (!loadout.GetFirstModWithMetadata(SMAPIMarker.Version, onlyEnabledMods: true).HasValue)
         {
             yield return Diagnostics.CreateSMAPIRequiredButDisabled(
                 ModCount: smapiModCount

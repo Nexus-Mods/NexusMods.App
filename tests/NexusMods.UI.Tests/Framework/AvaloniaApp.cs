@@ -58,6 +58,11 @@ public class AvaloniaApp : IDisposable
                 BuildAvaloniaApp()
                     .SetupWithoutStarting();
 
+                // Keep this here to make sure we at least create the dispatcher before
+                // reporting that we have started
+                
+                Dispatcher.UIThread.CheckAccess();
+                
                 tcs.SetResult();
                 Dispatcher.UIThread.MainLoop(CancellationToken.None);
             }

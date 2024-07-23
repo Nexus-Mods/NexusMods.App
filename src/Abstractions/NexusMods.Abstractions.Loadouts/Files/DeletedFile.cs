@@ -3,6 +3,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Loadouts.Files;
 
@@ -13,41 +14,15 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// exist, but marked as deleted. This means the mods can remain unmodified, and the overrides can be
 /// the final say on what is installed.
 /// </summary>
-public static class DeletedFile
+[Include<File>]
+[Obsolete(message: "This will be replaced with `DeletedFile` (LoadoutItem)")]
+public partial class DeletedFile : IModelDefinition
 {
-    public const string Namespace = "NexusMods.Abstractions.Loadouts.Files.DeletedFile";
-    
-    /// <summary>
-    /// If set to true, the file is considered deleted.
-    /// </summary>
-    public static readonly MarkerAttribute Deleted = new(Namespace, nameof(Deleted));
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.DeletedFile";
 
     /// <summary>
-    /// Model for a deleted file.
+    /// Not strictly necessary, but we need some attribute on this entity so we can query
+    /// it and discriminate it from other entities.
     /// </summary>
-    public class Model(ITransaction tx) : File.Model(tx)
-    {
-        /// <summary>
-        /// True if the file is deleted.
-        /// </summary>
-        public bool Deleted
-        {
-            get => DeletedFile.Deleted.Contains(this);
-            set => DeletedFile.Deleted.Add(this);
-        }
-    }
-    
-    
-    /// <summary>
-    /// If this file is a deleted file, this will return true and cast the deleted file to the out parameter.
-    /// </summary>
-    public static bool TryGetAsDeletedFile(this File.Model model, [NotNullWhen(true)] out Model? deletedFile)
-    {
-        deletedFile = null;
-        if (!model.Contains(Deleted))
-            return false;
-
-        deletedFile = model.Remap<Model>();
-        return true;
-    }
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
 }

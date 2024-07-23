@@ -13,12 +13,18 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 ///
 /// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
+[Obsolete(message: "To be replaced with ILibraryService")]
 public interface IDownloadService
 {
     /// <summary>
     /// Contains all downloads managed by the application.
     /// </summary>
     ReadOnlyObservableCollection<IDownloadTask> Downloads { get; }
+    
+    /// <summary>
+    /// The base directory for ongoing downloads
+    /// </summary>
+    AbsolutePath OngoingDownloadsDirectory { get; }
     
     /// <summary>
     /// Adds a task that will download from a NXM link.

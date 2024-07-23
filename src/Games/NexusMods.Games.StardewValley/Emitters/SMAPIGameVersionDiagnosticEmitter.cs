@@ -33,7 +33,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _client = client;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var smapiToGameMappings = await FetchSMAPIToGameMappings(cancellationToken);
         if (smapiToGameMappings is null) yield break;
@@ -42,7 +42,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (gameToSMAPIMappings is null) yield break;
 
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
         var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
 
@@ -104,8 +104,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionNewerThanMaximumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout.Model loadout,
-        Mod.Model smapiMod,
+        Loadout.ReadOnly loadout,
+        Mod.ReadOnly smapiMod,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
@@ -134,8 +134,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionOlderThanMinimumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout.Model loadout,
-        Mod.Model smapiMod,
+        Loadout.ReadOnly loadout,
+        Mod.ReadOnly smapiMod,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)

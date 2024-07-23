@@ -7,6 +7,7 @@ namespace NexusMods.Abstractions.Installers;
 ///     (currently archives) to the game folder.
 /// </summary>
 [PublicAPI]
+[Obsolete(message: "This will be replaced by ILibraryService")]
 public interface IModInstaller
 {
     /// <summary>

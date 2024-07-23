@@ -10,9 +10,9 @@ public class ListFilesTool : ITool
 {
     public IEnumerable<GameDomain> Domains => new[] { GameDomain.From("stubbed-game") };
 
-    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
+    public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        var listPath = loadout.Installation.LocationsRegister[LocationId.Game];
+        var listPath = loadout.InstallationInstance.LocationsRegister[LocationId.Game];
         var outPath = GeneratedFilePath.Combine(listPath);
 
         var lines = listPath.EnumerateFiles()

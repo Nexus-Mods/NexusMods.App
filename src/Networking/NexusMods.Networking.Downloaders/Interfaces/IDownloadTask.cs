@@ -8,17 +8,18 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// <summary>
 /// Represents an individual task to download and install a mod.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IDownloadTask
 {
     /// <summary>
     /// The DownloaderState of the task.
     /// </summary>
-    DownloaderState.Model PersistentState { get; }
+    DownloaderState.ReadOnly PersistentState { get; }
     
     /// <summary>
-    /// The download location of the task.
+    /// Path of the ongoing download file
     /// </summary>
-    public AbsolutePath DownloadLocation { get; }
+    public AbsolutePath DownloadPath { get; }
     
     /// <summary>
     /// Calculates the download speed of the current job.
@@ -66,10 +67,10 @@ public interface IDownloadTask
     void SetIsHidden(bool isHidden, ITransaction tx);
 
     /// <summary>
-    /// Reset (reload) the persistent state of the task from the database.
+    /// Refresh (reload) the persistent state of the task from the database.
     /// </summary>
     /// <param name="db"></param>
-    void ResetState(IDb db);
+    void RefreshState();
 }
 
 /// <summary>
@@ -93,12 +94,7 @@ public enum DownloadTaskStatus : byte
     Downloading,
 
     /// <summary>
-    /// The mod is being archived (and possibly installed) to a loadout.
-    /// </summary>
-    Installing,
-
-    /// <summary>
-    /// The task has ran to completion.
+    /// The task has run to completion.
     /// </summary>
     Completed,
     

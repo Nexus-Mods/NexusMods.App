@@ -6,6 +6,7 @@ namespace NexusMods.Abstractions.Activities;
 /// <summary>
 /// A report for an activity, these are immutable and emitted by the <see cref="IActivityMonitor"/>.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public class ActivityReport
 {
     /// <summary>

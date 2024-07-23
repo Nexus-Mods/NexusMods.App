@@ -41,14 +41,14 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="ClipToBounds" Value="False" />
         </Style>
-
+        
         <!-- Icon -->
         <Style Selector="^ icons|UnifiedIcon#Icon">
             <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="12" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralTranslucentModerate}" />
         </Style>
-
+        
         <!-- StackPanel -->
         <Style Selector="^ > Grid > StackPanel#StackPanel">
             <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />

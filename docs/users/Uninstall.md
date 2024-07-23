@@ -1,6 +1,6 @@
-# How to Uninstall the Nexus Mods App
+# How to Uninstall the Nexus Mods app
 
-So you're done with testing the Nexus Mods App and want to remove it from your system? Here's a quick guide on how to do it.
+So you're done with testing the Nexus Mods app and want to remove it from your system? Here's a quick guide on how to do it.
 
 Please keep in mind that the app will make the following changes to your system on uninstall.
 
@@ -11,11 +11,11 @@ Please keep in mind that the app will make the following changes to your system 
 
 ## Uninstall on Windows 10/11
 
-If you installed the Nexus Mods App from the installer (most common), you can remove it by doing the following. 
+If you installed the Nexus Mods app from the installer (most common), you can remove it by doing the following. 
 
 - Open your settings menu by pressing the Start button and clicking the ⚙️ icon next to the power button.
 - Select "Apps", then "Installed apps".
-- Type "Nexus Mods App" into the search bar.
+- Type "Nexus Mods app" into the search bar.
 - Click the menu at the end of the row.
 - Select uninstall and click through the wizard.
 

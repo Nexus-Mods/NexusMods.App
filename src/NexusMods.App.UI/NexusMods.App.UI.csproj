@@ -61,6 +61,7 @@
         <PackageReference Include="Avalonia.Controls.DataGrid" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
+        <PackageReference Include="Avalonia.Labs.Panels" />
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
@@ -77,6 +78,7 @@
         <PackageReference Include="System.Reactive" />
         <PackageReference Include="TextMateSharp.Grammars" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
@@ -558,6 +560,34 @@
         </Compile>
         <Compile Update="Controls\Settings\Section\SettingSectionViewModel.cs">
           <DependentUpon>ISettingSectionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutBadge\LoadoutBadgeDesignViewModel.cs">
+          <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\Standard\LoadoutCardView.axaml.cs">
+          <DependentUpon>LoadoutCardView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\Standard\LoadoutCardDesignViewModel.cs">
+          <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\Standard\SkeletonLoadoutCardViewModel.cs">
+          <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\AddLoadoutCard\AddLoadoutCardViewModel.cs">
+          <DependentUpon>IAddLoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryDesignViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\CreateNewLoadoutCard\CreateNewLoadoutCardViewModel.cs">
+          <DependentUpon>ICreateNewLoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\MyLoadoutsDesignViewModel.cs">
+          <DependentUpon>IMyLoadoutsViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

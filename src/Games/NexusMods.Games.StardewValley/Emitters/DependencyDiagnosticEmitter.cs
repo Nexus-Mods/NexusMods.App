@@ -1,16 +1,13 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
-using Metsys.Bson;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
@@ -40,9 +37,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _os = os;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
         if (!optionalSMAPIMod.HasValue) yield break;
 
@@ -72,7 +69,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
     
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
@@ -108,13 +105,13 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         });
     }
 
-    private static Mod.Model ModForId(Loadout.Model loadout, ModId id)
+    private static Mod.ReadOnly ModForId(Loadout.ReadOnly loadout, ModId id)
     {
-        return loadout.Db.Get<Mod.Model>(id.Value);
+        return Mod.Load(loadout.Db, id);
     }
     
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
@@ -176,7 +173,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseOutdatedDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,

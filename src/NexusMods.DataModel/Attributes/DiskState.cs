@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -12,7 +9,7 @@ namespace NexusMods.DataModel.Attributes;
 /// <summary>
 /// MnemonicDB attributes for the DiskStateTree registry.
 /// </summary>b
-public static class DiskState
+public partial class DiskState : IModelDefinition
 {
     private static readonly string Namespace = "NexusMods.DataModel.DiskStateRegistry";
     
@@ -30,69 +27,17 @@ public static class DiskState
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout)) { IsIndexed = true, NoHistory = true };
+    public static readonly ReferenceAttribute<Loadout> Loadout = new(Namespace, nameof(Loadout)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
     /// The associated transaction id.
     /// </summary>
-    public static readonly ReferenceAttribute TxId = new(Namespace, nameof(TxId)) { IsIndexed = true, NoHistory = true };
+    public static readonly TxIdAttribute TxId = new(Namespace, nameof(TxId)) { IsIndexed = true, NoHistory = true };
 
     /// <summary>
     /// The state of the disk.
     /// </summary>
     public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
-
-    [PublicAPI]
-    [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
-    internal class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DiskState)
-    {
-        /// <summary>
-        /// The associated game type
-        /// </summary>
-        public GameDomain Game
-        {
-            get => Attributes.DiskState.Game.Get(this);
-            set => Attributes.DiskState.Game.Add(this, value);
-        }
-    
-        /// <summary>
-        /// The associated game root folder
-        /// </summary>
-        public string Root
-        {
-            get => Attributes.DiskState.Root.Get(this);
-            set => Attributes.DiskState.Root.Add(this, value);
-        }
-    
-
-        /// <summary>
-        /// The associated loadout id.
-        /// </summary>
-        public EntityId LoadoutId
-        {
-            get => Loadout.Get(this);
-            set => Loadout.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The associated transaction id.
-        /// </summary>
-        public TxId TxId
-        {
-            get => TxId.From(Attributes.DiskState.TxId.Get(this).Value);
-            set => Attributes.DiskState.TxId.Add(this, EntityId.From(value.Value));
-        }
-        
-    
-        /// <summary>
-        /// The state of the disk.
-        /// </summary>
-        public NexusMods.Abstractions.DiskState.DiskStateTree DiskState
-        {
-            get => State.Get(this);
-            set => State.Add(this, value);
-        }
-    }
 }
 
 /// <summary>
@@ -105,7 +50,7 @@ public static class DiskState
 ///
 ///     This will also make cleaning out loadouts in MneumonicDB easier in the future.
 /// </remarks>
-public static class InitialDiskState
+public partial class InitialDiskState : IModelDefinition
 {
     private static readonly string Namespace = "NexusMods.DataModel.InitialDiskStates";
 
@@ -124,51 +69,4 @@ public static class InitialDiskState
     /// The state of the disk.
     /// </summary>
     public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
-
-    [PublicAPI]
-    [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
-    internal class Model(ITransaction tx) : Entity(tx)
-    {
-        /// <summary>
-        /// The associated game type
-        /// </summary>
-        public GameDomain Game
-        {
-            get => Attributes.InitialDiskState.Game.Get(this);
-            set => Attributes.InitialDiskState.Game.Add(this, value);
-        }
-    
-        /// <summary>
-        /// The associated game root folder
-        /// </summary>
-        public string Root
-        {
-            get => Attributes.InitialDiskState.Root.Get(this);
-            set => Attributes.InitialDiskState.Root.Add(this, value);
-        }
-    
-        /// <summary>
-        /// The state of the disk.
-        /// </summary>
-        public NexusMods.Abstractions.DiskState.DiskStateTree DiskState
-        {
-            get => State.Get(this);
-            set => State.Add(this, value);
-        }
-
-        /// <summary>
-        /// Retracts all of the values of this entity.
-        /// </summary>
-        /// <remarks>
-        ///     Make sure the current model has a Transaction (<see cref="tx"/>) attached
-        ///     before calling.
-        /// </remarks>
-        public void AddRetractToCurrentTx()
-        {
-            Debug.Assert(Tx != null, "Transaction should be set on `this` item.");
-            InitialDiskState.Game.Retract(this);
-            InitialDiskState.Root.Retract(this);
-            State.Retract(this);
-        }
-    }
 }

@@ -55,7 +55,7 @@
 
         </Grid.Styles>
 
-        <Border Grid.Row="0" Classes="RoundedTop Top" HorizontalAlignment="Stretch">
+        <Border Grid.Row="0" Classes="Rounded-t-lg High" HorizontalAlignment="Stretch">
             <Border Classes="TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 

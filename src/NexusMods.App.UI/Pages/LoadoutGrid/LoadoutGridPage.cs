@@ -39,8 +39,6 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
-
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
@@ -51,7 +49,7 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
                 FactoryId = Id,
                 Context = new LoadoutGridContext
                 {
-                    LoadoutId = loadout.LoadoutId,
+                    LoadoutId = loadoutContext.LoadoutId,
                 },
             },
         };

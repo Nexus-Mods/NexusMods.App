@@ -97,25 +97,25 @@ jobs:
 
     steps:
       - name: Get Linux Archive
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-linux.outputs.ArtifactNameLinuxArchive }}
           path: bin/LinuxArchive
 
       - name: Get Linux AppImage
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-linux.outputs.ArtifactNameLinuxAppImage }}
           path: bin/LinuxAppImage
 
       - name: Get Windows Archive
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-windows.outputs.ArtifactNameWindowsArchive }}
           path: bin/WindowsArchive
 
       - name: Get Windows Inno Setup
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-windows.outputs.ArtifactNameWindowsInnoSetup }}
           path: bin/WindowsInnoSetup

@@ -25,9 +25,9 @@ In the presence of these scenarios, the mod manager must still have a way to ins
 ## Decision Drivers & Requirements
 
 - Certain mods may not come with a recognizable file structure.
-    - The Nexus Mods App might not know how to install them automatically.
+    - The Nexus Mods app might not know how to install them automatically.
 
-- Interoperability: The Nexus Mods App must be able to somehow deploy ANY mod, regardless of its packaging format.
+- Interoperability: The Nexus Mods app must be able to somehow deploy ANY mod, regardless of its packaging format.
     - Otherwise, if users end up having to deploy files manually, they may be discouraged from using the mod manager.
 
 - The Manual Installer must work with minimal game implementation code.
@@ -81,7 +81,7 @@ Blue Hair
 ```
 
 The user is expected to select items from one of the given folders. These folders do map to game folder, but
-because there are duplicates and multiple candidates for deployment, the Nexus Mods App cannot automatically
+because there are duplicates and multiple candidates for deployment, the Nexus Mods app cannot automatically
 choose which one to deploy.
 
 ## Considered Options (Deployment)
@@ -159,7 +159,7 @@ public Dictionary<RelativePath, GamePath> ArchiveToOutputMap;
 When the user selects a `target`, we simply add the mapping to the dictionary. Accordingly, we remove the mapping when the
 user undoes the operation.
 
-The implementation should adhere to the [path standards used internally within the Nexus Mods App](./0003-paths.md);
+The implementation should adhere to the [path standards used internally within the Nexus Mods app](./0003-paths.md);
 i.e. All paths should use a separator of `/`, trim whitespace, do not alter `..`, etc.
 
 #### API Design (Proposed)
@@ -184,7 +184,7 @@ public struct DeploymentData
     /// then the KeyValuePair would be like ("texture.dds", "Game/Data/Textures/texture.dds").
     /// </example>
     /// <remarks>
-    /// Paths follow internal Nexus Mods App path standards: they use a "/" as a separator, trim whitespace, and do not alter "..".
+    /// Paths follow internal Nexus Mods app path standards: they use a "/" as a separator, trim whitespace, and do not alter "..".
     /// </remarks>
     internal Dictionary<RelativePath, GamePath> ArchiveToOutputMap { get; init; } = new();
 

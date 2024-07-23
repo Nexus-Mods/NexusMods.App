@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
-using Noggog;
 using ReactiveUI;
 
 namespace NexusMods.Networking.Downloaders.Tests;
@@ -11,7 +10,6 @@ public class DownloadServiceTests
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _httpServer;
-    private readonly TemporaryFileManager _temporaryFileManager;
     private IReadOnlyCollection<IDownloadTask> _downloadTasks;
 
     public DownloadServiceTests(DownloadService downloadService, 
@@ -19,14 +17,13 @@ public class DownloadServiceTests
     {
         _httpServer = httpServer;
         _downloadService = downloadService;
-        _temporaryFileManager = temporaryFileManager;
     }
 
     [Fact]
     public async Task AddTask_Uri_ShouldDownload()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Hello, World!".ToBytes());
+        _httpServer.SetContent(id, "Hello, World!"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
@@ -52,8 +49,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading, 
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Hello, World!");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }
@@ -62,7 +59,7 @@ public class DownloadServiceTests
     public async Task CanSuspendDownloads()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        _httpServer.SetContent(id, "Suspended Test"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
@@ -107,8 +104,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading,
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Suspended Test");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }
@@ -117,7 +114,7 @@ public class DownloadServiceTests
     public async Task CanCencelDownloads()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        _httpServer.SetContent(id, "Suspended Test"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));

@@ -31,7 +31,7 @@
             <Setter Property="Margin" Value="0" />
 
             <Setter Property="BoxShadow">
-                <extensions:BoxShadow
+                <extensions:BoxShadows
                     VerticalLength="3" BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
                     VerticalLength1="1" BlurRadius1="10" ShadowColor1="{StaticResource BrandTranslucentDark100}"
                     VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" />

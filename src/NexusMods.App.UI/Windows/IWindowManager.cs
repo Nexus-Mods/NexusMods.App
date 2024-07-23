@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -11,19 +12,19 @@ namespace NexusMods.App.UI.Windows;
 public interface IWindowManager
 {
     /// <summary>
-    /// Gets the ID of the currently active window.
+    /// Gets or sets the currently active window.
     /// </summary>
-    public WindowId ActiveWindowId { get; set; }
+    public IWorkspaceWindow ActiveWindow { get; set; }
+
+    /// <summary>
+    /// Gets the workspace controller of the currently active window.
+    /// </summary>
+    public IWorkspaceController ActiveWorkspaceController => ActiveWindow.WorkspaceController;
 
     /// <summary>
     /// Gets a read-only observable collection containing the IDs of all existing windows.
     /// </summary>
     public ReadOnlyObservableCollection<WindowId> AllWindowIds { get; }
-
-    /// <summary>
-    /// Tries to get the currently active window.
-    /// </summary>
-    public bool TryGetActiveWindow([NotNullWhen(true)] out IWorkspaceWindow? window);
 
     /// <summary>
     /// Tries to get a window.

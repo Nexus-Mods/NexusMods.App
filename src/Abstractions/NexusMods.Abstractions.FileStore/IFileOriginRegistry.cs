@@ -12,6 +12,7 @@ using MetadataFn = Action<NexusMods.MnemonicDB.Abstractions.ITransaction, NexusM
 /// <summary>
 /// A service for linking downloads with files in the file store
 /// </summary>
+[Obsolete(message: "This will be replaced by ILibraryService")]
 public interface IFileOriginRegistry
 {
     /// <summary>
@@ -49,19 +50,20 @@ public interface IFileOriginRegistry
     /// Indexes an already extracted download, returns a download id that can be used to retrieve the download later.
     /// </summary>
     public ValueTask<DownloadId> RegisterFolder(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default);
-
+    
     /// <summary>
     /// Get the analysis of a download
     /// </summary>
-    public DownloadAnalysis.Model Get(DownloadId id);
+    public DownloadAnalysis.ReadOnly Get(DownloadId id);
 
     /// <summary>
     /// Get the analysis of all downloads
     /// </summary>
-    public IEnumerable<DownloadAnalysis.Model> GetAll();
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetAll();
 
     /// <summary>
     /// Finds all downloads that have the given hash
     /// </summary>
-    public IEnumerable<DownloadAnalysis.Model> GetBy(Hash hash);
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetBy(Hash hash);
+    
 }

@@ -30,7 +30,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// <param name="register">The game locations register to obtain the locations.</param>
     /// <param name="loadout">The loadout, to obtain the loadout folder structure. Can be null.</param>
     /// <param name="gameName">The name of the Game, to show in the ui.</param>
-    public SelectLocationViewModel(IGameLocationsRegister register, Loadout.Model? loadout, string gameName)
+    public SelectLocationViewModel(IGameLocationsRegister register, Loadout.ReadOnly? loadout, string gameName)
     {
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
 
@@ -91,7 +91,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// <param name="loadout">The loadout, can be null.</param>
     /// <returns>The list of created tree entries that need to be added to the cache.</returns>
     private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(IGameLocationsRegister register,
-        Loadout.Model? loadout)
+        Loadout.ReadOnly? loadout)
     {
         // Initial population of the tree based on LocationIds
         List<ISelectableTreeEntryViewModel> treeEntries = new();

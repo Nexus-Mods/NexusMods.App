@@ -98,7 +98,7 @@
             <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{StaticResource NeutralModerate}" />
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource SurfaceMid}" />
             <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource NeutralModerate}" />
-            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="{StaticResource SurfaceTop }" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="{StaticResource SurfaceHigh }" />
             <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="{StaticResource NeutralModerate}" />
 
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOnDisabled" Color="{StaticResource SurfaceLow}" />

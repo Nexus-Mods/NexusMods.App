@@ -1,5 +1,6 @@
 using System.Globalization;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
@@ -9,12 +10,25 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 /// </summary>
 public static class EntityExtensions
 {
+    
     /// <summary>
-    /// Casts an entity to a specific type, performing no checks.
+    /// Gets the largest transaction id in the model.
     /// </summary>
-    public static T Remap<T>(this Entity entity) where T : Entity
+    public static TxId MostRecentTxId(this IReadOnlyModel model)
     {
-        return entity.Db.Get<T>(entity.Id);
+        return model.Max(m => m.T);
+    }
+    
+    
+    /// <summary>
+    /// Gets the timestamp of the transaction that created the model.
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public static DateTime GetCreatedAt(this IReadOnlyModel model)
+    {
+        var tx = new Transaction.ReadOnly(model.Db, EntityId.From(model.Min(m => m.T).Value));
+        return Transaction.Timestamp.Get(tx);
     }
     
     
@@ -33,7 +47,7 @@ public static class EntityExtensions
             return true;
         }
 
-        id = default;
+        id = default(EntityId);
         return false;
     }
 }

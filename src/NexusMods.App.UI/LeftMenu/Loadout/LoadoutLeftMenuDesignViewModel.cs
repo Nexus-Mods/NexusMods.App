@@ -24,7 +24,7 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
                 new IconViewModel
                 {
                     Name = "Diagnostics",
-                    Icon = IconValues.MonitorDiagnostics,
+                    Icon = IconValues.Stethoscope,
                 },
             ]
         );

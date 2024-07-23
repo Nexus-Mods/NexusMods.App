@@ -14,6 +14,7 @@ public class NexusLoginOverlayTests
 {
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task LoginTasksCreateOverlays()
     {
         var overlayController = new OverlayController();

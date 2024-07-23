@@ -6,9 +6,11 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.UI.Tests;
@@ -34,14 +36,16 @@ where TVm : IViewModelInterface
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
-    private Loadout.Model? _loadout;
-    protected Loadout.Model Loadout
+    private Loadout.ReadOnly? _loadout;
+    private GameInstallation _gameInstall;
+
+    protected Loadout.ReadOnly Loadout
     {
         get
         {
             if (_loadout == null)
                 throw new Exception("Must call CreateLoadout before accessing Loadout.");
-            return _loadout!;
+            return _loadout!.Value;
         }
     }
 
@@ -61,7 +65,8 @@ where TVm : IViewModelInterface
 
     public async Task CreateLoadout()
     {
-        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(Install, "Test");
+        _gameInstall = await StubbedGame.Create(Provider);
+        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(_gameInstall, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)

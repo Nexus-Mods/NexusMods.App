@@ -3,6 +3,7 @@
 /// <summary>
 /// Status of a given Mod
 /// </summary>
+[Obsolete(message: "This will be removed with Loadout Items")]
 public enum ModStatus
 {
     /// <summary>

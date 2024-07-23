@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -39,14 +40,14 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
                 .Select(mod => mod.Enabled)
                 .OnUI()
                 .BindTo(this, vm => vm.Enabled)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
                 .Select(mod => mod.Status)
                 .OnUI()
                 .BindTo(this, vm => vm.Status)
@@ -54,22 +55,31 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         });
         ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async enabled =>
         {
-            var old = _conn.Db.Get(Row);
-            await old.ToggleEnabled();
+            using var tx = _conn.BeginTransaction();
+            tx.Add(Row, static (txInner, db, id) =>
+            {
+                var mod = Mod.Load(db, id);
+                txInner.Add(mod.Id, Mod.Enabled, !mod.Enabled);
+                txInner.Add(mod.Id, Mod.Revision, mod.Revision + 1);
+                var loadout = mod.Loadout;
+                txInner.Add(loadout, Loadout.Revision, loadout.Revision + 1);
+            });
+            await tx.Commit();
             return Unit.Default;
         });
         DeleteModCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var mod = _conn.Db.Get(Row);
-            await mod.Delete();
+            using var tx = _conn.BeginTransaction();
+            tx.Delete(Row, true);
+            await tx.Commit();
         });
     }
 
     public int Compare(ModId a, ModId b)
     {
         var db = _conn.Db;
-        var aEnt = db.Get(a);
-        var bEnt = db.Get(b);
-        return (aEnt?.Enabled ?? false).CompareTo(bEnt?.Enabled ?? false);
+        var aEnt = Mod.Load(db, a);
+        var bEnt = Mod.Load(db, b);
+        return (aEnt.Enabled).CompareTo(bEnt.Enabled);
     }
 }

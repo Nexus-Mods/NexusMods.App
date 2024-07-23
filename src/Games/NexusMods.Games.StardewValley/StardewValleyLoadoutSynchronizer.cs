@@ -1,108 +1,101 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Settings;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley;
 
 public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 {
-    public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
+    public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider)
+    {
+        var settingsManager = provider.GetRequiredService<ISettingsManager>();
+        _settings = settingsManager.Get<StardewValleySettings>();
+    }
+
+    /// <summary>
+    /// The content folder of the game, we ignore files in this folder
+    /// </summary>
+    private static readonly GamePath ContentFolder = new(LocationId.Game, "Content".ToRelativePath());
+
+    private readonly StardewValleySettings _settings;
+
+    public override bool IsIgnoredBackupPath(GamePath path)
+    {
+        if (_settings.DoFullGameBackup) return false;
+        if (path.LocationId != LocationId.Game) return false;
+        return path.Path.InFolder(ContentFolder.Path);
+    }
 
 
-    protected override async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    protected override async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, StoredFile.ReadOnly[] newFiles)
     {
         using var tx = Connection.BeginTransaction();
-        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
-        var modifiedMods = new Dictionary<ModId, Mod.Model>();
+        var modifiedMods = new HashSet<ModId>();
 
-        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.Model>();
+        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.ReadOnly>();
 
         foreach (var newFile in newFiles)
         {
-            newFile.Add(File.Loadout, loadout.Id);
-
-            if (!newFile.Contains(File.To))
-            {
-                AddToOverride(newFile);
-                continue;
-            }
-
-            var gamePath = newFile.GetFirst(File.To);
+            var gamePath = newFile.AsFile().To;
             if (!IsModFile(gamePath, out var modDirectoryName))
             {
-                AddToOverride(newFile);
                 continue;
             }
 
             if (!smapiModDirectoryNameToModel.TryGetValue(modDirectoryName, out var smapiMod))
             {
-                smapiMod = GetSMAPIMod(modDirectoryName, loadout, loadout.Db);
-                if (smapiMod is null)
+                if (!TryGetSMAPIMod(modDirectoryName, loadout, loadout.Db, out smapiMod))
                 {
-                    AddToOverride(newFile);
                     continue;
                 }
 
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
 
-            newFile.Add(File.Mod, smapiMod.Id);
-            newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.Model>(smapiMod.ModId, smapiMod);
+            tx.Add(newFile.Id, File.Mod, smapiMod.Id);
+            modifiedMods.Add(smapiMod.ModId);
         }
 
-        foreach (var mod in modifiedMods.Values)
+        // Revise all modified mods
+        foreach (var modId in modifiedMods)
         {
-            // If we created the mod in this transaction (e.g. GetOrCreateOverride created the Override mod),
-            // Db property will be null, and we can't call `.Revise` on it.
-            // We need to manually revise the loadout in that case
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (mod.Db != null)
-            {
-                mod.Revise(tx);
-            }
-            else
-            {
-                loadout.Revise(tx);
-            }
+            var mod = Mod.Load(Connection.Db, modId);
+            mod.Revise(tx);
         }
 
+        // Only commit if we have changes
+        if (modifiedMods.Count <= 0) 
+            return loadout;
+        
+        
         var result = await tx.Commit();
-        return result.Db.Get<Loadout.Model>(loadout.Id);
-
-        void AddToOverride(TempEntity newFile)
-        {
-            newFile.Add(File.Mod, overridesMod.Id);
-            newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.Model>(overridesMod.ModId, overridesMod);
-        }
+        return loadout.Rebase();
     }
 
-    private static Mod.Model? GetSMAPIMod(RelativePath modDirectoryName, Loadout.Model loadout, IDb db)
+    private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out Mod.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        var manifestFile = db
-            .Find(File.To)
-            .Select(db.Get<File.Model>)
-            .FirstOrDefault(file =>
-            {
-                if (!file.Contains(File.Loadout)) return false;
-                if (!file.LoadoutId.Equals(loadout.LoadoutId)) return false;
-
-                if (!file.To.Equals(manifestFilePath)) return false;
-
-                if (!file.Contains(File.Mod)) return false;
-                return file.Mod.Enabled;
-            });
-
-        return manifestFile?.Mod;
+        var hasFile = File.FindByLoadout(db, loadout.LoadoutId)
+            .TryGetFirst(x => x.To == manifestFilePath && x.Mod.Enabled,
+                out var file);
+        
+        if (hasFile)
+        {
+            mod = file.Mod;
+            return true;
+        }
+        mod = default(Mod.ReadOnly);
+        return false;
     }
 
     private static bool IsModFile(GamePath gamePath, out RelativePath modDirectoryName)

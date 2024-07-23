@@ -32,6 +32,10 @@ public class Startup
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
             .AddDataModel() // this is required because we're also using NMA integration
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+            })
             .AddLogging(builder => builder.AddXunitOutput()
                 .SetMinimumLevel(LogLevel.Debug))
             .Validate();

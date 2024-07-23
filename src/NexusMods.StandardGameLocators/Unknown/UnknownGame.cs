@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -59,6 +60,9 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)

@@ -7,6 +7,7 @@
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
       <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

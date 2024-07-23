@@ -4,6 +4,7 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
@@ -13,8 +14,10 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -23,6 +26,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
@@ -46,7 +50,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
+    
+    protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
+    
     private readonly ILogger<AGameTest<TGame>> _logger;
+    
+    public IDiagnosticManager DiagnosticManager { get; set; }
+
 
     /// <summary>
     /// Constructor.
@@ -68,6 +78,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
 
+        DiagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
+
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
 
@@ -78,6 +90,44 @@ public abstract class AGameTest<TGame> where TGame : AGame
             ResetGameFolders();
         }
 
+    }
+
+
+    /// <summary>
+    /// Adds an empty mod to the loadout in the given transaction.
+    /// </summary>
+    protected NexusMods.Abstractions.Loadouts.Mods.ModId AddEmptyMod(ITransaction tx, LoadoutId loadoutId, string name)
+    {
+        var mod = new Mod.New(tx)
+        {
+            LoadoutId = loadoutId,
+            Name = name,
+            Enabled = true,
+            Status = ModStatus.Installed,
+            Revision = 0,
+            Category = ModCategory.Mod,
+        };
+        return mod.Id;
+    }
+    
+    /// <summary>
+    /// Creates a file in the loadout for the given mod. The file will be named with the given path, the hash will be the hash
+    /// of the name, and the size will be the length of the name. 
+    /// </summary>
+    public StoredFileId AddFile(ITransaction tx, LoadoutId loadoutId, NexusMods.Abstractions.Loadouts.Mods.ModId modId, GamePath path)
+    {
+        var file = new StoredFile.New(tx, out var id)
+        {
+            File = new File.New(tx, id)
+            {
+                LoadoutId = loadoutId,
+                ModId = modId,
+                To = path,
+            },
+            Hash = path.ToString().XxHash64AsUtf8(),
+            Size = Size.FromLong(path.ToString().Length),
+        };
+        return file.Id;
     }
 
     
@@ -100,22 +150,22 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
-    protected async Task<Loadout.Model> CreateLoadout(bool indexGameFiles = true)
+    protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
+
+    /// <summary>
+    /// Reloads the entity from the database.
+    /// </summary>
+    protected T Refresh<T>(T entity) where T : IReadOnlyModel<T>
+        => T.Create(Connection.Db, entity.Id);
     
     /// <summary>
     /// Reloads the entity from the database.
     /// </summary>
-    protected T Refresh<T>(T entity) where T : IEntity
-        => Connection.Db.Get<T>(entity.Id);
-    
-    /// <summary>
-    /// Reloads the entity from the database.
-    /// </summary>
-    protected void Refresh<T>(ref T entity) where T : IEntity
-        => entity = Connection.Db.Get<T>(entity.Id);
+    protected void Refresh<T>(ref T entity) where T : IReadOnlyModel<T>
+        => entity = T.Create(Connection.Db, entity.Id);
 
     /// <summary>
     /// Downloads a mod and returns the <see cref="TemporaryPath"/> and <see cref="Hash"/> of it.
@@ -153,13 +203,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
     public async Task<DownloadId> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
         var db = Connection.Db;
-        var metaDatas = db
-            .FindIndexed(fileId, NexusModsArchiveMetadata.FileId)
-            .Select(id => db.Get<DownloadAnalysis.Model>(id))
-            .Where(ent => ent.Get(NexusModsArchiveMetadata.ModId) == modId)
-            .FirstOrDefault(ent => ent.Get(NexusModsArchiveMetadata.GameId) == gameDomain);
+        var metaDatas = NexusModsArchiveMetadata.FindByFileId(db, fileId)
+            .Where(ent => ent.ModId == modId)
+            .FirstOrDefault(ent => ent.GameId == gameDomain);
 
-        if (metaDatas != null)
+        if (metaDatas.IsValid())
             return DownloadId.From(metaDatas.Id);
 
         var id = await DownloadMod(gameDomain, modId, fileId);
@@ -170,14 +218,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Installs the mods from the archive into the loadout.
     /// </summary>
-    protected async Task<Mod.Model[]> InstallModsStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly[]> InstallModsStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         DownloadId downloadId,
         CancellationToken cancellationToken = default)
     {
         var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, token: cancellationToken);
         var db = Connection.Db;
-        return modIds.Select(id => db.Get<Mod.Model>(id.Value)).ToArray();
+        return modIds.Select(id => Mod.Load(db, id)).ToArray();
     }
 
 
@@ -186,8 +234,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <see cref="InstallModsStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
     /// exists in the archive.
     /// </summary>
-    protected async Task<Mod.Model> InstallModStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         DownloadId downloadId,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
@@ -204,8 +252,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Variant of <see cref="InstallModStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
     /// </summary>
-    protected async Task<Mod.Model> InstallModStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         AbsolutePath path,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)

@@ -9,6 +9,7 @@ namespace NexusMods.Abstractions.Activities;
 /// be removed from the activity monitor. This interface is just for the producer size of the activity, consumers will
 /// receive an readonly interface to the activity.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IActivitySource : IDisposable
 {
 

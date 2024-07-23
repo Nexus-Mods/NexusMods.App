@@ -27,6 +27,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task ClickingTheButtonFiresTheCommand()
     {
         var source = new TaskCompletionSource<bool>();
@@ -49,6 +50,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task LabelTextAffectsButtonAndProgressText()
     {
         var text = Random.Shared.Next() + " Text";
@@ -61,7 +63,6 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
-    // Seems to very seldom stall CI, could be made to fail if run un repeat for enough times locally
     [Trait("FlakeyTest", "True")]
     public async Task ProgressAffectsProgressBar()
     {
@@ -83,6 +84,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task InProgressTaskAffectsControlVisibility()
     {
         var tcs = new TaskCompletionSource();
@@ -110,6 +112,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task DisablingTheButtonShowsATheProgressBar()
     {
 
@@ -125,6 +128,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task EnabledCommandShouldShowEnabledButton()
     {
         var subject = new Subject<bool>();

@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl
+<reactiveUi:ReactiveUserControl
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -30,8 +30,8 @@
                 </navigation:NavigationControl>
                 <Button x:Name="DeleteModsButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="Close" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}" />
+                        <icons:UnifiedIcon Classes="PlaylistRemove" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
                     </StackPanel>
                 </Button>
             </StackPanel>

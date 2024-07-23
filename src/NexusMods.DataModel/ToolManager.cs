@@ -23,10 +23,6 @@ public class ToolManager : IToolManager
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="tools"></param>
-    /// <param name="loadoutSynchronizer"></param>
-    /// <param name="dataStore"></param>
-    /// <param name="loadoutRegistry"></param>
     public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, IApplyService applyService, IConnection conn)
     {
         _logger = logger;
@@ -37,32 +33,33 @@ public class ToolManager : IToolManager
     }
 
     /// <inheritdoc />
-    public IEnumerable<ITool> GetTools(Loadout.Model loadout)
+    public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout)
     {
-        return _tools[loadout.Installation.Game.Domain];
+        return _tools[loadout.InstallationInstance.Game.Domain];
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.Model> RunTool(
+    public async Task<Loadout.ReadOnly> RunTool(
         ITool tool, 
-        Loadout.Model loadout, 
-        Mod.Model? generatedFilesMod = null, 
+        Loadout.ReadOnly loadout, 
         CancellationToken token = default)
     {
-        if (!tool.Domains.Contains(loadout.Installation.Game.Domain))
+        if (!tool.Domains.Contains(loadout.InstallationInstance.Game.Domain))
             throw new Exception("Tool does not support this game");
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
-            loadout.Id, loadout.Installation.Game.Name, loadout.Installation.Version);
-        await _applyService.Apply(loadout);
-        var appliedLoadout = _conn.Db.Get<Loadout.Model>(loadout.Id);
+            loadout.Id, loadout.InstallationInstance.Game.Name, loadout.InstallationInstance.Version);
+        await _applyService.Synchronize(loadout);
+        var appliedLoadout = loadout.Rebase();
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
-            tool.Name, appliedLoadout.Id, appliedLoadout.Installation.Game.Name, appliedLoadout.Installation.Version);
+            tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
         await tool.Execute(appliedLoadout, token);
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
-            appliedLoadout.Id, appliedLoadout.Installation.Game.Name, appliedLoadout.Installation.Version);
-        return await _applyService.Ingest(appliedLoadout.Installation);
+            appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
+        await _applyService.Synchronize(appliedLoadout);
+
+        return appliedLoadout.Rebase();
     }
 }

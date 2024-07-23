@@ -2,17 +2,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.BuildInfo;
 using NexusMods.Extensions.BCL;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
+using LibraryFile = NexusMods.Abstractions.Library.Models.LibraryFile;
 
 namespace NexusMods.DataModel;
 
@@ -22,6 +24,7 @@ namespace NexusMods.DataModel;
 public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
+    private readonly ILibraryService _libraryService;
     private readonly IConnection _conn;
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
@@ -31,7 +34,9 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
+    public ArchiveInstaller(
+        ILogger<ArchiveInstaller> logger,
+        ILibraryService libraryService,
         IFileOriginRegistry fileOriginRegistry,
         IConnection conn,
         IFileStore fileStore,
@@ -39,47 +44,74 @@ public class ArchiveInstaller : IArchiveInstaller
         IServiceProvider provider)
     {
         _logger = logger;
+        _libraryService = libraryService;
         _conn = conn;
         _fileOriginRegistry = fileOriginRegistry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
         _provider = provider;
     }
-    
+
+    private async Task ShadowTrafficTestLibraryService(Hash hash, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    {
+        // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/1763
+        if (!CompileConstants.IsDebug) return;
+        try
+        {
+            if (!LibraryFile.FindByHash(_conn.Db, hash).TryGetFirst(out var libraryFile))
+            {
+                _logger.LogDebug("Found no library item with hash `{Hash}`, skipping shadow traffic test", hash);
+                return;
+            }
+
+            var job = _libraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
+            await job.StartAsync(cancellationToken: cancellationToken);
+            var result = await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+            _logger.LogInformation("InstallItem result: `{Result}`", result.ToString());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception install library item");
+        }
+    }
+
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(
         LoadoutId loadoutId, 
-        DownloadAnalysis.Model download, 
+        DownloadAnalysis.ReadOnly download, 
         string? name = null, 
         IModInstaller? installer = null, 
         CancellationToken token = default)
     {
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
-        var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
-        
+        var loadout = Loadout.Load(_conn.Db, loadoutId);
+
+        await ShadowTrafficTestLibraryService(download.Hash, loadout, token);
+
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.
-        var modName = name ?? download.Get(DownloadAnalysis.SuggestedName);
+        var modName = name ?? download.SuggestedName;
         
         ModId modId;
-        Mod.Model baseMod;
+        Mod.ReadOnly baseMod;
         {
             using var tx = _conn.BeginTransaction();
 
-            baseMod = new Mod.Model(tx)
+            var newMod = new Mod.New(tx)
             {
                 Name = modName,
-                Source = download,
+                SourceId = download,
                 Status = ModStatus.Installing,
-                Loadout = loadout,
+                LoadoutId = loadout,
                 Category = ModCategory.Mod,
                 Enabled = true,
+                Revision = 0,
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
-            baseMod = result.Remap(baseMod);
+            baseMod = result.Remap(newMod);
             modId = ModId.From(result[baseMod.Id]);
         }
 
@@ -92,7 +124,7 @@ public class ArchiveInstaller : IArchiveInstaller
             var tree = download.GetFileTree(_fileStore);
 
             // Step 3: Run the archive through the installers.
-            var installers = loadout.Installation.GetGame().Installers;
+            var installers = loadout.InstallationInstance.GetGame().Installers;
             try
             {
                 var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
@@ -114,7 +146,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        var install = loadout.Installation;
+                        var install = loadout.InstallationInstance;
                         var info = new ModInstallerInfo
                         {
                             ArchiveFiles = tree,
@@ -206,7 +238,7 @@ public class ArchiveInstaller : IArchiveInstaller
 
     private async Task SetFailedStatus(ModId modId)
     {
-        var mod = _conn.Db.Get<Mod.Model>(modId.Value);
+        var mod = Mod.Load(_conn.Db, modId);
         _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, ModStatus.Failed);
 
         using var tx = _conn.BeginTransaction();

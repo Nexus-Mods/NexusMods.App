@@ -22,7 +22,7 @@ file class ExampleOutsideAPage
         // Most of the time, you'll want to get the currently active Window.
         // The active Window is the one that the user is currently interacting
         // with.
-        if (!_windowManager.TryGetActiveWindow(out var activeWindow)) return;
+        var activeWindow = _windowManager.ActiveWindow;
 
         // If you need to get a specific Window, you can refer to it by it's
         // WindowId.

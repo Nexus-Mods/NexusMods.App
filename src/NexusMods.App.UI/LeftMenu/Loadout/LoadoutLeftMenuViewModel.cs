@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
@@ -17,6 +16,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -38,11 +38,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
-        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
-        var loadout = conn.Db.Get<Abstractions.Loadouts.Loadout.Model>(loadoutContext.LoadoutId.Value);
-        var game = loadout.Installation.Game;
+        var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId);
+        var game = loadout.InstallationInstance.Game;
 
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
@@ -59,7 +58,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }
             ),
@@ -82,7 +81,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -102,7 +101,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -135,9 +134,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 })
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
-
-            downloadAnalysisRepository.Observable
-                .ToObservableChangeSet()
+            
+            conn.ObserveDatoms(DownloadAnalysis.Hash)
+                .Transform(d => DownloadAnalysis.Load(conn.Db, d.E))
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
                 .Filter(model => FileOriginsPageViewModel.FilterDownloadAnalysisModel(model, game.Domain))
