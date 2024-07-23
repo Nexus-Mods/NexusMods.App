@@ -29,7 +29,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             var installers = job.Loadout.InstallationInstance.GetGame().LibraryItemInstallers;
             foreach (var installer in installers)
             {
-                var isSupported = await installer.IsSupportedAsync(job.LibraryItem, cancellationToken);
+                var isSupported = installer.IsSupportedLibraryItem(job.LibraryItem);
                 if (!isSupported) continue;
 
                 foundInstaller = installer;
