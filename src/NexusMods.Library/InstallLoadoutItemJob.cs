@@ -18,8 +18,6 @@ public class InstallLoadoutItemJob : AJob
     public required LibraryItem.ReadOnly LibraryItem { get; init; }
     public required Loadout.ReadOnly Loadout { get; init; }
 
-    public Optional<ILibraryItemInstaller> Installer { get; set; }
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
