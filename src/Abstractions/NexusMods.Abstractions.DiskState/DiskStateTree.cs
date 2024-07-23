@@ -1,6 +1,9 @@
 ﻿using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.DiskState;
 

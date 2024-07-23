@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Subjects;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
@@ -7,6 +8,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.DataModel.DiskState.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using DiskStateEntry = NexusMods.Abstractions.DiskState.DiskStateEntry;
 
 namespace NexusMods.DataModel.DiskState;
 
@@ -15,7 +17,6 @@ namespace NexusMods.DataModel.DiskState;
 /// </summary>
 public class DiskStateRegistry : IDiskStateRegistry
 {
-    private readonly Dictionary<GameInstallation, LoadoutWithTxId> _lastAppliedRevisionDictionary = new();
     private readonly Subject<(GameInstallation gameInstallation, LoadoutWithTxId)> _lastAppliedRevisionSubject = new();
     private readonly IConnection _connection;
 
@@ -43,49 +44,41 @@ public class DiskStateRegistry : IDiskStateRegistry
         var previous = PreviousStateEntity(db, installation); 
         
         // If we have a previous state, update it
-        if (previous.IsValid())
+        if (previous.HasValue)
         {
-            previous.Update(tx, diskState.LoadoutId, diskState.TxId, diskState);
+            previous.Value.Update(tx, diskState);
         }
         else
         {
-            
-            _ = new LoadoutDiskState.New(tx, out var id)
+            var newId = tx.TempId();
+            var newState = new DiskState.Models.DiskState.New(tx, newId)
             {
-                DiskState = new DiskState.Models.New(id)
-                {
-                    Game = installation.Game.Domain,
-                    Root = installation.LocationsRegister[LocationId.Game].ToString(),
-                    State = diskState,
-                }
                 Game = installation.Game.Domain,
                 Root = installation.LocationsRegister[LocationId.Game].ToString(),
+            };
+            
+            _ = new LoadoutDiskState.New(tx, newId)
+            {
+                DiskState = newState,
                 LoadoutId = diskState.LoadoutId,
                 TxId = diskState.TxId,
-                State = diskState,
             };
+
+            newState.AddAll(tx, diskState);
+
         }
         await tx.Commit();
 
 
         var id = new LoadoutWithTxId { Id = diskState.LoadoutId, Tx = diskState.TxId };
-        _lastAppliedRevisionDictionary[installation] = id;
         _lastAppliedRevisionSubject.OnNext((installation, id));
     }
 
     /// <inheritdoc />
-    public DiskStateTree? GetState(GameInstallation gameInstallation)
+    public Optional<LoadoutDiskState.ReadOnly> GetState(GameInstallation gameInstallation)
     {
         var db = _connection.Db;
-        var result = PreviousStateEntity(db, gameInstallation);
-        
-        if (!result.IsValid()) 
-            return null;
-        
-        var state = result.State;
-        state.LoadoutId = result.LoadoutId;
-        state.TxId = result.TxId;
-        return state;
+        return PreviousStateEntity(db, gameInstallation);
     }
 
     /// <inheritdoc />
@@ -93,69 +86,78 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         var tx = _connection.BeginTransaction();
         var domain = installation.Game.Domain;
-        _ = new InitialDiskState.New(tx)
+        var diskStateId = tx.TempId();
+
+        var newDiskState = new Models.DiskState.New(tx, diskStateId)
         {
             Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
-            State = diskState,
+        };
+        
+        _ = new InitialDiskState.New(tx, diskStateId)
+        {
+            DiskState = newDiskState,
+            GameId = installation.GameMetadataId,
         };
 
+        newDiskState.AddAll(tx, diskState);
+        
         await tx.Commit();
     }
 
     /// <inheritdoc />
-    public DiskStateTree? GetInitialState(GameInstallation installation)
+    public Optional<InitialDiskState.ReadOnly> GetInitialState(GameInstallation installation)
     {
         var db = _connection.Db;
 
-        return InitialDiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
-            .Select(x => x.State)
+        var result = DiskState.Models.DiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
+            .OfTypeInitialDiskState()
             .FirstOrDefault();
+
+        if (result.IsValid())
+            return result;
+
+        return Optional<InitialDiskState.ReadOnly>.None;
     }
 
     /// <inheritdoc />
     public async Task ClearInitialState(GameInstallation installation)
     {
         var db = _connection.Db;
-        var initialDiskState = InitialDiskState.FindByRoot(db, installation.LocationsRegister[LocationId.Game].ToString())
-            .FirstOrDefault();
+        var initialDiskState = GetInitialState(installation);
         
-        if (!initialDiskState.IsValid())
+        if (!initialDiskState.HasValue)
             return;
 
         var tx = _connection.BeginTransaction();
-        tx.Delete(initialDiskState.Id, false);
+        tx.Delete(initialDiskState.Value.Id, false);
         await tx.Commit();
     }
 
     /// <inheritdoc />
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutWithTxId id)
     {
-        if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
-        {
-            var db = _connection.AsOf(lastAppliedLoadout.Tx);
-            var model = Loadout.Load(db, lastAppliedLoadout.Id);
-            id = lastAppliedLoadout;
-            return model.LoadoutKind != LoadoutKind.Deleted;
-        }
-
         var diskStateTree = GetState(gameInstallation);
-        if (diskStateTree is null)
+        if (!diskStateTree.HasValue)
         {
             id = default(LoadoutWithTxId);
             return false;
         }
         
-        id = new LoadoutWithTxId { Id = LoadoutId.From(diskStateTree.LoadoutId), Tx = diskStateTree.TxId };
-        _lastAppliedRevisionDictionary[gameInstallation] = id;
+        id = new LoadoutWithTxId { Id = LoadoutId.From(diskStateTree.Value.LoadoutId), Tx = diskStateTree.Value.TxId };
         return true;
     }
     
-    private static LoadoutDiskState.ReadOnly PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    private static Optional<LoadoutDiskState.ReadOnly> PreviousStateEntity(IDb db, GameInstallation gameInstallation)
     {
-        return Models.DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
+        var result =  Models.DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
             .Where(state => state.Game == gameInstallation.Game.Domain)
             .OfTypeLoadoutDiskState()
             .First();
+
+        if (result.IsValid())
+            return result;
+        
+        return Optional<LoadoutDiskState.ReadOnly>.None;
     }
 }

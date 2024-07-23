@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
 
@@ -20,7 +21,7 @@ public interface IDiskStateRegistry
     /// </summary>
     /// <param name="gameInstallation">The game installation to retrieve the disk state for</param>
     /// <returns>The disk state associated with the game installation, or null if not found</returns>
-    DiskStateTree? GetState(GameInstallation gameInstallation);
+    Optional<InitialDiskState.ReadOnly> GetState(GameInstallation gameInstallation);
     
     /// <summary>
     /// Gets the Loadout Revision Id of the last applied state for a given game installation
@@ -44,7 +45,7 @@ public interface IDiskStateRegistry
     /// </summary>
     /// <param name="installation">The game installation to retrieve the initial disk state for</param>
     /// <returns>The initial disk state, or null if not found</returns>
-    DiskStateTree? GetInitialState(GameInstallation installation);
+    Optional<InitialDiskState.ReadOnly> GetInitialState(GameInstallation installation);
     
     /// <summary>
     /// Removes the persisted initial state for a given game installation.
