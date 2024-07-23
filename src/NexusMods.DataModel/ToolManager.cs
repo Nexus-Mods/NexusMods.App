@@ -4,7 +4,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;

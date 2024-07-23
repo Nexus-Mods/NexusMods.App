@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.DataModel;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.DiskState;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Paths;
 

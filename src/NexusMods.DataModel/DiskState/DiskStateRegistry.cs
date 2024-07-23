@@ -4,11 +4,11 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.DataModel.Attributes;
+using NexusMods.DataModel.DiskState.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
-namespace NexusMods.DataModel.Loadouts;
+namespace NexusMods.DataModel.DiskState;
 
 /// <summary>
 /// A registry for managing disk states created by ingesting/applying loadouts
@@ -45,14 +45,19 @@ public class DiskStateRegistry : IDiskStateRegistry
         // If we have a previous state, update it
         if (previous.IsValid())
         {
-            tx.Add(previous.Id, DiskState.Loadout, diskState.LoadoutId);
-            tx.Add(previous.Id, DiskState.TxId, diskState.TxId);
-            tx.Add(previous.Id, DiskState.State, diskState);
+            previous.Update(tx, diskState.LoadoutId, diskState.TxId, diskState);
         }
         else
         {
-            _ = new DiskState.New(tx)
+            
+            _ = new LoadoutDiskState.New(tx, out var id)
             {
+                DiskState = new DiskState.Models.New(id)
+                {
+                    Game = installation.Game.Domain,
+                    Root = installation.LocationsRegister[LocationId.Game].ToString(),
+                    State = diskState,
+                }
                 Game = installation.Game.Domain,
                 Root = installation.LocationsRegister[LocationId.Game].ToString(),
                 LoadoutId = diskState.LoadoutId,
@@ -146,9 +151,11 @@ public class DiskStateRegistry : IDiskStateRegistry
         return true;
     }
     
-    private static DiskState.ReadOnly PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    private static LoadoutDiskState.ReadOnly PreviousStateEntity(IDb db, GameInstallation gameInstallation)
     {
-        return DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
-            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
+        return Models.DiskState.FindByRoot(db, gameInstallation.LocationsRegister[LocationId.Game].ToString())
+            .Where(state => state.Game == gameInstallation.Game.Domain)
+            .OfTypeLoadoutDiskState()
+            .First();
     }
 }

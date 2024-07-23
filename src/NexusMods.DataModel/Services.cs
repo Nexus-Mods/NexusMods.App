@@ -16,8 +16,8 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.DiskState;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Extensions.DependencyInjection;
@@ -101,7 +101,7 @@ public static class Services
         
         // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
-        coll.AddAttributeCollection(typeof(DiskState));
+        coll.AddAttributeCollection(typeof(DiskStateModels));
         coll.AddAttributeCollection(typeof(InitialDiskState));
 
         // File Hash Cache
