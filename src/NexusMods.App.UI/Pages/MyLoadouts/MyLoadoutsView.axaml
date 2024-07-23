@@ -23,7 +23,7 @@
             <panels:FlexPanel x:Name="MyLoadoutsOuterFlexPanel">
 
                 <TextBlock x:Name="PageDescriptionTextBlock"
-                           Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}" />
+                           Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}"  />
 
                 <ItemsControl x:Name="GameSectionsItemsControl">
                     <ItemsControl.ItemsPanel>
