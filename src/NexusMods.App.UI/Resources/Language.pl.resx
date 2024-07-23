@@ -614,4 +614,10 @@
     <data name="LoadoutCardViewCreatingText" xml:space="preserve">
         <value>Tworzenie...</value>
     </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Zestawy pozwalają przełączać się między różnymi stylami gry, dostosowując każdy z nich za sprawą różnych modów i konfiguracji.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>Musisz dodać grę przed użyciem zestawów</value>
+    </data>
 </root>
