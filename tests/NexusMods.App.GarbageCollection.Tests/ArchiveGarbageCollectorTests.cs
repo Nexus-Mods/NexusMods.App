@@ -4,6 +4,7 @@ using NexusMods.App.GarbageCollection.Structs;
 using NexusMods.App.GarbageCollection.Tests.Helpers;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
+using Xunit;
 namespace NexusMods.App.GarbageCollection.Tests;
 
 public class ArchiveGarbageCollectorTests
@@ -12,7 +13,7 @@ public class ArchiveGarbageCollectorTests
     public void AddFiles_ShouldAddAllHashes(AbsolutePath archivePath)
     {
         // Arrange
-        var collector = new ArchiveGarbageCollector<MockParsedHeaderState>();
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
         var hash1 = (Hash)1;
         var hash2 = (Hash)2;
         var headerState = new MockParsedHeaderState(hash1, hash2);
@@ -36,12 +37,12 @@ public class ArchiveGarbageCollectorTests
         collector.HashToArchive[hash1].Entries[hash1].GetRefCount().Should().Be(1);
         collector.HashToArchive[hash2].Entries[hash2].GetRefCount().Should().Be(1);
     }
-    
+
     [Theory, AutoFileSystem]
     public void AddFiles_WithMultipleReferences_ShouldIncreaseRefCount(AbsolutePath archivePath)
     {
         // Arrange
-        var collector = new ArchiveGarbageCollector<MockParsedHeaderState>();
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
         var hash1 = (Hash)1;
         var hash2 = (Hash)2;
         var headerState = new MockParsedHeaderState(hash1, hash2);
@@ -64,7 +65,7 @@ public class ArchiveGarbageCollectorTests
     public void AddReferencedFile_ShouldThrowForUnknownHash()
     {
         // Arrange
-        var collector = new ArchiveGarbageCollector<MockParsedHeaderState>();
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
         var unknownHash = (Hash)999;
 
         // Act & Assert
@@ -76,7 +77,7 @@ public class ArchiveGarbageCollectorTests
     public void AddArchive_ShouldHandleMultipleArchives(AbsolutePath path1, AbsolutePath path2)
     {
         // Arrange
-        var collector = new ArchiveGarbageCollector<MockParsedHeaderState>();
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
         var hash1 = (Hash)1;
         var hash2 = (Hash)2;
         var headerState1 = new MockParsedHeaderState(hash1);

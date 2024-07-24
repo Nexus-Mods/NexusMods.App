@@ -2,11 +2,22 @@ using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.App.GarbageCollection.Structs;
 namespace NexusMods.App.GarbageCollection.Tests.Helpers;
 
-internal class MockParsedHeaderState : ICanProvideFileHashes
+internal class MockParsedHeaderState : ICanProvideFileHashes<MockFileHash>
 {
-    private readonly Hash[] _hashes;
+    private readonly MockFileHash[] _hashes;
 
-    public MockParsedHeaderState(params Hash[] hashes) => _hashes = hashes;
+    public MockParsedHeaderState(params MockFileHash[] hashes) => _hashes = hashes;
 
-    public Span<Hash> GetFileHashes() => _hashes;
+    public Span<MockFileHash> GetFileHashes() => _hashes;
+}
+
+public struct MockFileHash : IHaveFileHash
+{
+    public Hash Hash { get; set; }
+
+    public static implicit operator MockFileHash(Hash hash) => new()
+    {
+        Hash = hash,
+    };
+
 }

@@ -19,9 +19,11 @@ namespace NexusMods.App.GarbageCollection;
 ///        all files which are used. Incrementing the ref count of the existing
 ///        items in the DataStore.
 ///
-///     3. Archives are then repacked, removing files which have a reference count of 1.
+///     3. Archives are then repacked, removing files which have a reference count of 0.
 /// </summary>
-public struct ArchiveGarbageCollector<TParsedHeaderState> where TParsedHeaderState : ICanProvideFileHashes
+public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper>
+    where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper>
+    where TFileEntryWrapper : IHaveFileHash
 {
     /// <summary>
     ///     A mapping of all known file hashes to their respective archive
@@ -38,7 +40,8 @@ public struct ArchiveGarbageCollector<TParsedHeaderState> where TParsedHeaderSta
     /// </summary>
     public void AddArchive(AbsolutePath archivePath, TParsedHeaderState header)
     {
-        var entries = new Dictionary<Hash, HashEntry>(header.GetFileHashes().Length);
+        var fileHashes = header.GetFileHashes();
+        var entries = new Dictionary<Hash, HashEntry>(fileHashes.Length);
         var archiveReference = new ArchiveReference<TParsedHeaderState>
         {
             FilePath = archivePath,
@@ -46,10 +49,10 @@ public struct ArchiveGarbageCollector<TParsedHeaderState> where TParsedHeaderSta
             HeaderState = header,
         };
 
-        foreach (var fileHash in header.GetFileHashes())
+        foreach (var fileHash in fileHashes)
         {
-            entries[fileHash] = fileHash;
-            HashToArchive[fileHash] = archiveReference;
+            entries[fileHash.Hash] = fileHash.Hash;
+            HashToArchive[fileHash.Hash] = archiveReference;
         }
     }
 
