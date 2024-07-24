@@ -9,7 +9,7 @@ Manage your installation of Stardew Modding API (SMAPI) by simply downloading an
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)
+![An example Health Check message prompting the installation of a missing mod.](../images/0.5.3/HealthCheckExample.webp)
 
 Diagnostics are shown in the following situations: 
 
@@ -28,7 +28,7 @@ Diagnostics are shown in the following situations:
 ### Edit Config Files
 Easily edit mod config files in your loadout(s). When new config files are created after starting the game, the app will automatically assign them to mod they correspond to. To edit these settings select the mod in the "My Mods" view and click "View Mod Files" on the toolbar. Locate the config file (e.g. config.json) and click "Edit File" from the toolbar. Click save when finished editing, then apply the changes to your game. 
 
-![Using the app to edit a config.json](../images/0.6.0/SDVEditConfig.webp)
+![Using the app to edit a config.json](../images/0.5.3/SDVEditConfig.webp)
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
