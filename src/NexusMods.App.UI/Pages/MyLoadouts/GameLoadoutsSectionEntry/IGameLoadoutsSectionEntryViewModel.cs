@@ -3,7 +3,7 @@ using NexusMods.App.UI.Controls.LoadoutCard;
 
 namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 
-public interface IGameLoadoutsSectionEntryViewModel : IViewModelInterface
+public interface IGameLoadoutsSectionEntryViewModel : IViewModelInterface, IDisposable
 {
     string HeadingText { get; }
     ReadOnlyObservableCollection<IViewModelInterface> CardViewModels { get; }

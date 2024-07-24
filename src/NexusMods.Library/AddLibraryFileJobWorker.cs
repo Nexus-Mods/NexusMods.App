@@ -70,9 +70,38 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 job.Transaction,
                 job.EntityId.Value,
                 job.FilePath,
-                job.RelativeTo,
                 hash: job.HashJobResult.Value.RequireData<Hash>()
             );
+        }
+
+        if (job.IsArchive.Value)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.ExtractionDirectory.HasValue)
+            {
+                job.ExtractionDirectory = _temporaryFileManager.CreateFolder();
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.ExtractedFiles.HasValue)
+            {
+                var extractedFiles = await ExtractArchiveAsync(
+                    job,
+                    job.FilePath,
+                    job.ExtractionDirectory.Value,
+                    cancellationToken
+                );
+
+                if (extractedFiles.Length == 0)
+                {
+                    _logger.LogWarning("File `{Path}` was assumed to be extractable but no files were extracted, it will not be added as an archive", job.FilePath);
+                    job.IsArchive = false;
+                }
+                else
+                {
+                    job.ExtractedFiles = extractedFiles;
+                }
+            }
         }
 
         if (job.IsArchive.Value)
@@ -83,25 +112,8 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 job.LibraryArchive = new LibraryArchive.New(job.Transaction, job.EntityId.Value)
                 {
                     LibraryFile = job.LibraryFile.Value,
-                    IsLibraryArchiveMarker = true,
+                    IsIsLibraryArchiveMarker = true,
                 };
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!job.ExtractionDirectory.HasValue)
-            {
-                job.ExtractionDirectory = _temporaryFileManager.CreateFolder();
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!job.ExtractedFiles.HasValue)
-            {
-                job.ExtractedFiles = await ExtractArchiveAsync(
-                    job,
-                    job.FilePath,
-                    job.ExtractionDirectory.Value,
-                    cancellationToken
-                );
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -115,11 +127,10 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                     var fileEntry = extractedFiles[i];
 
                     var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
-                    var childJob = new AddLibraryFileJob(job, worker)
+                    await using var childJob = new AddLibraryFileJob(job, worker)
                     {
                         Transaction = job.Transaction,
                         FilePath = fileEntry.Path,
-                        RelativeTo = job.ExtractionDirectory.Value,
                         DoCommit = false,
                         DoBackup = false,
                     };
@@ -158,12 +169,13 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             cancellationToken.ThrowIfCancellationRequested();
             foreach (var tuple in job.AddExtractedFileJobResults.Value)
             {
-                var (jobResult, _) = tuple;
-                
+                var (jobResult, fileEntry) = tuple;
                 var libraryFile = jobResult.RequireData<LibraryFile.New>();
-                
-                var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
+                var path = fileEntry.Path.RelativeTo(job.ExtractionDirectory.Value.Path);
+
+                _ = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
+                    Path = path,
                     LibraryFile = libraryFile,
                     ParentId = job.LibraryArchive.Value,
                 };
@@ -199,7 +211,8 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
     {
         await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
-        return await _fileExtractor.CanExtract(stream);
+        var canExtract = await _fileExtractor.CanExtract(stream);
+        return canExtract;
     }
 
     private static async Task<JobResult> HashAsync(AbsolutePath filePath, CancellationToken cancellationToken)
@@ -232,11 +245,11 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         // return await AddJobAndWaitForResultAsync(hashJob);
     }
 
-    private static LibraryFile.New CreateLibraryFile(ITransaction tx, EntityId entityId, AbsolutePath filePath, AbsolutePath relativeTo, Hash hash)
+    private static LibraryFile.New CreateLibraryFile(ITransaction tx, EntityId entityId, AbsolutePath filePath, Hash hash)
     {
         var libraryFile = new LibraryFile.New(tx, entityId)
         {
-            FileName = filePath.RelativeTo(relativeTo),
+            FileName = filePath.FileName,
             Hash = hash,
             Size = filePath.FileInfo.Size,
             LibraryItem = new LibraryItem.New(tx, entityId)
@@ -254,12 +267,12 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         AbsolutePath outputPath,
         CancellationToken cancellationToken)
     {
-        await using var tempDirectory = _temporaryFileManager.CreateFolder();
-
         var worker = _serviceProvider.GetRequiredService<ExtractArchiveJobWorker>();
-        var extractArchiveJob = new ExtractArchiveJob(job, worker)
+        var fileStreamFactory = new NativeFileStreamFactory(archivePath);
+
+        await using var extractArchiveJob = new ExtractArchiveJob(job, worker)
         {
-            FileStreamFactory = new NativeFileStreamFactory(archivePath),
+            FileStreamFactory = fileStreamFactory,
             OutputPath = outputPath,
         };
 

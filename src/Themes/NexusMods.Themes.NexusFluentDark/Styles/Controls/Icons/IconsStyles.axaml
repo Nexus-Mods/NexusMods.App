@@ -88,6 +88,7 @@
             <icons:UnifiedIcon Classes="Nexus"/>
             <icons:UnifiedIcon Classes="ColorLens"/>
             <icons:UnifiedIcon Classes="CheckBox"/>
+            <icons:UnifiedIcon Classes="ViewCarousel"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -435,5 +436,9 @@
     
     <Style Selector="icons|UnifiedIcon.CheckBox">
         <Setter Property="Value" Value="{x:Static icons:IconValues.CheckBox}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ViewCarousel">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ViewCarousel}"/>
     </Style>
 </Styles>

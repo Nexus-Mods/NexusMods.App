@@ -51,7 +51,7 @@
         </Style>
 
         <!-- Selected state -->
-        <Style Selector="^:selected">
+        <Style Selector="^:not(:selected)">
             <Setter Property="Background" Value="{StaticResource NeutralTranslucentModerate}" />
         </Style>
 

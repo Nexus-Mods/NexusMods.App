@@ -64,7 +64,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 return;
             }
 
-            var job = _libraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
+            await using var job = _libraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
             await job.StartAsync(cancellationToken: cancellationToken);
             var result = await job.WaitToFinishAsync(cancellationToken: cancellationToken);
             _logger.LogInformation("InstallItem result: `{Result}`", result.ToString());

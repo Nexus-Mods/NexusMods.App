@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Jobs;
 /// Represents a piece of work.
 /// </summary>
 [PublicAPI]
-public interface IJob
+public interface IJob : IDisposable, IAsyncDisposable
 {
     /// <summary>
     /// Gets the ID of the job.

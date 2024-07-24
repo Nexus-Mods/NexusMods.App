@@ -16,7 +16,7 @@ public partial class LibraryArchive : IModelDefinition
     /// <summary>
     /// Marker.
     /// </summary>
-    public static readonly MarkerAttribute LibraryArchiveMarker = new(Namespace, nameof(LibraryArchiveMarker));
+    public static readonly MarkerAttribute IsLibraryArchiveMarker = new(Namespace, nameof(IsLibraryArchiveMarker));
 
     /// <summary>
     /// Back-reference to all files inside the archive.

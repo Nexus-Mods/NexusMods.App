@@ -62,6 +62,7 @@
                     <Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="TextAlignment" Value="Center"/>
                 </Style>
             </Style>
         </Style>

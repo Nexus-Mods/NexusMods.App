@@ -11,6 +11,7 @@ namespace NexusMods.Games.StardewValley.Models;
 /// Marker for manifest files.
 /// </summary>
 [Include<StoredFile>]
+[Obsolete($"To be replaced with {nameof(SMAPIManifestLoadoutFile)}")]
 public partial class SMAPIManifestMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.StardewValley.Models.SMAPIManifestMetadata";

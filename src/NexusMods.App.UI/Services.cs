@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
@@ -190,9 +191,13 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
+            
+            
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
+            .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
             .AddView<CreateNewLoadoutCardView, ICreateNewLoadoutCardViewModel>()
+            .AddViewModel<LoadoutBadgeViewModel, ILoadoutBadgeViewModel>()
             
             .AddView<SettingsView, ISettingsPageViewModel>()
             .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
@@ -257,6 +262,8 @@ public static class Services
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
+            .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
+            
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

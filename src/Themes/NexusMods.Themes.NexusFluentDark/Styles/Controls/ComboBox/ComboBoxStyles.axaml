@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
 
     <StyleInclude Source="ComboBoxStyles.addPanelDropDown.axaml" />
 
@@ -104,6 +105,18 @@
     </Design.PreviewWith>
 
     <Style Selector="ComboBox">
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <panels:FlexPanel Direction="Column" 
+                                  RowSpacing="{StaticResource Spacing-0.5}"/>
+            </ItemsPanelTemplate>
+        </Setter>
+        
+        <Style.Resources>
+            <Thickness x:Key="ComboBoxDropdownContentMargin">4</Thickness>
+        </Style.Resources>
+        
+        
         <Style Selector="^ /template/ ContentControl#ContentPresenter">
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontSize" Value="14" />
@@ -114,7 +127,7 @@
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
-            <Setter Property="LineHeight" Value="20" />
+            <Setter Property="LineHeight" Value="21" />
         </Style>
 
         <Style Selector="^ /template/ PathIcon#DropDownGlyph">
