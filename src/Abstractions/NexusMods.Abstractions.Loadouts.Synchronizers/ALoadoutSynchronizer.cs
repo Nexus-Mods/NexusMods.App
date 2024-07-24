@@ -655,9 +655,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
-        
 
-        
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
         // have one.
@@ -671,9 +669,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             await CreateVanillaStateLoadout(installation);
         }
         
-        var shortName = LoadoutNameProvider.GetNewShortName(
-            existingLoadouts.Where(l => l.IsVisible()).Select(l=> l.ShortName).ToArray());
-        
+        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadouts
+            .Where(l => l.IsVisible())
+            .Select(l=> l.ShortName)
+            .ToArray()
+        );
+
         using var tx = Connection.BeginTransaction();
         
         var loadout = new Loadout.New(tx)
@@ -684,9 +685,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             Revision = 0,
             LoadoutKind = LoadoutKind.Default,
         };
-        
+
         var gameFiles = CreateGameFilesMod(loadout, installation, tx);
-        
+
+        var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
+
         // Backup the files
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
         var allStoredFileModels = new List<StoredFile.New>();
@@ -696,7 +699,31 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            
+
+            if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
+            {
+                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                groupId = group.Id;
+
+                loadoutGameFilesGroups.Add(path.LocationId, groupId);
+            }
+
+            _ = new LoadoutFile.New(tx, out var loadoutFileId)
+            {
+                Hash = file.Item.Value.Hash,
+                Size = file.Item.Value.Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
+                {
+                    TargetPath = path,
+                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
+                    {
+                        Name = path.FileName,
+                        LoadoutId = loadout,
+                        ParentId = groupId,
+                    },
+                },
+            };
+
             allStoredFileModels.Add(new StoredFile.New(tx, out var id)
             {
                 File = new File.New(tx, eid: id)
@@ -734,6 +761,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         await _diskStateRegistry.SaveState(remappedLoadout.InstallationInstance, initialState);
         return remappedLoadout;
+    }
+
+    private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
+        ITransaction transaction,
+        LocationId locationId,
+        LoadoutId loadoutId)
+    {
+        return new LoadoutGameFilesGroup.New(transaction, out var entityId)
+        {
+            RawLocationId = locationId.Value,
+            LoadoutItemGroup = new LoadoutItemGroup.New(transaction, entityId)
+            {
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(transaction, entityId)
+                {
+                    Name = $"Game Files: {locationId}",
+                    LoadoutId = loadoutId,
+                },
+            },
+        };
     }
 
     private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
@@ -856,6 +903,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
         
         var gameFiles = CreateGameFilesMod(loadout, installation, tx);
+        var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
 
         // Backup the files
         // 1. Because we need to backup the files for every created loadout.
@@ -867,7 +915,31 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            
+
+            if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
+            {
+                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                groupId = group.Id;
+
+                loadoutGameFilesGroups.Add(path.LocationId, groupId);
+            }
+
+            _ = new LoadoutFile.New(tx, out var loadoutFileId)
+            {
+                Hash = file.Item.Value.Hash,
+                Size = file.Item.Value.Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
+                {
+                    TargetPath = path,
+                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
+                    {
+                        Name = path.FileName,
+                        LoadoutId = loadout,
+                        ParentId = groupId,
+                    },
+                },
+            };
+
             _ = new StoredFile.New(tx, out var id)
             {
                 File = new File.New(tx, eid: id)
