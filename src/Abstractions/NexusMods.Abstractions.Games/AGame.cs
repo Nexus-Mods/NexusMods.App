@@ -24,7 +24,7 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
-    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    private readonly Lazy<ILoadoutSynchronizerOld> _synchronizer;
     private readonly Lazy<IEnumerable<IModInstaller>> _installers;
     private readonly IServiceProvider _provider;
 
@@ -36,7 +36,7 @@ public abstract class AGame : IGame
         _provider = provider;
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
-        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
+        _synchronizer = new Lazy<ILoadoutSynchronizerOld>(() => MakeSynchronizer(provider));
         _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
     }
 
@@ -46,9 +46,9 @@ public abstract class AGame : IGame
     /// </summary>
     /// <param name="provider"></param>
     /// <returns></returns>
-    protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    protected virtual ILoadoutSynchronizerOld MakeSynchronizer(IServiceProvider provider)
     {
-        return new DefaultSynchronizer(provider);
+        return new DefaultSynchronizerOld(provider);
     }
 
     /// <inheritdoc />
@@ -89,7 +89,7 @@ public abstract class AGame : IGame
     }
 
     /// <inheritdoc />
-    public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    public virtual ILoadoutSynchronizerOld SynchronizerOld => _synchronizer.Value;
 
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)

@@ -9,7 +9,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077.Cyberpunk2077Game>(serviceProvider)
+public class Cyberpunk2077SynchronizerOldTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077.Cyberpunk2077Game>(serviceProvider)
 {
 
     [Fact]

@@ -90,7 +90,7 @@ public class StressTest
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var list = await game.Synchronizer.CreateLoadout(install);
+                        var list = await game.SynchronizerOld.CreateLoadout(install);
                         var downloadId = await fileOriginRegistry.RegisterDownload(tmpPath, 
                             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, tmpPath.Path.Name),
                             tmpPath.Path.Name, token);

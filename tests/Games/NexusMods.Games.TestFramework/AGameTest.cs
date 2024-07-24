@@ -51,7 +51,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
     
-    protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
+    protected ILoadoutSynchronizerOld SynchronizerOld => GameInstallation.GetGame().SynchronizerOld;
     
     private readonly ILogger<AGameTest<TGame>> _logger;
     
@@ -152,7 +152,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
-        return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+        return await GameInstallation.GetGame().SynchronizerOld.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
 
     /// <summary>

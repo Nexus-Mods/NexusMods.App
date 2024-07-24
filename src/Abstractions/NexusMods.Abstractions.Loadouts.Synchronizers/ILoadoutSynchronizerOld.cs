@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
 /// </summary>
-public interface ILoadoutSynchronizer
+public interface ILoadoutSynchronizerOld
 {
     
     #region Synchronization Methods

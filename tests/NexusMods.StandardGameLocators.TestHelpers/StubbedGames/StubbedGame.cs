@@ -44,9 +44,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
     
-    public override ILoadoutSynchronizer Synchronizer =>
+    public override ILoadoutSynchronizerOld SynchronizerOld =>
         // Lazy initialization to avoid circular dependencies
-        new DefaultSynchronizer(_serviceProvider);
+        new DefaultSynchronizerOld(_serviceProvider);
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<StubbedGame>(

@@ -104,7 +104,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         overrideFile.Should().NotBeNull();
         overrideFile!.Contains(DeletedFile.Size).Should().BeTrue();
         
-        var syncTree = await Synchronizer.BuildSyncTree(BaseLoadout);
+        var syncTree = await SynchronizerOld.BuildSyncTree(BaseLoadout);
         
         // Act
         await ApplyService.Synchronize(BaseLoadout);

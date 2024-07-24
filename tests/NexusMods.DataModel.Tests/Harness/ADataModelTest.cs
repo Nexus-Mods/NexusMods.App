@@ -44,7 +44,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
     protected readonly IGameRegistry GameRegistry;
-    protected ILoadoutSynchronizer Synchronizer;
+    protected ILoadoutSynchronizerOld SynchronizerOld;
 
     protected IGame Game;
     protected GameInstallation Install;
@@ -93,8 +93,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         await _host.StartAsync(Token);
         Install = await StubbedGame.Create(ServiceProvider);
         Game = (IGame)Install.Game;
-        Synchronizer = Game.Synchronizer;
-        BaseLoadout = await Synchronizer.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
+        SynchronizerOld = Game.SynchronizerOld;
+        BaseLoadout = await SynchronizerOld.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
     }
 
     /// <summary>

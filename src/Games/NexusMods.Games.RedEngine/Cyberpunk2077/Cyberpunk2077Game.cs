@@ -31,8 +31,8 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         _serviceProvider = provider;
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) 
-        => new Cyberpunk2077Synchronizer(provider);
+    protected override ILoadoutSynchronizerOld MakeSynchronizer(IServiceProvider provider) 
+        => new Cyberpunk2077SynchronizerOld(provider);
 
     public override string Name => "Cyberpunk 2077";
     public override GameDomain Domain => StaticDomain;

@@ -44,9 +44,9 @@ public interface IGame : ILocatableGame
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
 
     /// <summary>
-    /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.
+    /// Returns a <see cref="ILoadoutSynchronizerOld"/> for this game.
     /// </summary>
-    public ILoadoutSynchronizer Synchronizer { get; }
+    public ILoadoutSynchronizerOld SynchronizerOld { get; }
     
     /// <summary>
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,

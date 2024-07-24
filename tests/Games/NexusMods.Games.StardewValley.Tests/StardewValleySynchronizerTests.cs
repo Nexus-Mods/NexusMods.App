@@ -21,7 +21,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
     public async Task FilesInModFoldersAreMovedIntoMods()
     {
         var loadout = await CreateLoadout();
-        loadout = await Synchronizer.Synchronize(loadout);
+        loadout = await SynchronizerOld.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
 
@@ -55,7 +55,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var newModId = result.Remap(mod).Id;
 
         loadout = loadout.Rebase();
-        loadout = await Synchronizer.Synchronize(loadout);
+        loadout = await SynchronizerOld.Synchronize(loadout);
         
         var newFilePath = new GamePath(LocationId.Game, "Mods/test_mod_42/foo.dat".ToRelativePath());
 
@@ -64,7 +64,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         absPath.Parent.CreateDirectory();
         await absPath.WriteAllTextAsync("Hello, World!");
         
-        loadout = await Synchronizer.Synchronize(loadout);
+        loadout = await SynchronizerOld.Synchronize(loadout);
         
         loadout.Files
             .TryGetFirst(f => f.To == newFilePath, out var found)

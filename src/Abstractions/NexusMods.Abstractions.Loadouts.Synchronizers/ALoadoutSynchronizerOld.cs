@@ -25,7 +25,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-public class ALoadoutSynchronizer : ILoadoutSynchronizer
+public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 {
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
@@ -45,7 +45,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
     /// <param name="os"></param>
-    protected ALoadoutSynchronizer(ILogger logger,
+    protected ALoadoutSynchronizerOld(ILogger logger,
         IFileHashCache hashCache,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
@@ -66,8 +66,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Helper constructor that takes only a service provider, and resolves the dependencies from it.
     /// </summary>
     /// <param name="provider"></param>
-    protected ALoadoutSynchronizer(IServiceProvider provider) : this(
-        provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
+    protected ALoadoutSynchronizerOld(IServiceProvider provider) : this(
+        provider.GetRequiredService<ILogger<ALoadoutSynchronizerOld>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),

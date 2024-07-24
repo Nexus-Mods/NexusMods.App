@@ -179,7 +179,7 @@ public static class LoadoutManagementVerbs
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.CreateLoadout(install, name);
+            await game.SynchronizerOld.CreateLoadout(install, name);
             return 0;
         });
     }

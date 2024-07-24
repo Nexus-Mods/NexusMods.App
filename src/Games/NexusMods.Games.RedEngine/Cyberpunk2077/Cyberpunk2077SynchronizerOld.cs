@@ -5,11 +5,11 @@ using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
-public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
+public class Cyberpunk2077SynchronizerOld : ALoadoutSynchronizerOld
 {
     private Cyberpunk2077Settings _settings;
 
-    protected internal Cyberpunk2077Synchronizer(IServiceProvider provider) : base(provider)
+    protected internal Cyberpunk2077SynchronizerOld(IServiceProvider provider) : base(provider)
     {
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
 

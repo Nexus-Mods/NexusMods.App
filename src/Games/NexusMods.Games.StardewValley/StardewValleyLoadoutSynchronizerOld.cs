@@ -13,9 +13,9 @@ using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley;
 
-public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
+public class StardewValleyLoadoutSynchronizerOld : ALoadoutSynchronizerOld
 {
-    public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider)
+    public StardewValleyLoadoutSynchronizerOld(IServiceProvider provider) : base(provider)
     {
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
         _settings = settingsManager.Get<StardewValleySettings>();
