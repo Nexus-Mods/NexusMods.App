@@ -227,24 +227,31 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public SyncActionGroupings ProcessSyncTree(SyncTree tree)
+    public SyncActionGroupings<SyncTreeNode> ProcessSyncTree(SyncTree tree)
     {
-        throw new NotImplementedException();
-        /*
-        var groupings = new SyncActionGroupings();
+        var groupings = new SyncActionGroupings<SyncTreeNode>();
         
         foreach (var entry in tree.GetAllDescendentFiles())
         {
             var item = entry.Item.Value;
 
+
+            // Called out so the compiler doesn't complain about unused variables
+            LoadoutFile.ReadOnly loadoutFile = default!;
+
+            if (item.LoadoutFile.HasValue && !item.LoadoutFile.Value.TryGetAsLoadoutFile(out loadoutFile))
+            {
+                throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
+            }
+
             var signature = new SignatureBuilder
             {
                 DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
                 PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
-                LoadoutHash = item.LoadoutFile.HasValue ? item.LoadoutFile.Value.Hash : Optional<Hash>.None,
+                LoadoutHash = item.LoadoutFile.HasValue ? loadoutFile.Hash : Optional<Hash>.None,
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
                 PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
-                LoadoutArchived = item.LoadoutFile.HasValue && HaveArchive(item.LoadoutFile.Value.Hash),
+                LoadoutArchived = item.LoadoutFile.HasValue && HaveArchive(loadoutFile.Hash),
                 PathIsIgnored = IsIgnoredBackupPath(entry.GamePath()),
             }.Build();
             
@@ -255,11 +262,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         return groupings;
-        */
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
         
         var previousTree = _diskStateRegistry.GetState(loadout.InstallationInstance)!
@@ -330,7 +336,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout;
     }
 
-    private void WarnOfConflict(SyncActionGroupings groupings)
+    private void WarnOfConflict(SyncActionGroupings<SyncTreeNode> groupings)
     {
         var conflicts = groupings[Actions.WarnOfConflict];
         _logger.LogWarning("Conflict detected in {Count} files", conflicts.Count);
@@ -341,7 +347,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void WarnOfUnableToExtract(SyncActionGroupings groupings)
+    private void WarnOfUnableToExtract(SyncActionGroupings<SyncTreeNode> groupings)
     {
         var unableToExtract = groupings[Actions.WarnOfUnableToExtract];
         _logger.LogWarning("Unable to extract {Count} files", unableToExtract.Count);
@@ -352,7 +358,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         var toAddDelete = groupings[Actions.AddReifiedDelete];
         _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
@@ -362,15 +368,19 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var item in toAddDelete)
         {
-            var delete = new Files.DeletedFile.New(tx, out var id)
+            var delete = new DeletedFile.New(tx, out var id)
             {
-                File = new File.New(tx, eid: id)
+                IsIsDeletedFileMarker = true,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
-                    To = item.Path,
-                    ModId = overridesMod,
-                    LoadoutId = loadout.Id,
+                    TargetPath = item.Path,
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        Name = item.Path.FileName,
+                        ParentId = overridesMod.Value,
+                        LoadoutId = loadout.Id,
+                    },
                 },
-                Size = item.LoadoutFile.Value.Size,
             };
 
             previousTree.Remove(item.Path);
@@ -390,7 +400,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout.Rebase();
     }
 
-    private async Task ActionExtractToDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         // Extract files to disk
         var toExtract = groupings[Actions.ExtractToDisk];
@@ -400,16 +410,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             await _fileStore.ExtractFiles(toExtract.Select(item =>
             {
                 var gamePath = register.GetResolvedPath(item.Path);
-                return (item.LoadoutFile.Value.Hash, gamePath);
+                if (!item.LoadoutFile.Value.TryGetAsLoadoutFile(out var loadoutFile))
+                {
+                    throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
+                }
+                return (loadoutFile.Hash, gamePath);
             }), CancellationToken.None);
 
             var isUnix = _os.IsUnix();
             foreach (var entry in toExtract)
             {
+                if (!entry.LoadoutFile.Value.TryGetAsLoadoutFile(out var loadoutFile))
+                {
+                    throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
+                }
                 previousTree[entry.Path] = new DiskStateEntry
                 {
-                    Hash = entry.LoadoutFile.Value.Hash,
-                    Size = entry.LoadoutFile.Value.Size,
+                    Hash = loadoutFile.Hash,
+                    Size = loadoutFile.Size,
                     // TODO: this isn't needed and we can delete it eventually
                     LastModified = DateTime.UtcNow,
                 };
@@ -433,7 +451,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private void ActionDeleteFromDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         // Delete files from disk
         var toDelete = groupings[Actions.DeleteFromDisk];
@@ -446,7 +464,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionBackupFiles(SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    private async Task ActionBackupFiles(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
         var toBackup = groupings[Actions.BackupFile];
         _logger.LogDebug("Backing up {Count} files", toBackup.Count);
@@ -455,7 +473,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
     }
 
-    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
@@ -662,9 +680,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        throw new NotImplementedException();
-        /*
-        // Get the initial state of the game fers
+        // Get the initial state of the game folder
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
 
         // We need to create a 'Vanilla State Loadout' for rolling back the game
@@ -703,7 +719,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Backup the files
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-        var allStoredFileModels = new List<StoredFile.New>();
+
         foreach (var file in initialState.GetAllDescendentFiles())
         {
             var path = file.GamePath();
@@ -734,18 +750,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     },
                 },
             };
-
-            allStoredFileModels.Add(new StoredFile.New(tx, out var id)
-            {
-                File = new File.New(tx, eid: id)
-                {
-                    To = path,
-                    LoadoutId = loadout.LoadoutId,
-                    ModId = gameFiles,
-                },
-                Hash = file.Item.Value.Hash,
-                Size = file.Item.Value.Size,
-            });
         }
         
         await BackupNewFiles(installation, filesToBackup);
@@ -772,7 +776,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         await _diskStateRegistry.SaveState(remappedLoadout.InstallationInstance, initialState);
         return remappedLoadout;
-        */
     }
 
     private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
@@ -780,8 +783,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         LocationId locationId,
         LoadoutId loadoutId)
     {
-        throw new NotImplementedException();
-        /*
         return new LoadoutGameFilesGroup.New(transaction, out var entityId)
         {
             RawLocationId = locationId.Value,
@@ -795,7 +796,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 },
             },
         };
-        */
     }
 
     private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
@@ -905,8 +905,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
     {
-        throw new NotImplementedException();
-        /*
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
@@ -956,25 +954,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     },
                 },
             };
-
-            _ = new StoredFile.New(tx, out var id)
-            {
-                File = new File.New(tx, eid: id)
-                {
-                    LoadoutId = loadout.LoadoutId,
-                    ModId = gameFiles,
-                    To = path,
-                },
-                Hash = file.Item.Value.Hash,
-                Size = file.Item.Value.Size,
-            };
         }
         
         await BackupNewFiles(installation, filesToBackup);
         var result = await tx.Commit();
 
         return result.Remap(loadout);
-        */
     }
 #endregion
     

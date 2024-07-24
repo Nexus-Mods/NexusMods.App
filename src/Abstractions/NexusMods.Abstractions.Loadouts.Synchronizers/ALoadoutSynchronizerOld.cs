@@ -224,9 +224,9 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     }
 
     /// <inheritdoc />
-    public SyncActionGroupings ProcessSyncTree(SyncTreeOld tree)
+    public SyncActionGroupings<SyncTreeNodeOld> ProcessSyncTree(SyncTreeOld tree)
     {
-        var groupings = new SyncActionGroupings();
+        var groupings = new SyncActionGroupings<SyncTreeNodeOld>();
         
         foreach (var entry in tree.GetAllDescendentFiles())
         {
@@ -253,7 +253,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings<SyncTreeNodeOld> groupings, Loadout.ReadOnly loadout)
     {
         
         var previousTree = _diskStateRegistry.GetState(loadout.InstallationInstance)!
@@ -324,7 +324,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         return loadout;
     }
 
-    private void WarnOfConflict(SyncActionGroupings groupings)
+    private void WarnOfConflict(SyncActionGroupings<SyncTreeNodeOld> groupings)
     {
         var conflicts = groupings[Actions.WarnOfConflict];
         _logger.LogWarning("Conflict detected in {Count} files", conflicts.Count);
@@ -335,7 +335,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
     }
 
-    private void WarnOfUnableToExtract(SyncActionGroupings groupings)
+    private void WarnOfUnableToExtract(SyncActionGroupings<SyncTreeNodeOld> groupings)
     {
         var unableToExtract = groupings[Actions.WarnOfUnableToExtract];
         _logger.LogWarning("Unable to extract {Count} files", unableToExtract.Count);
@@ -346,7 +346,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
     }
 
-    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings<SyncTreeNodeOld> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         var toAddDelete = groupings[Actions.AddReifiedDelete];
         _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
@@ -384,7 +384,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         return loadout.Rebase();
     }
 
-    private async Task ActionExtractToDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNodeOld> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         // Extract files to disk
         var toExtract = groupings[Actions.ExtractToDisk];
@@ -427,7 +427,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
     }
 
-    private void ActionDeleteFromDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private void ActionDeleteFromDisk(SyncActionGroupings<SyncTreeNodeOld> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         // Delete files from disk
         var toDelete = groupings[Actions.DeleteFromDisk];
@@ -440,7 +440,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
     }
 
-    private async Task ActionBackupFiles(SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    private async Task ActionBackupFiles(SyncActionGroupings<SyncTreeNodeOld> groupings, Loadout.ReadOnly loadout)
     {
         var toBackup = groupings[Actions.BackupFile];
         _logger.LogDebug("Backing up {Count} files", toBackup.Count);
@@ -449,7 +449,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
             (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
     }
 
-    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings<SyncTreeNodeOld> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
     {
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);

@@ -28,12 +28,12 @@ public interface ILoadoutSynchronizerOld
     /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, return a groupings object for the tree
     /// </summary>
-    SyncActionGroupings ProcessSyncTree(SyncTreeOld syncTree);
+    SyncActionGroupings<SyncTreeNodeOld> ProcessSyncTree(SyncTreeOld syncTree);
     
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings groupings, Loadout.ReadOnly install);
+    Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings<SyncTreeNodeOld> groupings, Loadout.ReadOnly install);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any

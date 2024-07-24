@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-public class SyncTreeNodeOld
+public class SyncTreeNodeOld : ISyncNode
 {
     public GamePath Path { get; init; }
     public Optional<DiskStateEntry> Disk { get; set; }
