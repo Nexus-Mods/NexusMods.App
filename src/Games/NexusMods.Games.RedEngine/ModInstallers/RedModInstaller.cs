@@ -106,7 +106,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 LoadoutId = loadout.Id,
                 IsDisabled = false,
-                Name = infoJson?.Name ?? "<unknown>",
+                Name = infoJson.Name,
                 ParentId = topLevelGroup.Id,
             };
             
@@ -130,7 +130,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
                 {
                     redModInfoFile = new RedModInfoFile.New(tx, newFile.Id)
                     {
-                        Name = infoJson!.Name,
+                        Name = infoJson.Name,
                         Version = infoJson.Version,
                         LoadoutFile = newFile,
                     };

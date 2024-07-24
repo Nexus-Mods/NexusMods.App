@@ -53,7 +53,11 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
         }};
     }
 
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        ITransaction tx,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
         var extensionPreset = new Extension(".preset");
@@ -69,9 +73,8 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
                 new GamePath(LocationId.Game, relPath.Join(kv.Key()))
             ))).ToArray();
 
-        if (!modFiles.Any())
-            return [];
-
-        return [group];
+        return modFiles.Length == 0
+            ? ValueTask.FromResult<LoadoutItem.New[]>([])
+            : ValueTask.FromResult<LoadoutItem.New[]>([group]);
     }
 }

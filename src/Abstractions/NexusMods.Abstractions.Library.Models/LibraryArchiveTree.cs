@@ -1,10 +1,9 @@
 using DynamicData.Kernel;
-
-namespace NexusMods.Abstractions.Library.Models;
-
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+
+namespace NexusMods.Abstractions.Library.Models;
 using LibraryArchiveTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, LibraryArchiveTree>;
 
 /// <summary>
@@ -22,8 +21,6 @@ public struct LibraryArchiveTree :
     IHaveKey<RelativePath>,
     IHaveValue<LibraryArchiveTree>
 {
-    // +16 bytes due to Boxing/Class overhead. object overhead
-
     /// <inheritdoc />
     public Box<LibraryArchiveTree>? Parent { get; private set; } // 0
 
@@ -32,14 +29,11 @@ public struct LibraryArchiveTree :
     
     /// <inheritdoc />
     public ushort Depth { get; private set;  } // 17
-
     
     /// <summary>
     /// True if this node represents a file.
     /// </summary>
     public bool IsFile => LibraryFile.HasValue;
-
-    // Key
 
     /// <inheritdoc />
     public RelativePath Segment { get; init; } // 24
@@ -49,8 +43,6 @@ public struct LibraryArchiveTree :
     /// </summary>
     public Optional<LibraryFile.ReadOnly> LibraryFile { get; init; }
     
-    // Utility Methods/Properties
-
     /// <summary>
     ///     The complete path of the file or directory.
     /// </summary>
@@ -60,11 +52,6 @@ public struct LibraryArchiveTree :
     ///     The name file or directory in this node.
     /// </summary>
     public RelativePath FileName => Segment;
-
-    /// <summary>
-    ///     The extension of this node.
-    /// </summary>
-    public Extension Extension => Segment.Extension;
 
     // Interface Redirects
     /// <inheritdoc />
@@ -128,6 +115,9 @@ public struct LibraryArchiveTree :
 
 }
 
+/// <summary>
+/// Converters and extensions for <see cref="LibraryArchiveTree"/>.
+/// </summary>
 public static class LibraryArchiveTreeExtensions
 {
     /// <summary>

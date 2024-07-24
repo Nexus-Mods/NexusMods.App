@@ -27,11 +27,18 @@ public static class Extensions
     /// <summary>
     /// Convert as LibraryArchiveTree node to a LoadoutFile with the given metadata
     /// </summary>
-    public static LoadoutFile.New ToLoadoutFile(this KeyedBox<RelativePath, LibraryArchiveTree> input, LoadoutId loadoutId, LoadoutItemGroupId parent, ITransaction tx, GamePath to)
+    public static LoadoutFile.New ToLoadoutFile(
+        this KeyedBox<RelativePath, LibraryArchiveTree> input,
+        LoadoutId loadoutId,
+        LoadoutItemGroupId parent,
+        ITransaction tx,
+        GamePath to,
+        Optional<EntityId> entityId = default)
     {
+        var id = entityId.ValueOr(tx.TempId);
         var libraryFile = input.Item.LibraryFile.Value;
 
-        return new LoadoutFile.New(tx, out var id)
+        return new LoadoutFile.New(tx, id)
         {
             LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
             {
@@ -52,9 +59,15 @@ public static class Extensions
     /// <summary>
     /// Creates a group loadout item for the given library archive. Often used by installers to group files from a single archive together
     /// </summary>
-    public static LoadoutItem.New ToGroup(this LibraryArchive.ReadOnly archive, LoadoutId loadout, ITransaction tx, string? name = null)
+    public static LoadoutItemGroup.New ToGroup(
+        this LibraryArchive.ReadOnly archive,
+        LoadoutId loadout,
+        ITransaction tx,
+        out LoadoutItem.New loadoutItem,
+        string? name = null,
+        Optional<EntityId> entityId = default)
     {
-        var groupId = tx.TempId();
+        var groupId = entityId.ValueOr(tx.TempId);
         
         var item = new LoadoutItem.New(tx, groupId)
         {

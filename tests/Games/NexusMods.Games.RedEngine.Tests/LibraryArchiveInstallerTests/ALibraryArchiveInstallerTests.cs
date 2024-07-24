@@ -68,17 +68,14 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
         return LibraryFile.FindByHash(Connection.Db, archiveHash).OfTypeLibraryArchive().First();
     }
 
-    protected async Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    protected async Task<LoadoutItem.ReadOnly[]> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+        where TInstaller : ILibraryArchiveInstaller
     {
-        var installer = Game.Installers.FirstOrDefault(i => i.GetType() == installerType);
-        if (installer == null)
-            throw new InvalidOperationException($"No installer of type {installerType.Name} found for game {Game.Name}.");
-        
-        if (installer is not ALibraryArchiveInstaller archiveInstaller)
-            throw new InvalidOperationException($"The installer of type {installerType.Name} is not an archive installer.");
+        var installer = Game.LibraryItemInstallers.OfType<TInstaller>().FirstOrDefault();
+        installer.Should().NotBeNull();
 
         using var tx = Connection.BeginTransaction();
-        var results = await archiveInstaller.ExecuteAsync(archive, tx, loadout, CancellationToken.None);
+        var results = await installer!.ExecuteAsync(archive, tx, loadout, CancellationToken.None);
         
         results.Length.Should().BePositive("The installer should have installed at least one file.");
         

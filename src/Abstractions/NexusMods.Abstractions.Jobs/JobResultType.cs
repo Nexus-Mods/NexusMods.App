@@ -8,15 +8,15 @@ public enum JobResultType : byte
     /// <summary>
     /// The job finished successfully.
     /// </summary>
-    Completed = 1,
+    Completed = 0,
 
     /// <summary>
     /// The job was cancelled.
     /// </summary>
-    Cancelled = 2,
+    Cancelled = 1,
 
     /// <summary>
     /// The job failed.
     /// </summary>
-    Failed = 3,
+    Failed = 2,
 }

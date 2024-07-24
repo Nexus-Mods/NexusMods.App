@@ -82,7 +82,11 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
     }
 
 
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        ITransaction tx,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
         
@@ -93,8 +97,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
             .OrderBy(node => node.Depth())
             .ToArray();
 
-        if (roots.Length == 0)
-            return [];
+        if (roots.Length == 0) return ValueTask.FromResult<LoadoutItem.New[]>([]);
 
         var highestRoot = roots.First();
         var group = libraryArchive.ToGroup(loadout.Id, tx);
@@ -127,9 +130,8 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
             newFiles++;
         }
 
-        if (newFiles == 0)
-            return [];
-        
-        return [group];
+        return newFiles == 0
+            ? ValueTask.FromResult<LoadoutItem.New[]>([])
+            : ValueTask.FromResult<LoadoutItem.New[]>([group]);
     }
 }
