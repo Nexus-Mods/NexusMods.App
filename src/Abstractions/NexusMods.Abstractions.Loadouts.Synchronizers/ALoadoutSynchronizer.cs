@@ -15,7 +15,6 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -357,7 +356,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var item in toAddDelete)
         {
-            var delete = new DeletedFile.New(tx, out var id)
+            var delete = new Files.DeletedFile.New(tx, out var id)
             {
                 File = new File.New(tx, eid: id)
                 {
