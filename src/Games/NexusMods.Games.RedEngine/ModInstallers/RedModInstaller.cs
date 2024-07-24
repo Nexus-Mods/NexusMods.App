@@ -95,7 +95,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
                 infosList.Add((f, infoJson));
         }
         
-        var topLevelGroup = libraryArchive.ToGroup(loadout.Id, tx);
+        var topLevelGroup = libraryArchive.ToGroup(loadout.Id, tx, out var topLevelItem);
         
         foreach (var (file, infoJson) in infosList.OrderBy(x => x.InfoJson.Name))
         {
@@ -105,7 +105,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             var loadoutItem = new LoadoutItem.New(tx)
             {
                 LoadoutId = loadout.Id,
-                IsDisabled = false,
+                IsIsDisabledMarker = false,
                 Name = infoJson.Name,
                 ParentId = topLevelGroup.Id,
             };
@@ -113,7 +113,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             var groupItem = new LoadoutItemGroup.New(tx, loadoutItem.Id)
             {
                 LoadoutItem = loadoutItem,
-                IsGroupMarker = true,
+                IsIsLoadoutItemGroupMarker = true,
             };
 
  
@@ -147,7 +147,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             };
         }
 
-        return [topLevelGroup];
+        return [topLevelItem];
     }
 }
 

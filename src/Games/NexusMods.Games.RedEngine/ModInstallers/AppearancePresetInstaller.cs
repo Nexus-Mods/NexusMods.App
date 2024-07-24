@@ -62,7 +62,7 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
         var tree = libraryArchive.GetTree();
         var extensionPreset = new Extension(".preset");
 
-        var group = libraryArchive.ToGroup(loadout.Id, tx);
+        var group = libraryArchive.ToGroup(loadout.Id, tx, out var loadoutItem);
         
         var modFiles = tree.GetFiles()
             .Where(kv => kv.Key().Extension == extensionPreset)
@@ -75,6 +75,6 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
 
         return modFiles.Length == 0
             ? ValueTask.FromResult<LoadoutItem.New[]>([])
-            : ValueTask.FromResult<LoadoutItem.New[]>([group]);
+            : ValueTask.FromResult<LoadoutItem.New[]>([loadoutItem]);
     }
 }

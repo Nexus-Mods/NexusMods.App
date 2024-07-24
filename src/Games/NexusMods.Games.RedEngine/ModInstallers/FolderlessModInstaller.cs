@@ -61,7 +61,7 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller, IModInstaller
     {
         var tree = libraryArchive.GetTree();
 
-        var group = libraryArchive.ToGroup(loadout, tx);
+        var group = libraryArchive.ToGroup(loadout, tx, out var loadoutItem);
         
         var modFiles = tree.EnumerateFilesBfs()
             .Where(f => !IgnoreExtensions.Contains(f.Value.Item.Path.Extension))
@@ -71,6 +71,6 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller, IModInstaller
         if (!modFiles.Any())
             return ValueTask.FromResult<LoadoutItem.New[]>([]);
         
-        return ValueTask.FromResult<LoadoutItem.New[]>([ group ]);
+        return ValueTask.FromResult<LoadoutItem.New[]>([ loadoutItem ]);
     }
 }

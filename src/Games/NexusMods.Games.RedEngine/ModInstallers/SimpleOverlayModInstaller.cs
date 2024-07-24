@@ -100,7 +100,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
         if (roots.Length == 0) return ValueTask.FromResult<LoadoutItem.New[]>([]);
 
         var highestRoot = roots.First();
-        var group = libraryArchive.ToGroup(loadout.Id, tx);
+        var group = libraryArchive.ToGroup(loadout.Id, tx, out var loadoutItem);
         
         var newFiles = 0;
 
@@ -121,7 +121,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
                         Name = relativePath.Name,
                         LoadoutId = loadout.Id,
                         ParentId = group.Id,
-                        IsDisabled = false,
+                        IsIsDisabledMarker = false,
                     },
                 },
                 Hash = file.Item.LibraryFile.Value.Hash,
@@ -132,6 +132,6 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
 
         return newFiles == 0
             ? ValueTask.FromResult<LoadoutItem.New[]>([])
-            : ValueTask.FromResult<LoadoutItem.New[]>([group]);
+            : ValueTask.FromResult<LoadoutItem.New[]>([loadoutItem]);
     }
 }

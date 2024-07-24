@@ -1,13 +1,15 @@
 using FluentAssertions;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Games.RedEngine.ModInstallers;
+using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Tests.LibraryArchiveInstallerTests;
 
-public class RedModInstallerTests : ALibraryArchiveInstallerTests
+public class RedModInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk2077Game>
 {
     public RedModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider)
     {

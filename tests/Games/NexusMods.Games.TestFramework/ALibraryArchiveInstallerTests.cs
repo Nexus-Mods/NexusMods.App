@@ -3,21 +3,21 @@ using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.RedEngine.Tests.LibraryArchiveInstallerTests;
+namespace NexusMods.Games.TestFramework;
 
-public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cyberpunk2077Game>
+public abstract class ALibraryArchiveInstallerTests<TGame> : AGameTest<TGame>
+where TGame : AGame
 {
     private readonly ILibraryService _libraryService;
     private readonly TemporaryFileManager _tempFileManager;
@@ -68,14 +68,19 @@ public abstract class ALibraryArchiveInstallerTests : AGameTest<Cyberpunk2077.Cy
         return LibraryFile.FindByHash(Connection.Db, archiveHash).OfTypeLibraryArchive().First();
     }
 
-    protected async Task<LoadoutItem.ReadOnly[]> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    protected Task<LoadoutItem.ReadOnly[]> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller
     {
-        var installer = Game.LibraryItemInstallers.OfType<TInstaller>().FirstOrDefault();
+        return Install(typeof(TInstaller), loadout, archive);
+    }
+    
+    protected async Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    {
+        var installer = Game.LibraryItemInstallers.FirstOrDefault(t => t.GetType() == installerType);
         installer.Should().NotBeNull();
 
         using var tx = Connection.BeginTransaction();
-        var results = await installer!.ExecuteAsync(archive, tx, loadout, CancellationToken.None);
+        var results = await installer!.ExecuteAsync(archive.AsLibraryFile().AsLibraryItem(), tx, loadout, CancellationToken.None);
         
         results.Length.Should().BePositive("The installer should have installed at least one file.");
         
