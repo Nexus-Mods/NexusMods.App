@@ -17,7 +17,7 @@ public partial class LoadoutGameFilesGroup : IModelDefinition
     /// <summary>
     /// Raw location id.
     /// </summary>
-    public static readonly StringAttribute RawLocationId = new(Namespace, nameof(LocationId));
+    public static readonly StringAttribute RawLocationId = new(Namespace, nameof(LocationId)) { IsIndexed = true };
 
     /// <summary/>
     [PublicAPI]
