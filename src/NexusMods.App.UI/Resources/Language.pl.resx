@@ -154,10 +154,10 @@
 		<value>Historia pobierania</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-		<value>PROSZĘ KLIKNĄĆ "AUTHORISE" NA STRONIE INTERNETOWEJ</value>
+		<value>Proszę kliknąć "Authorise" na stronie internetowej</value>
 	</data>
 	<data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
-		<value>PRZEGLĄDARKA NIE URUCHOMIŁA SIĘ AUTOMATYCZNIE?</value>
+		<value>Przeglądarka nie uruchomiła się automatycznie?</value>
 	</data>
 	<data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
 		<value>Proszę skopiować poniższy adres URL do okna przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
