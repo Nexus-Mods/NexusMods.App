@@ -77,16 +77,6 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         if (job.IsArchive.Value)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (!job.LibraryArchive.HasValue)
-            {
-                job.LibraryArchive = new LibraryArchive.New(job.Transaction, job.EntityId.Value)
-                {
-                    LibraryFile = job.LibraryFile.Value,
-                    IsIsLibraryArchiveMarker = true,
-                };
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
             if (!job.ExtractionDirectory.HasValue)
             {
                 job.ExtractionDirectory = _temporaryFileManager.CreateFolder();
@@ -95,12 +85,35 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
             cancellationToken.ThrowIfCancellationRequested();
             if (!job.ExtractedFiles.HasValue)
             {
-                job.ExtractedFiles = await ExtractArchiveAsync(
+                var extractedFiles = await ExtractArchiveAsync(
                     job,
                     job.FilePath,
                     job.ExtractionDirectory.Value,
                     cancellationToken
                 );
+
+                if (extractedFiles.Length == 0)
+                {
+                    _logger.LogWarning("File `{Path}` was assumed to be extractable but no files were extracted, it will not be added as an archive", job.FilePath);
+                    job.IsArchive = false;
+                }
+                else
+                {
+                    job.ExtractedFiles = extractedFiles;
+                }
+            }
+        }
+
+        if (job.IsArchive.Value)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!job.LibraryArchive.HasValue)
+            {
+                job.LibraryArchive = new LibraryArchive.New(job.Transaction, job.EntityId.Value)
+                {
+                    LibraryFile = job.LibraryFile.Value,
+                    IsIsLibraryArchiveMarker = true,
+                };
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -199,11 +212,6 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     {
         await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
         var canExtract = await _fileExtractor.CanExtract(stream);
-        if (canExtract)
-        {
-            _logger.LogInformation("Extractable: `{Path}`", filePath);
-        }
-
         return canExtract;
     }
 

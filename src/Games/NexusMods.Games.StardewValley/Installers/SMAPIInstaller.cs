@@ -306,7 +306,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
                     }
 
                     var fvi = tempFile.Path.FileInfo.GetFileVersionInfo();
-                    version = fvi.FileVersionString;
+                    version = fvi.FileVersion.ToString(fieldCount: 3);
                 }
                 catch (Exception e)
                 {
@@ -358,7 +358,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         // TODO: copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
 
-        var smapi = new SMAPILoadoutItem.New(transaction, group.Id)
+        _ = new SMAPILoadoutItem.New(transaction, group.Id)
         {
             LoadoutItemGroup = group,
             Version = version.ValueOrDefault(),
