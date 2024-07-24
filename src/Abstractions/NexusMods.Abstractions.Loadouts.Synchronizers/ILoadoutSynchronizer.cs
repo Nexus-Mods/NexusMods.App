@@ -1,13 +1,13 @@
-﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Ids;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
+
 
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
 /// </summary>
-public interface ILoadoutSynchronizerOld
+public interface ILoadoutSynchronizer
 {
     
     #region Synchronization Methods
@@ -16,24 +16,24 @@ public interface ILoadoutSynchronizerOld
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
     /// sync tree contains a matching of all the files in all 3 sources based on their path.
     /// </summary>
-    SyncTreeOld BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree);
+    SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree);
     
     /// <summary>
     /// Builds a sync tree from a loadout and the current state of the game folder.
     /// </summary>
     /// <param name="loadoutTree"></param>
     /// <returns></returns>
-    Task<SyncTreeOld> BuildSyncTree(Loadout.ReadOnly loadoutTree);
+    Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadoutTree);
     
     /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, return a groupings object for the tree
     /// </summary>
-    SyncActionGroupings ProcessSyncTree(SyncTreeOld syncTree);
+    SyncActionGroupings ProcessSyncTree(SyncTree syncTree);
     
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings groupings, Loadout.ReadOnly install);
+    Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings groupings, Loadout.ReadOnly install);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any

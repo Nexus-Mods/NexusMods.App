@@ -9,19 +9,19 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// </summary>
 public class SyncActionGroupings
 {
-    private ConcurrentDictionary<Actions, ConcurrentBag<SyncTreeNode>> _groupings = new();
+    private ConcurrentDictionary<Actions, ConcurrentBag<SyncTreeNodeOld>> _groupings = new();
     
     /// <summary>
     /// Gets the group of nodes that have the specified action.
     /// </summary>
     /// <param name="action"></param>
-    public IReadOnlyCollection<SyncTreeNode> this[Actions action] => _groupings.GetOrAdd(action, static _ => []);
+    public IReadOnlyCollection<SyncTreeNodeOld> this[Actions action] => _groupings.GetOrAdd(action, static _ => []);
     
     /// <summary>
     /// Adds a node to the groupings based on the actions it has.
     /// </summary>
     /// <param name="node"></param>
-    public void Add(SyncTreeNode node)
+    public void Add(SyncTreeNodeOld node)
     {
         foreach (var flag in Enum.GetValues<Actions>())
         {
@@ -30,7 +30,7 @@ public class SyncActionGroupings
         }
     }
     
-    private void AddOne(Actions flag, SyncTreeNode node)
+    private void AddOne(Actions flag, SyncTreeNodeOld node)
     {
         _groupings.GetOrAdd(flag, static _ => []).Add(node);
     }

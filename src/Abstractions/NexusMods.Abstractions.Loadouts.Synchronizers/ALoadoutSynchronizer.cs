@@ -25,7 +25,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
+public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
@@ -45,7 +45,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
     /// <param name="os"></param>
-    protected ALoadoutSynchronizerOld(ILogger logger,
+    protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
@@ -66,8 +66,8 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     /// Helper constructor that takes only a service provider, and resolves the dependencies from it.
     /// </summary>
     /// <param name="provider"></param>
-    protected ALoadoutSynchronizerOld(IServiceProvider provider) : this(
-        provider.GetRequiredService<ILogger<ALoadoutSynchronizerOld>>(),
+    protected ALoadoutSynchronizer(IServiceProvider provider) : this(
+        provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
@@ -145,9 +145,9 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     }
 
     /// <inheritdoc />
-    public SyncTreeOld BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
+    public SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
     {
-        var tree = new Dictionary<GamePath, SyncTreeNodeOld>();
+        var tree = new Dictionary<GamePath, SyncTreeNode>();
 
         var grouped = loadoutTree.Mods.Where(m => m.Enabled)
             .SelectMany(m => m.Files)
@@ -172,11 +172,14 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
                 continue;
             }
 
-            tree.Add(path, new SyncTreeNodeOld
-            {
-                Path = path,
-                LoadoutFile = stored,
-            });
+            throw new NotImplementedException();
+            /*
+        tree.Add(path, new SyncTreeNode
+        {
+            Path = path,
+            LoadoutFile = stored,
+        });
+        */
         }
 
         foreach (var node in previousTree.GetAllDescendentFiles())
@@ -187,7 +190,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
             }
             else
             {
-                tree.Add(node.GamePath(), new SyncTreeNodeOld
+                tree.Add(node.GamePath(), new SyncTreeNode
                 {
                     Path = node.GamePath(),
                     Previous = node.Item.Value,
@@ -203,7 +206,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
             }
             else
             {
-                tree.Add(node.GamePath(), new SyncTreeNodeOld
+                tree.Add(node.GamePath(), new SyncTreeNode
                 {
                     Path = node.GamePath(),
                     Disk = node.Item.Value,
@@ -211,11 +214,11 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
             }
         }
         
-        return new SyncTreeOld(tree);
+        return new SyncTree(tree);
     }
 
     /// <inheritdoc />
-    public async Task<SyncTreeOld> BuildSyncTree(Loadout.ReadOnly loadout)
+    public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var diskState = await GetDiskState(loadout.InstallationInstance);
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
@@ -224,8 +227,10 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     }
 
     /// <inheritdoc />
-    public SyncActionGroupings ProcessSyncTree(SyncTreeOld tree)
+    public SyncActionGroupings ProcessSyncTree(SyncTree tree)
     {
+        throw new NotImplementedException();
+        /*
         var groupings = new SyncActionGroupings();
         
         foreach (var entry in tree.GetAllDescendentFiles())
@@ -250,10 +255,11 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
 
         return groupings;
+        */
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(SyncTreeOld tree, SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings groupings, Loadout.ReadOnly loadout)
     {
         
         var previousTree = _diskStateRegistry.GetState(loadout.InstallationInstance)!
@@ -548,6 +554,8 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     /// <inheritdoc />
     public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
     {
+        throw new NotImplementedException();
+        /*
         var syncTree = BuildSyncTree(diskState, diskState, loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
@@ -608,6 +616,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         }
         
         return FileDiffTree.Create(diffs.Select(d => KeyValuePair.Create(d.GamePath, d)));
+        */
     }
     
     /// <summary>
@@ -622,7 +631,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         // by any extension system.
         //
         // So the problem is, the ingest process has tagged all these new files as coming from the downloads, but likely
-        // they've never actually been copied/compressed into the download folders. So if we need to restore them they won't exist.
+        // they've never actually been copied/compressed into the download fers. So if we need to restore them they won't exist.
         //
         // If a game wants other types of files to be backed up, they could do so with their own logic. But backing up a
         // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
@@ -653,7 +662,9 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        // Get the initial state of the game folders
+        throw new NotImplementedException();
+        /*
+        // Get the initial state of the game fers
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
 
         // We need to create a 'Vanilla State Loadout' for rolling back the game
@@ -749,7 +760,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         initialState.LoadoutId = remappedLoadout.Id;
 
         
-        // Reset the game folder to initial state if making a new loadout.
+        // Reset the game fer to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
         // Note(sewer): We can't just apply the new loadout here because we haven't run SaveState
@@ -761,6 +772,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 
         await _diskStateRegistry.SaveState(remappedLoadout.InstallationInstance, initialState);
         return remappedLoadout;
+        */
     }
 
     private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
@@ -768,6 +780,8 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         LocationId locationId,
         LoadoutId loadoutId)
     {
+        throw new NotImplementedException();
+        /*
         return new LoadoutGameFilesGroup.New(transaction, out var entityId)
         {
             RawLocationId = locationId.Value,
@@ -781,6 +795,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
                 },
             },
         };
+        */
     }
 
     private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
@@ -827,7 +842,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
     {
         // Clear Initial State if this is the only loadout for the game.
-        // We use folder location for this.
+        // We use fer location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
         var isLastLoadout = Loadout.All(Connection.Db)
             .Count(x => x.IsVisible() &&
@@ -850,7 +865,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 
                 The loadout being deleted is the currently active loadout.
 
-                As a 'default' reasonable behaviour, we will reset the game folder
+                As a 'default' reasonable behaviour, we will reset the game fer
                 to its initial state by using the 'vanilla state' loadout to accomodate this.
 
                 This is a good default for many cases:
@@ -882,7 +897,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 
     /// <summary>
     ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
-    ///     state of the game folder.
+    ///     state of the game fer.
     ///
     ///     This loadout is created when the last applied loadout for a game
     ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
@@ -890,6 +905,8 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     /// </summary>
     private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
     {
+        throw new NotImplementedException();
+        /*
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
@@ -957,6 +974,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
         var result = await tx.Commit();
 
         return result.Remap(loadout);
+        */
     }
 #endregion
     
@@ -976,7 +994,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     }
 
     /// <summary>
-    /// By default, this method just returns the current state of the game folders. Most of the time
+    /// By default, this method just returns the current state of the game fers. Most of the time
     /// this creates a sub-par user experience as users may have installed mods in the past and then
     /// these files will be marked as part of the game files when they are not. Properly implemented
     /// games should override this method and return only the files that are part of the game itself.
