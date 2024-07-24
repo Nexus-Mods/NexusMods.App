@@ -1,5 +1,10 @@
 ﻿[
   {
+    FromPath: archive/pc/mod/foo.archive,
+    Hash: 0x3F9FDA0CBCC34562,
+    ToGamePath: {Game}/archive/pc/mod/foo.archive
+  },
+  {
     FromPath: bin/x64/foo.exe,
     Hash: 0x798E0832D0DADE9C,
     ToGamePath: {Game}/bin/x64/foo.exe
@@ -18,10 +23,5 @@
     FromPath: red4ext/foo.exe,
     Hash: 0xC3DD09F834309596,
     ToGamePath: {Game}/red4ext/foo.exe
-  },
-  {
-    FromPath: archive/pc/mod/foo.archive,
-    Hash: 0x3F9FDA0CBCC34562,
-    ToGamePath: {Game}/archive/pc/mod/foo.archive
   }
 ]
