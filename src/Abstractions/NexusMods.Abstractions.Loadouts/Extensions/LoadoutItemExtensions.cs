@@ -14,7 +14,8 @@ public static class LoadoutItemExtensions
         {
             yield return item;
             
-            if (LoadoutItem.Parent.TryGet(item, out var parent))
+            // TODO: Fix this once we fix Attr.TryGet on value types
+            if (item.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGet(item, out var parent))
             {
                 item = LoadoutItem.Load(item.Db, parent);
             }

@@ -128,21 +128,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     #region ILoadoutSynchronizer Implementation
     
-    protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
+    protected LoadoutOverridesGroupId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
-        if (loadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
-            return overridesMod.ModId;
-        
-        var newOverrides = new Mod.New(tx)
+        if (LoadoutOverridesGroup.FindByOverridesFor(loadout.Db, loadout.Id).TryGetFirst(out var found))
+            return found;
+
+        var newOverrides = new LoadoutOverridesGroup.New(tx, out var id)
         {
-            LoadoutId = loadout.LoadoutId,
-            Category = ModCategory.Overrides,
-            Name = "Overrides",
-            Enabled = true,
-            Status = ModStatus.Installed,
-            Revision = 0,
+            OverridesForId = loadout,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            {
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    Name = "Overrides",
+                    LoadoutId = loadout.Id,
+                },
+            },
         };
-        return newOverrides.ModId;
+
+        return newOverrides.Id;
     }
 
     /// <inheritdoc />
@@ -220,17 +225,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Returns true if the file and all its parents are not disabled.
     /// </summary>
-    private bool FileIsEnabled(LoadoutItem.ReadOnly arg)
+    private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
     {
-        while (true)
-        {
-            if (arg.Contains(LoadoutItem.IsDisabledMarker))
-                return false;
-            
-            if (!LoadoutItem.ParentId.TryGet(arg, out var parentId)) 
-                return true;
-            arg = LoadoutItem.Load(arg.Db, parentId);
-        }
+        return arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.IsDisabledMarker));
     }
 
     /// <inheritdoc />
@@ -496,21 +493,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
                     
-        var added = new List<StoredFile.New>();
+        var added = new List<LoadoutFile.New>();
 
         foreach (var file in toIngest)
         {
-            var storedFile = new StoredFile.New(tx, out var id)
+            var storedFile = new LoadoutFile.New(tx, out var id)
             {
-                File = new File.New(tx, eid: id)
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
-                    To = file.Path,
-                    ModId = overridesMod,
-                    LoadoutId = loadout.Id,
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        ParentId = overridesMod.Value,
+                        LoadoutId = loadout.Id,
+                        Name = file.Path.FileName,
+                    },
+                    TargetPath = file.Path,
                 },
                 Hash = file.Disk.Value.Hash,
                 Size = file.Disk.Value.Size,
             };
+            
             added.Add(storedFile);
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
@@ -596,7 +598,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="loadout"></param>
     /// <param name="newFiles"></param>
     /// <returns></returns>
-    protected virtual async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, StoredFile.ReadOnly[] newFiles)
+    protected virtual async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, LoadoutFile.ReadOnly[] newFiles)
     {
         return loadout;
     }

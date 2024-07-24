@@ -111,4 +111,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     {
         return new StardewValleyLoadoutSynchronizerOld(provider);
     }
+    
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new StardewValleyLoadoutSynchronizer(provider);
+    }
 }

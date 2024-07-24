@@ -1,11 +1,13 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -24,35 +26,45 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         loadout = await SynchronizerOld.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
-
-        var mod = new Mod.New(tx)
-        {
-            LoadoutId = loadout,
-            Name = "Test Mod",
-            Revision = 0,
-            Enabled = true,
-            Category = ModCategory.Mod,
-            Status = ModStatus.Installed,
-        };
-
+        
         var manifestData = "{}";
         var manifestHash = manifestData.XxHash64AsUtf8();
         
-        var manfiestFile = new StoredFile.New(tx, out var id)
+        var smapiMod = new SMAPIModLoadoutItem.New(tx, out var modId)
         {
-            File = new File.New(tx, id)
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, modId)
             {
-                To = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
-                ModId = mod,
-                LoadoutId = loadout,
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(tx, modId)
+                {
+                    LoadoutId = loadout,
+                    Name = "Test Mod",
+                }
             },
-            Hash = manifestHash,
-            Size = Size.FromLong(manifestData.Length),
+            ManifestId = new SMAPIManifestLoadoutFile.New(tx, out var fileId)
+            {
+                IsIsManifestMarker = true,
+                LoadoutFile = new LoadoutFile.New(tx, fileId)
+                {
+                    Hash = manifestHash,
+                    Size = Size.FromLong(manifestData.Length),
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
+                    {
+                        TargetPath = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
+                        LoadoutItem = new LoadoutItem.New(tx, fileId)
+                        {
+                            LoadoutId = loadout,
+                            ParentId = modId,
+                            Name = "Test Mod - manifest.json",
+                        },
+                    },
+                },
+            },
         };
         
         var result = await tx.Commit();
 
-        var newModId = result.Remap(mod).Id;
+        var newModId = result.Remap(smapiMod).Id;
 
         loadout = loadout.Rebase();
         loadout = await Synchronizer.Synchronize(loadout);
@@ -66,12 +78,14 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         
         loadout = await Synchronizer.Synchronize(loadout);
         
-        loadout.Files
-            .TryGetFirst(f => f.To == newFilePath, out var found)
-            .Should().BeTrue("The file was ingested from the game folder");
+        loadout.Items.Should().ContainItemTargetingPath(newFilePath, "The file was moved into the mod folder");
+        var foundMod = loadout.Items
+            .OfTypeLoadoutItemWithTargetPath().Where(f => f.TargetPath == newFilePath)
+            .Select(f => f.AsLoadoutItem().Parent)
+            .First();
 
-        found.Mod.Name.Should().Be("Test Mod", "The file was ingested into the parent mod folder");
-        found.Mod.Id.Should().Be(newModId, "The file was ingested into the parent mod folder");
+        foundMod.AsLoadoutItem().Name.Should().Be("Test Mod", "The file was ingested into the parent mod folder");
+        foundMod.Id.Should().Be(newModId, "The file was ingested into the parent mod folder");
     }
 
     [Fact]
