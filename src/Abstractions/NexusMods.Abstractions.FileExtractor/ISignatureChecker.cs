@@ -5,6 +5,8 @@ namespace NexusMods.Abstractions.FileExtractor;
 /// </summary>
 public interface ISignatureChecker
 {
+    public ValueTask<bool> MatchesAnyAsync(Stream stream, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Looks at the first few bytes of a stream and returns the file types that match. Note: this will only
     /// consider the filetypes that were passed into the factory.

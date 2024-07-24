@@ -183,18 +183,20 @@ public class SevenZipExtractor : IExtractor
         }
         finally
         {
-            _logger.LogDebug("Cleaning up after extraction");
             if (spoolFile.HasValue)
+            {
+                _logger.LogDebug("Cleaning up after extraction");
                 await spoolFile.Value.DisposeAsync();
+            }
         }
     }
 
     private static string GetExtractorExecutableFileName()
     {
         return OSInformation.MatchPlatform(
-            onWindows: () => "7z.exe",
-            onLinux: () => "7zz",
-            onOSX: () => "7zz"
+            onWindows: static () => "7z.exe",
+            onLinux: static () => "7zz",
+            onOSX: static () => "7zz"
         );
     }
 
@@ -204,9 +206,9 @@ public class SevenZipExtractor : IExtractor
         if (UseSystemExtractor) return fileName;
 
         var directory = OSInformation.MatchPlatform(
-            onWindows: () => "runtimes/win-x64/native/",
-            onLinux: () => "runtimes/linux-x64/native/",
-            onOSX: () => "runtimes/osx-x64/native/"
+            onWindows: static () => "runtimes/win-x64/native/",
+            onLinux: static () => "runtimes/linux-x64/native/",
+            onOSX: static () => "runtimes/osx-x64/native/"
         );
 
         return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(directory + fileName).ToString();

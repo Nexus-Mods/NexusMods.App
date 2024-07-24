@@ -20,4 +20,11 @@ internal class AddLocalFileJob : AJob
 
         base.Dispose(disposing);
     }
+
+    protected override ValueTask DisposeAsyncCore()
+    {
+        Transaction.Dispose();
+
+        return base.DisposeAsyncCore();
+    }
 }

@@ -20,7 +20,7 @@ internal class AddLocalFileJobWorker : AJobWorker<AddLocalFileJob>
         var absolutePath = job.FilePath;
 
         var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
-        var addLibraryFileJob = new AddLibraryFileJob(job, worker)
+        await using var addLibraryFileJob = new AddLibraryFileJob(job, worker)
         {
             Transaction = job.Transaction,
             FilePath = job.FilePath,

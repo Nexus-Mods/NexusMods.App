@@ -16,12 +16,12 @@ public interface ILibraryService
     /// <summary>
     /// Adds a download to the library.
     /// </summary>
-    IJob AddDownload(IDownloadJob downloadJob);
+    [MustDisposeResource] IJob AddDownload(IDownloadJob downloadJob);
 
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    IJob AddLocalFile(AbsolutePath absolutePath);
+    [MustDisposeResource] IJob AddLocalFile(AbsolutePath absolutePath);
 
     /// <summary>
     /// Installs a library item into a target loadout.

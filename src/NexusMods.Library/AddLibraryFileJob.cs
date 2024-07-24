@@ -30,8 +30,6 @@ internal class AddLibraryFileJob : AJob
     {
         if (disposing)
         {
-            Transaction.Dispose();
-
             if (ExtractionDirectory.HasValue)
             {
                 ExtractionDirectory.Value.Dispose();
