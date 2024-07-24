@@ -46,7 +46,7 @@ public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyber
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, LocationId.Game, "archive/pc/mod/filea.archive")
+                (hash1, LocationId.Game, "archive/pc/mod/filea.archive"),
             });
     }
 }

@@ -1,0 +1,7 @@
+﻿[
+  {
+    FromPath: mymod/archive/pc/mod/foo.archive,
+    Hash: 0xE3DE93C464191B5F,
+    ToGamePath: {Game}/archive/pc/mod/foo.archive
+  }
+]

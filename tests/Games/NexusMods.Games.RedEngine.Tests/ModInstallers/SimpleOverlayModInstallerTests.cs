@@ -44,16 +44,7 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077.Cy
                 (hash2, LocationId.Game, "archive/pc/mod/foo.archive")
             });
     }
-
-    [Fact]
-    public async Task FilesUnderTwoSubFolderDepthsAreNotSupported()
-    {
-        var (hash1, hash2) = Next2Hash();
-        await BuildAndInstall(
-            (hash1, "prefix/mymod/bin/x64/foo.exe"),
-            (hash2, "mymod/archive/pc/mod/foo.archive"));
-    }
-
+    
     [Fact]
     public async Task AllCommonPrefixesAreSupported()
     {

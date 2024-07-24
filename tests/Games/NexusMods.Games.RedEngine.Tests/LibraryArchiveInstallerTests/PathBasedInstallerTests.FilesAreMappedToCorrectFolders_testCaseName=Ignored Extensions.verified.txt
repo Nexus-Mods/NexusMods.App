@@ -1,0 +1,7 @@
+﻿[
+  {
+    FromPath: folder/filea.archive,
+    Hash: 0x3CEAFFFA8F0928A4,
+    ToGamePath: {Game}/archive/pc/mod/filea.archive
+  }
+]

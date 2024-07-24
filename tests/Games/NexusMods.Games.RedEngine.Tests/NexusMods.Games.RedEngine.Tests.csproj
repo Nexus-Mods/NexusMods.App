@@ -15,6 +15,13 @@
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="LibraryArchiveInstallerTests\Resources\several_red_mods.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LibraryArchiveInstallerTests\Resources\one_mod.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Remove="LibraryArchiveInstallerTests\RedModInstallerTests.CanInstallRedMod.verified.txt" />
     </ItemGroup>
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
