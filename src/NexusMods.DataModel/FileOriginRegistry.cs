@@ -84,7 +84,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         if (!CompileConstants.IsDebug) return;
         try
         {
-            var job = _libraryService.AddLocalFile(path);
+            await using var job = _libraryService.AddLocalFile(path);
             await job.StartAsync(cancellationToken: cancellationToken);
             var result = await job.WaitToFinishAsync(cancellationToken: cancellationToken);
             _logger.LogInformation("AddLocalFile result: `{Result}`", result.ToString());

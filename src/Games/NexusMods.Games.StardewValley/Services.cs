@@ -41,7 +41,7 @@ public static class Services
             // Attributes
             .AddSMAPILoadoutItemModel()
             .AddSMAPIModDatabaseLoadoutFileModel()
-            .AddSMAPILoadoutItemModel()
+            .AddSMAPIModLoadoutItemModel()
             .AddSMAPIManifestLoadoutFileModel()
 
             // Misc

@@ -114,7 +114,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                     var fileEntry = extractedFiles[i];
 
                     var worker = _serviceProvider.GetRequiredService<AddLibraryFileJobWorker>();
-                    var childJob = new AddLibraryFileJob(job, worker)
+                    await using var childJob = new AddLibraryFileJob(job, worker)
                     {
                         Transaction = job.Transaction,
                         FilePath = fileEntry.Path,
@@ -160,7 +160,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 var libraryFile = jobResult.RequireData<LibraryFile.New>();
                 var path = fileEntry.Path.RelativeTo(job.ExtractionDirectory.Value.Path);
 
-                var archiveFileEntry = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
+                _ = new LibraryArchiveFileEntry.New(job.Transaction, libraryFile.Id)
                 {
                     Path = path,
                     LibraryFile = libraryFile,
@@ -198,7 +198,13 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
     private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
     {
         await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
-        return await _fileExtractor.CanExtract(stream);
+        var canExtract = await _fileExtractor.CanExtract(stream);
+        if (canExtract)
+        {
+            _logger.LogInformation("Extractable: `{Path}`", filePath);
+        }
+
+        return canExtract;
     }
 
     private static async Task<JobResult> HashAsync(AbsolutePath filePath, CancellationToken cancellationToken)
@@ -253,12 +259,12 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
         AbsolutePath outputPath,
         CancellationToken cancellationToken)
     {
-        await using var tempDirectory = _temporaryFileManager.CreateFolder();
-
         var worker = _serviceProvider.GetRequiredService<ExtractArchiveJobWorker>();
-        var extractArchiveJob = new ExtractArchiveJob(job, worker)
+        var fileStreamFactory = new NativeFileStreamFactory(archivePath);
+
+        await using var extractArchiveJob = new ExtractArchiveJob(job, worker)
         {
-            FileStreamFactory = new NativeFileStreamFactory(archivePath),
+            FileStreamFactory = fileStreamFactory,
             OutputPath = outputPath,
         };
 
