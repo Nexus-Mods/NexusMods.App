@@ -73,7 +73,7 @@ public struct LibraryArchiveTree :
         {
             var libraryFile = entry.AsLibraryFile();
             var current = root;
-            var parts = libraryFile.FileName.GetParts();
+            var parts = entry.Path.GetParts();
 
             for (var x = 0; x < parts.Length; x++)
             {
