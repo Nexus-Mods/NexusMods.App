@@ -41,7 +41,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             if (f.FileName() != InfoJson)
                 continue;
 
-            var infoJson = await ReadInfoJson(f.Item.Hash);
+            var infoJson = await ReadInfoJson(f.Item.Hash, f.Item.StreamFactory);
             if (infoJson != null)
                 infosList.Add((f, infoJson));
         }
@@ -67,7 +67,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
         return results;
     }
 
-    private async Task<RedModInfo?> ReadInfoJson(Hash hash)
+    private async Task<RedModInfo?> ReadInfoJson(Hash hash, IStreamFactory? streamFactory = null)
     {
         try
         {
@@ -76,6 +76,12 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
         }
         catch (Exception ex)
         {
+            // TODO: Remove this after we get rid of the old mod code
+            if (streamFactory != null)
+            {
+                await using var streamDirect = await streamFactory.GetStreamAsync();
+                return await JsonSerializer.DeserializeAsync<RedModInfo>(streamDirect);
+            }
             Logger.LogError(ex, "Failed to read info.json for {Hash}", hash);
             return null;
         }
