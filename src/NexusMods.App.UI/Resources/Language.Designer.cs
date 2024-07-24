@@ -1558,7 +1558,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BROWSER DIDN&apos;T OPEN AUTOMATICALLY?.
+        ///   Looks up a localized string similar to Browser didn&apos;t open automatically?.
         /// </summary>
         public static string NexusLoginOverlayView__BROWSER_DIDNT_OPEN {
             get {
@@ -1567,7 +1567,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PLEASE CLICK &quot;AUTHORIZE&quot; ON THE WEBSITE.
+        ///   Looks up a localized string similar to Please click &quot;Authorize&quot; on the website.
         /// </summary>
         public static string NexusLoginOverlayView__Please_Click_Authorize {
             get {

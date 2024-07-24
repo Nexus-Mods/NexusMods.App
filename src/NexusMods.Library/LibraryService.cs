@@ -49,7 +49,7 @@ public sealed class LibraryService : ILibraryService
     {
         var job = new InstallLoadoutItemJob(worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
         {
-            Transaction = _connection.BeginTransaction(),
+            Connection = _connection,
             LibraryItem = libraryItem,
             Loadout = targetLoadout,
         };

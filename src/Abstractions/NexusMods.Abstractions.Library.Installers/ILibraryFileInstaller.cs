@@ -14,7 +14,10 @@ public interface ILibraryFileInstaller : ILibraryItemInstaller
     /// <summary>
     /// Checks whether the provided library file is supported by this installer.
     /// </summary>
-    ValueTask<bool> IsSupportedAsync(LibraryFile.ReadOnly libraryFile, CancellationToken cancellationToken);
+    /// <remarks>
+    /// This method should only do surface checks on the entity itself.
+    /// </remarks>
+    bool IsSupportedLibraryFile(LibraryFile.ReadOnly libraryFile);
 
     /// <summary>
     /// Executes the installer.

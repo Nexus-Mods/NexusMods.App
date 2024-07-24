@@ -18,17 +18,14 @@ public abstract class ALibraryArchiveInstaller : ALibraryFileInstaller, ILibrary
     protected ALibraryArchiveInstaller(IServiceProvider serviceProvider, ILogger logger) : base(serviceProvider, logger) { }
 
     /// <inheritdoc/>
-    public override ValueTask<bool> IsSupportedAsync(LibraryFile.ReadOnly libraryFile, CancellationToken cancellationToken)
+    public override bool IsSupportedLibraryFile(LibraryFile.ReadOnly libraryFile)
     {
-        if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive)) return ValueTask.FromResult(false);
-        return IsSupportedAsync(libraryArchive, cancellationToken);
+        if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive)) return false;
+        return IsSupportedLibraryArchive(libraryArchive);
     }
 
     /// <inheritdoc/>
-    public ValueTask<bool> IsSupportedAsync(LibraryArchive.ReadOnly libraryArchive, CancellationToken cancellationToken)
-    {
-        return ValueTask.FromResult(true);
-    }
+    public virtual bool IsSupportedLibraryArchive(LibraryArchive.ReadOnly libraryArchive) => true;
 
     /// <inheritdoc/>
     public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
