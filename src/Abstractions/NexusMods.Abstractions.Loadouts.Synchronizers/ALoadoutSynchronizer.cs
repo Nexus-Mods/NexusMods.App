@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
@@ -18,7 +17,6 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -606,8 +604,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
     {
-        throw new NotImplementedException();
-        /*
         var syncTree = BuildSyncTree(diskState, diskState, loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
@@ -619,12 +615,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var syncNode = node.Item.Value;
             var actions = syncNode.Actions;
 
+            LoadoutFile.ReadOnly loadoutFile = default!;
+            if (node.Item.Value.LoadoutFile.HasValue && !node.Item.Value.LoadoutFile.Value.TryGetAsLoadoutFile(out loadoutFile))
+            {
+                continue;
+            }
+
             if (actions.HasFlag(Actions.DoNothing))
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = syncNode.LoadoutFile.Value.Hash,
-                    Size = syncNode.LoadoutFile.Value.Size,
+                    Hash = loadoutFile.Hash,
+                    Size = loadoutFile.Size,
                     ChangeType = FileChangeType.None,
                     GamePath = node.GamePath(),
                 };
@@ -634,8 +636,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = syncNode.LoadoutFile.Value.Hash,
-                    Size = syncNode.LoadoutFile.Value.Size,
+                    Hash = loadoutFile.Hash,
+                    Size = loadoutFile.Size,
                     // If paired with a delete action, this is a modified file not a new one
                     ChangeType = actions.HasFlag(Actions.DeleteFromDisk) ? FileChangeType.Modified : FileChangeType.Added,
                     GamePath = node.GamePath(),
@@ -646,8 +648,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = syncNode.Disk.Value.Hash,
-                    Size = syncNode.Disk.Value.Size,
+                    Hash = loadoutFile.Hash,
+                    Size = loadoutFile.Size,
                     ChangeType = FileChangeType.Removed,
                     GamePath = node.GamePath(),
                 };
@@ -668,7 +670,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         return FileDiffTree.Create(diffs.Select(d => KeyValuePair.Create(d.GamePath, d)));
-        */
     }
     
     /// <summary>
