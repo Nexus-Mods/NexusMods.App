@@ -57,13 +57,13 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         var dependantPaths = DependantPaths;
         var dependantExtensions = DependantExtensions;
         
-        var mods = loadout
-            .GetEnabledMods()
-            .Where(mod => mod.Files
-                .Any(file => IsDependant(dependantPaths, dependantExtensions, file.To)))
+        var groups = loadout.Items.GetEnabledLoadoutFiles()
+            .Where(file => IsDependant(dependantPaths, dependantExtensions, file.AsLoadoutItemWithTargetPath().TargetPath))
+            .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
+            .Distinct()
             .ToList();
 
-        if (mods.Count == 0)
+        if (groups.Count == 0)
             yield break;
         
         var (enabled, disabled) = FindDependency(loadout);
@@ -71,33 +71,33 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         if (enabled.HasValue)
             yield break;
         
-        foreach (var mod in mods)
+        foreach (var group in groups)
         {
             if (disabled.HasValue)
-                yield return Diagnostics.CreateDisabledModDependency(mod.ToReference(loadout), disabled.Value.ToReference(loadout));
+                yield return Diagnostics.CreateDisabledGroupDependency(group.ToReference(loadout), disabled.Value.ToReference(loadout));
             else 
-                yield return Diagnostics.CreateMissingModWithKnownNexusUri(mod.ToReference(loadout), DependencyName, DownloadLink);
+                yield return Diagnostics.CreateMissingModWithKnownNexusUri(group.ToReference(loadout), DependencyName, DownloadLink);
         }
     }
 
-    private (Optional<Mod.ReadOnly> Enabled, Optional<Mod.ReadOnly> Disabled) FindDependency(Loadout.ReadOnly loadout)
+    private (Optional<LoadoutItemGroup.ReadOnly> Enabled, Optional<LoadoutItemGroup.ReadOnly> Disabled) FindDependency(Loadout.ReadOnly loadout)
     {
-        var enabled = Optional<Mod.ReadOnly>.None;
-        var disabled = Optional<Mod.ReadOnly>.None;
+        var enabled = Optional<LoadoutItemGroup.ReadOnly>.None;
+        var disabled = Optional<LoadoutItemGroup.ReadOnly>.None;
         
-        foreach (var mod in loadout.Mods)
+        foreach (var group in loadout.Items.OfTypeLoadoutItemGroup())
         {
-            if (DependencyPaths.All(dependencyPath => mod.Files.Any(file => file.To == dependencyPath)))
+            if (DependencyPaths.All(dependencyPath => group.Children.OfTypeLoadoutItemWithTargetPath().Any(file => file.TargetPath == dependencyPath)))
             {
-                if (mod.Enabled)
+                if (group.AsLoadoutItem().IsEnabled())
                 {
                     // If it's enabled, we don't need to check for disabled mods or anything else.
-                    enabled = mod;
+                    enabled = group;
                     break;
                 }
                 else
                 {
-                    disabled = mod;
+                    disabled = group;
                 }
             }
         }

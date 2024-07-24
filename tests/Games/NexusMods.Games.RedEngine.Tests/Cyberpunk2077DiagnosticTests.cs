@@ -112,6 +112,6 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         
         diagnostics = await emitter.Diagnose(loadout, CancellationToken.None).ToListAsync();
         diagnostics.OfType<Diagnostic<Diagnostics.MissingModWithKnownNexusUriMessageData>>().Should().BeEmpty();
-        diagnostics.OfType<Diagnostic<Diagnostics.DisabledModDependencyMessageData>>().Should().ContainSingle();
+        diagnostics.OfType<Diagnostic<Diagnostics.DisabledGroupDependencyMessageData>>().Should().ContainSingle();
     }
 }

@@ -34,6 +34,18 @@ public static class ReferenceExtensions
             TxId = mod.Db.BasisTxId,
         };
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
+    /// </summary>
+    public static LoadoutItemGroupReference ToReference(this LoadoutItemGroup.ReadOnly group, Loadout.ReadOnly loadout)
+    {
+        return new LoadoutItemGroupReference
+        {
+            DataId = group.LoadoutItemGroupId,
+            TxId = group.Db.BasisTxId,
+        };
+    }
 
     /// <summary>
     /// Creates a new <see cref="ModFileReference"/> for the given <see cref="AModFile"/>.
