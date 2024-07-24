@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Settings;
@@ -10,12 +11,11 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Games.TestFramework.FluentAssertionExtensions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
-public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : AGameTest<StardewValley>(serviceProvider)
+public class StardewValleySynchronizerTestsOld(IServiceProvider serviceProvider) : AGameTest<StardewValley>(serviceProvider)
 {
     [Fact]
     public async Task FilesInModFoldersAreMovedIntoMods()
@@ -55,7 +55,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var newModId = result.Remap(mod).Id;
 
         loadout = loadout.Rebase();
-        loadout = await Synchronizer.Synchronize(loadout);
+        loadout = await SynchronizerOld.Synchronize(loadout);
         
         var newFilePath = new GamePath(LocationId.Game, "Mods/test_mod_42/foo.dat".ToRelativePath());
 
@@ -64,7 +64,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         absPath.Parent.CreateDirectory();
         await absPath.WriteAllTextAsync("Hello, World!");
         
-        loadout = await Synchronizer.Synchronize(loadout);
+        loadout = await SynchronizerOld.Synchronize(loadout);
         
         loadout.Files
             .TryGetFirst(f => f.To == newFilePath, out var found)
@@ -96,22 +96,22 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var notIgnoredHash = await notIgnoredPath.XxHash64Async();
         
         // Create the loadout
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         
-        loadout.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file exists, but is ignored");
+        loadout.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
         
-        loadout.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
+        loadout.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
         // Now disable the ignore setting
         settings.DoFullGameBackup = true;
 
-        var loadout2 = await CreateLoadout();
+        var loadout2 = await CreateLoadoutOld();
         
-        loadout2.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file is not ignored");
+        loadout2.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");
-        loadout2.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
+        loadout2.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored");
     }
 

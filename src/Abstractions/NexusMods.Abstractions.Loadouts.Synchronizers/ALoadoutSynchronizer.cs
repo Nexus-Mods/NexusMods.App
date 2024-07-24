@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
@@ -149,9 +150,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var tree = new Dictionary<GamePath, SyncTreeNode>();
 
-        var grouped = loadoutTree.Mods.Where(m => m.Enabled)
-            .SelectMany(m => m.Files)
-            .GroupBy(f => f.To);
+        var grouped = loadoutTree.Items
+            .OfTypeLoadoutItemWithTargetPath()
+            .Where(x => FileIsEnabled(x.AsLoadoutItem()))
+            .GroupBy(f => f.TargetPath);
         
         foreach (var group in grouped)
         {
@@ -166,20 +168,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (file.TryGetAsDeletedFile(out _))
                 continue;
 
-            if (!file.TryGetAsStoredFile(out var stored))
+            if (!file.TryGetAsLoadoutFile(out var loadoutFile))
             {
                 _logger.LogWarning("File {Path} is not a stored file, skipping", path);
                 continue;
             }
-
-            throw new NotImplementedException();
-            /*
-        tree.Add(path, new SyncTreeNode
-        {
-            Path = path,
-            LoadoutFile = stored,
-        });
-        */
+                
+            tree.Add(path, new SyncTreeNode
+            {
+                Path = path,
+                LoadoutFile = file,
+            });
+            
         }
 
         foreach (var node in previousTree.GetAllDescendentFiles())
@@ -215,6 +215,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         return new SyncTree(tree);
+    }
+
+    /// <summary>
+    /// Returns true if the file and all its parents are not disabled.
+    /// </summary>
+    private bool FileIsEnabled(LoadoutItem.ReadOnly arg)
+    {
+        while (true)
+        {
+            if (arg.Contains(LoadoutItem.IsDisabledMarker))
+                return false;
+            
+            if (!LoadoutItem.ParentId.TryGet(arg, out var parentId)) 
+                return true;
+            arg = LoadoutItem.Load(arg.Db, parentId);
+        }
     }
 
     /// <inheritdoc />
@@ -542,6 +558,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private static readonly Actions[] ActionsInOrder = Enum.GetValues<Actions>().OrderBy(a => (ushort)a).ToArray();
     
+    /// <summary>
+    /// Returns true if the given hash has been archived.
+    /// </summary>
     protected bool HaveArchive(Hash hash)
     {
         return _fileStore.HaveFile(hash).Result;
@@ -550,11 +569,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Given a list of files with duplicate game paths, select the winning file that will be applied to disk.
     /// </summary>
-    /// <param name="files"></param>
-    /// <returns></returns>
-    protected virtual File.ReadOnly SelectWinningFile(IEnumerable<File.ReadOnly> files)
+    protected virtual LoadoutItemWithTargetPath.ReadOnly SelectWinningFile(IEnumerable<LoadoutItemWithTargetPath.ReadOnly> files)
     {
-        return files.MaxBy(f => (byte)f.Mod.Category);
+        return files.MaxBy(GetPriority);
+
+        int GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
+        {
+            foreach (var parent in item.AsLoadoutItem().GetThisAndParents())
+            {
+                if (!parent.TryGetAsLoadoutItemGroup(out var group))
+                    continue;
+
+                if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
+                    return 0;
+                
+            }
+
+            return 50;
+        }
     }
 
     /// <summary>

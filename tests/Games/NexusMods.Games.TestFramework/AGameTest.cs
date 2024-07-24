@@ -53,6 +53,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     
     protected ILoadoutSynchronizerOld SynchronizerOld => GameInstallation.GetGame().SynchronizerOld;
     
+    protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
+    
     private readonly ILogger<AGameTest<TGame>> _logger;
     
     public IDiagnosticManager DiagnosticManager { get; set; }
