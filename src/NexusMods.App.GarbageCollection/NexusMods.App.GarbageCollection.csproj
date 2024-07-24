@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+    <ItemGroup>
+        <PackageReference Include="TransparentValueObjects"/>
+        <PackageReference Include="NexusMods.Paths"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.Tests"/>
+    </ItemGroup>
+</Project>
