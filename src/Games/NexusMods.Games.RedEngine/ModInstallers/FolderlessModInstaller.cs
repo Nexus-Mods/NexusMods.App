@@ -44,7 +44,7 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller, IModInstaller
             .ToArray();
 
         if (!modFiles.Any())
-            return Enumerable.Empty<ModInstallerResult>();
+            return [];
 
         return new[]
         {

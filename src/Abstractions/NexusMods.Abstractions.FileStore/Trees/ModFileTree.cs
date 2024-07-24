@@ -170,7 +170,7 @@ public static class ModFileTreeExtensions
     /// </summary>
     /// <param name="keyedBox">The KeyedBox containing a ModFileTree instance.</param>
     /// <returns>The file name.</returns>
-    public static RelativePath FileName(this ModFileTreeNode keyedBox) => keyedBox.Item.FileName;
+    public static RelativePath FileName(this ModFileTreeNode keyedBox) => keyedBox.Item.Path;
 
     /// <summary>
     ///     Gets the complete path of the ModFileTree item within the KeyedBox.

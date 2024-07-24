@@ -100,7 +100,7 @@ where TGame : AGame
         if (!item.TryGetAsLoadoutItemGroup(out var group))
             throw new InvalidOperationException("The item should be a group.");
 
-        foreach (var child in group.Children)
+        foreach (var child in group.Children.OrderBy(child => child.Name))
         {
             if (!child.TryGetAsLoadoutItemWithTargetPath(out var itemWithTargetPath))
                 throw new InvalidOperationException("The child should be an item with a target path.");
@@ -109,7 +109,10 @@ where TGame : AGame
                 throw new InvalidOperationException("The child should be a file.");
 
             var libraryFile = LibraryFile.FindByHash(db, file.Hash).First();
-            yield return (libraryFile.FileName, libraryFile.Hash, itemWithTargetPath.TargetPath);
+            if (libraryFile.TryGetAsLibraryArchiveFileEntry(out var entry )) 
+                yield return (entry.Path, libraryFile.Hash, itemWithTargetPath.TargetPath);
+            else 
+                yield return (libraryFile.FileName, libraryFile.Hash, itemWithTargetPath.TargetPath);
         }
     }
 
