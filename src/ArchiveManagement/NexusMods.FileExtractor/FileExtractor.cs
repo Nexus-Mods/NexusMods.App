@@ -141,7 +141,7 @@ public class FileExtractor : IFileExtractor
     /// <inheritdoc/>
     public async ValueTask<bool> CanExtract(Stream stream)
     {
-        return (await SignatureChecker.MatchesAsync(stream)).Any();
+        return await SignatureChecker.MatchesAnyAsync(stream);
     }
 
     private async ValueTask<IExtractor[]> FindExtractors(IStreamFactory sFn)

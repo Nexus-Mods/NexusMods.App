@@ -28,13 +28,34 @@ public class SignatureChecker : ISignatureChecker
                                          : Array.Empty<byte>();
     }
 
-    /// <summary>
-    /// Checks if the header of the stream matches any known signature and returns the list of matching signatures.
-    /// </summary>
-    /// <param name="stream">The stream to check the header of.</param>
-    /// <returns>List of matching signatures/files.</returns>
+    /// <inheritdoc/>
+    public async ValueTask<bool> MatchesAnyAsync(Stream stream, CancellationToken cancellationToken = default)
+    {
+        if (!stream.CanSeek) throw new ArgumentException(message: "Stream doesn't support seeking!", nameof(stream));
+
+        var originalPos = stream.Position;
+        var count = await stream.ReadAtLeastAsync(_buffer, _buffer.Length, throwOnEndOfStream: false, cancellationToken: cancellationToken);
+        if (count < 1) return false;
+
+        stream.Position = originalPos;
+
+        foreach (var tuple in _signatures)
+        {
+            var (_, signature) = tuple;
+            if (_buffer.AsSpan(start: 0, length: count).StartsWith(signature))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IReadOnlyList<FileType>> MatchesAsync(Stream stream)
     {
+        if (!stream.CanSeek) throw new ArgumentException(message: "Stream doesn't support seeking!", nameof(stream));
+
         var originalPos = stream.Position;
         await stream.ReadAtLeastAsync(_buffer, _buffer.Length, false);
         stream.Position = originalPos;
