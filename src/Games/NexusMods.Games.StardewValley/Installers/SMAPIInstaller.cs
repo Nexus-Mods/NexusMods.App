@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
@@ -276,8 +277,8 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             : "StardewValley";
 
         var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem);
-        var modDatabaseEntityId = Optional<EntityId>.None;
-        var version = Optional<string>.None;
+        var modDatabaseEntityId = DynamicData.Kernel.Optional<EntityId>.None;
+        var version = DynamicData.Kernel.Optional<string>.None;
 
         foreach (var fileEntry in installDataArchive.Children)
         {
@@ -355,8 +356,44 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             }
         }
 
-        // TODO: copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
+        // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
+        var foundGameFilesGroup = LoadoutGameFilesGroup
+            .FindByRawLocationId(loadout.Db, LocationId.Game.Value)
+            .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
+
+        if (!foundGameFilesGroup)
+        {
+            Logger.LogError("Unable to find game files group!");
+        }
+        else
+        {
+            var targetPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
+            var foundGameDepsFile = gameFilesGroup.GameFiles.TryGetFirst(gameFile => gameFile.AsLoadoutItemWithTargetPath().TargetPath == targetPath, out var gameDepsFile);
+            if (!foundGameDepsFile)
+            {
+                Logger.LogError("Unable to find `{Path}` in game files group!", targetPath);
+            }
+            else
+            {
+                var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
+                _ = new LoadoutFile.New(transaction, out var id)
+                {
+                    Hash = gameDepsFile.Hash,
+                    Size = gameDepsFile.Size,
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
+                    {
+                        TargetPath = to,
+                        LoadoutItem = new LoadoutItem.New(transaction, id)
+                        {
+                            Name = to.FileName,
+                            LoadoutId = loadout,
+                            ParentId = group,
+                        },
+                    },
+                };
+            }
+        }
 
         _ = new SMAPILoadoutItem.New(transaction, group.Id)
         {
