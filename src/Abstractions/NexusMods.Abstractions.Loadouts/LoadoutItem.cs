@@ -20,13 +20,13 @@ public partial class LoadoutItem : IModelDefinition
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
 
     /// <summary>
-    /// Whether the item is disabled. A disabled loadout item will not participate
-    /// in actions.
+    /// Marker to signal that the item is disabled. A disabled loadout item will
+    /// not participate in actions.
     /// </summary>
     /// <remarks>
     /// The exact meaning of a "disabled" loadout item is up to the implementations.
     /// </remarks>
-    public static readonly BooleanAttribute IsDisabled = new(Namespace, nameof(IsDisabled));
+    public static readonly MarkerAttribute IsDisabledMarker = new(Namespace, nameof(IsDisabledMarker));
 
     /// <summary>
     /// Loadout that contains the item.
