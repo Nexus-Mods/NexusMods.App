@@ -20,7 +20,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077.Cyberpunk2077Game>
     public async Task CanCreateLoadout(string name, ModId modId, FileId fileId,
         Hash hash, IEnumerable<GamePath> files)
     {
-        var loadout = await CreateLoadout(indexGameFiles:false);
+        var loadout = await CreateLoadoutOld(indexGameFiles:false);
         var id = await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
         var mod = await InstallModStoredFileIntoLoadout(loadout, id, name);
 

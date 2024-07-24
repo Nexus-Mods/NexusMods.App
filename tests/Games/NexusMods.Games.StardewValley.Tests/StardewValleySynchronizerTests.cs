@@ -20,7 +20,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
     [Fact]
     public async Task FilesInModFoldersAreMovedIntoMods()
     {
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         loadout = await SynchronizerOld.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
@@ -96,7 +96,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var notIgnoredHash = await notIgnoredPath.XxHash64Async();
         
         // Create the loadout
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         
         loadout.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
@@ -107,7 +107,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         // Now disable the ignore setting
         settings.DoFullGameBackup = true;
 
-        var loadout2 = await CreateLoadout();
+        var loadout2 = await CreateLoadoutOld();
         
         loadout2.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");

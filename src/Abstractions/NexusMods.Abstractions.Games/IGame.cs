@@ -46,7 +46,13 @@ public interface IGame : ILocatableGame
     /// <summary>
     /// Returns a <see cref="ILoadoutSynchronizerOld"/> for this game.
     /// </summary>
+    [Obsolete("Use Synchronizer instead.")]
     public ILoadoutSynchronizerOld SynchronizerOld { get; }
+    
+    /// <summary>
+    /// The synchronizer for this game.
+    /// </summary>
+    public ILoadoutSynchronizer Synchronizer { get; }
     
     /// <summary>
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,

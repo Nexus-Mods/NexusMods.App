@@ -59,7 +59,10 @@ public class UnknownGame : IGame
     public IDiagnosticEmitter[] DiagnosticEmitters => Array.Empty<IDiagnosticEmitter>();
 
     /// <inheritdoc />
-    public ILoadoutSynchronizerOld SynchronizerOld => throw new NotImplementedException();
+    public ILoadoutSynchronizerOld SynchronizerOld => throw new NotSupportedException();
+
+    /// <inheritdoc />
+    public ILoadoutSynchronizer Synchronizer => throw new NotSupportedException();
 
     /// <inheritdoc />
     public ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];

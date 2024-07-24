@@ -24,7 +24,8 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
-    private readonly Lazy<ILoadoutSynchronizerOld> _synchronizer;
+    private readonly Lazy<ILoadoutSynchronizerOld> _synchronizerOld;
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     private readonly Lazy<IEnumerable<IModInstaller>> _installers;
     private readonly IServiceProvider _provider;
 
@@ -36,19 +37,25 @@ public abstract class AGame : IGame
         _provider = provider;
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
-        _synchronizer = new Lazy<ILoadoutSynchronizerOld>(() => MakeSynchronizer(provider));
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
+        _synchronizerOld = new Lazy<ILoadoutSynchronizerOld>(() => MakeSynchronizerOld(provider));
         _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
     }
 
     /// <summary>
-    /// Helper method to create a <see cref="IStandardizedLoadoutSynchronizer"/>. The result of this method is cached
-    /// so that the same instance is returned every time.
+    /// Called to create the synchronizer for this game.
     /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    protected virtual ILoadoutSynchronizerOld MakeSynchronizer(IServiceProvider provider)
+    protected virtual ILoadoutSynchronizerOld MakeSynchronizerOld(IServiceProvider provider)
     {
         return new DefaultSynchronizerOld(provider);
+    }
+    
+    /// <summary>
+    /// Called to create the synchronizer for this game.
+    /// </summary>
+    protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new DefaultSynchronizer(provider);
     }
 
     /// <inheritdoc />
@@ -89,7 +96,10 @@ public abstract class AGame : IGame
     }
 
     /// <inheritdoc />
-    public virtual ILoadoutSynchronizerOld SynchronizerOld => _synchronizer.Value;
+    public virtual ILoadoutSynchronizerOld SynchronizerOld => _synchronizerOld.Value;
+    
+    /// <inheritdoc />
+    public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
 
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
