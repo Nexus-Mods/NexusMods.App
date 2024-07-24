@@ -90,9 +90,9 @@ public class StardewValleySynchronizerTestsOld(IServiceProvider serviceProvider)
         var notIgnoredPath = GameInstallation.LocationsRegister.GetResolvedPath(notIgnoredGamePath);
         
         // Write the files
-        await ignoredPath.WriteAllTextAsync("Ignore me");
+        await ignoredPath.WriteAllTextAsync("Ignore me" + Guid.NewGuid());
         var ignoredHash = await ignoredPath.XxHash64Async();
-        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!");
+        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!" + Guid.NewGuid());
         var notIgnoredHash = await notIgnoredPath.XxHash64Async();
         
         // Create the loadout
