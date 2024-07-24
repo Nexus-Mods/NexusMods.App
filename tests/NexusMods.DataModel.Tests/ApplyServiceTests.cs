@@ -1,15 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.DataModel.Serializers.DiskStateTreeSchema;
 using NexusMods.DataModel.Tests.Harness;
-using Xunit.Sdk;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
+using DeletedFile = NexusMods.Abstractions.Loadouts.Files.DeletedFile;
 
 namespace NexusMods.DataModel.Tests;
 
