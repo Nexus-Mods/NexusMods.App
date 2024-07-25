@@ -126,7 +126,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     #region ILoadoutSynchronizer Implementation
     
-    protected LoadoutOverridesGroupId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
+    protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(Loadout.ReadOnly loadout, ITransaction tx)
     {
         if (LoadoutOverridesGroup.FindByOverridesFor(loadout.Db, loadout.Id).TryGetFirst(out var found))
             return found;
@@ -375,7 +375,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
                     
         using var tx = Connection.BeginTransaction();
-        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+        var overridesGroup = GetOrCreateOverridesGroup(loadout, tx);
 
         foreach (var item in toAddDelete)
         {
@@ -388,7 +388,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutItem = new LoadoutItem.New(tx, id)
                     {
                         Name = item.Path.FileName,
-                        ParentId = overridesMod.Value,
+                        ParentId = overridesGroup.Value,
                         LoadoutId = loadout.Id,
                     },
                 },
@@ -397,9 +397,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             previousTree.Remove(item.Path);
         }
                     
-        if (overridesMod.Value.InPartition(PartitionId.Temp))
+        if (overridesGroup.Value.InPartition(PartitionId.Temp))
         {
-            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+            var mod = new LoadoutGameFilesGroup.ReadOnly(loadout.Db, overridesGroup);
             mod.Revise(tx);
         }
         else
@@ -679,12 +679,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public virtual async Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
-        // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "StoredFile".
+        // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "StoredFile".
         // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
         // by any extension system.
         //
         // So the problem is, the ingest process has tagged all these new files as coming from the downloads, but likely
-        // they've never actually been copied/compressed into the download fers. So if we need to restore them they won't exist.
+        // they've never actually been copied/compressed into the download folders. So if we need to restore them they won't exist.
         //
         // If a game wants other types of files to be backed up, they could do so with their own logic. But backing up a
         // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
@@ -748,7 +748,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             LoadoutKind = LoadoutKind.Default,
         };
 
-        var gameFiles = CreateGameFilesMod(loadout, installation, tx);
+        var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
 
         var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
 
@@ -813,37 +813,20 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return remappedLoadout;
     }
 
-    private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
-        ITransaction transaction,
-        LocationId locationId,
-        LoadoutId loadoutId)
+    private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)
     {
-        return new LoadoutGameFilesGroup.New(transaction, out var entityId)
+        return new LoadoutGameFilesGroup.New(tx, out var id)
         {
-            RawLocationId = locationId.Value,
-            LoadoutItemGroup = new LoadoutItemGroup.New(transaction, entityId)
+            GameMetadataId = installation.GameMetadataId,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
             {
                 IsIsLoadoutItemGroupMarker = true,
-                LoadoutItem = new LoadoutItem.New(transaction, entityId)
+                LoadoutItem = new LoadoutItem.New(tx, id)
                 {
-                    Name = $"Game Files: {locationId}",
-                    LoadoutId = loadoutId,
+                    Name = "Game Files",
+                    LoadoutId = loadout,
                 },
             },
-        };
-    }
-
-    private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
-    {
-        return new Mod.New(tx)
-        {
-            Name = "Game Files",
-            Version = installation.Version.ToString(),
-            Category = ModCategory.GameFiles,
-            Enabled = true,
-            LoadoutId = loadout.LoadoutId,
-            Status = ModStatus.Installed,
-            Revision = 0,
         };
     }
 
@@ -952,7 +935,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             LoadoutKind = LoadoutKind.VanillaState,
         };
         
-        var gameFiles = CreateGameFilesMod(loadout, installation, tx);
+        var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
         var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
 
         // Backup the files

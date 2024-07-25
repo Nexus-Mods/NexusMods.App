@@ -766,11 +766,11 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
     private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
         ITransaction transaction,
         LocationId locationId,
-        LoadoutId loadoutId)
+        GameMetadata.ReadOnly metadata)
     {
         return new LoadoutGameFilesGroup.New(transaction, out var entityId)
         {
-            RawLocationId = locationId.Value,
+            GameMetadataId = metadata.GameMetadataId,
             LoadoutItemGroup = new LoadoutItemGroup.New(transaction, entityId)
             {
                 IsIsLoadoutItemGroupMarker = true,

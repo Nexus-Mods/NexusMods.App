@@ -17,22 +17,7 @@ public partial class LoadoutGameFilesGroup : IModelDefinition
     /// <summary>
     /// Raw location id.
     /// </summary>
-    public static readonly StringAttribute RawLocationId = new(Namespace, nameof(LocationId)) { IsIndexed = true };
-
-    /// <summary/>
-    [PublicAPI]
-    public partial struct ReadOnly
-    {
-        /// <summary>
-        /// Gets the location ID.
-        /// </summary>
-        public LocationId LocationId => LocationId.From(RawLocationId);
-
-        /// <summary>
-        /// Gets the children as <see cref="LoadoutFile.ReadOnly"/>.
-        /// </summary>
-        public IEnumerable<LoadoutFile.ReadOnly> GameFiles => AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile();
-    }
+    public static readonly ReferenceAttribute<GameMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
 }
 
 
