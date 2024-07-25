@@ -41,7 +41,7 @@ public class PathBasedInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk20
     [MethodData(nameof(TestCaseData))]
     public async Task FilesAreMappedToCorrectFolders(string testCaseName, Type installerType, string[] archivePaths)
     {
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         var archive = await AddFromPaths(archivePaths);
         var result = await Install(installerType, loadout, archive);
         

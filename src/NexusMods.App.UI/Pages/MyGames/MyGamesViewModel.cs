@@ -120,13 +120,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
     private async Task RemoveAllLoadouts(GameInstallation install)
     {
-        var synchronizer = install.GetGame().Synchronizer;
+        var synchronizer = install.GetGame().SynchronizerOld;
         await synchronizer.UnManage(install);
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
-        var install = await ((IGame)installation.Game).Synchronizer.CreateLoadout(installation);
+        var install = await ((IGame)installation.Game).SynchronizerOld.CreateLoadout(installation);
         Dispatcher.UIThread.Invoke(() =>
             {
                 var workspaceController = _windowManager.ActiveWorkspaceController;

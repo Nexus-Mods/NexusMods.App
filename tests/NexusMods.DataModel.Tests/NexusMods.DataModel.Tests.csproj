@@ -21,6 +21,15 @@
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="ALoadoutSynchronizerTests.CanCreateFileTree.verified.txt">
+        <DependentUpon>ALoadoutSynchronizerOldTests.cs</DependentUpon>
+      </None>
+      <None Update="ALoadoutSynchronizerTests.CanFlattenLoadout.verified.txt">
+        <DependentUpon>ALoadoutSynchronizerOldTests.cs</DependentUpon>
+      </None>
+      <None Update="ALoadoutSynchronizerTests.CanLoadoutToDiskDiff.verified.txt">
+        <DependentUpon>ALoadoutSynchronizerOldTests.cs</DependentUpon>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

@@ -60,7 +60,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
         {
             AddLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                await _gameInstallation.GetGame().Synchronizer.CreateLoadout(_gameInstallation);
+                await _gameInstallation.GetGame().SynchronizerOld.CreateLoadout(_gameInstallation);
             }),
         };
 
