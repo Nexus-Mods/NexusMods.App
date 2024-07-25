@@ -2,7 +2,6 @@ using System.Reactive;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;
@@ -62,15 +61,11 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
     
     private void Refresh(DiffTreeViewModel diffTreeViewModel)
     {
-        Task.Run(async () =>
-            {
-                await diffTreeViewModel.Refresh();
+        diffTreeViewModel.Refresh();
 
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    BodyViewModel = diffTreeViewModel;
-                });
-            }
-        );
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            BodyViewModel = diffTreeViewModel;
+        });
     }
 }
