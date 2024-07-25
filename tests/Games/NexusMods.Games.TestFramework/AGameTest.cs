@@ -152,6 +152,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
+    [Obsolete($"To be replaced by {nameof(CreateLoadout)}")]
     protected async Task<Loadout.ReadOnly> CreateLoadoutOld(bool indexGameFiles = true)
     {
         return await GameInstallation.GetGame().SynchronizerOld.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
