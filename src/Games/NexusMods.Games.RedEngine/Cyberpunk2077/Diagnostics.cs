@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Generators.Diagnostics;
 
@@ -18,13 +19,13 @@ public static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing Mod with Known Nexus URI")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The mod '{Mod}' requires {DependencyName} to function properly, but it is missing.")
+        .WithSummary("The group '{Group}' requires {DependencyName} to function properly, but it is missing.")
         .WithDetails("""
 
 You can download the latest version of `{DependencyName}` from {NexusModsDependencyUri}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
+            .AddDataReference<LoadoutItemGroupReference>("Group")
             .AddValue<string>("DependencyName")
             .AddValue<NamedLink>("NexusModsDependencyUri")
         )
@@ -32,16 +33,16 @@ You can download the latest version of `{DependencyName}` from {NexusModsDepende
     
     [DiagnosticTemplate] 
     [UsedImplicitly] 
-    internal static IDiagnosticTemplate DisabledModDependency = DiagnosticTemplateBuilder
+    internal static IDiagnosticTemplate DisabledGroupDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
         .WithTitle("Disabled Mod Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The mod '{Mod}' requires '{DependencyMod}' to function properly, but it is disabled.")
-        .WithDetails("Please re-enable '{DependencyMod}' to ensure '{Mod}' functions properly.")
+        .WithSummary("The mod '{Group}' requires '{DependencyGroup}' to function properly, but it is disabled.")
+        .WithDetails("Please re-enable '{DependencyGroup}' to ensure '{Group}' functions properly.")
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddDataReference<ModReference>("DependencyMod")
+            .AddDataReference<LoadoutItemGroupReference>("Group")
+            .AddDataReference<LoadoutItemGroupReference>("DependencyGroup")
         )
         .Finish();
 }
