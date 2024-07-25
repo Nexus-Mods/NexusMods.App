@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
+[Obsolete($"To be replaced by {nameof(SyncTreeNode)}")]
 public class SyncTreeNodeOld : ISyncNode
 {
     public GamePath Path { get; init; }
