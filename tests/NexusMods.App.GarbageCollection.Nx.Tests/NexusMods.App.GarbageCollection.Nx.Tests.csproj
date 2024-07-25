@@ -3,6 +3,6 @@
         <PackageReference Include="NexusMods.Paths.TestingHelpers"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NexusMods.App.GarbageCollection.NMA\NexusMods.App.GarbageCollection.NMA.csproj"/>
+        <ProjectReference Include="..\..\src\NexusMods.App.GarbageCollection.Nx\NexusMods.App.GarbageCollection.Nx.csproj"/>
     </ItemGroup>
 </Project>

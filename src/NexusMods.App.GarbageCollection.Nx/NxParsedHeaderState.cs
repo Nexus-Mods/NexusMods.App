@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Hashing.xxHash64;
-namespace NexusMods.App.GarbageCollection.NMA;
+namespace NexusMods.App.GarbageCollection.Nx;
 
 /// <summary>
 ///     The parsed header state for the Nx Archive.

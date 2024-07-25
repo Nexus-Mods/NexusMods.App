@@ -6,7 +6,7 @@ using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
 using Xunit;
-namespace NexusMods.App.GarbageCollection.NMA.Tests;
+namespace NexusMods.App.GarbageCollection.Nx.Tests;
 
 public class NxParsedHeaderStateTests
 {
