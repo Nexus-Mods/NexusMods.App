@@ -63,7 +63,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         emitter.DependantPaths.Should().NotBeEmpty();
         emitter.DependantExtensions.Should().NotBeEmpty();
         
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         
         // Install the dependant but not the dependency
         {

@@ -51,6 +51,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
     
+    protected ILoadoutSynchronizerOld SynchronizerOld => GameInstallation.GetGame().SynchronizerOld;
+    
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
     private readonly ILogger<AGameTest<TGame>> _logger;
@@ -156,6 +158,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
+    [Obsolete($"To be replaced by {nameof(CreateLoadout)}")]
+    protected async Task<Loadout.ReadOnly> CreateLoadoutOld(bool indexGameFiles = true)
+    {
+        return await GameInstallation.GetGame().SynchronizerOld.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+    }
+    
     protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
