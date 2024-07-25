@@ -27,7 +27,7 @@ public static class LoadoutItemExtensions
             }
         }
     }
-    
+
     /// <summary>
     /// Returns all the LoadoutFiles in the collection that are enabled.
     /// </summary>
@@ -39,7 +39,7 @@ public static class LoadoutItemExtensions
             .OfTypeLoadoutItemWithTargetPath()
             .OfTypeLoadoutFile();
     }
-    
+
     /// <summary>
     /// Returns true if the LoadoutItem is enabled and all its parents are enabled.
     /// </summary>

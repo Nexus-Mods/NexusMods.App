@@ -53,7 +53,7 @@ where TGame : AGame
     {
         var archiveHash = await file.XxHash64Async();
         
-        var job = _libraryService.AddLocalFile(file);
+        await using var job = _libraryService.AddLocalFile(file);
         await job.StartAsync();
         var result = await job.WaitToFinishAsync();
         

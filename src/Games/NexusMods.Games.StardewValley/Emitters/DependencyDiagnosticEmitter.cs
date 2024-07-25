@@ -7,8 +7,6 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -40,26 +38,28 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
-        var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
-        if (!optionalSMAPIMod.HasValue) yield break;
 
-        var (_, smapiMarker) = optionalSMAPIMod.Value;
-        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
+        if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
+        if (!SemanticVersion.TryParse(smapi.Version, out var smapiVersion))
+        {
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapi.Version);
+            yield break;
+        }
 
-        var modIdToManifest = await Helpers
+        var loadoutItemIdToManifest = await Helpers
             .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: false, cancellationToken)
-            .ToDictionaryAsync(tuple => ModId.From(tuple.Item1.Id), tuple => tuple.Item2, cancellationToken);
+            .ToDictionaryAsync(tuple => tuple.Item1.SMAPIModLoadoutItemId, tuple => tuple.Item2, cancellationToken);
 
-        var uniqueIdToModId = modIdToManifest
+        var uniqueIdToLoadoutItemId = loadoutItemIdToManifest
             .DistinctBy(kv => kv.Value.UniqueID, StringComparer.OrdinalIgnoreCase)
-            .Select(kv => (UniqueId: kv.Value.UniqueID, ModId: kv.Key))
-            .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.ModId, StringComparer.OrdinalIgnoreCase);
+            .Select(kv => (UniqueId: kv.Value.UniqueID, LoaodutItemId: kv.Key))
+            .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.LoaodutItemId, StringComparer.OrdinalIgnoreCase);
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var a = DiagnoseDisabledDependencies(loadout, modIdToManifest, uniqueIdToModId);
-        var b = await DiagnoseMissingDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
-        var c = await DiagnoseOutdatedDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
+        var a = DiagnoseDisabledDependencies(loadout, loadoutItemIdToManifest, uniqueIdToLoadoutItemId);
+        var b = await DiagnoseMissingDependencies(loadout, gameVersion, smapiVersion, loadoutItemIdToManifest, uniqueIdToLoadoutItemId, cancellationToken);
+        var c = await DiagnoseOutdatedDependencies(loadout, gameVersion, smapiVersion, loadoutItemIdToManifest, uniqueIdToLoadoutItemId, cancellationToken);
         var diagnostics = a.Concat(b).Concat(c).ToArray();
 
         foreach (var diagnostic in diagnostics)
@@ -67,73 +67,69 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield return diagnostic;
         }
     }
-    
+
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
         Loadout.ReadOnly loadout,
-        Dictionary<ModId, SMAPIManifest> modIdToManifest,
-        ImmutableDictionary<string, ModId> uniqueIdToModId)
+        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId)
     {
-        
-        var collect = modIdToManifest
+        var collect = loadoutItemIdToManifest
             .Where(kv =>
             {
-                var (modId, _) = kv;
-                return ModForId(loadout, modId).Enabled;
+                var (loadoutItemId, _) = kv;
+                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker;
             })
             .Select(kv =>
             {
-                var (modId, manifest) = kv;
+                var (loadoutItemId, manifest) = kv;
 
                 var requiredDependencies = GetRequiredDependencies(manifest);
                 var disabledDependencies = requiredDependencies
-                    .Select(uniqueIdToModId.GetValueOrDefault)
-                    .Where(id => id != default(ModId))
-                    .Where(id => !ModForId(loadout, modId).Enabled)
+                    .Select(uniqueIdToLoadoutItemId.GetValueOrDefault)
+                    .Where(id => id != default(SMAPIModLoadoutItemId))
+                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker)
                     .ToArray();
 
-                return (Id: modId, DisabledDependencies: disabledDependencies);
+                return (Id: loadoutItemId, DisabledDependencies: disabledDependencies);
             })
             .ToArray();
 
         return collect.SelectMany(tuple =>
         {
-            var (modId, disabledDependencies) = tuple;
-            return disabledDependencies.Select(dependency => Diagnostics.CreateDisabledRequiredDependency(
-                Mod: ModForId(loadout, modId).ToReference(loadout),
-                Dependency: ModForId(loadout, dependency).ToReference(loadout)
+            var (loadoutItemId, disabledDependencies) = tuple;
+            var smapiMod = SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId);
+
+            return disabledDependencies.Select(dependencyId => Diagnostics.CreateDisabledRequiredDependency(
+                SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
+                Dependency: SMAPIModLoadoutItem.Load(loadout.Db, dependencyId).AsLoadoutItemGroup().ToReference(loadout)
             ));
         });
     }
 
-    private static Mod.ReadOnly ModForId(Loadout.ReadOnly loadout, ModId id)
-    {
-        return Mod.Load(loadout.Db, id);
-    }
-    
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
         Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
-        Dictionary<ModId, SMAPIManifest> modIdToManifest,
-        ImmutableDictionary<string, ModId> uniqueIdToModId,
+        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId,
         CancellationToken cancellationToken)
     {
-        var collect = modIdToManifest
+        var collect = loadoutItemIdToManifest
             .Where(kv =>
             {
-                var (modId, _) = kv;
-                return ModForId(loadout, modId).Enabled;
+                var (loadoutItemId, _) = kv;
+                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker;
             })
             .Select(kv =>
             {
-                var (modId, manifest) = kv;
+                var (loadoutItemId, manifest) = kv;
 
                 var requiredDependencies = GetRequiredDependencies(manifest);
                 var missingDependencies = requiredDependencies
-                    .Where(x => !uniqueIdToModId.ContainsKey(x))
+                    .Where(x => !uniqueIdToLoadoutItemId.ContainsKey(x))
                     .ToArray();
 
-                return (Id: modId, MissingDependencies: missingDependencies);
+                return (Id: loadoutItemId, MissingDependencies: missingDependencies);
             })
             .Where(kv => kv.MissingDependencies.Length != 0)
             .ToArray();
@@ -154,16 +150,16 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         return collect.SelectMany(kv =>
         {
-            var (modId, missingDependencies) = kv;
+            var (loadoutItemId, missingDependencies) = kv;
             return missingDependencies.Select(missingDependency =>
             {
-                var mod = ModForId(loadout, modId);
+                var smapiMod = SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId);
                 var modDetails = apiMods.GetValueOrDefault(missingDependency);
                 // TODO: diagnostic even if the API doesn't return anything
                 if (modDetails?.Name is null) return null;
 
                 return Diagnostics.CreateMissingRequiredDependency(
-                    Mod: mod.ToReference(loadout),
+                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
                     MissingDependencyModId: modDetails.UniqueId,
                     MissingDependencyModName: modDetails.Name,
                     NexusModsDependencyUri: modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink)
@@ -176,37 +172,37 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
-        Dictionary<ModId, SMAPIManifest> modIdToManifest,
-        ImmutableDictionary<string, ModId> uniqueIdToModId,
+        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId,
         CancellationToken cancellationToken)
     {
-        var uniqueIdToVersion = modIdToManifest
+        var uniqueIdToVersion = loadoutItemIdToManifest
             .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
             .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
 
-        var collect = modIdToManifest.SelectMany(kv =>
+        var collect = loadoutItemIdToManifest.SelectMany(kv =>
         {
-            var (modId, manifest) = kv;
+            var (loadoutItemId, manifest) = kv;
 
             var minimumVersionDependencies = manifest.Dependencies
-                .Where(x => uniqueIdToModId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null)
+                .Where(x => uniqueIdToLoadoutItemId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null)
                 .Select(x => (x.UniqueID, x.MinimumVersion))
                 .ToList();
 
             var contentPack = manifest.ContentPackFor;
-            if (contentPack?.MinimumVersion is not null && uniqueIdToModId.ContainsKey(contentPack.UniqueID))
+            if (contentPack?.MinimumVersion is not null && uniqueIdToLoadoutItemId.ContainsKey(contentPack.UniqueID))
                 minimumVersionDependencies.Add((contentPack.UniqueID, contentPack.MinimumVersion));
 
             return minimumVersionDependencies.Select(dependency =>
             {
-                var dependencyModId = uniqueIdToModId[dependency.UniqueID];
+                var dependencyModId = uniqueIdToLoadoutItemId[dependency.UniqueID];
 
                 var minimumVersion = dependency.MinimumVersion!;
                 var currentVersion = uniqueIdToVersion[dependency.UniqueID];
 
                 var isOutdated = currentVersion.IsOlderThan(minimumVersion);
                 return (
-                    ModId: modId,
+                    LoadoutItemId: loadoutItemId,
                     DependencyModId: dependencyModId,
                     DependencyId: dependency.UniqueID,
                     MinimumVersion: minimumVersion,
@@ -232,8 +228,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         );
 
         return collect.Select(tuple => Diagnostics.CreateRequiredDependencyIsOutdated(
-            Dependent: ModForId(loadout, tuple.ModId).ToReference(loadout),
-            Dependency: ModForId(loadout, tuple.DependencyModId).ToReference(loadout),
+            Dependent: SMAPIModLoadoutItem.Load(loadout.Db, tuple.LoadoutItemId).AsLoadoutItemGroup().ToReference(loadout),
+            Dependency: SMAPIModLoadoutItem.Load(loadout.Db, tuple.DependencyModId).AsLoadoutItemGroup().ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
             NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.NexusModsLink)
