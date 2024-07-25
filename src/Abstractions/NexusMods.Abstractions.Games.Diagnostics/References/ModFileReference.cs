@@ -1,15 +1,13 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.MnemonicDB.Abstractions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
-/// <summary>
-/// A reference to a <see cref="AModFile"/>
-/// </summary>
+/// <summary/>
 [PublicAPI]
+[Obsolete("To be replaced")]
 public record ModFileReference : IDataReference<FileId, File.ReadOnly>
 {
     /// <inheritdoc/>

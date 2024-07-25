@@ -17,12 +17,12 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing required dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is missing required dependency '{MissingDependencyModName}'")
+        .WithSummary("Mod {SMAPIMod} is missing required dependency '{MissingDependencyModName}'")
         .WithDetails("""
 You can download the latest version of '{MissingDependencyModName}' (`{MissingDependencyModId}`) at {NexusModsDependencyUri}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
             .AddValue<string>("MissingDependencyModName")
             .AddValue<string>("MissingDependencyModId")
             .AddValue<NamedLink>("NexusModsDependencyUri")
@@ -39,8 +39,8 @@ You can download the latest version of '{MissingDependencyModName}' (`{MissingDe
         .WithSummary("Mod {Dependent} requires at least version {MinimumVersion} of {Dependency} but installed is {CurrentVersion}")
         .WithDetails("You can download the latest version at {NexusModsDependencyUri}")
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Dependent")
-            .AddDataReference<ModReference>("Dependency")
+            .AddDataReference<LoadoutItemGroupReference>("Dependent")
+            .AddDataReference<LoadoutItemGroupReference>("Dependency")
             .AddValue<string>("MinimumVersion")
             .AddValue<string>("CurrentVersion")
             .AddValue<NamedLink>("NexusModsDependencyUri")
@@ -83,11 +83,11 @@ You can download the latest version of '{MissingDependencyModName}' (`{MissingDe
         .WithId(new DiagnosticId(Source, number: 5))
         .WithTitle("Required dependency is disabled")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} requires {Dependency} to be enabled")
+        .WithSummary("Mod {SMAPIMod} requires {Dependency} to be enabled")
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddDataReference<ModReference>("Dependency")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
+            .AddDataReference<LoadoutItemGroupReference>("Dependency")
         )
         .Finish();
 
@@ -98,17 +98,17 @@ You can download the latest version of '{MissingDependencyModName}' (`{MissingDe
         .WithId(new DiagnosticId(Source, number: 6))
         .WithTitle("Mod is obsolete")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is obsolete")
+        .WithSummary("Mod {SMAPIModName} is obsolete")
         .WithDetails("""
-Mod {Mod} has been made obsolete:
+Mod {SMAPIMod} has been made obsolete:
 
-> {ModName} is obsolete because {ReasonPhrase}
+> {SMAPIModName} is obsolete because {ReasonPhrase}
 
 The compatibility status was extracted from the internal SMAPI metadata file.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddValue<string>("ModName")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
+            .AddValue<string>("SMAPIModName")
             .AddValue<string>("ReasonPhrase")
         )
         .Finish();
@@ -120,9 +120,9 @@ The compatibility status was extracted from the internal SMAPI metadata file.
         .WithId(new DiagnosticId(Source, number: 7))
         .WithTitle("Mod is assumed broken")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is assumed broken")
+        .WithSummary("Mod {SMAPIModName} is assumed broken")
         .WithDetails("""
-Mod {Mod} is marked as broken by SMAPI:
+Mod {SMAPIMod} is marked as broken by SMAPI:
 
 > {ReasonPhrase}
 
@@ -131,7 +131,8 @@ Please check for a version newer than {ModVersion} at {ModLink}.
 The compatibility status was extracted from the internal SMAPI metadata file.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
+            .AddValue<string>("SMAPIModName")
             .AddValue<string>("ReasonPhrase")
             .AddValue<NamedLink>("ModLink")
             .AddValue<string>("ModVersion")
@@ -157,7 +158,7 @@ The newest supported SMAPI version for game version {CurrentGameVersion} is {New
 You can download this SMAPI version from {SMAPINexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("SMAPIMod")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPI")
             .AddValue<string>("SMAPIVersion")
             .AddValue<string>("MinimumGameVersion")
             .AddValue<string>("CurrentGameVersion")
@@ -185,7 +186,7 @@ The newest supported SMAPI version for game version {CurrentGameVersion} is {New
 You can download this SMAPI version from {SMAPINexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("SMAPIMod")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPI")
             .AddValue<string>("SMAPIVersion")
             .AddValue<string>("MaximumGameVersion")
             .AddValue<string>("CurrentGameVersion")
@@ -225,9 +226,9 @@ Once downloaded, add SMAPI to your mod list from the Library.
         .WithId(new DiagnosticId(Source, number: 11))
         .WithTitle("SMAPI Version newer than supported Mod")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The minimum supported SMAPI version of {ModName} is {MinimumAPIVersion}")
+        .WithSummary("The minimum supported SMAPI version of {SMAPIModName} is {MinimumAPIVersion}")
         .WithDetails("""
-Mod {Mod} requires the SMAPI version to be at least {MinimumAPIVersion}.
+Mod {SMAPIMod} requires the SMAPI version to be at least {MinimumAPIVersion}.
 The current SMAPI version is {CurrentSMAPIVersion}.
 
 You can solve this issue by either updating SMAPI or download an older version
@@ -235,8 +236,8 @@ of the mod from {NexusModsLink}. The latest SMAPI version can be downloaded
 from {SMAPINexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddValue<string>("ModName")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
+            .AddValue<string>("SMAPIModName")
             .AddValue<string>("MinimumAPIVersion")
             .AddValue<string>("CurrentSMAPIVersion")
             .AddValue<NamedLink>("NexusModsLink")
@@ -251,17 +252,17 @@ from {SMAPINexusModsLink}.
         .WithId(new DiagnosticId(Source, number: 12))
         .WithTitle("Game Version newer than supported by Mod")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The minimum supported game version of {ModName} is {MinimumGameVersion}")
+        .WithSummary("The minimum supported game version of {SMAPIModName} is {MinimumGameVersion}")
         .WithDetails("""
-Mod {Mod} requires the game version to be at least {MinimumGameVersion}.
+Mod {SMAPIMod} requires the game version to be at least {MinimumGameVersion}.
 The current game version is {CurrentGameVersion}.
 
 You can solve this issue by either updating your game or download an older version
 of the mod from {NexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddValue<string>("ModName")
+            .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
+            .AddValue<string>("SMAPIModName")
             .AddValue<string>("MinimumGameVersion")
             .AddValue<string>("CurrentGameVersion")
             .AddValue<NamedLink>("NexusModsLink")
