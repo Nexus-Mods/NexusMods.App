@@ -11,6 +11,7 @@ using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
+using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ArchiveContents;
@@ -60,7 +61,8 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash)
     {
         var db = _conn.Db;
-        return ValueTask.FromResult(TryGetLocation(db, hash, null, out _, out _));
+        return ValueTask.FromResult(TryGetLocation(db, hash, null,
+            out _, out _));
     }
 
     /// <inheritdoc />
@@ -109,14 +111,14 @@ public class NxFileStore : IFileStore
         {
             Path = finalPath.Name,
         };
-        
+
         var entries = unpacker.GetPathedFileEntries();
 
         foreach (var entry in entries)
         {
             _ = new ArchivedFile.New(tx)
             {
-                Hash = Hash.FromHex(entry.FileName),
+                Hash = Hash.FromHex(entry.FilePath),
                 NxFileEntry = entry.Entry,
                 ContainerId = container,
             };
@@ -124,7 +126,7 @@ public class NxFileStore : IFileStore
 
         await tx.Commit();
     }
-    
+
     /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
@@ -133,7 +135,7 @@ public class NxFileStore : IFileStore
         // of duplicate files between different mods.
         var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(Environment.ProcessorCount, 1);
         var createdDirectories = new ConcurrentDictionary<AbsolutePath, byte>();
-    
+
 #if DEBUG
         var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
 #endif
@@ -142,7 +144,8 @@ public class NxFileStore : IFileStore
         var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
         Parallel.ForEach(files, file =>
         {
-            if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache, out var archivePath, out var fileEntry))
+            if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache,
+                    out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
                 lock (group)
@@ -209,7 +212,7 @@ public class NxFileStore : IFileStore
         var results = new ConcurrentDictionary<Hash, byte[]>(Environment.ProcessorCount, filesArr.Length);
         var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>(Environment.ProcessorCount, 1);
         var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, filesArr.Length);
-        
+
 #if DEBUG
         var processedHashes = new ConcurrentDictionary<Hash, byte>();
 #endif
@@ -221,7 +224,8 @@ public class NxFileStore : IFileStore
                 throw new Exception($"Duplicate hash found: {hash.ToHex()}");
             #endif
 
-            if (TryGetLocation(_conn.Db, hash, fileExistsCache, out var archivePath, out var fileEntry))
+            if (TryGetLocation(_conn.Db, hash, fileExistsCache,
+                    out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry)>());
                 lock (group)
@@ -266,7 +270,8 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        if (!TryGetLocation(_conn.Db, hash, null, out var archivePath, out var entry))
+        if (!TryGetLocation(_conn.Db, hash, null,
+                out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
 
         var file = archivePath.Read();
@@ -283,10 +288,10 @@ public class NxFileStore : IFileStore
     {
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
-        
+
         // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
         fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved().OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
-        
+
         return fileHashes;
     }
 
@@ -313,21 +318,25 @@ public class NxFileStore : IFileStore
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong localIndex, CancellationToken token = default)
         {
             var extractable =
-                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
-            _stream.Position = offset;
+                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize,
+                    out var offset);
+            _stream.Position = (long)offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             await _stream.ReadExactlyAsync(compressedBlock.Memory[..compressedBlockSize], token);
-            ProcessBlock(buffer.Span, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
+            ProcessBlock(buffer.Span, blockIndex, extractable,
+                compressedBlock.Memory.Span, compressedBlockSize);
         }
 
         public void ReadChunk(Span<byte> buffer, ulong localIndex)
         {
             var extractable =
-                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
-            _stream.Position = offset;
+                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize,
+                    out var offset);
+            _stream.Position = (long)offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             _stream.ReadExactly(compressedBlock.Memory.Span[..compressedBlockSize]);
-            ProcessBlock(buffer, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
+            ProcessBlock(buffer, blockIndex, extractable,
+                compressedBlock.Memory.Span, compressedBlockSize);
         }
 
         /// <summary>
@@ -340,7 +349,7 @@ public class NxFileStore : IFileStore
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ExtractableBlock PreProcessBlock(ulong localIndex, out int blockIndex, out int compressedBlockSize,
-            out long offset)
+            out ulong offset)
         {
             var extractable = _blocks[(int)localIndex];
             blockIndex = extractable.BlockIndex;
@@ -390,7 +399,8 @@ public class NxFileStore : IFileStore
                 fixed (byte* compressedPtr = compressedBlock)
                 fixed (byte* ptr = buffer)
                 {
-                    Compression.Decompress(method, compressedPtr, blockSize, ptr, (int)length);
+                    Compression.Decompress(method, compressedPtr, blockSize,
+                        ptr, (int)length);
                 }
 
                 return;
@@ -405,7 +415,8 @@ public class NxFileStore : IFileStore
             fixed (byte* extractedPtr = extractedBlock.Memory.Span)
             {
                 // Decompress all.
-                Compression.Decompress(method, compressedPtr, blockSize, extractedPtr,
+                Compression.Decompress(method, compressedPtr, blockSize,
+                    extractedPtr,
                     extractable.DecompressSize);
 
 
@@ -417,7 +428,8 @@ public class NxFileStore : IFileStore
 
                 fixed (byte* ptr = buffer)
                 {
-                    Buffer.MemoryCopy(extractedPtr + _entry.DecompressedBlockOffset, ptr, length, length);
+                    Buffer.MemoryCopy(extractedPtr + _entry.DecompressedBlockOffset, ptr, length,
+                        length);
                 }
             }
         }
@@ -435,7 +447,7 @@ public class NxFileStore : IFileStore
                 {
                     BlockIndex = blockIndex,
                     DecompressSize = _entry.DecompressedBlockOffset +
-                                     (int)Math.Min(remainingDecompSize, (ulong)chunkSize)
+                                     (int)Math.Min(remainingDecompSize, (ulong)chunkSize),
                 };
 
                 _blocks.Add(block);
@@ -459,7 +471,7 @@ public class NxFileStore : IFileStore
         /// </summary>
         public required int DecompressSize { get; set; }
     }
-    
+
     private bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var result = false;
