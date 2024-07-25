@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
@@ -14,10 +13,10 @@ using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
@@ -42,24 +41,26 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
         OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
+            // TODO: rework this and only use LoadoutFile
+
             var key = SelectedItem!.Key;
             var targetModId = _modId.Value;
 
-            // NOTE(erri120): not a huge fan of this, but it works
-            var db = connection.Db;
-            var storedFile = Mod.Load(db, targetModId)
+            var foundFile = Mod.Load(connection.Db, targetModId)
                 .Files
-                .FirstOrDefault(storedFile => storedFile.To.Equals(key));
+                .OfTypeStoredFile()
+                .TryGetFirst(x => x.AsFile().To.Equals(key), out var storedFile);
 
-            if (!storedFile.IsValid()) return;
+            if (!foundFile) return;
+            if (!LoadoutFile.FindByHash(connection.Db, storedFile.Hash).TryGetFirst(out var loadoutFile)) return;
 
             var pageData = new PageData
             {
                 FactoryId = TextEditorPageFactory.StaticId,
                 Context = new TextEditorPageContext
                 {
-                    FileId = storedFile.FileId,
-                    FilePath = storedFile.To,
+                    LoadoutFileId = loadoutFile,
+                    FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath,
                 },
             };
 
