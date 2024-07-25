@@ -35,18 +35,6 @@ public static class ReferenceExtensions
     }
     
     /// <summary>
-    /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
-    /// </summary>
-    public static LoadoutItemGroupReference ToReference(this LoadoutItemGroup.ReadOnly group, Loadout.ReadOnly loadout)
-    {
-        return new LoadoutItemGroupReference
-        {
-            DataId = group.LoadoutItemGroupId,
-            TxId = group.Db.BasisTxId,
-        };
-    }
-
-    /// <summary>
     /// Creates a new <see cref="LoadoutItemGroupReference"/> for the given <see cref="LoadoutItemGroup.ReadOnly"/>.
     /// </summary>
     public static LoadoutItemGroupReference ToReference(this LoadoutItemGroup.ReadOnly group, Loadout.ReadOnly loadout)

@@ -359,7 +359,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var foundGameFilesGroup = LoadoutGameFilesGroup
-            .FindByRawLocationId(loadout.Db, LocationId.Game.Value)
+            .FindByGameMetadata(loadout.Db, loadout.Installation.GameMetadataId)
             .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
 
         if (!foundGameFilesGroup)
@@ -369,18 +369,22 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         else
         {
             var targetPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
-            var foundGameDepsFile = gameFilesGroup.GameFiles.TryGetFirst(gameFile => gameFile.AsLoadoutItemWithTargetPath().TargetPath == targetPath, out var gameDepsFile);
+            var foundGameDepsFile = gameFilesGroup.AsLoadoutItemGroup().Children
+                .TryGetFirst(gameFile => gameFile.TryGetAsLoadoutItemWithTargetPath(out var targeted) && targeted.TargetPath == targetPath,
+                    out var gameDepsFile);
             if (!foundGameDepsFile)
             {
                 Logger.LogError("Unable to find `{Path}` in game files group!", targetPath);
             }
             else
             {
+                var gameFile = LoadoutFile.Load(gameDepsFile.Db, gameDepsFile.Id);
+                
                 var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
                 _ = new LoadoutFile.New(transaction, out var id)
                 {
-                    Hash = gameDepsFile.Hash,
-                    Size = gameDepsFile.Size,
+                    Hash = gameFile.Hash,
+                    Size = gameFile.Size,
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                     {
                         TargetPath = to,
