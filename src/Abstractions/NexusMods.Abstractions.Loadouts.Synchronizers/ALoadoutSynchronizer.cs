@@ -789,7 +789,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         initialState.LoadoutId = remappedLoadout.Id;
 
         
-        // Reset the game fer to initial state if making a new loadout.
+        // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
         // Note(sewer): We can't just apply the new loadout here because we haven't run SaveState
@@ -850,7 +850,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
     {
         // Clear Initial State if this is the only loadout for the game.
-        // We use fer location for this.
+        // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
         var isLastLoadout = Loadout.All(Connection.Db)
             .Count(x => x.IsVisible() &&
@@ -873,7 +873,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 The loadout being deleted is the currently active loadout.
 
-                As a 'default' reasonable behaviour, we will reset the game fer
+                As a 'default' reasonable behaviour, we will reset the game folder
                 to its initial state by using the 'vanilla state' loadout to accomodate this.
 
                 This is a good default for many cases:
@@ -905,7 +905,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     /// <summary>
     ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
-    ///     state of the game fer.
+    ///     state of the game folder.
     ///
     ///     This loadout is created when the last applied loadout for a game
     ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
@@ -987,7 +987,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <summary>
-    /// By default, this method just returns the current state of the game fers. Most of the time
+    /// By default, this method just returns the current state of the game folders. Most of the time
     /// this creates a sub-par user experience as users may have installed mods in the past and then
     /// these files will be marked as part of the game files when they are not. Properly implemented
     /// games should override this method and return only the files that are part of the game itself.
