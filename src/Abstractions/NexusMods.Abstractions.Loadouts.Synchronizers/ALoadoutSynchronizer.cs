@@ -485,7 +485,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
-            var storedFile = new LoadoutFile.New(tx, out var id)
+            var loadoutFile = new LoadoutFile.New(tx, out var id)
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
@@ -501,7 +501,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = file.Disk.Value.Size,
             };
             
-            added.Add(storedFile);
+            added.Add(loadoutFile);
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
                     
@@ -669,8 +669,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public virtual async Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
-        // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "StoredFile".
-        // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
+        // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
+        // All Loadoutfile does, is say that this file is copied from the downloaded archives, that is, it's not generated
         // by any extension system.
         //
         // So the problem is, the ingest process has tagged all these new files as coming from the downloads, but likely
