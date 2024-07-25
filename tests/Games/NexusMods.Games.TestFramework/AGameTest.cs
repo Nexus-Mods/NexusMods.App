@@ -98,16 +98,17 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
-    protected NexusMods.Abstractions.Loadouts.Mods.ModId AddEmptyMod(ITransaction tx, LoadoutId loadoutId, string name)
+    protected LoadoutItemGroupId AddEmptyGroup(ITransaction tx, LoadoutId loadoutId, string name)
     {
-        var mod = new Mod.New(tx)
+        var mod = new LoadoutItemGroup.New(tx, out var id)
         {
-            LoadoutId = loadoutId,
-            Name = name,
-            Enabled = true,
-            Status = ModStatus.Installed,
-            Revision = 0,
-            Category = ModCategory.Mod,
+            IsIsLoadoutItemGroupMarker = true,
+            LoadoutItem = new LoadoutItem.New(tx, id)
+            {
+                LoadoutId = loadoutId,
+                Name = name,
+                
+            },
         };
         return mod.Id;
     }
@@ -116,19 +117,24 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a file in the loadout for the given mod. The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public StoredFileId AddFile(ITransaction tx, LoadoutId loadoutId, NexusMods.Abstractions.Loadouts.Mods.ModId modId, GamePath path)
+    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path)
     {
-        var file = new StoredFile.New(tx, out var id)
+        var file = new LoadoutFile.New(tx, out var id)
         {
-            File = new File.New(tx, id)
+            LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
             {
-                LoadoutId = loadoutId,
-                ModId = modId,
-                To = path,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    ParentId = groupId,
+                    Name = path.Path,
+                },
+                TargetPath = path,
             },
-            Hash = path.ToString().XxHash64AsUtf8(),
-            Size = Size.FromLong(path.ToString().Length),
+            Hash = path.Path.ToString().XxHash64AsUtf8(),
+            Size = Size.FromLong(path.Path.ToString().Length),
         };
+        
         return file.Id;
     }
 

@@ -1,3 +1,5 @@
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+
 namespace NexusMods.Abstractions.Loadouts.Extensions;
 
 /// <summary>
@@ -13,7 +15,7 @@ public static class LoadoutItemExtensions
         while (true)
         {
             yield return item;
-            
+
             // TODO: Fix this once we fix Attr.TryGet on value types
             if (item.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGet(item, out var parent))
             {
@@ -24,5 +26,25 @@ public static class LoadoutItemExtensions
                 break;
             }
         }
+    }
+    
+    /// <summary>
+    /// Returns all the LoadoutFiles in the collection that are enabled.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static IEnumerable<LoadoutFile.ReadOnly> GetEnabledLoadoutFiles(this Entities<LoadoutItem.ReadOnly> items)
+    {
+        return items.Where(i => i.IsEnabled())
+            .OfTypeLoadoutItemWithTargetPath()
+            .OfTypeLoadoutFile();
+    }
+    
+    /// <summary>
+    /// Returns true if the LoadoutItem is enabled and all its parents are enabled.
+    /// </summary>
+    public static bool IsEnabled(this LoadoutItem.ReadOnly item)
+    {
+        return !item.GetThisAndParents().Any(i => i.IsIsDisabledMarker);
     }
 }
