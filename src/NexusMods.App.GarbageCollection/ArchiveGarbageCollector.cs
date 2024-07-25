@@ -31,6 +31,15 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     /// </summary>
     internal readonly ConcurrentDictionary<Hash, ArchiveReference<TParsedHeaderState>> HashToArchive = new();
 
+    /// <summary>
+    ///     Stores all known archives.
+    /// </summary>
+    /// <remarks>
+    ///     I (Sewer) chose this collection because it's low overhead on multi-thread access,
+    ///     due to use of Interlocked.
+    /// </remarks>
+    internal readonly ConcurrentQueue<ArchiveReference<TParsedHeaderState>> AllArchives = new();
+
     /// <summary/>
     public ArchiveGarbageCollector() { }
 
@@ -54,6 +63,8 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
             entries[fileHash.Hash] = fileHash.Hash;
             HashToArchive[fileHash.Hash] = archiveReference;
         }
+
+        AllArchives.Enqueue(archiveReference);
     }
 
     /// <summary>

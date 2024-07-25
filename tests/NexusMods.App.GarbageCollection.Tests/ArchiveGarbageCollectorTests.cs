@@ -36,6 +36,9 @@ public class ArchiveGarbageCollectorTests
         // Check the ref count
         collector.HashToArchive[hash1].Entries[hash1].GetRefCount().Should().Be(1);
         collector.HashToArchive[hash2].Entries[hash2].GetRefCount().Should().Be(1);
+
+        // Check archive count
+        collector.AllArchives.Count.Should().Be(1);
     }
 
     [Theory, AutoFileSystem]
@@ -105,5 +108,8 @@ public class ArchiveGarbageCollectorTests
         // Verify that each archive only contains its own hash
         collector.HashToArchive[hash1].Entries.Should().NotContainKey(hash2);
         collector.HashToArchive[hash2].Entries.Should().NotContainKey(hash1);
+
+        // Verify the archive count
+        collector.AllArchives.Count.Should().Be(2);
     }
 }
