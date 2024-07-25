@@ -87,4 +87,26 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
             entry.IncrementRefCount();
         }
     }
+
+    /// <summary>
+    ///     Collects all garbage from the archives.
+    /// </summary>
+    public void CollectGarbage(Action<List<Hash>, ArchiveReference<TParsedHeaderState>> doRepack)
+    {
+        foreach (var archive in AllArchives)
+        {
+            var toArchive = new List<Hash>(archive.Entries.Count);
+            foreach (var item in archive.Entries)
+            {
+                if (item.Value.GetRefCount() >= 1)
+                    toArchive.Add(item.Key);
+            }
+
+            var shouldRepack = toArchive.Count != archive.Entries.Count;
+            if (!shouldRepack)
+                continue;
+
+            doRepack(toArchive, archive);
+        }
+    }
 }

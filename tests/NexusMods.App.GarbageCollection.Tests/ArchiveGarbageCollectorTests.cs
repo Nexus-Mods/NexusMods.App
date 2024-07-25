@@ -112,4 +112,144 @@ public class ArchiveGarbageCollectorTests
         // Verify the archive count
         collector.AllArchives.Count.Should().Be(2);
     }
+
+    [Theory, AutoFileSystem]
+    public void CollectGarbage_ShouldNotRepackWhenAllFilesReferenced(AbsolutePath archivePath)
+    {
+        // Arrange
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
+        var hash1 = (Hash)1;
+        var hash2 = (Hash)2;
+        var headerState = new MockParsedHeaderState(hash1, hash2);
+
+        collector.AddArchive(archivePath, headerState);
+        collector.AddReferencedFile(hash1);
+        collector.AddReferencedFile(hash2);
+
+        var repackCalled = false;
+
+        // Act
+        collector.CollectGarbage((_, _) =>
+        {
+            repackCalled = true;
+        });
+
+        // Assert
+        repackCalled.Should().BeFalse();
+    }
+
+    [Theory, AutoFileSystem]
+    public void CollectGarbage_ShouldRepackWhenSomeFilesUnreferenced(AbsolutePath archivePath)
+    {
+        // Arrange
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
+        var hash1 = (Hash)1;
+        var hash2 = (Hash)2;
+        var headerState = new MockParsedHeaderState(hash1, hash2);
+
+        collector.AddArchive(archivePath, headerState);
+        collector.AddReferencedFile(hash1);
+        // hash2 is not referenced
+
+        List<Hash> repackedHashes = null!;
+        ArchiveReference<MockParsedHeaderState> repackedArchive = null!;
+
+        // Act
+        collector.CollectGarbage((hashes, archive) =>
+        {
+            repackedHashes = hashes;
+            repackedArchive = archive;
+        });
+
+        // Assert
+        repackedHashes.Should().NotBeNull();
+        repackedHashes.Should().ContainSingle();
+        repackedHashes[0].Should().Be(hash1);
+        repackedArchive.Should().NotBeNull();
+        repackedArchive.FilePath.Should().Be(archivePath);
+    }
+
+    [Theory, AutoFileSystem]
+    public void CollectGarbage_ShouldHandleMultipleArchives(AbsolutePath path1, AbsolutePath path2)
+    {
+        // Arrange
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
+        var hash1 = (Hash)1;
+        var hash2 = (Hash)2;
+        var hash3 = (Hash)3;
+        var hash4 = (Hash)4;
+        var headerState1 = new MockParsedHeaderState(hash1, hash2);
+        var headerState2 = new MockParsedHeaderState(hash3, hash4);
+
+        collector.AddArchive(path1, headerState1);
+        collector.AddArchive(path2, headerState2);
+        collector.AddReferencedFile(hash1);
+        collector.AddReferencedFile(hash3);
+        collector.AddReferencedFile(hash4);
+        // hash2 is not referenced
+
+        AbsolutePath? repackedArchives = null;
+        List<Hash>? repackedHashes = null;
+
+        // Act
+        collector.CollectGarbage((hashes, archive) =>
+        {
+            if (repackedArchives != null || repackedHashes != null)
+                Assert.Fail("Repack called multiple times. Only one archive should be repacked.");
+
+            repackedArchives = archive.FilePath;
+            repackedHashes = hashes;
+        });
+
+        // Assert
+        repackedArchives.Should().Be(path1);
+        repackedHashes.Should().ContainSingle();
+        repackedHashes![0].Should().Be(hash1);
+    }
+
+    [Theory, AutoFileSystem]
+    public void CollectGarbage_ShouldHandleEmptyArchives(AbsolutePath archivePath)
+    {
+        // Arrange
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
+        var headerState = new MockParsedHeaderState();
+
+        collector.AddArchive(archivePath, headerState);
+
+        var repackCalled = false;
+
+        // Act
+        collector.CollectGarbage((_, _) =>
+        {
+            repackCalled = true;
+        });
+
+        // Assert
+        repackCalled.Should().BeFalse();
+    }
+
+    [Theory, AutoFileSystem]
+    public void CollectGarbage_ShouldHandleAllUnreferencedFiles(AbsolutePath archivePath)
+    {
+        // Arrange
+        var collector = new ArchiveGarbageCollector<MockParsedHeaderState, MockFileHash>();
+        var hash1 = (Hash)1;
+        var hash2 = (Hash)2;
+        var headerState = new MockParsedHeaderState(hash1, hash2);
+
+        collector.AddArchive(archivePath, headerState);
+        // No files are referenced
+
+        List<Hash> repackedHashes = null!;
+
+        // Act
+        collector.CollectGarbage((hashes, _) =>
+        {
+            repackedHashes = hashes;
+        });
+
+        // Assert
+        repackedHashes.Should().NotBeNull();
+        repackedHashes.Should().BeEmpty();
+    }
 }

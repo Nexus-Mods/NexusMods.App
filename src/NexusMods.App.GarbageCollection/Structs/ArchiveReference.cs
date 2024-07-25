@@ -7,7 +7,7 @@ namespace NexusMods.App.GarbageCollection.Structs;
 /// <typeparam name="TParsedHeaderState">
 ///     Contains pre-parsed header info for this type.
 /// </typeparam>
-internal class ArchiveReference<TParsedHeaderState>
+public class ArchiveReference<TParsedHeaderState>
 {
     /// <summary>
     ///     The native file path of the archive.
