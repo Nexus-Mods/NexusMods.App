@@ -4,6 +4,7 @@ using NexusMods.App.GarbageCollection.Errors;
 using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.App.GarbageCollection.Structs;
 using NexusMods.App.GarbageCollection.Utilities;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 namespace NexusMods.App.GarbageCollection;
 

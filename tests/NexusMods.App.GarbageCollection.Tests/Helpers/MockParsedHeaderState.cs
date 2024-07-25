@@ -1,5 +1,5 @@
 using NexusMods.App.GarbageCollection.Interfaces;
-using NexusMods.App.GarbageCollection.Structs;
+using NexusMods.Hashing.xxHash64;
 namespace NexusMods.App.GarbageCollection.Tests.Helpers;
 
 internal class MockParsedHeaderState : ICanProvideFileHashes<MockFileHash>
@@ -19,5 +19,4 @@ public struct MockFileHash : IHaveFileHash
     {
         Hash = hash,
     };
-
 }

@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using NexusMods.App.GarbageCollection.Interfaces;
-using NexusMods.App.GarbageCollection.Structs;
 using NexusMods.Archives.Nx.Headers.Managed;
+using NexusMods.Hashing.xxHash64;
 namespace NexusMods.App.GarbageCollection.NMA;
 
 /// <summary>

@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.App.GarbageCollection.Errors;
 using NexusMods.App.GarbageCollection.Structs;
 using NexusMods.App.GarbageCollection.Tests.Helpers;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
 using Xunit;

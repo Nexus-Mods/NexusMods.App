@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Hashing.xxHash64;
 namespace NexusMods.App.GarbageCollection.Structs;
 
 /// <summary>
