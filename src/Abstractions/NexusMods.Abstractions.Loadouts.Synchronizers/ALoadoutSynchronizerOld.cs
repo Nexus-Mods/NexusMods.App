@@ -700,9 +700,11 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
 
+            var metadata = GameMetadata.Load(Connection.Db, installation.GameMetadataId);
+            
             if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
             {
-                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                var group = CreateLoadoutGameFilesGroup(tx, loadout, metadata);
                 groupId = group.Id;
 
                 loadoutGameFilesGroups.Add(path.LocationId, groupId);
@@ -765,7 +767,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 
     private static LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(
         ITransaction transaction,
-        LocationId locationId,
+        LoadoutId loadoutId,
         GameMetadata.ReadOnly metadata)
     {
         return new LoadoutGameFilesGroup.New(transaction, out var entityId)
@@ -776,7 +778,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
                 IsIsLoadoutItemGroupMarker = true,
                 LoadoutItem = new LoadoutItem.New(transaction, entityId)
                 {
-                    Name = $"Game Files: {locationId}",
+                    Name = $"Game Files: {metadata.Domain}",
                     LoadoutId = loadoutId,
                 },
             },
@@ -918,7 +920,7 @@ public class ALoadoutSynchronizerOld : ILoadoutSynchronizerOld
 
             if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
             {
-                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                var group = CreateLoadoutGameFilesGroup(tx, loadout.LoadoutId, GameMetadata.Load(Connection.Db, installation.GameMetadataId));
                 groupId = group.Id;
 
                 loadoutGameFilesGroups.Add(path.LocationId, groupId);

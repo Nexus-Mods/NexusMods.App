@@ -126,7 +126,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     #region ILoadoutSynchronizer Implementation
     
-    protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(Loadout.ReadOnly loadout, ITransaction tx)
+    protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(ITransaction tx, Loadout.ReadOnly loadout)
     {
         if (LoadoutOverridesGroup.FindByOverridesFor(loadout.Db, loadout.Id).TryGetFirst(out var found))
             return found;
@@ -375,7 +375,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
                     
         using var tx = Connection.BeginTransaction();
-        var overridesGroup = GetOrCreateOverridesGroup(loadout, tx);
+        var overridesGroup = GetOrCreateOverridesGroup(tx, loadout);
 
         foreach (var item in toAddDelete)
         {
@@ -396,17 +396,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             previousTree.Remove(item.Path);
         }
-                    
-        if (overridesGroup.Value.InPartition(PartitionId.Temp))
-        {
-            var mod = new LoadoutGameFilesGroup.ReadOnly(loadout.Db, overridesGroup);
-            mod.Revise(tx);
-        }
-        else
-        {
-            loadout.Revise(tx);
-        }
-                    
+        
         await tx.Commit();
         return loadout.Rebase();
     }
@@ -489,7 +479,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
         using var tx = Connection.BeginTransaction();
-        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+        var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
                     
         var added = new List<LoadoutFile.New>();
 
@@ -764,7 +754,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
             {
-                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                var group = CreateLoadoutGameFilesGroup(loadout, installation, tx);
                 groupId = group.Id;
 
                 loadoutGameFilesGroups.Add(path.LocationId, groupId);
@@ -951,7 +941,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
             {
-                var group = CreateLoadoutGameFilesGroup(tx, path.LocationId, loadout);
+                var group = CreateLoadoutGameFilesGroup(loadout, installation, tx);
                 groupId = group.Id;
 
                 loadoutGameFilesGroups.Add(path.LocationId, groupId);
