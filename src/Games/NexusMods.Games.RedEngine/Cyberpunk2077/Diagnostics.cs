@@ -36,9 +36,9 @@ You can download the latest version of `{DependencyName}` from {NexusModsDepende
     internal static IDiagnosticTemplate DisabledGroupDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
-        .WithTitle("Disabled Group Dependency")
+        .WithTitle("Disabled Mod Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The group '{Mod}' requires '{DependencyGroup}' to function properly, but it is disabled.")
+        .WithSummary("The mod '{Group}' requires '{DependencyGroup}' to function properly, but it is disabled.")
         .WithDetails("Please re-enable '{DependencyGroup}' to ensure '{Group}' functions properly.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
