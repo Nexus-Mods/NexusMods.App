@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
@@ -14,9 +15,8 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var enabledSMAPIModCount = loadout.Items
-            .OfTypeLoadoutItemGroup()
-            .Where(group => !group.AsLoadoutItem().IsIsDisabledMarker)
+        var enabledSMAPIModCount = loadout
+            .GetEnabledGroups()
             .OfTypeSMAPIModLoadoutItem()
             .Count();
 

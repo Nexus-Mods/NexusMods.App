@@ -275,17 +275,17 @@ of the mod from {NexusModsLink}.
         .WithId(new DiagnosticId(Source, number: 13))
         .WithTitle("Mod overwrites game files")
         .WithSeverity(DiagnosticSeverity.Suggestion)
-        .WithSummary("Mod {ModName} overwrites game files")
+        .WithSummary("Mod {GroupName} overwrites game files")
         .WithDetails("""
 Mod {Mod} overwrites game files. This can cause compatibility issues and have other
 unintended side-effects. See the {SMAPIWikiLink} for details.
 
-You can resolve this diagnostic by replacing {Mod} with a SMAPI mod that doesn't
+You can resolve this diagnostic by replacing {Group} with a SMAPI mod that doesn't
 overwrite game files. See the {SMAPIWikiTableLink} for a list of alternatives.
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-            .AddValue<string>("ModName")
+            .AddDataReference<LoadoutItemGroupReference>("Group")
+            .AddValue<string>("GroupName")
             .AddValue<NamedLink>("SMAPIWikiLink")
             .AddValue<NamedLink>("SMAPIWikiTableLink")
         )
