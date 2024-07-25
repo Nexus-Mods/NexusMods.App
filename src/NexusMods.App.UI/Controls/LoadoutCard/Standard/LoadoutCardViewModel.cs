@@ -138,7 +138,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     
     private Task DeleteLoadout(Loadout.ReadOnly loadout)
     {
-        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout.InstallationInstance, loadout.LoadoutId));
+        return Task.Run(() => loadout.InstallationInstance.GetGame().SynchronizerOld.DeleteLoadout(loadout.InstallationInstance, loadout.LoadoutId));
     }
     
 }

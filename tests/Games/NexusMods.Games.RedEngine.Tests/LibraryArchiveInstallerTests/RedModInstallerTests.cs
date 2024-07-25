@@ -23,7 +23,7 @@ public class RedModInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk2077G
     {
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("LibraryArchiveInstallerTests/Resources/" + filename);
 
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadoutOld();
         var libraryArchive = await RegisterLocalArchive(fullPath);
         var installResult = await Install(typeof(RedModInstaller), loadout, libraryArchive);
         installResult.Length.Should().Be(1, "The installer should have installed one group of files.");
