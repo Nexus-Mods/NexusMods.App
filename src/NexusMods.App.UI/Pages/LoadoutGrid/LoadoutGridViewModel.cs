@@ -61,14 +61,14 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         TabIcon = IconValues.Collections;
         TabTitle = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry;
 
-        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModId, LoadoutColumn>>();
+        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, LoadoutItemGroupId, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
         nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
 
-        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModId, LoadoutColumn>>();
+        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, LoadoutItemGroupId, LoadoutColumn>>();
         installedColumn.Type = LoadoutColumn.Installed;
 
-        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModId, LoadoutColumn>>();
+        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, LoadoutItemGroupId, LoadoutColumn>>();
         enabledColumn.Type = LoadoutColumn.Enabled;
 
         _columns.Edit(x =>

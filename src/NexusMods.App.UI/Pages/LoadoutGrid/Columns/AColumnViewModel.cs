@@ -39,7 +39,7 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
     /// </summary>
     protected abstract int Compare(TValue a, TValue b);
 
-    private LoadoutItemGroupId _row = default!;
+    private LoadoutItemGroupId _row;
 
     /// <summary>
     /// The Source ModId

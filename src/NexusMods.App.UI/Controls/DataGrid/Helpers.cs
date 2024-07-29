@@ -40,8 +40,6 @@ public static class Helpers
             LoadoutColumn loadoutColumn => loadoutColumn switch
             {
                 LoadoutColumn.Name => new TextBlock { Text = Language.Helpers_GenerateHeader_NAME },
-                LoadoutColumn.Version => new TextBlock { Text = Language.Helpers_GenerateHeader_VERSION },
-                LoadoutColumn.Category => new TextBlock { Text = Language.Helpers_GenerateHeader_CATEGORY },
                 LoadoutColumn.Installed => new TextBlock { Text = Language.Helpers_GenerateHeader_INSTALLED },
                 LoadoutColumn.Enabled => new ModEnabledHeader()
                 {

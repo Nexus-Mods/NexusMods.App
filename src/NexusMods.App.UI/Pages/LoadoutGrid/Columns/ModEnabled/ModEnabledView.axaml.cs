@@ -16,10 +16,6 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
     {
         InitializeComponent();
 
-        EnabledToggleSwitch.IsVisible = false;
-        InstallingProgressRing.IsVisible = false;
-        DeleteButton.IsVisible = false;
-
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Enabled)
@@ -27,13 +23,8 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
                 .BindTo(this, view => view.EnabledToggleSwitch.IsChecked)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.Status)
-                .OnUI()
-                .SubscribeWithErrorLogging(logger: default, UpdateVisibilities)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.DeleteModCommand, view => view.DeleteButton)
-                .DisposeWith(d);
+            // this.BindCommand(ViewModel, vm => vm.DeleteModCommand, view => view.DeleteButton)
+            //     .DisposeWith(d);
 
             var isCheckedObservable = this.WhenAnyValue(view => view.EnabledToggleSwitch.IsChecked)
                 .Select(isChecked => isChecked ?? false);
@@ -45,13 +36,6 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
                 .DisposeWith(d);
             
         });
-    }
-
-    private void UpdateVisibilities(ModStatus status)
-    {
-        EnabledToggleSwitch.IsVisible = status == ModStatus.Installed;
-        InstallingProgressRing.IsVisible = status == ModStatus.Installing;
-        DeleteButton.IsVisible = status == ModStatus.Failed;
     }
 }
 

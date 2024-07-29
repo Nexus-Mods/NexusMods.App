@@ -48,11 +48,9 @@ using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
@@ -74,11 +72,9 @@ using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Downlo
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
-using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
 using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
 using ModNameView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName.ModNameView;
-using ModVersionView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion.ModVersionView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
 
@@ -122,11 +118,9 @@ public static class Services
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
-            .AddViewModel<ModCategoryViewModel, IModCategoryViewModel>()
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()
             .AddViewModel<ModInstalledViewModel, IModInstalledViewModel>()
             .AddViewModel<ModNameViewModel, IModNameViewModel>()
-            .AddViewModel<ModVersionViewModel, IModVersionViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
             .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
@@ -163,11 +157,9 @@ public static class Services
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<LoadoutGridView, ILoadoutGridViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
-            .AddView<ModCategoryView, IModCategoryViewModel>()
             .AddView<ModEnabledView, IModEnabledViewModel>()
             .AddView<ModInstalledView, IModInstalledViewModel>()
             .AddView<ModNameView, IModNameViewModel>()
-            .AddView<ModVersionView, IModVersionViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
             .AddView<Spine, ISpineViewModel>()
