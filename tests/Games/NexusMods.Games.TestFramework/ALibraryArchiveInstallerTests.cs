@@ -80,13 +80,24 @@ where TGame : AGame
         installer.Should().NotBeNull();
 
         using var tx = Connection.BeginTransaction();
-        var results = await installer!.ExecuteAsync(archive.AsLibraryFile().AsLibraryItem(), tx, loadout, CancellationToken.None);
-        
-        results.Length.Should().BePositive("The installer should have installed at least one file.");
-        
+        var libraryItem = archive.AsLibraryFile().AsLibraryItem();
+
+        var loadoutGroup = new LoadoutItemGroup.New(tx, out var groupId)
+        {
+            IsIsLoadoutItemGroupMarker = true,
+            LoadoutItem = new LoadoutItem.New(tx, groupId)
+            {
+                Name = libraryItem.Name,
+                LoadoutId = loadout,
+            },
+        };
+
+        var result = await installer!.ExecuteAsync(libraryItem, loadoutGroup, tx, loadout, CancellationToken.None);
+        result.IsSuccess.Should().BeTrue();
+
         var dbResult = await tx.Commit();
-        
-        return results.Select(item => dbResult.Remap(item)).ToArray();
+        var group = dbResult.Remap(loadoutGroup);
+        return group.Children.ToArray();
     }
 
     /// <summary>

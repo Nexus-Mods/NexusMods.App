@@ -37,8 +37,9 @@ public abstract class ALibraryItemInstaller : ILibraryItemInstaller
     public virtual bool IsSupportedLibraryItem(LibraryItem.ReadOnly libraryItem) => true;
 
     /// <inheritdoc/>
-    public abstract ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public abstract ValueTask<InstallerResult> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);

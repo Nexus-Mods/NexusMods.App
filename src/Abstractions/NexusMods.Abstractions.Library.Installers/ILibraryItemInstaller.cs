@@ -22,8 +22,9 @@ public interface ILibraryItemInstaller
     /// <summary>
     /// Executes the installer.
     /// </summary>
-    ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    ValueTask<InstallerResult> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);

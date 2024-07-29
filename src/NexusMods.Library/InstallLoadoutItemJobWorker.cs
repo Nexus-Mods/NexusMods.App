@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -32,15 +33,15 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
         }
 
-        var (loadoutItems, transaction) = result.Value;
+        var (loadoutGroup, transaction) = result.Value;
         using var tx = transaction;
 
         var transactionResult = await transaction.Commit();
-        var jobResults = loadoutItems.Select(x => transactionResult.Remap(x)).ToArray();
+        var jobResults = transactionResult.Remap(loadoutGroup);
         return JobResult.CreateCompleted(jobResults);
     }
 
-    private static async ValueTask<(LoadoutItem.New[], ITransaction transaction)?> ExecuteInstallersAsync(
+    private static async ValueTask<(LoadoutItemGroup.New, ITransaction transaction)?> ExecuteInstallersAsync(
         InstallLoadoutItemJob job,
         ILibraryItemInstaller[] installers,
         CancellationToken cancellationToken)
@@ -51,14 +52,25 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             if (!isSupported) continue;
 
             var transaction = job.Connection.BeginTransaction();
-            var result = await installer.ExecuteAsync(job.LibraryItem, transaction, job.Loadout, cancellationToken);
-            if (result.Length == 0)
+            var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
+            {
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(transaction, groupId)
+                {
+                    Name = job.LibraryItem.Name,
+                    LoadoutId = job.Loadout,
+                },
+            };
+
+            var result = await installer.ExecuteAsync(job.LibraryItem, loadoutGroup, transaction, job.Loadout, cancellationToken);
+            if (result.IsNotSupported)
             {
                 transaction.Dispose();
                 continue;
             }
 
-            return (result, transaction);
+            Debug.Assert(result.IsSuccess);
+            return (loadoutGroup, transaction);
         }
 
         return null;
