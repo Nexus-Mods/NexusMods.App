@@ -48,14 +48,14 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
     private readonly IConnection _conn;
-    private readonly ITreeAnalyzer _treeAnalyzer;
+    //private readonly ITreeAnalyzer _treeAnalyzer;
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
         ILogger<SpineViewModel> logger,
         IConnection conn,
-        ITreeAnalyzer treeAnalyzer,
+        //ITreeAnalyzer treeAnalyzer,
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
@@ -66,7 +66,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
         _conn = conn;
-        _treeAnalyzer = treeAnalyzer;
+        //_treeAnalyzer = treeAnalyzer;
 
         // Setup the special spine items
         Home = homeButtonViewModel;
@@ -84,7 +84,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         
         this.WhenActivated(disposables =>
             {
-                var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, _conn.Registry))
+                var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Name, _conn.Registry))
                     .SuppressRefresh()
                     .Transform(id => Loadout.Load(_conn.Db, id.E));
                 
