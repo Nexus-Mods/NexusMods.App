@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
@@ -39,6 +40,7 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddMnemonicDB();
+        coll.AddAnalyzers();
 
         // Settings
         coll.AddSettings<DataModelSettings>();

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -47,12 +48,14 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
     private readonly IConnection _conn;
+    private readonly ITreeAnalyzer _treeAnalyzer;
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
         ILogger<SpineViewModel> logger,
         IConnection conn,
+        ITreeAnalyzer treeAnalyzer,
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
@@ -63,6 +66,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
         _conn = conn;
+        _treeAnalyzer = treeAnalyzer;
 
         // Setup the special spine items
         Home = homeButtonViewModel;
