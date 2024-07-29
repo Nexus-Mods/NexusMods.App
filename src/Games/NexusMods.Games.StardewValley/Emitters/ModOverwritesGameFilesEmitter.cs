@@ -24,6 +24,12 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
 
         var groups = loadout.Items
             .GetEnabledLoadoutFiles()
+            .Where(file =>
+            {
+                var loadoutItem = file.AsLoadoutItemWithTargetPath().AsLoadoutItem();
+                if (loadoutItem.ParentId == default(LoadoutItemGroupId)) return false;
+                return !loadoutItem.Parent.TryGetAsLoadoutGameFilesGroup(out _);
+            })
             .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.StartsWith(ContentDirectoryPath))
             .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
             .ToArray();
