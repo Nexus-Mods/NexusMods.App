@@ -5,18 +5,14 @@
     x:Class="NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView"
     x:TypeArguments="modEnabled:IModEnabledViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
     xmlns:modEnabled="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled">
-    <Design.DataContext>
-        <modEnabled:ModEnabledDesignViewModel />
-    </Design.DataContext>
+
     <Grid>
-        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="EnabledToggleSwitch" IsVisible="False">
+        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="EnabledToggleSwitch" IsVisible="True">
             <ToggleSwitch.OnContent>
                 <ContentControl />
             </ToggleSwitch.OnContent>
@@ -24,12 +20,6 @@
                 <ContentControl />
             </ToggleSwitch.OffContent>
         </ToggleSwitch>
-        <progressRing:ProgressRing HorizontalAlignment="Center" x:Name="InstallingProgressRing" />
-        <Button
-            Classes="BareIcon WindowClose"
-            HorizontalAlignment="Center"
-            x:Name="DeleteButton">
-        </Button>
     </Grid>
 </reactiveUi:ReactiveUserControl>
 

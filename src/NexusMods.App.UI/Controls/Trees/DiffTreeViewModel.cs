@@ -54,7 +54,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         TreeSource = CreateTreeSource(_items);
     }
 
-    public async Task Refresh()
+    public void Refresh()
     {
         var loadout = Loadout.Load(_conn.Db, _loadoutId);
         if (!loadout.IsValid())

@@ -19,6 +19,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.ModInfo;
 
+[Obsolete("To be replaced with loadout items")]
 public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewModel
 {
     [Reactive]
