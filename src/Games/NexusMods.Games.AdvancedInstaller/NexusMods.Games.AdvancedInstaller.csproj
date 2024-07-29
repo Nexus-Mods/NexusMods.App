@@ -6,6 +6,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+      <PackageReference Include="NexusMods.Paths" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
     </ItemGroup>
 </Project>

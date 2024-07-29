@@ -5,7 +5,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -25,7 +24,6 @@ public abstract class AGame : IGame
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
-    private readonly Lazy<IEnumerable<IModInstaller>> _installers;
     private readonly IServiceProvider _provider;
 
     /// <summary>
@@ -37,7 +35,6 @@ public abstract class AGame : IGame
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
-        _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
     }
 
     /// <summary>
@@ -64,26 +61,12 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
-
-    /// <inheritdoc />
-    public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
-
+    
     /// <inheritdoc />
     public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
-
-    /// <summary>
-    /// Helper method to create a list of <see cref="IModInstaller"/>s. The result of this method is cached
-    /// behind a lazy.
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    protected virtual IEnumerable<IModInstaller> MakeInstallers(IServiceProvider provider)
-    {
-        return Array.Empty<IModInstaller>();
-    }
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

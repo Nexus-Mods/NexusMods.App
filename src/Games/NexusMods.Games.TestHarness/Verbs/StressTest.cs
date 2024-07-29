@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.NexusWebApi;

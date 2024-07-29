@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -61,4 +62,9 @@ public partial class DownloaderState : IModelDefinition
     /// Version of the mod; can sometimes be arbitrary and not follow SemVer or any standard.
     /// </summary>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version)) { IsOptional = true };
+    
+    /// <summary>
+    /// The finished analyzed library file.
+    /// </summary>
+    public static readonly ReferenceAttribute<LibraryFile> LibraryFile = new(Namespace, nameof(LibraryFile)) { IsOptional = true };
 }

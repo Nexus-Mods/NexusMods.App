@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Installers;
 
 namespace NexusMods.Games.AdvancedInstaller;
 

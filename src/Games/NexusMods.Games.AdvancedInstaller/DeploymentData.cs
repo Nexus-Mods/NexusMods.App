@@ -1,13 +1,9 @@
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -108,6 +104,8 @@ public readonly struct DeploymentData
     /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
     public IEnumerable<TempEntity> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
+        throw new NotImplementedException();
+        /*
         // Written like this for clarity, use array in actual code.
         // Just an example, might not compile.
         foreach (var mapping in ArchiveToOutputMap)
@@ -123,5 +121,6 @@ public readonly struct DeploymentData
                 { File.To, mapping.Value },
             };
         }
+        */
     }
 }

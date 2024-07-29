@@ -1,7 +1,8 @@
 ﻿using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
@@ -18,14 +19,14 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     private readonly INexusApiClient _nexusApiClient;
     private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
-    private readonly IArchiveInstaller _archiveInstaller;
+    private readonly ILibraryService _archiveInstaller;
     private readonly IFileOriginRegistry _downloaderRegistry;
 
     /// <summary/>
     public NxmDownloadProtocolHandler(INexusApiClient nexusApiClient,
         IHttpDownloader downloader,
         TemporaryFileManager temp,
-        IArchiveInstaller archiveInstaller,
+        ILibraryService archiveInstaller,
         IFileOriginRegistry fileOriginRegistry)
     {
         _archiveInstaller = archiveInstaller;
@@ -59,6 +60,9 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
             {
                 tx.Add(id, FilePathMetadata.OriginalName, tempPath.Path.Name);
             }, modName, token);
-        await _archiveInstaller.AddMods(loadout.LoadoutId, downloadId, modName, token:token);
+
+        
+        throw new NotImplementedException();
+        //await _archiveInstaller.AddMods(loadout.LoadoutId, downloadId, modName, token:token);
     }
 }

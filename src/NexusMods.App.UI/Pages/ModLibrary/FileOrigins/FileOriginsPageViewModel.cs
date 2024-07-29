@@ -11,7 +11,7 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
@@ -95,11 +95,12 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
         var canAddMod = new Subject<bool>();
-        var advancedInstaller = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
+        var advancedInstaller = _provider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
         AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
-            await DoAddModImpl(advancedInstaller, cancellationToken);
+            throw new NotImplementedException();
+            //await DoAddModImpl(advancedInstaller, cancellationToken);
         }, canAddMod);
         
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
