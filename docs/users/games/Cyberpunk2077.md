@@ -13,7 +13,8 @@ Get information on potential issues in your loadout(s). [Learn more about Health
 
 Diagnostics are shown in the following situations: 
 
-- TBC
+- A mod has a requirement that is not been downloaded.
+- A mod has a requirement which has been downloaded but is not present/enabled in the loadout. 
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
