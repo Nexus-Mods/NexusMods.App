@@ -1,7 +1,5 @@
 using System.Reactive;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -24,5 +22,5 @@ public class ApplyDiffDesignViewModel : APageViewModel<IApplyDiffViewModel>, IAp
     }
 
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; } = ReactiveCommand.Create(() => { });
-    public IViewModelInterface BodyViewModel { get; set; } = new DummyLoadingViewModel();
+    public IViewModelInterface BodyViewModel { get; set; } = null!;
 }

@@ -2,7 +2,6 @@ using System.Reactive;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -19,9 +18,8 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
     private IServiceProvider _serviceProvider;
     private DiffTreeViewModel? _fileTreeViewModel;
     private LoadoutId _loadoutId;
-    private DummyLoadingViewModel _dummyLoadingViewModel;
 
-    [Reactive] public IViewModelInterface BodyViewModel { get; set; }
+    [Reactive] public IViewModelInterface BodyViewModel { get; set; } = null!;
 
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
 
@@ -31,8 +29,6 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
         TabTitle = Language.ApplyDiffViewModel_PageTitle;
         TabIcon = IconValues.ListFilled;
 
-        _dummyLoadingViewModel = new DummyLoadingViewModel();
-        BodyViewModel = _dummyLoadingViewModel;
         _serviceProvider = serviceProvider;
 
         RefreshCommand = ReactiveCommand.Create( () =>
@@ -42,7 +38,6 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
                 return;
             }
 
-            BodyViewModel = _dummyLoadingViewModel;
             Refresh(_fileTreeViewModel);
         });
     }
