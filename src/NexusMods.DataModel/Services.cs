@@ -8,6 +8,7 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
@@ -94,6 +95,7 @@ public static class Services
         coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
         
+        coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         
         // Disk State Registry
@@ -122,7 +124,8 @@ public static class Services
         coll.AddSettings<DiagnosticSettings>();
         
         // Verbs
-        coll.AddToolVerbs()
+        coll.AddLoadoutManagementVerbs()
+            .AddToolVerbs()
             .AddFileHashCacheVerbs()
             .AddArchiveVerbs();
 

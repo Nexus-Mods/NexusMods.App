@@ -1,5 +1,6 @@
 ﻿using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.MnemonicDB.Abstractions;

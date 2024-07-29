@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -32,7 +31,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected CancellationTokenSource CancellationTokenSource;
     protected AbsolutePath _downloadPath = default!;
     protected IFileSystem FileSystem;
-    protected ILibraryService LibraryService;
+    protected IFileOriginRegistry FileOriginRegistry;
     private DownloaderState.ReadOnly _persistentState;
     private IDownloadService _downloadService;
     
@@ -45,7 +44,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         CancellationTokenSource = new CancellationTokenSource();
         ActivityFactory = provider.GetRequiredService<IActivityFactory>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
-        LibraryService = provider.GetRequiredService<ILibraryService>();
+        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
         _downloadService = provider.GetRequiredService<IDownloadService>();
     }
     
@@ -232,24 +231,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     {
         try
         {
-            var task = LibraryService.AddLocalFile(DownloadPath);
-            await task.StartAsync();
-            var result = await task.WaitToFinishAsync();
-            if (!result.TryGetCompleted(out var resultCompleted))
-            {
-                Logger.LogError("Failed to analyze file {Name}", PersistentState.FriendlyName);
-                return;
-            }
-            
-            if (!resultCompleted.TryGetData<LibraryFile.ReadOnly>(out var file))
-            {
-                Logger.LogError("Failed to analyze file {Name}", PersistentState.FriendlyName);
-            }
-            
-            using var tx = Connection.BeginTransaction();
-            tx.Add(PersistentState.Id, DownloaderState.LibraryFile, file.Id);
-            await tx.Commit();
-            RefreshState();
+            await FileOriginRegistry.RegisterDownload(DownloadPath, PersistentState.Id, PersistentState.FriendlyName);
         }
         catch (Exception ex)
         {

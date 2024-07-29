@@ -4,22 +4,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.FOMOD.CoreDelegates;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 using IFileSystem = NexusMods.Paths.IFileSystem;
 using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodXmlInstaller : ALibraryArchiveInstaller
+public class FomodXmlInstaller : AModInstaller
 {
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
@@ -175,10 +175,5 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
             { File.To, new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)) },
             { EmptyDirectory.Directory, true }
         };
-    }
-
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -14,6 +14,7 @@ using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -73,6 +74,11 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
     public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
     public IEnumerable<string> XboxIds => new[] { "xbox-game-id" };
+
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        (IModInstaller)new StubbedGameInstaller(_serviceProvider),
+    };
     
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

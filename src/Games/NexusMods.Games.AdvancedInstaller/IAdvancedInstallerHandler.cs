@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Games.AdvancedInstaller;
+﻿using NexusMods.Abstractions.Installers;
+
+namespace NexusMods.Games.AdvancedInstaller;
 
 /// <summary>
 /// Handles the implementation of the <see cref="AdvancedManualInstaller"/> functionality.

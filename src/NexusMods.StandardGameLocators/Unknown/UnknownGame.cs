@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -51,6 +52,9 @@ public class UnknownGame : IGame
     /// <inheritdoc />
     public void ResetInstallations() { }
     
+    /// <inheritdoc />
+    public IEnumerable<IModInstaller> Installers => Array.Empty<IModInstaller>();
+
     /// <inheritdoc />
     public IDiagnosticEmitter[] DiagnosticEmitters => Array.Empty<IDiagnosticEmitter>();
     

@@ -3,6 +3,7 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.DiskState\NexusMods.Abstractions.DiskState.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
     </ItemGroup>
