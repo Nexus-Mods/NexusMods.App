@@ -276,7 +276,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
-        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem);
+        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem, name: "SMAPI");
         var modDatabaseEntityId = DynamicData.Kernel.Optional<EntityId>.None;
         var version = DynamicData.Kernel.Optional<string>.None;
 
