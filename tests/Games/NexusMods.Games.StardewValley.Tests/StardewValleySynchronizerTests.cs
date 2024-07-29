@@ -2,10 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
@@ -13,7 +10,6 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Games.TestFramework.FluentAssertionExtensions;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
@@ -22,8 +18,8 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
     [Fact]
     public async Task FilesInModFoldersAreMovedIntoMods()
     {
-        var loadout = await CreateLoadoutOld();
-        loadout = await SynchronizerOld.Synchronize(loadout);
+        var loadout = await CreateLoadout();
+        loadout = await Synchronizer.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
         

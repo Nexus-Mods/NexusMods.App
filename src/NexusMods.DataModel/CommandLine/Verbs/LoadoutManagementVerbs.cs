@@ -144,11 +144,13 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
-        var rows = loadout.Mods
-            .Select(mod => new object[] { mod.Name, mod.Files.Count })
+        var rows = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .Where(group => !group.Contains(LoadoutItem.Parent))
+            .Select(mod => new object[] { mod.AsLoadoutItem().Name })
             .ToList();
 
-        await renderer.Table(["Name", "File Count"], rows);
+        await renderer.Table(["Name"], rows);
         return 0;
     }
 
@@ -179,7 +181,7 @@ public static class LoadoutManagementVerbs
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.SynchronizerOld.CreateLoadout(install, name);
+            await game.Synchronizer.CreateLoadout(install, name);
             return 0;
         });
     }

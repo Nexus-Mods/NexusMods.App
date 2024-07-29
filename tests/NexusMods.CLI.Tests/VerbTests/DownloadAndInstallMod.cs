@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -27,8 +28,10 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     [InlineData("Resources/DataFolderWithDifferentName/-Skyrim 202X 9.0 to 9.4 - Update Ravenrock.zip")]
     public async Task DownloadModFromUrl(string url)
     {
-        var loadout = await CreateLoadoutOld();
-        var origNumMods = loadout.Mods.Count;
+        var loadout = await CreateLoadout();
+        var origNumMods = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .Count(g => !g.Contains(LoadoutItem.Parent));
         origNumMods.Should().Be(1); // game files
 
         var oldRevision = loadout.Revision;
@@ -39,7 +42,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
         loadout = Refresh(loadout);
         loadout.Revision.Should().NotBe(oldRevision, "the loadout has been updated");
 
-        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
+        loadout.Items.Count.Should().BeGreaterThan(origNumMods);
     }
 
     [Theory]
@@ -47,13 +50,13 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     public async Task DownloadModFromNxm(string gameDomain, ulong modId, ulong fileId)
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
-        var loadout = await CreateLoadoutOld();
-        var origNumMods = loadout.Mods.Count;
+        var loadout = await CreateLoadout();
+        var origNumMods = loadout.Items.Count;
         origNumMods.Should().Be(1); // game files
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         await Test.Run("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
         Refresh(ref loadout);
-        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
+        loadout.Items.Count.Should().BeGreaterThan(origNumMods);
     }
 }
