@@ -410,25 +410,9 @@
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Controls\ModInfo\Error\ErrorView.axaml.cs">
-          <DependentUpon>LoadingView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\Spinner\Spinner.axaml.cs">
           <DependentUpon>ProgressRing.axaml</DependentUpon>
           <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Pages\ModInfo\ModInfoDesignViewModel.cs">
-          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ModInfo\ModInfoViewModel.cs">
-          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\ModInfo\ModFiles\ModFilesDesignViewModel.cs">
-          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
-          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Diagnostics\DiagnosticEntryView.axaml.cs">
             <DependentUpon>DiagnosticEntryView.xaml</DependentUpon>
