@@ -28,7 +28,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     public async Task DownloadModFromUrl(string url)
     {
         var loadout = await CreateLoadout();
-        var origNumMods = loadout.Mods.Count;
+        var origNumMods = loadout.Items.Count;
         origNumMods.Should().Be(1); // game files
 
         var oldRevision = loadout.Revision;
@@ -39,7 +39,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
         loadout = Refresh(loadout);
         loadout.Revision.Should().NotBe(oldRevision, "the loadout has been updated");
 
-        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
+        loadout.Items.Count.Should().BeGreaterThan(origNumMods);
     }
 
     [Theory]
@@ -48,12 +48,12 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
         var loadout = await CreateLoadout();
-        var origNumMods = loadout.Mods.Count;
+        var origNumMods = loadout.Items.Count;
         origNumMods.Should().Be(1); // game files
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         await Test.Run("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
         Refresh(ref loadout);
-        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
+        loadout.Items.Count.Should().BeGreaterThan(origNumMods);
     }
 }

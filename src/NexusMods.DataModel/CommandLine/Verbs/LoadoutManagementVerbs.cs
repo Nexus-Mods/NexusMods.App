@@ -144,11 +144,11 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
-        var rows = loadout.Mods
-            .Select(mod => new object[] { mod.Name, mod.Files.Count })
+        var rows = loadout.Items
+            .Select(mod => new object[] { mod.Name })
             .ToList();
 
-        await renderer.Table(["Name", "File Count"], rows);
+        await renderer.Table(["Name"], rows);
         return 0;
     }
 
