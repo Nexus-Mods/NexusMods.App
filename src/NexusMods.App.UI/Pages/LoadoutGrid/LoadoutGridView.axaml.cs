@@ -1,13 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.Controls.MarkdownRenderer;
-using NexusMods.App.UI.Resources;
+using NexusMods.Abstractions.Loadouts;
 using ReactiveUI;
 using static NexusMods.App.UI.Controls.DataGrid.Helpers;
 
@@ -22,53 +19,52 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.Mods.Count)
+            this.WhenAnyValue(view => view.ViewModel!.GroupIds.Count)
                 .Select(count => count == 0)
                 .BindToView(this, view => view.EmptyState.IsActive)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.EmptyModlistTitleMessage, view => view.EmptyState.Header)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(view => view.ViewModel!.Mods)
-                .BindToView(this, view => view.ModsDataGrid.ItemsSource)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.ViewModContentsCommand, view => view.ViewModFilesButton)
-                .DisposeWith(d);
-            
-            this.BindCommand(ViewModel, vm => vm.ViewModLibraryCommand, view => view.ViewModLibraryButton)
-                .DisposeWith(d);
+            this.WhenAnyValue(view => view.ViewModel!.GroupIds)
+                .BindToView(this, view => view.DataGrid.ItemsSource);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
-                .GenerateColumns(ModsDataGrid)
+                .GenerateColumns(DataGrid)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.ViewLibraryCommand, view => view.ViewLibraryButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.DeleteCommand, view => view.DeleteButton)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.EmptyStateTitle, view => view.EmptyState.Header)
                 .DisposeWith(d);
 
             Observable.FromEventPattern<SelectionChangedEventArgs>(
-                addHandler => ModsDataGrid.SelectionChanged += addHandler,
-                removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
-                .Select(_ => ModsDataGrid.SelectedItems.Cast<ModId>().ToArray())
-                .BindTo(ViewModel, vm => vm.SelectedItems)
+                    addHandler: handler => DataGrid.SelectionChanged += handler,
+                    removeHandler: handler => DataGrid.SelectionChanged -= handler
+                )
+                .Select(eventPattern => eventPattern.EventArgs)
+                .Do(args =>
+                {
+                    var sourceList = ViewModel?.SelectedGroupIds;
+                    if (sourceList is null) return;
+
+                    var added = args.AddedItems.OfType<LoadoutItemGroupId>();
+                    var removed = args.RemovedItems.OfType<LoadoutItemGroupId>();
+
+                    sourceList.Edit(list =>
+                    {
+                        list.Remove(removed);
+                        list.AddRange(added);
+                    });
+                })
+                .SubscribeWithErrorLogging()
                 .DisposeWith(d);
-
-            // TODO: remove these commands and move all of this into the ViewModel
-            var isItemSelected = this.WhenAnyValue(
-                view => view.ModsDataGrid.SelectedIndex,
-                (selectedIndex) => selectedIndex >= 0);
-
-            DeleteModsButton.Command = ReactiveCommand.CreateFromTask(DeleteSelectedMods, isItemSelected);
         });
-    }
-
-    private async Task DeleteSelectedMods()
-    {
-        var toDelete = new List<ModId>();
-        foreach (var row in ModsDataGrid.SelectedItems)
-        {
-            if (row is not ModId id) continue;
-            toDelete.Add(id);
-        }
-        await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
     }
 }
 

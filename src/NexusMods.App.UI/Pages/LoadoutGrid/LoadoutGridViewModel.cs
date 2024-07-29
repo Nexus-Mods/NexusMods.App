@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -8,65 +7,48 @@ using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
-using NexusMods.App.UI.Pages.ModInfo;
-using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
 [UsedImplicitly]
 public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
-    private readonly IConnection _conn;
-
-    private ReadOnlyObservableCollection<ModId> _mods;
-    public ReadOnlyObservableCollection<ModId> Mods => _mods;
-
-    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns;
-
-    private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new([]);
-    
-    
-    [Reactive] public string? EmptyModlistTitleMessage { get; private set; }
-    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
+    private readonly IConnection _connection;
 
     [Reactive] public LoadoutId LoadoutId { get; set; }
-    [Reactive] public string LoadoutName { get; set; } = "";
+    private ReadOnlyObservableCollection<LoadoutItemGroupId> _groupIds = ReadOnlyObservableCollection<LoadoutItemGroupId>.Empty;
+    public ReadOnlyObservableCollection<LoadoutItemGroupId> GroupIds => _groupIds;
 
-    [Reactive] public ModId[] SelectedItems { get; set; } = [];
-    public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
-    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; }
+    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns = new(_ => throw new NotSupportedException());
+    private readonly ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns;
+    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
-    public LoadoutGridViewModel() : base(null!)
-    {
-        throw new NotImplementedException();
-    }
+    public SourceList<LoadoutItemGroupId> SelectedGroupIds { get; } = new();
+
+    public ReactiveCommand<NavigationInformation, Unit> ViewLibraryCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> ViewFilesCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> DeleteCommand { get; }
+
+    [Reactive] public string? EmptyStateTitle { get; [UsedImplicitly] private set; }
+
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
@@ -74,11 +56,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         IWindowManager windowManager,
         ISettingsManager settingsManager) : base(windowManager)
     {
-        _conn = conn;
+        _connection = conn;
 
-        _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
-        _mods = new ReadOnlyObservableCollection<ModId>(new ObservableCollection<ModId>());
-        
         TabIcon = IconValues.Collections;
         TabTitle = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry;
 
@@ -86,63 +65,29 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         nameColumn.Type = LoadoutColumn.Name;
         nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
 
-        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModId, LoadoutColumn>>();
-        categoryColumn.Type = LoadoutColumn.Category;
-
         var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModId, LoadoutColumn>>();
         installedColumn.Type = LoadoutColumn.Installed;
 
         var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModId, LoadoutColumn>>();
         enabledColumn.Type = LoadoutColumn.Enabled;
 
-        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModId, LoadoutColumn>>();
-        versionColumn.Type = LoadoutColumn.Version;
-
         _columns.Edit(x =>
         {
             x.AddOrUpdate(nameColumn, LoadoutColumn.Name);
-            x.AddOrUpdate(versionColumn, LoadoutColumn.Version);
-            x.AddOrUpdate(categoryColumn, LoadoutColumn.Category);
             x.AddOrUpdate(installedColumn, LoadoutColumn.Installed);
             x.AddOrUpdate(enabledColumn, LoadoutColumn.Enabled);
         });
 
-        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItems, arr => arr.Length != 0);
+        _columns
+            .Connect()
+            .Bind(out _filteredColumns)
+            .SubscribeWithErrorLogging(logger);
 
-        ViewModContentsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        ViewLibraryCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
-            var modId = SelectedItems[0];
-            var mod = Mod.Load(_conn.Db, modId);
-            var file = mod.Files.OfTypeStoredFile().First();
-
-            var foundGroup = LoadoutFile.FindByHash(_conn.Db, file.Hash)
-                .Select(f => f.AsLoadoutItemWithTargetPath().AsLoadoutItem())
-                .Where(x => x.ParentId != default(LoadoutItemGroupId))
-                .Select(x => x.Parent)
-                .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == LoadoutId, out var group);
-
-            Debug.Assert(foundGroup);
-
             var pageData = new PageData
             {
-                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                Context = new LoadoutGroupFilesPageContext
-                {
-                    GroupId = group,
-                },
-            };
-
-            var workspaceController = GetWorkspaceController();
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-        }, hasSelection);
-        
-        ViewModLibraryCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        {
-
-            var pageData = new PageData
-            {
-                Context = new FileOriginsPageContext()
+                Context = new FileOriginsPageContext
                 {
                     LoadoutId = LoadoutId,
                 },
@@ -154,69 +99,72 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         });
 
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedGroupIds.Count, count => count > 0);
+
+        ViewFilesCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+            var groupId = SelectedGroupIds.Items.First();
+
+            var pageData = new PageData
+            {
+                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                Context = new LoadoutGroupFilesPageContext
+                {
+                    GroupId = groupId,
+                },
+            };
+
+            var workspaceController = GetWorkspaceController();
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        }, hasSelection);
+
+        DeleteCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+            // TODO:
+        }, hasSelection);
+
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>(prependCurrent: true))
-                .SelectMany(tuple => Loadout.Observe(_conn, tuple.First.Value))
-                .Select(loadout =>
-                {
-                    
-                    var settings = settingsManager.Get<LoadoutGridSettings>();
-                    var showGameFiles = settings.ShowGameFiles;
-                    var showOverride = settings.ShowOverride;
-                    
-                    return loadout.Mods
-                        .Where(m => showGameFiles || m.Category != ModCategory.GameFiles)
-                        .Where(m => showOverride || m.Category != ModCategory.Overrides)
-                        .Select(m => m.ModId);
-                })
+                .Select(loadoutId => Loadout.Observe(_connection, loadoutId))
+                .Switch()
+                .Select(loadout => loadout
+                    .Items
+                    .OfTypeLoadoutItemGroup()
+                    .Where(group => group.AsLoadoutItem().ParentId == default(LoadoutItemGroupId))
+                    .Select(group => group.LoadoutItemGroupId)
+                )
                 .OnUI()
-                .ToDiffedChangeSet(cur => cur, cur => cur)
-                .Bind(out _mods)
+                .ToDiffedChangeSet(group => group, group => group)
+                .Bind(out _groupIds)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
-            _columns.Connect()
-                .Bind(out _filteredColumns)
-                .SubscribeWithErrorLogging(logger)
-                .DisposeWith(d);
-            
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .Select(id => Loadout.Load(conn.Db, id))
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(loadout =>
-                {
-                    EmptyModlistTitleMessage = GetEmptyModlistTitleString(loadout.InstallationInstance);
-                })
+                .Select(loadoutId => Loadout.Load(_connection.Db, loadoutId))
+                .Select(loadout => string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name))
+                .BindToVM(this, vm => vm.EmptyStateTitle)
                 .DisposeWith(d);
-            
         });
     }
 
-    [UsedImplicitly]
-    public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
-    {
-        var db = _conn.Db;
-        var loadout = Loadout.Load(db, LoadoutId);
-        using var tx = _conn.BeginTransaction();
-        foreach (var modId in modsToDelete)
-        {
-            var mod = Mod.Load(db, modId);
-            foreach (var file in mod.Files)
-            {
-                tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
-            }
-            tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId.Value);
-        }
-        loadout.Revise(tx);
-        await tx.Commit();
-    }
-    
-    private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
-    private static string GetEmptyModlistTitleString(GameInstallation gameInstallation)
-    {
-        return string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, gameInstallation.Game.Name);
-    }
-
+    // [UsedImplicitly]
+    // public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
+    // {
+    //     var db = _conn.Db;
+    //     var loadout = Loadout.Load(db, LoadoutId);
+    //     using var tx = _conn.BeginTransaction();
+    //     foreach (var modId in modsToDelete)
+    //     {
+    //         var mod = Mod.Load(db, modId);
+    //         foreach (var file in mod.Files)
+    //         {
+    //             tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
+    //         }
+    //         tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId.Value);
+    //     }
+    //     loadout.Revise(tx);
+    //     await tx.Commit();
+    // }
 }

@@ -552,9 +552,6 @@
         <Compile Update="Overlays\AlphaWarning\AlphaWarningViewModel.cs">
           <DependentUpon>IAlphaWarningViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LoadoutGrid\LoadoutGridDesignViewModel.cs">
-          <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\WorkspaceController\WorkspaceController.cs">
           <DependentUpon>IWorkspaceController.cs</DependentUpon>
         </Compile>
@@ -625,12 +622,10 @@
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
       <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
       <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
