@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -20,6 +22,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Pages.ModLibrary;
@@ -27,6 +30,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -108,16 +112,24 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ViewModContentsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var modId = SelectedItems[0];
+            var mod = Mod.Load(_conn.Db, modId);
+            var file = mod.Files.OfTypeStoredFile().First();
+
+            var foundGroup = LoadoutFile.FindByHash(_conn.Db, file.Hash)
+                .Select(f => f.AsLoadoutItemWithTargetPath().AsLoadoutItem())
+                .Where(x => x.ParentId != default(LoadoutItemGroupId))
+                .Select(x => x.Parent)
+                .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == LoadoutId, out var group);
+
+            Debug.Assert(foundGroup);
 
             var pageData = new PageData
             {
-                Context = new ModInfoPageContext
+                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                Context = new LoadoutGroupFilesPageContext
                 {
-                    LoadoutId = LoadoutId,
-                    ModId = modId,
-                    Section = CurrentModInfoSection.Files,
+                    GroupId = group,
                 },
-                FactoryId = ModInfoPageFactory.StaticId,
             };
 
             var workspaceController = GetWorkspaceController();
