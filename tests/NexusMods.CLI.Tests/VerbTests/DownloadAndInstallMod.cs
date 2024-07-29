@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -28,7 +29,9 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     public async Task DownloadModFromUrl(string url)
     {
         var loadout = await CreateLoadout();
-        var origNumMods = loadout.Items.Count;
+        var origNumMods = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .Count(g => !g.Contains(LoadoutItem.Parent));
         origNumMods.Should().Be(1); // game files
 
         var oldRevision = loadout.Revision;
