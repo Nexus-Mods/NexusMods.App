@@ -30,7 +30,7 @@ public class ApplyService : IApplyService
     /// <inheritdoc />
     public async Task Synchronize(Loadout.ReadOnly loadout)
     {
-        await loadout.InstallationInstance.GetGame().SynchronizerOld.Synchronize(loadout);
+        await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
     }
 
 
@@ -39,7 +39,7 @@ public class ApplyService : IApplyService
     {
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
             
-        var syncrhonizer = loadout.InstallationInstance.GetGame().SynchronizerOld;
+        var syncrhonizer = loadout.InstallationInstance.GetGame().Synchronizer;
         
         return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
     }

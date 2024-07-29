@@ -16,7 +16,7 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
     [Trait("RequiresNetworking", "True")]
     public async Task Test_GetFilesToExtract()
     {
-        var loadout = await CreateLoadoutOld();
+        var loadout = await CreateLoadout();
 
         // SMAPI 3.18.2 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
         var downloadId = await DownloadMod(StardewValley.GameDomain, ModId.From(2400), FileId.From(64874));

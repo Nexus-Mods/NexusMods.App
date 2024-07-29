@@ -40,7 +40,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     
     public async Task InitializeAsync()
     {
-        Loadout = await CreateLoadoutOld();
+        Loadout = await CreateLoadout();
     }
     
     public async Task DisposeAsync()

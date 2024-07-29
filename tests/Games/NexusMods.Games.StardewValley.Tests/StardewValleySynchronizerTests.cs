@@ -22,8 +22,8 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
     [Fact]
     public async Task FilesInModFoldersAreMovedIntoMods()
     {
-        var loadout = await CreateLoadoutOld();
-        loadout = await SynchronizerOld.Synchronize(loadout);
+        var loadout = await CreateLoadout();
+        loadout = await Synchronizer.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
         

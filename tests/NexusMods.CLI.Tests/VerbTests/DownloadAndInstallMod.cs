@@ -27,7 +27,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     [InlineData("Resources/DataFolderWithDifferentName/-Skyrim 202X 9.0 to 9.4 - Update Ravenrock.zip")]
     public async Task DownloadModFromUrl(string url)
     {
-        var loadout = await CreateLoadoutOld();
+        var loadout = await CreateLoadout();
         var origNumMods = loadout.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
@@ -47,7 +47,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     public async Task DownloadModFromNxm(string gameDomain, ulong modId, ulong fileId)
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
-        var loadout = await CreateLoadoutOld();
+        var loadout = await CreateLoadout();
         var origNumMods = loadout.Mods.Count;
         origNumMods.Should().Be(1); // game files
 

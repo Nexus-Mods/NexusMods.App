@@ -66,7 +66,7 @@ where TVm : IViewModelInterface
     public async Task CreateLoadout()
     {
         _gameInstall = await StubbedGame.Create(Provider);
-        _loadout = await ((IGame)Install.Game).SynchronizerOld.CreateLoadout(_gameInstall, "Test");
+        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(_gameInstall, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)

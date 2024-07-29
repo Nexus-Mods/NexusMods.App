@@ -49,7 +49,7 @@ internal static class CleanupVerbs
         {
             try
             {
-                var synchronizer = installation.GetGame().SynchronizerOld;
+                var synchronizer = installation.GetGame().Synchronizer;
                 await synchronizer.UnManage(installation);
                 await renderer.Text($"Reverted {installation.Game.Name} to its original state");
             }

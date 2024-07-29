@@ -106,11 +106,6 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
-
-    protected override ILoadoutSynchronizerOld MakeSynchronizerOld(IServiceProvider provider)
-    {
-        return new StardewValleyLoadoutSynchronizerOld(provider);
-    }
     
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {

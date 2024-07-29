@@ -14,7 +14,7 @@ public class ASynchronizerBenchmark
 {
     protected ABenchmarkDatamodel _datamodel = null!;
     protected IServiceProvider _serviceProvider = null!;
-    protected DefaultSynchronizerOld DefaultSynchronizerOld = null!;
+    protected DefaultSynchronizer DefaultSynchronizer = null!;
     protected GameInstallation _installation = null!;
     protected IDiskStateRegistry _diskStateRegistry = null!;
 
@@ -28,9 +28,9 @@ public class ASynchronizerBenchmark
         // Create a DataModel for Benchmarking
         var files = Assets.Loadouts.FileLists.GetFileList(fileList);
         _datamodel = ABenchmarkDatamodel.WithMod(_serviceProvider, baseModName, files);
-        DefaultSynchronizerOld = (_datamodel.Game.SynchronizerOld as DefaultSynchronizerOld)!;
-        if (DefaultSynchronizerOld == null)
-            throw new Exception($"Can't cast synchronizer to {typeof(DefaultSynchronizerOld)}. Did the test StubbedGame code change?");
+        DefaultSynchronizer = (_datamodel.Game.Synchronizer as DefaultSynchronizer)!;
+        if (DefaultSynchronizer == null)
+            throw new Exception($"Can't cast synchronizer to {typeof(DefaultSynchronizer)}. Did the test StubbedGame code change?");
 
         _installation = _datamodel.BaseLoadout.InstallationInstance;
         _diskStateRegistry = _serviceProvider.GetRequiredService<IDiskStateRegistry>();

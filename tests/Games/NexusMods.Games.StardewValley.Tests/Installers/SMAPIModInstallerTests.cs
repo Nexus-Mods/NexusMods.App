@@ -41,7 +41,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
     [Trait("RequiresNetworking", "True")]
     public async Task Test_InstallMod()
     {
-        var loadout = await CreateLoadoutOld();
+        var loadout = await CreateLoadout();
 
         // NPC Map Locations 2.11.3 (https://www.nexusmods.com/stardewvalley/mods/239)
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
@@ -54,7 +54,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
     [Trait("RequiresNetworking", "True")]
     public async Task Test_MultipleModsOneArchive()
     {
-        var loadout = await CreateLoadoutOld();
+        var loadout = await CreateLoadout();
 
         // Raised Garden Beds 1.0.5 (https://www.nexusmods.com/stardewvalley/mods/5305)
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
