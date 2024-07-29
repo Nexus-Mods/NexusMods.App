@@ -7,6 +7,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModInfo;
 
+[Obsolete("To be replaced with loadout items")]
 public class ModInfoDesignViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewModel
 {
     public LoadoutId LoadoutId { get; set; }

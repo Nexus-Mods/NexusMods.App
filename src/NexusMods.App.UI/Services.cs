@@ -53,6 +53,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
@@ -229,7 +230,9 @@ public static class Services
 
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
-            
+
+            .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
+            .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -263,7 +266,7 @@ public static class Services
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
-            
+            .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

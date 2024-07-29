@@ -9,6 +9,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModInfo;
 
+[Obsolete("To be replaced with loadout items")]
 [JsonName("NexusMods.App.UI.Pages.ViewModInfo.ModInfoPageContext")]
 public record ModInfoPageContext : IPageFactoryContext
 {
@@ -17,6 +18,7 @@ public record ModInfoPageContext : IPageFactoryContext
     public required CurrentModInfoSection Section { get; init; }
 }
 
+[Obsolete("To be replaced with loadout items")]
 [UsedImplicitly]
 public class ModInfoPageFactory : APageFactory<IModInfoViewModel, ModInfoPageContext>
 {

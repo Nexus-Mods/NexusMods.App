@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -21,6 +22,7 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
 [UsedImplicitly]
+[Obsolete($"To be replaced by {nameof(LoadoutGroupFilesViewModel)}")]
 public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewModel
 {
     private readonly IConnection _connection;
@@ -41,8 +43,6 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
         OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
-            // TODO: rework this and only use LoadoutFile
-
             var key = SelectedItem!.Key;
             var targetModId = _modId.Value;
 

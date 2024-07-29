@@ -601,6 +601,9 @@
         <Compile Update="Controls\Trees\LoadoutGroupFileTreeViewModel.cs">
           <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
+          <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
