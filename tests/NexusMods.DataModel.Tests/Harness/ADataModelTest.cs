@@ -6,6 +6,9 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -34,13 +37,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
     protected readonly IFileStore FileStore;
-    protected readonly IArchiveInstaller ArchiveInstaller;
+    protected readonly ILibraryItemInstaller LibraryItemInstaller;
 
     protected readonly IApplyService ApplyService;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IConnection Connection;
-    protected readonly IFileOriginRegistry FileOriginRegistry;
+    protected readonly ILibraryService LibraryService;
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
     protected readonly IGameRegistry GameRegistry;
@@ -69,12 +72,12 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         _host = host.Build();
         var provider = _host.Services;
         FileStore = provider.GetRequiredService<IFileStore>();
-        ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
+        LibraryItemInstaller = provider.GetRequiredService<ILibraryItemInstaller>();
         ApplyService = provider.GetRequiredService<IApplyService>();
         FileHashCache = provider.GetRequiredService<FileHashCache>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
         Connection = provider.GetRequiredService<IConnection>();
-        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
+        LibraryService = provider.GetRequiredService<ILibraryService>();
         DiskStateRegistry = provider.GetRequiredService<DiskStateRegistry>();
         Logger = provider.GetRequiredService<ILogger<T>>();
         TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
@@ -115,61 +118,33 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         return;
     }
 
-    protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
+    protected async Task<LoadoutItemGroup.ReadOnly[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path, name ?? path.FileName, Token);
-        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId,name ?? path.FileName, token: Token);
+        var job = LibraryService.AddLocalFile(path);
+        await job.StartAsync(Token);
+        var libraryResult = await job.WaitToFinishAsync(Token);
+        
+        if (!libraryResult.TryGetCompleted(out var completed))
+            throw new Exception("Failed to add mod to library");
+
+        if (!completed.TryGetData<LocalFile.ReadOnly>(out var localFile))
+            throw new Exception("Failed to add mod to library");
+        
+        using var tx = Connection.BeginTransaction();
+        var newGroups = await LibraryItemInstaller.ExecuteAsync(localFile.AsLibraryFile().AsLibraryItem(), tx, Loadout.Load(Connection.Db, loadoutId), Token); 
         // Refresh the loadout to get the new mods, as a convenience.
-        Refresh(ref BaseLoadout);
-        return result;
+        
+        var result = await tx.Commit();
+        
+        return newGroups.Select(group => result.Remap(group)).OfTypeLoadoutItemGroup().ToArray();
     }
 
-    protected Task<ModId[]> AddMods(Loadout.ReadOnly loadout, AbsolutePath path, string? name = null)
+    protected Task<LoadoutItemGroup.ReadOnly[]> AddMods(Loadout.ReadOnly loadout, AbsolutePath path, string? name = null)
     {
         return AddMods(LoadoutId.From(loadout.Id), path, name);
     }
 
-    /// <summary>
-    /// Creates a download from the given files, and data (saved as UTF-8 strings), and registers it with the FileOriginRegistry,
-    /// returning the download id.
-    /// </summary>
-    /// <param name="files"></param>
-    /// <param name="modName"></param>
-    /// <returns></returns>
-    protected async Task<DownloadId> RegisterDownload(string modName, params (string Name, string Data)[] files)
-    {
-        await using var tmpFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
-        using var memoryStream = new MemoryStream();
-        using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-        {
-            foreach (var (name, data) in files)
-            {
-                var entry = zip.CreateEntry(name, CompressionLevel.Fastest);
-                await using var stream = entry.Open();
-                await using var writer = new StreamWriter(stream);
-                await writer.WriteAsync(data);
-            }
-        }
-
-        memoryStream.Position = 0;
-        await using (var fileStream = tmpFile.Path.Create())
-        {
-            await memoryStream.CopyToAsync(fileStream, Token);
-        }
-
-        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, modName, Token);
-    }
-
-    /// <summary>
-    /// Adds a mod to the given loadout, with the given files (saved as UTF-8 strings), and returns the mod id.
-    /// </summary>
-    protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
-    {
-        var downloadId = await RegisterDownload(modName, files);
-        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, modName, token: Token);
-        return modIds.First();
-    }
-
+    
     public Task DisposeAsync()
     {
         return Task.CompletedTask;

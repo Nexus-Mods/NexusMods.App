@@ -145,7 +145,9 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = loadout.Items
-            .Select(mod => new object[] { mod.Name })
+            .OfTypeLoadoutItemGroup()
+            .Where(group => !group.Contains(LoadoutItem.Parent))
+            .Select(mod => new object[] { mod.AsLoadoutItem().Name })
             .ToList();
 
         await renderer.Table(["Name"], rows);
