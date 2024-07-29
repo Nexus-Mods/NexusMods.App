@@ -8,7 +8,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
@@ -99,7 +98,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         });
 
-        var hasSelection = this.WhenAnyValue(vm => vm.SelectedGroupIds.Count, count => count > 0);
+        var hasSelection = SelectedGroupIds.CountChanged.Select(count => count > 0);
 
         ViewFilesCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
