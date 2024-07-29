@@ -20,11 +20,6 @@
                 <ContentControl />
             </ToggleSwitch.OffContent>
         </ToggleSwitch>
-        <Button
-            Classes="BareIcon WindowClose"
-            HorizontalAlignment="Center"
-            x:Name="DeleteButton">
-        </Button>
     </Grid>
 </reactiveUi:ReactiveUserControl>
 
