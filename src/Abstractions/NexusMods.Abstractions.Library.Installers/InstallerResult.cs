@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Loadouts;
 using OneOf;
 
 namespace NexusMods.Abstractions.Library.Installers;
@@ -8,22 +7,27 @@ namespace NexusMods.Abstractions.Library.Installers;
 /// Represents the result for an installer.
 /// </summary>
 [PublicAPI]
-public sealed class InstallerResult : OneOfBase<Success, NotSupported>
+public readonly struct InstallerResult
 {
+    private readonly OneOf<Success, NotSupported> _value;
+
     /// <summary>
     /// Constructor.
     /// </summary>
-    public InstallerResult(OneOf<Success, NotSupported> input) : base(input) { }
+    public InstallerResult(OneOf<Success, NotSupported> input)
+    {
+        _value = input;
+    }
 
     /// <summary>
     /// Gets whether the result is <see cref="Success"/>.
     /// </summary>
-    public bool IsSuccess => IsT0;
+    public bool IsSuccess => _value.IsT0;
 
     /// <summary>
     /// Gets whether the result is <see cref="NotSupported"/>.
     /// </summary>
-    public bool IsNotSupported => IsT1;
+    public bool IsNotSupported => _value.IsT1;
 
     /// <summary/>
     public static implicit operator InstallerResult(Success x) => new(x);
@@ -36,10 +40,10 @@ public sealed class InstallerResult : OneOfBase<Success, NotSupported>
 /// The input is supported by the installer.
 /// </summary>
 [PublicAPI]
-public record Success;
+public record struct Success;
 
 /// <summary>
 /// The input is not supported by the installer.
 /// </summary>
 [PublicAPI]
-public record NotSupported;
+public record struct NotSupported;
