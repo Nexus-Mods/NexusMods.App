@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,13 +69,13 @@ where TGame : AGame
         return LibraryFile.FindByHash(Connection.Db, archiveHash).OfTypeLibraryArchive().First();
     }
 
-    protected Task<LoadoutItem.ReadOnly[]> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller
     {
         return Install(typeof(TInstaller), loadout, archive);
     }
-    
-    protected Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+
+    protected Task<LoadoutItemGroup.ReadOnly> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
     {
         var installer = Game.LibraryItemInstallers.FirstOrDefault(t => t.GetType() == installerType);
         installer.Should().NotBeNull();
@@ -82,7 +83,7 @@ where TGame : AGame
         return Install(installer!, loadout, archive);
     }
 
-    protected async Task<LoadoutItem.ReadOnly[]> Install(
+    protected async Task<LoadoutItemGroup.ReadOnly> Install(
         ILibraryItemInstaller installer,
         Loadout.ReadOnly loadout,
         LibraryArchive.ReadOnly archive)
@@ -105,19 +106,15 @@ where TGame : AGame
 
         var dbResult = await tx.Commit();
         var group = dbResult.Remap(loadoutGroup);
-        return group.Children.ToArray();
+        return group;
     }
 
     /// <summary>
     /// Gets the children of this loadout item as a tuple of from path, hash and game path.
     /// </summary>
-    public IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> ChildrenFilesAndHashes(LoadoutItem.ReadOnly item)
+    protected IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> ChildrenFilesAndHashes(LoadoutItemGroup.ReadOnly group)
     {
-
         var db = Connection.Db;
-        
-        if (!item.TryGetAsLoadoutItemGroup(out var group))
-            throw new InvalidOperationException("The item should be a group.");
 
         foreach (var child in group.Children.OrderBy(child => child.Name))
         {
@@ -135,9 +132,10 @@ where TGame : AGame
         }
     }
 
-    public SettingsTask VerifyTx(TxId tx)
+    public SettingsTask VerifyTx(TxId tx, [CallerFilePath] string sourceFile = "")
     {
-        return Verify(ToTable(Connection.Db.Datoms(tx)));
+        // ReSharper disable once ExplicitCallerInfoArgument
+        return Verify(ToTable(Connection.Db.Datoms(tx)), sourceFile: sourceFile);
     }
     
     public static string ToTable(IndexSegment datoms)

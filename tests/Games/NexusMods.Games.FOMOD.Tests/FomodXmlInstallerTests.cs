@@ -12,7 +12,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
 {
     public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    private async Task<LoadoutItem.ReadOnly[]> GetResultsFromDirectory(string testCase)
+    private async Task<LoadoutItemGroup.ReadOnly> GetResultsFromDirectory(string testCase)
     {
         var relativePath = $"TestCasesPacked/{testCase}.fomod";
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(relativePath);
@@ -22,22 +22,22 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
 
         var loadout = await CreateLoadout();
 
-        var res = await Install(installer, loadout, archive);
-        return res;
+        var group = await Install(installer, loadout, archive);
+        return group;
     }
 
     [Fact]
     public async Task PriorityHighIfScriptExists()
     {
         var results = await GetResultsFromDirectory("SimpleInstaller");
-        results.Should().NotBeEmpty();
+        results.Children.Should().NotBeEmpty();
     }
 
     [Fact]
     public async Task InstallsFilesSimple()
     {
         var results = await GetResultsFromDirectory("SimpleInstaller");
-        results.Should().HaveCount(2).And.Satisfy(
+        results.Children.Should().HaveCount(2).And.Satisfy(
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
         );
@@ -47,7 +47,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallsFilesComplex_WithImages()
     {
         var results = await GetResultsFromDirectory("WithImages");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
@@ -61,7 +61,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallsFilesComplex_WithMissingImage()
     {
         var results = await GetResultsFromDirectory("WithMissingImage");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
@@ -74,7 +74,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallsFilesSimple_UsingRar()
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-rar");
-        results.Should().HaveCount(2).And.Satisfy(
+        results.Children.Should().HaveCount(2).And.Satisfy(
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
         );
@@ -84,7 +84,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallsFilesSimple_Using7z()
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-7z");
-        results.Should().HaveCount(2).And.Satisfy(
+        results.Children.Should().HaveCount(2).And.Satisfy(
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
         );
@@ -94,7 +94,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallFilesNestedWithImages()
     {
         var results = await GetResultsFromDirectory("NestedWithImages.zip");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
@@ -107,7 +107,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task InstallFilesMultipleNestedWithImages()
     {
         var results = await GetResultsFromDirectory("MultipleNestingWithImages.7z");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
@@ -120,7 +120,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task ObeysTypeDescriptors()
     {
         var results = await GetResultsFromDirectory("ComplexInstaller");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
@@ -133,7 +133,7 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     public async Task ResilientToCaseInconsistencies()
     {
         var results = await GetResultsFromDirectory("ComplexInstallerCaseChanges.7z");
-        results.Should().HaveCount(3).And.Satisfy(
+        results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
             x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName.Equals("g1p2f1.out.esp"),
             // In group 2, both plugins are required
