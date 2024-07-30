@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
@@ -20,6 +21,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Synchronizer;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -39,6 +41,7 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddMnemonicDB();
+        coll.AddAnalyzers();
 
         // Settings
         coll.AddSettings<DataModelSettings>();
@@ -107,7 +110,7 @@ public static class Services
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
         coll.AddAttributeCollection(typeof(HashCacheEntry));
         
-        coll.AddAllSingleton<IApplyService, ApplyService>();
+        coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();

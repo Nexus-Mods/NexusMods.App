@@ -13,7 +13,7 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
  
     [Reactive] public Optional<Loadout.ReadOnly> LoadoutValue { get; set; }
     
-    public LoadoutBadgeViewModel(IConnection conn, IApplyService applyService)
+    public LoadoutBadgeViewModel(IConnection conn, ISynchronizerService syncService)
     {
         this.WhenActivated(d =>
         {
@@ -26,7 +26,7 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                 {
                     LoadoutShortName = loadout.ShortName;
                     
-                    isLastAppliedSerialDisposable.Disposable = applyService
+                    isLastAppliedSerialDisposable.Disposable = syncService
                         .LastAppliedRevisionFor(loadout.InstallationInstance)
                         .Select(lastAppliedLoadout => lastAppliedLoadout.Id == loadout.LoadoutId)
                         .BindToVM(this, vm => vm.IsLoadoutApplied)

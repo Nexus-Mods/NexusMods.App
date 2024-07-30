@@ -18,7 +18,7 @@ namespace NexusMods.App.UI.Controls.Trees;
 public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private readonly LoadoutId _loadoutId;
-    private readonly IApplyService _applyService;
+    private readonly ISynchronizerService _syncService;
     private readonly IConnection _conn;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _treeSourceCache;
     private readonly ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
@@ -30,10 +30,10 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
 
-    public DiffTreeViewModel(LoadoutId loadoutId, IApplyService applyService, IConnection conn)
+    public DiffTreeViewModel(LoadoutId loadoutId, ISynchronizerService syncService, IConnection conn)
     {
         _loadoutId = loadoutId;
-        _applyService = applyService;
+        _syncService = syncService;
         _conn = conn;
 
         _treeSourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(entry => entry.Key);
@@ -62,7 +62,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             throw new KeyNotFoundException($"Loadout with ID {_loadoutId} not found.");
         }
 
-        var diffTree = _applyService.GetApplyDiffTree(loadout);
+        var diffTree = _syncService.GetApplyDiffTree(loadout);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
