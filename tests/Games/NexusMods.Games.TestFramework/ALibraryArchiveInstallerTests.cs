@@ -74,11 +74,19 @@ where TGame : AGame
         return Install(typeof(TInstaller), loadout, archive);
     }
     
-    protected async Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
+    protected Task<LoadoutItem.ReadOnly[]> Install(Type installerType, Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
     {
         var installer = Game.LibraryItemInstallers.FirstOrDefault(t => t.GetType() == installerType);
         installer.Should().NotBeNull();
 
+        return Install(installer!, loadout, archive);
+    }
+
+    protected async Task<LoadoutItem.ReadOnly[]> Install(
+        ILibraryItemInstaller installer,
+        Loadout.ReadOnly loadout,
+        LibraryArchive.ReadOnly archive)
+    {
         using var tx = Connection.BeginTransaction();
         var libraryItem = archive.AsLibraryFile().AsLibraryItem();
 
@@ -92,7 +100,7 @@ where TGame : AGame
             },
         };
 
-        var result = await installer!.ExecuteAsync(libraryItem, loadoutGroup, tx, loadout, CancellationToken.None);
+        var result = await installer.ExecuteAsync(libraryItem, loadoutGroup, tx, loadout, CancellationToken.None);
         result.IsSuccess.Should().BeTrue();
 
         var dbResult = await tx.Commit();
