@@ -11,16 +11,16 @@ using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.DataModel;
 
 /// <inheritdoc />
-public class ApplyService : IApplyService
+public class SynchronizerService : ISynchronizerService
 {
-    private readonly ILogger<ApplyService> _logger;
+    private readonly ILogger<SynchronizerService> _logger;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly IConnection _conn;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ApplyService(IDiskStateRegistry diskStateRegistry, IConnection conn, ILogger<ApplyService> logger)
+    public SynchronizerService(IDiskStateRegistry diskStateRegistry, IConnection conn, ILogger<SynchronizerService> logger)
     {
         _logger = logger;
         _conn = conn;

@@ -28,7 +28,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     public LoadoutCardViewModel(Loadout.ReadOnly loadout, IConnection conn, IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutCardViewModel>>();
-        var applyService = serviceProvider.GetRequiredService<IApplyService>();
+        var applyService = serviceProvider.GetRequiredService<ISynchronizerService>();
         LoadoutName = loadout.Name;
         var badgeVm = serviceProvider.GetRequiredService<ILoadoutBadgeViewModel>();
         badgeVm.LoadoutValue = loadout;

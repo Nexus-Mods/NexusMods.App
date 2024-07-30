@@ -42,9 +42,9 @@ public static class LoadoutManagementVerbs
     [Verb("synchronize", "Synchronize the loadout with the game folders, adding any changes in the game folder to the loadout and applying any new changes in the loadout to the game folder")]
     private static async Task<int> Synchronize([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to apply")] Loadout.ReadOnly loadout,
-        [Injected] IApplyService applyService)
+        [Injected] ISynchronizerService syncService)
     {
-        await applyService.Synchronize(loadout);
+        await syncService.Synchronize(loadout);
         return 0;
     }
 

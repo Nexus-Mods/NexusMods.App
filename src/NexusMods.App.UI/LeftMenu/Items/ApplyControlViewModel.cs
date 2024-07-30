@@ -20,7 +20,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
     private readonly IConnection _conn;
-    private readonly IApplyService _applyService;
+    private readonly ISynchronizerService _syncService;
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
@@ -43,7 +43,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
     {
         _loadoutId = loadoutId;
-        _applyService = serviceProvider.GetRequiredService<IApplyService>();
+        _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
 
@@ -80,14 +80,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         this.WhenActivated(disposables =>
             {
                 // Newest Loadout
-                Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId)
-                    .Revisions()
+                Abstractions.Loadouts.Loadout.RevisionsWithChildUpdates(_conn, _loadoutId)
                     .OnUI()
                     .BindToVM(this, vm => vm.NewestLoadout)
                     .DisposeWith(disposables);
                 
                 // Last applied loadoutTxId
-                _applyService.LastAppliedRevisionFor(_gameInstallation)
+                _syncService.LastAppliedRevisionFor(_gameInstallation)
                     .OnUI()
                     .BindToVM(this, vm => vm.LastAppliedWithTxId)
                     .DisposeWith(disposables);
@@ -144,7 +143,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         await Task.Run(async () =>
         {
             var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-            await _applyService.Synchronize(loadout);
+            await _syncService.Synchronize(loadout);
         });
     }
     
@@ -157,7 +156,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             if (LastAppliedWithTxId.Id.Equals(_loadoutId))
             {
                 var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-                await _applyService.Synchronize(loadout);
+                await _syncService.Synchronize(loadout);
             }
         }
     }

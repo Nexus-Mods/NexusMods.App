@@ -18,4 +18,17 @@ public partial class Loadout
         return Loadout.ObserveAll(connection)
             .AutoRefreshOnObservable(itm => analyzerDatas.Where(set => set.Contains(itm.Id)));
     }
+    
+    /// <summary>
+    /// Returns an IObservable of a loadout with the given id, refreshing it whenever a child entity is updated.
+    /// </summary>
+    public static IObservable<Loadout.ReadOnly> RevisionsWithChildUpdates(IConnection connection, LoadoutId id)
+    {
+        var analyzerDatas = connection.Revisions.Select(db => db.AnalyzerData<TreeAnalyzer, FrozenSet<EntityId>>());
+        
+        return analyzerDatas
+            .Where(set => set.Contains(id))
+            .Select(_ => Loadout.Load(connection.Db, id))
+            .StartWith(Loadout.Load(connection.Db, id));
+    }
 }
