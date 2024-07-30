@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -5,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Library;
@@ -12,10 +14,12 @@ namespace NexusMods.Library;
 [UsedImplicitly]
 internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public InstallLoadoutItemJobWorker(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJobWorker>>();
     }
 
@@ -28,19 +32,24 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 
         if (!result.HasValue)
         {
-            // TODO: default to advanced installer
-            return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
+            var manualInstaller = AdvancedManualInstaller.Create(_serviceProvider);
+            result = await ExecuteInstallersAsync(job, [manualInstaller], cancellationToken);
+
+            if (!result.HasValue)
+            {
+                return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`), including the advanced installer!");
+            }
         }
 
-        var (loadoutItems, transaction) = result.Value;
+        var (loadoutGroup, transaction) = result.Value;
         using var tx = transaction;
 
         var transactionResult = await transaction.Commit();
-        var jobResults = loadoutItems.Select(x => transactionResult.Remap(x)).ToArray();
+        var jobResults = transactionResult.Remap(loadoutGroup);
         return JobResult.CreateCompleted(jobResults);
     }
 
-    private static async ValueTask<(LoadoutItem.New[], ITransaction transaction)?> ExecuteInstallersAsync(
+    private static async ValueTask<(LoadoutItemGroup.New, ITransaction transaction)?> ExecuteInstallersAsync(
         InstallLoadoutItemJob job,
         ILibraryItemInstaller[] installers,
         CancellationToken cancellationToken)
@@ -51,14 +60,25 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             if (!isSupported) continue;
 
             var transaction = job.Connection.BeginTransaction();
-            var result = await installer.ExecuteAsync(job.LibraryItem, transaction, job.Loadout, cancellationToken);
-            if (result.Length == 0)
+            var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
+            {
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(transaction, groupId)
+                {
+                    Name = job.LibraryItem.Name,
+                    LoadoutId = job.Loadout,
+                },
+            };
+
+            var result = await installer.ExecuteAsync(job.LibraryItem, loadoutGroup, transaction, job.Loadout, cancellationToken);
+            if (result.IsNotSupported)
             {
                 transaction.Dispose();
                 continue;
             }
 
-            return (result, transaction);
+            Debug.Assert(result.IsSuccess);
+            return (loadoutGroup, transaction);
         }
 
         return null;

@@ -82,8 +82,9 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
     }
 
 
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction tx,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
@@ -97,11 +98,10 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
             .OrderBy(node => node.Depth())
             .ToArray();
 
-        if (roots.Length == 0) return ValueTask.FromResult<LoadoutItem.New[]>([]);
+        if (roots.Length == 0) return ValueTask.FromResult<InstallerResult>(new NotSupported());
 
         var highestRoot = roots.First();
-        var group = libraryArchive.ToGroup(loadout.Id, tx, out var loadoutItem);
-        
+
         var newFiles = 0;
 
         // Enumerate over all directories with the same depth as the most rooted item.
@@ -120,7 +120,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
                     {
                         Name = relativePath.Name,
                         LoadoutId = loadout.Id,
-                        ParentId = group.Id,
+                        ParentId = loadoutGroup.Id,
                         IsIsDisabledMarker = false,
                     },
                 },
@@ -131,7 +131,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
         }
 
         return newFiles == 0
-            ? ValueTask.FromResult<LoadoutItem.New[]>([])
-            : ValueTask.FromResult<LoadoutItem.New[]>([loadoutItem]);
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }

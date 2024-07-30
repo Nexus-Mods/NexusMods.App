@@ -50,23 +50,29 @@ public class StubbedGameInstaller : ALibraryArchiveInstaller, IModInstaller
         };
     }
     
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction tx,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
-        var group = libraryArchive.ToGroup(loadout, transaction, out var loadoutItem);
-        
         var modFiles = libraryArchive.GetTree().GetFiles()
             .Select(kv =>
             {
                 var path = kv.Item.Path;
                 if (path.Path.StartsWith(_preferencesPrefix))
-                    return kv.ToLoadoutFile(loadout, group, transaction, new GamePath(LocationId.Preferences, path));
+                    return kv.ToLoadoutFile(loadout, loadoutGroup, tx, new GamePath(LocationId.Preferences, path));
 
                 if (path.Path.StartsWith(_savesPrefix))
-                    return kv.ToLoadoutFile(loadout, group, transaction, new GamePath(LocationId.Saves, path));
+                    return kv.ToLoadoutFile(loadout, loadoutGroup, tx, new GamePath(LocationId.Saves, path));
 
-                return kv.ToLoadoutFile(loadout, group, transaction, new GamePath(LocationId.Game, path));
-            });
+                return kv.ToLoadoutFile(loadout, loadoutGroup, tx, new GamePath(LocationId.Game, path));
+            })
+            .ToArray();
 
-        return ValueTask.FromResult<LoadoutItem.New[]>([loadoutItem]);
+        return modFiles.Length == 0
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }

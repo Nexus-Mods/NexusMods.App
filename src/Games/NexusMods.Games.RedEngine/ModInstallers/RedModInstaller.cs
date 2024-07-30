@@ -87,7 +87,12 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
         }
     }
     
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override async ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction tx,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
         var infosList = new List<(KeyedBox<RelativePath, LibraryArchiveTree>  File, RedModInfo InfoJson)>();
@@ -101,8 +106,6 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
                 infosList.Add((f, infoJson));
         }
         
-        var topLevelGroup = libraryArchive.ToGroup(loadout.Id, tx, out var topLevelItem);
-        
         foreach (var (file, infoJson) in infosList.OrderBy(x => x.InfoJson.Name))
         {
             var modFolder = file.Parent();
@@ -113,7 +116,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
                 LoadoutId = loadout.Id,
                 IsIsDisabledMarker = false,
                 Name = infoJson.Name,
-                ParentId = topLevelGroup.Id,
+                ParentId = loadoutGroup.Id,
             };
             
             var groupItem = new LoadoutItemGroup.New(tx, loadoutItem.Id)
@@ -153,7 +156,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             };
         }
 
-        return [topLevelItem];
+        return new Success();
     }
 }
 

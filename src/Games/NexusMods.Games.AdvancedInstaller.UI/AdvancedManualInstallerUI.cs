@@ -5,9 +5,13 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -15,7 +19,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 /// Provides the UI for the Advanced Manual Installer.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
+public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInstallerHandler
 {
     /// <summary>
     /// If true, the UI is not running and the installer will quietly fail.
@@ -30,50 +34,40 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     /// <summary>
     /// Construct the UI handler for the Advanced Manual Installer.
     /// </summary>
-    /// <param name="provider">Service provider required to obtain Loadout information.</param>
-    public AdvancedManualInstallerUI(IServiceProvider provider)
+    public AdvancedManualInstallerUI(IServiceProvider provider, ILogger<AdvancedManualInstallerUI> logger) : base(provider, logger)
     {
         // Delay to avoid circular dependency.
         _conn = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
-        _logger = provider.GetRequiredService<ILogger<AdvancedManualInstallerUI>>();
+        _logger = logger;
     }
 
-    /// <InheritDoc/>
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        ModInstallerInfo info,
-        CancellationToken cancellationToken = default)
+    public override async ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction transaction,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
-        if (Headless)
-            return Array.Empty<ModInstallerResult>();
-        
-        // Get default name of the mod for UI purposes.
-        var modName = info.ModName ?? Language.AdvancedInstaller_Manual_Mod;
+        if (Headless) return new NotSupported();
 
-        // Note: This code is effectively a stub.
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(info, modName);
+        var tree = LibraryArchiveTree.Create(libraryArchive);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(Language.AdvancedInstaller_Manual_Mod, tree, loadout);
 
-        if (!shouldInstall)
-            return Array.Empty<ModInstallerResult>();
+        if (!shouldInstall) return new NotSupported();
 
-        return new[]
-        {
-            new ModInstallerResult
-            {
-                Id = info.BaseModId,
-                Files = deploymentData.EmitOperations(info.ArchiveFiles)
-            }
-        };
+        deploymentData.CreateLoadoutItems(tree, loadout, loadoutGroup, transaction);
+        return new Success();
     }
 
-
-    private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
-        ModInstallerInfo info, string modName)
+    private async ValueTask<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
+        string title,
+        KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
+        Loadout.ReadOnly loadout)
     {
-        var installerViewModel = new AdvancedInstallerWindowViewModel(modName, info.ArchiveFiles, info.Locations, info.GameName);
-        await ShowAdvancedInstallerDialog(installerViewModel);
+        var vm = new AdvancedInstallerWindowViewModel(title, archiveFiles, loadout);
+        await ShowAdvancedInstallerDialog(vm);
 
-        return (installerViewModel.AdvancedInstallerVM.ShouldInstall,
-            installerViewModel.AdvancedInstallerVM.BodyViewModel.DeploymentData);
+        return (vm.AdvancedInstallerVM.ShouldInstall, vm.AdvancedInstallerVM.BodyViewModel.DeploymentData);
     }
 
     /// <summary>

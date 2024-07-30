@@ -3,7 +3,6 @@ using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -25,13 +24,14 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         new(entry => entry.GamePath);
 
     /// <summary>
-    /// Constructs the view model for the Select Location view.
+    /// Constructor.
     /// </summary>
-    /// <param name="register">The game locations register to obtain the locations.</param>
-    /// <param name="loadout">The loadout, to obtain the loadout folder structure. Can be null.</param>
-    /// <param name="gameName">The name of the Game, to show in the ui.</param>
-    public SelectLocationViewModel(IGameLocationsRegister register, Loadout.ReadOnly? loadout, string gameName)
+    public SelectLocationViewModel(Loadout.ReadOnly loadout)
     {
+        var installation = loadout.InstallationInstance;
+        var gameName = installation.Game.Name;
+        var register = installation.LocationsRegister;
+
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
 
         SuggestedEntries = CreateSuggestedEntries(register).ToReadOnlyObservableCollection();
@@ -88,10 +88,9 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// Creates the tree entries from the LocationIds and potentially the Loadout folder structure.
     /// </summary>
     /// <param name="register">The game locations register</param>
-    /// <param name="loadout">The loadout, can be null.</param>
+    /// <param name="loadout">The loadout</param>
     /// <returns>The list of created tree entries that need to be added to the cache.</returns>
-    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(IGameLocationsRegister register,
-        Loadout.ReadOnly? loadout)
+    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(IGameLocationsRegister register, Loadout.ReadOnly loadout)
     {
         // Initial population of the tree based on LocationIds
         List<ISelectableTreeEntryViewModel> treeEntries = new();
@@ -120,11 +119,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             }
         }
 
-        if (loadout != null)
-        {
-            // TODO: Potentially add entries to the tree to represent all the folders found in the loadout.
-        }
-
+        // TODO: Potentially add entries to the tree to represent all the folders found in the loadout.
         return treeEntries;
     }
 

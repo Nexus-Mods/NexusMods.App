@@ -22,20 +22,12 @@
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
 
-        <Compile Update="Content\Left\ModContent\ModContentDesignViewModel.cs">
-            <DependentUpon>IModContentViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Left\ModContent\ModContentViewModel.cs">
             <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\BodyView.axaml.cs">
             <SubType>Code</SubType>
-        </Compile>
-
-        <Compile Update="Content\BodyDesignViewModel.cs">
-            <DependentUpon>IBodyViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Bottom\FooterView.axaml.cs">
@@ -71,10 +63,6 @@
           <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\SelectLocation\SelectLocationDesignViewModel.cs">
-          <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Right\SelectLocation\SelectLocationViewModel.cs">
           <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
         </Compile>
@@ -91,20 +79,12 @@
           <DependentUpon>IAdvancedInstallerPageViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Pages\AdvancedInstallerPages\AdvancedInstallerPageDesignViewModel.cs">
-          <DependentUpon>IAdvancedInstallerPageViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Pages\ModUnsupportedPage\UnsupportedModPageDesignViewModel.cs">
           <DependentUpon>IUnsupportedModPageViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Pages\ModUnsupportedPage\UnsupportedModPageViewModel.cs">
           <DependentUpon>IUnsupportedModPageViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Window\AdvancedInstallerWindowDesignViewModel.cs">
-          <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\Preview\TreeEntry\PreviewTreeEntryDesignViewModel.cs">

@@ -53,8 +53,9 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
         }};
     }
 
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction tx,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
@@ -62,19 +63,17 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller, IModInstaller
         var tree = libraryArchive.GetTree();
         var extensionPreset = new Extension(".preset");
 
-        var group = libraryArchive.ToGroup(loadout.Id, tx, out var loadoutItem);
-        
         var modFiles = tree.GetFiles()
             .Where(kv => kv.Key().Extension == extensionPreset)
             .SelectMany(kv => Paths.Select(relPath => kv.ToLoadoutFile(
                 loadout.Id,
-                group.Id,
+                loadoutGroup.Id,
                 tx,
                 new GamePath(LocationId.Game, relPath.Join(kv.Key()))
             ))).ToArray();
 
         return modFiles.Length == 0
-            ? ValueTask.FromResult<LoadoutItem.New[]>([])
-            : ValueTask.FromResult<LoadoutItem.New[]>([loadoutItem]);
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }

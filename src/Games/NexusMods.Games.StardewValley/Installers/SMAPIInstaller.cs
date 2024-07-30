@@ -241,8 +241,9 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         };
     }
 
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
@@ -262,11 +263,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             return parentName.Equals(targetParentName);
         }, out var installDataFile);
 
-        if (!foundInstallDataFile) return [];
+        if (!foundInstallDataFile) return new NotSupported();
         if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
         {
             Logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
-            return [];
+            return new NotSupported();
         }
 
         var isUnix = _osInformation.IsUnix();
@@ -276,7 +277,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
-        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem, name: "SMAPI");
+        // TODO: set group name
         var modDatabaseEntityId = DynamicData.Kernel.Optional<EntityId>.None;
         var version = DynamicData.Kernel.Optional<string>.None;
 
@@ -290,7 +291,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 Name = fileName,
                 LoadoutId = loadout,
-                ParentId = group,
+                ParentId = loadoutGroup,
             };
 
             // NOTE(erri120): This is a more reliable approach for getting
@@ -392,20 +393,20 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
                         {
                             Name = to.FileName,
                             LoadoutId = loadout,
-                            ParentId = group,
+                            ParentId = loadoutGroup,
                         },
                     },
                 };
             }
         }
 
-        _ = new SMAPILoadoutItem.New(transaction, group.Id)
+        _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)
         {
-            LoadoutItemGroup = group,
+            LoadoutItemGroup = loadoutGroup,
             Version = version.ValueOrDefault(),
             ModDatabaseId = modDatabaseEntityId.ValueOrDefault(),
         };
 
-        return [groupLoadoutItem];
+        return new Success();
     }
 }
