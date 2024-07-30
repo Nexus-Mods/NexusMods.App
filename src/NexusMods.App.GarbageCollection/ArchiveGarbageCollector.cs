@@ -92,10 +92,22 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     /// <summary>
     ///     Collects all garbage from the archives.
     /// </summary>
-    public void CollectGarbage(Action<List<Hash>, ArchiveReference<TParsedHeaderState>> doRepack)
+    /// <param name="progress">
+    ///     Reports progress of the repacking process.
+    ///     As per convention, a value of 1 means 100% completion.
+    ///     A value of 0 means 0% completion.
+    /// </param>
+    /// <param name="doRepack">
+    ///     The method used to repack the archive. See the <see cref="RepackDelegate"/>
+    ///     for more details.
+    /// </param>
+    public void CollectGarbage(IProgress<double> progress, RepackDelegate doRepack)
     {
+        var slicer = new ProgressSlicer(progress);
+        var progressPerArchive = 1 / (double)AllArchives.Count;
         foreach (var archive in AllArchives)
         {
+            var archiveProgress = slicer.Slice(progressPerArchive);
             var toArchive = new List<Hash>(archive.Entries.Count);
             foreach (var item in archive.Entries)
             {
@@ -107,7 +119,24 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
             if (!shouldRepack)
                 continue;
 
-            doRepack(toArchive, archive);
+            doRepack(archiveProgress, toArchive, archive);
         }
+        
+        progress.Report(1);
     }
+    
+    /// <summary>
+    ///     Performs the repacking of an individual archive.
+    /// </summary>
+    /// <param name="progress">
+    ///     Reports progress of the repacking process.
+    /// </param>
+    /// <param name="hashes">
+    ///     The list of hashes as the placed in the new archive.
+    ///     The archive will be repacked with only the hashes in this list.
+    /// </param>
+    /// <param name="archive">
+    ///     The archive to be repacked.
+    /// </param>
+    public delegate void RepackDelegate(IProgress<double> progress, List<Hash> hashes, ArchiveReference<TParsedHeaderState> archive);
 }

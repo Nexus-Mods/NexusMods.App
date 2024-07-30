@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using NexusMods.App.GarbageCollection.Errors;
 using NexusMods.App.GarbageCollection.Structs;
@@ -130,7 +131,7 @@ public class ArchiveGarbageCollectorTests
         var repackCalled = false;
 
         // Act
-        collector.CollectGarbage((_, _) =>
+        collector.CollectGarbage(null!, (_, _, _) =>
         {
             repackCalled = true;
         });
@@ -156,7 +157,7 @@ public class ArchiveGarbageCollectorTests
         ArchiveReference<MockParsedHeaderState> repackedArchive = null!;
 
         // Act
-        collector.CollectGarbage((hashes, archive) =>
+        collector.CollectGarbage(null!, (_, hashes, archive) =>
         {
             repackedHashes = hashes;
             repackedArchive = archive;
@@ -193,7 +194,7 @@ public class ArchiveGarbageCollectorTests
         List<Hash>? repackedHashes = null;
 
         // Act
-        collector.CollectGarbage((hashes, archive) =>
+        collector.CollectGarbage(null!, (_, hashes, archive) =>
         {
             if (repackedArchives != null || repackedHashes != null)
                 Assert.Fail("Repack called multiple times. Only one archive should be repacked.");
@@ -220,7 +221,7 @@ public class ArchiveGarbageCollectorTests
         var repackCalled = false;
 
         // Act
-        collector.CollectGarbage((_, _) =>
+        collector.CollectGarbage(null!, (_, _, _) =>
         {
             repackCalled = true;
         });
@@ -244,7 +245,7 @@ public class ArchiveGarbageCollectorTests
         List<Hash> repackedHashes = null!;
 
         // Act
-        collector.CollectGarbage((hashes, _) =>
+        collector.CollectGarbage(null!, (_, hashes, _) =>
         {
             repackedHashes = hashes;
         });

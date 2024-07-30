@@ -1,3 +1,4 @@
+using System;
 using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.Hashing.xxHash64;
 namespace NexusMods.App.GarbageCollection.Tests.Helpers;

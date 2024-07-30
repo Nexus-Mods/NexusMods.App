@@ -3,7 +3,7 @@ using AutoFixture.Xunit2;
 using FluentAssertions;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
-using NexusMods.Archives.Nx.Packing;
+using NexusMods.Archives.Nx.Packing.Pack;
 using NexusMods.Archives.Nx.Structs;
 using Xunit;
 namespace NexusMods.App.GarbageCollection.Nx.Tests;

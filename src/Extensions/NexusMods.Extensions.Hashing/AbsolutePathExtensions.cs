@@ -41,7 +41,7 @@ public static class AbsolutePathExtensions
     {
         try
         {
-            using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read);
+            using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read, 0);
             var hashValue = XxHash64Algorithm.HashBytes(mmf.AsSpan());
             job?.AddProgress(Size.FromLong((long)mmf.Length));
             return Hash.From(hashValue);

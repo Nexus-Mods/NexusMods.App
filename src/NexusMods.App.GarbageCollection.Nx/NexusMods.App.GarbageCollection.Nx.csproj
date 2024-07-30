@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
     <ItemGroup>
         <PackageReference Include="NexusMods.Archives.Nx"/>
+        <PackageReference Include="NexusMods.Paths.Extensions.Nx" />
     </ItemGroup>
 
     <ItemGroup>
