@@ -740,8 +740,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
 
-        var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
-
         // Backup the files
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
 
@@ -751,14 +749,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-
-            if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
-            {
-                var group = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-                groupId = group.Id;
-
-                loadoutGameFilesGroups.Add(path.LocationId, groupId);
-            }
 
             _ = new LoadoutFile.New(tx, out var loadoutFileId)
             {
@@ -771,7 +761,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     {
                         Name = path.FileName,
                         LoadoutId = loadout,
-                        ParentId = groupId,
+                        ParentId = gameFiles.Id,
                     },
                 },
             };
@@ -926,7 +916,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
         
         var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-        var loadoutGameFilesGroups = new Dictionary<LocationId, LoadoutItemGroupId>();
 
         // Backup the files
         // 1. Because we need to backup the files for every created loadout.
@@ -939,14 +928,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!IsIgnoredBackupPath(path)) 
                 filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
 
-            if (!loadoutGameFilesGroups.TryGetValue(path.LocationId, out var groupId))
-            {
-                var group = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-                groupId = group.Id;
-
-                loadoutGameFilesGroups.Add(path.LocationId, groupId);
-            }
-
             _ = new LoadoutFile.New(tx, out var loadoutFileId)
             {
                 Hash = file.Item.Value.Hash,
@@ -958,7 +939,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     {
                         Name = path.FileName,
                         LoadoutId = loadout,
-                        ParentId = groupId,
+                        ParentId = gameFiles.Id,
                     },
                 },
             };
