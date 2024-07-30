@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using DynamicData.Alias;
 using Humanizer;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -34,7 +35,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
 
     private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
     public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
-    public DownloadAnalysis.ReadOnly FileOrigin { get; }
+    public LibraryArchive.ReadOnly FileOrigin { get; }
     public ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
     public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
     public ReactiveCommand<Unit, Unit> AddAdvancedToLoadoutCommand { get; }
@@ -42,7 +43,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public FileOriginEntryViewModel(
         IConnection conn,
         LoadoutId loadoutId,
-        DownloadAnalysis.ReadOnly fileOrigin,
+        LibraryArchive.ReadOnly fileOrigin,
         ReactiveCommand<NavigationInformation, Unit> viewModCommand,
         ReactiveCommand<Unit, Unit> addModToLoadoutCommand,
         ReactiveCommand<Unit, Unit> addAdvancedToLoadoutCommand)
@@ -52,10 +53,9 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         AddToLoadoutCommand = addModToLoadoutCommand;
         AddAdvancedToLoadoutCommand = addAdvancedToLoadoutCommand;
 
-        Name = DownloaderState.FriendlyName.TryGet(fileOrigin, out var foundName) && foundName != "Unknown" ? foundName : fileOrigin.SuggestedName;
-        
-        Size = DownloadAnalysis.Size.TryGet(fileOrigin, out var analysisSize) ? analysisSize : 
-            DownloaderState.Size.TryGet(fileOrigin, out var dlStateSize) ? dlStateSize : Size.From(0);
+        Name = fileOrigin.AsLibraryFile().AsLibraryItem().Name;
+
+        Size = fileOrigin.AsLibraryFile().Size;
 
         Version = DownloaderState.Version.TryGet(fileOrigin, out var version) && version != "Unknown" ? version : "-";
         
