@@ -2,6 +2,7 @@ using NexusMods.App.GarbageCollection.Structs;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
 namespace NexusMods.App.GarbageCollection.Nx;
 
@@ -29,12 +30,18 @@ public static class NxRepacker
         }
 
         var repacker = new NxRepackerBuilder();
-        var fromAbsolutePathProvider = new FromAbsolutePathProvider()
+        var fromAbsolutePathProvider = new FromAbsolutePathProvider
         {
             FilePath = archive.FilePath,
         };
-        repacker.AddFilesFromNxArchive(fromAbsolutePathProvider, archive.HeaderState.Header, entries);
-        repacker.WithProgress(progress);
+
+        var tempFile = archive.FilePath.AppendExtension((Extension)".tmp");
+        repacker.AddFilesFromNxArchive(fromAbsolutePathProvider, archive.HeaderState.Header, entries)
+            .WithProgress(progress)
+            .WithOutput(tempFile.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None));
         repacker.Build();
+        // Note: There's a flaw with Nx API, the `Build` method should be virtual,
+        //       will fix soonish.
+        tempFile.FileSystem.MoveFile(tempFile, archive.FilePath, true);
     }
 }
