@@ -93,6 +93,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
+        _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
     ];
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>

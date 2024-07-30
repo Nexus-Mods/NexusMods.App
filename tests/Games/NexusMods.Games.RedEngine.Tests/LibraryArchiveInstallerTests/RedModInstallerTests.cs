@@ -25,18 +25,14 @@ public class RedModInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk2077G
 
         var loadout = await CreateLoadout();
         var libraryArchive = await RegisterLocalArchive(fullPath);
-        var installResult = await Install(typeof(RedModInstaller), loadout, libraryArchive);
-        installResult.Length.Should().Be(1, "The installer should have installed one group of files.");
-        
-
-        installResult.First().TryGetAsLoadoutItemGroup(out var group).Should().BeTrue("The installed result should be a loadout item group.");
+        var group = await Install(typeof(RedModInstaller), loadout, libraryArchive);
 
         foreach (var child in group.Children)
         {
             child.TryGetAsLoadoutItemGroup(out var childGroup).Should().BeTrue("The child should be a loadout item group.");
             childGroup.TryGetAsRedModLoadoutGroup(out var redModGroup).Should().BeTrue("The child should be a red mod loadout group.");
         }
-        
-        await VerifyTx(installResult[0].MostRecentTxId()).UseParameters(filename);
+
+        await VerifyTx(group.MostRecentTxId()).UseParameters(filename);
     }
 }

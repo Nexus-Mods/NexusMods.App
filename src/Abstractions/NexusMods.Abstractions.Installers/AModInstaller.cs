@@ -6,6 +6,7 @@ namespace NexusMods.Abstractions.Installers;
 /// Mod installer base class that provides support for the installation of mods
 /// </summary>
 [PublicAPI]
+[Obsolete]
 public abstract class AModInstaller : IModInstaller
 {
     /// <summary>

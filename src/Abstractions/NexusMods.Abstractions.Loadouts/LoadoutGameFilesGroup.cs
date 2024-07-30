@@ -15,7 +15,7 @@ public partial class LoadoutGameFilesGroup : IModelDefinition
     private const string Namespace = "NexusMods.Loadouts.LoadoutGameFilesGroup";
 
     /// <summary>
-    /// Raw location id.
+    /// Game metadata.
     /// </summary>
     public static readonly ReferenceAttribute<GameMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
 }

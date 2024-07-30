@@ -12,6 +12,7 @@ namespace NexusMods.Abstractions.FileStore.Trees;
 /// <remarks>
 ///     See this for reference https://github.com/Nexus-Mods/NexusMods.Paths/blob/main/docs/Trees/Introduction.md
 /// </remarks>
+[Obsolete("To be replaced by LibraryArchiveTree")]
 public struct ModFileTree :
     IHaveBoxedChildrenWithKey<RelativePath, ModFileTree>, // basic functionality
     IHaveAFileOrDirectory, // for uses which want to distinguish file/directory

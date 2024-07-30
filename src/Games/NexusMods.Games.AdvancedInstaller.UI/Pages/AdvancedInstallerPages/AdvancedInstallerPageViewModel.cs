@@ -1,6 +1,8 @@
 using System.Reactive.Disposables;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
@@ -12,19 +14,16 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
     IAdvancedInstallerPageViewModel
 {
     /// <summary>
-    /// Constructor for the main Manual installer page, this currently contains the footer and body view models.
-    /// TODO: This isn't an actual Page yet, still needs conversion.
+    /// Constructor.
     /// </summary>
-    /// <param name="modName">The display name for the mod to install.</param>
-    /// <param name="archiveFiles">A <see cref="FileTreeNode{RelativePath,ModSourceFileEntry}"/> of the files contained in the mod archive.</param>
-    /// <param name="register">The register containing the game locations.</param>
-    /// <param name="gameName">The display name of the game being managed.</param>
-    public AdvancedInstallerPageViewModel(string modName,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
-        IGameLocationsRegister register,
-        string gameName)
+    public AdvancedInstallerPageViewModel(
+        string title,
+        KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
+        Loadout.ReadOnly loadout)
     {
-        BodyViewModel = new BodyViewModel(new DeploymentData(), modName, archiveFiles, register, null, gameName);
+        // TODO: convert to page?
+
+        BodyViewModel = new BodyViewModel(new DeploymentData(), title, archiveFiles, loadout);
         FooterViewModel = new FooterViewModel();
         ShouldInstall = false;
 

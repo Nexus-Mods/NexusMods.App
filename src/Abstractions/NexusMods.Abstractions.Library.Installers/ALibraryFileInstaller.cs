@@ -28,8 +28,9 @@ public abstract class ALibraryFileInstaller : ALibraryItemInstaller, ILibraryFil
     public virtual bool IsSupportedLibraryFile(LibraryFile.ReadOnly libraryFile) => true;
 
     /// <inheritdoc/>
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
@@ -37,15 +38,16 @@ public abstract class ALibraryFileInstaller : ALibraryItemInstaller, ILibraryFil
         if (!libraryItem.TryGetAsLibraryFile(out var libraryFile))
         {
             Logger.LogError("The provided library item `{Name}` (`{Id}`) is not a library file!", libraryItem.Name, libraryItem.Id);
-            return new ValueTask<LoadoutItem.New[]>([]);
+            return ValueTask.FromResult<InstallerResult>(new NotSupported());
         }
 
-        return ExecuteAsync(libraryFile, transaction, loadout, cancellationToken);
+        return ExecuteAsync(libraryFile, loadoutGroup, transaction, loadout, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public abstract ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public abstract ValueTask<InstallerResult> ExecuteAsync(
         LibraryFile.ReadOnly libraryFile,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);

@@ -56,21 +56,22 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller, IModInstaller
         };
     }
 
-    
-    public override ValueTask<LoadoutItem.New[]> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, ITransaction tx, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction tx,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
 
-        var group = libraryArchive.ToGroup(loadout, tx, out var loadoutItem);
-        
         var modFiles = tree.EnumerateFilesBfs()
             .Where(f => !IgnoreExtensions.Contains(f.Value.Item.Path.Extension))
-            .Select(f => f.Value.ToLoadoutFile(loadout.Id, group.Id, tx, new GamePath(LocationId.Game, Destination.Join(f.Value.Item.Path.FileName))))
+            .Select(f => f.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, tx, new GamePath(LocationId.Game, Destination.Join(f.Value.Item.Path.FileName))))
             .ToArray();
 
-        if (!modFiles.Any())
-            return ValueTask.FromResult<LoadoutItem.New[]>([]);
-        
-        return ValueTask.FromResult<LoadoutItem.New[]>([ loadoutItem ]);
+        return modFiles.Length == 0
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }
