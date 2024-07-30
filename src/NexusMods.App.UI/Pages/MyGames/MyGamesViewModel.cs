@@ -38,7 +38,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IServiceProvider serviceProvider,
         IConnection conn,
         ILogger<MyGamesViewModel> logger,
-        IApplyService applyService,
+        ISynchronizerService syncService,
         IGameRegistry gameRegistry) : base(windowManager)
     {
         TabTitle = Language.MyGames;

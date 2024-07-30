@@ -16,19 +16,19 @@ public class ToolManager : IToolManager
 {
     private readonly ILookup<GameDomain,ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
-    private readonly IApplyService _applyService;
+    private readonly ISynchronizerService _syncService;
     private readonly IConnection _conn;
     
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, IApplyService applyService, IConnection conn)
+    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, ISynchronizerService syncService, IConnection conn)
     {
         _logger = logger;
         _tools = tools.SelectMany(tool => tool.Domains.Select(domain => (domain, tool)))
             .ToLookup(t => t.domain, t => t.tool);
-        _applyService = applyService;
+        _syncService = syncService;
         _conn = conn;
     }
 
@@ -49,7 +49,7 @@ public class ToolManager : IToolManager
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
             loadout.Id, loadout.InstallationInstance.Game.Name, loadout.InstallationInstance.Version);
-        await _applyService.Synchronize(loadout);
+        await _syncService.Synchronize(loadout);
         var appliedLoadout = loadout.Rebase();
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
@@ -58,7 +58,7 @@ public class ToolManager : IToolManager
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
             appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
-        await _applyService.Synchronize(appliedLoadout);
+        await _syncService.Synchronize(appliedLoadout);
 
         return appliedLoadout.Rebase();
     }

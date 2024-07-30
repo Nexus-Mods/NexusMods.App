@@ -44,11 +44,11 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
                 var item = LoadoutItem.Load(db, id);
                 if (item.IsIsDisabledMarker)
                 {
-                    txInner.Retract(item.Id, LoadoutItemGroup.IsLoadoutItemGroupMarker, Null.Instance);
+                    txInner.Retract(item.Id, LoadoutItem.IsDisabledMarker, Null.Instance);
                 }
                 else
                 {
-                    txInner.Add(item.Id, LoadoutItemGroup.IsLoadoutItemGroupMarker, Null.Instance);
+                    txInner.Add(item.Id, LoadoutItem.IsDisabledMarker, Null.Instance);
                 }
             });
 

@@ -47,7 +47,7 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
     {
         _loadoutId = loadoutId;
         _fileTreeViewModel = new DiffTreeViewModel(_loadoutId,
-            _serviceProvider.GetRequiredService<IApplyService>(),
+            _serviceProvider.GetRequiredService<ISynchronizerService>(),
             _serviceProvider.GetRequiredService<IConnection>()
         );
 

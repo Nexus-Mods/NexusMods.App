@@ -23,7 +23,7 @@ public static class Services
             .AddLoadoutItemWithTargetPathModel()
             .AddLoadoutFileModel()
             .AddDeletedFileModel()
-
+            
             // deprecated:
             .AddFileModel()
             .AddStoredFileModel()
