@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Library;
@@ -13,10 +14,12 @@ namespace NexusMods.Library;
 [UsedImplicitly]
 internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public InstallLoadoutItemJobWorker(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJobWorker>>();
     }
 
@@ -29,8 +32,13 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 
         if (!result.HasValue)
         {
-            // TODO: default to advanced installer
-            return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
+            var manualInstaller = AdvancedManualInstaller.Create(_serviceProvider);
+            result = await ExecuteInstallersAsync(job, [manualInstaller], cancellationToken);
+
+            if (!result.HasValue)
+            {
+                return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`), including the advanced installer!");
+            }
         }
 
         var (loadoutGroup, transaction) = result.Value;
