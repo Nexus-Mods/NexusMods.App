@@ -225,7 +225,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
     {
-        return arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.IsDisabledMarker));
+        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.IsDisabledMarker));
     }
 
     /// <inheritdoc />
