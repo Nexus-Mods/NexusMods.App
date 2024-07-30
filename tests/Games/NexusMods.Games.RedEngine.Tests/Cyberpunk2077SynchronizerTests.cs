@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.Games.TestFramework.FluentAssertionExtensions;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.Tests;
@@ -28,18 +29,18 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
         var notIgnoredPath = GameInstallation.LocationsRegister.GetResolvedPath(notIgnoredGamePath);
         
         // Write the files
-        await ignoredPath.WriteAllTextAsync("Ignore me");
+        await ignoredPath.WriteAllTextAsync("Ignore me" + Guid.NewGuid());
         var ignoredHash = await ignoredPath.XxHash64Async();
-        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!");
+        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!" + Guid.NewGuid());
         var notIgnoredHash = await notIgnoredPath.XxHash64Async();
         
         // Create the loadout
         var loadout = await CreateLoadout();
         
-        loadout.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
+        loadout.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
         
-        loadout.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
+        loadout.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
         // Now disable the ignore setting
@@ -47,9 +48,9 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
 
         var loadout2 = await CreateLoadout();
         
-        loadout2.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
+        loadout2.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file is not ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");
-        loadout2.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
+        loadout2.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored");
     }
 

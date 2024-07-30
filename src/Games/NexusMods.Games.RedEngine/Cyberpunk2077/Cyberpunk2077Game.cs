@@ -31,7 +31,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         _serviceProvider = provider;
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) 
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
         => new Cyberpunk2077Synchronizer(provider);
 
     public override string Name => "Cyberpunk 2077";
@@ -82,7 +82,6 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new SimpleOverlayModInstaller(_serviceProvider),
         new AppearancePresetInstaller(_serviceProvider),
         new FolderlessModInstaller(_serviceProvider),
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
     };
     
     /// <inheritdoc />
@@ -92,6 +91,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new SimpleOverlayModInstaller(_serviceProvider),
         new AppearancePresetInstaller(_serviceProvider),
         new FolderlessModInstaller(_serviceProvider),
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)

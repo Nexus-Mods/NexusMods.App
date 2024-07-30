@@ -42,9 +42,9 @@ public interface IGame : ILocatableGame
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
-
+    
     /// <summary>
-    /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.
+    /// The synchronizer for this game.
     /// </summary>
     public ILoadoutSynchronizer Synchronizer { get; }
     

@@ -2,16 +2,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
+using NexusMods.Games.TestFramework.FluentAssertionExtensions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
@@ -24,35 +22,45 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         loadout = await Synchronizer.Synchronize(loadout);
 
         using var tx = Connection.BeginTransaction();
-
-        var mod = new Mod.New(tx)
-        {
-            LoadoutId = loadout,
-            Name = "Test Mod",
-            Revision = 0,
-            Enabled = true,
-            Category = ModCategory.Mod,
-            Status = ModStatus.Installed,
-        };
-
+        
         var manifestData = "{}";
         var manifestHash = manifestData.XxHash64AsUtf8();
         
-        var manfiestFile = new StoredFile.New(tx, out var id)
+        var smapiMod = new SMAPIModLoadoutItem.New(tx, out var modId)
         {
-            File = new File.New(tx, id)
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, modId)
             {
-                To = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
-                ModId = mod,
-                LoadoutId = loadout,
+                IsIsLoadoutItemGroupMarker = true,
+                LoadoutItem = new LoadoutItem.New(tx, modId)
+                {
+                    LoadoutId = loadout,
+                    Name = "Test Mod",
+                }
             },
-            Hash = manifestHash,
-            Size = Size.FromLong(manifestData.Length),
+            ManifestId = new SMAPIManifestLoadoutFile.New(tx, out var fileId)
+            {
+                IsIsManifestMarker = true,
+                LoadoutFile = new LoadoutFile.New(tx, fileId)
+                {
+                    Hash = manifestHash,
+                    Size = Size.FromLong(manifestData.Length),
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
+                    {
+                        TargetPath = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
+                        LoadoutItem = new LoadoutItem.New(tx, fileId)
+                        {
+                            LoadoutId = loadout,
+                            ParentId = modId,
+                            Name = "Test Mod - manifest.json",
+                        },
+                    },
+                },
+            },
         };
         
         var result = await tx.Commit();
 
-        var newModId = result.Remap(mod).Id;
+        var newModId = result.Remap(smapiMod).Id;
 
         loadout = loadout.Rebase();
         loadout = await Synchronizer.Synchronize(loadout);
@@ -66,12 +74,14 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         
         loadout = await Synchronizer.Synchronize(loadout);
         
-        loadout.Files
-            .TryGetFirst(f => f.To == newFilePath, out var found)
-            .Should().BeTrue("The file was ingested from the game folder");
+        loadout.Items.Should().ContainItemTargetingPath(newFilePath, "The file was moved into the mod folder");
+        var foundMod = loadout.Items
+            .OfTypeLoadoutItemWithTargetPath().Where(f => f.TargetPath == newFilePath)
+            .Select(f => f.AsLoadoutItem().Parent)
+            .First();
 
-        found.Mod.Name.Should().Be("Test Mod", "The file was ingested into the parent mod folder");
-        found.Mod.Id.Should().Be(newModId, "The file was ingested into the parent mod folder");
+        foundMod.AsLoadoutItem().Name.Should().Be("Test Mod", "The file was ingested into the parent mod folder");
+        foundMod.Id.Should().Be(newModId, "The file was ingested into the parent mod folder");
     }
 
     [Fact]
@@ -90,18 +100,18 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         var notIgnoredPath = GameInstallation.LocationsRegister.GetResolvedPath(notIgnoredGamePath);
         
         // Write the files
-        await ignoredPath.WriteAllTextAsync("Ignore me");
+        await ignoredPath.WriteAllTextAsync("Ignore me" + Guid.NewGuid());
         var ignoredHash = await ignoredPath.XxHash64Async();
-        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!");
+        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!" + Guid.NewGuid());
         var notIgnoredHash = await notIgnoredPath.XxHash64Async();
         
         // Create the loadout
         var loadout = await CreateLoadout();
         
-        loadout.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
+        loadout.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
         
-        loadout.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
+        loadout.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
         // Now disable the ignore setting
@@ -109,9 +119,9 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
 
         var loadout2 = await CreateLoadout();
         
-        loadout2.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
+        loadout2.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file is not ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");
-        loadout2.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
+        loadout2.Items.Should().ContainItemTargetingPath(notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored");
     }
 

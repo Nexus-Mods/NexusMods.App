@@ -1,85 +1,67 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
-public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel, IComparableColumn<ModId>
+public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel, IComparableColumn<LoadoutItemGroupId>
 {
-    private readonly IConnection _conn;
+    private readonly IConnection _connection;
 
-    [Reactive]
-    public ModId Row { get; set; } = Initializers.ModId;
+    [Reactive] public bool Enabled { get; set; } = false;
 
-    [Reactive]
-    public bool Enabled { get; set; } = false;
-
-    [Reactive]
-    public ModStatus Status { get; set; } = ModStatus.Installed;
-
-    [Reactive]
     public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; set; }
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; set; }
+    [Reactive] public LoadoutItemGroupId Row { get; set; }
 
     public ModEnabledViewModel(IConnection conn)
     {
-        _conn = conn;
+        _connection = conn;
 
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
-                .Select(mod => mod.Enabled)
-                .OnUI()
-                .BindTo(this, vm => vm.Enabled)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
-                .Select(mod => mod.Status)
-                .OnUI()
-                .BindTo(this, vm => vm.Status)
+                .Select(groupId => LoadoutItemGroup.Observe(_connection, groupId))
+                .Switch()
+                .Select(group => !group.AsLoadoutItem().IsIsDisabledMarker)
+                .BindToVM(this, vm => vm.Enabled)
                 .DisposeWith(d);
         });
-        ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async enabled =>
+
+        ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async _ =>
         {
-            using var tx = _conn.BeginTransaction();
-            tx.Add(Row, static (txInner, db, id) =>
+            using var tx = _connection.BeginTransaction();
+
+            tx.Add(Row.Value, static (txInner, db, id) =>
             {
-                var mod = Mod.Load(db, id);
-                txInner.Add(mod.Id, Mod.Enabled, !mod.Enabled);
-                txInner.Add(mod.Id, Mod.Revision, mod.Revision + 1);
-                var loadout = mod.Loadout;
-                txInner.Add(loadout, Loadout.Revision, loadout.Revision + 1);
+                var item = LoadoutItem.Load(db, id);
+                if (item.IsIsDisabledMarker)
+                {
+                    txInner.Retract(item.Id, LoadoutItemGroup.IsLoadoutItemGroupMarker, Null.Instance);
+                }
+                else
+                {
+                    txInner.Add(item.Id, LoadoutItemGroup.IsLoadoutItemGroupMarker, Null.Instance);
+                }
             });
+
             await tx.Commit();
             return Unit.Default;
         });
-        DeleteModCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            using var tx = _conn.BeginTransaction();
-            tx.Delete(Row, true);
-            await tx.Commit();
-        });
     }
 
-    public int Compare(ModId a, ModId b)
+    public int Compare(LoadoutItemGroupId a, LoadoutItemGroupId b)
     {
-        var db = _conn.Db;
-        var aEnt = Mod.Load(db, a);
-        var bEnt = Mod.Load(db, b);
-        return (aEnt.Enabled).CompareTo(bEnt.Enabled);
+        var db = _connection.Db;
+        var aEnt = LoadoutItemGroup.Load(db, a);
+        var bEnt = LoadoutItemGroup.Load(db, b);
+        return aEnt.AsLoadoutItem().IsIsDisabledMarker.CompareTo(bEnt.AsLoadoutItem().IsIsDisabledMarker);
     }
 }

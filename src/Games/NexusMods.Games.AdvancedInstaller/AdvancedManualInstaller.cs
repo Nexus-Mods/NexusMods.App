@@ -1,12 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Installers;
+using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
 /// <summary>
 /// Advanced interactive mod installer that allows users to manually define files to install and where to install them.
 /// </summary>
-public class AdvancedManualInstaller : AModInstaller
+public class AdvancedManualInstaller : ALibraryArchiveInstaller
 {
     private readonly Lazy<IAdvancedInstallerHandler?> _handler;
 
@@ -23,22 +27,21 @@ public class AdvancedManualInstaller : AModInstaller
     /// <returns></returns>
     public static AdvancedManualInstaller Create(IServiceProvider provider) => new(provider);
 
-    public AdvancedManualInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AdvancedManualInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<AdvancedManualInstaller>>())
     {
         _handler = new Lazy<IAdvancedInstallerHandler?>(() => GetAdvancedInstallerHandler(serviceProvider));
     }
 
-    public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        ModInstallerInfo info,
-        CancellationToken cancellationToken = default)
+    public override ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction transaction,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
-        // No UI -> fail install.
-        if (!IsActive)
-            return new ValueTask<IEnumerable<ModInstallerResult>>(Enumerable.Empty<ModInstallerResult>());
-
-        return _handler.Value!.GetModsAsync(info, cancellationToken);
+        if (!IsActive) return ValueTask.FromResult<InstallerResult>(new NotSupported());
+        return _handler.Value!.ExecuteAsync(libraryArchive, loadoutGroup, transaction, loadout, cancellationToken);
     }
-
 
     /// <summary>
     /// Attempts to obtain an <see cref="IAdvancedInstallerHandler"/> from the <paramref name="provider"/>.

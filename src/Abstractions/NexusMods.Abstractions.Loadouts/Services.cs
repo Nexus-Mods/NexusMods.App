@@ -18,6 +18,7 @@ public static class Services
             .AddLoadoutItemModel()
             .AddLoadoutItemGroupModel()
             .AddLoadoutGameFilesGroupModel()
+            .AddLoadoutOverridesGroupModel()
             .AddLibraryLinkedLoadoutItemModel()
             .AddLoadoutItemWithTargetPathModel()
             .AddLoadoutFileModel()

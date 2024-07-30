@@ -1,4 +1,4 @@
-using FluentAssertions;
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.ModInstallers;
@@ -43,14 +43,12 @@ public class PathBasedInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk20
     {
         var loadout = await CreateLoadout();
         var archive = await AddFromPaths(archivePaths);
-        var result = await Install(installerType, loadout, archive);
-        
-        result.Length.Should().Be(1, "The installer should have installed one group of files.");
-        
-        await VerifyChildren(ChildrenFilesAndHashes(result[0]), archivePaths).UseParameters(testCaseName);
+        var group = await Install(installerType, loadout, archive);
+
+        await VerifyChildren(ChildrenFilesAndHashes(group), archivePaths).UseParameters(testCaseName);
     }
 
-    private SettingsTask VerifyChildren(IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> childrenFilesAndHashes, string[] archivePaths)
+    private SettingsTask VerifyChildren(IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> childrenFilesAndHashes, string[] archivePaths, [CallerFilePath] string sourceFile = "")
     {
         var asArray = childrenFilesAndHashes.ToArray();
         
@@ -61,6 +59,7 @@ public class PathBasedInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk20
                     Hash = row.Hash.ToString(),
                     ToGamePath = row.GamePath.ToString(),
                 }
-        )); 
+            // ReSharper disable once ExplicitCallerInfoArgument
+        ), sourceFile: sourceFile);
     }
 }

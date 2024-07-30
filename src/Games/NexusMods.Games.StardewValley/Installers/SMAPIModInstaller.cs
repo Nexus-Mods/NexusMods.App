@@ -101,16 +101,15 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller, IModInstaller
         return mods;
     }
 
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
         var manifestFileTuples = await GetManifestsAsync(libraryArchive, cancellationToken);
-        if (manifestFileTuples.Count == 0) return [];
-
-        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem);
+        if (manifestFileTuples.Count == 0) return new NotSupported();
 
         foreach (var tuple in manifestFileTuples)
         {
@@ -124,7 +123,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller, IModInstaller
                 {
                     Name = manifest.Name,
                     LoadoutId = loadout,
-                    ParentId = group,
+                    ParentId = loadoutGroup,
                 },
             };
 
@@ -169,7 +168,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller, IModInstaller
             };
         }
 
-        return [groupLoadoutItem];
+        return new Success();
     }
 
     private async ValueTask<List<ValueTuple<LibraryArchiveFileEntry.ReadOnly, SMAPIManifest>>> GetManifestsAsync(

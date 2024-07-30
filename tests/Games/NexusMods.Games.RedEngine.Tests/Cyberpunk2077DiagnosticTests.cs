@@ -2,12 +2,14 @@ using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
@@ -66,7 +68,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         // Install the dependant but not the dependency
         {
             using var tx = Connection.BeginTransaction();
-            var pluginMod = AddEmptyMod(tx, loadout, "PluginMod");
+            var pluginMod = AddEmptyGroup(tx, loadout, "PluginMod");
             foreach (var dependantPath in emitter.DependantPaths)
             {
                 foreach (var dependantExtension in emitter.DependantExtensions)
@@ -88,7 +90,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         // Install the dependency and the diagnostic should disappear
         {
             using var tx = Connection.BeginTransaction();
-            var dependencyMod = AddEmptyMod(tx, loadout, "DependencyMod");
+            var dependencyMod = AddEmptyGroup(tx, loadout, "DependencyMod");
             foreach (var dependencyPath in emitter.DependencyPaths)
             {
                 var gamePath = new GamePath(dependencyPath.LocationId, dependencyPath.Path);
@@ -104,14 +106,16 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         
         // Disable the dependency and the diagnostic should reappear
         {
-            var dependencyMod = Mod.Load(Connection.Db, loadout.GetEnabledMods().First(m => m.Name == "DependencyMod").Id);
-            await dependencyMod.ToggleEnabled();
+            var dependencyMod = LoadoutItemGroup.Load(Connection.Db, loadout.Items.First(m => m.Name == "DependencyMod").Id);
+            using var tx = Connection.BeginTransaction();
+            tx.Add(dependencyMod, LoadoutItem.IsDisabledMarker, Null.Instance);
+            await tx.Commit();
         }
         
         Refresh(ref loadout);
         
         diagnostics = await emitter.Diagnose(loadout, CancellationToken.None).ToListAsync();
         diagnostics.OfType<Diagnostic<Diagnostics.MissingModWithKnownNexusUriMessageData>>().Should().BeEmpty();
-        diagnostics.OfType<Diagnostic<Diagnostics.DisabledModDependencyMessageData>>().Should().ContainSingle();
+        diagnostics.OfType<Diagnostic<Diagnostics.DisabledGroupDependencyMessageData>>().Should().ContainSingle();
     }
 }

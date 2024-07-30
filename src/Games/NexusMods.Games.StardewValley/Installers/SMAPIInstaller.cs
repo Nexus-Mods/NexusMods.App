@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
@@ -240,8 +241,9 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
         };
     }
 
-    public override async ValueTask<LoadoutItem.New[]> ExecuteAsync(
+    public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
@@ -261,11 +263,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             return parentName.Equals(targetParentName);
         }, out var installDataFile);
 
-        if (!foundInstallDataFile) return [];
+        if (!foundInstallDataFile) return new NotSupported();
         if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
         {
             Logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
-            return [];
+            return new NotSupported();
         }
 
         var isUnix = _osInformation.IsUnix();
@@ -275,9 +277,9 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
-        var group = libraryArchive.ToGroup(loadout, transaction, out var groupLoadoutItem);
-        var modDatabaseEntityId = Optional<EntityId>.None;
-        var version = Optional<string>.None;
+        // TODO: set group name
+        var modDatabaseEntityId = DynamicData.Kernel.Optional<EntityId>.None;
+        var version = DynamicData.Kernel.Optional<string>.None;
 
         foreach (var fileEntry in installDataArchive.Children)
         {
@@ -289,7 +291,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 Name = fileName,
                 LoadoutId = loadout,
-                ParentId = group,
+                ParentId = loadoutGroup,
             };
 
             // NOTE(erri120): This is a more reliable approach for getting
@@ -355,16 +357,56 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             }
         }
 
-        // TODO: copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
+        // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
+        var foundGameFilesGroup = LoadoutGameFilesGroup
+            .FindByGameMetadata(loadout.Db, loadout.Installation.GameMetadataId)
+            .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
 
-        _ = new SMAPILoadoutItem.New(transaction, group.Id)
+        if (!foundGameFilesGroup)
         {
-            LoadoutItemGroup = group,
+            Logger.LogError("Unable to find game files group!");
+        }
+        else
+        {
+            var targetPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
+            var foundGameDepsFile = gameFilesGroup.AsLoadoutItemGroup().Children
+                .TryGetFirst(gameFile => gameFile.TryGetAsLoadoutItemWithTargetPath(out var targeted) && targeted.TargetPath == targetPath,
+                    out var gameDepsFile);
+            if (!foundGameDepsFile)
+            {
+                Logger.LogError("Unable to find `{Path}` in game files group!", targetPath);
+            }
+            else
+            {
+                var gameFile = LoadoutFile.Load(gameDepsFile.Db, gameDepsFile.Id);
+                
+                var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
+                _ = new LoadoutFile.New(transaction, out var id)
+                {
+                    Hash = gameFile.Hash,
+                    Size = gameFile.Size,
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
+                    {
+                        TargetPath = to,
+                        LoadoutItem = new LoadoutItem.New(transaction, id)
+                        {
+                            Name = to.FileName,
+                            LoadoutId = loadout,
+                            ParentId = loadoutGroup,
+                        },
+                    },
+                };
+            }
+        }
+
+        _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)
+        {
+            LoadoutItemGroup = loadoutGroup,
             Version = version.ValueOrDefault(),
             ModDatabaseId = modDatabaseEntityId.ValueOrDefault(),
         };
 
-        return [groupLoadoutItem];
+        return new Success();
     }
 }

@@ -18,9 +18,6 @@ using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
-using NexusMods.App.UI.Controls.ModInfo.Error;
-using NexusMods.App.UI.Controls.ModInfo.Loading;
-using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Spine;
@@ -48,12 +45,10 @@ using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
-using NexusMods.App.UI.Pages.ModInfo;
+using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
@@ -72,12 +67,9 @@ using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Download
 using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
-using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
-using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
 using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
 using ModNameView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName.ModNameView;
-using ModVersionView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion.ModVersionView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
 
@@ -121,11 +113,9 @@ public static class Services
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
-            .AddViewModel<ModCategoryViewModel, IModCategoryViewModel>()
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()
             .AddViewModel<ModInstalledViewModel, IModInstalledViewModel>()
             .AddViewModel<ModNameViewModel, IModNameViewModel>()
-            .AddViewModel<ModVersionViewModel, IModVersionViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
             .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
@@ -142,11 +132,7 @@ public static class Services
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
-            .AddViewModel<ModFilesViewModel, IModFilesViewModel>()
-            .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
-            .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
-            .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
 
             // Views
@@ -162,11 +148,9 @@ public static class Services
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<LoadoutGridView, ILoadoutGridViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
-            .AddView<ModCategoryView, IModCategoryViewModel>()
             .AddView<ModEnabledView, IModEnabledViewModel>()
             .AddView<ModInstalledView, IModInstalledViewModel>()
             .AddView<ModNameView, IModNameViewModel>()
-            .AddView<ModVersionView, IModVersionViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
             .AddView<Spine, ISpineViewModel>()
@@ -183,11 +167,7 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
-            .AddView<ModFilesView, IModFilesViewModel>()
-            .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
-            .AddView<LoadingView, ILoadingViewModel>()
-            .AddView<ErrorView, IErrorViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
@@ -229,7 +209,9 @@ public static class Services
 
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
-            
+
+            .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
+            .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -254,7 +236,6 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
-            .AddSingleton<IPageFactory, ModInfoPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
@@ -263,7 +244,7 @@ public static class Services
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
-            
+            .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

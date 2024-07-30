@@ -38,6 +38,9 @@
       <Compile Update="LoadoutGameFilesGroup.cs">
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
+      <Compile Update="LoadoutOverridesGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

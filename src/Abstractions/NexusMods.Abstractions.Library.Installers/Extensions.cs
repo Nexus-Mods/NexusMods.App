@@ -12,31 +12,6 @@ namespace NexusMods.Abstractions.Library.Installers;
 [PublicAPI]
 public static class Extensions
 {
-    public static LoadoutItemGroup.New ToGroup(
-        this LibraryArchive.ReadOnly archive,
-        LoadoutId loadout,
-        ITransaction tx,
-        out LoadoutItem.New loadoutItem,
-        string? name = null,
-        Optional<EntityId> entityId = default)
-    {
-        var groupId = entityId.ValueOr(tx.TempId);
-
-        loadoutItem = new LoadoutItem.New(tx, groupId)
-        {
-            LoadoutId = loadout,
-            Name = name ?? archive.AsLibraryFile().FileName,
-        };
-
-        var group = new LoadoutItemGroup.New(tx, groupId)
-        {
-            LoadoutItem = loadoutItem,
-            IsIsLoadoutItemGroupMarker = true,
-        };
-
-        return group;
-    }
-    
     /// <summary>
     /// Convert as LibraryArchiveTree node to a LoadoutFile with the given metadata
     /// </summary>

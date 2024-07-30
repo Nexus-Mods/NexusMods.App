@@ -1,14 +1,12 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using JetBrains.Annotations;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
+namespace NexusMods.App.UI.Pages.LoadoutGroupFiles;
 
-[UsedImplicitly]
-public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
+public partial class LoadoutGroupFilesView : ReactiveUserControl<ILoadoutGroupFilesViewModel>
 {
-    public ModFilesView()
+    public LoadoutGroupFilesView()
     {
         InitializeComponent();
 
@@ -22,3 +20,4 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
         });
     }
 }
+

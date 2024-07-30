@@ -93,6 +93,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
+        _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
     ];
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
@@ -106,7 +107,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new StardewValleyLoadoutSynchronizer(provider);

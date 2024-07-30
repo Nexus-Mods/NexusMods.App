@@ -10,6 +10,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Mod"/>.
 /// </summary>
 [PublicAPI]
+[Obsolete($"To be replaced by {nameof(LoadoutItemGroupReference)}")]
 public record ModReference : IDataReference<ModId, Mod.ReadOnly>
 {
     /// <inheritdoc/>

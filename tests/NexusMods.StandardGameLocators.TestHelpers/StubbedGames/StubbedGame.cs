@@ -17,6 +17,7 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -76,8 +77,13 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
-        new StubbedGameInstaller()
+        (IModInstaller)new StubbedGameInstaller(_serviceProvider),
     };
+    
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
+        new StubbedGameInstaller(_serviceProvider),
+    ];
 
     /// <summary>
     /// Incremented version number for each new game.

@@ -3,6 +3,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Library.Installers\NexusMods.Abstractions.Library.Installers.csproj" />
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
     </ItemGroup>
 

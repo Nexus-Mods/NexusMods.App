@@ -41,11 +41,8 @@ public abstract class AGame : IGame
     }
 
     /// <summary>
-    /// Helper method to create a <see cref="IStandardizedLoadoutSynchronizer"/>. The result of this method is cached
-    /// so that the same instance is returned every time.
+    /// Called to create the synchronizer for this game.
     /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
     protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);

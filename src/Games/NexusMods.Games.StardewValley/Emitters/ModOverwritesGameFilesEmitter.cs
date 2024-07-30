@@ -16,20 +16,29 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
 
     private static readonly GamePath ContentDirectoryPath = new(LocationId.Game, "Content");
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(
+        Loadout.ReadOnly loadout,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
-        var mods = loadout
-            .GetEnabledMods()
-            .Where(mod => mod.Files.Any(file => file.To.StartsWith(ContentDirectoryPath)))
+        var groups = loadout.Items
+            .GetEnabledLoadoutFiles()
+            .Where(file =>
+            {
+                var loadoutItem = file.AsLoadoutItemWithTargetPath().AsLoadoutItem();
+                if (loadoutItem.ParentId == default(LoadoutItemGroupId)) return false;
+                return !loadoutItem.Parent.TryGetAsLoadoutGameFilesGroup(out _);
+            })
+            .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.StartsWith(ContentDirectoryPath))
+            .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
             .ToArray();
 
-        foreach (var mod in mods)
+        foreach (var group in groups)
         {
             yield return Diagnostics.CreateModOverwritesGameFiles(
-                Mod: mod.ToReference(loadout),
-                ModName: mod.Name,
+                Group: group.ToReference(loadout),
+                GroupName: group.AsLoadoutItem().Name,
                 SMAPIWikiLink: SMAPIWikiLink,
                 SMAPIWikiTableLink: SMAPIWikiTableLink
             );
