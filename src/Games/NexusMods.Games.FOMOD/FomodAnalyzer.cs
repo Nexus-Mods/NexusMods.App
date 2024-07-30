@@ -2,6 +2,8 @@
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -9,12 +11,15 @@ using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodAnalyzer
+public static class FomodAnalyzer
 {
-    public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(KeyedBox<RelativePath, ModFileTree> allFiles, IFileSystem fileSystem,
-        CancellationToken ct = default)
+    public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(
+        KeyedBox<RelativePath, LibraryArchiveTree> allFiles,
+        IFileSystem fileSystem,
+        IFileStore fileStore,
+        CancellationToken cancellationToken = default)
     {
-        if (!allFiles.GetFiles().TryGetFirst(x => x.Path().EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlNode))
+        if (!allFiles.GetFiles().TryGetFirst(x => x.Item.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlNode))
             return null;
 
         // If the fomod folder is not at first level, find the prefix.
@@ -27,9 +32,10 @@ public class FomodAnalyzer
 
         try
         {
-            await using var stream = await xmlNode!.Item.OpenAsync();
+            var hash = xmlNode!.Item.LibraryFile.Value.Hash;
+            await using var stream = await fileStore.GetFileStream(hash, cancellationToken);
             using var streamReader = new StreamReader(stream, leaveOpen:true);
-            data = await streamReader.ReadToEndAsync(ct);
+            data = await streamReader.ReadToEndAsync(cancellationToken);
             var xmlScript = new XmlScriptType();
             var script = (XmlScript)xmlScript.LoadScript(data, true);
 
@@ -39,19 +45,19 @@ public class FomodAnalyzer
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
 
-                var imagePath = pathPrefix.Path().Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
+                var imagePath = pathPrefix.Item.Path.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
                 byte[] bytes;
                 try
                 {
                     var node = allFiles.FindByPathFromChild(imagePath);
-                    await using var imageStream = await node!.Item.OpenAsync();
+                    await using var imageStream = await fileStore.GetFileStream(node!.Item.LibraryFile.Value.Hash, cancellationToken);
                     using var ms = new MemoryStream();
-                    await imageStream.CopyToAsync(ms, ct);
+                    await imageStream.CopyToAsync(ms, cancellationToken);
                     bytes = ms.ToArray();
                 }
                 catch (Exception)
                 {
-                    bytes = await GetPlaceholderImage(fileSystem, ct);
+                    bytes = await GetPlaceholderImage(fileSystem, cancellationToken);
                 }
 
                 images.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
@@ -74,7 +80,7 @@ public class FomodAnalyzer
         {
             XmlScript = data,
             Images = images,
-            PathPrefix = pathPrefix.Path()
+            PathPrefix = pathPrefix.Item.Path
         };
     }
 
