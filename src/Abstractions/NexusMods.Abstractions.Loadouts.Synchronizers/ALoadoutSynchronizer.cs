@@ -638,8 +638,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = loadoutFile.Hash,
-                    Size = loadoutFile.Size,
+                    Hash = node.Item.Value.Disk.Value.Hash,
+                    Size = node.Item.Value.Disk.Value.Size,
                     ChangeType = FileChangeType.Removed,
                     GamePath = node.GamePath(),
                 };

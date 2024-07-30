@@ -21,6 +21,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Synchronizer;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;

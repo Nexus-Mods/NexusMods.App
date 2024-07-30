@@ -1,17 +1,13 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,13 +19,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly ISynchronizerService _syncService;
 
     private readonly LoadoutId _loadoutId;
-    private readonly GameInstallation _gameInstallation;
-    
-    private bool _isFirstLoad = true;
-
-    [Reactive] private Abstractions.Loadouts.Loadout.ReadOnly NewestLoadout { get; set; }
-    [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
-    [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
     [Reactive] private bool CanApply { get; set; } = true;
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
@@ -49,13 +38,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
-
-        NewestLoadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-        if (!NewestLoadout.IsValid()) 
-            throw new ArgumentException("Loadout not found: " + loadoutId);
-
-        _gameInstallation = NewestLoadout.InstallationInstance;
-
+        
         ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
         
@@ -80,60 +63,15 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         this.WhenActivated(disposables =>
             {
                 // Newest Loadout
-                Abstractions.Loadouts.Loadout.RevisionsWithChildUpdates(_conn, _loadoutId)
+                _syncService.StatusFor(_loadoutId)
                     .OnUI()
-                    .BindToVM(this, vm => vm.NewestLoadout)
+                    .Subscribe(status =>
+                    {
+                        CanApply = status != LoadoutSynchronizerState.Pending && status != LoadoutSynchronizerState.Current;
+                        IsLaunchButtonEnabled = status == LoadoutSynchronizerState.Current;
+                    })
                     .DisposeWith(disposables);
                 
-                // Last applied loadoutTxId
-                _syncService.LastAppliedRevisionFor(_gameInstallation)
-                    .OnUI()
-                    .BindToVM(this, vm => vm.LastAppliedWithTxId)
-                    .DisposeWith(disposables);
-                
-                // Last applied LoadoutId
-                this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
-                    .Select(revId =>
-                        {
-                            var loadout = Abstractions.Loadouts.Loadout.Load(_conn.AsOf(revId.Tx),revId.Id);
-                            if (!loadout.IsValid())
-                                throw new ArgumentException("Loadout not found for revision: " + revId);
-                            return loadout.LoadoutId;
-                        }
-                    )
-                    .OnUI()
-                    .BindToVM(this, vm => vm.LastAppliedLoadoutId)
-                    .DisposeWith(disposables);
-
-                // Changes to either newest loadout or last applied loadout
-                var loadoutOrLastAppliedTxObservable = this.WhenAnyValue(
-                    vm => vm.NewestLoadout,
-                    vm => vm.LastAppliedWithTxId
-                );
-
-                // CanApply and IsLaunchButtonEnabled
-                Observable.CombineLatest(
-                    loadoutOrLastAppliedTxObservable,
-                    ApplyCommand.IsExecuting,
-                    LaunchButtonViewModel.Command.IsExecuting,
-                    (loadoutTuple, isApplying, isToolRunning) => (
-                        IsApplying: isApplying, 
-                        IsToolRunning: isToolRunning, 
-                        LastAppliedWithTxId: loadoutTuple.Item2)
-                    )
-                    .OnUI()
-                    .Subscribe(data =>
-                        {
-                            var (isApplying, isToolRunning, lastAppliedWithTxId) = data;
-                            CanApply = !isApplying &&
-                                       !isToolRunning &&
-                                       !NewestLoadout.GetLoadoutWithTxId().Equals(lastAppliedWithTxId);
-                            IsLaunchButtonEnabled = !isApplying && !CanApply;
-                        }
-                    ).DisposeWith(disposables);
-                
-                // Perform an ingest on first load:
-                Task.Run(FirstLoadIngest);
             }
         );
     }
@@ -142,22 +80,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     {
         await Task.Run(async () =>
         {
-            var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-            await _syncService.Synchronize(loadout);
+            await _syncService.Synchronize(_loadoutId);
         });
-    }
-    
-    private async Task FirstLoadIngest()
-    {
-        if (_isFirstLoad)
-        {
-            _isFirstLoad = false;
-
-            if (LastAppliedWithTxId.Id.Equals(_loadoutId))
-            {
-                var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-                await _syncService.Synchronize(loadout);
-            }
-        }
     }
 }

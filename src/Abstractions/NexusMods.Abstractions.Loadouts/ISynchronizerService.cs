@@ -38,3 +38,4 @@ public interface ISynchronizerService
     /// </summary>
     public IObservable<LoadoutSynchronizerState> StatusFor(LoadoutId loadoutId);
 }
+

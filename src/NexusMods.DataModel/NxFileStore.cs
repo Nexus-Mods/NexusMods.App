@@ -44,7 +44,7 @@ public class NxFileStore : IFileStore
         IFileSystem fileSystem)
     {
         var settings = settingsManager.Get<DataModelSettings>();
-
+        
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
         {
@@ -60,7 +60,8 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash)
     {
         var db = _conn.Db;
-        return ValueTask.FromResult(TryGetLocation(db, hash, null, out _, out _));
+        
+        return ValueTask.FromResult(ArchivedFile.FindByHash(db, hash).Any());
     }
 
     /// <inheritdoc />
