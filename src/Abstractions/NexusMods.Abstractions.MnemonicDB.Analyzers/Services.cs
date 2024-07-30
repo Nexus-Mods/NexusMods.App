@@ -6,7 +6,6 @@ public static class Services
 {
     public static IServiceCollection AddAnalyzers(this IServiceCollection services)
     {
-        //return services.AddSingleton<ITreeAnalyzer, TreeAnalyzer>();
-        return services;
+        return services.AddSingleton<ITreeAnalyzer, TreeAnalyzer>();
     }
 }
