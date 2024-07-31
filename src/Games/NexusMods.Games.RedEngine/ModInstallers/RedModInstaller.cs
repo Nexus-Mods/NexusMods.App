@@ -96,6 +96,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
     {
         var tree = libraryArchive.GetTree();
         var infosList = new List<(KeyedBox<RelativePath, LibraryArchiveTree>  File, RedModInfo InfoJson)>();
+        
         foreach (var f in tree.GetFiles())
         {
             if (f.Key().FileName != InfoJson)
@@ -105,6 +106,10 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             if (infoJson != null)
                 infosList.Add((f, infoJson));
         }
+        
+        if (infosList.Count == 0)
+            return new NotSupported();
+        
         
         foreach (var (file, infoJson) in infosList.OrderBy(x => x.InfoJson.Name))
         {
