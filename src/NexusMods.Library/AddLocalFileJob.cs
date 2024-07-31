@@ -6,7 +6,8 @@ namespace NexusMods.Library;
 
 internal class AddLocalFileJob : AJob
 {
-    public AddLocalFileJob(IJobGroup? group = null, IJobWorker? worker = null) : base(null!, group, worker) { }
+    public AddLocalFileJob(IJobMonitor? monitor, IJobGroup? group = null, IJobWorker? worker = null)
+        : base(null!, group, worker, monitor) { }
 
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
