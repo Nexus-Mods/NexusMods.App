@@ -99,9 +99,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         });
-        
-        var settings = settingsManager.GetChanges<LoadoutGridSettings>()
-            .StartWith(settingsManager.Get<LoadoutGridSettings>());
 
         var hasSelection = SelectedGroupIds.CountChanged.Select(count => count > 0);
 

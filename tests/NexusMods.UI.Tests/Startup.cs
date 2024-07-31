@@ -32,11 +32,6 @@ public class Startup
                 {
                     UseInMemoryDataModel = true,
                 })
-                .OverrideSettingsForTests<LoadoutGridSettings>(settings => settings with
-                {
-                    ShowGameFiles = true,
-                    ShowOverride = true,
-                })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
