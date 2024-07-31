@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Jobs;
 
@@ -11,29 +11,28 @@ namespace NexusMods.Abstractions.Jobs;
 /// </summary>
 /// <param name="ns"></param>
 /// <param name="name"></param>
-public class WorkerAttribute(string ns, string name) : ScalarAttribute<UInt128, UInt128>(ValueTags.Int128, ns, name)
+public class WorkerAttribute(string ns, string name) : ScalarAttribute<IPersistedJobWorker, UInt128>(ValueTags.UInt128, ns, name)
 {
     /// <inheritdoc />
-    protected override UInt128 ToLowLevel(UInt128 value)
+    protected override UInt128 ToLowLevel(IPersistedJobWorker worker)
     {
-        return value;
+        Span<byte> bytes = stackalloc byte[16];
+        MemoryMarshal.TryWrite(bytes, worker.Id);
+        return MemoryMarshal.Read<UInt128>(bytes);
     }
 
-    protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags)
+    /// <inheritdoc />
+    protected override IPersistedJobWorker FromLowLevel(UInt128 value, ValueTags tags, RegistryId registryId)
     {
-        return value;
-    }
-    
-    /// <summary>
-    /// Get the worker instance from the DI container that has a unique identifier matching the value stored in this attribute
-    /// </summary>
-    public IPersistedJobWorker GetWorker<TModel>(in TModel entity)
-    where TModel : IReadOnlyModel<TModel>
-    {
-        var key = Get(entity);
-        var item = entity.Db.Connection.ServiceProvider.GetKeyedService<IPersistedJobWorker>(key);
-        if (item == null)
-            throw new KeyNotFoundException($"The item {typeof(IPersistedJobWorker)} with key {key} was not found in the DI container.");
-        return item;
+        var provider = GetServiceProvider(registryId).GetServices<IPersistedJobWorker>();
+        Span<byte> bytes = stackalloc byte[16];
+        MemoryMarshal.Write(bytes, value);
+        var guid = new Guid(bytes);
+        var result = provider.FirstOrDefault(worker => worker.Id == guid);
+        
+        if (result is null)
+            throw new InvalidOperationException($"Could not find a worker with the ID {guid}.");
+        
+        return result;
     }
 }

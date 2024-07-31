@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -10,5 +11,5 @@ public class ULongAttribute(string ns, string name) : ScalarAttribute<ulong, ulo
 {
     protected override ulong ToLowLevel(ulong value) => value;
     
-    protected override ulong FromLowLevel(ulong value, ValueTags tags) => value;
+    protected override ulong FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => value;
 }

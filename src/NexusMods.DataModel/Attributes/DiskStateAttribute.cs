@@ -6,6 +6,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Archives.Nx.Enums;
 using NexusMods.DataModel.Serializers.DiskStateTreeSchema;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
@@ -16,7 +17,7 @@ namespace NexusMods.DataModel.Attributes;
 
 public class DiskStateAttribute(string ns, string name) : HashedBlobAttribute<DiskStateTree>(ns, name)
 {
-    protected override DiskStateTree FromLowLevel(ReadOnlySpan<byte> value, ValueTags tag)
+    protected override DiskStateTree FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
     {
         var files = Files.Serializer.Parse(value.ToArray());
         

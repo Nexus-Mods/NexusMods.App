@@ -16,14 +16,13 @@ public class JobRestarter(IConnection connection) : IHostedService
 
         foreach (var jobState in jobsToRestart)
         {
-            var worker = PersistedJobState.Worker.GetWorker(jobState);
-            var job = worker.LoadJob(jobState);
+            var job = jobState.Worker.LoadJob(jobState);
             await job.StartAsync(CancellationToken.None);
         }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

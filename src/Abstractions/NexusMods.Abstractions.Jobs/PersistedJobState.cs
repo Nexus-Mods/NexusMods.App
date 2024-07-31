@@ -16,7 +16,7 @@ public partial class PersistedJobState : IModelDefinition
     /// <summary>
     /// The status of the job.
     /// </summary>
-    public static readonly EnumAttribute<JobStatus> Status = new(Namespace, nameof(Status)) { IsIndexed = true };
+    public static readonly EnumByteAttribute<JobStatus> Status = new(Namespace, nameof(Status)) { IsIndexed = true };
 
     /// <summary>
     /// The worker that is responsible for processing the job.

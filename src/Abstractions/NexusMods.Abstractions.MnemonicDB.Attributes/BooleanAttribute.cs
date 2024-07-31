@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -15,7 +16,7 @@ public class BooleanAttribute(string ns, string name) : ScalarAttribute<bool, by
     }
 
     /// <inheritdoc />
-    protected override bool FromLowLevel(byte value, ValueTags tags)
+    protected override bool FromLowLevel(byte value, ValueTags tags, RegistryId registry)
     {
         return value == 1;
     }

@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -13,7 +14,7 @@ public class ByteAttribute(string ns, string name) : ScalarAttribute<byte, byte>
         return value;
     }
 
-    protected override byte FromLowLevel(byte value, ValueTags tags)
+    protected override byte FromLowLevel(byte value, ValueTags tags, RegistryId registry)
     {
         return value;
     }

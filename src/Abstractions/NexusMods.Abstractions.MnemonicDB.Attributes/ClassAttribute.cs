@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -17,7 +18,7 @@ where TType : IGuidClass
     protected override UInt128 ToLowLevel(UInt128 id) => id;
 
     /// <inheritdoc />
-    protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags) => value;
+    protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags, RegistryId registry) => value;
     
     /// <summary>
     /// Gets the instance of the class from the DI container.

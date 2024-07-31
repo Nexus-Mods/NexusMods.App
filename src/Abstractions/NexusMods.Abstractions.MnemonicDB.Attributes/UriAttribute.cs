@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -15,7 +16,7 @@ public class UriAttribute(string ns, string name) : ScalarAttribute<Uri, string>
     }
 
     /// <inheritdoc />
-    protected override Uri FromLowLevel(string value, ValueTags tag)
+    protected override Uri FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
         return new Uri(value);
     }
