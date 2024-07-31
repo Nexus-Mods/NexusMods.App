@@ -17,6 +17,7 @@ public static class Services
         return serviceCollection
             .AddLibraryItemModel()
             .AddLibraryFileModel()
+            .AddDownloadedFileModel()
             .AddLocalFileModel()
             .AddLibraryArchiveModel()
             .AddLibraryArchiveFileEntryModel();
