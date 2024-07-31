@@ -10,6 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
@@ -125,6 +126,9 @@ public static class Services
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddSettings<DiagnosticSettings>();
+        
+        // Jobs System
+        coll.AddPersistedJobStateModel();
         
         // Verbs
         coll.AddLoadoutManagementVerbs()

@@ -1,5 +1,6 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Jobs;
 
@@ -24,6 +25,14 @@ public abstract class APersistedJob : AJob, IPersistedJob
     /// Get the value of the attribute from the internal persisted job state.
     /// </summary>
     public THighLevel Get<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr)
+    {
+        return attr.Get(_state);
+    }
+    
+    /// <summary>
+    /// Get the value of the attribute from the internal persisted job state.
+    /// </summary>
+    public Values<THighLevel, TLowLevel> Get<THighLevel, TLowLevel>(CollectionAttribute<THighLevel, TLowLevel> attr)
     {
         return attr.Get(_state);
     }

@@ -25,7 +25,7 @@ public class PersistedJobTests
                 {
                     s.AddMnemonicDB();
                     s.AddSingleton<IStoreBackend, MnemonicDB.Storage.InMemoryBackend.Backend>();
-                    s.AddSingleton<DatomStoreSettings>(_ => new DatomStoreSettings() { Path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("tests_Jobs" + Guid.NewGuid()) });
+                    s.AddSingleton<DatomStoreSettings>(_ => new DatomStoreSettings { Path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("tests_Jobs" + Guid.NewGuid()) });
                     s.AddSlowResumableJobPersistedStateModel();
                     s.AddPersistedJobStateModel();
                     s.AddWorker<SlowResumableJobWorker>();
@@ -40,20 +40,19 @@ public class PersistedJobTests
     [Fact]
     public async Task CanResumeJobs()
     {
-
+        // Setup
         var worker = _services.GetRequiredService<SlowResumableJobWorker>();
         var job = await SlowResumableJob.Create(_connection, null!, worker, 40);
 
         job.Should().BeOfType<SlowResumableJob>();
-        
         var castedJob = (SlowResumableJob) job;
         
+        // Start the job
         await job.StartAsync(CancellationToken.None);
-
         await Task.Delay(200);
-
         await job.PauseAsync();
         
+        // Check the paused state
         var allJobs = SlowResumableJobPersistedState.All(_connection.Db).ToArray();
 
         var jobsWithIds = allJobs.Where(j => j.AsPersistedJobState().PersistedJobStateId == castedJob.PersistedJobStateId).ToArray();
@@ -63,13 +62,15 @@ public class PersistedJobTests
         var jobWithId = jobsWithIds.First();
         
         jobWithId.Current.Should().BeGreaterThan(0, "because we should have processed at least one item");
+        jobWithId.Current.Should().BeLessThan(jobWithId.Max, "because we paused the job");
         jobWithId.Max.Should().Be(40, "because we set the max to 40");
         
-        
+        // Get the restarter and resume all jobs
         var restarter = _services.GetRequiredService<JobRestarter>();
 
         await restarter.StartAsync(CancellationToken.None);
 
+        // Check the resumed state
         var st = Stopwatch.StartNew();
         while (st.Elapsed < TimeSpan.FromSeconds(10))
         {

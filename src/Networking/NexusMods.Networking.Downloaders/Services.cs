@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -24,6 +25,8 @@ public static class Services
             .AddSingleton<IDownloadService>(sp=> sp.GetRequiredService<DownloadService>())
             .AddTransient<NxmDownloadTask>()
             .AddTransient<HttpDownloadTask>()
+            .AddWorker<HttpDownloadJobWorker>()
+            .AddHttpDownloadJobPersistedStateModel()
             .AddAttributeCollection(typeof(DownloaderState))
             .AddAttributeCollection(typeof(HttpDownloadState))
             .AddAttributeCollection(typeof(NxmDownloadState))

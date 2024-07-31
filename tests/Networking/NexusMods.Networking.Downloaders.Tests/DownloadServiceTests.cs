@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -11,12 +12,17 @@ public class DownloadServiceTests
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _httpServer;
     private IReadOnlyCollection<IDownloadTask> _downloadTasks;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly HttpDownloadJobWorker _worker;
 
     public DownloadServiceTests(DownloadService downloadService, 
-        LocalHttpServer httpServer, TemporaryFileManager temporaryFileManager)
+        LocalHttpServer httpServer, TemporaryFileManager temporaryFileManager,
+        HttpDownloadJobWorker worker)
     {
         _httpServer = httpServer;
         _downloadService = downloadService;
+        _temporaryFileManager = temporaryFileManager;
+        _worker = worker;
     }
 
     [Fact]
@@ -53,6 +59,32 @@ public class DownloadServiceTests
         task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
+    }
+    
+    [Fact]
+    public async Task CanDownloadWithJobInterface()
+    {
+        var id = Guid.NewGuid().ToString();
+        _httpServer.SetContent(id, "Hello, World!"u8.ToArray());
+
+        var location = _temporaryFileManager.CreateFile();
+
+        await using var job = await _worker.CreateJob(new Uri($"{_httpServer.Prefix}{id}"), location);
+        await job.StartAsync(CancellationToken.None);
+
+        var result = await job.WaitToFinishAsync();
+        result.ResultType.Should().Be(JobResultType.Completed);
+        
+        result.TryGetCompleted(out var completed).Should().BeTrue();
+        
+        completed!.TryGetData(out AbsolutePath path).Should().BeTrue();
+
+        path.Should().Be(location.Path);
+        
+        location.Path.FileExists.Should().BeTrue();
+        (await location.Path.ReadAllTextAsync()).Should().Be("Hello, World!");
+        
+
     }
     
     [Fact]
