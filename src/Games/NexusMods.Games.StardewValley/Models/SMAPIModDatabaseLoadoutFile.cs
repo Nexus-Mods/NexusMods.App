@@ -9,5 +9,5 @@ public partial class SMAPIModDatabaseLoadoutFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile";
 
-    public static readonly MarkerAttribute IsModDatabaseFileMarker = new(Namespace, nameof(IsModDatabaseFileMarker));
+    public static readonly MarkerAttribute ModDatabaseFile = new(Namespace, nameof(ModDatabaseFile));
 }

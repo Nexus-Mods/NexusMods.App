@@ -349,7 +349,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 _ = new SMAPIModDatabaseLoadoutFile.New(transaction, entityId)
                 {
-                    IsIsModDatabaseFileMarker = true,
+                    IsModDatabaseFile = true,
                     LoadoutFile = loadoutFile,
                 };
 

@@ -26,7 +26,7 @@ public partial class LoadoutItem : IModelDefinition
     /// <remarks>
     /// The exact meaning of a "disabled" loadout item is up to the implementations.
     /// </remarks>
-    public static readonly MarkerAttribute IsDisabledMarker = new(Namespace, nameof(IsDisabledMarker));
+    public static readonly MarkerAttribute Disabled = new(Namespace, nameof(Disabled));
 
     /// <summary>
     /// Loadout that contains the item.

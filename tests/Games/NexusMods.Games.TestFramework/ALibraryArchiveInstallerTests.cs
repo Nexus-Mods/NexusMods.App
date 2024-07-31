@@ -93,7 +93,7 @@ where TGame : AGame
 
         var loadoutGroup = new LoadoutItemGroup.New(tx, out var groupId)
         {
-            IsIsLoadoutItemGroupMarker = true,
+            IsGroup = true,
             LoadoutItem = new LoadoutItem.New(tx, groupId)
             {
                 Name = libraryItem.Name,

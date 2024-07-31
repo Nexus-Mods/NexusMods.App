@@ -136,7 +136,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             OverridesForId = loadout,
             LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
                     Name = "Overrides",
@@ -225,7 +225,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
     {
-        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.IsDisabledMarker));
+        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
     }
 
     /// <inheritdoc />
@@ -381,7 +381,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var delete = new DeletedFile.New(tx, out var id)
             {
-                IsIsDeletedFileMarker = true,
+                Reason = "Reified delete",
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
                     TargetPath = item.Path,
@@ -800,7 +800,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             GameMetadataId = installation.GameMetadataId,
             LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
                     Name = "Game Files",

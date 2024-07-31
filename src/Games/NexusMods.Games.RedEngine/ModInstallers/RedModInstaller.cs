@@ -119,7 +119,6 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             var loadoutItem = new LoadoutItem.New(tx)
             {
                 LoadoutId = loadout.Id,
-                IsIsDisabledMarker = false,
                 Name = infoJson.Name,
                 ParentId = loadoutGroup.Id,
             };
@@ -127,7 +126,7 @@ public class RedModInstaller : ALibraryArchiveInstaller, IModInstaller
             var groupItem = new LoadoutItemGroup.New(tx, loadoutItem.Id)
             {
                 LoadoutItem = loadoutItem,
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
             };
 
  
