@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Platform.Storage;
 using DynamicData;
+using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
@@ -133,18 +134,17 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                     workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
                 }
             );
-            
-            LibraryArchive.ObserveAll(_conn)
-                .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
+
+            _libraryService.ObserveFilteredLibraryFiles()
                 .OnUI()
-                .Transform(fileOrigin => (IFileOriginEntryViewModel)
+                .Transform(libraryFile => (IFileOriginEntryViewModel)
                     new FileOriginEntryViewModel(
                         _conn,
                         LoadoutId,
-                        fileOrigin,
+                        libraryFile,
                         viewModCommand,
-                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(fileOrigin, null, default(CancellationToken))),
-                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(fileOrigin, advancedInstaller, default(CancellationToken)))
+                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(libraryFile.AsLibraryItem(), null, default(CancellationToken))),
+                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(libraryFile.AsLibraryItem(), advancedInstaller, default(CancellationToken)))
                     )
                 )
                 .Bind(out _fileOrigins)
@@ -207,13 +207,13 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private async Task DoAddModImpl(ILibraryItemInstaller? installer, CancellationToken token)
     {
         foreach (var mod in SelectedModsCollection)
-            await AddUsingInstallerToLoadout(mod.FileOrigin, installer, token);
+            await AddUsingInstallerToLoadout(mod.LibraryFile.AsLibraryItem(), installer, token);
     }
 
-    private async Task AddUsingInstallerToLoadout(LibraryArchive.ReadOnly fileOrigin, ILibraryItemInstaller? installer, CancellationToken token)
+    private async Task AddUsingInstallerToLoadout(LibraryItem.ReadOnly libraryItem, ILibraryItemInstaller? installer, CancellationToken token)
     {
         var loadout = Loadout.Load(_conn.Db, LoadoutId);
-        await using var job = _libraryService.InstallItem(fileOrigin.AsLibraryFile().AsLibraryItem(), loadout, installer);
+        await using var job = _libraryService.InstallItem(libraryItem, loadout, installer);
         await job.StartAsync(token);
         await job.WaitToFinishAsync(token);
     }

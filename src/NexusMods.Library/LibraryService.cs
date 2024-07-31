@@ -1,3 +1,6 @@
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
@@ -46,16 +49,30 @@ public sealed class LibraryService : ILibraryService
         return group;
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, object? itemInstaller = null)
+    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? itemInstaller = null)
     {
         var job = new InstallLoadoutItemJob(worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
         {
             Connection = _connection,
             LibraryItem = libraryItem,
             Loadout = targetLoadout,
-            Installer = itemInstaller as ILibraryItemInstaller,
+            Installer = itemInstaller,
         };
 
         return job;
+    }
+
+    public IObservable<IChangeSet<LibraryFile.ReadOnly>> ObserveFilteredLibraryFiles()
+    {
+        return LibraryItem.ObserveAll(_connection)
+            .Where(item =>
+            {
+                if (!item.TryGetAsLibraryFile(out var file))
+                    return false;
+
+                // TODO: downloads
+                return file.IsLocalFile();
+            })
+            .Select(item => item.ToLibraryFile());
     }
 }
