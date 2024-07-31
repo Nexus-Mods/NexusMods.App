@@ -13,6 +13,7 @@ using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Telemetry;
@@ -100,7 +101,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
         var canAddMod = new Subject<bool>();
-        var advancedInstaller = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
+        var advancedInstaller = _provider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
         AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
@@ -203,19 +204,16 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         await _osInterop.OpenUrl(uri, true);
     }
 
-    private async Task DoAddModImpl(IModInstaller? installer, CancellationToken token)
+    private async Task DoAddModImpl(ILibraryItemInstaller? installer, CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         foreach (var mod in SelectedModsCollection)
             await AddUsingInstallerToLoadout(mod.FileOrigin, installer, token);
-            */
     }
 
-    private async Task AddUsingInstallerToLoadout(LibraryArchive.ReadOnly fileOrigin, IModInstaller? installer, CancellationToken token)
+    private async Task AddUsingInstallerToLoadout(LibraryArchive.ReadOnly fileOrigin, ILibraryItemInstaller? installer, CancellationToken token)
     {
         var loadout = Loadout.Load(_conn.Db, LoadoutId);
-        await using var job = _libraryService.InstallItem(fileOrigin.AsLibraryFile().AsLibraryItem(), loadout);
+        await using var job = _libraryService.InstallItem(fileOrigin.AsLibraryFile().AsLibraryItem(), loadout, installer);
         await job.StartAsync(token);
         await job.WaitToFinishAsync(token);
     }
