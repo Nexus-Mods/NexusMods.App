@@ -12,4 +12,6 @@ public interface IPersistedJob : IJob
     /// Gets the ID of the persisted job state.
     /// </summary>
     PersistedJobStateId PersistedJobStateId { get; }
+
+    static abstract IPersistedJob ToJob(PersistedJobState.ReadOnly jobState);
 }

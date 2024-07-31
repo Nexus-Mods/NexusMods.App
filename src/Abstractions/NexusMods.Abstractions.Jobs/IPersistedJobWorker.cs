@@ -12,4 +12,9 @@ public interface IPersistedJobWorker : IJobWorker
     /// when the job is persisted.
     /// </summary>
     public Guid Id { get; }
+
+    /// <summary>
+    /// Load the job from the persisted state.
+    /// </summary>
+    public IJob LoadJob(PersistedJobState.ReadOnly state);
 }

@@ -6,19 +6,19 @@ namespace NexusMods.Jobs;
 
 public class JobRestarter(IConnection connection) : IHostedService
 {
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         var jobsToRestart = PersistedJobState
             .FindByStatus(connection.Db, JobStatus.Running)
             .Concat(PersistedJobState.FindByStatus(connection.Db, JobStatus.Paused))
             .Concat(PersistedJobState.FindByStatus(connection.Db, JobStatus.Created));
 
-        foreach (var job in jobsToRestart)
+        foreach (var jobState in jobsToRestart)
         {
-            var worker = PersistedJobState.Worker.GetWorker(job);
-            worker.StartAsync(job, CancellationToken.None);
+            var worker = PersistedJobState.Worker.GetWorker(jobState);
+            var job = worker.LoadJob(jobState);
+            await job.StartAsync(CancellationToken.None);
         }
-
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
