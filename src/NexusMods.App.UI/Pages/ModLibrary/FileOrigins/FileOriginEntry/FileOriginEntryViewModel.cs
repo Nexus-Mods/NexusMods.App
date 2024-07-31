@@ -1,17 +1,12 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using DynamicData.Alias;
 using Humanizer;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -35,7 +30,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
 
     private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
     public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
-    public LibraryArchive.ReadOnly FileOrigin { get; }
+    public LibraryFile.ReadOnly LibraryFile { get; }
     public ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
     public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
     public ReactiveCommand<Unit, Unit> AddAdvancedToLoadoutCommand { get; }
@@ -43,29 +38,38 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public FileOriginEntryViewModel(
         IConnection conn,
         LoadoutId loadoutId,
-        LibraryArchive.ReadOnly fileOrigin,
+        LibraryFile.ReadOnly libraryFile,
         ReactiveCommand<NavigationInformation, Unit> viewModCommand,
         ReactiveCommand<Unit, Unit> addModToLoadoutCommand,
         ReactiveCommand<Unit, Unit> addAdvancedToLoadoutCommand)
     {
-        FileOrigin = fileOrigin;
+        LibraryFile = libraryFile;
+
         ViewModCommand = viewModCommand;
         AddToLoadoutCommand = addModToLoadoutCommand;
         AddAdvancedToLoadoutCommand = addAdvancedToLoadoutCommand;
 
-        Name = fileOrigin.AsLibraryFile().AsLibraryItem().Name;
+        Name = libraryFile.AsLibraryItem().Name;
 
-        Size = fileOrigin.AsLibraryFile().Size;
+        Size = libraryFile.Size;
 
-        Version = DownloaderState.Version.TryGet(fileOrigin, out var version) && version != "Unknown" ? version : "-";
-        
-        ArchiveDate = fileOrigin.GetCreatedAt();
+        Version = "-";
+
+        ArchiveDate = libraryFile.GetCreatedAt();
         
         var loadout = Loadout.Load(conn.Db, loadoutId);
 
         _isModAddedToLoadout = loadout.Revisions()
-            .Select(rev => rev.Mods.Any(mod => mod.Contains(Mod.Source) && mod.SourceId.Equals(fileOrigin.Id)))
+            .Select(x => x.GetLoadoutItemsByLibraryItem(libraryFile.AsLibraryItem()).Any())
             .ToProperty(this, vm => vm.IsModAddedToLoadout, scheduler: RxApp.MainThreadScheduler);
+
+        _lastInstalledDate = loadout.Revisions()
+            .Select(x => x
+                .GetLoadoutItemsByLibraryItem(libraryFile.AsLibraryItem())
+                .Select(item => item.GetCreatedAt())
+                .DefaultIfEmpty(DateTime.MinValue)
+                .Max())
+            .ToProperty(this, vm => vm.LastInstalledDate, scheduler: RxApp.MainThreadScheduler);
 
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
 
@@ -73,16 +77,6 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         _displayArchiveDate = interval.Select(_ => ArchiveDate)
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToProperty(this, vm => vm.DisplayArchiveDate, scheduler: RxApp.MainThreadScheduler);
-
-        // Update the LastInstalledDate every time the loadout is updated
-        _lastInstalledDate = loadout.Revisions()
-            .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
-                                                 && mod.SourceId.Equals(fileOrigin.Id))
-                .Select(mod => mod.GetCreatedAt())
-                .DefaultIfEmpty(DateTime.MinValue)
-                .Max()
-            )
-            .ToProperty(this, vm => vm.LastInstalledDate, scheduler: RxApp.MainThreadScheduler);
 
         // Update the humanized LastInstalledDate every minute and when the LastInstalledDate changes
         _displayLastInstalledDate = this.WhenAnyValue(vm => vm.LastInstalledDate)
