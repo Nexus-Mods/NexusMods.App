@@ -217,7 +217,7 @@ For example use, please see the tests.
 
     [For future use with archive compaction.](#archive-compactionmerging)
 
-### Repacking Process
+### Repacking Callback
 
 !!! info "The `repacking` process is delegated to a user provided function"
 
