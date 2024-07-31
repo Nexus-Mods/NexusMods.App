@@ -28,5 +28,6 @@ public interface ILibraryService
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
-    IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout);
+    /// <param name="installer">If set, must be set to a ILibraryItemInstaller (untyped here as to not require a library reference). The Library will use this installer to install the item</param>
+    IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, object? installer = null);
 }

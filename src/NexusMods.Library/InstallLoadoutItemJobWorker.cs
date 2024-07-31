@@ -28,6 +28,10 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
         cancellationToken.ThrowIfCancellationRequested();
 
         var installers = job.Loadout.InstallationInstance.GetGame().LibraryItemInstallers;
+        
+        if (job.Installer != null)
+            installers = [job.Installer];
+        
         var result = await ExecuteInstallersAsync(job, installers, cancellationToken);
 
         if (!result.HasValue)

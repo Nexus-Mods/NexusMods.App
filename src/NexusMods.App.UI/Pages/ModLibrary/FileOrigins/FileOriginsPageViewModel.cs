@@ -12,6 +12,9 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
@@ -70,32 +73,35 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     public LoadoutId LoadoutId { get; private set; }
     private readonly GameDomain _gameDomain;
     private readonly IArchiveInstaller _archiveInstaller;
-    
+    private readonly ILibraryService _libraryService;
+    private readonly IConnection _conn;
+
     public FileOriginsPageViewModel(
         LoadoutId loadoutId,
         IServiceProvider serviceProvider) : base(serviceProvider.GetRequiredService<IWindowManager>())
     {
-        var conn = serviceProvider.GetRequiredService<IConnection>();
+        _conn = serviceProvider.GetRequiredService<IConnection>();
         _fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         _logger = serviceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>();
         _provider = serviceProvider;
         _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
+        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
 
         TabTitle = Language.FileOriginsPageTitle;
         TabIcon = IconValues.ModLibrary;
 
         LoadoutId = loadoutId;
 
-        var loadout = Loadout.Load(conn.Db, loadoutId);
+        var loadout = Loadout.Load(_conn.Db, loadoutId);
         var game = loadout.InstallationInstance.Game;
         _gameDomain = loadout.InstallationInstance.Game.Domain;
 
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
         var canAddMod = new Subject<bool>();
-        var advancedInstaller = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
+        var advancedInstaller = _provider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
         AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
@@ -128,12 +134,12 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 }
             );
             
-            DownloadAnalysis.ObserveAll(conn)
+            LibraryArchive.ObserveAll(_conn)
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
                 .Transform(fileOrigin => (IFileOriginEntryViewModel)
                     new FileOriginEntryViewModel(
-                        conn,
+                        _conn,
                         LoadoutId,
                         fileOrigin,
                         viewModCommand,
@@ -160,11 +166,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         });
     }
 
-    public static bool FilterDownloadAnalysisModel(DownloadAnalysis.ReadOnly model, GameDomain currentGameDomain)
+    public static bool FilterDownloadAnalysisModel(LibraryArchive.ReadOnly model, GameDomain currentGameDomain)
     {
-        if (!DownloaderState.GameDomain.TryGet(model, out var domain)) return false;
-        if (domain != currentGameDomain) return false;
-        if (model.Contains(StreamBasedFileOriginMetadata.StreamBasedOrigin)) return false;
+        // TODO: Filter by game domain
         return true;
     }
 
@@ -186,12 +190,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
         _ = Task.Run(async () =>
         {
-            await _fileOriginRegistry.RegisterDownload(file,
-                (tx, id) =>
-                {
-                    tx.Add(id, DownloaderState.GameDomain, _gameDomain);
-                    tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
-                }, file.FileName);
+            await using var job = _libraryService.AddLocalFile(file);
+            await job.StartAsync();
+            await job.WaitToFinishAsync();
         });
 
         return Task.CompletedTask;
@@ -203,15 +204,18 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         await _osInterop.OpenUrl(uri, true);
     }
 
-    private async Task DoAddModImpl(IModInstaller? installer, CancellationToken token)
+    private async Task DoAddModImpl(ILibraryItemInstaller? installer, CancellationToken token)
     {
         foreach (var mod in SelectedModsCollection)
             await AddUsingInstallerToLoadout(mod.FileOrigin, installer, token);
     }
 
-    private async Task AddUsingInstallerToLoadout(DownloadAnalysis.ReadOnly fileOrigin, IModInstaller? installer, CancellationToken token)
+    private async Task AddUsingInstallerToLoadout(LibraryArchive.ReadOnly fileOrigin, ILibraryItemInstaller? installer, CancellationToken token)
     {
-        await _archiveInstaller.AddMods(LoadoutId, fileOrigin, null, installer, token);
+        var loadout = Loadout.Load(_conn.Db, LoadoutId);
+        await using var job = _libraryService.InstallItem(fileOrigin.AsLibraryFile().AsLibraryItem(), loadout, installer);
+        await job.StartAsync(token);
+        await job.WaitToFinishAsync(token);
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)

@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.PLinq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -97,6 +99,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         });
+        
+        var settings = settingsManager.GetChanges<LoadoutGridSettings>()
+            .StartWith(settingsManager.Get<LoadoutGridSettings>());
 
         var hasSelection = SelectedGroupIds.CountChanged.Select(count => count > 0);
 
@@ -131,11 +136,12 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .Select(loadout => loadout
                     .Items
                     .OfTypeLoadoutItemGroup()
-                    .Where(group => group.AsLoadoutItem().ParentId == default(LoadoutItemGroupId))
+                    .Where(group => !group.Contains(LoadoutItem.ParentId))
                     .Select(group => group.LoadoutItemGroupId)
                 )
                 .OnUI()
                 .ToDiffedChangeSet(group => group, group => group)
+                .Filter(settings.Select(ShouldShow))
                 .Bind(out _groupIds)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
@@ -146,6 +152,22 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .BindToVM(this, vm => vm.EmptyStateTitle)
                 .DisposeWith(d);
         });
+    }
+
+    private Func<LoadoutItemGroupId, bool> ShouldShow(LoadoutGridSettings settings)
+    {
+        return itm =>
+        {
+            var group = LoadoutItemGroup.Load(_connection.Db, itm);
+        
+            if (group.Contains(LoadoutGameFilesGroup.GameMetadata) && !settings.ShowGameFiles)
+                return false;
+        
+            if (group.Contains(LoadoutOverridesGroup.OverridesForId) && !settings.ShowOverride)
+                return false;
+
+            return true;
+        };
     }
 
     // [UsedImplicitly]

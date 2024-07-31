@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
@@ -45,13 +46,14 @@ public sealed class LibraryService : ILibraryService
         return group;
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout)
+    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, object? itemInstaller = null)
     {
         var job = new InstallLoadoutItemJob(worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
         {
             Connection = _connection,
             LibraryItem = libraryItem,
             Loadout = targetLoadout,
+            Installer = itemInstaller as ILibraryItemInstaller,
         };
 
         return job;
