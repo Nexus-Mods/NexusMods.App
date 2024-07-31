@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
@@ -31,7 +32,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
         
         if (job.Installer != null)
             installers = [job.Installer];
-        
+
         var result = await ExecuteInstallersAsync(job, installers, cancellationToken);
 
         if (!result.HasValue)
@@ -47,6 +48,12 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 
         var (loadoutGroup, transaction) = result.Value;
         using var tx = transaction;
+
+        _ = new LibraryLinkedLoadoutItem.New(tx, loadoutGroup.Id)
+        {
+            LoadoutItem = loadoutGroup.GetLoadoutItem(tx),
+            LibraryItemId = job.LibraryItem,
+        };
 
         var transactionResult = await transaction.Commit();
         var jobResults = transactionResult.Remap(loadoutGroup);

@@ -6,6 +6,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Navigation;
@@ -135,12 +136,11 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 })
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
-            
-            LibraryArchive.ObserveAll(conn)
+
+            LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
-                .Filter(model => FileOriginsPageViewModel.FilterDownloadAnalysisModel(model, game.Domain))
-                .Subscribe(changeSet => NewDownloadModelCount += changeSet.Adds)
+                .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount += changeSet.Adds)
                 .DisposeWith(disposable);
 
             // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream
