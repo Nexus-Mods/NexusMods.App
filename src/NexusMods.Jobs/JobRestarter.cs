@@ -8,10 +8,11 @@ public class JobRestarter(IConnection connection) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        var db = connection.Db;
         var jobsToRestart = PersistedJobState
-            .FindByStatus(connection.Db, JobStatus.Running)
-            .Concat(PersistedJobState.FindByStatus(connection.Db, JobStatus.Paused))
-            .Concat(PersistedJobState.FindByStatus(connection.Db, JobStatus.Created));
+            .FindByStatus(db, JobStatus.Running)
+            .Concat(PersistedJobState.FindByStatus(db, JobStatus.Paused))
+            .Concat(PersistedJobState.FindByStatus(db, JobStatus.Created));
 
         foreach (var jobState in jobsToRestart)
         {

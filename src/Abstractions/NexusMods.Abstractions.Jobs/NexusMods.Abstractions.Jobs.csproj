@@ -66,6 +66,12 @@
       <Compile Update="JobWorker.cs">
         <DependentUpon>IJobWorker.cs</DependentUpon>
       </Compile>
+      <Compile Update="APersistedJob.cs">
+        <DependentUpon>IJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="APersistedJobWorker.cs">
+        <DependentUpon>IJobWorker.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
