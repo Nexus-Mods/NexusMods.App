@@ -6,6 +6,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -135,8 +136,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
             
-            conn.ObserveDatoms(DownloadAnalysis.Hash)
-                .Transform(d => DownloadAnalysis.Load(conn.Db, d.E))
+            LibraryArchive.ObserveAll(conn)
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
                 .Filter(model => FileOriginsPageViewModel.FilterDownloadAnalysisModel(model, game.Domain))
