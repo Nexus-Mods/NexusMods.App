@@ -136,7 +136,7 @@ extract the files and must be updated.
 
 !!! danger "Possibility of corruption in event of power loss."
 
-    The new archive file ***MUST NOT*** replace the old archive.
+    The new archive file ***MUST NOT*** replace the old archive on the filesystem.
 
 It is not possible to replace the old `.nx` archive and update the [`ArchivedFile`][archived-file]
 entries in an atomic fashion. Therefore, during repacking, always create a *new* archive file,
