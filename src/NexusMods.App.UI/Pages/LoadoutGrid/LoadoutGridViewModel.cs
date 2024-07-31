@@ -135,13 +135,12 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .Switch()
                 .Select(loadout => loadout
                     .Items
+                    .Where(LoadoutUserFilters.ShouldShow)
                     .OfTypeLoadoutItemGroup()
-                    .Where(group => !group.Contains(LoadoutItem.ParentId))
                     .Select(group => group.LoadoutItemGroupId)
                 )
                 .OnUI()
                 .ToDiffedChangeSet(group => group, group => group)
-                .Filter(settings.Select(ShouldShow))
                 .Bind(out _groupIds)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
@@ -152,22 +151,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .BindToVM(this, vm => vm.EmptyStateTitle)
                 .DisposeWith(d);
         });
-    }
-
-    private Func<LoadoutItemGroupId, bool> ShouldShow(LoadoutGridSettings settings)
-    {
-        return itm =>
-        {
-            var group = LoadoutItemGroup.Load(_connection.Db, itm);
-        
-            if (group.Contains(LoadoutGameFilesGroup.GameMetadata) && !settings.ShowGameFiles)
-                return false;
-        
-            if (group.Contains(LoadoutOverridesGroup.OverridesForId) && !settings.ShowOverride)
-                return false;
-
-            return true;
-        };
     }
 
     // [UsedImplicitly]

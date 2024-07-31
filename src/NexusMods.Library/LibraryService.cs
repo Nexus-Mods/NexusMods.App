@@ -1,6 +1,3 @@
-using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
@@ -60,19 +57,5 @@ public sealed class LibraryService : ILibraryService
         };
 
         return job;
-    }
-
-    public IObservable<IChangeSet<LibraryFile.ReadOnly>> ObserveFilteredLibraryFiles()
-    {
-        return LibraryItem.ObserveAll(_connection)
-            .Where(item =>
-            {
-                if (!item.TryGetAsLibraryFile(out var file))
-                    return false;
-
-                // TODO: downloads
-                return file.IsLocalFile();
-            })
-            .Select(item => item.ToLibraryFile());
     }
 }

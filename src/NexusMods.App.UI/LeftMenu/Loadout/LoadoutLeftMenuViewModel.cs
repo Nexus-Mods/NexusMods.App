@@ -39,8 +39,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IWorkspaceController workspaceController,
         IServiceProvider serviceProvider)
     {
-        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
@@ -139,7 +137,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
 
-            libraryService.ObserveFilteredLibraryFiles()
+            LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
                 .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount += changeSet.Adds)

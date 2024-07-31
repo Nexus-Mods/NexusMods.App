@@ -1,6 +1,7 @@
 using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -124,7 +125,18 @@ public partial class Loadout : IModelDefinition
         /// especially, when it comes to displaying elements the user can edit.
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
-        
+
+        /// <summary>
+        /// Returns an enumerable containing all loadout items linked to the given library item.
+        /// </summary>
+        public IEnumerable<LibraryLinkedLoadoutItem.ReadOnly> GetLoadoutItemsByLibraryItem(LibraryItem.ReadOnly libraryItem)
+        {
+            return Items.Where(item =>
+            {
+                if (!item.TryGetAsLibraryLinkedLoadoutItem(out var linked)) return false;
+                return linked.LibraryItemId == libraryItem.LibraryItemId;
+            }).Select(item => item.ToLibraryLinkedLoadoutItem());
+        }
     }
 }
 

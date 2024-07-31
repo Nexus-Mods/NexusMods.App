@@ -60,19 +60,15 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         var loadout = Loadout.Load(conn.Db, loadoutId);
 
         _isModAddedToLoadout = loadout.Revisions()
-            .Select(x => x.Items.Any(item =>
-            {
-                if (!item.TryGetAsLibraryLinkedLoadoutItem(out var linked)) return false;
-                return linked.LibraryItemId == LibraryItemId.From(libraryFile.Id);
-            }))
+            .Select(x => x.GetLoadoutItemsByLibraryItem(libraryFile.AsLibraryItem()).Any())
             .ToProperty(this, vm => vm.IsModAddedToLoadout, scheduler: RxApp.MainThreadScheduler);
 
         _lastInstalledDate = loadout.Revisions()
-            .Select(x => x.Items.Where(item =>
-            {
-                if (!item.TryGetAsLibraryLinkedLoadoutItem(out var linked)) return false;
-                return linked.LibraryItemId == LibraryItemId.From(libraryFile.Id);
-            }).Select(item => item.GetCreatedAt()).DefaultIfEmpty(DateTime.MinValue).Max())
+            .Select(x => x
+                .GetLoadoutItemsByLibraryItem(libraryFile.AsLibraryItem())
+                .Select(item => item.GetCreatedAt())
+                .DefaultIfEmpty(DateTime.MinValue)
+                .Max())
             .ToProperty(this, vm => vm.LastInstalledDate, scheduler: RxApp.MainThreadScheduler);
 
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);

@@ -1,4 +1,3 @@
-using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
@@ -32,6 +31,4 @@ public interface ILibraryService
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
     IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? installer = null);
-
-    IObservable<IChangeSet<LibraryFile.ReadOnly>> ObserveFilteredLibraryFiles();
 }

@@ -9,8 +9,6 @@ using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library;
@@ -27,7 +25,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -135,7 +132,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 }
             );
 
-            _libraryService.ObserveFilteredLibraryFiles()
+            LibraryUserFilters.ObserveFilteredLibraryItems(connection: _conn)
+                .Select(item => item.ToLibraryFile())
+                .Where(file => file.IsValid())
                 .OnUI()
                 .Transform(libraryFile => (IFileOriginEntryViewModel)
                     new FileOriginEntryViewModel(
@@ -164,12 +163,6 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .SubscribeWithErrorLogging(disposable => serialDisposable.Disposable = disposable)
                 .DisposeWith(d);
         });
-    }
-
-    public static bool FilterDownloadAnalysisModel(LibraryArchive.ReadOnly model, GameDomain currentGameDomain)
-    {
-        // TODO: Filter by game domain
-        return true;
     }
 
     public async Task RegisterFromDisk(IStorageProvider storageProvider)
