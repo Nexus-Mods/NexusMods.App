@@ -153,7 +153,7 @@ However, if [`NxFileStore`][nx-file-store] is actively extracting a file from an
 the GC should not delete the source `.nx` archive, a lock must be placed to prevent
 that edge case from happening.
 
-## Code Design
+## Core Code Design
 
 !!! abstract "The main modular 'core' of the GC lives as `ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper>`"
 
