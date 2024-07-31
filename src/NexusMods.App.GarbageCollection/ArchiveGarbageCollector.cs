@@ -101,7 +101,7 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     ///     The method used to repack the archive. See the <see cref="RepackDelegate"/>
     ///     for more details.
     /// </param>
-    public void CollectGarbage(IProgress<double> progress, RepackDelegate doRepack)
+    public void CollectGarbage(IProgress<double>? progress, RepackDelegate doRepack)
     {
         var slicer = new ProgressSlicer(progress);
         var progressPerArchive = 1 / (double)AllArchives.Count;
@@ -122,7 +122,7 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
             doRepack(archiveProgress, toArchive, archive);
         }
         
-        progress.Report(1);
+        progress?.Report(1);
     }
     
     /// <summary>
