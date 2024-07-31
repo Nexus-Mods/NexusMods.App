@@ -38,7 +38,7 @@ public class JobWorkerTests
 
     private class MyJob : AJob
     {
-        public MyJob(IJobGroup? group = default, IJobWorker? worker = default)
-            : base(null!, group, worker) { }
+        public MyJob(IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default)
+            : base(null!, group, worker, monitor) { }
     }
 }

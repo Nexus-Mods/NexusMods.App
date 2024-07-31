@@ -1,5 +1,7 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
@@ -9,4 +11,6 @@ internal class AddDownloadJob : AJob
         : base(null!, group, worker, monitor) { }
 
     public required IDownloadJob DownloadJob { get; init; }
+
+    public Optional<AbsolutePath> DownloadJobResult { get; set; }
 }
