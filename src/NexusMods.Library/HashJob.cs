@@ -4,8 +4,8 @@ namespace NexusMods.Library;
 
 internal class HashJob : AJob
 {
-    public HashJob(IJobGroup? group = default, IJobWorker? worker = default)
-        : base(new MutableProgress(new IndeterminateProgress()), group, worker) { }
+    public HashJob(IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default)
+        : base(new MutableProgress(new IndeterminateProgress()), group, worker, monitor) { }
 
     private Stream? _stream;
     public required Stream Stream

@@ -20,6 +20,7 @@ public static class Services
             .AddSingleton<AddLibraryFileJobWorker>()
             .AddSingleton<AddLocalFileJobWorker>()
             .AddSingleton<ExtractArchiveJobWorker>()
-            .AddSingleton<InstallLoadoutItemJobWorker>();
+            .AddSingleton<InstallLoadoutItemJobWorker>()
+            .AddSingleton<AddDownloadJobWorker>();
     }
 }
