@@ -30,7 +30,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
             this.WhenAnyValue(vm => vm.Row)
                 .Select(groupId => LoadoutItemGroup.Observe(_connection, groupId))
                 .Switch()
-                .Select(group => !group.AsLoadoutItem().IsIsDisabledMarker)
+                .Select(group => !group.AsLoadoutItem().IsDisabled)
                 .BindToVM(this, vm => vm.Enabled)
                 .DisposeWith(d);
         });
@@ -42,13 +42,13 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
             tx.Add(Row.Value, static (txInner, db, id) =>
             {
                 var item = LoadoutItem.Load(db, id);
-                if (item.IsIsDisabledMarker)
+                if (item.IsDisabled)
                 {
-                    txInner.Retract(item.Id, LoadoutItem.IsDisabledMarker, Null.Instance);
+                    txInner.Retract(item.Id, LoadoutItem.Disabled, Null.Instance);
                 }
                 else
                 {
-                    txInner.Add(item.Id, LoadoutItem.IsDisabledMarker, Null.Instance);
+                    txInner.Add(item.Id, LoadoutItem.Disabled, Null.Instance);
                 }
             });
 
@@ -62,6 +62,6 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         var db = _connection.Db;
         var aEnt = LoadoutItemGroup.Load(db, a);
         var bEnt = LoadoutItemGroup.Load(db, b);
-        return aEnt.AsLoadoutItem().IsIsDisabledMarker.CompareTo(bEnt.AsLoadoutItem().IsIsDisabledMarker);
+        return aEnt.AsLoadoutItem().IsDisabled.CompareTo(bEnt.AsLoadoutItem().IsDisabled);
     }
 }

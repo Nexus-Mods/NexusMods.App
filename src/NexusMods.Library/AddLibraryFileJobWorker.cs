@@ -112,7 +112,7 @@ internal class AddLibraryFileJobWorker : AJobWorker<AddLibraryFileJob>
                 job.LibraryArchive = new LibraryArchive.New(job.Transaction, job.EntityId.Value)
                 {
                     LibraryFile = job.LibraryFile.Value,
-                    IsIsLibraryArchiveMarker = true,
+                    IsArchive = true,
                 };
             }
 

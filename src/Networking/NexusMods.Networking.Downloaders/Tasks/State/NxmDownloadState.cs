@@ -5,6 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Networking.Downloaders.Tasks.State;
 
+[Obsolete("To be replaced by jobs")]
 [Include<DownloaderState>]
 public partial class NxmDownloadState : IModelDefinition
 {

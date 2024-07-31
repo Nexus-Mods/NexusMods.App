@@ -100,7 +100,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var mod = new LoadoutItemGroup.New(tx, out var id)
         {
-            IsIsLoadoutItemGroupMarker = true,
+            IsGroup = true,
             LoadoutItem = new LoadoutItem.New(tx, id)
             {
                 LoadoutId = loadoutId,

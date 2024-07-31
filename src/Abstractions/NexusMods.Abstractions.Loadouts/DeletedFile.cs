@@ -14,7 +14,7 @@ public partial class DeletedFile : IModelDefinition
     private const string Namespace = "NexusMods.Loadouts.DeletedFile";
 
     /// <summary>
-    /// Marker.
+    /// Reason.
     /// </summary>
-    public static readonly MarkerAttribute IsDeletedFileMarker = new(Namespace, nameof(IsDeletedFileMarker));
+    public static readonly StringAttribute Reason = new(Namespace, nameof(Reason));
 }
