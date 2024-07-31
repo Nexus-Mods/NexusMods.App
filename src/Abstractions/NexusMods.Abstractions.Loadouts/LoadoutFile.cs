@@ -7,6 +7,16 @@ namespace NexusMods.Abstractions.Loadouts;
 /// <summary>
 /// Represents a file in a Loadout.
 /// </summary>
+/// <remarks>
+///     Note(sewer):
+/// 
+///     DO NOT ADD ANY OTHER PRIMITIVES THAT CAN STORE FILES IN THE 'ARCHIVES'
+///     LOCATIONS DEMARKED BY 'DataModelSettings.ArchiveLocations' WITHOUT
+///     UPDATING THE CODE OF THE GARBAGE COLLECTOR.
+///
+///     FAILURE TO DO SO WILL RESULT IN CATASTROPHIC FAILURE IN THE FORM OF
+///     USERS LOSING FILES THAT MAY STILL BE IN USE.
+/// </remarks>
 [Include<LoadoutItemWithTargetPath>]
 [PublicAPI]
 public partial class LoadoutFile : IModelDefinition

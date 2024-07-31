@@ -105,6 +105,8 @@ nav:
             - '0B: Undo Via Event Sourcing': developers/decisions/backend/0011-undo-via-event-sourcing.md
             - '0C: Single Process Application': developers/decisions/backend/0012-single-process-application.md
             - '0D: Default Datastore Locations': developers/decisions/backend/0013-default-datastore-locations.md
+            - '0E: Synchronizer Structure': developers/decisions/backend/0014-synchronizer-structure.md
+            - '10: Garbage Collector Design': developers/decisions/backend/0016-garbage-collector-design.md
         - Frontend:
             - '01: UI Panel Layout': developers/decisions/frontend/0001-UI-Panel-Layout.md
             - '02: Workspaces': developers/decisions/frontend/0002-Workspaces.md
