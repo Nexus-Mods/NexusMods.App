@@ -915,8 +915,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
     {
-        /*
-        var (_, initialState) = await GetOrCreateInitialDiskState(installation);
+        
+        var initialState = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
         var loadout = new Loadout.New(tx)
@@ -934,17 +934,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // 1. Because we need to backup the files for every created loadout.
         // 2. Because in practice this is the first loadout created.
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-        foreach (var file in initialState.GetAllDescendentFiles())
+        foreach (var file in initialState)
         {
-            var path = file.GamePath();
+            var path = file.Path;
 
             if (!IsIgnoredBackupPath(path)) 
-                filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+                filesToBackup.Add((path, file.Hash, file.Size));
 
             _ = new LoadoutFile.New(tx, out var loadoutFileId)
             {
-                Hash = file.Item.Value.Hash,
-                Size = file.Item.Value.Size,
+                Hash = file.Hash,
+                Size = file.Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
                 {
                     TargetPath = path,
@@ -962,8 +962,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var result = await tx.Commit();
 
         return result.Remap(loadout);
-        */
-        throw new NotImplementedException();
     }
 #endregion
     
