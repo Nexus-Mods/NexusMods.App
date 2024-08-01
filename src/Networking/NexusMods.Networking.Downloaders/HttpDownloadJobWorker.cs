@@ -13,6 +13,9 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
     private readonly IHttpDownloader _downloader;
     private readonly IConnection _connection;
 
+    /// <inheritdoc />
+    public override Guid Id { get; } = Guid.Parse("17DBF060-5A55-4960-81D6-F99E4CD24702");
+
     /// <summary>
     /// DI constructor.
     /// </summary>
@@ -27,12 +30,11 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
     /// <inheritdoc />
     protected override async Task<JobResult> ExecuteAsync(HttpDownloadJob job, CancellationToken cancellationToken)
     {
-        var destination = job.Get(HttpDownloadJobPersistedState.Destination);
         await _downloader.DownloadAsync(
-            [job.Get(HttpDownloadJobPersistedState.Uri)],
-            destination, 
+            [job.DownloadUri],
+            job.DownloadPath, 
             token: cancellationToken);
-        return JobResult.CreateCompleted(destination);
+        return JobResult.CreateCompleted(job.DownloadPath);
     }
 
     /// <inheritdoc />

@@ -4,6 +4,8 @@ namespace NexusMods.Jobs.Tests.TestHelpers;
 
 public class SlowResumableJobWorker : APersistedJobWorker<SlowResumableJob>
 {
+    public override Guid Id => new("d4b3b3b3-0b3b-4b3b-8b3b-0b3b3b3b3b3b");
+    
     protected override async Task<JobResult> ExecuteAsync(SlowResumableJob job, CancellationToken cancellationToken)
     {
         var current = job.Get(TestHelpers.SlowResumableJobPersistedState.Current, 0UL);

@@ -8,6 +8,7 @@ public abstract class APersistedJob : AJob, IPersistedJob
 {
     private readonly IConnection _connection;
 
+    /// <inheritdoc />
     protected APersistedJob(IConnection connection, PersistedJobStateId id, MutableProgress progress, IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default) : 
         base(progress, group, worker, monitor)
     {

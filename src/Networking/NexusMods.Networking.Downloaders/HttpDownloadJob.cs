@@ -1,16 +1,31 @@
+using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
 
-public class HttpDownloadJob : APersistedJob
+/// <summary>
+/// Job for downloading files from the internet.
+/// </summary>
+public class HttpDownloadJob : APersistedJob, IHttpDownloadJob
 {
+    /// <inheritdoc />
     public HttpDownloadJob(IConnection connection, PersistedJobStateId id, MutableProgress progress, IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default) 
         : base(connection, id, progress, group, worker, monitor)
     {
         
     }
+    
+    /// <summary>
+    /// Destination path for the downloaded file.
+    /// </summary>
+    public AbsolutePath DownloadPath => Get(HttpDownloadJobPersistedState.Destination);
+    
+    /// <summary>
+    /// The URI of the file to download.
+    /// </summary>
+    public Uri DownloadUri => Get(HttpDownloadJobPersistedState.Uri);
     
     public static async Task<IJob> Create(IConnection connection, MutableProgress progress, HttpDownloadJobWorker worker, Uri uri, AbsolutePath destination)
     {

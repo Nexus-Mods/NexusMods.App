@@ -6,7 +6,7 @@ public abstract class APersistedJobWorker<T> : AJobWorker<T>, IPersistedJobWorke
     private PersistedJobStateId _stateId;
 
     /// <inheritdoc />
-    public Guid Id => Guid.Parse("17DBF060-5A55-4960-81D6-F99E4CD24702");
+    public abstract Guid Id { get; }
 
     /// <inheritdoc />
     public abstract IJob LoadJob(PersistedJobState.ReadOnly state);
