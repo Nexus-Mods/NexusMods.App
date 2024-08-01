@@ -45,6 +45,6 @@ public static class LoadoutItemExtensions
     /// </summary>
     public static bool IsEnabled(this LoadoutItem.ReadOnly item)
     {
-        return !item.GetThisAndParents().Any(i => i.IsIsDisabledMarker);
+        return !item.GetThisAndParents().Any(i => i.IsDisabled);
     }
 }

@@ -77,7 +77,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker;
+                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
             })
             .Select(kv =>
             {
@@ -87,7 +87,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var disabledDependencies = requiredDependencies
                     .Select(uniqueIdToLoadoutItemId.GetValueOrDefault)
                     .Where(id => id != default(SMAPIModLoadoutItemId))
-                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker)
+                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
                     .ToArray();
 
                 return (Id: loadoutItemId, DisabledDependencies: disabledDependencies);
@@ -118,7 +118,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker;
+                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
             })
             .Select(kv =>
             {

@@ -108,7 +108,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         {
             var dependencyMod = LoadoutItemGroup.Load(Connection.Db, loadout.Items.First(m => m.Name == "DependencyMod").Id);
             using var tx = Connection.BeginTransaction();
-            tx.Add(dependencyMod, LoadoutItem.IsDisabledMarker, Null.Instance);
+            tx.Add(dependencyMod, LoadoutItem.Disabled, Null.Instance);
             await tx.Commit();
         }
         

@@ -118,7 +118,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller, IModInstaller
 
             var smapiModGroup = new LoadoutItemGroup.New(transaction, out var smapiModEntityId)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(transaction, smapiModEntityId)
                 {
                     Name = manifest.Name,
@@ -153,7 +153,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller, IModInstaller
                     manifestLoadoutItemId = entityId;
                     _ = new SMAPIManifestLoadoutFile.New(transaction, entityId)
                     {
-                        IsIsManifestMarker = true,
+                        IsManifestFile = true,
                         LoadoutFile = loadoutFile,
                     };
                 }

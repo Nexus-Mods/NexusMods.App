@@ -33,7 +33,6 @@ public static class Extensions
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
                     LoadoutId = loadoutId,
-                    IsIsDisabledMarker = false,
                     Name = input.Item.Value.FileName,
                     ParentId = parent,
                 },
