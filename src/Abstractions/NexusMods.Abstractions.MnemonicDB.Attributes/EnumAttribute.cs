@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -18,7 +19,7 @@ public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, int>(
     }
 
     /// <inheritdoc />
-    protected override T FromLowLevel(int value, ValueTags tags)
+    protected override T FromLowLevel(int value, ValueTags tags, RegistryId registryId)
     {
         // Same as ToLowLevel, the cast to object is removed by the JIT
         return (T)(object)value;
@@ -40,7 +41,7 @@ public class EnumByteAttribute<T>(string ns, string name) : ScalarAttribute<T, i
     }
 
     /// <inheritdoc />
-    protected override T FromLowLevel(byte value, ValueTags tags)
+    protected override T FromLowLevel(byte value, ValueTags tags, RegistryId registryId)
     {
         // Same as ToLowLevel, the cast to object is removed by the JIT
         return (T)(object)value;

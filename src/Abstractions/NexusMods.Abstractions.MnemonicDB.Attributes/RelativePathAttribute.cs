@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
@@ -16,7 +17,7 @@ public class RelativePathAttribute(string ns, string name) : ScalarAttribute<Rel
     }
 
     /// <inheritdoc />
-    protected override RelativePath FromLowLevel(string value, ValueTags tags)
+    protected override RelativePath FromLowLevel(string value, ValueTags tags, RegistryId registryId)
     {
         return RelativePath.FromUnsanitizedInput(value);
     }

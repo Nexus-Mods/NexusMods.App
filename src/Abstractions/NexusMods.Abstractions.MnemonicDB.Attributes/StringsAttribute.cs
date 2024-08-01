@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -10,5 +11,5 @@ public class StringsAttribute(string ns, string name) : CollectionAttribute<stri
 {
     protected override string ToLowLevel(string value) => value;
 
-    protected override string FromLowLevel(string value, ValueTags tag) => value;
+    protected override string FromLowLevel(string value, ValueTags tag, RegistryId registryId) => value;
 }

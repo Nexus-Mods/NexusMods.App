@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -15,5 +16,5 @@ public class DateTimeAttribute(string ns, string name) : ScalarAttribute<DateTim
     protected override long ToLowLevel(DateTime value) => value.ToBinary();
 
     /// <inheritdoc />
-    protected override DateTime FromLowLevel(long value, ValueTags tags) => DateTime.FromBinary(value);
+    protected override DateTime FromLowLevel(long value, ValueTags tags, RegistryId registryId) => DateTime.FromBinary(value);
 }

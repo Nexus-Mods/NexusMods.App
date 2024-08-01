@@ -5,9 +5,9 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
-/// Represents a URL attribute, stored as a UTF-8 string.
+/// A collection of URIs, stored as strings
 /// </summary>
-public class UriAttribute(string ns, string name) : ScalarAttribute<Uri, string>(ValueTags.Utf8, ns, name) 
+public class UrisAttribute(string ns, string name) : CollectionAttribute<Uri, string>(ValueTags.Utf8, ns, name) 
 {
     /// <inheritdoc />
     protected override string ToLowLevel(Uri value)

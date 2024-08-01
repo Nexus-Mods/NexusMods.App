@@ -44,7 +44,7 @@ internal class AddDownloadJobWorker : AJobWorker<AddDownloadJob>
         var addLibraryFileJobResult = await addLibraryFileJob.WaitToFinishAsync(cancellationToken: cancellationToken);
 
         var libraryFile = addLibraryFileJobResult.RequireData<LibraryFile.New>();
-        job.DownloadJob.AddMetadata(tx, libraryFile);
+        await job.DownloadJob.AddMetadata(tx, libraryFile);
 
         var transactionResult = await tx.Commit();
         return JobResult.CreateCompleted(transactionResult.Remap(libraryFile));
