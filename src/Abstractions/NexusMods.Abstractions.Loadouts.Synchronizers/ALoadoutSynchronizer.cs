@@ -228,7 +228,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var diskState = await GetDiskState(loadout.InstallationInstance);
-        var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
+        var prevDiskState = await _diskStateRegistry.GetState(loadout.InstallationInstance)!;
         
         return BuildSyncTree(diskState, prevDiskState, loadout);
     }
@@ -275,9 +275,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
         
-        var previousTree = _diskStateRegistry.GetState(loadout.InstallationInstance)!
+        var previousTree = (await _diskStateRegistry.GetState(loadout.InstallationInstance))
             .GetAllDescendentFiles()
             .ToDictionary(d => d.Item.GamePath, d => d.Item.Value);
+        
+        using var tx = Connection.BeginTransaction();
         
         foreach (var action in ActionsInOrder)
         {
@@ -298,19 +300,19 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    loadout = await ActionIngestFromDisk(groupings, loadout, previousTree);
+                    loadout = await ActionIngestFromDisk(groupings, loadout, tx);
                     break;
                 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(groupings, register, previousTree); 
+                    ActionDeleteFromDisk(groupings, register, tx); 
                     break;
                 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(groupings, register, previousTree);
+                    await ActionExtractToDisk(groupings, register, tx);
                     break;
 
                 case Actions.AddReifiedDelete:
-                    loadout = await ActionAddReifiedDelete(groupings, loadout, previousTree);
+                    ActionAddReifiedDelete(groupings, loadout, tx);
                     break;
                 
                 case Actions.WarnOfUnableToExtract:
@@ -365,12 +367,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private void ActionAddReifiedDelete(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var toAddDelete = groupings[Actions.AddReifiedDelete];
         _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
                     
-        using var tx = Connection.BeginTransaction();
         var overridesGroup = GetOrCreateOverridesGroup(tx, loadout);
 
         foreach (var item in toAddDelete)
@@ -390,14 +391,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 },
             };
 
-            previousTree.Remove(item.Path);
+
+            var prevId = item.Disk.Value.Id;
+            tx.Add(prevId, DiskStateEntry.Path, item.Path);
+            tx.Add(prevId, DiskStateEntry.Hash, Hash.Zero);
+            tx.Add(prevId, DiskStateEntry.Size, Size.Zero);
+            tx.Add(prevId, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(prevId, DiskStateEntry.Root, item.Disk.Value.Root);
         }
-        
-        await tx.Commit();
-        return loadout.Rebase();
     }
 
-    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx)
     {
         // Extract files to disk
         var toExtract = groupings[Actions.ExtractToDisk];
@@ -421,15 +425,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
-                previousTree[entry.Path] = new DiskStateEntry
+
+                // Reuse the old disk state entry if it exists
+                if (entry.Disk.HasValue)
                 {
-                    Hash = loadoutFile.Hash,
-                    Size = loadoutFile.Size,
-                    // TODO: this isn't needed and we can delete it eventually
-                    LastModified = DateTime.UtcNow,
-                };
-                
-                
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, loadoutFile.Hash);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, loadoutFile.Size);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                }
+                else
+                {
+                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                    {
+                        Path = entry.Path,
+                        Hash = loadoutFile.Hash,
+                        Size = loadoutFile.Size,
+                        LastModified = DateTime.UtcNow,
+                        RootId = entry.Disk.Value.Root,
+                    };
+                }
+
 
                 // And mark them as executable if necessary, on Unix
                 if (!isUnix)
@@ -448,7 +463,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private void ActionDeleteFromDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx)
     {
         // Delete files from disk
         var toDelete = groupings[Actions.DeleteFromDisk];
@@ -457,7 +472,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var gamePath = register.GetResolvedPath(item.Path);
             gamePath.Delete();
-            previousTree.Remove(item.Path);
+            
+            // Don't delete the entry if we're just going to replace it
+            if (!item.Actions.HasFlag(Actions.ExtractToDisk))
+            {
+                var id = item.Disk.Value.Id;
+                tx.Retract(id, DiskStateEntry.Path, item.Path);
+                tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
+                tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
+                tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
+                tx.Retract(id, DiskStateEntry.Root, item.Disk.Value.Root);
+            }
+            
         }
     }
 
@@ -470,11 +496,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
     }
 
-    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
-        using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
                     
         var added = new List<LoadoutFile.New>();
@@ -498,7 +523,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
             
             added.Add(loadoutFile);
-            previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
         }
 
         if (!overridesMod.Value.InPartition(PartitionId.Temp))

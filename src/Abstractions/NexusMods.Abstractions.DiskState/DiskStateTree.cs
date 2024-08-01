@@ -7,9 +7,9 @@ namespace NexusMods.Abstractions.DiskState;
 /// <summary>
 /// A tree representing the current state of files on disk.
 /// </summary>
-public class DiskStateTree : AGamePathNodeTree<DiskStateEntry>
+public class DiskStateTree : AGamePathNodeTree<DiskStateEntry.ReadOnly>
 {
-    private DiskStateTree(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
+    private DiskStateTree(IEnumerable<KeyValuePair<GamePath, DiskStateEntry.ReadOnly>> tree) : base(tree) { }
 
     /// <summary>
     /// The associated tx id for this disk state.
@@ -24,5 +24,6 @@ public class DiskStateTree : AGamePathNodeTree<DiskStateEntry>
     /// <summary>
     ///     Creates a disk state from a list of files.
     /// </summary>
-    public static DiskStateTree Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> items) => new(items);
+    public static DiskStateTree Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry.ReadOnly>> items) => new(items);
 }
+

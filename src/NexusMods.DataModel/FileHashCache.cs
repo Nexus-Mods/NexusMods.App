@@ -115,8 +115,15 @@ public class FileHashCache : IFileHashCache
         var hashed =
             await IndexFoldersAsync(installation.LocationsRegister.GetTopLevelLocations().Select(f => f.Value))
                 .ToListAsync();
-        return DiskStateTree.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
-            DiskStateEntry.From(h))));
+        var register = installation.LocationsRegister;
+        return DiskStateTree.Create(hashed.Select(h => KeyValuePair.Create(register.ToGamePath(h.Path),
+            new MutableStateEntry
+            {
+                Path = register.ToGamePath(h.Path),
+                Hash = h.Hash,
+                Size = h.Size,
+                LastModified = h.LastModified,
+            })));
     }
 
     private async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)

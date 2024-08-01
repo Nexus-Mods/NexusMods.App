@@ -18,12 +18,12 @@ public class SyncTreeNode : ISyncNode
     /// <summary>
     /// The state of the file on the disk.
     /// </summary>
-    public Optional<DiskStateEntry> Disk { get; set; }
+    public Optional<DiskStateEntry.ReadOnly> Disk { get; set; }
     
     /// <summary>
     /// The previously known state of the file on the disk.
     /// </summary>
-    public Optional<DiskStateEntry> Previous { get; set; }
+    public Optional<DiskStateEntry.ReadOnly> Previous { get; set; }
     
     /// <summary>
     /// The state of the file in the loadout.

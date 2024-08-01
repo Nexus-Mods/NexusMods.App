@@ -1,51 +1,43 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.DiskState;
 
-/// <summary>
-/// Metadata about a file on disk.
-/// </summary>
-public readonly struct DiskStateEntry
+public partial class DiskStateEntry : IModelDefinition
 {
     /// <summary>
-    /// The hash of the file.
+    /// Put entries in a user partition so they are all grouped together
     /// </summary>
-    public required Hash Hash { get; init; }
-
+    public static readonly PartitionId EntryPartition = PartitionId.User(4);
+    
+    private const string Namespace = "NexusMods.DataModel.DiskStateEntry";
+    
     /// <summary>
-    /// The size of the file.
+    /// The path to the file
     /// </summary>
-    public required Size Size { get; init; }
-
+    public static readonly GamePathAttribute Path = new(Namespace, nameof(Path));
+    
     /// <summary>
-    /// The last modified time of the file.
+    /// The hash of the file
     /// </summary>
-    public required DateTime LastModified { get; init; }
-
+    public static readonly HashAttribute Hash = new(Namespace, nameof(Hash));
+    
     /// <summary>
-    /// Converts a <see cref="HashedEntry"/> to a <see cref="DiskStateEntry"/>.
+    /// The size of the file (in bytes)
     /// </summary>
-    /// <param name="hashedEntry"></param>
-    /// <returns></returns>
-    public static DiskStateEntry From(HashedEntryWithName hashedEntry)
-    {
-        return new()
-        {
-            Hash = hashedEntry.Hash,
-            Size = hashedEntry.Size,
-            LastModified = hashedEntry.LastModified
-        };
-    }
-
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
+    
     /// <summary>
-    /// Converts a <see cref="DiskStateEntry"/> to a <see cref="HashedEntry"/>.
+    /// The last modified time of the file
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public HashedEntryWithName ToHashedEntry(AbsolutePath path)
-    {
-        return new(path, Hash, LastModified, Size);
-    }
-
+    public static readonly DateTimeAttribute LastModified = new(Namespace, nameof(LastModified));
+    
+    /// <summary>
+    /// The owning disk state root id
+    /// </summary>
+    public static readonly ReferenceAttribute<DiskStateRoot> Root = new(Namespace, nameof(DiskStateRoot));
 }

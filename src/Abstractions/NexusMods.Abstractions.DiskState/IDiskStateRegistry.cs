@@ -16,11 +16,10 @@ public interface IDiskStateRegistry
     Task SaveState(GameInstallation installation, DiskStateTree diskState);
 
     /// <summary>
-    /// Gets the disk state associated with a specific game installation, returns false if no state is found
+    /// Gets the current disk state for a given game installation, values will be cached and any changes will result in a re-hash
+    /// of the changed files
     /// </summary>
-    /// <param name="gameInstallation">The game installation to retrieve the disk state for</param>
-    /// <returns>The disk state associated with the game installation, or null if not found</returns>
-    DiskStateTree? GetState(GameInstallation gameInstallation);
+    Task<DiskStateTree> GetState(GameInstallation gameInstallation);
     
     /// <summary>
     /// Gets the Loadout Revision Id of the last applied state for a given game installation

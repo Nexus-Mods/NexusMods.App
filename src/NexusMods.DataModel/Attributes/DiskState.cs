@@ -1,8 +1,13 @@
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Attributes;
 
@@ -37,8 +42,11 @@ public partial class DiskState : IModelDefinition
     /// <summary>
     /// The state of the disk.
     /// </summary>
-    public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
+    public static readonly ReferenceAttribute<DiskStateRoot> State = new(Namespace, nameof(State)) { NoHistory = true };
 }
+
+
+
 
 /// <summary>
 ///     A sibling of <see cref="DiskState"/>, but only for the initial state.
@@ -68,5 +76,5 @@ public partial class InitialDiskState : IModelDefinition
     /// <summary>
     /// The state of the disk.
     /// </summary>
-    public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
+    public static readonly ReferenceAttribute<DiskStateRoot> State = new(Namespace, nameof(State)) { NoHistory = true };
 }
