@@ -17,5 +17,8 @@ public interface IDownloadJob : IPersistedJob
     /// </summary>
     AbsolutePath DownloadPath { get; }
 
-    void AddMetadata(ITransaction transaction, LibraryFile.New libraryFile);
+    /// <summary>
+    /// Adds metadata from the download to the library file
+    /// </summary>
+    ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile);
 }

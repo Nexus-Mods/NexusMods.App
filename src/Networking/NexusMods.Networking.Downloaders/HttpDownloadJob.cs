@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -44,5 +45,11 @@ public class HttpDownloadJob : APersistedJob, IHttpDownloadJob
 
         var results = await tx.Commit();
         return new HttpDownloadJob(connection, results[id], progress, worker: worker);
+    }
+    
+    /// <inheritdoc />
+    public async ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
+    {
+        throw new NotImplementedException();
     }
 }
