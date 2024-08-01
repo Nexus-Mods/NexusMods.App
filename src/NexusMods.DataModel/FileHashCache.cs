@@ -25,6 +25,7 @@ namespace NexusMods.DataModel;
 ///     Related reading: <a href="https://en.wikipedia.org/wiki/Birthday_problem">Birthday Problem</a>
 /// </remarks>
 [UsedImplicitly]
+[Obsolete]
 public class FileHashCache : IFileHashCache
 {
     /// <summary>
@@ -46,8 +47,7 @@ public class FileHashCache : IFileHashCache
         _conn = conn;
     }
 
-    /// <inheritdoc/>
-    public bool TryGetCached(AbsolutePath path, out HashCacheEntry.ReadOnly entry)
+    private bool TryGetCached(AbsolutePath path, out HashCacheEntry.ReadOnly entry)
     {
         var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
         var db = _conn.Db;
@@ -110,27 +110,6 @@ public class FileHashCache : IFileHashCache
     }
 
     /// <inheritdoc/>
-    public async ValueTask<HashedEntryWithName> IndexFileAsync(AbsolutePath file, CancellationToken token = default)
-    {
-        var info = file.FileInfo;
-        var size = info.Size;
-        if (TryGetCached(file, out var found))
-        {
-            if (found.Size == size && found.LastModified == info.LastWriteTimeUtc)
-            {
-                return new HashedEntryWithName(file, found.Hash, info.LastWriteTimeUtc, size);
-            }
-        }
-
-        using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
-        job.SetMax(info.Size);
-        var hashed = await file.XxHash64Async(job, token);
-        var result = new HashedEntryWithName(file, hashed, info.LastWriteTimeUtc, size);
-        await PutCached([result]);
-        return result;
-    }
-
-    /// <inheritdoc/>
     public async ValueTask<DiskStateTree> IndexDiskState(GameInstallation installation)
     {
         var hashed =
@@ -140,7 +119,7 @@ public class FileHashCache : IFileHashCache
             DiskStateEntry.From(h))));
     }
 
-    internal async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
+    private async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
     {
         if (toPersist.Count == 0) return;
         var db = _conn.Db;
