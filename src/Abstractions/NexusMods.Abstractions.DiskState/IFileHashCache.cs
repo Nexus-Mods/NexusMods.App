@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -12,18 +11,6 @@ namespace NexusMods.Abstractions.DiskState;
 public interface IFileHashCache
 {
     /// <summary>
-    ///     Tries to find a hash for the file from the cache.
-    /// </summary>
-    /// <remarks>
-    ///     When calling this code, you must ensure yourself that the returned cache
-    ///     element is valid, by comparing last modified date and size with the actual
-    ///     file on disk. If the file on disk does not match size and last modified,
-    ///     you should call <see cref="IFileHashCache.IndexFileAsync" />; which will update the underlying
-    ///     cached item.
-    /// </remarks>
-    bool TryGetCached(AbsolutePath path, out HashCacheEntry.ReadOnly entry);
-
-    /// <summary>
     ///     Asynchronously indexes the folder specified by <paramref name="path" />; putting it in the cache.
     /// </summary>
     /// <remarks>
@@ -31,15 +18,6 @@ public interface IFileHashCache
     ///     can verify cached entry is accurate.
     /// </remarks>
     IAsyncEnumerable<HashedEntryWithName> IndexFolderAsync(AbsolutePath path, CancellationToken token = default);
-
-    /// <summary>
-    ///     Asynchronously indexes the file specified by <paramref name="file" />; putting them in the cache.
-    /// </summary>
-    /// <remarks>
-    ///     Entry is pulled from cache if it already exists in the cache and we
-    ///     can verify cached entry is accurate.
-    /// </remarks>
-    ValueTask<HashedEntryWithName> IndexFileAsync(AbsolutePath file, CancellationToken token = default);
 
     /// <summary>
     ///     Indexes the folders a game installation and returns the disk state tree.

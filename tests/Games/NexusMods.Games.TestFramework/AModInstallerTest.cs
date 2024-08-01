@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
@@ -22,11 +23,14 @@ using File = NexusMods.Abstractions.Loadouts.Files.File;
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
+[Obsolete]
 public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>, IAsyncLifetime
     where TGame : AGame
     where TModInstaller : IModInstaller
 {
     protected readonly TModInstaller ModInstaller;
+    protected readonly IArchiveInstaller ArchiveInstaller;
+    protected readonly IFileOriginRegistry FileOriginRegistry;
     protected Loadout.ReadOnly Loadout;
 
     /// <summary>
@@ -36,6 +40,8 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var game = serviceProvider.GetServices<IGame>().OfType<TGame>().Single();
         ModInstaller = game.Installers.OfType<TModInstaller>().Single();
+        ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
+        FileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
     }
     
     public async Task InitializeAsync()

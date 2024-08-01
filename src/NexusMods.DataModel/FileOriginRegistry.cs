@@ -23,6 +23,7 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// Registry for downloads, stores metadata and links to files in the file store
 /// </summary>
+[Obsolete("To be replaced with LibraryService")]
 public class FileOriginRegistry : IFileOriginRegistry
 {
     private readonly ILogger<FileOriginRegistry> _logger;
@@ -31,7 +32,6 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IConnection _conn;
-    private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
     /// Constructor.
@@ -42,8 +42,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         IFileExtractor extractor,
         IFileStore fileStore,
         TemporaryFileManager temporaryFileManager,
-        IConnection conn,
-        IFileHashCache fileHashCache)
+        IConnection conn)
     {
         _logger = logger;
         _libraryService = library;
@@ -51,7 +50,6 @@ public class FileOriginRegistry : IFileOriginRegistry
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
         _conn = conn;
-        _fileHashCache = fileHashCache;
     }
 
     /// <inheritdoc />
@@ -102,7 +100,7 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
-        var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
+        var archiveHash = await path.XxHash64Async(token: token);
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
         if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))
@@ -120,8 +118,7 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
-        
-        var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
+        var archiveHash = await path.XxHash64Async(token: token);
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
         if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))

@@ -21,5 +21,8 @@
       <Compile Update="InstallLoadoutItemJobWorker.cs">
         <DependentUpon>InstallLoadoutItemJob.cs</DependentUpon>
       </Compile>
+      <Compile Update="AddDownloadJobWorker.cs">
+        <DependentUpon>AddDownloadJob.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -35,7 +35,6 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<FileOriginsPageViewModel> _logger;
     private readonly IServiceProvider _provider;
-    private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly IOSInterop _osInterop;
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins => _fileOrigins;
@@ -70,7 +69,6 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public LoadoutId LoadoutId { get; private set; }
     private readonly GameDomain _gameDomain;
-    private readonly IArchiveInstaller _archiveInstaller;
     private readonly ILibraryService _libraryService;
     private readonly IConnection _conn;
 
@@ -82,9 +80,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         _logger = serviceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>();
         _provider = serviceProvider;
-        _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
 
         TabTitle = Language.FileOriginsPageTitle;
