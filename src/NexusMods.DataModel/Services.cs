@@ -15,18 +15,15 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.Paths;
 
@@ -101,18 +98,9 @@ public static class Services
         
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
-        
-        // Disk State Registry
-        coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
-        coll.AddDiskStateModel();
-        coll.AddDiskStateEntryModel();
-        coll.AddDiskStateRootModel();
-        coll.AddInitialDiskStateModel();
 
-        // File Hash Cache
-        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
-        coll.AddAttributeCollection(typeof(HashCacheEntry));
-        
+        // Disk State and Synchronizer
+        coll.AddDiskStateEntryModel();
         coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
@@ -135,7 +123,6 @@ public static class Services
         // Verbs
         coll.AddLoadoutManagementVerbs()
             .AddToolVerbs()
-            .AddFileHashCacheVerbs()
             .AddArchiveVerbs();
 
         return coll;

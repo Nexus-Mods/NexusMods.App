@@ -15,7 +15,6 @@ namespace NexusMods.DataModel.Synchronizer;
 public class SynchronizerService : ISynchronizerService
 {
     private readonly ILogger<SynchronizerService> _logger;
-    private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly IConnection _conn;
     private readonly IGameRegistry _gameRegistry;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
@@ -25,11 +24,10 @@ public class SynchronizerService : ISynchronizerService
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IDiskStateRegistry diskStateRegistry, IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry)
     {
         _logger = logger;
         _conn = conn;
-        _diskStateRegistry = diskStateRegistry;
         _gameRegistry = gameRegistry;
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
@@ -40,12 +38,15 @@ public class SynchronizerService : ISynchronizerService
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         _logger.LogDebug("Getting diff tree for loadout {LoadoutId}", loadoutId);
+        throw new NotImplementedException();
+        /*
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
             
         var syncrhonizer = loadout.InstallationInstance.GetGame().Synchronizer;
         
         _logger.LogDebug("Creating diff tree for loadout {LoadoutId}", loadoutId);
         return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
+        */
     }
 
     /// <inheritdoc />
@@ -90,6 +91,8 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout)
     {
+        throw new NotImplementedException();
+        /*
         if (!_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
         {
             loadout = default(Loadout.ReadOnly);
@@ -99,23 +102,27 @@ public class SynchronizerService : ISynchronizerService
         var db = _conn.AsOf(lastId.Tx);
         loadout = Loadout.Load(db, lastId.Id);
         return true;
+        */
     }
 
     /// <inheritdoc />
     public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
-        LoadoutWithTxId last;
-        if (_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
-            last = lastId;
-        else
-            last = new LoadoutWithTxId(LoadoutId.From(EntityId.From(0)), TxId.From(0));
-        
-        // Return a deferred observable that computes the starting value only on first subscription
-        return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable
-            .Where(x => x.Install.Equals(gameInstallation))
-            .Select(x => x.LoadoutRevisionId)
-            .StartWith(last)
-        );
+        throw new NotImplementedException();
+        /*
+    LoadoutWithTxId last;
+    if (_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
+        last = lastId;
+    else
+        last = new LoadoutWithTxId(LoadoutId.From(EntityId.From(0)), TxId.From(0));
+
+    // Return a deferred observable that computes the starting value only on first subscription
+    return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable
+        .Where(x => x.Install.Equals(gameInstallation))
+        .Select(x => x.LoadoutRevisionId)
+        .StartWith(last)
+    );
+    */
     }
 
     /// <inheritdoc />

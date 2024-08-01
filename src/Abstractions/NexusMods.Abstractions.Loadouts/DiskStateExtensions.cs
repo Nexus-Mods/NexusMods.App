@@ -2,6 +2,7 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Extensions.Hashing;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -11,6 +12,38 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public static class DiskStateExtensions
 {
+
+    /// <summary>
+    /// Gets the latest game metadata for the installation
+    /// </summary>
+    public static GameMetadata.ReadOnly GetMetadata(this GameInstallation installation, IConnection connection)
+    {
+        return GameMetadata.Load(connection.Db, installation.GameMetadataId);
+    }
+
+    /// <summary>
+    /// Gets the disk state of the game as of a specific transaction
+    /// </summary>
+    /// <param name="metadata"></param>
+    /// <param name="txId"></param>
+    /// <returns></returns>
+    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameMetadata.ReadOnly metadata, TxId txId)
+    {
+        // Get an as-of db for the last applied loadout
+        var asOfDb = metadata.Db.Connection.AsOf(txId);
+        // Get the attributes for the entries in the disk state
+        var segment = asOfDb.Datoms(DiskStateEntry.Game, metadata.Id);
+        return new Entities<DiskStateEntry.ReadOnly>(new EntityIds(segment, 0, segment.Count), asOfDb);
+    }
+    
+    /// <summary>
+    /// Gets the disk state of the game as of a specific transaction
+    /// </summary>
+    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameMetadata.ReadOnly metadata, Transaction.ReadOnly tx)
+    {
+        return DiskStateAsOf(metadata, TxId.From(tx.Id.Value));
+    }
+    
     /// <summary>
     /// Load the disk state of the game as of the last applied loadout
     /// </summary>
@@ -21,12 +54,7 @@ public static class DiskStateExtensions
         {
             return EmptyState;
         }
-
-        // Get an as-of db for the last applied loadout
-        var asOfDb = metadata.Db.Connection.AsOf(TxId.From(metadata.LastAppliedLoadout.Id.Value));
-        // Get the attributes for the entries in the disk state
-        var segment = asOfDb.Datoms(DiskStateEntry.Game, metadata.Id);
-        return new Entities<DiskStateEntry.ReadOnly>(new EntityIds(segment, 0, segment.Count), asOfDb);
+        return metadata.DiskStateAsOf(metadata.LastAppliedLoadoutTransaction);
     }
     
     private static readonly Entities<DiskStateEntry.ReadOnly> EmptyState = new();

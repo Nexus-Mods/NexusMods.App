@@ -381,7 +381,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             tx.Add(prevId, DiskStateEntry.Hash, Hash.Zero);
             tx.Add(prevId, DiskStateEntry.Size, Size.Zero);
             tx.Add(prevId, DiskStateEntry.LastModified, DateTime.UtcNow);
-            tx.Add(prevId, DiskStateEntry.Root, item.Disk.Value.Root);
+            tx.Add(prevId, DiskStateEntry.Game, item.Disk.Value.Game);
         }
     }
 
@@ -425,7 +425,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Hash = loadoutFile.Hash,
                         Size = loadoutFile.Size,
                         LastModified = DateTime.UtcNow,
-                        RootId = entry.Disk.Value.Root,
+                        GameId = entry.Disk.Value.Game,
                     };
                 }
 
@@ -465,7 +465,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
                 tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
                 tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
-                tx.Retract(id, DiskStateEntry.Root, item.Disk.Value.Root);
+                tx.Retract(id, DiskStateEntry.Game, item.Disk.Value.Game);
             }
             
         }
@@ -532,13 +532,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
-        var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
-
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (prevDiskState.LoadoutId != loadout.Id)
+        if (loadout.Installation.LastAppliedLoadout.Id != loadout.Id)
         {
-            var prevLoadout = Loadout.Load(loadout.Db, prevDiskState.LoadoutId);
+            var prevLoadout = Loadout.Load(loadout.Db, loadout.Installation.LastAppliedLoadout.Id);
             if (prevLoadout.IsValid()) 
                 await Synchronize(prevLoadout);
         }
@@ -704,11 +702,33 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await _fileStore.BackupFiles(archivedFiles);
     }
     
+    private async Task<DiskState> GetOrCreateInitialDiskState(GameInstallation installation)
+    {
+        // Return any existing state
+        var metadata = installation.GetMetadata(Connection);
+        if (metadata.Contains(GameMetadata.InitialStateTransaction))
+        {
+            return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
+        }
+        
+        // Or create a new one
+        using var tx = Connection.BeginTransaction();
+        await installation.IndexNewState(tx);
+        tx.Add(metadata.Id, GameMetadata.InitialStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        await tx.Commit();
+        
+        // Rebase the metadata to the new transaction
+        metadata.Rebase();
+        
+        // Return the new state
+        return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
+    }
+    
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         // Get the initial state of the game folder
-        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        var initialState = await GetOrCreateInitialDiskState(installation);
 
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
@@ -745,17 +765,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Backup the files
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
 
-        foreach (var file in initialState.GetAllDescendentFiles())
+        foreach (var file in initialState)
         {
-            var path = file.GamePath();
+            var path = file.Path;
             
             if (!IsIgnoredBackupPath(path)) 
-                filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+                filesToBackup.Add((path, file.Hash, file.Size));
 
             _ = new LoadoutFile.New(tx, out var loadoutFileId)
             {
-                Hash = file.Item.Value.Hash,
-                Size = file.Item.Value.Size,
+                Hash = file.Hash,
+                Size = file.Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
                 {
                     TargetPath = path,
@@ -777,21 +797,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Remap the ids
         var remappedLoadout = result.Remap(loadout);
         
-        initialState.TxId = result.NewTx;
-        initialState.LoadoutId = remappedLoadout.Id;
-
-        
-        // Reset the game folder to initial state if making a new loadout.
-        // We must do this before saving state, as Apply does a diff against
-        // the last state. Which will be a state from previous loadout.
-        // Note(sewer): We can't just apply the new loadout here because we haven't run SaveState
-        // and we can't guarantee we have a clean state without applying.
-        if (isCached)
-        {
-            await Synchronize(remappedLoadout);
-        }
-
-        await _diskStateRegistry.SaveState(remappedLoadout.InstallationInstance, initialState);
         return remappedLoadout;
     }
 
@@ -815,8 +820,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
+        throw new NotImplementedException();
         // The 'Vanilla State Loadout' contains the original state.
-        await ApplyVanillaStateLoadout(installation);
+        //await ApplyVanillaStateLoadout(installation);
 
         // Cleanup all of the metadata left behind for this game.
         // All database information, including loadouts, initial game state and
@@ -829,7 +835,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             tx.Delete(loadout, true);
         await tx.Commit();
         
-        await _diskStateRegistry.ClearInitialState(installation);
+        //await _diskStateRegistry.ClearInitialState(installation);
     }
     
     /// <inheritdoc />
@@ -841,6 +847,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
     {
+        throw new NotImplementedException();
+        /*
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
@@ -886,13 +894,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 via a setting to match user preferences, but for now this is the
                 default.
             */
-
+/*
             await ApplyVanillaStateLoadout(installation);
         }
 
         using var tx = Connection.BeginTransaction();
         tx.Delete(id, true);
         await tx.Commit();
+        */
+        
     }
 
     /// <summary>
@@ -905,6 +915,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
     {
+        /*
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
@@ -951,6 +962,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var result = await tx.Commit();
 
         return result.Remap(loadout);
+        */
+        throw new NotImplementedException();
     }
 #endregion
     
