@@ -45,6 +45,9 @@
       <Compile Update="LoadoutObservables.cs">
         <DependentUpon>Loadout.cs</DependentUpon>
       </Compile>
+      <Compile Update="DiskStateExtensions.cs">
+        <DependentUpon>GameMetadata.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.MnemonicDB.Attributes;
+﻿using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -37,7 +38,7 @@ public partial class DiskStateEntry : IModelDefinition
     public static readonly DateTimeAttribute LastModified = new(Namespace, nameof(LastModified));
     
     /// <summary>
-    /// The owning disk state root id
+    /// The owning game installation
     /// </summary>
-    public static readonly ReferenceAttribute<DiskStateRoot> Root = new(Namespace, nameof(DiskStateRoot));
+    public static readonly ReferenceAttribute<GameMetadata> Game = new(Namespace, nameof(Game));
 }

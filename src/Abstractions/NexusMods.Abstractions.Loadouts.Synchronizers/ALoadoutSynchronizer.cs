@@ -16,10 +16,13 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
+
+using DiskState = Entities<DiskStateEntry.ReadOnly>;
 
 /// <summary>
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
@@ -34,8 +37,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     protected readonly IConnection Connection;
 
     private readonly ILogger _logger;
-    private readonly IFileHashCache _hashCache;
-    private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
     private readonly IOSInformation _os;
     private readonly IFileStore _fileStore;
@@ -44,16 +45,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Loadout synchronizer base constructor.
     /// </summary>
     protected ALoadoutSynchronizer(ILogger logger,
-        IFileHashCache hashCache,
-        IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
         ISorter sorter,
         IConnection conn,
         IOSInformation os)
     {
         _logger = logger;
-        _hashCache = hashCache;
-        _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
         Connection = conn;
@@ -66,17 +63,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="provider"></param>
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
-        provider.GetRequiredService<IFileHashCache>(),
-        provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>()) { }
-
-    private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskStateTree newTree, GameInstallation installation)
+    
+    private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskState newState, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
+
+        var newStatePaths = newState.Select(e => e.Path).ToHashSet();
+        
         foreach (var entry in toDelete)
         {
             var parentPath = entry.Parent;
@@ -90,7 +88,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
                 
                 // newTree was build from files, so if the parent is in the new tree, it's not empty
-                if (newTree.ContainsKey(parentPath))
+                if (newStatePaths.Contains(parentPath))
                 {
                     break;
                 }
@@ -109,12 +107,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             // Could have other empty directories as children, so we need to delete recursively
             installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
         }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<DiskStateTree> GetDiskState(GameInstallation installation)
-    {
-        return await _hashCache.IndexDiskState(installation);
     }
     
     #region ILoadoutSynchronizer Implementation
@@ -145,7 +137,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
+    public SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, Loadout.ReadOnly loadoutTree)
     {
         var tree = new Dictionary<GamePath, SyncTreeNode>();
 
@@ -181,34 +173,34 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
         }
 
-        foreach (var node in previousTree.GetAllDescendentFiles())
+        foreach (var node in previousTree)
         {
-            if (tree.TryGetValue(node.GamePath(), out var found))
+            if (tree.TryGetValue(node.Path, out var found))
             {
-                found.Previous = node.Item.Value;
+                found.Previous = node;
             }
             else
             {
-                tree.Add(node.GamePath(), new SyncTreeNode
+                tree.Add(node.Path, new SyncTreeNode
                 {
-                    Path = node.GamePath(),
-                    Previous = node.Item.Value,
+                    Path = node.Path,
+                    Previous = node,
                 });
             }
         }
         
-        foreach (var node in currentState.GetAllDescendentFiles())
+        foreach (var node in currentState)
         {
-            if (tree.TryGetValue(node.GamePath(), out var found))
+            if (tree.TryGetValue(node.Path, out var found))
             {
-                found.Disk = node.Item.Value;
+                found.Disk = node;
             }
             else
             {
-                tree.Add(node.GamePath(), new SyncTreeNode
+                tree.Add(node.Path, new SyncTreeNode
                 {
-                    Path = node.GamePath(),
-                    Disk = node.Item.Value,
+                    Path = node.Path,
+                    Disk = node,
                 });
             }
         }
@@ -227,10 +219,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
     {
-        var diskState = await GetDiskState(loadout.InstallationInstance);
-        var prevDiskState = await _diskStateRegistry.GetState(loadout.InstallationInstance)!;
-        
-        return BuildSyncTree(diskState, prevDiskState, loadout);
+        var metadata = await loadout.InstallationInstance.ReindexState(Connection);
+        var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
+        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout);
     }
 
     /// <inheritdoc />
@@ -274,11 +265,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
-        
-        var previousTree = (await _diskStateRegistry.GetState(loadout.InstallationInstance))
-            .GetAllDescendentFiles()
-            .ToDictionary(d => d.Item.GamePath, d => d.Item.Value);
-        
         using var tx = Connection.BeginTransaction();
         
         foreach (var action in ActionsInOrder)
@@ -328,20 +314,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             }
         }
-        
-        var newTree = DiskStateTree.Create(previousTree);
-        newTree.LoadoutId = loadout.Id;
-        newTree.TxId = loadout.MostRecentTxId();
 
+        await tx.Commit();
+
+        var newState = loadout.Installation.Rebase().DiskStateEntries;
+        
         // Clean up empty directories
         var deletedFiles = groupings[Actions.DeleteFromDisk];
         if (deletedFiles.Count > 0)
         {
-            CleanDirectories(deletedFiles.Select(f => f.Path), newTree, loadout.InstallationInstance);
+            CleanDirectories(deletedFiles.Select(f => f.Path), newState, loadout.InstallationInstance);
         }
         
-        await _diskStateRegistry.SaveState(loadout.InstallationInstance, newTree);
-
         return loadout;
     }
 
@@ -610,7 +594,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
     {
         var syncTree = BuildSyncTree(diskState, diskState, loadout);
         // Process the sync tree to get the actions populated in the nodes
@@ -970,55 +954,4 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 #endregion
     
-    #region Misc Helper Functions
-    /// <summary>
-    /// Checks if the last applied loadout is a 'vanilla state' loadout.
-    /// </summary>
-    /// <param name="installation">The game installation to check.</param>
-    /// <returns>True if the last applied loadout is a vanilla state.</returns>
-    private bool IsLastLoadoutAVanillaStateLoadout(GameInstallation installation)
-    {
-        if (!_diskStateRegistry.TryGetLastAppliedLoadout(installation, out var lastApplied))
-            return false;
-
-        var db = Connection.AsOf(lastApplied.Tx);
-        return Loadout.Load(db, lastApplied.Id).IsVanillaStateLoadout();
-    }
-
-    /// <summary>
-    /// By default, this method just returns the current state of the game folders. Most of the time
-    /// this creates a sub-par user experience as users may have installed mods in the past and then
-    /// these files will be marked as part of the game files when they are not. Properly implemented
-    /// games should override this method and return only the files that are part of the game itself.
-    ///
-    /// Doing so, will cause the next "Ingest" to pull in the remaining files in a way consistent with
-    /// the ingestion process of the game. Likely this will involve adding the files to a "Override" mod.
-    /// </summary>
-    /// <param name="installation"></param>
-    /// <returns></returns>
-    public virtual async ValueTask<(bool isCachedState, DiskStateTree tree)> GetOrCreateInitialDiskState(GameInstallation installation)
-    {
-        var initialState = _diskStateRegistry.GetInitialState(installation);
-        if (initialState != null)
-            return (true, initialState);
-
-        var indexedState = await _hashCache.IndexDiskState(installation);
-        await _diskStateRegistry.SaveInitialState(installation, indexedState);
-        return (false, indexedState);
-    }
-
-    private async Task ApplyVanillaStateLoadout(GameInstallation installation)
-    {
-        var installLocation = installation.LocationsRegister[LocationId.Game];
-
-        var vanillaStateLoadout = Loadout.All(Connection.Db)
-            .FirstOrOptional(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation
-                                 && x.IsVanillaStateLoadout());
-        
-        if (!vanillaStateLoadout.HasValue)
-            vanillaStateLoadout = await CreateVanillaStateLoadout(installation);
-        
-        await Synchronize(vanillaStateLoadout.Value);
-    }
-    #endregion
 }

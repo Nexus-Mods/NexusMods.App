@@ -140,7 +140,6 @@ public class DiskStateRegistry : IDiskStateRegistry
                 };
             }
         }
-
         return state;
     }
 

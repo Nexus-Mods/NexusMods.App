@@ -1,8 +1,10 @@
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
+using DiskState = Entities<DiskStateEntry.ReadOnly>;
 
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
@@ -16,7 +18,7 @@ public interface ILoadoutSynchronizer
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
     /// sync tree contains a matching of all the files in all 3 sources based on their path.
     /// </summary>
-    SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree);
+    SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, Loadout.ReadOnly loadoutTree);
     
     /// <summary>
     /// Builds a sync tree from a loadout and the current state of the game folder.
@@ -41,19 +43,6 @@ public interface ILoadoutSynchronizer
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout);
     
-    /// <summary>
-    /// Gets the current disk state of the game folders for the given game installation.
-    /// </summary>
-    Task<DiskStateTree> GetDiskState(GameInstallation installationInstance);
-
-    /// <summary>
-    /// Gets the current disk state of the game folders for the given loadout.
-    /// </summary>
-    Task<DiskStateTree> GetDiskState(Loadout.ReadOnly loadout)
-    {
-        return GetDiskState(loadout.InstallationInstance);
-    }
-    
     #endregion
     
     
@@ -65,7 +54,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
+    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState);
     
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously
