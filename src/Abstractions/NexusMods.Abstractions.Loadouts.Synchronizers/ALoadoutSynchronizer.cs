@@ -286,7 +286,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    loadout = await ActionIngestFromDisk(groupings, loadout, tx);
+                    await ActionIngestFromDisk(groupings, loadout, tx);
                     break;
                 
                 case Actions.DeleteFromDisk:
@@ -317,7 +317,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         await tx.Commit();
 
-        var newState = loadout.Installation.Rebase().DiskStateEntries;
+        loadout = loadout.Rebase();
+        var newState = loadout.Installation.DiskStateEntries;
         
         // Clean up empty directories
         var deletedFiles = groupings[Actions.DeleteFromDisk];
@@ -480,7 +481,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
     }
 
-    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
+    private async Task ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
@@ -509,24 +510,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             added.Add(loadoutFile);
             tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
         }
-
-        if (!overridesMod.Value.InPartition(PartitionId.Temp))
-        {
-            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
-            mod.Revise(tx);
-        }
-        else
-        {
-            loadout.Revise(tx);
-        }
-                    
-        var result = await tx.Commit();
-
-        loadout = loadout.Rebase();
-
+        
         if (added.Count > 0) 
-            loadout = await MoveNewFilesToMods(loadout, added.Select(file => result.Remap(file)).ToArray());
-        return loadout;
+            await MoveNewFilesToMods(loadout, added, tx);
     }
 
     /// <inheritdoc />
@@ -586,9 +572,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// When new files are added to the loadout from disk, this method will be called to move the files from the override mod
     /// into any other mod they may belong to.
     /// </summary>
-    protected virtual Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, LoadoutFile.ReadOnly[] newFiles)
+    protected virtual ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<LoadoutFile.New> newFiles, ITransaction tx)
     {
-        return Task.FromResult(loadout);
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -729,21 +715,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // Get the initial state of the game folder
         var initialState = await GetOrCreateInitialDiskState(installation);
-
-        // We need to create a 'Vanilla State Loadout' for rolling back the game
-        // to the original state before NMA touched it, if we don't already
-        // have one.
-        var installLocation = installation.LocationsRegister[LocationId.Game];
-        var existingLoadouts = Loadout.All(Connection.Db)
-            .Where(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation)
-            .ToArray();
         
-        if (!existingLoadouts.Any(x => x.IsVanillaStateLoadout()))
-        {
-            await CreateVanillaStateLoadout(installation);
-        }
-        
-        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadouts
+        var shortName = LoadoutNameProvider.GetNewShortName(Loadout.All(Connection.Db)
             .Where(l => l.IsVisible())
             .Select(l=> l.ShortName)
             .ToArray()

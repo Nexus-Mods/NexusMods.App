@@ -89,7 +89,7 @@ public static class DiskStateExtensions
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(file);
                 
-                if (!inState.TryGetValue(gamePath, out var entry))
+                if (inState.TryGetValue(gamePath, out var entry))
                 {
                     var fileInfo = file.FileInfo;
                     
