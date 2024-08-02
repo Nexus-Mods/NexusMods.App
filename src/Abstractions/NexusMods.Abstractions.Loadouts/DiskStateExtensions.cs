@@ -81,10 +81,13 @@ public static class DiskStateExtensions
         var seen = new HashSet<GamePath>();
         var metadata = GameMetadata.Load(connection.Db, installation.GameMetadataId);
         var inState = metadata.DiskStateEntries.ToDictionary(e => e.Path);
-        bool changes = false;
+        var changes = false;
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
+            if (!location.Value.DirectoryExists())
+                continue;
+            
             foreach (var file in location.Value.EnumerateFiles())
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(file);
@@ -149,6 +152,8 @@ public static class DiskStateExtensions
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
+            if (!location.Value.DirectoryExists())
+                continue;
             foreach (var file in location.Value.EnumerateFiles())
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(file);

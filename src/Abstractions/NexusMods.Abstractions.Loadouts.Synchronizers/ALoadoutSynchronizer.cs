@@ -266,6 +266,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
         using var tx = Connection.BeginTransaction();
+        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
         
         foreach (var action in ActionsInOrder)
@@ -292,7 +293,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
                 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(groupings, register, tx);
+                    await ActionExtractToDisk(groupings, register, tx, gameMetadataId);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -385,7 +386,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx)
+    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
     {
         // Extract files to disk
         var toExtract = groupings[Actions.ExtractToDisk];
@@ -425,7 +426,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Hash = loadoutFile.Hash,
                         Size = loadoutFile.Size,
                         LastModified = DateTime.UtcNow,
-                        GameId = entry.Disk.Value.Game,
+                        GameId = gameMetadataId,
                     };
                 }
 
