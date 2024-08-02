@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Extensions.Hashing;
@@ -13,6 +14,17 @@ namespace NexusMods.Abstractions.Loadouts;
 public static class DiskStateExtensions
 {
 
+    /// <summary>
+    /// Returns the last synchronized loadout for the game, if any
+    /// </summary>
+    public static Optional<LoadoutId> LastSynchronizedLoadout(this GameMetadata.ReadOnly metadata)
+    {
+        if (GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastApplied))
+            return LoadoutId.From(lastApplied);
+        return Optional<LoadoutId>.None;
+    }
+
+    
     /// <summary>
     /// Gets the latest game metadata for the installation
     /// </summary>
