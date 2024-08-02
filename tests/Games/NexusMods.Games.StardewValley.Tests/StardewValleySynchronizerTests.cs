@@ -107,6 +107,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         
         // Create the loadout
         var loadout = await CreateLoadout();
+        loadout = await Synchronizer.Synchronize(loadout);
         
         loadout.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file exists, but is ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
@@ -118,6 +119,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         settings.DoFullGameBackup = true;
 
         var loadout2 = await CreateLoadout();
+        loadout2 = await Synchronizer.Synchronize(loadout2);
         
         loadout2.Items.Should().ContainItemTargetingPath(ignoredGamePath, "The file is not ignored");
         (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");

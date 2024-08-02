@@ -266,15 +266,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
     {
         using var tx = Connection.BeginTransaction();
+        var register = loadout.InstallationInstance.LocationsRegister;
         
         foreach (var action in ActionsInOrder)
         {
             var items = groupings[action];
             if (items.Count == 0)
                 continue;
-
-            var register = loadout.InstallationInstance.LocationsRegister;
-
             
             switch (action)
             {
@@ -315,6 +313,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
+        tx.Add(loadout.Id, GameMetadata.LastAppliedLoadout, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -481,38 +480,57 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
     }
 
+    public record struct AddedEntry
+    {
+        public required LoadoutItem.New LoadoutItem { get; init; }
+        public required LoadoutItemWithTargetPath.New LoadoutItemWithTargetPath { get; init; }
+        public required LoadoutFile.New LoadoutFileEntry { get; init; }
+    }
+    
     private async Task ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var toIngest = groupings[Actions.IngestFromDisk];
         _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
         var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
                     
-        var added = new List<LoadoutFile.New>();
+        var added = new List<AddedEntry>();
 
         foreach (var file in toIngest)
         {
-            var loadoutFile = new LoadoutFile.New(tx, out var id)
+            var id = tx.TempId();
+            var loadoutItem = new LoadoutItem.New(tx, id)
             {
-                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
-                {
-                    LoadoutItem = new LoadoutItem.New(tx, id)
-                    {
-                        ParentId = overridesMod.Value,
-                        LoadoutId = loadout.Id,
-                        Name = file.Path.FileName,
-                    },
-                    TargetPath = file.Path,
-                },
+                ParentId = overridesMod.Value,
+                LoadoutId = loadout.Id,
+                Name = file.Path.FileName,
+            };
+            var loadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
+            {
+                LoadoutItem = loadoutItem,
+                TargetPath = file.Path,
+            };
+            
+            var loadoutFile = new LoadoutFile.New(tx, id)
+            {
+                LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
                 Hash = file.Disk.Value.Hash,
                 Size = file.Disk.Value.Size,
             };
-            
-            added.Add(loadoutFile);
+
+            added.Add(new AddedEntry
+                {
+                    LoadoutItem = loadoutItem,
+                    LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
+                    LoadoutFileEntry = loadoutFile,
+                }
+            );
             tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
         }
-        
-        if (added.Count > 0) 
+
+        if (added.Count > 0)
+        {
             await MoveNewFilesToMods(loadout, added, tx);
+        }
     }
 
     /// <inheritdoc />
@@ -572,7 +590,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// When new files are added to the loadout from disk, this method will be called to move the files from the override mod
     /// into any other mod they may belong to.
     /// </summary>
-    protected virtual ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<LoadoutFile.New> newFiles, ITransaction tx)
+    protected virtual ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
         return ValueTask.CompletedTask;
     }

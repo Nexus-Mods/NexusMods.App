@@ -88,6 +88,7 @@ public static class DiskStateExtensions
             foreach (var file in location.Value.EnumerateFiles())
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(file);
+                seen.Add(gamePath);
                 
                 if (inState.TryGetValue(gamePath, out var entry))
                 {
