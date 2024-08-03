@@ -43,6 +43,12 @@ public interface ILoadoutSynchronizer
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout);
     
+    
+    /// <summary>
+    /// Rescan the game files, bringing the current cached state up to date.
+    /// </summary>
+    Task<GameMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation);
+    
     #endregion
     
     
@@ -71,7 +77,12 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.
     /// </summary>
-    public Task ResetToOriginalGameState(GameInstallation installation);
+    public Task DeactivateCurrentLoadout(GameInstallation installation);
+    
+    /// <summary>
+    /// Sets the loadout as the active loadout for the game, applying the changes to the game folder.
+    /// </summary>
+    public Task ActivateLoadout(Loadout.ReadOnly loadout);
 
     /// <summary>
     /// Deletes the loadout for the game. If the loadout is the currently active loadout,
@@ -92,6 +103,9 @@ public interface ILoadoutSynchronizer
     /// up. This method is ignored when the global configuration is set to always back up all game files.
     /// </summary>
     bool IsIgnoredBackupPath(GamePath path);
+    
+    
 
 #endregion
+
 }

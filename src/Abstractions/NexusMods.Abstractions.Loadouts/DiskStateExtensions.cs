@@ -76,12 +76,24 @@ public static class DiskStateExtensions
     /// </summary>
     public static async Task<GameMetadata.ReadOnly> ReindexState(this GameInstallation installation, IConnection connection)
     {
+        var originalMetadata = GetMetadata(installation, connection);
         using var tx = connection.BeginTransaction();
+
+        // Index the state
         var changed = await installation.ReindexState(connection, tx);
+        
+        if (!originalMetadata.Contains(GameMetadata.InitialStateTransaction))
+        {
+            // No initial state, so set this transaction as the initial state
+            changed = true;
+            tx.Add(originalMetadata.Id, GameMetadata.InitialStateTransaction, EntityId.From(TxId.Tmp.Value));
+        }
+        
         if (changed)
         {
             await tx.Commit();
         }
+        
         return GameMetadata.Load(connection.Db, installation.GameMetadataId);
     }
     

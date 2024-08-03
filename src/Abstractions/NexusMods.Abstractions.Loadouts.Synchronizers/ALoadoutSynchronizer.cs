@@ -394,8 +394,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         if (gameMetadata.Contains(GameMetadata.LastAppliedLoadout))
         {
-            tx.Retract(gameMetadataId, GameMetadata.LastAppliedLoadout, gameMetadata.LastAppliedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameMetadata.LastAppliedLoadout, gameMetadata.LastAppliedLoadout);
+            tx.Retract(gameMetadataId, GameMetadata.LastAppliedLoadoutTransaction, gameMetadata.LastAppliedLoadoutTransaction);
         }
+        tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
 
         await tx.Commit();
     }
@@ -613,9 +615,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (loadout.Installation.LastAppliedLoadout.Id != loadout.Id)
+        if (GameMetadata.LastAppliedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
         {
-            var prevLoadout = Loadout.Load(loadout.Db, loadout.Installation.LastAppliedLoadout.Id);
+            var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
                 await Synchronize(prevLoadout);
         }
@@ -623,6 +625,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var tree = await BuildSyncTree(loadout);
         var groupings = ProcessSyncTree(tree);
         return await RunGroupings(tree, groupings, loadout);
+    }
+
+    public async Task<GameMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
+    {
+        return await gameInstallation.ReindexState(Connection);
     }
 
     /// <summary>
@@ -864,6 +871,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var remappedLoadout = result.Remap(loadout);
 
         return remappedLoadout;
+    }
+
+    public async Task DeactivateCurrentLoadout(GameInstallation installation)
+    {
+        var metadata = installation.GetMetadata(Connection);
+        
+        if (!metadata.Contains(GameMetadata.LastAppliedLoadout))
+            return;
+        
+        // Syncronize the last applied loadout so we don't lose any changes
+        await Synchronize(Loadout.Load(Connection.Db, metadata.LastAppliedLoadout));
+        
+        await ResetToOriginalGameState(installation);
+    }
+
+    public Task ActivateLoadout(Loadout.ReadOnly loadout)
+    {
+        throw new NotImplementedException();
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)

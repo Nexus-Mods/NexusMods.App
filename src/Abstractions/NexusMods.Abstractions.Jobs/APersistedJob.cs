@@ -25,7 +25,8 @@ public abstract class APersistedJob : AJob, IPersistedJob
     /// <summary>
     /// Get the value of the attribute from the internal persisted job state.
     /// </summary>
-    public THighLevel Get<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr)
+    public THighLevel Get<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr) 
+        where THighLevel : notnull
     {
         return attr.Get(_state);
     }
@@ -41,7 +42,8 @@ public abstract class APersistedJob : AJob, IPersistedJob
     /// <summary>
     /// Get the value of the attribute from the internal persisted job state.
     /// </summary>
-    public THighLevel Get<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr, THighLevel defaultValue)
+    public THighLevel Get<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr, THighLevel defaultValue) 
+        where THighLevel : notnull
     {
         if (!_state.Contains(attr))
             return defaultValue;
@@ -52,7 +54,8 @@ public abstract class APersistedJob : AJob, IPersistedJob
     /// <summary>
     /// Update the value of the attribute in the internal persisted job state.
     /// </summary>
-    public async Task Set<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr, THighLevel value)
+    public async Task Set<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attr, THighLevel value) 
+        where THighLevel : notnull
     {
         using var tx = _connection.BeginTransaction();
         attr.Add(tx, PersistedJobStateId, value);
