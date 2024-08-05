@@ -128,7 +128,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .WhenPropertyChanged(panel => panel.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
                 .Select(propertyValue => propertyValue.Sender)
-                .BindToVM(this, vm => vm.SelectedPanel);
+                .BindToVM(this, vm => vm.SelectedPanel)
+                .DisposeWith(disposables);
 
             this.WhenAnyValue(vm => vm.SelectedPanel)
                 .SubscribeWithErrorLogging(selectedPanel =>
@@ -142,7 +143,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
             // selected tab
             this.WhenAnyValue(vm => vm.SelectedPanel)
-                .Select(panel => panel.SelectedTab)
+                .Select(panel => panel.WhenAnyValue(x => x.SelectedTab))
+                .Switch()
                 .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(disposables);
 

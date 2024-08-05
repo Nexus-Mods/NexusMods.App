@@ -26,6 +26,15 @@
                    Margin="16,0"
                    x:Name="ActiveWorkspaceTitleTextBlock" />
 
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="GoBackInHistory">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronLeft}"/>
+            </Button>
+            <Button x:Name="GoForwardInHistory">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronRight}"/>
+            </Button>
+        </StackPanel>
+
         <Menu Grid.Column="2" Margin="12 0">
             <MenuItem Classes="TopBarNoStyleMenuItem">
                 <MenuItem.Header>
