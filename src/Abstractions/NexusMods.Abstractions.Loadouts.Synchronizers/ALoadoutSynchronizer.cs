@@ -887,6 +887,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await ResetToOriginalGameState(installation);
     }
 
+    /// <inheritdoc />
+    public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation)
+    {
+        var metadata = installation.GetMetadata(Connection);
+        if (!GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastAppliedLoadout))
+            return Optional<LoadoutId>.None;
+        return LoadoutId.From(lastAppliedLoadout);
+    }
+
     public async Task ActivateLoadout(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
@@ -914,24 +923,19 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc />b
     public async Task UnManage(GameInstallation installation)
     {
-        throw new NotImplementedException();
-        // The 'Vanilla State Loadout' contains the original state.
-        //await ApplyVanillaStateLoadout(installation);
+        var metadata = installation.GetMetadata(Connection);
+        
+        if (GetCurrentlyActiveLoadout(installation).HasValue)
+            await DeactivateCurrentLoadout(installation);
 
-        // Cleanup all of the metadata left behind for this game.
-        // All database information, including loadouts, initial game state and
-        // TODO: Garbage Collect unused files.
-
-        var installationLoadouts = Loadout.All(Connection.Db).Where(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installation.LocationsRegister[LocationId.Game]);
-        using var tx = Connection.BeginTransaction();
-        foreach (var loadout in installationLoadouts)
-            tx.Delete(loadout, true);
-        await tx.Commit();
-
-        //await _diskStateRegistry.ClearInitialState(installation);
+        foreach (var loadout in metadata.Loadouts)
+        {
+            _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+            await DeleteLoadout(loadout);
+        }
     }
 
     /// <inheritdoc />

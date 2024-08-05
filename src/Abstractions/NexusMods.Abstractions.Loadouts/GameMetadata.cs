@@ -53,4 +53,9 @@ public partial class GameMetadata : IModelDefinition
     /// The last scanned transaction ID
     /// </summary>
     public static readonly ReferenceAttribute<Transaction> LastScannedTransaction = new(Namespace, nameof(LastScannedTransaction)) { IsOptional = true };
+    
+    /// <summary>
+    /// All the loadouts that are based on this game installation
+    /// </summary>
+    public static readonly BackReferenceAttribute<Loadout> Loadouts = new(Loadout.Installation);
 }

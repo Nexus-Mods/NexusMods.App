@@ -120,22 +120,11 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
             """, [loadoutA, loadoutB]
         );
         
+        await Synchronizer.UnManage(GameInstallation);
         
-        await Synchronizer.DeactivateCurrentLoadout(GameInstallation);
-        
-        LogState(sb, "## 11 - Loadout Deactivated",
+        LogState(sb, "## 11 - Game Unmanaged",
             """
-            The loadout has been deactivated, and the game folder should be back to its initial state.
-            """, [loadoutA, loadoutB]
-        );
-        
-        
-        await Synchronizer.DeleteLoadout(loadoutA);
-        await Synchronizer.DeleteLoadout(loadoutB);
-        
-        LogState(sb, "## 12 - Loadouts Deleted",
-            """
-            The loadouts have been deleted
+            The loadouts have been deleted and the game folder should be back to its initial state.
             """,
         [loadoutA.Rebase(), loadoutB.Rebase()]);
         

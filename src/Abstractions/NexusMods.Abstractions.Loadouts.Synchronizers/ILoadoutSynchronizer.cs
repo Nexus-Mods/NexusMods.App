@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -78,6 +79,13 @@ public interface ILoadoutSynchronizer
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.
     /// </summary>
     public Task DeactivateCurrentLoadout(GameInstallation installation);
+    
+    /// <summary>
+    /// Gets the currently active loadout for the game, if any.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation);
     
     /// <summary>
     /// Sets the loadout as the active loadout for the game, applying the changes to the game folder.
