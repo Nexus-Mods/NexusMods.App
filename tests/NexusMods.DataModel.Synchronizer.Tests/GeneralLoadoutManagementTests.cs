@@ -121,6 +121,15 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
         );
         
         
+        await Synchronizer.DeactivateCurrentLoadout(GameInstallation);
+        
+        LogState(sb, "## 11 - Loadout Deactivated",
+            """
+            The loadout has been deactivated, and the game folder should be back to its initial state.
+            """, [loadoutA, loadoutB]
+        );
+        
+        
         /*
 
         await VerifyAllStates().UseParameters("Initial State");

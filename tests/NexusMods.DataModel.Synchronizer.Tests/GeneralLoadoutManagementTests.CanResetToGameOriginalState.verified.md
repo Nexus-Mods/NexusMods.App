@@ -221,3 +221,26 @@ Now we switch back to the A loadout, and the new file should be removed from the
 
 
 
+## 11 - Loadout Deactivated:
+The loadout has been deactivated, and the game folder should be back to its initial state.
+### Initial State - (1) - Tx:100000000000005
+| Path | Hash | Size | TxId |
+| --- | --- | --- | --- |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+### Current State - (1) - Tx:100000000000019
+| Path | Hash | Size | TxId |
+| --- | --- | --- | --- |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+### Loadout A - (2)
+| Path | Hash | Size | TxId |
+| --- | --- | --- | --- |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+### Loadout B - (2)
+| Path | Hash | Size | TxId |
+| --- | --- | --- | --- |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
+| {Game}/bin/newFileInGameFolderB.txt | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000014 |
+
+
+
