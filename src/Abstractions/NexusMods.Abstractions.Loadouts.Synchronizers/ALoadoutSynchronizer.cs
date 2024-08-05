@@ -939,6 +939,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId)
     {
+        var loadout = Loadout.Load(Connection.Db, loadoutId);
+        var metadata = GameMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
+        if (GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
+        {
+            await DeactivateCurrentLoadout(loadout.InstallationInstance);
+        }
+        
         using var tx = Connection.BeginTransaction();
         tx.Delete(loadoutId, true);
         await tx.Commit();
