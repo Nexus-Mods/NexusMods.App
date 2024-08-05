@@ -74,7 +74,7 @@ Disk state entries are entities that contain the following fields:
 * LastModified - The last modified date of the file
 * GameMetadataId - The game that this disk state entry is associated with
 
-### LoadoutItemWithTargetdPath
+### LoadoutItemWithTargetedPath
 
 The LoadoutItemWithTargetPath model is also updated to use the `(LoadoutId, LocationId, RelativePath)` tuple for the target path,
 so that at any time all the loadout items that reference a given target in a loadout can be queried via a range query.
