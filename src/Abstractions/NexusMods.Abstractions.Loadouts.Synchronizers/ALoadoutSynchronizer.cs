@@ -677,7 +677,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var syncNode = node.Item.Value;
             var actions = syncNode.Actions;
 
-            LoadoutFile.ReadOnly loadoutFile = default!;
             if (!node.Item.Value.LoadoutFileHash.HasValue)
             {
                 continue;
@@ -687,8 +686,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = loadoutFile.Hash,
-                    Size = loadoutFile.Size,
+                    Hash = node.Item.Value.LoadoutFileHash.Value,
+                    Size = node.Item.Value.LoadoutFileSize.Value,
                     ChangeType = FileChangeType.None,
                     GamePath = node.GamePath(),
                 };
@@ -698,8 +697,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 var entry = new DiskDiffEntry
                 {
-                    Hash = loadoutFile.Hash,
-                    Size = loadoutFile.Size,
+                    Hash = node.Item.Value.LoadoutFileHash.Value,
+                    Size = node.Item.Value.LoadoutFileSize.Value,
                     // If paired with a delete action, this is a modified file not a new one
                     ChangeType = actions.HasFlag(Actions.DeleteFromDisk) ? FileChangeType.Modified : FileChangeType.Added,
                     GamePath = node.GamePath(),
