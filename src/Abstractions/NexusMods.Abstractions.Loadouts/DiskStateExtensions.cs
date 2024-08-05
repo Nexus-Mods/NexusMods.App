@@ -111,41 +111,48 @@ public static class DiskStateExtensions
         {
             if (!location.Value.DirectoryExists())
                 continue;
-            
-            foreach (var file in location.Value.EnumerateFiles())
-            {
-                var gamePath = installation.LocationsRegister.ToGamePath(file);
-                seen.Add(gamePath);
-                
-                if (inState.TryGetValue(gamePath, out var entry))
+
+            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
                 {
-                    var fileInfo = file.FileInfo;
-                    
-                    // If the files don't match, update the entry
-                    if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
                     {
-                        var newHash = await file.XxHash64Async();
-                        tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
-                        tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                        tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
-                        changes = true;
+                        var gamePath = installation.LocationsRegister.ToGamePath(file);
+                        
+                        lock (seen)
+                        {
+                            seen.Add(gamePath);
+                        }
+
+                        if (inState.TryGetValue(gamePath, out var entry))
+                        {
+                            var fileInfo = file.FileInfo;
+
+                            // If the files don't match, update the entry
+                            if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
+                            {
+                                var newHash = await file.XxHash64Async();
+                                tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
+                                tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
+                                changes = true;
+                            }
+                        }
+                        else
+                        {
+                            // No previous entry found, so create a new one
+                            var newHash = await file.XxHash64Async(token: token);
+                            _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                            {
+                                Path = gamePath.ToGamePathParentTuple(metadata.Id),
+                                Hash = newHash,
+                                Size = file.FileInfo.Size,
+                                LastModified = file.FileInfo.LastWriteTimeUtc,
+                                GameId = metadata.Id,
+                            };
+                            changes = true;
+                        }
                     }
                 }
-                else
-                {
-                    // No previous entry found, so create a new one
-                    var newHash = await file.XxHash64Async();
-                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
-                    {
-                        Path = gamePath.ToGamePathParentTuple(metadata.Id),
-                        Hash = newHash,
-                        Size = file.FileInfo.Size,
-                        LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = metadata.Id,
-                    };
-                    changes = true;
-                }
-            }
+            );
         }
         
         foreach (var entry in inState.Values)
