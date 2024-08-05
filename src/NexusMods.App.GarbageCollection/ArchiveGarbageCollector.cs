@@ -109,17 +109,20 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
         {
             var archiveProgress = slicer.Slice(progressPerArchive);
             var toArchive = new List<Hash>(archive.Entries.Count);
+            var toRemove = new List<Hash>(archive.Entries.Count);
             foreach (var item in archive.Entries)
             {
                 if (item.Value.GetRefCount() >= 1)
                     toArchive.Add(item.Key);
+                else
+                    toRemove.Add(item.Key);
             }
 
             var shouldRepack = toArchive.Count != archive.Entries.Count;
             if (!shouldRepack)
                 continue;
 
-            doRepack(archiveProgress, toArchive, archive);
+            doRepack(archiveProgress, toArchive, toRemove, archive);
         }
         
         progress?.Report(1);
@@ -131,12 +134,20 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     /// <param name="progress">
     ///     Reports progress of the repacking process.
     /// </param>
-    /// <param name="hashes">
+    /// <param name="toArchive">
     ///     The list of hashes as the placed in the new archive.
     ///     The archive will be repacked with only the hashes in this list.
+    /// </param>
+    /// <param name="toRemove">
+    ///     The list of hashes to be removed from the new archive.
+    /// 
+    ///     Combined with <paramref name="toArchive"/> this contains all hashes
+    ///     in the archive.
+    ///
+    ///     These files by definition have a ref count of 0; thus are not used anywhere.
     /// </param>
     /// <param name="archive">
     ///     The archive to be repacked.
     /// </param>
-    public delegate void RepackDelegate(IProgress<double> progress, List<Hash> hashes, ArchiveReference<TParsedHeaderState> archive);
+    public delegate void RepackDelegate(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<TParsedHeaderState> archive);
 }

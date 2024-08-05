@@ -131,7 +131,7 @@ public class ArchiveGarbageCollectorTests
         var repackCalled = false;
 
         // Act
-        collector.CollectGarbage(null!, (_, _, _) =>
+        collector.CollectGarbage(null!, (_, _, _, _) =>
         {
             repackCalled = true;
         });
@@ -153,20 +153,27 @@ public class ArchiveGarbageCollectorTests
         collector.AddReferencedFile(hash1);
         // hash2 is not referenced
 
-        List<Hash> repackedHashes = null!;
+        List<Hash> toBeArchived = null!;
+        List<Hash> toBeRemoved = null!;
         ArchiveReference<MockParsedHeaderState> repackedArchive = null!;
 
         // Act
-        collector.CollectGarbage(null!, (_, hashes, archive) =>
+        collector.CollectGarbage(null!, (_, toArchive, toRemove, archive) =>
         {
-            repackedHashes = hashes;
+            toBeArchived = toArchive;
+            toBeRemoved = toRemove;
             repackedArchive = archive;
         });
 
         // Assert
-        repackedHashes.Should().NotBeNull();
-        repackedHashes.Should().ContainSingle();
-        repackedHashes[0].Should().Be(hash1);
+        toBeArchived.Should().NotBeNull();
+        toBeArchived.Should().ContainSingle();
+        toBeArchived[0].Should().Be(hash1);
+        
+        toBeRemoved.Should().NotBeNull();
+        toBeRemoved.Should().ContainSingle();
+        toBeRemoved[0].Should().Be(hash2);
+        
         repackedArchive.Should().NotBeNull();
         repackedArchive.FilePath.Should().Be(archivePath);
     }
@@ -191,22 +198,26 @@ public class ArchiveGarbageCollectorTests
         // hash2 is not referenced
 
         AbsolutePath? repackedArchives = null;
-        List<Hash>? repackedHashes = null;
+        List<Hash>? toBeArchived = null;
+        List<Hash>? toBeRemoved = null;
 
         // Act
-        collector.CollectGarbage(null!, (_, hashes, archive) =>
+        collector.CollectGarbage(null!, (_, toArchive, toRemove, archive) =>
         {
-            if (repackedArchives != null || repackedHashes != null)
+            if (repackedArchives != null || toBeArchived != null || toBeRemoved != null)
                 Assert.Fail("Repack called multiple times. Only one archive should be repacked.");
 
             repackedArchives = archive.FilePath;
-            repackedHashes = hashes;
+            toBeArchived = toArchive;
+            toBeRemoved = toRemove;
         });
 
         // Assert
         repackedArchives.Should().Be(path1);
-        repackedHashes.Should().ContainSingle();
-        repackedHashes![0].Should().Be(hash1);
+        toBeArchived.Should().ContainSingle();
+        toBeArchived![0].Should().Be(hash1);
+        toBeRemoved.Should().ContainSingle();
+        toBeRemoved![0].Should().Be(hash2);
     }
 
     [Theory, AutoFileSystem]
@@ -221,7 +232,7 @@ public class ArchiveGarbageCollectorTests
         var repackCalled = false;
 
         // Act
-        collector.CollectGarbage(null!, (_, _, _) =>
+        collector.CollectGarbage(null!, (_, _, _, _) =>
         {
             repackCalled = true;
         });
@@ -240,18 +251,24 @@ public class ArchiveGarbageCollectorTests
         var headerState = new MockParsedHeaderState(hash1, hash2);
 
         collector.AddArchive(archivePath, headerState);
-        // No files are referenced
 
-        List<Hash> repackedHashes = null!;
+        // No files are referenced (AddReferencedFile not called)
+        List<Hash> toBeArchived = null!;
+        List<Hash> toBeRemoved = null!;
 
         // Act
-        collector.CollectGarbage(null!, (_, hashes, _) =>
+        collector.CollectGarbage(null!, (_, toArchive, toRemove, _) =>
         {
-            repackedHashes = hashes;
+            toBeArchived = toArchive;
+            toBeRemoved = toRemove;
         });
 
         // Assert
-        repackedHashes.Should().NotBeNull();
-        repackedHashes.Should().BeEmpty();
+        toBeArchived.Should().NotBeNull();
+        toBeArchived.Should().BeEmpty();
+        
+        toBeRemoved.Should().NotBeNull();
+        toBeRemoved.Should().Contain(hash1);
+        toBeRemoved.Should().Contain(hash2);
     }
 }

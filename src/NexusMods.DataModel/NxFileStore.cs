@@ -472,16 +472,32 @@ public class NxFileStore : IFileStore
         public required int DecompressSize { get; set; }
     }
 
-    private bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
+    internal bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
+        archivePath = default(AbsolutePath);
+        fileEntry = default(FileEntry);
         var result = false;
-        var entries = from entry in ArchivedFile.FindByHash(db, hash)
-            from location in _archiveLocations
-            let combined = location.Combine(entry.Container.Path)
-            where existsCache?.GetOrAdd(combined, combined.FileExists) ?? combined.FileExists
-            select (combined, entry.NxFileEntry, true);
 
-        (archivePath, fileEntry, result) = entries.FirstOrDefault();
+        foreach (var entry in ArchivedFile.FindByHash(db, hash))
+        {
+            // Skip retracted entries.
+            if (!entry.IsValid())
+                continue;
+
+            foreach (var location in _archiveLocations)
+            {
+                var combined = location.Combine(entry.Container.Path);
+                var fileExists = existsCache?.GetOrAdd(combined, path => path.FileExists) ?? combined.FileExists;
+                if (!fileExists) 
+                    continue;
+
+                archivePath = combined;
+                fileEntry = entry.NxFileEntry;
+                result = true;
+                return result;
+            }
+        }
+
         return result;
     }
 }

@@ -1,10 +1,13 @@
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.DataModel.Attributes;
+using NexusMods.DataModel.Serializers.DiskStateTreeSchema;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using File = System.IO.File;
 // ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace NexusMods.DataModel.ArchiveContents;
@@ -18,6 +21,8 @@ public partial class ArchivedFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.DataModel.ArchivedFile";
     
+    // TODO: Remove history from here.
+
     /// <summary>
     /// The compressed container (.nx archive) that contains the file, the entity referenced
     /// here should have the relative path to the file.
@@ -33,4 +38,16 @@ public partial class ArchivedFile : IModelDefinition
     /// The file entry data for the NX block offset data
     /// </summary>
     public static readonly NxFileEntryAttribute NxFileEntry = new(Namespace, nameof(NxFileEntry));
+}
+
+public partial class ArchivedFile
+{
+    public partial struct ReadOnly
+    {
+        /// <summary>
+        /// Adds a retraction which effectively deletes the current archived file from the data store.
+        /// </summary>
+        /// <param name="tx">The transaction to add the retraction to.</param>
+        public void Retract(ITransaction tx) => tx.Retract(Id, ArchivedFile.Container, Container.Id);
+    }
 }

@@ -4,6 +4,7 @@ using NexusMods.Archives.Nx.Packing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
+using NexusMods.Paths.Utilities;
 namespace NexusMods.App.GarbageCollection.Nx;
 
 /// <summary>
@@ -17,13 +18,23 @@ public static class NxRepacker
     ///     can be used to repack Nx archives. See <see cref="ArchiveGarbageCollector{TParsedHeaderState,TFileEntryWrapper}.RepackDelegate"/>
     ///     type for more info.
     /// </summary>
-    public static void RepackArchive(IProgress<double> progress, List<Hash> hashes, ArchiveReference<NxParsedHeaderState> archive)
+    public static void RepackArchive(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<NxParsedHeaderState> archive)
+    {
+        RepackArchive(progress, toArchive, toRemove, archive, true, out _);
+    }
+    
+    /// <summary>
+    ///     The method to pass to the 'CollectGarbage' method that
+    ///     can be used to repack Nx archives. See <see cref="ArchiveGarbageCollector{TParsedHeaderState,TFileEntryWrapper}.RepackDelegate"/>
+    ///     type for more info.
+    /// </summary>
+    public static void RepackArchive(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<NxParsedHeaderState> archive, bool deleteOriginal, out AbsolutePath newArchivePath)
     {
         // Get the entries that need repacking.
         var nxHeaderItemsByHash = archive.HeaderState.Header.Entries.ToDictionary(entry => (Hash)entry.Hash);
-        var entries = new List<FileEntry>(hashes.Count);
+        var entries = new List<FileEntry>(toArchive.Count);
         
-        foreach (var hash in hashes)
+        foreach (var hash in toArchive)
         {
             if (nxHeaderItemsByHash.TryGetValue(hash, out var entry))
                 entries.Add(entry);
@@ -34,14 +45,22 @@ public static class NxRepacker
         {
             FilePath = archive.FilePath,
         };
-
-        var tempFile = archive.FilePath.AppendExtension((Extension)".tmp");
+        
+        var guid = Guid.NewGuid();
+        var id = guid.ToString();
+        var fs = archive.FilePath.FileSystem;
+        var tmpArchivePath = archive.FilePath.Parent.Combine(id).AppendExtension(KnownExtensions.Tmp);
         repacker.AddFilesFromNxArchive(fromAbsolutePathProvider, archive.HeaderState.Header, entries)
             .WithProgress(progress)
-            .WithOutput(tempFile.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None));
+            .WithOutput(tmpArchivePath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None));
         repacker.Build();
         // Note: There's a flaw with Nx API, the `Build` method should be virtual,
         //       will fix soonish.
-        tempFile.FileSystem.MoveFile(tempFile, archive.FilePath, true);
+        
+        // Delete the original archive.
+        newArchivePath = tmpArchivePath.ReplaceExtension(KnownExtensions.Nx);
+        tmpArchivePath.FileSystem.MoveFile(tmpArchivePath, newArchivePath, true);
+        if (deleteOriginal)
+            fs.DeleteFile(archive.FilePath);
     }
 }

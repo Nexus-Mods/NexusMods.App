@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+    <ItemGroup>
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.App.GarbageCollection.Nx\NexusMods.App.GarbageCollection.Nx.csproj" />
+        <ProjectReference Include="..\NexusMods.App.GarbageCollection\NexusMods.App.GarbageCollection.csproj"/>
+        <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
+</Project>

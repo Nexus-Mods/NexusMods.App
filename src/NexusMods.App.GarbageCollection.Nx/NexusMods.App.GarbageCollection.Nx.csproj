@@ -5,7 +5,6 @@
         <PackageReference Include="NexusMods.Archives.Nx"/>
         <PackageReference Include="NexusMods.Paths.Extensions.Nx" />
     </ItemGroup>
-
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.NMA.Tests"/>
     </ItemGroup>

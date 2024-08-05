@@ -42,8 +42,8 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
     </ItemGroup>
-
 
     <ItemGroup>
       <Compile Remove="DirectoryIndexer.cs" />
