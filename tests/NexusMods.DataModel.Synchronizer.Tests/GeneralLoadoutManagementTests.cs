@@ -144,8 +144,8 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
             sb.AppendLine(comments);
         
         Section("### Initial State", metadata.InitialStateTransaction);
-        if (metadata.Contains(GameMetadata.LastAppliedLoadoutTransaction)) 
-            Section("### Last Synced State", metadata.LastAppliedLoadoutTransaction);
+        if (metadata.Contains(GameMetadata.LastSyncedLoadoutTransaction)) 
+            Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
         Section("### Current State", metadata.LastScannedTransaction);
         foreach (var loadout in loadouts ?? [])
         {

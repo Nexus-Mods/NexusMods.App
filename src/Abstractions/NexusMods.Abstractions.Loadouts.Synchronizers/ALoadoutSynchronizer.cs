@@ -317,8 +317,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        tx.Add(gameMetadataId, GameMetadata.LastAppliedLoadout, loadout.Id);
-        tx.Add(gameMetadataId, GameMetadata.LastAppliedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, GameMetadata.LastSyncedLoadout, loadout.Id);
+        tx.Add(gameMetadataId, GameMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
@@ -387,10 +387,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        if (gameMetadata.Contains(GameMetadata.LastAppliedLoadout))
+        if (gameMetadata.Contains(GameMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameMetadata.LastAppliedLoadout, gameMetadata.LastAppliedLoadout);
-            tx.Retract(gameMetadataId, GameMetadata.LastAppliedLoadoutTransaction, gameMetadata.LastAppliedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
+            tx.Retract(gameMetadataId, GameMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
         }
         tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
 
@@ -602,7 +602,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (GameMetadata.LastAppliedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
+        if (GameMetadata.LastSyncedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
@@ -864,11 +864,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = installation.GetMetadata(Connection);
         
-        if (!metadata.Contains(GameMetadata.LastAppliedLoadout))
+        if (!metadata.Contains(GameMetadata.LastSyncedLoadout))
             return;
         
         // Synchronize the last applied loadout, so we don't lose any changes
-        await Synchronize(Loadout.Load(Connection.Db, metadata.LastAppliedLoadout));
+        await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
         await ResetToOriginalGameState(installation);
     }
@@ -877,7 +877,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
-        if (!GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastAppliedLoadout))
+        if (!GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout))
             return Optional<LoadoutId>.None;
         return LoadoutId.From(lastAppliedLoadout);
     }
@@ -935,7 +935,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
-        if (GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
+        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {
             await DeactivateCurrentLoadout(loadout.InstallationInstance);
         }

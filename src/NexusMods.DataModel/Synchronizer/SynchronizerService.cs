@@ -89,7 +89,7 @@ public class SynchronizerService : ISynchronizerService
     {
         var metadata = gameInstallation.GetMetadata(_conn);
         
-        if (GameMetadata.LastAppliedLoadoutId.TryGet(metadata, out var lastId))
+        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId))
         {
             loadout = Loadout.Load(_conn.Db, lastId);
             return true;
@@ -105,7 +105,7 @@ public class SynchronizerService : ISynchronizerService
         return GameMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameMetadata.LastAppliedLoadoutId.TryGet(metadata, out var lastId) && GameMetadata.LastAppliedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) && GameMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }
