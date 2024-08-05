@@ -2,6 +2,9 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -28,7 +31,17 @@ public class SyncTreeNode : ISyncNode
     /// <summary>
     /// The state of the file in the loadout.
     /// </summary>
-    public Optional<LoadoutItemWithTargetPath.ReadOnly> LoadoutFile { get; set; }
+    public Optional<Hash> LoadoutFileHash { get; set; }
+    
+    /// <summary>
+    /// The size of the file in the loadout.
+    /// </summary>
+    public Optional<Size> LoadoutFileSize { get; set; }
+    
+    /// <summary>
+    /// The ID of the file in the loadout.
+    /// </summary>
+    public Optional<EntityId> LoadoutFileId { get; set; }
     
     /// <summary>
     /// Sync state signature.

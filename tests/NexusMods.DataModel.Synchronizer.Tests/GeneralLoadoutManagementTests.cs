@@ -23,7 +23,7 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
     }
 
     [Fact]
-    public async Task CanResetToGameOriginalState()
+    public async Task SynchronizerIntegrationTests()
     {
         var sb = new StringBuilder();
         

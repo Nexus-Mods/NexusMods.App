@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -41,4 +42,18 @@ public partial class DiskStateEntry : IModelDefinition
     /// The owning game installation
     /// </summary>
     public static readonly ReferenceAttribute<GameMetadata> Game = new(Namespace, nameof(Game));
+    
+    
+    public partial struct ReadOnly : IHavePathHashSizeAndReference
+    {
+#region IHavePathHashSizeAndReference
+
+        GamePath IHavePathHashSizeAndReference.Path => DiskStateEntry.Path.Get(this);
+
+        Hash IHavePathHashSizeAndReference.Hash => DiskStateEntry.Hash.Get(this);
+
+        Size IHavePathHashSizeAndReference.Size => DiskStateEntry.Size.Get(this);
+        EntityId IHavePathHashSizeAndReference.Reference => EntityId.From(0);
+#endregion
+    }
 }

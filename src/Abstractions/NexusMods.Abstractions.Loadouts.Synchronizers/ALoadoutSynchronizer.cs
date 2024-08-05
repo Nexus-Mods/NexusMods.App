@@ -142,39 +142,42 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
-    /// <inheritdoc />
     public SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, IEnumerable<LoadoutItem.ReadOnly> loadoutItems)
     {
-        var tree = new Dictionary<GamePath, SyncTreeNode>();
-
         var grouped = loadoutItems
             .OfTypeLoadoutItemWithTargetPath()
             .Where(x => FileIsEnabled(x.AsLoadoutItem()))
-            .GroupBy(f => f.TargetPath);
-
-        foreach (var group in grouped)
-        {
-            var path = group.Key;
-            var file = group.First();
-            if (group.Count() > 1)
+            .GroupBy(f => f.TargetPath)
+            .Select(group =>
             {
-                file = SelectWinningFile(group);
-            }
-
-            // Deleted file markers are not included in the sync tree
-            if (file.TryGetAsDeletedFile(out _))
-                continue;
-
-            if (!file.TryGetAsLoadoutFile(out var loadoutFile))
-            {
-                _logger.LogWarning("File {Path} is not a stored file, skipping", path);
-                continue;
-            }
-
-            tree.Add(path, new SyncTreeNode
+                var file = group.First();
+                if (group.Count() > 1)
                 {
-                    Path = path,
-                    LoadoutFile = file,
+                    file = SelectWinningFile(group);
+                }
+                return file;
+            })
+            .Where(f => !f.TryGetAsDeletedFile(out _))
+            .OfTypeLoadoutFile();
+        
+        return BuildSyncTree(currentState, previousTree, grouped);
+    }
+
+    /// <inheritdoc />
+    public SyncTree BuildSyncTree<T>(DiskState currentState, DiskState previousTree, IEnumerable<T> loadoutItems)
+    where T : IHavePathHashSizeAndReference
+    {
+        var tree = new Dictionary<GamePath, SyncTreeNode>();
+        
+        foreach (var item in loadoutItems)
+        {
+            
+            tree.Add(item.Path, new SyncTreeNode
+                {
+                    Path = item.Path,
+                    LoadoutFileHash = item.Hash,
+                    LoadoutFileSize = item.Size,
+                    LoadoutFileId = item.Reference,
                 }
             );
         }
@@ -241,23 +244,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var item = entry.Item.Value;
 
-
-            // Called out so the compiler doesn't complain about unused variables
-            LoadoutFile.ReadOnly loadoutFile = default!;
-
-            if (item.LoadoutFile.HasValue && !item.LoadoutFile.Value.TryGetAsLoadoutFile(out loadoutFile))
-            {
-                throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
-            }
-
             var signature = new SignatureBuilder
             {
                 DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
                 PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
-                LoadoutHash = item.LoadoutFile.HasValue ? loadoutFile.Hash : Optional<Hash>.None,
+                LoadoutHash = item.LoadoutFileHash.HasValue ? item.LoadoutFileHash.Value : Optional<Hash>.None,
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
                 PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
-                LoadoutArchived = item.LoadoutFile.HasValue && HaveArchive(loadoutFile.Hash),
+                LoadoutArchived = item.LoadoutFileHash.HasValue && HaveArchive(item.LoadoutFileHash.Value),
                 PathIsIgnored = IsIgnoredBackupPath(entry.GamePath()),
             }.Build();
 
@@ -461,12 +455,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             await _fileStore.ExtractFiles(toExtract.Select(item =>
                     {
                         var gamePath = register.GetResolvedPath(item.Path);
-                        if (!item.LoadoutFile.Value.TryGetAsLoadoutFile(out var loadoutFile))
+                        if (!item.LoadoutFileHash.HasValue)
                         {
                             throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                         }
 
-                        return (loadoutFile.Hash, gamePath);
+                        return (item.LoadoutFileHash.Value, gamePath);
                     }
                 ), CancellationToken.None
             );
@@ -474,7 +468,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var isUnix = _os.IsUnix();
             foreach (var entry in toExtract)
             {
-                if (!entry.LoadoutFile.Value.TryGetAsLoadoutFile(out var loadoutFile))
+                if (!entry.LoadoutFileHash.HasValue)
                 {
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
@@ -482,8 +476,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, loadoutFile.Hash);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, loadoutFile.Size);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
                 }
                 else
@@ -491,8 +485,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = entry.Path,
-                        Hash = loadoutFile.Hash,
-                        Size = loadoutFile.Size,
+                        Hash = entry.LoadoutFileHash.Value,
+                        Size = entry.LoadoutFileSize.Value,
                         LastModified = DateTime.UtcNow,
                         GameId = gameMetadataId,
                     };
@@ -684,7 +678,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var actions = syncNode.Actions;
 
             LoadoutFile.ReadOnly loadoutFile = default!;
-            if (node.Item.Value.LoadoutFile.HasValue && !node.Item.Value.LoadoutFile.Value.TryGetAsLoadoutFile(out loadoutFile))
+            if (!node.Item.Value.LoadoutFileHash.HasValue)
             {
                 continue;
             }
@@ -866,6 +860,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return remappedLoadout;
     }
 
+    /// <inheritdoc />
     public async Task DeactivateCurrentLoadout(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
@@ -873,7 +868,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         if (!metadata.Contains(GameMetadata.LastAppliedLoadout))
             return;
         
-        // Syncronize the last applied loadout so we don't lose any changes
+        // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastAppliedLoadout));
         
         await ResetToOriginalGameState(installation);
@@ -1011,7 +1006,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     public async Task ResetToOriginalGameState(GameInstallation installation)
     {
-        var basisDb = Connection.Db;
         var metaData = await installation.ReindexState(Connection);
         if (!metaData.Contains(GameMetadata.InitialStateTransaction))
             throw new InvalidOperationException("No initial state transaction found for game");
@@ -1019,34 +1013,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var currentState = metaData.DiskStateEntries;
         var initialState = metaData.DiskStateAsOf(metaData.InitialStateTransaction);
         var prevState = metaData.GetLastAppliedDiskState();
-
-        var items = new List<LoadoutItem.ReadOnly>();
-
-        using var builder = new IndexSegmentBuilder(Connection.Registry);
-        var stateTx = TxId.From(metaData.InitialStateTransaction.Id.Value);
-
-        ulong id = 10;
-        foreach (var item in initialState)
-        {
-            using var tx = Connection.BeginTransaction();
-            var tmpId = PartitionId.Temp.MakeEntityId(id);
-            builder.Add(tmpId, LoadoutItemWithTargetPath.TargetPath, item.Path,
-                stateTx, false
-            );
-            builder.Add(tmpId, LoadoutFile.Hash, item.Hash,
-                stateTx, false
-            );
-            builder.Add(tmpId, LoadoutFile.Size, item.Size,
-                stateTx, false
-            );
-
-            var built = builder.Build();
-
-            items.Add(new LoadoutItem.ReadOnly(basisDb, built, tmpId));
-            id++;
-        }
-
-        var syncTree = BuildSyncTree(currentState, prevState, items);
+        
+        // Bit strange, but we're setting the "loadout" to the initial state here.
+        // previous state is the last applied state. This then tells the sync system that we don't want integrate any disk changes into the loadout
+        // but instead want a "hard reset" to a previous state. 
+        
+        var syncTree = BuildSyncTree(currentState, prevState, initialState);
         var groups = ProcessSyncTree(syncTree);
 
         await RunGroupings(syncTree, groups, installation);
