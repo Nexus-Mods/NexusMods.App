@@ -27,8 +27,8 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
     {
         var sb = new StringBuilder();
         
-        var originalFileGamePathA = new GamePath(LocationId.Game, "bin/originalGameFileA.txt");
-        var originalFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(originalFileGamePathA);
+        var originalFileGamePath = new GamePath(LocationId.Game, "bin/originalGameFile.txt");
+        var originalFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
         
@@ -54,10 +54,10 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
             """,
             loadouts: [loadoutA]);
         
-        var newFileInGameFolder = new GamePath(LocationId.Game, "bin/newFileInGameFolder.txt");
-        var newFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolder);
-        newFileFullPath.Parent.CreateDirectory();
-        await newFileFullPath.WriteAllTextAsync("New File for this loadout");
+        var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
+        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        newFileFullPathA.Parent.CreateDirectory();
+        await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
         
         await Synchronizer.RescanGameFiles(GameInstallation);
         LogState(sb, "## 4 - New File Added to Game Folder",

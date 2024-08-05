@@ -3,11 +3,11 @@ The initial state of the game folder should contain the game files as they were 
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 
 
 
@@ -17,15 +17,15 @@ game files.
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Loadout A - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
 
 
 
@@ -34,19 +34,19 @@ Now that the loadout has been synchronized, the 'Last Synced State' should match
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (1) - Tx:100000000000009
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:100000000000009
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Loadout A - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
 
 
 
@@ -55,20 +55,20 @@ New files have been added to the game folder by the user or the game, but the lo
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (1) - Tx:100000000000009
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (2) - Tx:10000000000000A
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000A |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000A |
 ### Loadout A - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
 
 
 
@@ -77,22 +77,22 @@ After the loadout has been synchronized, the new file should be added to the loa
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (2) - Tx:10000000000000C
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Current State - (2) - Tx:10000000000000C
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 
 
 
@@ -101,16 +101,16 @@ At this point the loadout is deactivated, and all the files in the current state
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:10000000000000E
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 
 
 
@@ -119,20 +119,20 @@ A new loadout is created, but it has not been synchronized yet. So again the 'La
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:10000000000000E
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Loadout B - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
 
 
 
@@ -142,24 +142,24 @@ loadout are different from the previous loadout due to the new file only being i
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (1) - Tx:100000000000011
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Current State - (1) - Tx:100000000000011
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Loadout B - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
 
 
 
@@ -168,26 +168,26 @@ A new file has been added to the game folder and B loadout has been synchronized
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (2) - Tx:100000000000014
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 | {Game}/bin/newFileInGameFolderB.txt | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000014 |
 ### Current State - (2) - Tx:100000000000014
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 | {Game}/bin/newFileInGameFolderB.txt | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000014 |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Loadout B - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
 | {Game}/bin/newFileInGameFolderB.txt | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000014 |
 
 
@@ -197,26 +197,26 @@ Now we switch back to the A loadout, and the new file should be removed from the
 ### Initial State - (1) - Tx:100000000000005
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
 ### Last Synced State - (2) - Tx:100000000000017
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:100000000000017 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:100000000000017 |
 ### Current State - (2) - Tx:100000000000017
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:100000000000017 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000005 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:100000000000017 |
 ### Loadout A - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
-| {Game}/bin/newFileInGameFolder.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000007 |
+| {Game}/bin/newFileInGameFolderA.txt | 0x2D489D43D46C8849 | 25 B | Tx:10000000000000C |
 ### Loadout B - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| {Game}/bin/originalGameFileA.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
+| {Game}/bin/originalGameFile.txt | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000010 |
 | {Game}/bin/newFileInGameFolderB.txt | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000014 |
 
 
