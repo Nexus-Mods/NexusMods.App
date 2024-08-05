@@ -941,72 +941,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(Loadout.ReadOnly loadout)
+    public async Task DeleteLoadout(LoadoutId loadoutId)
     {
-        /*
-        // First check if we need to un-sync the loadout
-        if (loadout.Installation.LastAppliedLoadout.Id == loadout.Id)
-        {
-            await ResetToOriginalGameState(loadout.Installation);
-        }
-
-
-        // Clear Initial State if this is the only loadout for the game.
-        // We use folder location for this.
-        var installLocation = installation.LocationsRegister[LocationId.Game];
-        var isLastLoadout = Loadout.All(Connection.Db)
-            .Count(x => x.IsVisible() &&
-                        x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation
-            ) <= 1;
-
-        if (isLastLoadout)
-        {
-            await UnManage(installation);
-            return;
-        }
-
-        var hasLastApplied = _diskStateRegistry.TryGetLastAppliedLoadout(installation, out var loadoutWithTxId);
-
-        // Note(Sewer) TxId, which affects loadout revision is irrelevant here
-        // because we're deleting the loadout as a whole.
-        if (hasLastApplied && id == loadoutWithTxId.Id)
-        {
-            /*
-                Note(Sewer)
-
-                The loadout being deleted is the currently active loadout.
-
-                As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state by using the 'vanilla state' loadout to accomodate this.
-
-                This is a good default for many cases:
-
-                - Game files are not likely to be overwritten, so this will
-                  just end up materialising into a bunch of deletes. (Very Fast)
-
-                - Ensures internal consistency. i.e. 'last applied loadout' is always
-                  a valid loadout.
-
-                - Provides more backend flexibility (e.g. we can 'squash' the
-                  revisions at the beginning of other loadouts without consequence.)
-
-                - Meets user UI/UX expectations. The next loadout they navigate to
-                  won't be somehow magically applied.
-
-                We may make a setting to change the behaviour in the future,
-                via a setting to match user preferences, but for now this is the
-                default.
-            */
-/*
-            await ApplyVanillaStateLoadout(installation);
-        }
-
         using var tx = Connection.BeginTransaction();
-        tx.Delete(id, true);
+        tx.Delete(loadoutId, true);
         await tx.Commit();
-        */
-
-        //}
     }
 
     /// <summary>

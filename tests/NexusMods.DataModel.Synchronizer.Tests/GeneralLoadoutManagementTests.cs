@@ -130,30 +130,15 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
         );
         
         
-        /*
-
-        await VerifyAllStates().UseParameters("Initial State");
-        */
-
-        /*
-
-
-        loadout = await Synchronizer.Synchronize(loadout);
-        loadout.Items.Should().ContainItemTargetingPath(gamePath, "The file exists");
-
-        fullPath.FileExists.Should().BeTrue("because the loadout was synchronized");
-        (await fullPath.ReadAllTextAsync()).Should().Be("Hello World!", "because the file was written");
-
-        await Synchronizer.ResetToOriginalGameState(loadout.InstallationInstance);
-        fullPath.FileExists.Should().BeFalse("because the loadout was reset");
-
-        await Synchronizer.Synchronize(loadout);
-        fullPath.FileExists.Should().BeTrue("because the loadout was synchronized");
-        (await fullPath.ReadAllTextAsync()).Should().Be("Hello World!", "because the file was written");
-
-        await VerifyAllStates();
-        */
-
+        await Synchronizer.DeleteLoadout(loadoutA);
+        await Synchronizer.DeleteLoadout(loadoutB);
+        
+        LogState(sb, "## 12 - Loadouts Deleted",
+            """
+            The loadouts have been deleted
+            """,
+        [loadoutA.Rebase(), loadoutB.Rebase()]);
+        
         await Verify(sb.ToString(), extension: "md");
     }
 
