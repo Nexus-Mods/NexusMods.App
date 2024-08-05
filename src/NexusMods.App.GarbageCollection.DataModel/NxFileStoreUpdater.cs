@@ -32,6 +32,7 @@ public class NxFileStoreUpdater
         var fromAbsolutePathProvider = new FromAbsolutePathProvider { FilePath = newArchivePath };
         var nxHeader = HeaderParser.ParseHeader(fromAbsolutePathProvider);
 
+        var transactions = new List<Task>();
         foreach (var entry in nxHeader.Entries)
         {
             foreach (var archivedFile in ArchivedFile.FindByHash(db, (Hash)entry.Hash))
@@ -39,7 +40,7 @@ public class NxFileStoreUpdater
                 using var tx = _connection.BeginTransaction();
                 tx.Add(archivedFile.Id, ArchivedFile.NxFileEntry, entry);
                 tx.Add(archivedFile.Container.Id, ArchivedFileContainer.Path, newArchivePath.Name);
-                tx.Commit();
+                transactions.Add(tx.Commit());
             }
         }
         
@@ -50,8 +51,10 @@ public class NxFileStoreUpdater
             {
                 using var tx = _connection.BeginTransaction();
                 archivedFile.Retract(tx);
-                tx.Commit();
+                transactions.Add(tx.Commit());
             }
         }
+
+        Task.WhenAll(transactions).Wait();
     }
 }
