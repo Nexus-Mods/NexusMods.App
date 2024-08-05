@@ -325,6 +325,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         tx.Add(gameMetadataId, GameMetadata.LastAppliedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameMetadata.LastAppliedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -886,9 +887,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await ResetToOriginalGameState(installation);
     }
 
-    public Task ActivateLoadout(Loadout.ReadOnly loadout)
+    public async Task ActivateLoadout(LoadoutId loadoutId)
     {
-        throw new NotImplementedException();
+        var loadout = Loadout.Load(Connection.Db, loadoutId);
+        var reindexed = await loadout.InstallationInstance.ReindexState(Connection);
+        
+        var tree = BuildSyncTree(reindexed.DiskStateEntries, reindexed.DiskStateEntries, loadout.Items);
+        var groupings = ProcessSyncTree(tree);
+        await RunGroupings(tree, groupings, loadout);
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)

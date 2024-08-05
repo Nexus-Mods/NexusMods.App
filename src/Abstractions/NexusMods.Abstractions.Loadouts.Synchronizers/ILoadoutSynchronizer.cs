@@ -82,7 +82,7 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Sets the loadout as the active loadout for the game, applying the changes to the game folder.
     /// </summary>
-    public Task ActivateLoadout(Loadout.ReadOnly loadout);
+    public Task ActivateLoadout(LoadoutId loadout);
 
     /// <summary>
     /// Deletes the loadout for the game. If the loadout is the currently active loadout,
