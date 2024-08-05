@@ -448,14 +448,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     },
                 },
             };
-
-
-            var prevId = item.Disk.Value.Id;
-            tx.Add(prevId, DiskStateEntry.Path, item.Path);
-            tx.Add(prevId, DiskStateEntry.Hash, Hash.Zero);
-            tx.Add(prevId, DiskStateEntry.Size, Size.Zero);
-            tx.Add(prevId, DiskStateEntry.LastModified, DateTime.UtcNow);
-            tx.Add(prevId, DiskStateEntry.Game, item.Disk.Value.Game);
         }
     }
 
@@ -805,7 +797,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
 
         // Rebase the metadata to the new transaction
-        metadata.Rebase();
+        metadata = metadata.Rebase();
 
         // Return the new state
         return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
