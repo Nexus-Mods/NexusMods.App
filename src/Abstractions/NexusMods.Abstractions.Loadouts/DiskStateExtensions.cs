@@ -19,7 +19,7 @@ public static class DiskStateExtensions
     /// </summary>
     public static Optional<LoadoutId> LastSynchronizedLoadout(this GameMetadata.ReadOnly metadata)
     {
-        if (GameMetadata.LastAppliedLoadout.TryGet(metadata, out var lastApplied))
+        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastApplied))
             return LoadoutId.From(lastApplied);
         return Optional<LoadoutId>.None;
     }
@@ -62,11 +62,11 @@ public static class DiskStateExtensions
     public static Entities<DiskStateEntry.ReadOnly> GetLastAppliedDiskState(this GameMetadata.ReadOnly metadata)
     {
         // No previously applied loadout, return an empty state
-        if (!metadata.Contains(GameMetadata.LastAppliedLoadout))
+        if (!metadata.Contains(GameMetadata.LastSyncedLoadout))
         {
             return EmptyState;
         }
-        return metadata.DiskStateAsOf(metadata.LastAppliedLoadoutTransaction);
+        return metadata.DiskStateAsOf(metadata.LastSyncedLoadoutTransaction);
     }
     
     private static readonly Entities<DiskStateEntry.ReadOnly> EmptyState = new();

@@ -32,12 +32,12 @@ public partial class GameMetadata : IModelDefinition
     /// <summary>
     /// The last applied loadout to this game state
     /// </summary>
-    public static readonly ReferenceAttribute<Loadout> LastAppliedLoadout = new(Namespace, nameof(LastAppliedLoadout)) { IsOptional = true };
+    public static readonly ReferenceAttribute<Loadout> LastSyncedLoadout = new(Namespace, nameof(LastSyncedLoadout)) { IsOptional = true };
     
     /// <summary>
     /// The 'AsOf' transaction ID of the last applied loadout
     /// </summary>
-    public static readonly ReferenceAttribute<Transaction> LastAppliedLoadoutTransaction = new(Namespace, nameof(LastAppliedLoadoutTransaction)) { IsOptional = true };
+    public static readonly ReferenceAttribute<Transaction> LastSyncedLoadoutTransaction = new(Namespace, nameof(LastSyncedLoadoutTransaction)) { IsOptional = true };
     
     /// <summary>
     /// The 'AsOf' transaction ID of the initial state when the game folder was first indexed
