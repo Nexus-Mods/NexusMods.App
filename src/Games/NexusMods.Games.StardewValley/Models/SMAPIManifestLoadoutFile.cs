@@ -9,5 +9,5 @@ public partial class SMAPIManifestLoadoutFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.StardewValley.SMAPIManifestLoadoutFile";
 
-    public static readonly MarkerAttribute IsManifestMarker = new(Namespace, nameof(IsManifestMarker));
+    public static readonly MarkerAttribute ManifestFile = new(Namespace, nameof(ManifestFile));
 }

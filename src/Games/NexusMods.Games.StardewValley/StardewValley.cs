@@ -8,7 +8,6 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -83,12 +82,6 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
 
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
-
-    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
-    {
-        _serviceProvider.GetRequiredService<SMAPIInstaller>(),
-        _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
-    };
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

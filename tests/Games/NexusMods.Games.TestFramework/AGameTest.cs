@@ -42,8 +42,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IFileStore FileStore;
-    protected readonly IArchiveInstaller ArchiveInstaller;
-    protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly IGameRegistry GameRegistry;
 
     protected readonly IConnection Connection;
@@ -73,8 +71,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         FileStore = serviceProvider.GetRequiredService<IFileStore>();
-        ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
-        FileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
 
@@ -100,7 +96,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var mod = new LoadoutItemGroup.New(tx, out var id)
         {
-            IsIsLoadoutItemGroupMarker = true,
+            IsGroup = true,
             LoadoutItem = new LoadoutItem.New(tx, id)
             {
                 LoadoutId = loadoutId,
@@ -172,109 +168,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// </summary>
     protected void Refresh<T>(ref T entity) where T : IReadOnlyModel<T>
         => entity = T.Create(Connection.Db, entity.Id);
-
-    /// <summary>
-    /// Downloads a mod and returns the <see cref="TemporaryPath"/> and <see cref="Hash"/> of it.
-    /// </summary>
-    /// <param name="gameDomain"></param>
-    /// <param name="modId"></param>
-    /// <param name="fileId"></param>
-    /// <returns></returns>
-    protected async Task<DownloadId> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
-    {
-        var links = await NexusNexusApiClient.DownloadLinksAsync(gameDomain, modId, fileId);
-        var file = TemporaryFileManager.CreateFile();
-
-        await HttpDownloader.DownloadAsync(
-            links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(),
-            file
-        );
-
-        var id = await FileOriginRegistry.RegisterDownload(file.Path, fileId.ToString());
-
-        return id;
-    }
-
-    /// <summary>
-    /// Downloads a mod and caches it in the <see cref="FileStore"/> so future
-    /// requests for the same file will be served from the cache. Compares the
-    /// hash of the downloaded file with the expected hash and throws an exception
-    /// if they don't match.
-    /// </summary>
-    /// <param name="gameDomain"></param>
-    /// <param name="modId"></param>
-    /// <param name="fileId"></param>
-    /// <param name="hash"></param>
-    /// <returns></returns>
-    public async Task<DownloadId> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
-    {
-        var db = Connection.Db;
-        var metaDatas = NexusModsArchiveMetadata.FindByFileId(db, fileId)
-            .Where(ent => ent.ModId == modId)
-            .FirstOrDefault(ent => ent.GameId == gameDomain);
-
-        if (metaDatas.IsValid())
-            return DownloadId.From(metaDatas.Id);
-
-        var id = await DownloadMod(gameDomain, modId, fileId);
-
-        return id;
-    }
-
-    /// <summary>
-    /// Installs the mods from the archive into the loadout.
-    /// </summary>
-    protected async Task<Mod.ReadOnly[]> InstallModsStoredFileIntoLoadout(
-        Loadout.ReadOnly loadout,
-        DownloadId downloadId,
-        CancellationToken cancellationToken = default)
-    {
-        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, token: cancellationToken);
-        var db = Connection.Db;
-        return modIds.Select(id => Mod.Load(db, id)).ToArray();
-    }
-
-
-    /// <summary>
-    /// Installs a single mod from the archive into the loadout. This calls
-    /// <see cref="InstallModsStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
-    /// exists in the archive.
-    /// </summary>
-    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
-        Loadout.ReadOnly loadout,
-        DownloadId downloadId,
-        string? defaultModName = null,
-        CancellationToken cancellationToken = default)
-    {
-        var mods = await InstallModsStoredFileIntoLoadout(
-            loadout, downloadId,
-            cancellationToken);
-
-        mods.Length.Should().BeGreaterOrEqualTo(1);
-        // Sort the mods so we have consistent results
-        return mods.OrderBy(m => m.Name).First();
-    }
-
-    /// <summary>
-    /// Variant of <see cref="InstallModStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
-    /// </summary>
-    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
-        Loadout.ReadOnly loadout,
-        AbsolutePath path,
-        string? defaultModName = null,
-        CancellationToken cancellationToken = default)
-    {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path, defaultModName ?? "Unknown", cancellationToken);
-
-        var mods = await InstallModsStoredFileIntoLoadout(
-            loadout,
-            downloadId,
-            cancellationToken
-        );
-
-        mods.Should().ContainSingle();
-        return mods.First();
-    }
 
     /// <summary>
     /// Creates a ZIP archive using <see cref="ZipArchive"/> and returns the

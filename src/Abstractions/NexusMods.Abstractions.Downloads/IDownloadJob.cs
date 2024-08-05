@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Downloads;
@@ -14,4 +16,9 @@ public interface IDownloadJob : IPersistedJob
     /// Gets the path where the file will be downloaded to.
     /// </summary>
     AbsolutePath DownloadPath { get; }
+
+    /// <summary>
+    /// Adds metadata from the download to the library file
+    /// </summary>
+    ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile);
 }

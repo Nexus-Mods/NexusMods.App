@@ -21,7 +21,7 @@ internal static class Helpers
         var foundSMAPI = loadout.Items
             .OfTypeLoadoutItemGroup()
             .OfTypeSMAPILoadoutItem()
-            .TryGetFirst(x => !x.AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker, out smapi);
+            .TryGetFirst(x => !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled, out smapi);
 
         return foundSMAPI;
     }
@@ -36,7 +36,7 @@ internal static class Helpers
         var asyncEnumerable = loadout.Items
             .OfTypeLoadoutItemGroup()
             .OfTypeSMAPIModLoadoutItem()
-            .Where(x => !onlyEnabledMods || !x.AsLoadoutItemGroup().AsLoadoutItem().IsIsDisabledMarker)
+            .Where(x => !onlyEnabledMods || !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
             .ToAsyncEnumerable()
             .ConfigureAwait(continueOnCapturedContext: false)
             .WithCancellation(cancellationToken);

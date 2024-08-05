@@ -121,7 +121,6 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
                         Name = relativePath.Name,
                         LoadoutId = loadout.Id,
                         ParentId = loadoutGroup.Id,
-                        IsIsDisabledMarker = false,
                     },
                 },
                 Hash = file.Item.LibraryFile.Value.Hash,

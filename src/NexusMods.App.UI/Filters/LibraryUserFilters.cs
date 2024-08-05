@@ -20,8 +20,7 @@ public static class LibraryUserFilters
         if (!libraryItem.TryGetAsLibraryFile(out var file))
             return false;
 
-        // TODO: also show downloads
-        return file.IsLocalFile();
+        return file.IsLocalFile() || file.IsDownloadedFile();
     }
 
     /// <summary>

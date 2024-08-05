@@ -8,8 +8,8 @@ namespace NexusMods.Library;
 
 internal class AddLibraryFileJob : AJob
 {
-    public AddLibraryFileJob(IJobGroup? group = null, IJobWorker? worker = null)
-        : base(null!, group, worker) { }
+    public AddLibraryFileJob(IJobGroup? group = null, IJobWorker? worker = null, IJobMonitor? monitor = null)
+        : base(null!, group, worker, monitor) { }
 
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }

@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -16,7 +17,7 @@ public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameD
     }
 
     /// <inheritdoc />
-    protected override GameDomain FromLowLevel(string value, ValueTags tag)
+    protected override GameDomain FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
         return GameDomain.From(value);
     }

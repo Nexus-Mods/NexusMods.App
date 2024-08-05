@@ -31,7 +31,7 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
                 if (resolved is not ReferenceAttribute reference) 
                     continue;
                 
-                var parent = reference.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag);
+                var parent = reference.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, entity.RegistryId);
                 remaining.Push(parent);
             }
         }

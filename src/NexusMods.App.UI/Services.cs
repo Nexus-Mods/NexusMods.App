@@ -261,6 +261,7 @@ public static class Services
             .AddSingleton<IValueFormatter, ModReferenceFormatter>()
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
+            .AddSingleton<IValueFormatter, LoadoutItemGroupFormatter>()
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
             
             // Overlay Helpers

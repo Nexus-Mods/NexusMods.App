@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
@@ -24,26 +25,24 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
+[PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
+    /// <summary>
+    /// Connection.
+    /// </summary>
+    protected readonly IConnection Connection;
+
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
-    protected readonly IConnection Connection;
     private readonly IOSInformation _os;
-    private IFileStore _fileStore;
+    private readonly IFileStore _fileStore;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="hashCache"></param>
-    /// <param name="store"></param>
-    /// <param name="diskStateRegistry"></param>
-    /// <param name="fileStore"></param>
-    /// <param name="sorter"></param>
-    /// <param name="os"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDiskStateRegistry diskStateRegistry,
@@ -72,14 +71,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
-        provider.GetRequiredService<IOSInformation>())
+        provider.GetRequiredService<IOSInformation>()) { }
 
-    {
-
-    }
-    
-    
-    
     private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskStateTree newTree, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
@@ -125,7 +118,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
     
     #region ILoadoutSynchronizer Implementation
-    
+
+    /// <summary>
+    /// Gets or creates the override group.
+    /// </summary>
     protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(ITransaction tx, Loadout.ReadOnly loadout)
     {
         if (LoadoutOverridesGroup.FindByOverridesFor(loadout.Db, loadout.Id).TryGetFirst(out var found))
@@ -136,7 +132,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             OverridesForId = loadout,
             LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
                     Name = "Overrides",
@@ -225,7 +221,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
     {
-        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.IsDisabledMarker));
+        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
     }
 
     /// <inheritdoc />
@@ -381,7 +377,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var delete = new DeletedFile.New(tx, out var id)
             {
-                IsIsDeletedFileMarker = true,
+                Reason = "Reified delete",
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
                     TargetPath = item.Path,
@@ -504,7 +500,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             added.Add(loadoutFile);
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
-                    
+
         if (!overridesMod.Value.InPartition(PartitionId.Temp))
         {
             var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
@@ -583,12 +579,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// When new files are added to the loadout from disk, this method will be called to move the files from the override mod
     /// into any other mod they may belong to.
     /// </summary>
-    /// <param name="loadout"></param>
-    /// <param name="newFiles"></param>
-    /// <returns></returns>
-    protected virtual async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, LoadoutFile.ReadOnly[] newFiles)
+    protected virtual Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, LoadoutFile.ReadOnly[] newFiles)
     {
-        return loadout;
+        return Task.FromResult(loadout);
     }
 
     /// <inheritdoc />
@@ -800,7 +793,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             GameMetadataId = installation.GameMetadataId,
             LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
                     Name = "Game Files",
@@ -1001,17 +994,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             vanillaStateLoadout = await CreateVanillaStateLoadout(installation);
         
         await Synchronize(vanillaStateLoadout.Value);
-    }
-    #endregion
-
-    #region Internal Helper Functions
-    /// <summary>
-    /// Overrides the <see cref="IFileStore"/> used.
-    /// </summary>
-    [Obsolete("Intended for Benchmark Use Only")] // produce warning in IDE
-    internal void SetFileStore(IFileStore fs)
-    {
-        _fileStore = fs;
     }
     #endregion
 }

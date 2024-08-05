@@ -1,6 +1,7 @@
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Headers.Native;
 using NexusMods.Archives.Nx.Utilities;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -12,7 +13,7 @@ namespace NexusMods.DataModel.ArchiveContents;
 public class NxFileEntryAttribute(string ns, string name) : BlobAttribute<FileEntry>(ns, name)
 {
     /// <inheritdoc />
-    protected override unsafe FileEntry FromLowLevel(ReadOnlySpan<byte> value, ValueTags tag)
+    protected override unsafe FileEntry FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
     {
         fixed (byte* ptr = value)
         {

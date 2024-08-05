@@ -73,7 +73,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             var transaction = job.Connection.BeginTransaction();
             var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(transaction, groupId)
                 {
                     Name = job.LibraryItem.Name,

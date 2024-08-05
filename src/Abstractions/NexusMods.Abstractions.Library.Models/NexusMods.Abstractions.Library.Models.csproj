@@ -22,5 +22,8 @@
       <Compile Update="LibraryArchiveTree.cs">
         <DependentUpon>LibraryArchive.cs</DependentUpon>
       </Compile>
+      <Compile Update="DownloadedFile.cs">
+        <DependentUpon>LibraryItem.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

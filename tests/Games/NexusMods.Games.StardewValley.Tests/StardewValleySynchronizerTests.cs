@@ -30,7 +30,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         {
             LoadoutItemGroup = new LoadoutItemGroup.New(tx, modId)
             {
-                IsIsLoadoutItemGroupMarker = true,
+                IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, modId)
                 {
                     LoadoutId = loadout,
@@ -39,7 +39,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
             },
             ManifestId = new SMAPIManifestLoadoutFile.New(tx, out var fileId)
             {
-                IsIsManifestMarker = true,
+                IsManifestFile = true,
                 LoadoutFile = new LoadoutFile.New(tx, fileId)
                 {
                     Hash = manifestHash,

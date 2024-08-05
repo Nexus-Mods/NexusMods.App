@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
@@ -11,5 +12,5 @@ public class SizeAttribute(string ns, string name) : ScalarAttribute<Size, ulong
 {
     protected override ulong ToLowLevel(Size value) => value.Value;
 
-    protected override Size FromLowLevel(ulong value, ValueTags tags) => Size.From(value);
+    protected override Size FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => Size.From(value);
 }
