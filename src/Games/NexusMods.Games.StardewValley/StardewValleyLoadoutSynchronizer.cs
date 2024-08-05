@@ -68,7 +68,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath)
+        if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath.ToGamePathParentTuple(loadout))
                 .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == loadout && x.Contains(SMAPIManifestLoadoutFile.ManifestFile), out var file))
         {
             mod = default(SMAPIModLoadoutItem.ReadOnly);

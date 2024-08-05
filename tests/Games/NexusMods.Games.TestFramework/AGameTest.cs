@@ -132,7 +132,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
                     ParentId = groupId,
                     Name = path.Path,
                 },
-                TargetPath = path,
+                TargetPath = path.ToGamePathParentTuple(loadoutId),
             },
             Hash = path.Path.ToString().XxHash64AsUtf8(),
             Size = Size.FromLong(path.Path.ToString().Length),

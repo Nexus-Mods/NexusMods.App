@@ -133,7 +133,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                 Size = fileEntry.AsLibraryFile().Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
                 {
-                    TargetPath = to,
+                    TargetPath = to.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = loadoutItem,
                 },
             };
@@ -183,7 +183,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                     Size = gameFile.Size,
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                     {
-                        TargetPath = to,
+                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
                         LoadoutItem = new LoadoutItem.New(transaction, id)
                         {
                             Name = to.FileName,

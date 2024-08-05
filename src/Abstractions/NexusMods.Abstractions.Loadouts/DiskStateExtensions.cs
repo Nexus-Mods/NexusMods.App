@@ -104,7 +104,7 @@ public static class DiskStateExtensions
     {
         var seen = new HashSet<GamePath>();
         var metadata = GameMetadata.Load(connection.Db, installation.GameMetadataId);
-        var inState = metadata.DiskStateEntries.ToDictionary(e => e.Path);
+        var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
         var changes = false;
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
@@ -137,7 +137,7 @@ public static class DiskStateExtensions
                     var newHash = await file.XxHash64Async();
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
-                        Path = gamePath,
+                        Path = gamePath.ToGamePathParentTuple(metadata.Id),
                         Hash = newHash,
                         Size = file.FileInfo.Size,
                         LastModified = file.FileInfo.LastWriteTimeUtc,
@@ -184,7 +184,7 @@ public static class DiskStateExtensions
                 var newHash = await file.XxHash64Async();
                 _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                 {
-                    Path = gamePath,
+                    Path = gamePath.ToGamePathParentTuple(metaDataId),
                     Hash = newHash,
                     Size = file.FileInfo.Size,
                     LastModified = file.FileInfo.LastWriteTimeUtc,

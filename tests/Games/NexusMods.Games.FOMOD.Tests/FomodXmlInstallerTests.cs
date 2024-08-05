@@ -38,8 +38,8 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     {
         var results = await GetResultsFromDirectory("SimpleInstaller");
         results.Children.Should().HaveCount(2).And.Satisfy(
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp"
         );
     }
 
@@ -49,10 +49,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("WithImages");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p2f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p2f1.out.esp"
         );
     }
 
@@ -63,10 +63,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("WithMissingImage");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p2f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p2f1.out.esp"
         );
     }
 
@@ -75,8 +75,8 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-rar");
         results.Children.Should().HaveCount(2).And.Satisfy(
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp"
         );
     }
 
@@ -85,8 +85,8 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-7z");
         results.Children.Should().HaveCount(2).And.Satisfy(
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp"
         );
     }
 
@@ -96,10 +96,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("NestedWithImages.zip");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p2f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p2f1.out.esp"
         );
     }
 
@@ -109,10 +109,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("MultipleNestingWithImages.7z");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p2f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p2f1.out.esp"
         );
     }
 
@@ -122,10 +122,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("ComplexInstaller");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g1p2f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g1p2f1.out.esp",
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p1f1.out.esp",
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName == "g2p2f1.out.esp"
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p1f1.out.esp",
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName == "g2p2f1.out.esp"
         );
     }
 
@@ -135,10 +135,10 @@ public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk207
         var results = await GetResultsFromDirectory("ComplexInstallerCaseChanges.7z");
         results.Children.Should().HaveCount(3).And.Satisfy(
             // In group 1, the second plugin is recommended
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName.Equals("g1p2f1.out.esp"),
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName.Equals("g1p2f1.out.esp"),
             // In group 2, both plugins are required
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName.Equals("g2p1f1.out.esp"),
-            x => x.ToLoadoutItemWithTargetPath().TargetPath.FileName.Equals("g2p2f1.out.esp")
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName.Equals("g2p1f1.out.esp"),
+            x => ((GamePath)x.ToLoadoutItemWithTargetPath().TargetPath).FileName.Equals("g2p2f1.out.esp")
         );
     }
 

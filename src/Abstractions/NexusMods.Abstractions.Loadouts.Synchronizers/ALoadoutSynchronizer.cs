@@ -79,7 +79,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
 
-        var newStatePaths = newState.Select(e => e.Path).ToHashSet();
+        var newStatePaths = newState.Select(e => (GamePath)e.Path).ToHashSet();
 
         foreach (var entry in toDelete)
         {
@@ -433,7 +433,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Reason = "Reified delete",
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
-                    TargetPath = item.Path,
+                    TargetPath = item.Path.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = new LoadoutItem.New(tx, id)
                     {
                         Name = item.Path.FileName,
@@ -484,7 +484,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
-                        Path = entry.Path,
+                        Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
                         LastModified = DateTime.UtcNow,
@@ -524,7 +524,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!item.Actions.HasFlag(Actions.ExtractToDisk))
             {
                 var id = item.Disk.Value.Id;
-                tx.Retract(id, DiskStateEntry.Path, item.Path);
+                tx.Retract(id, DiskStateEntry.Path, item.Disk.Value.Path);
                 tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
                 tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
                 tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
@@ -571,7 +571,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var loadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
             {
                 LoadoutItem = loadoutItem,
-                TargetPath = file.Path,
+                TargetPath = file.Path.ToGamePathParentTuple(loadout.Id),
             };
 
             var loadoutFile = new LoadoutFile.New(tx, id)
@@ -826,7 +826,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in initialState)
         {
-            var path = file.Path;
+            GamePath path = file.Path;
 
             if (!IsIgnoredBackupPath(path))
                 filesToBackup.Add((path, file.Hash, file.Size));
@@ -837,7 +837,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = file.Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
                 {
-                    TargetPath = path,
+                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
                     {
                         Name = path.FileName,
@@ -975,7 +975,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
         foreach (var file in initialState)
         {
-            var path = file.Path;
+            GamePath path = file.Path;
 
             if (!IsIgnoredBackupPath(path))
                 filesToBackup.Add((path, file.Hash, file.Size));
@@ -986,7 +986,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = file.Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
                 {
-                    TargetPath = path,
+                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
                     {
                         Name = path.FileName,

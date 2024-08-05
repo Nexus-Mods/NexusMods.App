@@ -21,7 +21,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The path to the file
     /// </summary>
-    public static readonly GamePathAttribute Path = new(Namespace, nameof(Path));
+    public static readonly GamePathParentAttribute Path = new(Namespace, nameof(Path));
     
     /// <summary>
     /// The hash of the file

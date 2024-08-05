@@ -46,7 +46,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
                     Size = Size.FromLong(manifestData.Length),
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
                     {
-                        TargetPath = new GamePath(LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
+                        TargetPath = (loadout.Id, LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
                         LoadoutItem = new LoadoutItem.New(tx, fileId)
                         {
                             LoadoutId = loadout,
