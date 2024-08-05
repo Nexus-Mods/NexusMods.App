@@ -252,7 +252,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
                 PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
                 LoadoutArchived = item.LoadoutFileHash.HasValue && HaveArchive(item.LoadoutFileHash.Value),
-                PathIsIgnored = IsIgnoredBackupPath(entry.GamePath()),
+                PathIsIgnored = IsIgnoredBackupPath(item.Path),
             }.Build();
 
             item.Signature = signature;
