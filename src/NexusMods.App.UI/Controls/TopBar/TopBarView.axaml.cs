@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using Humanizer.DateTimeHumanizeStrategy;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -16,6 +17,11 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
                 .DisposeWith(d);
 
+            this.BindCommand(ViewModel, vm => vm.SelectedTab!.GoBackInHistoryCommand, view => view.GoBackInHistory)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.SelectedTab!.GoForwardInHistoryCommand, view => view.GoForwardInHistory)
+                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
                 .DisposeWith(d);
