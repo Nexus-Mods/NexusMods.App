@@ -68,6 +68,10 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
+        var hasAnyFiles = backups.Any();
+        if (hasAnyFiles == false)
+            return;
+        
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
