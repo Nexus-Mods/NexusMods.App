@@ -15,7 +15,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
     /// <summary>
     /// Redmod deploys combined mods to the redmod cache folder
     /// </summary>
-    private static GamePath RedModCacheFolder => new(LocationId.Game, "r6/cache/mods");
+    private static GamePath RedModCacheFolder => new(LocationId.Game, "r6/cache/modded");
     
     /// <summary>
     /// Redmod stages the scripts in the redmod/scripts folder
