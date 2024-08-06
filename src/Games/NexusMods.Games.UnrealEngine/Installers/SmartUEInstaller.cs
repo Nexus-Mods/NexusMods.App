@@ -20,6 +20,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using System.Xml.Linq;
 using NexusMods.Extensions.BCL;
+using System.Linq;
 
 
 namespace NexusMods.Games.UnrealEngine.Installers;
@@ -190,7 +191,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
         }
 
         var foundGameFilesGroup = LoadoutGameFilesGroup
-            .FindByGameMetadata(loadout.Db, loadout.Installation.GameMetadataId)
+            .FindByGameMetadata(loadout.Db, loadout.Installation.GameInstallMetadataId)
             .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
 
         if (!foundGameFilesGroup)
@@ -200,7 +201,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
         }
 
         var gameFilesLookup = gameFilesGroup.AsLoadoutItemGroup().Children
-            .Select(gameFile => gameFile.TryGetAsLoadoutItemWithTargetPath(out var targeted) ? targeted.TargetPath : default)
+            .Select(gameFile => gameFile.TryGetAsLoadoutItemWithTargetPath(out var targeted) ? (GamePath)targeted.TargetPath : default)
             .Where(x => x != default)
             .ToLookup(x => x.FileName);
 
