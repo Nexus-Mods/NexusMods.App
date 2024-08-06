@@ -61,8 +61,8 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash)
     {
         var db = _conn.Db;
-        
-        return ValueTask.FromResult(ArchivedFile.FindByHash(db, hash).Any());
+        var archivedFiles = ArchivedFile.FindByHash(db, hash).Any(x => x.IsValid());
+        return ValueTask.FromResult(archivedFiles);
     }
 
     /// <inheritdoc />
