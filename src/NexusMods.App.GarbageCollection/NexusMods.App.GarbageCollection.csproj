@@ -9,5 +9,6 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.Tests"/>
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
     </ItemGroup>
 </Project>
