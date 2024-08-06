@@ -25,11 +25,6 @@
     <ItemGroup>
         <PackageReference Include="BitFaster.Caching" />
         <PackageReference Include="DynamicData" />
-        <PackageReference Include="FlatSharp.Compiler">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="FlatSharp.Runtime" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
@@ -48,9 +43,5 @@
 
     <ItemGroup>
       <Compile Remove="DirectoryIndexer.cs" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <FlatSharpSchema Include="Serializers\DiskStateTreeSchema.fbs" />
     </ItemGroup>
 </Project>

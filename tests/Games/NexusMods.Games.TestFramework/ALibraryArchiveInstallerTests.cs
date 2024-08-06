@@ -15,6 +15,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 
+using PathTuple = (NexusMods.MnemonicDB.Abstractions.EntityId, NexusMods.Abstractions.GameLocators.LocationId, NexusMods.Paths.RelativePath);
+
 namespace NexusMods.Games.TestFramework;
 
 public abstract class ALibraryArchiveInstallerTests<TGame> : AGameTest<TGame>
@@ -186,6 +188,9 @@ where TGame : AGame
 
             switch (datom.ObjectValue)
             {
+                case PathTuple pathTuple:
+                    sb.Append((Remap(pathTuple.Item1).Value.ToString("X16"), pathTuple.Item2, pathTuple.Item3));
+                    break;
                 case EntityId eid:
                     sb.Append(Remap(eid).Value.ToString("X16").PadRight(48));
                     break;

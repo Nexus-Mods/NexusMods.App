@@ -70,7 +70,7 @@ public class GameInstallation : IEquatable<GameInstallation>
     public IGameLocator Locator { get; init; } = null!;
     
     /// <summary>
-    /// An entity id that points to the game metadata in the mnemonidb instance
+    /// An entity id that points to the game metadata in the MnemonicDB instance
     /// </summary>
     public EntityId GameMetadataId { get; init; }
 

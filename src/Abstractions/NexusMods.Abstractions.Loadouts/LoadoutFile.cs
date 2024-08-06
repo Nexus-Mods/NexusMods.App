@@ -1,6 +1,10 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -32,4 +36,20 @@ public partial class LoadoutFile : IModelDefinition
     /// Size of the file.
     /// </summary>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
+
+    public partial struct ReadOnly : IHavePathHashSizeAndReference
+    {
+
+#region IHavePathHashSizeAndReference
+
+        GamePath IHavePathHashSizeAndReference.Path => LoadoutItemWithTargetPath.TargetPath.Get(this);
+
+        Hash IHavePathHashSizeAndReference.Hash => LoadoutFile.Hash.Get(this);
+
+        Size IHavePathHashSizeAndReference.Size => LoadoutFile.Size.Get(this);
+        EntityId IHavePathHashSizeAndReference.Reference => Id;
+
+#endregion
+    }
+
 }

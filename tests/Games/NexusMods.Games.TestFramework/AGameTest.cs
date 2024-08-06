@@ -43,6 +43,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
     private readonly ILogger<AGameTest<TGame>> _logger;
+
+    private bool _gameFilesWritten = false;
     
     public IDiagnosticManager DiagnosticManager { get; set; }
 
@@ -78,6 +80,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
         }
     }
 
+    /// <summary>
+    /// Override this method to generate the game files for the tests in this class. 
+    /// </summary>
+    protected virtual Task GenerateGameFiles()
+    {
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
@@ -128,7 +137,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
                 ParentId = groupId,
                 Name = path.Path,
             },
-            TargetPath = path,
+            TargetPath = path.ToGamePathParentTuple(loadoutId),
         },
         Hash = hash,
         Size = size,
@@ -180,6 +189,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             newLocations[k] = TemporaryFileManager.CreateFolder().Path;
         }
         register.Reset(newLocations);
+        _gameFilesWritten = false;
     }
 
     /// <summary>
@@ -187,13 +197,18 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// </summary>
     protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
+        if (!_gameFilesWritten)
+        {
+            await GenerateGameFiles();
+            _gameFilesWritten = true;
+        }
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
     
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
-    protected Task DeleteLoadoutAsync(LoadoutId loadoutId) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(GameInstallation, loadoutId);
+    protected Task DeleteLoadoutAsync(LoadoutId loadoutId) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId);
 
     /// <summary>
     /// Reloads the entity from the database.
