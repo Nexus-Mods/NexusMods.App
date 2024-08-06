@@ -14,7 +14,7 @@ public static class LoadoutExtensions
 {
     public static IEnumerable<LoadoutItemGroup.ReadOnly> GetEnabledGroups(this Loadout.ReadOnly loadout)
     {
-        return loadout.Items.OfTypeLoadoutItemGroup().Where(group => !group.AsLoadoutItem().IsDisabled);
+        return loadout.Items.OfTypeLoadoutItemGroup().Where(group => group.AsLoadoutItem().IsEnabled());
     }
 
     private static IEnumerable<Mod.ReadOnly> GetEnabledMods(this Loadout.ReadOnly loadout, bool onlyEnabledMods)
