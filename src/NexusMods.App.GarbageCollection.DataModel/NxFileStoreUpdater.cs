@@ -29,32 +29,30 @@ public class NxFileStoreUpdater
     public void UpdateNxFileStore(List<Hash> toRetract, AbsolutePath newArchivePath)
     {
         var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+        if (newArchivePath == default(AbsolutePath))
+            goto archiveDoesNotExist;
+
         var fromAbsolutePathProvider = new FromAbsolutePathProvider { FilePath = newArchivePath };
         var nxHeader = HeaderParser.ParseHeader(fromAbsolutePathProvider);
 
-        var transactions = new List<Task>();
         foreach (var entry in nxHeader.Entries)
         {
             foreach (var archivedFile in ArchivedFile.FindByHash(db, (Hash)entry.Hash))
             {
-                using var tx = _connection.BeginTransaction();
                 tx.Add(archivedFile.Id, ArchivedFile.NxFileEntry, entry);
                 tx.Add(archivedFile.Container.Id, ArchivedFileContainer.Path, newArchivePath.Name);
-                transactions.Add(tx.Commit());
             }
         }
         
         // Now retract all removed files
+        archiveDoesNotExist:
         foreach (var retractedHash in toRetract)
         {
             foreach (var archivedFile in ArchivedFile.FindByHash(db, retractedHash))
-            {
-                using var tx = _connection.BeginTransaction();
                 archivedFile.Retract(tx);
-                transactions.Add(tx.Commit());
-            }
         }
 
-        Task.WhenAll(transactions).Wait();
+        tx.Commit().ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }

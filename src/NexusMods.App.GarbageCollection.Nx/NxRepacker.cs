@@ -46,7 +46,6 @@ public static class NxRepacker
             if (nxHeaderItemsByHash.TryGetValue(hash, out var entry))
                 entries.Add(entry);
         }
-
         
         var repacker = new NxRepackerBuilder();
         var fromAbsolutePathProvider = new FromAbsolutePathProvider
