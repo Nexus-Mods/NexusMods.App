@@ -20,12 +20,12 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
     /// <summary>
     /// Redmod stages the scripts in the redmod/scripts folder
     /// </summary>
-    private static GamePath RedModScriptsFolder => new(LocationId.Game, "rools/redmod/scripts");
+    private static GamePath RedModScriptsFolder => new(LocationId.Game, "tools/redmod/scripts");
     
     /// <summary>
     /// Redmod stages the tweaks in the redmod/tweaks folder
     /// </summary>
-    private static GamePath RedModTweaksFolder => new(LocationId.Game, "rools/redmod/tweaks");
+    private static GamePath RedModTweaksFolder => new(LocationId.Game, "tools/redmod/tweaks");
     
     
     private readonly RedModDeployTool _redModTool;

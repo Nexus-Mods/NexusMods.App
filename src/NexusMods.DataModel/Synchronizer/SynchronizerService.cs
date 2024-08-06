@@ -40,9 +40,6 @@ public class SynchronizerService : ISynchronizerService
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
         var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        
-        _logger.LogInformation("Getting diff tree for loadout {LoadoutId} {Tx} {LastScanned}", loadoutId, _conn.Db.BasisTxId, metaData.LastScannedDiskStateTransaction.Id);
-        
         return synchronizer.LoadoutToDiskDiff(loadout, diskState);
         
     }

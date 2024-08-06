@@ -263,11 +263,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
             
-            if (item.Path.FileName == "v_sportbike2_arch.tweak")
-            {
-                _logger.LogDebug("Processing {Path} -> {Actions}", item.Path, item.Actions);
-            }
-
             groupings.Add(item);
         }
 
