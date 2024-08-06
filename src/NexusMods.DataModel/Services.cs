@@ -89,7 +89,7 @@ public static class Services
         // Game Registry
         coll.AddSingleton<IGameRegistry, GameRegistry>();
         coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
-        coll.AddAttributeCollection(typeof(GameMetadata));
+        coll.AddAttributeCollection(typeof(GameInstallMetadata));
         
         // File Store
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));

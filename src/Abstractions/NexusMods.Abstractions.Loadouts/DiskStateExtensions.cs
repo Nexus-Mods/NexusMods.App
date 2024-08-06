@@ -17,9 +17,9 @@ public static class DiskStateExtensions
     /// <summary>
     /// Returns the last synchronized loadout for the game, if any
     /// </summary>
-    public static Optional<LoadoutId> LastSynchronizedLoadout(this GameMetadata.ReadOnly metadata)
+    public static Optional<LoadoutId> LastSynchronizedLoadout(this GameInstallMetadata.ReadOnly metadata)
     {
-        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastApplied))
+        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastApplied))
             return LoadoutId.From(lastApplied);
         return Optional<LoadoutId>.None;
     }
@@ -28,9 +28,9 @@ public static class DiskStateExtensions
     /// <summary>
     /// Gets the latest game metadata for the installation
     /// </summary>
-    public static GameMetadata.ReadOnly GetMetadata(this GameInstallation installation, IConnection connection)
+    public static GameInstallMetadata.ReadOnly GetMetadata(this GameInstallation installation, IConnection connection)
     {
-        return GameMetadata.Load(connection.Db, installation.GameMetadataId);
+        return GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public static class DiskStateExtensions
     /// <param name="metadata"></param>
     /// <param name="txId"></param>
     /// <returns></returns>
-    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameMetadata.ReadOnly metadata, TxId txId)
+    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameInstallMetadata.ReadOnly metadata, TxId txId)
     {
         // Get an as-of db for the last applied loadout
         var asOfDb = metadata.Db.Connection.AsOf(txId);
@@ -51,7 +51,7 @@ public static class DiskStateExtensions
     /// <summary>
     /// Gets the disk state of the game as of a specific transaction
     /// </summary>
-    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameMetadata.ReadOnly metadata, Transaction.ReadOnly tx)
+    public static Entities<DiskStateEntry.ReadOnly> DiskStateAsOf(this GameInstallMetadata.ReadOnly metadata, Transaction.ReadOnly tx)
     {
         return DiskStateAsOf(metadata, TxId.From(tx.Id.Value));
     }
@@ -59,10 +59,10 @@ public static class DiskStateExtensions
     /// <summary>
     /// Load the disk state of the game as of the last applied loadout
     /// </summary>
-    public static Entities<DiskStateEntry.ReadOnly> GetLastAppliedDiskState(this GameMetadata.ReadOnly metadata)
+    public static Entities<DiskStateEntry.ReadOnly> GetLastAppliedDiskState(this GameInstallMetadata.ReadOnly metadata)
     {
         // No previously applied loadout, return an empty state
-        if (!metadata.Contains(GameMetadata.LastSyncedLoadout))
+        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
             return EmptyState;
         }
@@ -74,7 +74,7 @@ public static class DiskStateExtensions
     /// <summary>
     /// Reindex the state of the game, running a transaction if changes are found
     /// </summary>
-    public static async Task<GameMetadata.ReadOnly> ReindexState(this GameInstallation installation, IConnection connection)
+    public static async Task<GameInstallMetadata.ReadOnly> ReindexState(this GameInstallation installation, IConnection connection)
     {
         var originalMetadata = GetMetadata(installation, connection);
         using var tx = connection.BeginTransaction();
@@ -82,11 +82,11 @@ public static class DiskStateExtensions
         // Index the state
         var changed = await installation.ReindexState(connection, tx);
         
-        if (!originalMetadata.Contains(GameMetadata.InitialStateTransaction))
+        if (!originalMetadata.Contains(GameInstallMetadata.InitialStateTransaction))
         {
             // No initial state, so set this transaction as the initial state
             changed = true;
-            tx.Add(originalMetadata.Id, GameMetadata.InitialStateTransaction, EntityId.From(TxId.Tmp.Value));
+            tx.Add(originalMetadata.Id, GameInstallMetadata.InitialStateTransaction, EntityId.From(TxId.Tmp.Value));
         }
         
         if (changed)
@@ -94,7 +94,7 @@ public static class DiskStateExtensions
             await tx.Commit();
         }
         
-        return GameMetadata.Load(connection.Db, installation.GameMetadataId);
+        return GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
     }
     
     /// <summary>
@@ -103,7 +103,7 @@ public static class DiskStateExtensions
     public static async Task<bool> ReindexState(this GameInstallation installation, IConnection connection, ITransaction tx)
     {
         var seen = new HashSet<GamePath>();
-        var metadata = GameMetadata.Load(connection.Db, installation.GameMetadataId);
+        var metadata = GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
         var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
         var changes = false;
         
@@ -169,7 +169,7 @@ public static class DiskStateExtensions
         
         
         if (changes) 
-            tx.Add(metadata.Id, GameMetadata.LastScannedTransaction, EntityId.From(TxId.Tmp.Value));
+            tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
         
         return changes;
     }

@@ -41,7 +41,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The owning game installation
     /// </summary>
-    public static readonly ReferenceAttribute<GameMetadata> Game = new(Namespace, nameof(Game));
+    public static readonly ReferenceAttribute<GameInstallMetadata> Game = new(Namespace, nameof(Game));
     
     
     public partial struct ReadOnly : IHavePathHashSizeAndReference

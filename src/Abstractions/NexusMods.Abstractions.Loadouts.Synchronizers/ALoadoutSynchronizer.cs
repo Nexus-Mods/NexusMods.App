@@ -317,9 +317,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        tx.Add(gameMetadataId, GameMetadata.LastSyncedLoadout, loadout.Id);
-        tx.Add(gameMetadataId, GameMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
-        tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
+        tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -340,7 +340,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
-        var gameMetadata = GameMetadata.Load(Connection.Db, gameMetadataId);
+        var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
 
         foreach (var action in ActionsInOrder)
@@ -387,12 +387,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        if (gameMetadata.Contains(GameMetadata.LastSyncedLoadout))
+        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
-            tx.Retract(gameMetadataId, GameMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
         }
-        tx.Add(gameMetadataId, GameMetadata.LastScannedTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
         await tx.Commit();
     }
@@ -602,7 +602,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (GameMetadata.LastSyncedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
+        if (GameInstallMetadata.LastSyncedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
@@ -614,7 +614,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return await RunGroupings(tree, groupings, loadout);
     }
 
-    public async Task<GameMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
+    public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
     {
         return await gameInstallation.ReindexState(Connection);
     }
@@ -778,7 +778,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // Return any existing state
         var metadata = installation.GetMetadata(Connection);
-        if (metadata.Contains(GameMetadata.InitialStateTransaction))
+        if (metadata.Contains(GameInstallMetadata.InitialStateTransaction))
         {
             return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
         }
@@ -786,7 +786,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Or create a new one
         using var tx = Connection.BeginTransaction();
         await installation.IndexNewState(tx);
-        tx.Add(metadata.Id, GameMetadata.InitialStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(metadata.Id, GameInstallMetadata.InitialStateTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         // Rebase the metadata to the new transaction
@@ -864,7 +864,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = installation.GetMetadata(Connection);
         
-        if (!metadata.Contains(GameMetadata.LastSyncedLoadout))
+        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
             return;
         
         // Synchronize the last applied loadout, so we don't lose any changes
@@ -877,7 +877,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
-        if (!GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout))
+        if (!GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout))
             return Optional<LoadoutId>.None;
         return LoadoutId.From(lastAppliedLoadout);
     }
@@ -934,8 +934,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task DeleteLoadout(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var metadata = GameMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
-        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
+        var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
+        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {
             await DeactivateCurrentLoadout(loadout.InstallationInstance);
         }
@@ -1006,7 +1006,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ResetToOriginalGameState(GameInstallation installation)
     {
         var metaData = await installation.ReindexState(Connection);
-        if (!metaData.Contains(GameMetadata.InitialStateTransaction))
+        if (!metaData.Contains(GameInstallMetadata.InitialStateTransaction))
             throw new InvalidOperationException("No initial state transaction found for game");
         
         var currentState = metaData.DiskStateEntries;

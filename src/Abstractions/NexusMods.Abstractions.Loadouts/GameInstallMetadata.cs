@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// Metadata about a game installation. This model exists so that parts of the system can reference a single
 /// MnemonicDb model, instead of a tuple of domain/store/path
 /// </summary>
-public partial class GameMetadata : IModelDefinition
+public partial class GameInstallMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.GameMetadata";
     
@@ -52,7 +52,7 @@ public partial class GameMetadata : IModelDefinition
     /// <summary>
     /// The last scanned disk state transaction ID
     /// </summary>
-    public static readonly ReferenceAttribute<Transaction> LastScannedDiskStateTransaction = new(Namespace, nameof(LastScannedTransaction)) { IsOptional = true };
+    public static readonly ReferenceAttribute<Transaction> LastScannedDiskStateTransaction = new(Namespace, nameof(LastScannedDiskStateTransaction)) { IsOptional = true };
     
     /// <summary>
     /// All the loadouts that are based on this game installation

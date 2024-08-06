@@ -155,7 +155,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var foundGameFilesGroup = LoadoutGameFilesGroup
-            .FindByGameMetadata(loadout.Db, loadout.Installation.GameMetadataId)
+            .FindByGameMetadata(loadout.Db, loadout.Installation.GameInstallMetadataId)
             .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
 
         if (!foundGameFilesGroup)

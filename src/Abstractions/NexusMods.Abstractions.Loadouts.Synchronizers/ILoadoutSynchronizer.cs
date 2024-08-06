@@ -48,7 +48,7 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Rescan the game files, bringing the current cached state up to date.
     /// </summary>
-    Task<GameMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation);
+    Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation);
     
     #endregion
     

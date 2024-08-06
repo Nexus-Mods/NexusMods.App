@@ -38,8 +38,8 @@ public class SynchronizerService : ISynchronizerService
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var metaData = GameMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
-        var diskState = metaData.DiskStateAsOf(metaData.LastScannedTransaction);
+        var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
+        var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
         
         return synchronizer.LoadoutToDiskDiff(loadout, diskState);
         
@@ -89,7 +89,7 @@ public class SynchronizerService : ISynchronizerService
     {
         var metadata = gameInstallation.GetMetadata(_conn);
         
-        if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId))
+        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId))
         {
             loadout = Loadout.Load(_conn.Db, lastId);
             return true;
@@ -102,10 +102,10 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
-        return GameMetadata.Observe(_conn, gameInstallation.GameMetadataId)
+        return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) && GameMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }

@@ -6,10 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using GameMetadata = NexusMods.Abstractions.Loadouts.GameMetadata;
 
 namespace NexusMods.DataModel;
 
@@ -81,8 +81,8 @@ public class GameRegistry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var wasFound = GameMetadata.FindByPath(db, result.Path.ToString())
-            .Select(id => GameMetadata.Load(db, id))
+        var wasFound = GameInstallMetadata.FindByPath(db, result.Path.ToString())
+            .Select(id => GameInstallMetadata.Load(db, id))
             .TryGetFirst(m => m.Domain == locatableGame.Domain && m.Store == result.Store, out var found);
         if (!wasFound)
         {
@@ -110,9 +110,9 @@ public class GameRegistry : IGameRegistry, IHostedService
 
             // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
             var id = tx.TempId();
-            tx.Add(id, GameMetadata.Store, result.Store);
-            tx.Add(id, GameMetadata.Domain, game.Domain);
-            tx.Add(id, GameMetadata.Path, result.Path.ToString());
+            tx.Add(id, GameInstallMetadata.Store, result.Store);
+            tx.Add(id, GameInstallMetadata.Domain, game.Domain);
+            tx.Add(id, GameInstallMetadata.Path, result.Path.ToString());
         });
         
         var txResult = await tx.Commit();
