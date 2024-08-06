@@ -10,6 +10,7 @@ namespace NexusMods.Games.RedEngine;
 public class RedModDeployTool : ITool
 {
     private static readonly GamePath RedModPath = new(LocationId.Game, "tools/redmod/bin/redmod.exe");
+    private static readonly GamePath RedModDeployFolder = new(LocationId.Game, "r6/cache/modded");
 
     private readonly ILogger<RedModDeployTool> _logger;
 
@@ -23,6 +24,12 @@ public class RedModDeployTool : ITool
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
+        var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
+        
+        // RedMod deploys to this folder and freaks out if it doesn't exist, but our synchronizer will
+        // delete it if it's empty, so we need to recreate it here.
+        if (!deployFolder.DirectoryExists())
+            deployFolder.CreateDirectory();
 
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();

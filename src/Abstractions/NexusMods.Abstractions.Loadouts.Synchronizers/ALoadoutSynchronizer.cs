@@ -149,7 +149,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var grouped = loadoutItems
             .OfTypeLoadoutItemWithTargetPath()
             .Where(x => FileIsEnabled(x.AsLoadoutItem()))
-            .GroupBy(f => f.TargetPath)
+            .GroupBy(f => (GamePath)f.TargetPath)
             .Select(group =>
             {
                 var file = group.First();
@@ -247,6 +247,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var item = entry.Item.Value;
 
+
             var signature = new SignatureBuilder
             {
                 DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
@@ -260,6 +261,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
+            
+            if (item.Path.FileName == "v_sportbike2_arch.tweak")
+            {
+                _logger.LogDebug("Processing {Path} -> {Actions}", item.Path, item.Actions);
+            }
 
             groupings.Add(item);
         }
@@ -679,12 +685,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var syncNode = node.Item.Value;
             var actions = syncNode.Actions;
-
-            if (!node.Item.Value.LoadoutFileHash.HasValue)
-            {
-                continue;
-            }
-
+            
             if (actions.HasFlag(Actions.DoNothing))
             {
                 var entry = new DiskDiffEntry
@@ -790,6 +791,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         await installation.IndexNewState(tx);
         tx.Add(metadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         // Rebase the metadata to the new transaction
