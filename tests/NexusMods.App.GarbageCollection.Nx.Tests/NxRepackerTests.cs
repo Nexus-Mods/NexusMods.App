@@ -44,7 +44,11 @@ public class NxRepackerTests
         var collector = SetupGarbageCollector(archivePath);
 
         // Act
-        collector.CollectGarbage(new Progress<double>(), NxRepacker.RepackArchive);
+        collector.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archiveRef) =>
+        {
+            // We create a new archive, so we need its location.
+            NxRepacker.RepackArchive(progress, toArchive, toRemove, archiveRef, true, out archivePath);
+        });
 
         // Assert
         var unpacker = NxUnpackerBuilderExtensions.FromFile(archivePath);
