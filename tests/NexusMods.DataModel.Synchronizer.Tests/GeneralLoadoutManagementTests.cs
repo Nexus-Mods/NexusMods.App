@@ -143,7 +143,7 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
         if (!string.IsNullOrEmpty(comments))
             sb.AppendLine(comments);
         
-        Section("### Initial State", metadata.InitialStateTransaction);
+        Section("### Initial State", metadata.InitialDiskStateTransaction);
         if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
             Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
         Section("### Current State", metadata.LastScannedDiskStateTransaction);

@@ -778,22 +778,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // Return any existing state
         var metadata = installation.GetMetadata(Connection);
-        if (metadata.Contains(GameInstallMetadata.InitialStateTransaction))
+        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
         {
-            return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
+            return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
         }
 
         // Or create a new one
         using var tx = Connection.BeginTransaction();
         await installation.IndexNewState(tx);
-        tx.Add(metadata.Id, GameInstallMetadata.InitialStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(metadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         // Rebase the metadata to the new transaction
         metadata = metadata.Rebase();
 
         // Return the new state
-        return metadata.DiskStateAsOf(metadata.InitialStateTransaction);
+        return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
     }
 
     /// <inheritdoc />
@@ -1006,11 +1006,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ResetToOriginalGameState(GameInstallation installation)
     {
         var metaData = await installation.ReindexState(Connection);
-        if (!metaData.Contains(GameInstallMetadata.InitialStateTransaction))
+        if (!metaData.Contains(GameInstallMetadata.InitialDiskStateTransaction))
             throw new InvalidOperationException("No initial state transaction found for game");
         
         var currentState = metaData.DiskStateEntries;
-        var initialState = metaData.DiskStateAsOf(metaData.InitialStateTransaction);
+        var initialState = metaData.DiskStateAsOf(metaData.InitialDiskStateTransaction);
         var prevState = metaData.GetLastAppliedDiskState();
         
         // Bit strange, but we're setting the "loadout" to the initial state here.

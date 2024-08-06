@@ -82,11 +82,11 @@ public static class DiskStateExtensions
         // Index the state
         var changed = await installation.ReindexState(connection, tx);
         
-        if (!originalMetadata.Contains(GameInstallMetadata.InitialStateTransaction))
+        if (!originalMetadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
         {
             // No initial state, so set this transaction as the initial state
             changed = true;
-            tx.Add(originalMetadata.Id, GameInstallMetadata.InitialStateTransaction, EntityId.From(TxId.Tmp.Value));
+            tx.Add(originalMetadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
         }
         
         if (changed)

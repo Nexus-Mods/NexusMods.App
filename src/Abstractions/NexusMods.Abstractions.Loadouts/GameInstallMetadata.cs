@@ -42,7 +42,7 @@ public partial class GameInstallMetadata : IModelDefinition
     /// <summary>
     /// The 'AsOf' transaction ID of the initial disk state when the game folder was first indexed
     /// </summary>
-    public static readonly ReferenceAttribute<Transaction> InitialStateTransaction = new(Namespace, nameof(InitialStateTransaction)) { IsOptional = true };
+    public static readonly ReferenceAttribute<Transaction> InitialDiskStateTransaction = new(Namespace, nameof(InitialDiskStateTransaction)) { IsOptional = true };
     
     /// <summary>
     /// Current state of the game as seen on disk
