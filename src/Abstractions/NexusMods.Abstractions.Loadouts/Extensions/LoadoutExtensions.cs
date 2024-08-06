@@ -53,7 +53,7 @@ public static class LoadoutExtensions
     public static IEnumerable<ValueTuple<Mod.ReadOnly, TOuter>> GetModsWithMetadata<TOuter, TInner>(
         this Loadout.ReadOnly loadout,
         ScalarAttribute<TOuter, TInner> attribute,
-        bool onlyEnabledMods = true)
+        bool onlyEnabledMods = true) where TOuter : notnull
     {
         return loadout
             .GetEnabledMods(onlyEnabledMods)
@@ -67,7 +67,7 @@ public static class LoadoutExtensions
     public static Optional<ValueTuple<Mod.ReadOnly, TOuter>> GetFirstModWithMetadata<TOuter, TInner>(
         this Loadout.ReadOnly loadout,
         ScalarAttribute<TOuter, TInner> attribute,
-        bool onlyEnabledMods = true)
+        bool onlyEnabledMods = true) where TOuter : notnull
     {
         return loadout.GetModsWithMetadata(attribute, onlyEnabledMods)
             .FirstOrOptional(_ => true);

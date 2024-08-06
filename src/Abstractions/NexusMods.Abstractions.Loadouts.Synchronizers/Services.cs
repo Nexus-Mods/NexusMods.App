@@ -11,7 +11,8 @@ public static class Services
     /// <summary>
     /// Registers the services for the Loadouts Synchronizers.
     /// </summary>
-    public static IServiceCollection AddLoadoutsSynchronizers(this IServiceCollection services) =>
-        services.AddAttributeCollection(typeof(GeneratedFile));
-    
+    public static IServiceCollection AddLoadoutsSynchronizers(this IServiceCollection services)
+    {
+        return services;
+    }
 }

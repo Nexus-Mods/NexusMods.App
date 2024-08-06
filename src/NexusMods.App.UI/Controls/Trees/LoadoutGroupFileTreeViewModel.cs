@@ -37,7 +37,7 @@ public class LoadoutGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFi
 
             var node = new FileTreeNodeViewModel(
                 fullPath: loadoutItem.TargetPath,
-                parentPath: loadoutItem.TargetPath.Parent,
+                parentPath: ((GamePath)loadoutItem.TargetPath).Parent,
                 isFile: true,
                 fileSize: size.Value,
                 numChildFiles: 0,
@@ -49,7 +49,7 @@ public class LoadoutGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFi
             totalNumFiles++;
             totalSize += size;
 
-            var parent = loadoutItem.TargetPath.Parent;
+            var parent = ((GamePath)loadoutItem.TargetPath).Parent;
             while (parent.Path != RelativePath.Empty)
             {
                 ref var directory = ref CollectionsMarshal.GetValueRefOrNullRef(directories, parent);

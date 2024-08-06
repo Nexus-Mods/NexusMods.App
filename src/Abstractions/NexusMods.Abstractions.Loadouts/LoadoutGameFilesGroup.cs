@@ -17,7 +17,7 @@ public partial class LoadoutGameFilesGroup : IModelDefinition
     /// <summary>
     /// Game metadata.
     /// </summary>
-    public static readonly ReferenceAttribute<GameMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
+    public static readonly ReferenceAttribute<GameInstallMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
 }
 
 
