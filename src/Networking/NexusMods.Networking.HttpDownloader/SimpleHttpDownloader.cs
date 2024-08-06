@@ -55,11 +55,13 @@ public class SimpleHttpDownloader : IHttpDownloader
             activity?.SetProgress(Size.FromLong(args.ReceivedBytesSize));
         };
 
-        // TODO: figure out what do with multiple sources
-        var urls = sources.Select(source => source.RequestUri!.ToString()).Take(1).ToArray();
+        var url = sources[0].RequestUri!.ToString();
 
+        // NOTE(erri120): The Downloader library uses all URLs in a round-robin fashion.
+        // If you download 4 chunks in parallel and provide 4 URLs, then each URL will be
+        // assigned 1 chunk.
         await downloadService.DownloadFileTaskAsync(
-            urls: urls,
+            urls: [url],
             fileName: destination.ToNativeSeparators(OSInformation.Shared),
             cancellationToken: cancellationToken
         );
