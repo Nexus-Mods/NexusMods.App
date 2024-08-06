@@ -53,7 +53,7 @@ on the stack instead of the heap.
 
 The implementation of the disk state storage is as follows:
 
-### GameMetadata
+### GameInstallMetadata
 
 Each game installation, when detected, causes the creation of a `GameMetadata` entity. We attach disk state to this entity, and
 this entity also contains pointers for the following:
