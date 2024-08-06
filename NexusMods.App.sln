@@ -278,6 +278,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Telemetry.Tests", "tests\NexusMods.Telemetry.Tests\NexusMods.Telemetry.Tests.csproj", "{336387F7-3635-43FE-9C23-CBC0CE534989}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.UnrealEngine", "src\Games\NexusMods.Games.UnrealEngine\NexusMods.Games.UnrealEngine.csproj", "{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -728,6 +730,10 @@ Global
 		{336387F7-3635-43FE-9C23-CBC0CE534989}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{336387F7-3635-43FE-9C23-CBC0CE534989}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{336387F7-3635-43FE-9C23-CBC0CE534989}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -857,6 +863,7 @@ Global
 		{A5A2932D-B3EF-480B-BEBC-793F6FC90EDE} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{8D7E82BB-2F8D-455A-AF12-C486D9EC3B77} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{336387F7-3635-43FE-9C23-CBC0CE534989} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
