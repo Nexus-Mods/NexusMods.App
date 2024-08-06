@@ -60,8 +60,8 @@ this entity also contains pointers for the following:
 
 * LastAppliedLoadout - The last loadout that was applied to the game
 * LastAppliedLoadoutTransaction - The transaction that was created when the loadout was applied
-* LastScannedDiskState - The transaction that was created when the disk state was last synced
-* InitialStateTransaction - The transaction that was created when the game was first scanned
+* LastScannedDiskStateTransaction - The transaction that was created when the disk state was last synced
+* InitialDiskStateTransaction - The transaction that was created when the game was first scanned
 * DiskStateEntries (backref) - All the disk state entries that point to this game
 
 ### DiskStateEntry
