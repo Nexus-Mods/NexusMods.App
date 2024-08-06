@@ -35,6 +35,8 @@ public interface IWorkspaceViewModel : IViewModelInterface
 
     public IPanelViewModel SelectedPanel { get; }
 
+    public IPanelTabViewModel SelectedTab { get; }
+
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers { get; }

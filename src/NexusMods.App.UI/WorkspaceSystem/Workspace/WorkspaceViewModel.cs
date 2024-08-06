@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
@@ -34,6 +35,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     /// <inheritdoc/>
     [Reactive] public IPanelViewModel SelectedPanel { get; private set; } = null!;
+
+    /// <inheritdoc/>
+    [Reactive]
+    public IPanelTabViewModel SelectedTab { get; [UsedImplicitly] private set; } = null!;
 
     /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
@@ -123,7 +128,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .WhenPropertyChanged(panel => panel.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
                 .Select(propertyValue => propertyValue.Sender)
-                .BindToVM(this, vm => vm.SelectedPanel);
+                .BindToVM(this, vm => vm.SelectedPanel)
+                .DisposeWith(disposables);
 
             this.WhenAnyValue(vm => vm.SelectedPanel)
                 .SubscribeWithErrorLogging(selectedPanel =>
@@ -133,6 +139,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         panel.IsSelected = panel.Id == selectedPanel.Id;
                     }
                 })
+                .DisposeWith(disposables);
+
+            // selected tab
+            this.WhenAnyValue(vm => vm.SelectedPanel)
+                .Select(panel => panel.WhenAnyValue(x => x.SelectedTab))
+                .Switch()
+                .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(disposables);
 
             // TODO: popout command
