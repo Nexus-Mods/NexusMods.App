@@ -89,14 +89,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Override this method to generate the game files for the tests in this class. 
-    /// </summary>
-    protected virtual Task GenerateGameFiles()
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
     protected LoadoutItemGroupId AddEmptyGroup(ITransaction tx, LoadoutId loadoutId, string name)
