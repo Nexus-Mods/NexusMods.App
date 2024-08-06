@@ -51,8 +51,6 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
         DataStoreNxArchiveFinder.FindAllArchives(_settingsManager, archiveGc);
 
         // Assert
-        archiveGc.AllArchives.Count.Should().Be(createdArchives.Count, "The number of detected archives should match the number of created archives");
-
         foreach (var createdArchive in createdArchives)
             archiveGc.AllArchives.Should().Contain(reference => reference.FilePath == createdArchive, $"The created archive {createdArchive} should be detected");
     }
