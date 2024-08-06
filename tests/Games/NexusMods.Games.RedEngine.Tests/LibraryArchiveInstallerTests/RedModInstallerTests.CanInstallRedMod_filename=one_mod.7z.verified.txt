@@ -12,30 +12,30 @@
 + | 0200000000000004 | Name                     | info.json                                        | 0200000000000000
 + | 0200000000000004 | Loadout                  | 0200000000000002                                 | 0200000000000000
 + | 0200000000000004 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000004 | TargetPath               | (EId:200000000000297, ...er_Shotguns/info.json)  | 0200000000000000
++ | 0200000000000004 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/info.json) | 0200000000000000
 + | 0200000000000004 | Hash                     | 0x55FE2BFA19917AAF                               | 0200000000000000
 + | 0200000000000004 | Size                     | 80 B                                             | 0200000000000000
 + | 0200000000000005 | Name                     | base_crusher.tweak                               | 0200000000000000
 + | 0200000000000005 | Loadout                  | 0200000000000002                                 | 0200000000000000
 + | 0200000000000005 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000005 | TargetPath               | (EId:200000000000297, ...er/base_crusher.tweak)  | 0200000000000000
++ | 0200000000000005 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/revolvers/crusher/base_crusher.tweak) | 0200000000000000
 + | 0200000000000005 | Hash                     | 0x6A6D905ABC5177AE                               | 0200000000000000
 + | 0200000000000005 | Size                     | 128 B                                            | 0200000000000000
 + | 0200000000000006 | Name                     | base_pozhar.tweak                                | 0200000000000000
 + | 0200000000000006 | Loadout                  | 0200000000000002                                 | 0200000000000000
 + | 0200000000000006 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000006 | TargetPath               | (EId:200000000000297, ...har/base_pozhar.tweak)  | 0200000000000000
++ | 0200000000000006 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/rifles/pozhar/base_pozhar.tweak) | 0200000000000000
 + | 0200000000000006 | Hash                     | 0xDB4B2217BE615C07                               | 0200000000000000
 + | 0200000000000006 | Size                     | 128 B                                            | 0200000000000000
 + | 0200000000000007 | Name                     | base_igla.tweak                                  | 0200000000000000
 + | 0200000000000007 | Loadout                  | 0200000000000002                                 | 0200000000000000
 + | 0200000000000007 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000007 | TargetPath               | (EId:200000000000297, .../igla/base_igla.tweak)  | 0200000000000000
++ | 0200000000000007 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/igla/base_igla.tweak) | 0200000000000000
 + | 0200000000000007 | Hash                     | 0xA2EFF12B68D2606B                               | 0200000000000000
 + | 0200000000000007 | Size                     | 128 B                                            | 0200000000000000
 + | 0200000000000008 | Name                     | base_satara.tweak                                | 0200000000000000
 + | 0200000000000008 | Loadout                  | 0200000000000002                                 | 0200000000000000
 + | 0200000000000008 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000008 | TargetPath               | (EId:200000000000297, ...ara/base_satara.tweak)  | 0200000000000000
++ | 0200000000000008 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/satara/base_satara.tweak) | 0200000000000000
 + | 0200000000000008 | Hash                     | 0x468F14E15B6E2EDC                               | 0200000000000000
 + | 0200000000000008 | Size                     | 128 B                                            | 0200000000000000
