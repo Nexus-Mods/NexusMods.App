@@ -156,24 +156,28 @@ public abstract class AGameTest<TGame> where TGame : AGame
         foreach (var path in paths)
         {
             var data = Encoding.UTF8.GetBytes(path);
-            var hash = path.Path.XxHash64AsUtf8();
+            var hash = data.XxHash64();
             var size = Size.FromLong(path.Path.Length);
             
             // Create the LoadoutFile in DB
-            var file = AddFileInternal(tx, loadoutId, modGroup, new GamePath(LocationId.Game, path), hash, size);
+            AddFileInternal(tx, loadoutId, modGroup, new GamePath(LocationId.Game, path), hash, size);
             
             // Create the file to backup.
-            records.Add(new ArchivedFileEntry(
-                new MemoryStreamFactory(path, new MemoryStream(data)),
-                hash,
-                size
-            ));
-            
             hashes.Add(hash);
+            if (!await FileStore.HaveFile(hash))
+            {
+                records.Add(new ArchivedFileEntry(
+                    new MemoryStreamFactory(path, new MemoryStream(data)),
+                    hash,
+                    size
+                ));
+            }
         }
 
-        await FileStore.BackupFiles(records);
-        return (GetArchivePath(records[0].Hash), hashes);
+        if (records.Count > 0)
+            await FileStore.BackupFiles(records);
+
+        return (GetArchivePath(hashes.First()), hashes);
     }
     
     /// <summary>

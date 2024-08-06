@@ -13,22 +13,12 @@ using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
-public class NxFileStoreUpdaterTests
+public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connection, NxFileStore nxFileStore)
 {
-    private readonly IFileStore _fileStore;
-    private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly NxFileStoreUpdater _updater;
-    private readonly IConnection _connection;
-    private readonly NxFileStore _nxFileStore;
-
-    public NxFileStoreUpdaterTests(IFileStore fileStore, TemporaryFileManager temporaryFileManager, IConnection connection, NxFileStore nxFileStore)
-    {
-        _fileStore = fileStore;
-        _temporaryFileManager = temporaryFileManager;
-        _connection = connection;
-        _nxFileStore = nxFileStore;
-        _updater = new NxFileStoreUpdater(connection);
-    }
+    private readonly IFileStore _fileStore = fileStore;
+    private readonly NxFileStoreUpdater _updater = new(connection);
+    private readonly IConnection _connection = connection;
+    private readonly NxFileStore _nxFileStore = nxFileStore;
 
     [Fact]
     public async Task UpdateNxFileStore_ShouldUpdateArchivedFileEntries()
