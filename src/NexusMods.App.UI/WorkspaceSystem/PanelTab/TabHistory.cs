@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 internal class TabHistory : ReactiveObject
 {
     /// <summary>
-    /// Arbitrarly choosen limit.
+    /// Arbitrarily chosen limit.
     /// </summary>
     private const int Limit = 10;
 
@@ -21,24 +21,19 @@ internal class TabHistory : ReactiveObject
     private readonly PageData[] _history = new PageData[Limit];
 
     /// <summary>
-    /// Points to the current place in history.
+    /// Points to the tail, the last position.
     /// </summary>
-    [Reactive] private int ReadPointer { get; set; } = -1;
+    private int Tail => Math.Max(0, Head - Math.Min(Limit, Head));
 
     /// <summary>
-    /// Points to the next place in the history that will be written to.
+    /// Points to the head, the first position.
     /// </summary>
-    [Reactive] private int WritePointer { get; set; }
+    [Reactive] private int Head { get; set; }
 
     /// <summary>
-    /// Gets the amount of items in the history.
+    /// Points to the current position in the history.
     /// </summary>
-    /// <remarks>
-    /// The ring buffer has a limit, once that limit is reached
-    /// previous items will be overwritten. As such, the count
-    /// can never be above the limit.
-    /// </remarks>
-    private int Count => Math.Min(WritePointer, Limit);
+    [Reactive] private int Position { get; set; } = -1;
 
     /// <summary>
     /// Intermediate value used when traversing the history to prevent
@@ -52,20 +47,16 @@ internal class TabHistory : ReactiveObject
     public TabHistory(Action<PageData> openPageFunc)
     {
         var canGoBack = this.WhenAnyValue(
-            vm => vm.ReadPointer,
-            vm => vm.WritePointer).Select(_ =>
-        {
-            var start = WritePointer - Count;
-            return start < ReadPointer;
-        });
+            vm => vm.Position,
+            vm => vm.Head).Select(_ => Position > Tail);
 
         GoBackCommand = ReactiveCommand.Create(() =>
         {
-            var next = ReadPointer - 1;
+            var next = Position - 1;
             var index = next % Limit;
             var pageData = _history[index];
 
-            ReadPointer = next;
+            Position = next;
 
             try
             {
@@ -79,16 +70,16 @@ internal class TabHistory : ReactiveObject
         }, canGoBack);
 
         var canGoForward = this.WhenAnyValue(
-            vm => vm.ReadPointer,
-            vm => vm.WritePointer).Select(_ => ReadPointer < WritePointer - 1);
+            vm => vm.Position,
+            vm => vm.Head).Select(_ => Position < Head);
 
         GoForwardCommand = ReactiveCommand.Create(() =>
         {
-            var next = ReadPointer + 1;
+            var next = Position + 1;
             var index = next % Limit;
             var pageData = _history[index];
 
-            ReadPointer = next;
+            Position = next;
 
             try
             {
@@ -107,12 +98,12 @@ internal class TabHistory : ReactiveObject
         if (IsTraversing) return;
         if (pageData.Context.IsEphemeral) return;
 
-        var next = ReadPointer + 1;
+        var next = Position + 1;
 
         var index = next % Limit;
         _history[index] = pageData;
 
-        WritePointer = next + 1;
-        ReadPointer = next;
+        Position = next;
+        Head = next;
     }
 }
