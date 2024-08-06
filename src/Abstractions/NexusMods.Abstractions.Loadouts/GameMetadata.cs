@@ -40,7 +40,7 @@ public partial class GameMetadata : IModelDefinition
     public static readonly ReferenceAttribute<Transaction> LastSyncedLoadoutTransaction = new(Namespace, nameof(LastSyncedLoadoutTransaction)) { IsOptional = true };
     
     /// <summary>
-    /// The 'AsOf' transaction ID of the initial state when the game folder was first indexed
+    /// The 'AsOf' transaction ID of the initial disk state when the game folder was first indexed
     /// </summary>
     public static readonly ReferenceAttribute<Transaction> InitialStateTransaction = new(Namespace, nameof(InitialStateTransaction)) { IsOptional = true };
     
