@@ -45,6 +45,7 @@ public static class DependencyInjectionHelper
     /// <returns></returns>
     public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection)
     {
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var prefix = FileSystem.Shared
             .GetKnownPath(KnownPath.EntryDirectory)
             .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
@@ -69,6 +70,10 @@ public static class DependencyInjectionHelper
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
+                MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"DataModel/MnemonicDB.rocksdb"),
+                ArchiveLocations = [
+                    new ConfigurablePath(baseKnownPath, $"DataModel/Archives"),
+                ],
             })
             .AddSettingsManager()
             .AddFileExtractors();
