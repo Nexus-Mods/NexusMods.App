@@ -33,5 +33,4 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
         Synchronizer.IsIgnoredBackupPath(ignoredGamePath).Should().BeFalse("The setting is now disabled");
         Synchronizer.IsIgnoredBackupPath(notIgnoredGamePath).Should().BeFalse("The setting is now disabled");
     }
-
 }

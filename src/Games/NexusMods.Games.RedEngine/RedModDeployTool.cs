@@ -30,11 +30,12 @@ public class RedModDeployTool : ITool
         _logger.LogInformation("Running {Program}", exe);
         var result = await Cli.Wrap(exe.ToString())
             .WithArguments("deploy")
-            .WithWorkingDirectory(loadout.InstallationInstance.LocationsRegister[LocationId.Game].ToString())
+            .WithWorkingDirectory(exe.Parent.ToString())
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-            .ExecuteAsync();
+            .ExecuteAsync(cancellationToken);
         _logger.LogInformation("Finished running {Program}", exe);
+        _logger.LogDebug("RedMod Deploy stdout: {StdOut}", stdOutBuffer.ToString());
 
         if (result.ExitCode != 0)
         {

@@ -142,6 +142,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
+
+
     public SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, IEnumerable<LoadoutItem.ReadOnly> loadoutItems)
     {
         var grouped = loadoutItems
@@ -158,6 +160,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return file;
             })
             .Where(f => !f.TryGetAsDeletedFile(out _))
+            .Where(f => !IsIgnoredPath(f.TargetPath))
             .OfTypeLoadoutFile();
         
         return BuildSyncTree(currentState, previousTree, grouped);
@@ -598,7 +601,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
@@ -929,7 +932,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return false;
     }
-
+    
+    /// <inheritdoc />
+    public virtual bool IsIgnoredPath(GamePath path)
+    {
+        return false;
+    }
+    
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId)
     {
