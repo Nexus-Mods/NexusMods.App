@@ -50,9 +50,9 @@ public partial class GameMetadata : IModelDefinition
     public static readonly BackReferenceAttribute<DiskStateEntry> DiskStateEntries = new(DiskStateEntry.Game);
     
     /// <summary>
-    /// The last scanned transaction ID
+    /// The last scanned disk state transaction ID
     /// </summary>
-    public static readonly ReferenceAttribute<Transaction> LastScannedTransaction = new(Namespace, nameof(LastScannedTransaction)) { IsOptional = true };
+    public static readonly ReferenceAttribute<Transaction> LastScannedDiskStateTransaction = new(Namespace, nameof(LastScannedTransaction)) { IsOptional = true };
     
     /// <summary>
     /// All the loadouts that are based on this game installation
