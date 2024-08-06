@@ -11,7 +11,6 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
-using Xunit;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 public class NxFileStoreUpdaterTests
