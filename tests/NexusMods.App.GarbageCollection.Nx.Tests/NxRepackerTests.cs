@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.Archives.Nx.Headers;
+using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -41,7 +42,8 @@ public class NxRepackerTests
 
         // Arrange
         var archivePath = await CreateInitialArchive(fs, folderPath);
-        var collector = SetupGarbageCollector(archivePath);
+        var collector = SetupGarbageCollector(archivePath, out var header);
+        AddFile1AndFile2(header, collector);
 
         // Act
         collector.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archiveRef) =>
@@ -73,6 +75,29 @@ public class NxRepackerTests
         (await fs.ReadAllTextAsync(extractedFile1)).Should().Be(File1Content);
         (await fs.ReadAllTextAsync(extractedFile2)).Should().Be(File2Content);
     }
+    
+    [Theory, AutoFileSystem]
+    public async Task CollectGarbage_ShouldCreateEmptyArchiveWhenAllFilesUnreferenced(InMemoryFileSystem fs, AbsolutePath folderPath)
+    {
+/*
+    This test verifies that the NxRepacker produces no new files when there are no
+    files to be repacked. i.e. It does not produce empty archives.
+*/
+        
+        // Arrange
+        var archivePath = await CreateInitialArchive(fs, folderPath);
+        var collector = SetupGarbageCollector(archivePath, out _);
+
+        // Act
+        collector.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archiveRef) =>
+        {
+            NxRepacker.RepackArchive(progress, toArchive, toRemove, archiveRef, true, out archivePath);
+        });
+
+        // Assert
+        archivePath.Should().NotBeNull();
+        fs.FileExists(archivePath).Should().BeFalse();
+    }
 
     private async Task<AbsolutePath> CreateInitialArchive(InMemoryFileSystem fs, AbsolutePath folderPath)
     {
@@ -93,17 +118,19 @@ public class NxRepackerTests
         return archivePath;
     }
 
-    private ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> SetupGarbageCollector(AbsolutePath archivePath)
+    private ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> SetupGarbageCollector(AbsolutePath archivePath, out ParsedHeader header)
     {
         var streamProvider = new FromAbsolutePathProvider
         {
             FilePath = archivePath,
         };
-        var header = HeaderParser.ParseHeader(streamProvider);
-
+        header = HeaderParser.ParseHeader(streamProvider);
         var collector = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
         collector.AddArchive(archivePath, new NxParsedHeaderState(header));
-
+        return collector;
+    }
+    private static void AddFile1AndFile2(ParsedHeader header, ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> collector)
+    {
         // Add references to file1 and file2, but not file3
         for (var x = 0; x < header.Entries.Length; x++)
         {
@@ -112,7 +139,5 @@ public class NxRepackerTests
             if (entryName is File1Name or File2Name)
                 collector.AddReferencedFile((Hash)entry.Hash);
         }
-
-        return collector;
     }
 }

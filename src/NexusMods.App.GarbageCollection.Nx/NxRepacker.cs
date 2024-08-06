@@ -28,8 +28,15 @@ public static class NxRepacker
     ///     can be used to repack Nx archives. See <see cref="ArchiveGarbageCollector{TParsedHeaderState,TFileEntryWrapper}.RepackDelegate"/>
     ///     type for more info.
     /// </summary>
+    // ReSharper disable once UnusedParameter.Global
     public static void RepackArchive(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<NxParsedHeaderState> archive, bool deleteOriginal, out AbsolutePath newArchivePath)
     {
+        // If there's nothing to pack, skip the packing.
+        var fs = archive.FilePath.FileSystem;
+        newArchivePath = default(AbsolutePath);
+        if (toArchive.Count <= 0)
+            goto end;
+        
         // Get the entries that need repacking.
         var nxHeaderItemsByHash = archive.HeaderState.Header.Entries.ToDictionary(entry => (Hash)entry.Hash);
         var entries = new List<FileEntry>(toArchive.Count);
@@ -40,6 +47,7 @@ public static class NxRepacker
                 entries.Add(entry);
         }
 
+        
         var repacker = new NxRepackerBuilder();
         var fromAbsolutePathProvider = new FromAbsolutePathProvider
         {
@@ -48,7 +56,6 @@ public static class NxRepacker
         
         var guid = Guid.NewGuid();
         var id = guid.ToString();
-        var fs = archive.FilePath.FileSystem;
         var tmpArchivePath = archive.FilePath.Parent.Combine(id).AppendExtension(KnownExtensions.Tmp);
         repacker.AddFilesFromNxArchive(fromAbsolutePathProvider, archive.HeaderState.Header, entries)
             .WithProgress(progress)
@@ -60,6 +67,8 @@ public static class NxRepacker
         // Delete the original archive.
         newArchivePath = tmpArchivePath.ReplaceExtension(KnownExtensions.Nx);
         tmpArchivePath.FileSystem.MoveFile(tmpArchivePath, newArchivePath, true);
+        
+        end:
         if (deleteOriginal)
             fs.DeleteFile(archive.FilePath);
     }
