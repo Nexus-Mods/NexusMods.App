@@ -24,7 +24,7 @@ the unmodified state of the game.
 
 During the design process for this new disk state a few important discoveries were made:
 
-### All the disk states for a given game are linear in time
+### All the disk states for a given game installation are linear in time
 
 Since only one loadout can be applied at a time, and we try to sync loadouts and game state, we can view the disk state
 as evolving linearly in time. This means that we can leverage MnemonicDB's linear time model to store pointers to transaction
