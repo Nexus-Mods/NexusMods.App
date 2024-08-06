@@ -2,7 +2,7 @@
 
 ## Context
 
-During the life of a loadout, the application needs to track several the state of the disk. This data includes roughly the
+During the life of a loadout, the application needs to track several states of the disk. This data includes roughly the
 following fields:
 
 * Game Path - The path of a file, relative to a LocationId
