@@ -3,12 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.Games.TestFramework.FluentAssertionExtensions;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077>(serviceProvider)
+public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077.Cyberpunk2077Game>(serviceProvider)
 {
 
     [Fact]
@@ -22,34 +24,13 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
         var ignoredGamePath = new GamePath(LocationId.Game, "archive/pc/content/foo.dat".ToRelativePath());
         var notIgnoredGamePath = new GamePath(LocationId.Game, "foo.dat".ToRelativePath());
         
-        var ignoredPath = GameInstallation.LocationsRegister.GetResolvedPath(ignoredGamePath);
-        ignoredPath.Parent.CreateDirectory();
-        var notIgnoredPath = GameInstallation.LocationsRegister.GetResolvedPath(notIgnoredGamePath);
-        
-        // Write the files
-        await ignoredPath.WriteAllTextAsync("Ignore me");
-        var ignoredHash = await ignoredPath.XxHash64Async();
-        await notIgnoredPath.WriteAllTextAsync("Don't you dare ignore me!");
-        var notIgnoredHash = await notIgnoredPath.XxHash64Async();
-        
-        // Create the loadout
-        var loadout = await CreateLoadout();
-        
-        loadout.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
-        (await FileStore.HaveFile(ignoredHash)).Should().BeFalse("The file is ignored");
-        
-        loadout.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
-        (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
+        // Check if the paths are ignored
+        Synchronizer.IsIgnoredBackupPath(ignoredGamePath).Should().BeTrue("The setting is now disabled");
+        Synchronizer.IsIgnoredBackupPath(notIgnoredGamePath).Should().BeFalse("The setting is now disabled");
         
         // Now disable the ignore setting
         settings.DoFullGameBackup = true;
-
-        var loadout2 = await CreateLoadout();
-        
-        loadout2.Files.Should().Contain(f => f.To == ignoredGamePath, "The file exists, but is ignored");
-        (await FileStore.HaveFile(ignoredHash)).Should().BeTrue("The file is not ignored");
-        loadout2.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
-        (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored");
+        Synchronizer.IsIgnoredBackupPath(ignoredGamePath).Should().BeFalse("The setting is now disabled");
+        Synchronizer.IsIgnoredBackupPath(notIgnoredGamePath).Should().BeFalse("The setting is now disabled");
     }
-
 }

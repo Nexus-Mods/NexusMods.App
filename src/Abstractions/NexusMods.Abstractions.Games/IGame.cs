@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -32,13 +33,18 @@ public interface IGame : ILocatableGame
     public IEnumerable<IModInstaller> Installers { get; }
 
     /// <summary>
+    /// Gets all available installers this game supports.
+    /// </summary>
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+
+    /// <summary>
     /// An array of all instances of <see cref="IDiagnosticEmitter"/> supported
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
-
+    
     /// <summary>
-    /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.
+    /// The synchronizer for this game.
     /// </summary>
     public ILoadoutSynchronizer Synchronizer { get; }
     

@@ -5,6 +5,7 @@ namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 /// <summary>
 /// Info for a mod archive describing where it came from and the suggested name of the file
 /// </summary>
+[Obsolete(message: "To be replaced with Library Items")]
 [JsonName("NexusMods.Abstractions.Games.ArchiveMetadata.AArchiveMetaData")]
 public abstract record AArchiveMetaData
 {

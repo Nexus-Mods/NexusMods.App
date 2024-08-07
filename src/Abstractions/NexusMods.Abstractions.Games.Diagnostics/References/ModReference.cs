@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
@@ -9,6 +10,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Mod"/>.
 /// </summary>
 [PublicAPI]
+[Obsolete($"To be replaced by {nameof(LoadoutItemGroupReference)}")]
 public record ModReference : IDataReference<ModId, Mod.ReadOnly>
 {
     /// <inheritdoc/>

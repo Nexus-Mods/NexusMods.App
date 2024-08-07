@@ -1,3 +1,4 @@
+using Downloader;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
@@ -11,50 +12,60 @@ namespace NexusMods.Networking.HttpDownloader;
 /// A simple implementation of <see cref="IHttpDownloader"/> used for diagnostic
 /// purposes, or as a fallback.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
 public class SimpleHttpDownloader : IHttpDownloader
 {
-    private readonly ILogger<SimpleHttpDownloader> _logger;
-    private readonly HttpClient _client;
-    private readonly IActivityFactory _activityFactory;
-
-    /// <summary/>
-    /// <param name="logger">Logger for the download operations.</param>
-    /// <param name="client">The client which will be used to issue download requests.</param>
-    /// <param name="activityFactory">Limiter for the concurrent jobs we can run at once.</param>
-    /// <remarks>This constructor is usually called from DI container.</remarks>
-    public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger, HttpClient client,
-        IActivityFactory activityFactory)
-    {
-        _logger = logger;
-        _client = client;
-        _activityFactory = activityFactory;
-    }
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger) { }
 
     /// <inheritdoc />
-    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? state, Size? size, CancellationToken token)
+    public async Task<Hash> DownloadAsync(
+        IReadOnlyList<HttpRequestMessage> sources,
+        AbsolutePath destination,
+        HttpDownloaderState? state,
+        Size? size,
+        CancellationToken cancellationToken)
     {
         state ??= new HttpDownloaderState();
-        foreach (var source in sources)
+        var activity = (IActivitySource<Size>?)state.Activity;
+
+        var downloadService = new DownloadService(new DownloadConfiguration
         {
-            using var job = _activityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", destination.FileName);
+            // TODO: find good values, probably put some in settings
+            ChunkCount = 4,
+            ParallelDownload = true,
+            Timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds,
 
-            // Note: If download fails, job will be reported as 'failed', and will not participate in throughput calculations.
-            state.Activity = job;
+            ReserveStorageSpaceBeforeStartingDownload = true,
+        });
 
-            var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Failed to download {Source} to {Destination}: {StatusCode}", source.RequestUri, destination, response.StatusCode);
-                continue;
-            }
+        downloadService.DownloadStarted += (_, args) =>
+        {
+            activity?.SetMax(Size.FromLong(args.TotalBytesToReceive));
+        };
 
-            job.SetMax(size ?? Size.FromLong(response.Content.Headers.ContentLength ?? 1));
+        var lastUpdate = DateTime.MinValue;
+        downloadService.DownloadProgressChanged += (_, args) =>
+        {
+            // TODO: remove this, this is a hack to keep our UI from exploding
+            var now = DateTime.Now;
+            if (now - lastUpdate < TimeSpan.FromMilliseconds(700)) return;
+            activity?.SetProgress(Size.FromLong(args.ReceivedBytesSize));
+        };
 
-            await using var stream = await response.Content.ReadAsStreamAsync(token);
-            await using var file = destination.Create();
-            return await stream.HashingCopyAsync(file, job, token);
-        }
+        var url = sources[0].RequestUri!.ToString();
 
-        throw new Exception($"Could not download {destination.FileName}");
+        // NOTE(erri120): The Downloader library uses all URLs in a round-robin fashion.
+        // If you download 4 chunks in parallel and provide 4 URLs, then each URL will be
+        // assigned 1 chunk.
+        await downloadService.DownloadFileTaskAsync(
+            urls: [url],
+            fileName: destination.ToNativeSeparators(OSInformation.Shared),
+            cancellationToken: cancellationToken
+        );
+
+        return await destination.XxHash64Async(token: cancellationToken);
     }
 }

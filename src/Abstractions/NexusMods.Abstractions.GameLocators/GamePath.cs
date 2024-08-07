@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -117,4 +118,15 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
         var locationComparison = LocationId.CompareTo(other.LocationId);
         return locationComparison != 0 ? locationComparison : Path.CompareTo(other.Path);
     }
+    
+    /// <summary>
+    /// Implicitly converts a tuple (such as from a GamePathParentAttribute) to a GamePath.
+    /// </summary>
+    public static implicit operator GamePath((EntityId, LocationId, RelativePath) value) => new(value.Item2, value.Item3);
+    
+    /// <summary>
+    /// Converts a GamePath to a tuple (such as for a GamePathParentAttribute), using the provided EntityId, this id
+    /// is allowed to be a temporary id and will be replaced with the actual id the value is transacted
+    /// </summary>
+    public (EntityId, LocationId, RelativePath) ToGamePathParentTuple(EntityId id) => (id, LocationId, Path);
 }

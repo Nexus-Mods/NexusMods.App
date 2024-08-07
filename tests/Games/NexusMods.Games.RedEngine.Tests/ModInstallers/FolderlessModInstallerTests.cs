@@ -5,7 +5,7 @@ using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
-public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, FolderlessModInstaller>
+public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, FolderlessModInstaller>
 {
     public FolderlessModInstallerTests(IServiceProvider serviceProvider) : base(
         serviceProvider)
@@ -46,7 +46,7 @@ public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, Fold
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, LocationId.Game, "archive/pc/mod/filea.archive")
+                (hash1, LocationId.Game, "archive/pc/mod/filea.archive"),
             });
     }
 }

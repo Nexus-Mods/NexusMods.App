@@ -1,6 +1,4 @@
-﻿using NexusMods.Abstractions.Loadouts.Synchronizers;
-
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// A simple loadout synchronizer that simply calls out to ALoadoutSynchronizer.
@@ -10,6 +8,5 @@ public class DefaultSynchronizer : ALoadoutSynchronizer
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="provider"></param>
     public DefaultSynchronizer(IServiceProvider provider) : base(provider) { }
 }

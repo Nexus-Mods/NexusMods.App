@@ -2,24 +2,23 @@ using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.FOMOD.CoreDelegates;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 using IFileSystem = NexusMods.Paths.IFileSystem;
-using Mod = FomodInstaller.Interface.Mod;
+using FomodMod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodXmlInstaller : AModInstaller
+public class FomodXmlInstaller : ALibraryArchiveInstaller
 {
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
@@ -27,6 +26,7 @@ public class FomodXmlInstaller : AModInstaller
     private readonly GamePath _fomodInstallationPath;
     private readonly IFileSystem _fileSystem;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IFileStore _fileStore;
 
     /// <summary>
     /// Creates a new instance of <see cref="FomodXmlInstaller"/> given the provided <paramref name="provider"/> and <paramref name="fomodInstallationPath"/>.
@@ -36,52 +36,54 @@ public class FomodXmlInstaller : AModInstaller
     /// <returns></returns>
     public static FomodXmlInstaller Create(IServiceProvider provider, GamePath fomodInstallationPath)
     {
-        return new FomodXmlInstaller(provider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
-            provider.GetRequiredService<ICoreDelegates>(), provider.GetRequiredService<IFileSystem>(),
-            provider.GetRequiredService<TemporaryFileManager>(),
-
-            fomodInstallationPath, provider);
+        return new FomodXmlInstaller(provider, provider.GetRequiredService<ILogger<FomodXmlInstaller>>(), fomodInstallationPath);
     }
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates,
-        IFileSystem fileSystem, TemporaryFileManager temporaryFileManager, GamePath fomodInstallationPath,
-        IServiceProvider serviceProvider) : base(serviceProvider)
+    private FomodXmlInstaller(
+        IServiceProvider serviceProvider,
+        ILogger<FomodXmlInstaller> logger,
+        GamePath fomodInstallationPath) : base(serviceProvider, logger)
     {
-        _delegates = coreDelegates;
-        _fomodInstallationPath = fomodInstallationPath;
         _logger = logger;
-        _temporaryFileManager = temporaryFileManager;
-        _fileSystem = fileSystem;
+        _fomodInstallationPath = fomodInstallationPath;
+
+        _delegates = serviceProvider.GetRequiredService<ICoreDelegates>();
+        _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        _fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+        _fileStore = serviceProvider.GetRequiredService<IFileStore>();
     }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        ModInstallerInfo info,
-        CancellationToken cancellationToken = default)
+    public override async ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction transaction,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(info.ArchiveFiles, _fileSystem, cancellationToken);
-        if (analyzerInfo == default)
-            return Array.Empty<ModInstallerResult>();
+        var tree = LibraryArchiveTree.Create(libraryArchive);
+
+        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(tree, _fileSystem, _fileStore,cancellationToken);
+        if (analyzerInfo is null) return new NotSupported();
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
 
         var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
-        // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = info.ArchiveFiles.GetFiles().Select(x => x.Path().ToNativeSeparators(OSInformation.Shared)).ToList();
-        var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
+        var files = tree.GetFiles().Select(x => x.Item.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
+        var mod = new FomodMod(files, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
         // NOTE(erri120): The FOMOD library calls us, so this is the only way we can pass data along.
         var installerDelegates = _delegates as InstallerDelegates;
         if (installerDelegates is not null)
         {
-            installerDelegates.UiDelegates.CurrentArchiveFiles = info.ArchiveFiles;
+            installerDelegates.UiDelegates.CurrentArchiveFiles = tree;
         }
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
@@ -90,24 +92,18 @@ public class FomodXmlInstaller : AModInstaller
 
         // NOTE(err120): Reset the previously provided data
         if (installerDelegates is not null)
-            installerDelegates.UiDelegates.CurrentArchiveFiles = info.ArchiveFiles;
+            installerDelegates.UiDelegates.CurrentArchiveFiles = tree;
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
-        if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
+        if (errors.Length != 0) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
 
         // I don't think this can happen on xml installers, afaik this would only happen on c# scripts that
         // try to directly change the plugin load order
         foreach (var warning in instructions.Where(instruction => instruction.type == "unsupported"))
             _logger.LogWarning("Installer uses unsupported function: {}", warning.source);
 
-        return new[]
-        {
-            new ModInstallerResult
-            {
-                Id = info.BaseModId,
-                Files = InstructionsToModFiles(instructions, info.ArchiveFiles, _fomodInstallationPath)
-            }
-        };
+        InstructionsToLoadoutItems(transaction, loadout, loadoutGroup,instructions, tree, _fomodInstallationPath);
+        return new Success();
     }
 
     private static string FixXmlScript(string input)
@@ -119,61 +115,46 @@ public class FomodXmlInstaller : AModInstaller
         return Path.DirectorySeparatorChar == PathHelpers.DirectorySeparatorChar ? input.Replace('\\', PathHelpers.DirectorySeparatorChar) : input;
     }
 
-    private IEnumerable<TempEntity> InstructionsToModFiles(
+    private void InstructionsToLoadoutItems(
+        ITransaction transaction,
+        LoadoutId loadoutId,
+        LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
-        KeyedBox<RelativePath, ModFileTree> files,
-        GamePath gameTargetPath)
+        KeyedBox<RelativePath, LibraryArchiveTree> tree,
+        GamePath gamePath)
     {
-        var res = instructions.Select(instruction =>
+        foreach (var instruction in instructions)
         {
-            return instruction.type switch
+            if (instruction.type == "copy")
             {
-                "copy" => ConvertInstructionCopy(instruction, files, gameTargetPath),
-                "mkdir" => ConvertInstructionMkdir(instruction, gameTargetPath),
-                // TODO: "enableallplugins",
-                // "iniedit" - only supported by c# script and modscript installers atm
-                // "generatefile" - only supported by c# script installers
-                // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
-                _ => ReportUnknownType(instruction.type),
-            };
-        }).Where(x => x is not null).Select(x => x!).ToArray();
-
-        return res;
+                ConvertInstructionCopy(transaction, instruction, loadoutGroup, loadoutId, tree, gamePath);
+            }
+            // TODO: "mkdir" - not sure if we need/want this
+            // TODO: "enableallplugins"
+            // "iniedit" - only supported by c# script and modscript installers atm
+            // "generatefile" - only supported by c# script installers
+            // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
+            else
+            {
+                _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instruction.type);
+            }
+        }
     }
 
-    private TempEntity? ReportUnknownType(string instructionType)
-    {
-        _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instructionType);
-        return null;
-    }
-
-    private static TempEntity ConvertInstructionCopy(
+    private static void ConvertInstructionCopy(
+        ITransaction transaction,
         Instruction instruction,
-        KeyedBox<RelativePath, ModFileTree> files,
-        GamePath gameTargetPath)
+        LoadoutItemGroup.New loadoutGroup,
+        LoadoutId loadoutId,
+        KeyedBox<RelativePath, LibraryArchiveTree> tree,
+        GamePath gamePath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = files.FindByPathFromChild(src)!;
-        return new TempEntity
-        {
-            { StoredFile.Hash, file.Item.Hash },
-            { StoredFile.Size, file.Item.Size },
-            { File.To, new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)) },
-        };
-    }
+        var file = tree.FindByPathFromChild(src);
+        if (file is null) throw new KeyNotFoundException($"Unable to find file `{src}` in tree!");
 
-
-    private static TempEntity ConvertInstructionMkdir(
-        Instruction instruction,
-        GamePath gameTargetPath)
-    {
-        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
-        return new TempEntity
-        {
-            { File.To, new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)) },
-            { EmptyDirectory.Directory, true }
-        };
+        _ = file.ToLoadoutFile(loadoutId, loadoutGroup, transaction, new GamePath(gamePath.LocationId, gamePath.Path.Join(dest)));
     }
 }

@@ -3,10 +3,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -59,7 +60,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }
             ),
@@ -82,7 +83,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -102,7 +103,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -135,13 +136,11 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 })
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
-            
-            conn.ObserveDatoms(DownloadAnalysis.Hash)
-                .Transform(d => DownloadAnalysis.Load(conn.Db, d.E))
+
+            LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
-                .Filter(model => FileOriginsPageViewModel.FilterDownloadAnalysisModel(model, game.Domain))
-                .Subscribe(changeSet => NewDownloadModelCount += changeSet.Adds)
+                .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount += changeSet.Adds)
                 .DisposeWith(disposable);
 
             // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream

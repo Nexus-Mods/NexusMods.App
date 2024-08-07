@@ -168,7 +168,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                                     },
                                 };
 
-                                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                             })
                             .DisposeWith(compositeDisposable);

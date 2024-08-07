@@ -1,9 +1,9 @@
-using System.Collections.Immutable;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -23,7 +23,7 @@ public static class Extensions
     {
         return input.ToStoredFile(to, null);
     }
-
+    
     /// <summary>
     /// Creates a StoredFile from a ModFileTreeSource.
     /// </summary>

@@ -5,6 +5,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloads\NexusMods.Abstractions.HttpDownloads.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
       <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -13,5 +14,14 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Networking.Downloaders.Tests" />
         <PackageReference Include="ReactiveUI.Fody"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="HttpDownloadJobWorker.cs">
+        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="HttpDownloadJobPersistedState.cs">
+        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

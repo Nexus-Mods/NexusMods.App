@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -37,7 +37,23 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
                         Context = new MyGamesPageContext(),
                     };
 
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                }),
+            },
+            new IconViewModel
+            {
+                Name = Language.MyLoadoutsPageTitle,
+                Icon = IconValues.ViewCarousel,
+                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+                {
+                    var pageData = new PageData
+                    {
+                        FactoryId = MyLoadoutsPageFactory.StaticId,
+                        Context = new MyLoadoutsPageContext(),
+                    };
+
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }),
             },

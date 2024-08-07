@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
+using DynamicData;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -10,29 +9,17 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
-/// <summary>
-/// View model for the loadout grid.
-/// </summary>
 public interface ILoadoutGridViewModel : IPageViewModelInterface
 {
-    public ReadOnlyObservableCollection<ModId> Mods { get; }
-    public LoadoutId LoadoutId { get; set; }
-    
-    public string? EmptyModlistTitleMessage { get; }
+    LoadoutId LoadoutId { get; set; }
 
-    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
+    ReadOnlyObservableCollection<LoadoutItemGroupId> GroupIds { get; }
+    ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
+    SourceList<LoadoutItemGroupId> SelectedGroupIds { get; }
 
-    public ModId[] SelectedItems { get; set; }
+    ReactiveCommand<NavigationInformation, Unit> ViewLibraryCommand { get; }
+    ReactiveCommand<NavigationInformation, Unit> ViewFilesCommand { get; }
+    ReactiveCommand<Unit, Unit> DeleteCommand { get; }
 
-    public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
-    
-    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; }
-
-    /// <summary>
-    /// Delete the mods from the loadout.
-    /// </summary>
-    /// <param name="modsToDelete"></param>
-    /// <param name="commitMessage"></param>
-    /// <returns></returns>
-    public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage);
+    string? EmptyStateTitle { get; }
 }

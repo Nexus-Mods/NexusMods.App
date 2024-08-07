@@ -6,6 +6,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Settings;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.UI.Tests.Framework;
@@ -20,7 +21,7 @@ public class Startup
         var path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("temp").Combine(Guid.NewGuid().ToString());
         path.CreateDirectory();
 
-        services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
+        services.AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
                 .AddApp(startupMode: new StartupMode()
                 {
                     ShowUI = false,
@@ -30,11 +31,6 @@ public class Startup
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,
-                })
-                .OverrideSettingsForTests<LoadoutGridSettings>(settings => settings with
-                {
-                    ShowGameFiles = true,
-                    ShowOverride = true,
                 })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()

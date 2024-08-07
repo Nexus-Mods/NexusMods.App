@@ -37,13 +37,13 @@
                     <Button Classes="Standard Primary">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -57,7 +57,7 @@
                                     <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
                                 </icons:UnifiedIcon.Value>
                             </icons:UnifiedIcon>
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
@@ -67,7 +67,7 @@
                                     <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
                                 </icons:UnifiedIcon.Value>
                             </icons:UnifiedIcon>
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -75,10 +75,10 @@
                 <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
                     <TextBlock>Standard Primary</TextBlock>
                     <Button Classes="Standard Primary">
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                     </Button>
                 </StackPanel>
 
@@ -88,13 +88,13 @@
                     <Button Classes="Standard PrimaryOutlined">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -105,13 +105,13 @@
                     <Button Classes="Standard Secondary">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Secondary" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -122,13 +122,13 @@
                     <Button Classes="Standard SecondaryOutlined">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -139,13 +139,13 @@
                     <Button Classes="Standard Tertiary">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Tertiary" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -157,13 +157,13 @@
                     <Button Classes="Standard Success">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Success" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -174,13 +174,13 @@
                     <Button Classes="Standard Info">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Info" IsEnabled="False">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
+                            <TextBlock Text="Button" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -200,7 +200,7 @@
         <Setter Property="Height" Value="36" />
 
         <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
-        <Setter Property="Padding" Value="16, 0" />
+        <Setter Property="Padding" Value="8, 0" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
         <Setter Property="BorderThickness" Value="1" />
@@ -210,7 +210,7 @@
 
         <!-- If text is at top level -->
         <Style Selector="^ > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
@@ -220,15 +220,15 @@
         </Style>
 
         <Style Selector="^ > StackPanel > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
         </Style>
 
         <Style Selector="^ > StackPanel > icons|UnifiedIcon">
-            <Setter Property="Size" Value="24" />
-            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Size" Value="20" />
+            <Setter Property="Margin" Value="0,0,4,0" />
         </Style>
 
         <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
@@ -316,11 +316,11 @@
     <!-- Standard SecondaryOutlined -->
     <Style Selector="Button.Standard.SecondaryOutlined">
         <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource NeutralStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrong}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
@@ -330,7 +330,7 @@
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource NeutralWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate }" />
         </Style>
     </Style>
 

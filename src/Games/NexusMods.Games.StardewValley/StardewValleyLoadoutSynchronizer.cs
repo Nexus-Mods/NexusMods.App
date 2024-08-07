@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -35,18 +36,15 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         return path.Path.InFolder(ContentFolder.Path);
     }
 
-
-    protected override async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, StoredFile.ReadOnly[] newFiles)
+    protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
-        using var tx = Connection.BeginTransaction();
-        var modifiedMods = new HashSet<ModId>();
-
-        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.ReadOnly>();
+        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, SMAPIModLoadoutItem.ReadOnly>();
 
         foreach (var newFile in newFiles)
         {
-            var gamePath = newFile.AsFile().To;
-            if (!IsModFile(gamePath, out var modDirectoryName))
+            GamePath gamePath;
+
+            if (!IsModFile(newFile.LoadoutItemWithTargetPath.TargetPath, out var modDirectoryName))
             {
                 continue;
             }
@@ -61,41 +59,24 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
 
-            tx.Add(newFile.Id, File.Mod, smapiMod.Id);
-            modifiedMods.Add(smapiMod.ModId);
+            newFile.LoadoutItem.ParentId = smapiMod.Id;
         }
-
-        // Revise all modified mods
-        foreach (var modId in modifiedMods)
-        {
-            var mod = Mod.Load(Connection.Db, modId);
-            mod.Revise(tx);
-        }
-
-        // Only commit if we have changes
-        if (modifiedMods.Count <= 0) 
-            return loadout;
-        
-        
-        var result = await tx.Commit();
-        return loadout.Rebase();
+        return ValueTask.CompletedTask;
     }
 
-    private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out Mod.ReadOnly mod)
+    private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out SMAPIModLoadoutItem.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        var hasFile = File.FindByLoadout(db, loadout.LoadoutId)
-            .TryGetFirst(x => x.To == manifestFilePath && x.Mod.Enabled,
-                out var file);
-        
-        if (hasFile)
+        if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath.ToGamePathParentTuple(loadout))
+                .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == loadout && x.Contains(SMAPIManifestLoadoutFile.ManifestFile), out var file))
         {
-            mod = file.Mod;
-            return true;
+            mod = default(SMAPIModLoadoutItem.ReadOnly);
+            return false;
         }
-        mod = default(Mod.ReadOnly);
-        return false;
+
+        mod = SMAPIModLoadoutItem.Load(db, file.AsLoadoutItem().Parent);
+        return true;
     }
 
     private static bool IsModFile(GamePath gamePath, out RelativePath modDirectoryName)

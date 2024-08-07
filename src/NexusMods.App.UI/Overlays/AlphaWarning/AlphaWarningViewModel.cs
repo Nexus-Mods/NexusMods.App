@@ -61,7 +61,7 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
                 FactoryId = ChangelogPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None), Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None));
             workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
 
             Close();

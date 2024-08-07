@@ -8,6 +8,7 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// <summary>
 /// Represents an individual task to download and install a mod.
 /// </summary>
+[Obsolete(message: "To be replaced with Jobs")]
 public interface IDownloadTask
 {
     /// <summary>

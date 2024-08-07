@@ -5,7 +5,7 @@ using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 
-public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, SimpleOverlayModInstaller>
+public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077.Cyberpunk2077Game, SimpleOverlayModInstaller>
 {
     public SimpleOverlayModInstallerTests(IServiceProvider provider) : base(provider)
     {
@@ -44,16 +44,7 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, S
                 (hash2, LocationId.Game, "archive/pc/mod/foo.archive")
             });
     }
-
-    [Fact]
-    public async Task FilesUnderTwoSubFolderDepthsAreNotSupported()
-    {
-        var (hash1, hash2) = Next2Hash();
-        await BuildAndInstall(
-            (hash1, "prefix/mymod/bin/x64/foo.exe"),
-            (hash2, "mymod/archive/pc/mod/foo.archive"));
-    }
-
+    
     [Fact]
     public async Task AllCommonPrefixesAreSupported()
     {

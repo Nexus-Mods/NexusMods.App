@@ -1,7 +1,6 @@
 ﻿using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.Installers;
@@ -9,6 +8,7 @@ namespace NexusMods.Abstractions.Installers;
 /// <summary>
 /// A component that can index and install archives.
 /// </summary>
+[Obsolete(message: "This will be removed with ILibraryService")]
 public interface IArchiveInstaller
 {
     /// <summary>

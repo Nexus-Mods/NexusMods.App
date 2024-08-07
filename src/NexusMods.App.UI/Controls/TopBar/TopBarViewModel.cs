@@ -1,9 +1,9 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -51,6 +51,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
 
+    [Reactive] public IPanelTabViewModel? SelectedTab { get; set; }
+
     public TopBarViewModel(
         IServiceProvider serviceProvider,
         ILogger<TopBarViewModel> logger,
@@ -74,7 +76,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 FactoryId = SettingsPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
             var workspace = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => page);
             workspaceController.OpenPage(workspace.Id, page, behavior);
         });
@@ -90,7 +92,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 FactoryId = ChangelogPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
         });
 
@@ -149,8 +151,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .DisposeWith(d);
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
-                .Select(title => title.ToUpperInvariant())
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
+                .DisposeWith(d);
+
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)
+                .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(d);
         });
     }

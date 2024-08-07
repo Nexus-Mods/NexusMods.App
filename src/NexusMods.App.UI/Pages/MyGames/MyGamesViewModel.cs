@@ -38,7 +38,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IServiceProvider serviceProvider,
         IConnection conn,
         ILogger<MyGamesViewModel> logger,
-        IApplyService applyService,
+        ISynchronizerService syncService,
         IGameRegistry gameRegistry) : base(windowManager)
     {
         TabTitle = Language.MyGames;
@@ -52,6 +52,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 // Managed games widgets
                 Loadout.ObserveAll(conn)
                     .Filter(l => l.IsVisible())
+                    .GroupOn(loadout => loadout.InstallationInstance.LocationsRegister[LocationId.Game])
+                    .Transform(group=> group.List.Items.First())
                     .OnUI()
                     .Transform(loadout =>
                     {

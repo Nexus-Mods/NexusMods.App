@@ -42,9 +42,9 @@ public static class LoadoutManagementVerbs
     [Verb("synchronize", "Synchronize the loadout with the game folders, adding any changes in the game folder to the loadout and applying any new changes in the loadout to the game folder")]
     private static async Task<int> Synchronize([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to apply")] Loadout.ReadOnly loadout,
-        [Injected] IApplyService applyService)
+        [Injected] ISynchronizerService syncService)
     {
-        await applyService.Synchronize(loadout);
+        await syncService.Synchronize(loadout);
         return 0;
     }
 
@@ -129,8 +129,6 @@ public static class LoadoutManagementVerbs
         {
             if (file.TryGetAsStoredFile(out var stored))
                 rows.Add([file.To, stored.Hash]);
-            else if (file.TryGetAsGeneratedFile(out var generatedFile))
-                rows.Add([file.To, generatedFile.Generator.GetType().ToString()]);
             else
                 rows.Add([file.GetType().ToString(), "<none>"]);
         }
@@ -144,11 +142,13 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
-        var rows = loadout.Mods
-            .Select(mod => new object[] { mod.Name, mod.Files.Count })
+        var rows = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .Where(group => !group.Contains(LoadoutItem.Parent))
+            .Select(mod => new object[] { mod.AsLoadoutItem().Name })
             .ToList();
 
-        await renderer.Table(["Name", "File Count"], rows);
+        await renderer.Table(["Name"], rows);
         return 0;
     }
 

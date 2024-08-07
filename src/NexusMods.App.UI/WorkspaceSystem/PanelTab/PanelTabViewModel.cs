@@ -1,3 +1,5 @@
+using System.Reactive;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -16,9 +18,26 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     /// <inheritdoc/>
     [Reactive] public bool IsVisible { get; set; } = true;
 
-    public PanelTabViewModel()
+    /// <inheritdoc/>
+    public ReactiveCommand<Unit, Unit> GoBackInHistoryCommand => History.GoBackCommand;
+
+    /// <inheritdoc/>
+    public ReactiveCommand<Unit, Unit> GoForwardInHistoryCommand => History.GoForwardCommand;
+
+    private TabHistory History { get; }
+
+    public PanelTabViewModel(IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId)
     {
         Header = new PanelTabHeaderViewModel(Id);
+        History = new TabHistory(
+            openPageFunc: pageData => {
+                workspaceController.OpenPage(workspaceId, pageData, behavior: new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(panelId, Header.Id)), selectTab: true, checkOtherPanels: false);
+            }
+        );
+
+        this.WhenAnyValue(vm => vm.Contents)
+            .WhereNotNull()
+            .SubscribeWithErrorLogging(page => History.AddToHistory(page.PageData));
     }
 
     public TabData? ToData()

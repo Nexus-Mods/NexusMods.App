@@ -1,6 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions.Models;
 

@@ -23,9 +23,8 @@ public static class ReferenceExtensions
         };
     }
 
-    /// <summary>
-    /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
-    /// </summary>
+    /// <summary/>
+    [Obsolete("To be replaced")]
     public static ModReference ToReference(this Mod.ReadOnly mod, Loadout.ReadOnly loadout)
     {
         return new ModReference
@@ -34,10 +33,21 @@ public static class ReferenceExtensions
             TxId = mod.Db.BasisTxId,
         };
     }
-
+    
     /// <summary>
-    /// Creates a new <see cref="ModFileReference"/> for the given <see cref="AModFile"/>.
+    /// Creates a new <see cref="LoadoutItemGroupReference"/> for the given <see cref="LoadoutItemGroup.ReadOnly"/>.
     /// </summary>
+    public static LoadoutItemGroupReference ToReference(this LoadoutItemGroup.ReadOnly group, Loadout.ReadOnly loadout)
+    {
+        return new LoadoutItemGroupReference
+        {
+            DataId = group.LoadoutItemGroupId,
+            TxId = group.Db.BasisTxId,
+        };
+    }
+
+    /// <summary/>
+    [Obsolete("To be replaced")]
     public static ModFileReference ToReference(this File.ReadOnly modFile)
     {
         return new ModFileReference

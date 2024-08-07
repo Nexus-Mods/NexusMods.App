@@ -1,4 +1,5 @@
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
@@ -16,7 +17,7 @@ public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong
     }
     
     /// <inheritdoc />
-    protected override Hash FromLowLevel(ulong value, ValueTags tags)
+    protected override Hash FromLowLevel(ulong value, ValueTags tags, RegistryId registryId)
     {
         return Hash.From(value);
     }

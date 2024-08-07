@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -40,11 +41,8 @@ public abstract class AGame : IGame
     }
 
     /// <summary>
-    /// Helper method to create a <see cref="IStandardizedLoadoutSynchronizer"/>. The result of this method is cached
-    /// so that the same instance is returned every time.
+    /// Called to create the synchronizer for this game.
     /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
     protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);
@@ -69,6 +67,9 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
+
+    /// <inheritdoc />
+    public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();

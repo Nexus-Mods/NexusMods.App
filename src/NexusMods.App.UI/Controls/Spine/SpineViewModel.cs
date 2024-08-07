@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -80,8 +81,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         
         this.WhenActivated(disposables =>
             {
-                var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, _conn.Registry))
-                    .Transform(id => Loadout.Load(_conn.Db, id.E));
+                var loadouts = Loadout.ObserveAllWithChildUpdates(_conn);
                 
                     loadouts
                     .Filter(loadout => loadout.IsVisible())

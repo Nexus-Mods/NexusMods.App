@@ -1,8 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.DiskState\NexusMods.Abstractions.DiskState.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="AddLocalFileJobWorker.cs">
@@ -13,6 +16,12 @@
       </Compile>
       <Compile Update="AddLibraryFileJobWorker.cs">
         <DependentUpon>AddLibraryFileJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="InstallLoadoutItemJobWorker.cs">
+        <DependentUpon>InstallLoadoutItemJob.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AddDownloadJobWorker.cs">
+        <DependentUpon>AddDownloadJob.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

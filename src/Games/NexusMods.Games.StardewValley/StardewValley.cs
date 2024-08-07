@@ -8,9 +8,9 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
@@ -83,11 +83,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
 
-    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
-    {
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
         _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
-    };
+    ];
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
@@ -100,7 +100,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new StardewValleyLoadoutSynchronizer(provider);

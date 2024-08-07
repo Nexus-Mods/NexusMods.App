@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
@@ -19,7 +20,7 @@ public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePat
     }
 
     /// <inheritdoc />
-    protected override GamePath FromLowLevel(string value, ValueTags tags)
+    protected override GamePath FromLowLevel(string value, ValueTags tags, RegistryId registryId)
     {
         var parts = value.Split('|');
         Debug.Assert(parts.Length == 2);

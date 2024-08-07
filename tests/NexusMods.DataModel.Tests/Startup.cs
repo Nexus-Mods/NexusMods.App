@@ -4,6 +4,7 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
@@ -12,6 +13,8 @@ using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
@@ -49,6 +52,9 @@ public static class Startup
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSettingsManager()
             .AddDataModel()
+            .AddLibrary()
+            .AddLibraryModels()
+            .AddJobMonitor()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

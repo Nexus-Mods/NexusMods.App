@@ -19,7 +19,8 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IDownloadService"/>
+[Obsolete(message: "To be replaced with ILibraryService")]
 public class DownloadService : IDownloadService, IDisposable, IHostedService
 {
     /// <inheritdoc />
@@ -165,10 +166,10 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
             // We should be using ObserveDatoms here
             .SelectMany(revision =>
             {
-                return revision.AddedDatoms
+                return revision.RecentlyAdded
                     .Select(r => r.Resolved)
                     .Where(d => d.A == DownloaderState.Status)
-                    .Select(d => (revision.Database, d.E));
+                    .Select(d => (revision, d.E));
             })
             .StartWith(DownloaderState.All(_conn.Db).Select(state => (state.Db, state.Id)))
             .Subscribe(x =>

@@ -11,6 +11,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// tool's output, or a backed up game file.
 /// </summary>
 [Include<File>]
+[Obsolete(message: "This will be replaced with `LoadoutFile`")]
 public partial class StoredFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.StoredFile";

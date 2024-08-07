@@ -1,9 +1,5 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.DataModel.Attributes;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ArchiveContents;
 

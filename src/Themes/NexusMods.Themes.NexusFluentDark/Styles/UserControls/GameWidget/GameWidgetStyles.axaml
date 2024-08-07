@@ -6,6 +6,9 @@
     <Design.PreviewWith>
         <Border Classes="Mid" Padding="20">
             <ui:GameWidget>
+                <ui:GameWidget.DataContext>
+                    <ui:GameWidgetDesignViewModel />
+                </ui:GameWidget.DataContext>
             </ui:GameWidget>
         </Border>
     </Design.PreviewWith>
@@ -15,7 +18,7 @@
         <Setter Property="ClipToBounds" Value="False" />
 
         <Style Selector="^ Border#GameWidgetBorder">
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadows
                     BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
@@ -25,7 +28,7 @@
         </Style>
 
         <Style Selector="^ Border#MainBorder">
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
             <Setter Property="ClipToBounds" Value="True" />
         </Style>
 

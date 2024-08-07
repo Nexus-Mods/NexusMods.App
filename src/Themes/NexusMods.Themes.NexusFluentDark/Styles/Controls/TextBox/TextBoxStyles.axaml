@@ -28,9 +28,8 @@
     <!-- Typography -->
     <Style Selector="TextBox.BodyMDBold">
         <Setter Property="FontFamily" Value="{StaticResource FontBodyBold}" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="LetterSpacing" Value="0" />
         <Setter Property="LineHeight" Value="21" />
     </Style>
 
@@ -38,7 +37,6 @@
         <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="LetterSpacing" Value="0" />
         <Setter Property="LineHeight" Value="21" />
     </Style>
 

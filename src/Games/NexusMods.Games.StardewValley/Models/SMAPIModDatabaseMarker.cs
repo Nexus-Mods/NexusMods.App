@@ -8,6 +8,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Games.StardewValley.Models;
 
 [Include<StoredFile>]
+[Obsolete($"To be replaced with {nameof(SMAPIModDatabaseLoadoutFile)}")]
 public partial class SMAPIModDatabaseMarker : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.StardewValley.Models.SMAPIModDatabaseMarker";

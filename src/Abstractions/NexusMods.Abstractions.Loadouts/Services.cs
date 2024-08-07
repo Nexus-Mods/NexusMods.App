@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.MnemonicDB.Abstractions;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -16,11 +14,22 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddLoadoutAbstractions(this IServiceCollection services)
     {
-        services.AddAttributeCollection(typeof(File));
-        services.AddAttributeCollection(typeof(StoredFile));
-        services.AddAttributeCollection(typeof(DeletedFile));
-        services.AddAttributeCollection(typeof(Mod));
-        services.AddAttributeCollection(typeof(Loadout));
-        return services;
+        services = services
+            .AddLoadoutItemModel()
+            .AddLoadoutItemGroupModel()
+            .AddLoadoutGameFilesGroupModel()
+            .AddLoadoutOverridesGroupModel()
+            .AddLibraryLinkedLoadoutItemModel()
+            .AddLoadoutItemWithTargetPathModel()
+            .AddLoadoutFileModel()
+            .AddDeletedFileModel()
+            
+            // deprecated:
+            .AddFileModel()
+            .AddStoredFileModel()
+            .AddModModel()
+            .AddLoadoutModel();
+
+        return Files.DeletedFileExtensions.AddDeletedFileModel(services);
     }
 }

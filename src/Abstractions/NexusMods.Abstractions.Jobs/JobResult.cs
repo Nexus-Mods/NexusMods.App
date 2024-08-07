@@ -78,18 +78,25 @@ public class JobResult
         return true;
     }
 
+    /// <summary>
+    /// Returns the data in the completed result or thrown an exception.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The result isn't of type <see cref="JobResultCompleted{TData}"/></exception>
     public TData RequireData<TData>()
     where TData : notnull
     {
         if (!TryGetCompleted(out var completed))
-            throw new InvalidOperationException($"JobResult is of type `{ResultType}` but expected `{JobResultType.Completed}`");
+            throw new InvalidOperationException($"JobResult is of type `{ResultType}` but expected `{JobResultType.Completed}`: `{ToString()}`");
 
         if (!completed.TryGetData<TData>(out var data))
-            throw new InvalidOperationException("Completed JobResult doesn't have data!");
+            throw new InvalidOperationException($"Completed JobResult doesn't have data: `{ToString()}`");
 
         return data;
     }
 
+    /// <summary>
+    /// Creates a failed job result from an exception.
+    /// </summary>
     [StackTraceHidden]
     public static JobResult CreateFailed(Exception exception)
     {
@@ -99,15 +106,23 @@ public class JobResult
         });
     }
 
+    /// <summary>
+    /// Creates a failed job result from an error message.
+    /// </summary>
     [StackTraceHidden]
     public static JobResult CreateFailed(string message)
     {
         return CreateFailed(new Exception(message));
     }
 
+    /// <summary>
+    /// Creates a cancelled job result.
+    /// </summary>
     [StackTraceHidden] public static JobResult CreateCancelled() => new(new JobResultCancelled());
-    [StackTraceHidden] public static JobResult CreateCompleted() => new(new JobResultCompleted());
 
+    /// <summary>
+    /// Creates a completed job result with data.
+    /// </summary>
     [StackTraceHidden]
     public static JobResult CreateCompleted<TData>(TData data)
         where TData : notnull
@@ -116,5 +131,15 @@ public class JobResult
         {
             Data = data,
         });
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return _value.Match(
+            f0: x => x.ToString(),
+            f1: x => x.ToString(),
+            f2: x => x.ToString()
+        );
     }
 }

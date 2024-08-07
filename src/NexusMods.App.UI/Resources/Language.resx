@@ -43,10 +43,10 @@
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
     <data name="Updater_LATER" xml:space="preserve">
-        <value>LATER</value>
+        <value>Later</value>
     </data>
     <data name="Updater_UPDATE" xml:space="preserve">
-        <value>UPDATE</value>
+        <value>Update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
         <value>Update available</value>
@@ -73,10 +73,10 @@
         <value>Unknown</value>
     </data>
     <data name="MessageBox_Button_Yes" xml:space="preserve">
-        <value>YES</value>
+        <value>Yes</value>
     </data>
     <data name="MessageBox_Button_No" xml:space="preserve">
-        <value>NO</value>
+        <value>No</value>
     </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
@@ -109,10 +109,10 @@
         <value>STATUS</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
-        <value>RUNNING...</value>
+        <value>Running...</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-        <value>PLAY</value>
+        <value>Play</value>
     </data>
     <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
         <value>{0} secs</value>
@@ -139,13 +139,13 @@
         <value>Search</value>
     </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
-        <value>LOG IN</value>
+        <value>Log In</value>
     </data>
     <data name="GameWidget__Add_game" xml:space="preserve">
         <value>Add game</value>
     </data>
     <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-        <value>DOWNLOADS</value>
+        <value>Downloads</value>
     </data>
     <data name="DownloadsView__In_Progress" xml:space="preserve">
         <value>In Progress</value>
@@ -157,25 +157,25 @@
         <value>Download history</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>PLEASE CLICK "AUTHORIZE" ON THE WEBSITE</value>
+        <value>Please click "Authorize" on the website</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
-        <value>BROWSER DIDN'T OPEN AUTOMATICALLY?</value>
+        <value>Browser didn't open automatically?</value>
     </data>
     <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
         <value>Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge.</value>
     </data>
     <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
-        <value>COMPLETED</value>
+        <value>Completed</value>
     </data>
     <data name="DownloadCompleted_Clear_All" xml:space="preserve">
         <value>Clear All</value>
     </data>
     <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
-        <value>HISTORY</value>
+        <value>History</value>
     </data>
     <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
-        <value>IN PROGRESS</value>
+        <value>In Progress</value>
     </data>
     <data name="DownloadInProgressView__Cancel" xml:space="preserve">
         <value>Cancel</value>
@@ -202,10 +202,10 @@
         <value>We found games ready to mod!</value>
     </data>
     <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
-        <value>CAN'T SEE YOUR GAME</value>
+        <value>Can't see your game</value>
     </data>
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
-        <value>BROWSE ALL GAMES</value>
+        <value>Browse all games</value>
     </data>
     <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Add</value>
@@ -292,25 +292,25 @@
         <value>Mod Info</value>
     </data>
     <data name="ViewModFilesView_Location" xml:space="preserve">
-        <value>LOCATION:</value>
+        <value>Location:</value>
     </data>
     <data name="ViewModFilesView_Locations" xml:space="preserve">
-        <value>LOCATIONS:</value>
+        <value>Location:</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-        <value>ACTIVATE LOADOUT</value>
+        <value>Activate Loadout</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-        <value>ACTIVATE &amp; APPLY</value>
+        <value>Activate &amp; Apply</value>
     </data>
     <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-        <value>APPLY</value>
+        <value>Apply</value>
     </data>
     <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
         <value>Applying...</value>
     </data>
     <data name="Helpers_ERROR" xml:space="preserve">
-        <value>ERROR</value>
+        <value>Error</value>
     </data>
     <data name="ErrorView_Title" xml:space="preserve">
         <value>Something went wrong</value>
@@ -325,16 +325,16 @@
         <value>Mod not found</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
-        <value>SUGGESTION</value>
+        <value>Suggestion</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
-        <value>WARNING</value>
+        <value>Warning</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
-        <value>CRITICAL ERROR</value>
+        <value>Critical Error</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
-        <value>HIDDEN</value>
+        <value>Hidden</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
         <value>Health Check</value>
@@ -359,7 +359,7 @@
         <value>There are no diagnostics</value>
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
-        <value>INGEST</value>
+        <value>Ingest</value>
     </data>
     <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
         <value>Files: {0} ({1})</value>
@@ -423,10 +423,10 @@
         <value>Settings</value>
     </data>
     <data name="DialogButton_CANCEL" xml:space="preserve">
-        <value>CANCEL</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogButton_SAVE" xml:space="preserve">
-        <value>SAVE</value>
+        <value>Save</value>
     </data>
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
@@ -435,7 +435,7 @@
         <value>Add</value>
     </data>
     <data name="DialogButton_Discard" xml:space="preserve">
-        <value>DISCARD</value>
+        <value>Discard</value>
     </data>
     <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
         <value>Changelog</value>
@@ -582,5 +582,48 @@
     </data>
     <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
         <value>Ready for gaming.</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Created {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Last applied {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Mods {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>My Loadouts</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>{0} Loadouts</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Create new loadout</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Currently Applied</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Create Copy</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Deleting...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Creating...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>You need to add a game before using Loadouts</value>
     </data>
 </root>

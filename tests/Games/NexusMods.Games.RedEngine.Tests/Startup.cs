@@ -22,7 +22,7 @@ public class Startup
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
+            .AddUniversalGameLocator<Cyberpunk2077.Cyberpunk2077Game>(new Version("1.61"))
             .AddFomod()
             .AddRedEngineGames()
             .AddLogging(builder => builder.AddXUnit())

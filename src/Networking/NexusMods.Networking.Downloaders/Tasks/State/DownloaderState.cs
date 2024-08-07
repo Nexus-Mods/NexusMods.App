@@ -18,6 +18,7 @@ namespace NexusMods.Networking.Downloaders.Tasks.State;
 ///     might not need it since it uses another strategy to start a mod download.
 /// </remarks>
 // ReSharper disable once PartialTypeWithSinglePart
+[Obsolete("To be replaced by jobs")]
 public partial class DownloaderState : IModelDefinition
 {
     private const string Namespace = "NexusMods.Networking.Downloaders.Tasks.DownloaderState";

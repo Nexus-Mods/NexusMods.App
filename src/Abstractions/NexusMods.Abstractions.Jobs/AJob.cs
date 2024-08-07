@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -9,13 +8,21 @@ using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Jobs;
 
+/// <summary>
+/// Base class for <see cref="IJob"/>.
+/// </summary>
 [PublicAPI]
-public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
+public abstract class AJob : IJobGroup
 {
+    /// <inheritdoc/>
     public JobId Id { get; }
-    public IJobGroup? Group { get; }
+    /// <inheritdoc/>
+    public IJobGroup? Group { get; private set; }
+    /// <inheritdoc/>
     public JobStatus Status { get; private set; }
+    /// <inheritdoc/>
     public IJobWorker? Worker { get; private set; }
+    /// <inheritdoc/>
     public JobResult? Result { get; private set; }
 
     Progress IJob.Progress => Progress;
@@ -23,14 +30,17 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
 
     private readonly List<IJob> _collection;
     private readonly ObservableCollection<IJob> _observableCollection;
+    /// <inheritdoc/>
     public ReadOnlyObservableCollection<IJob> ObservableCollection { get; }
 
     private readonly Subject<JobStatus> _subjectStatus;
     private readonly IConnectableObservable<JobStatus> _connectableObservableStatus;
+    /// <inheritdoc/>
     public IObservable<JobStatus> ObservableStatus => _connectableObservableStatus;
 
     private readonly Subject<JobResult> _subjectResult;
     private readonly IConnectableObservable<JobResult> _connectableObservableResult;
+    /// <inheritdoc/>
     public IObservable<JobResult> ObservableResult => _connectableObservableResult;
 
     internal CancellationTokenSource CancellationTokenSource { get; } = new();
@@ -39,10 +49,14 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
 
     private readonly CompositeDisposable _disposable = new();
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     protected AJob(
         MutableProgress progress,
-        IJobGroup? group = default,
-        IJobWorker? worker = default)
+        IJobGroup? group,
+        IJobWorker? worker,
+        IJobMonitor? monitor)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
@@ -64,11 +78,16 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         _collection = [];
         _observableCollection = new ObservableCollection<IJob>(_collection);
         ObservableCollection = new ReadOnlyObservableCollection<IJob>(_observableCollection);
+
+        monitor?.RegisterJob(this);
     }
 
+    /// <inheritdoc/>
     public IEnumerator<IJob> GetEnumerator() => _collection.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
+    /// <inheritdoc/>
     public int Count => _observableCollection.Count;
+    /// <inheritdoc/>
     public IJob this[int index] => _collection[index];
 
     internal void AddJob(AJob job)
@@ -115,6 +134,7 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     public async Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default)
     {
         if (Result is not null) return Result;
@@ -125,30 +145,35 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         return result;
     }
 
+    /// <inheritdoc/>
     public ValueTask StartAsync(CancellationToken cancellationToken = default)
     {
         if (Worker is null) throw new InvalidOperationException("Worker is null, unable to start job");
         return Worker.StartAsync(job: this, cancellationToken: cancellationToken);
     }
 
+    /// <inheritdoc/>
     public ValueTask PauseAsync(CancellationToken cancellationToken = default)
     {
         if (Worker is null) throw new InvalidOperationException("Worker is null, unable to pause job");
         return Worker.PauseAsync(job: this, cancellationToken: cancellationToken);
     }
 
+    /// <inheritdoc/>
     public ValueTask CancelAsync(CancellationToken cancellationToken = default)
     {
         if (Worker is null) throw new InvalidOperationException("Worker is null, unable to cancel job");
         return Worker.CancelAsync(job: this, cancellationToken: cancellationToken);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         await DisposeAsyncCore().ConfigureAwait(false);
@@ -157,6 +182,7 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc cref="IDisposable.Dispose"/>
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
@@ -165,5 +191,6 @@ public abstract class AJob : IJobGroup, IDisposable, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync"/>
     protected virtual ValueTask DisposeAsyncCore() => ValueTask.CompletedTask;
 }

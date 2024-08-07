@@ -2,17 +2,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.BuildInfo;
 using NexusMods.Extensions.BCL;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
+using LibraryFile = NexusMods.Abstractions.Library.Models.LibraryFile;
 
 namespace NexusMods.DataModel;
 
@@ -22,6 +24,7 @@ namespace NexusMods.DataModel;
 public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
+    private readonly ILibraryService _libraryService;
     private readonly IConnection _conn;
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
@@ -31,7 +34,9 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
+    public ArchiveInstaller(
+        ILogger<ArchiveInstaller> logger,
+        ILibraryService libraryService,
         IFileOriginRegistry fileOriginRegistry,
         IConnection conn,
         IFileStore fileStore,
@@ -39,13 +44,37 @@ public class ArchiveInstaller : IArchiveInstaller
         IServiceProvider provider)
     {
         _logger = logger;
+        _libraryService = libraryService;
         _conn = conn;
         _fileOriginRegistry = fileOriginRegistry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
         _provider = provider;
     }
-    
+
+    private async Task ShadowTrafficTestLibraryService(Hash hash, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    {
+        // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/1763
+        if (!CompileConstants.IsDebug) return;
+        try
+        {
+            if (!LibraryFile.FindByHash(_conn.Db, hash).TryGetFirst(out var libraryFile))
+            {
+                _logger.LogDebug("Found no library item with hash `{Hash}`, skipping shadow traffic test", hash);
+                return;
+            }
+
+            await using var job = _libraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
+            await job.StartAsync(cancellationToken: cancellationToken);
+            var result = await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+            _logger.LogInformation("InstallItem result: `{Result}`", result.ToString());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception install library item");
+        }
+    }
+
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(
         LoadoutId loadoutId, 
@@ -57,7 +86,9 @@ public class ArchiveInstaller : IArchiveInstaller
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
         var loadout = Loadout.Load(_conn.Db, loadoutId);
-        
+
+        await ShadowTrafficTestLibraryService(download.Hash, loadout, token);
+
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.

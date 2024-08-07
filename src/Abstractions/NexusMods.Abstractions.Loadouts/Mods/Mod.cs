@@ -24,6 +24,7 @@ namespace NexusMods.Abstractions.Loadouts.Mods;
 ///
 ///    This will change some time in the future.
 /// </remarks>
+[Obsolete(message: "This will be replaced with `LoadoutItem`")]
 public partial class Mod : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Mods.Mod";
@@ -94,19 +95,6 @@ public partial class Mod : IModelDefinition
                 innerTx.Add(id, Mod.Revision, self.Revision + 1);
             });
             Loadout.Revise(tx);
-        }
-
-        /// <summary>
-        /// Returns the timestamp of the transaction that created this mod.
-        /// </summary>
-        public DateTime CreatedAt
-        {
-            get
-            {
-                var lowestTx = this.Min(d => d.T);
-                var tx = Transaction.Load(Db, EntityId.From(lowestTx.Value));
-                return tx.Timestamp;
-            }
         }
 
     }

@@ -10,16 +10,17 @@
     <!-- Add Styles Here -->
     <Style Selector="ui|NexusLoginOverlayView">
         <Style Selector="^ TextBlock#TitleTextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}" />
         </Style>
 
         <Style Selector="^ TextBlock#CaptionTextBlock">
-            <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
         </Style>
 
         <Style Selector="^ SelectableTextBlock#UrlTextBlock">
             <Setter Property="SelectionBrush" Value="{StaticResource PrimaryModerateBrush}" />
             <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+            <Setter Property="FontWeight" Value="Regular"/>
             <Setter Property="FontSize" Value="14" />
         </Style>
     </Style>

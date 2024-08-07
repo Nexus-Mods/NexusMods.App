@@ -11,6 +11,7 @@ using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
+using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ArchiveContents;
@@ -44,7 +45,7 @@ public class NxFileStore : IFileStore
         IFileSystem fileSystem)
     {
         var settings = settingsManager.Get<DataModelSettings>();
-
+        
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
         {
@@ -60,7 +61,8 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash)
     {
         var db = _conn.Db;
-        return ValueTask.FromResult(TryGetLocation(db, hash, null, out _, out _));
+        
+        return ValueTask.FromResult(ArchivedFile.FindByHash(db, hash).Any());
     }
 
     /// <inheritdoc />
@@ -116,7 +118,7 @@ public class NxFileStore : IFileStore
         {
             _ = new ArchivedFile.New(tx)
             {
-                Hash = Hash.FromHex(entry.FileName),
+                Hash = Hash.FromHex(entry.FilePath),
                 NxFileEntry = entry.Entry,
                 ContainerId = container,
             };
@@ -314,7 +316,7 @@ public class NxFileStore : IFileStore
         {
             var extractable =
                 PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
-            _stream.Position = offset;
+            _stream.Position = (long)offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             await _stream.ReadExactlyAsync(compressedBlock.Memory[..compressedBlockSize], token);
             ProcessBlock(buffer.Span, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
@@ -324,7 +326,7 @@ public class NxFileStore : IFileStore
         {
             var extractable =
                 PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
-            _stream.Position = offset;
+            _stream.Position = (long)offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             _stream.ReadExactly(compressedBlock.Memory.Span[..compressedBlockSize]);
             ProcessBlock(buffer, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
@@ -340,7 +342,7 @@ public class NxFileStore : IFileStore
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ExtractableBlock PreProcessBlock(ulong localIndex, out int blockIndex, out int compressedBlockSize,
-            out long offset)
+            out ulong offset)
         {
             var extractable = _blocks[(int)localIndex];
             blockIndex = extractable.BlockIndex;

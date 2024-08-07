@@ -3,7 +3,6 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <!-- TODO: This library needs stabilized -->
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
@@ -13,6 +12,18 @@
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="AModInstaller.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ModInstallerInfo.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ModInstallerResult.cs">
+        <DependentUpon>IModInstaller.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

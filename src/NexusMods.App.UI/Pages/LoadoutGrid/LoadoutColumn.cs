@@ -6,8 +6,6 @@
 public enum LoadoutColumn
 {
     Name,
-    Version,
-    Category,
     Installed,
-    Enabled
+    Enabled,
 }

@@ -10,7 +10,7 @@ public class JobWorkerTests
     public async Task TestCreateSync()
     {
         var job = new MyJob();
-        var worker = JobWorker.Create<MyJob, string>(new MyJob(), (_, _, _) => Task.FromResult<string>("hello world"));
+        var worker = JobWorker.CreateWithData<MyJob, string>(new MyJob(), (_, _, _) => Task.FromResult<string>("hello world"));
 
         await worker.StartAsync(job);
         var jobResult = await job.WaitToFinishAsync();
@@ -23,7 +23,7 @@ public class JobWorkerTests
     public async Task TestCreateAsync()
     {
         var job = new MyJob();
-        var worker = JobWorker.Create<MyJob, string>(new MyJob(), async (_, _, _) =>
+        var worker = JobWorker.CreateWithData<MyJob, string>(new MyJob(), async (_, _, _) =>
         {
             await Task.Yield();
             return "hello world";
@@ -38,7 +38,7 @@ public class JobWorkerTests
 
     private class MyJob : AJob
     {
-        public MyJob(IJobGroup? group = default, IJobWorker? worker = default)
-            : base(null!, group, worker) { }
+        public MyJob(IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default)
+            : base(null!, group, worker, monitor) { }
     }
 }

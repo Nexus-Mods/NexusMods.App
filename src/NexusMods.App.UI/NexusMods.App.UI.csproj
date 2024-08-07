@@ -410,25 +410,9 @@
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Controls\ModInfo\Error\ErrorView.axaml.cs">
-          <DependentUpon>LoadingView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\Spinner\Spinner.axaml.cs">
           <DependentUpon>ProgressRing.axaml</DependentUpon>
           <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Pages\ModInfo\ModInfoDesignViewModel.cs">
-          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ModInfo\ModInfoViewModel.cs">
-          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\ModInfo\ModFiles\ModFilesDesignViewModel.cs">
-          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
-          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Diagnostics\DiagnosticEntryView.axaml.cs">
             <DependentUpon>DiagnosticEntryView.xaml</DependentUpon>
@@ -552,9 +536,6 @@
         <Compile Update="Overlays\AlphaWarning\AlphaWarningViewModel.cs">
           <DependentUpon>IAlphaWarningViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LoadoutGrid\LoadoutGridDesignViewModel.cs">
-          <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\WorkspaceController\WorkspaceController.cs">
           <DependentUpon>IWorkspaceController.cs</DependentUpon>
         </Compile>
@@ -577,6 +558,45 @@
         <Compile Update="Controls\LoadoutCard\AddLoadoutCard\AddLoadoutCardViewModel.cs">
           <DependentUpon>IAddLoadoutCardViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\GameLoadoutsSectionEntry\GameLoadoutsSectionEntryDesignViewModel.cs">
+          <DependentUpon>IGameLoadoutsSectionEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\CreateNewLoadoutCard\CreateNewLoadoutCardViewModel.cs">
+          <DependentUpon>ICreateNewLoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\MyLoadoutsDesignViewModel.cs">
+          <DependentUpon>IMyLoadoutsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutCard\Standard\LoadoutCardViewModel.cs">
+          <DependentUpon>ILoadoutCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyLoadouts\MyLoadoutsViewModel.cs">
+          <DependentUpon>IMyLoadoutsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
+          <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Trees\LoadoutGroupFileTreeViewModel.cs">
+          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
+          <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledViewModel.cs">
+          <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutGrid\Columns\ModName\ModNameViewModel.cs">
+          <DependentUpon>IModNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledViewModel.cs">
+          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -598,12 +618,10 @@
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
       <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
       <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>

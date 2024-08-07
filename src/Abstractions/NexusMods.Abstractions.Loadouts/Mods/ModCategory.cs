@@ -1,5 +1,6 @@
 namespace NexusMods.Abstractions.Loadouts.Mods;
 
+[Obsolete(message: "This will be removed with Loadout Items")]
 public enum ModCategory
 {
     GameFiles,

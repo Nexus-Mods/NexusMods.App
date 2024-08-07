@@ -1,15 +1,15 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
 /// <summary>
-/// Represented a <see cref="LibraryFile"/> originating from Nexus Mods.
+/// Represented a <see cref="DownloadedFile"/> originating from Nexus Mods.
 /// </summary>
 [PublicAPI]
-[Include<LibraryFile>]
+[Include<DownloadedFile>]
 public partial class NexusModsLibraryFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NexusModsLibraryFile";

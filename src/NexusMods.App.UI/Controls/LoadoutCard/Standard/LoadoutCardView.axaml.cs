@@ -1,7 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.LoadoutCard;
@@ -63,17 +63,22 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                         view => view.NumberOfModsTextBlock.Text)
                     .DisposeWith(d);
                 
+                // Hide Delete button if last loadout
+                this.WhenAnyValue(view => view.ViewModel!.IsLastLoadout)
+                    .Select(isLastLoadout => !isLastLoadout)
+                    .BindToView(this, view => view.DeleteButton.IsVisible)
+                    .DisposeWith(d);
+                
                 // Deleting state
                 this.WhenAnyValue(view => view.ViewModel!.IsDeleting)
                     .OnUI()
                     .Subscribe(isDeleting =>
                     {
                         if (isDeleting) 
-                            OverlayTextBlock.Text = "Deleting...";
+                            OverlayTextBlock.Text = Language.LoadoutCardViewDeletingText;
                         IsEnabled = !isDeleting;
                         OverlayFlexPanel.IsVisible = isDeleting;
-                        CreateCopyButton.IsVisible = !isDeleting;
-                        DeleteButton.IsVisible = !isDeleting;
+                        ActionsBorder.IsVisible = !isDeleting;
                     })
                     .DisposeWith(d);
                 
@@ -83,7 +88,7 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                     .Subscribe(isSkeleton =>
                     {
                         if (isSkeleton) 
-                            OverlayTextBlock.Text = "Creating...";
+                            OverlayTextBlock.Text = Language.LoadoutCardViewCreatingText;
                         IsEnabled = !isSkeleton;
                         OverlayFlexPanel.IsVisible = isSkeleton;
                         BodyAndActionsGroupFlexPanel.IsVisible = !isSkeleton;
@@ -104,8 +109,8 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                 
                 // Visit loadout command
                 this.BindCommand(ViewModel,
-                        vm => vm.DeleteLoadoutCommand,
-                        view => view.DeleteButton)
+                        vm => vm.VisitLoadoutCommand,
+                        view => view.CardOuterButton)
                     .DisposeWith(d);
             }
         );

@@ -43,6 +43,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] public bool IsAlone { get; set; }
 
+    [Reactive] public IPanelTabViewModel SelectedTab { get; private set; } = null!;
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly IWorkspaceController _workspaceController;
@@ -128,7 +129,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender.Id)
+                .Select(propertyValue => propertyValue.Sender)
+                .Do(vm => SelectedTab = vm)
+                .Select(vm => vm.Id)
                 .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 
@@ -167,7 +170,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public void AddCustomTab(PageData pageData)
     {
         var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
-        var tab = new PanelTabViewModel
+        var tab = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
         {
             Contents = newTabPage,
             Header =
@@ -225,7 +228,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 var tab = data.Tabs[i];
                 var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
 
-                var vm = new PanelTabViewModel
+                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
                 {
                     Contents = newTabPage,
                     Header =

@@ -2,14 +2,17 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -59,6 +62,9 @@ public static class DependencyInjectionHelper
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
             .AddDataModel()
+            .AddLibrary()
+            .AddLibraryModels()
+            .AddJobMonitor()
             .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {

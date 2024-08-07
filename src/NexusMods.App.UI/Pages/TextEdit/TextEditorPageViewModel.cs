@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -7,9 +8,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
@@ -23,7 +22,6 @@ using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -62,12 +60,11 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
-            var fileId = context.FileId;
+            var loadoutFileId = context.LoadoutFileId;
+            var loadoutFile = LoadoutFile.Load(connection.Db, loadoutFileId);
 
-            var fileHash = StoredFile.Load(connection.Db, fileId.Value).Hash;
-            logger.LogDebug("Loading file {Hash} into the Text Editor", fileHash);
-
-            await using var stream = await fileStore.GetFileStream(fileHash);
+            logger.LogDebug("Loading file `{File}` (`{Hash}`) into the Text Editor", loadoutFile.AsLoadoutItemWithTargetPath().TargetPath, loadoutFile.Hash);
+            await using var stream = await fileStore.GetFileStream(loadoutFile.Hash);
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var contents = await reader.ReadToEndAsync();
 
@@ -83,7 +80,9 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var fileId = Context!.FileId;
+            Debug.Assert(Context is not null);
+
+            var loadoutFileId = Context!.LoadoutFileId;
             var filePath = Context!.FilePath;
 
             var text = Document.Text;
@@ -99,14 +98,11 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             }
 
             // update the file
-            var db = connection.Db;
-            var storedFile = StoredFile.Load(db, fileId.Value);
-
             using (var tx = connection.BeginTransaction())
             {
-                tx.Add(storedFile.Id, StoredFile.Hash, hash);
-                tx.Add(storedFile.Id, StoredFile.Size, size);
-                storedFile.AsFile().Mod.Revise(tx);
+                tx.Add(loadoutFileId, LoadoutFile.Hash, hash);
+                tx.Add(loadoutFileId, LoadoutFile.Size, size);
+                // TODO: Revise
                 await tx.Commit();
             }
 
@@ -115,25 +111,13 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         this.WhenActivated(disposables =>
         {
-            var serialDisposable = new SerialDisposable();
-            serialDisposable.DisposeWith(disposables);
-            
             this.WhenAnyValue(vm => vm.Context)
-                .Do(context =>
-                {
-                    if (context is null)
-                    {
-                        serialDisposable.Disposable = null;
-                        return;
-                    }
-
-                    serialDisposable.Disposable = File.Load(connection.Db, context.FileId.Value)
-                        .Revisions()
-                        .Select(_ => context)
-                        .OffUi()
-                        .InvokeReactiveCommand(_loadFileCommand);
-                })
                 .WhereNotNull()
+                .Select(context => LoadoutFile.Load(connection.Db, context.LoadoutFileId)
+                    .Revisions()
+                    .Select(_ => context)
+                )
+                .Switch()
                 .OffUi()
                 .InvokeReactiveCommand(_loadFileCommand)
                 .DisposeWith(disposables);

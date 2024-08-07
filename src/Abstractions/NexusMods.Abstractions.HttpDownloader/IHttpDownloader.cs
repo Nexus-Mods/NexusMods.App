@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.HttpDownloader;
 /// <summary>
 /// Represents a HTTP downloader implementation.
 /// </summary>
+[Obsolete(message: "To be replaced with Library Items and Jobs")]
 public interface IHttpDownloader
 {
     /// <summary>

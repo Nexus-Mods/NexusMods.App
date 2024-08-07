@@ -54,7 +54,7 @@
                     <TextBlock x:Name="CaptionTextBlock"
                         Text="{x:Static resources:Language.NexusLoginOverlayView__BROWSER_DIDNT_OPEN}" />
                     <TextBlock
-                        Classes="BodyMDNormal"
+                        Classes="BodyMDNormal ForegroundSubdued"
                         Margin="0,16,0,0"
                         Text="{x:Static resources:Language.NexusLoginOverlayView_Please_copy_url}"
                         TextWrapping="Wrap" />

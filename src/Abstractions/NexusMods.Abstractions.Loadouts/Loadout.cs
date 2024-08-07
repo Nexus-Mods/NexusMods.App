@@ -1,15 +1,14 @@
-
-using System.Reactive.Linq;
 using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -30,9 +29,14 @@ public partial class Loadout : IModelDefinition
     public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
     
     /// <summary>
+    /// A capital one-letter name for the loadout, for spine labels and other places where space is limited.
+    /// </summary>
+    public static readonly StringAttribute ShortName = new(Namespace, nameof(ShortName)) { IsIndexed = true, DefaultValue = "-"};
+    
+    /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
-    public static readonly ReferenceAttribute<GameMetadata> Installation = new(Namespace, nameof(Installation));
+    public static readonly ReferenceAttribute<GameInstallMetadata> Installation = new(Namespace, nameof(Installation));
     
     /// <summary>
     /// A revision number for this loadout. Each change to a file/mod in the loadout should increment
@@ -52,13 +56,20 @@ public partial class Loadout : IModelDefinition
     /// <summary>
     /// Mods that are part of this loadout point to this entity via Mod.Loadout
     /// </summary>
+    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
     public static readonly BackReferenceAttribute<Mod> Mods = new(Mod.Loadout);
     
     /// <summary>
     /// All the files that are part of this loadout point to this entity via File.Loadout
     /// </summary>
+    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
     public static readonly BackReferenceAttribute<File> Files = new(File.Loadout);
-    
+
+    /// <summary>
+    /// All items in the Loadout.
+    /// </summary>
+    public static readonly BackReferenceAttribute<LoadoutItem> Items = new(LoadoutItem.Loadout);
+
     public partial struct ReadOnly
     {
         /// <summary>
@@ -114,6 +125,19 @@ public partial class Loadout : IModelDefinition
         /// especially, when it comes to displaying elements the user can edit.
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
+
+        /// <summary>
+        /// Returns an enumerable containing all loadout items linked to the given library item.
+        /// </summary>
+        public IEnumerable<LibraryLinkedLoadoutItem.ReadOnly> GetLoadoutItemsByLibraryItem(LibraryItem.ReadOnly libraryItem)
+        {
+            var thisId = LoadoutId; // Compiler complains about using `this` in a lambda otherwise
+            
+            // Start with a backref. This assumes that the number of loadouts with a given library item will be fairly small.
+            // This could be false, but it's a good starting point.
+            return LibraryLinkedLoadoutItem.FindByLibraryItem(Db, libraryItem)
+                .Where(linked => linked.AsLoadoutItem().LoadoutId == thisId);
+        }
     }
 }
 

@@ -18,7 +18,6 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager)
     {
         _logger = logger;
-        CanAddMoreThanOneLoadout = settingsManager.Get<ExperimentalSettings>().EnableMultipleLoadouts;
 
         AddGameCommand = ReactiveCommand.Create(() => { });
         ViewGameCommand = ReactiveCommand.Create(() => { });
@@ -72,12 +71,10 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     [Reactive]
     public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; }
 
-    // TODO: This is temporary, to speed up development. Until design comes up with UX for deleting loadouts.
     [Reactive]
     public ReactiveCommand<Unit, Unit> RemoveAllLoadoutsCommand { get; set; }
 
 
     [Reactive]
     public GameWidgetState State { get; set; }
-    public bool CanAddMoreThanOneLoadout { get; }
 }
