@@ -26,15 +26,18 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                 {
                     LoadoutShortName = loadout.ShortName;
                     
-                    applyStatusSerialDisposable.Disposable = syncService
-                        .StatusFor(loadout.LoadoutId)
-                        .Do(applyStatus =>
-                            {
-                                IsLoadoutApplied = applyStatus == LoadoutSynchronizerState.Current;
-                                IsLoadoutInProgress = applyStatus == LoadoutSynchronizerState.Pending;
-                            }
-                        )
-                        .SubscribeWithErrorLogging();
+                    applyStatusSerialDisposable.Disposable = Observable.FromAsync(() =>
+                    {
+                        return Task.Run(() => syncService.StatusFor(loadout.LoadoutId));
+                    })
+                    .Switch()
+                    .Do(applyStatus =>
+                        {
+                            IsLoadoutApplied = applyStatus == LoadoutSynchronizerState.Current;
+                            IsLoadoutInProgress = applyStatus == LoadoutSynchronizerState.Pending;
+                        }
+                    )
+                    .SubscribeWithErrorLogging();;
                     
                     applyStatusSerialDisposable.DisposeWith(d);
 

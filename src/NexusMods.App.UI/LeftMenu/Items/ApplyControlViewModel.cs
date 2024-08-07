@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
@@ -63,7 +64,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         this.WhenActivated(disposables =>
             {
                 // Newest Loadout
-                _syncService.StatusFor(_loadoutId)
+                Observable.FromAsync(() =>
+                        {
+                            return Task.Run(()=> _syncService.StatusFor(_loadoutId));
+                        }
+                    )
+                    .Switch()
                     .OnUI()
                     .Subscribe(status =>
                     {
