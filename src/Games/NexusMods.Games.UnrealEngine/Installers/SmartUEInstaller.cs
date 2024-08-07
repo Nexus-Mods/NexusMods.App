@@ -208,31 +208,25 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
         var modFiles = achiveFiles.Select(kv =>
         {
             var filePath = kv.Value.Item.Path;
+
+            var matchesGameFles = gameFilesLookup[filePath.FileName];
+            if (matchesGameFles.Any()) // if Content file exists in game dir replace it
+            {
+                var matchedFile = matchesGameFles.First();
+                return kv.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, transaction, matchedFile);
+            }
+
             switch (filePath.Extension)
             {
                 case Extension ext when Constants.ContentExts.Contains(ext):
                     {
-                        var matchesGameContentFles = gameFilesLookup[filePath.FileName];
-                        if (matchesGameContentFles.Any()) // if Content file exists in game dir replace it
-                        {
-                            var matchedContentFIle = matchesGameContentFles.First();
-                            return kv.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, transaction, matchedContentFIle);
-                        }
-                        else
-                            return kv.Value.ToLoadoutFile(
+                        return kv.Value.ToLoadoutFile(
                                 loadout.Id, loadoutGroup.Id, transaction, new GamePath(Constants.GameMainUE, Constants.ContentModsPath.Join(filePath.FileName))
                                     );
                     }
                 case Extension ext when ext == Constants.DLLExt:
                     {
-                        var matchesGameDlls = gameFilesLookup[filePath.FileName];
-                        if (matchesGameDlls.Any()) // if DLL exists in game dir replace it
-                        {
-                            var matchedDll = matchesGameDlls.First();
-                            return kv.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, transaction, matchedDll);
-                        }
-                        else
-                            return kv.Value.ToLoadoutFile(
+                        return kv.Value.ToLoadoutFile(
                                 loadout.Id, loadoutGroup.Id, transaction, new GamePath(Constants.GameMainUE, Constants.InjectorModsPath.Join(filePath.FileName))
                                     );
 
@@ -245,17 +239,8 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                     }
                 default:
                     {
-                        var matchesGameFles = gameFilesLookup[filePath.FileName];
-                        if (matchesGameFles.Any()) // if File exists in game dir replace it
-                        {
-                            var matchedFile = matchesGameFles.First();
-                            return kv.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, transaction, matchedFile);
-                        }
-                        else
-                        {
-                            Logger.LogWarning("File {} is of unrecognized type {}, skipping", filePath.FileName, filePath.Extension);
-                            return null;
-                        }
+                        Logger.LogWarning("File {} is of unrecognized type {}, skipping", filePath.FileName, filePath.Extension);
+                        return null;
                     }
             }
         }).OfType<LoadoutFile.New>().ToArray();
