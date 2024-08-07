@@ -1,26 +1,20 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
-using System.Xml.Linq;
-using NexusMods.Extensions.BCL;
-using System.Linq;
 
 
 namespace NexusMods.Games.UnrealEngine.Installers;
@@ -213,6 +207,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
             if (matchesGameFles.Any()) // if Content file exists in game dir replace it
             {
                 var matchedFile = matchesGameFles.First();
+                Logger.LogDebug("Found existing file {}, replacing", matchedFile);
                 return kv.Value.ToLoadoutFile(loadout.Id, loadoutGroup.Id, transaction, matchedFile);
             }
 
@@ -235,6 +230,12 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                     {
                         return kv.Value.ToLoadoutFile(
                                 loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.AppData, Constants.SaveGamesPath.Join(filePath.FileName))
+                                    );
+                    }
+                case Extension ext when ext == Constants.ConfigExt:
+                    {
+                        return kv.Value.ToLoadoutFile(
+                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.AppData, Constants.ConfigPath.Join(filePath.FileName))
                                     );
                     }
                 default:
