@@ -21,10 +21,6 @@ public static partial class Constants
     /// <summary>
     /// Relative to <see cref="LocationId.AppData"/>
     /// </summary>
-    public static readonly RelativePath SaveGamesPath = "Saved/SaveGames".ToRelativePath();
-    /// <summary>
-    /// Relative to <see cref="LocationId.AppData"/>
-    /// </summary>
     public static readonly RelativePath ConfigPath = "Saved/Config".ToRelativePath();
     /// <summary>
     /// Relative to <see cref="LocationId.AppData"/>

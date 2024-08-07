@@ -229,7 +229,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                 case Extension ext when ext == Constants.SavedGameExt:
                     {
                         return kv.Value.ToLoadoutFile(
-                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.AppData, Constants.SaveGamesPath.Join(filePath.FileName))
+                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.Saves, filePath.FileName)
                                     );
                     }
                 case Extension ext when ext == Constants.ConfigExt:
