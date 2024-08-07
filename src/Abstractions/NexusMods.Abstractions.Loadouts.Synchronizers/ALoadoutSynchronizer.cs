@@ -13,6 +13,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Extensions.BCL;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -144,12 +145,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
+
+
     public SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, IEnumerable<LoadoutItem.ReadOnly> loadoutItems)
     {
         var grouped = loadoutItems
             .OfTypeLoadoutItemWithTargetPath()
             .Where(x => FileIsEnabled(x.AsLoadoutItem()))
-            .GroupBy(f => f.TargetPath)
+            .GroupBy(f => (GamePath)f.TargetPath)
             .Select(group =>
             {
                 var file = group.First();
@@ -160,6 +163,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return file;
             })
             .Where(f => !f.TryGetAsDeletedFile(out _))
+            .Where(f => !IsIgnoredPath(f.TargetPath))
             .OfTypeLoadoutFile();
         
         return BuildSyncTree(currentState, previousTree, grouped);
@@ -232,7 +236,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
     {
-        var metadata = await loadout.InstallationInstance.ReindexState(Connection);
+        var metadata = await ReindexState(loadout.InstallationInstance, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
         return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout.Items);
     }
@@ -245,6 +249,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         foreach (var entry in tree.GetAllDescendentFiles())
         {
             var item = entry.Item.Value;
+
 
             var signature = new SignatureBuilder
             {
@@ -259,7 +264,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
-
+            
             groupings.Add(item);
         }
 
@@ -600,7 +605,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
@@ -618,7 +623,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
     {
-        return await gameInstallation.ReindexState(Connection);
+        return await ReindexState(gameInstallation, Connection);
     }
 
     /// <summary>
@@ -678,12 +683,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var syncNode = node.Item.Value;
             var actions = syncNode.Actions;
-
-            if (!node.Item.Value.LoadoutFileHash.HasValue)
-            {
-                continue;
-            }
-
+            
             if (actions.HasFlag(Actions.DoNothing))
             {
                 var entry = new DiskDiffEntry
@@ -787,8 +787,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Or create a new one
         using var tx = Connection.BeginTransaction();
-        await installation.IndexNewState(tx);
+        await IndexNewState(installation, tx);
         tx.Add(metadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
         await tx.Commit();
 
         // Rebase the metadata to the new transaction
@@ -796,6 +797,146 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Return the new state
         return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
+    }
+    
+    /// <summary>
+    /// Reindex the state of the game, running a transaction if changes are found
+    /// </summary>
+    private async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, IConnection connection)
+    {
+        var originalMetadata = installation.GetMetadata(connection);
+        using var tx = connection.BeginTransaction();
+
+        // Index the state
+        var changed = await ReindexState(installation, connection, tx);
+        
+        if (!originalMetadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
+        {
+            // No initial state, so set this transaction as the initial state
+            changed = true;
+            tx.Add(originalMetadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
+        }
+        
+        if (changed)
+        {
+            await tx.Commit();
+        }
+        
+        return GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
+    }
+    
+    /// <summary>
+    /// Reindex the state of the game
+    /// </summary>
+    public async Task<bool> ReindexState(GameInstallation installation, IConnection connection, ITransaction tx)
+    {
+        var seen = new HashSet<GamePath>();
+        var metadata = GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
+        var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
+        var changes = false;
+        
+        foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
+        {
+            if (!location.Value.DirectoryExists())
+                continue;
+
+            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
+                {
+                    {
+                        var gamePath = installation.LocationsRegister.ToGamePath(file);
+                        
+                        if (IsIgnoredPath(gamePath))
+                            return;
+                        
+                        lock (seen)
+                        {
+                            seen.Add(gamePath);
+                        }
+
+                        if (inState.TryGetValue(gamePath, out var entry))
+                        {
+                            var fileInfo = file.FileInfo;
+
+                            // If the files don't match, update the entry
+                            if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
+                            {
+                                var newHash = await file.XxHash64Async();
+                                tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
+                                tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
+                                changes = true;
+                            }
+                        }
+                        else
+                        {
+                            // No previous entry found, so create a new one
+                            var newHash = await file.XxHash64Async(token: token);
+                            _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                            {
+                                Path = gamePath.ToGamePathParentTuple(metadata.Id),
+                                Hash = newHash,
+                                Size = file.FileInfo.Size,
+                                LastModified = file.FileInfo.LastWriteTimeUtc,
+                                GameId = metadata.Id,
+                            };
+                            changes = true;
+                        }
+                    }
+                }
+            );
+        }
+        
+        foreach (var entry in inState.Values)
+        {
+            if (seen.Contains(entry.Path))
+                continue;
+            tx.Retract(entry.Id, DiskStateEntry.Path, entry.Path);
+            tx.Retract(entry.Id, DiskStateEntry.Hash, entry.Hash);
+            tx.Retract(entry.Id, DiskStateEntry.Size, entry.Size);
+            tx.Retract(entry.Id, DiskStateEntry.LastModified, entry.LastModified);
+            tx.Retract(entry.Id, DiskStateEntry.Game, metadata.Id);
+            changes = true;
+        }
+        
+        
+        if (changes) 
+            tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
+        
+        return changes;
+    }
+        
+    /// <summary>
+    /// Index the game state and create the initial disk state
+    /// </summary>
+    public async Task IndexNewState(GameInstallation installation, ITransaction tx)
+    {
+        var metaDataId = installation.GameMetadataId;
+        
+        foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
+        {
+            if (!location.Value.DirectoryExists())
+                continue;
+
+            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
+                {
+                    var gamePath = installation.LocationsRegister.ToGamePath(file);
+                    if (IsIgnoredPath(gamePath))
+                    {
+                        return;
+                    }
+
+                    var newHash = await file.XxHash64Async(token: token);
+                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                    {
+                        Path = gamePath.ToGamePathParentTuple(metaDataId),
+                        Hash = newHash,
+                        Size = file.FileInfo.Size,
+                        LastModified = file.FileInfo.LastWriteTimeUtc,
+                        GameId = metaDataId
+                    };
+                }
+            );
+        }
     }
 
     /// <inheritdoc />
@@ -887,7 +1028,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ActivateLoadout(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var reindexed = await loadout.InstallationInstance.ReindexState(Connection);
+        var reindexed = await ReindexState(loadout.InstallationInstance, Connection);
         
         var tree = BuildSyncTree(reindexed.DiskStateEntries, reindexed.DiskStateEntries, loadout.Items);
         var groupings = ProcessSyncTree(tree);
@@ -911,7 +1052,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
     }
 
-    /// <inheritdoc />b
+    /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
         var metadata = installation.GetMetadata(Connection);
@@ -936,6 +1077,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
+    public virtual bool IsIgnoredPath(GamePath path)
+    {
+        return false;
+    }
+
+    /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunSynchronously)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
@@ -946,7 +1093,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         using var tx = Connection.BeginTransaction();
-        tx.Delete(loadoutId, true);
+        tx.Delete(loadoutId, false);
+        foreach (var item in loadout.Items)
+        {
+            tx.Delete(item.Id, false);
+        }
         await tx.Commit();
         
         // Execute the garbage collector
@@ -1011,9 +1162,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return result.Remap(loadout);
     }
     
+    /// <inheritdoc />
     public async Task ResetToOriginalGameState(GameInstallation installation)
     {
-        var metaData = await installation.ReindexState(Connection);
+        var metaData = await ReindexState(installation, Connection);
         if (!metaData.Contains(GameInstallMetadata.InitialDiskStateTransaction))
             throw new InvalidOperationException("No initial state transaction found for game");
         

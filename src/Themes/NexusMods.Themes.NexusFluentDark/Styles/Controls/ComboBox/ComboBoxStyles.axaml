@@ -6,7 +6,7 @@
     <StyleInclude Source="ComboBoxStyles.addPanelDropDown.axaml" />
 
     <Design.PreviewWith>
-        <Border Padding="20" Height="400" Width="400">
+        <Border Padding="20" Height="400" Width="440">
             <StackPanel Orientation="Vertical" Spacing="30">
                 <StackPanel Spacing="20" Orientation="Horizontal">
                     <ComboBox Classes="Primary" PlaceholderText="Placeholder Text">
@@ -66,7 +66,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -79,7 +79,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -92,7 +92,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -112,22 +112,23 @@
             </ItemsPanelTemplate>
         </Setter>
         
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Height" Value="36" />
+        
         <Style.Resources>
             <Thickness x:Key="ComboBoxDropdownContentMargin">4</Thickness>
         </Style.Resources>
         
         
+        
         <Style Selector="^ /template/ ContentControl#ContentPresenter">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="14" />
             <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="16" />
         </Style>
 
         <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
-            <Setter Property="LineHeight" Value="21" />
+            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
         </Style>
 
         <Style Selector="^ /template/ PathIcon#DropDownGlyph">
@@ -138,8 +139,6 @@
     </Style>
 
     <Style Selector="ComboBox.Primary">
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Padding" Value="6" />
 
         <Setter Property="Background" Value="{StaticResource PrimaryModerate}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
@@ -189,15 +188,13 @@
     </Style>
 
     <Style Selector="ComboBox.Secondary">
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Padding" Value="6" />
 
-        <Setter Property="Background" Value="{StaticResource NeutralModerate}" />
-        <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
-        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralInverted}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMid}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralModerate}" />
+        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralModerate}" />
 
         <Style Selector="^ PathIcon#DropDownGlyph">
-            <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerate}" />
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
@@ -207,41 +204,42 @@
         <!-- Hover State -->
         <Style Selector="^:pointerover">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource NeutralStrong}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHigh}" />
             </Style>
         </Style>
 
         <!-- Active State -->
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource NeutralSubdued}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
             </Style>
         </Style>
 
         <!-- Disabled State -->
         <Style Selector="^:disabled">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource NeutralModerate}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
             <Style Selector="^ /template/ ContentControl#ContentPresenter">
-                <Setter Property="Foreground" Value="{DynamicResource NeutralInverted}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerate}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
             <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource NeutralInverted}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerate}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
             <Style Selector="^ /template/ PathIcon#DropDownGlyph">
-                <Setter Property="Foreground" Value="{DynamicResource NeutralInverted}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerate}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
         </Style>
     </Style>
 
     <Style Selector="ComboBox.Tertiary">
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Padding" Value="6" />
 
         <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
         <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralStrong}" />

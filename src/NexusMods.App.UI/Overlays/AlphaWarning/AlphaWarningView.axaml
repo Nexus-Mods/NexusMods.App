@@ -76,7 +76,7 @@
         <base:MessageBoxBackground.BottomContent>
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
                 <Button x:Name="DoneButton" Classes="Standard Primary">
-                    <TextBlock>LET'S GO!</TextBlock>
+                    <TextBlock>Let's Go!</TextBlock>
                 </Button>
             </StackPanel>
 

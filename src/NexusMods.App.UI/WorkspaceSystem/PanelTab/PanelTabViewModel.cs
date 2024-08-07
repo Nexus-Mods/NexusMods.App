@@ -36,6 +36,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
         );
 
         this.WhenAnyValue(vm => vm.Contents)
+            .WhereNotNull()
             .SubscribeWithErrorLogging(page => History.AddToHistory(page.PageData));
     }
 
