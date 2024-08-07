@@ -11,13 +11,17 @@ public static partial class Constants
     /// </summary>
     public static readonly LocationId GameMainUE = LocationId.From("GameMainUE");
     /// <summary>
-    /// Relative to GameMainUE
+    /// Relative to <see cref="GameMainUE"/>
     /// </summary>
     public static readonly RelativePath ContentModsPath = "Content/Paks/~mods".ToRelativePath();
     /// <summary>
-    /// Relative to GameMainUE
+    /// Relative to <see cref="GameMainUE"/>
     /// </summary>
     public static readonly RelativePath InjectorModsPath = "Binaries/Win64".ToRelativePath();
+    /// <summary>
+    /// Relative to <see cref="LocationId.AppData"/>
+    /// </summary>
+    public static readonly RelativePath SaveGamesPath = "Saved/SaveGames".ToRelativePath();
     public static readonly Extension PakExt = new(".pak");
     public static readonly Extension UcasExt = new(".ucas");
     public static readonly Extension UtocExt = new(".utoc");
@@ -25,6 +29,7 @@ public static partial class Constants
     public static readonly Extension DLLExt = new(".dll");
     public static readonly Extension ExeExt = new(".exe");
     public static readonly Extension ConfigExt = new(".ini");
+    public static readonly Extension SavedGameExt = new(".sav");
 
     public static readonly HashSet<Extension> ContentExts = [PakExt, UcasExt, UtocExt, SigExt];
     public static readonly HashSet<Extension> ArchiveExts = [new(".zip"), new(".rar")];
