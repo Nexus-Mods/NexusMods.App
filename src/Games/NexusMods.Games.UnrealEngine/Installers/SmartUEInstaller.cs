@@ -235,7 +235,13 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                             return kv.Value.ToLoadoutFile(
                                 loadout.Id, loadoutGroup.Id, transaction, new GamePath(Constants.GameMainUE, Constants.InjectorModsPath.Join(filePath.FileName))
                                     );
-                            
+
+                    }
+                case Extension ext when ext == Constants.SavedGameExt:
+                    {
+                        return kv.Value.ToLoadoutFile(
+                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.AppData, Constants.SaveGamesPath.Join(filePath.FileName))
+                                    );
                     }
                 default:
                     {
