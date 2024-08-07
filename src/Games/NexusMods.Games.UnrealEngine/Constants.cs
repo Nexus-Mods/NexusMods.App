@@ -13,23 +13,23 @@ public static partial class Constants
     /// <summary>
     /// Relative to <see cref="GameMainUE"/>
     /// </summary>
-    public static readonly RelativePath ContentModsPath = "Content/Paks/~mods".ToRelativePath();
+    public static readonly GamePath ContentModsPath = new(GameMainUE, "Content/Paks/~mods");
     /// <summary>
     /// Relative to <see cref="GameMainUE"/>
     /// </summary>
-    public static readonly RelativePath InjectorModsPath = "Binaries/Win64".ToRelativePath();
+    public static readonly GamePath InjectorModsPath = new(GameMainUE, "Binaries/Win64");
     /// <summary>
     /// Relative to <see cref="LocationId.AppData"/>
     /// </summary>
-    public static readonly RelativePath ConfigPath = "Saved/Config".ToRelativePath();
+    public static readonly GamePath ConfigPath = new(LocationId.AppData, "Saved/Config");
     /// <summary>
     /// Relative to <see cref="LocationId.AppData"/>
     /// </summary>
-    public static readonly RelativePath LogsPath = "Saved/Logs".ToRelativePath();
+    public static readonly GamePath LogsPath = new(LocationId.AppData, "Saved/Logs");
     /// <summary>
     /// Relative to <see cref="LocationId.AppData"/>
     /// </summary>
-    public static readonly RelativePath CrashesPath = "Saved/Crashes".ToRelativePath();
+    public static readonly GamePath CrashesPath = new(LocationId.AppData, "Saved/Crashes");
 
     public static readonly Extension PakExt = new(".pak");
     public static readonly Extension UcasExt = new(".ucas");
