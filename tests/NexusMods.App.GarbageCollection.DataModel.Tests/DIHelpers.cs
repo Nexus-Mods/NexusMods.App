@@ -5,9 +5,9 @@ using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
-public class Startup
+public static class DIHelpers
 {
-    public void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services)
     {
         services.AddDefaultServicesForTesting()
             .AddStandardGameLocators(false)

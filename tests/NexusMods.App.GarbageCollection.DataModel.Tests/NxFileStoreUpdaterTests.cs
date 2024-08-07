@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.GarbageCollection.Nx;
@@ -135,5 +136,12 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
 
         toDelete = toDel;
         return newArchivePath;
+    }
+    
+    public class Startup
+    {
+        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
+        // A trick for parallelizing tests with Xunit.DependencyInjection
+        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
     }
 }

@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Settings;
@@ -79,5 +80,12 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
     {
         _fileStore.TryGetLocation(_connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
+    }
+    
+    public class Startup
+    {
+        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
+        // A trick for parallelizing tests with Xunit.DependencyInjection
+        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
     }
 }
