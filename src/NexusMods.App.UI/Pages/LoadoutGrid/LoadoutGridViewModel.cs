@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
-using DynamicData.PLinq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,12 +17,12 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -46,7 +45,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     public ReactiveCommand<NavigationInformation, Unit> ViewLibraryCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ViewFilesCommand { get; }
-    public ReactiveCommand<NavigationInformation, Unit> DeleteCommand { get; }
+    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
 
     [Reactive] public string? EmptyStateTitle { get; [UsedImplicitly] private set; }
 
@@ -120,10 +119,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         }, hasSelection);
 
-        DeleteCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        {
-            // TODO:
-        }, hasSelection);
+        DeleteCommand = ReactiveCommand.CreateFromTask(() => Delete(SelectedGroupIds.Items), canExecute: hasSelection);
 
         this.WhenActivated(d =>
         {
@@ -150,22 +146,15 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         });
     }
 
-    // [UsedImplicitly]
-    // public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
-    // {
-    //     var db = _conn.Db;
-    //     var loadout = Loadout.Load(db, LoadoutId);
-    //     using var tx = _conn.BeginTransaction();
-    //     foreach (var modId in modsToDelete)
-    //     {
-    //         var mod = Mod.Load(db, modId);
-    //         foreach (var file in mod.Files)
-    //         {
-    //             tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
-    //         }
-    //         tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId.Value);
-    //     }
-    //     loadout.Revise(tx);
-    //     await tx.Commit();
-    // }
+    private async Task Delete(IEnumerable<LoadoutItemGroupId> groupIds)
+    {
+        using var tx = _connection.BeginTransaction();
+
+        foreach (var id in groupIds)
+        {
+            tx.Delete(id, recursive: true);
+        }
+
+        await tx.Commit();
+    }
 }
