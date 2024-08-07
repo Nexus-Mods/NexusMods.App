@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Games.TestFramework;
@@ -57,7 +58,8 @@ public class MarkUsedFilesTest(IServiceProvider serviceProvider) : AGameTest<Stu
         }
 
         // Delete the loadout
-        await DeleteLoadoutAsync(loadout.Id);
+        // ReSharper disable once RedundantArgumentDefaultValue
+        await DeleteLoadoutAsync(loadout.Id, GarbageCollectorRunMode.DoNotRun);
 
         // Mark used files again
         gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();

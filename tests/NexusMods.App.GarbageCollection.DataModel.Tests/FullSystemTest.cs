@@ -1,18 +1,13 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.GarbageCollection.Nx;
-using NexusMods.App.GarbageCollection.Structs;
-using NexusMods.Archives.Nx.Headers;
 using NexusMods.DataModel;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions.Nx.FileProviders;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
-
 
 public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager settingsManager) : AGameTest<StubbedGame>(serviceProvider)
 {
@@ -62,8 +57,7 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
         }
 
         // Act: All files are referenced.
-        await DeleteLoadoutAsync(loadout2);
-        RunGarbageCollector.Do(_dataModelSettings.ArchiveLocations, _fileStore, Connection);
+        await DeleteLoadoutAsync(loadout2, GarbageCollectorRunMode.RunSynchronously);
         
         // Assert that all files except for loadout2ModHashes (deleted via loadout delete).
         foreach (var hash in loadout1ModHashes.Concat(loadout1SharedModHashes)

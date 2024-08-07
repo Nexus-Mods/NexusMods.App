@@ -4,7 +4,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-namespace NexusMods.DataModel.ArchiveContents;
+namespace NexusMods.Abstractions.FileStore.Nx.Models;
 
 /// <summary>
 /// A metadata entry for an archived file entry. These are the items stored inside the .nx archives. Each

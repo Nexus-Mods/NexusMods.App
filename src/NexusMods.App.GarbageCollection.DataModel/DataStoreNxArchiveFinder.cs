@@ -1,7 +1,6 @@
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
-using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
 namespace NexusMods.App.GarbageCollection.DataModel;

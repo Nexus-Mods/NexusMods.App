@@ -1,7 +1,7 @@
+using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

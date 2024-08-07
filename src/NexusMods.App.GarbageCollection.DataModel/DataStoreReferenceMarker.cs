@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Interfaces;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.App.GarbageCollection.DataModel;
 

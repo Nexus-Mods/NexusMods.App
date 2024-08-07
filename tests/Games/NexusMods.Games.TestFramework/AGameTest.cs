@@ -212,7 +212,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
-    protected Task DeleteLoadoutAsync(LoadoutId loadoutId) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId);
+    protected Task DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId, gcRunMode);
 
     /// <summary>
     /// Reloads the entity from the database.

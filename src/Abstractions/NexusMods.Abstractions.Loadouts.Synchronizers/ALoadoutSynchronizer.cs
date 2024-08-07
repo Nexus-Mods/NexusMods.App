@@ -7,16 +7,14 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -37,6 +35,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly ILogger _logger;
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
+    private readonly IGarbageCollectorRunner _garbageCollectorRunner;
 
     /// <summary>
     /// Connection.
@@ -51,13 +50,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IFileStore fileStore,
         ISorter sorter,
         IConnection conn,
-        IOSInformation os)
+        IOSInformation os,
+        IGarbageCollectorRunner garbageCollectorRunner)
     {
         _logger = logger;
         _fileStore = fileStore;
         _sorter = sorter;
         Connection = conn;
         _os = os;
+        _garbageCollectorRunner = garbageCollectorRunner;
     }
 
     /// <summary>
@@ -69,7 +70,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
-        provider.GetRequiredService<IOSInformation>()
+        provider.GetRequiredService<IOSInformation>(),
+        provider.GetRequiredService<IGarbageCollectorRunner>()
     )
     {
     }
@@ -910,7 +912,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />b
-    public async Task UnManage(GameInstallation installation)
+    public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
         var metadata = installation.GetMetadata(Connection);
         
@@ -920,8 +922,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         foreach (var loadout in metadata.Loadouts)
         {
             _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-            await DeleteLoadout(loadout);
+            await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
         }
+
+        if (runGc)
+            _garbageCollectorRunner.Run();
     }
 
     /// <inheritdoc />
@@ -931,7 +936,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(LoadoutId loadoutId)
+    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunSynchronously)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
@@ -943,6 +948,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         tx.Delete(loadoutId, true);
         await tx.Commit();
+        
+        // Execute the garbage collector
+        RunGC(gcRunMode);
     }
 
     /// <summary>
@@ -1021,6 +1029,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var groups = ProcessSyncTree(syncTree);
 
         await RunGroupings(syncTree, groups, installation);
+    }
+    
+    // ReSharper disable once InconsistentNaming
+    private void RunGC(GarbageCollectorRunMode gcRunMode)
+    {
+        switch (gcRunMode)
+        {
+            case GarbageCollectorRunMode.RunSynchronously:
+                _garbageCollectorRunner.Run();
+                break;
+            case GarbageCollectorRunMode.RunInBackground:
+                _ = Task.Run(() => _garbageCollectorRunner.Run());
+                break;
+            case GarbageCollectorRunMode.DoNotRun:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(gcRunMode), gcRunMode, null);
+        }
     }
 }
 

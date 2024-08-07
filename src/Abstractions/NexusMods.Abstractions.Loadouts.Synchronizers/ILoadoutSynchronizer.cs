@@ -96,14 +96,15 @@ public interface ILoadoutSynchronizer
     /// Deletes the loadout for the game. If the loadout is the currently active loadout,
     /// the game's folder will be reset to its initial state.
     /// </summary>
-    Task DeleteLoadout(LoadoutId loadout);
+    Task DeleteLoadout(LoadoutId loadout, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunSynchronously);
 
     /// <summary>
     /// Removes all the loadouts for a game, and resets the game folder to its
     /// initial state.
     /// </summary>
     /// <param name="installation">Game installation which should be unmanaged.</param>
-    Task UnManage(GameInstallation installation);
+    /// <param name="runGc">If true, runs the garbage collector.</param>
+    Task UnManage(GameInstallation installation, bool runGc = true);
 
     /// <summary>
     /// Returns true if the path should be ignored by the synchronizer when backing up or restoring files. This does not mean
