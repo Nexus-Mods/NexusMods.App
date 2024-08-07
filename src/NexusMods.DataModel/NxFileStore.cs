@@ -313,6 +313,7 @@ public class NxFileStore : IFileStore
     /// Acquires a lock for the garbage collector.
     /// Use with `using` statement, see <see cref="NxGarbageCollectorLock"/> docs for more info.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public NxGarbageCollectorLock.WriteLockDisposable LockForGC() => _lock.LockForGc();
 
     private class ChunkedArchiveStream : IChunkedStreamSource
@@ -536,46 +537,79 @@ public class NxFileStore : IFileStore
 /// meaning we can run as many operations as we want concurrently, but cannot run
 /// the GC during that time.
 /// </summary>
-public readonly struct NxGarbageCollectorLock : IDisposable
+public class NxGarbageCollectorLock
 {
-    private readonly ReaderWriterLockSlim _lock = new();
+    private const int WriteLockValue = int.MinValue;
+    
+    /// <summary>
+    /// The _lockState value represents the current state of the lock:
+    /// - <see cref="WriteLockValue"/> (<see cref="int.MinValue"/>): A write lock is held (GC is in progress)
+    /// - 0: No locks are held
+    /// - Positive integer: The number of read locks currently held
+    /// 
+    /// Locking mechanism:
+    /// - Write lock (GC):
+    ///   - Acquired by atomically setting <see cref="_lockState"/> to <see cref="WriteLockValue"/> if it's 0
+    ///   - Released by setting <see cref="_lockState"/> back to 0
+    /// - Read lock (File Store):
+    ///   - Acquired by atomically incrementing <see cref="_lockState"/> if it's not WriteLockValue
+    ///   - Released by decrementing <see cref="_lockState"/>
+    /// 
+    /// This allows for multiple concurrent readers but only 1 writer.
+    /// </summary>
+    private int _lockState;
 
-    internal WriteLockDisposable LockForGc() => new(_lock);
+    internal WriteLockDisposable LockForGc()
+    {
+        while (true)
+        {
+            if (Interlocked.CompareExchange(ref _lockState, WriteLockValue, 0) == 0)
+                return new WriteLockDisposable(this);
 
-    internal ReadLockDisposable LockForFileStore() => new(_lock);
+            Thread.Sleep(1);
+        }
+    }
 
-    /// <summary/>
-    public NxGarbageCollectorLock() { }
+    internal ReadLockDisposable LockForFileStore()
+    {
+        while (true)
+        {
+            var current = _lockState;
+            if (current != WriteLockValue)
+            {
+                if (Interlocked.CompareExchange(ref _lockState, current + 1, current) == current)
+                    return new ReadLockDisposable(this);
+                
+                // If code hits here, we've had concurrent increment attempts, so we'll try
+                // again next loop.
+            }
+            else
+            {
+                // If we're on a write lock, it'll probably take a bit, so we can sleep
+                Thread.Sleep(1);
+            }
+        }
+    }
 
-    /// <inheritdoc />
-    public void Dispose() => _lock.Dispose();
-
-    /// <summary/>
+    /// <summary>
+    /// Represents a write lock that can be disposed to release the lock.
+    /// </summary>
     public readonly struct WriteLockDisposable : IDisposable
     {
-        private readonly ReaderWriterLockSlim _lock;
+        private readonly NxGarbageCollectorLock _lock;
 
-        /// <summary/>
-        public WriteLockDisposable(ReaderWriterLockSlim @lock)
-        {
-            _lock = @lock;
-            _lock.EnterWriteLock();
-        }
+        internal WriteLockDisposable(NxGarbageCollectorLock @lock) => _lock = @lock;
 
         /// <inheritdoc />
-        public void Dispose() => _lock.ExitWriteLock();
+        public void Dispose() => Interlocked.Exchange(ref _lock._lockState, 0);
     }
 
     internal readonly struct ReadLockDisposable : IDisposable
     {
-        private readonly ReaderWriterLockSlim _lock;
+        private readonly NxGarbageCollectorLock _lock;
 
-        public ReadLockDisposable(ReaderWriterLockSlim @lock)
-        {
-            _lock = @lock;
-            _lock.EnterReadLock();
-        }
+        internal ReadLockDisposable(NxGarbageCollectorLock @lock) => _lock = @lock;
 
-        public void Dispose() => _lock.ExitReadLock();
+        public void Dispose() => Interlocked.Decrement(ref _lock._lockState);
     }
 }
