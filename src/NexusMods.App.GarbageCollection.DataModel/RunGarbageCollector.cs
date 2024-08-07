@@ -10,11 +10,16 @@ namespace NexusMods.App.GarbageCollection.DataModel;
 /// </summary>
 public static class RunGarbageCollector
 {
-    public static void Do(ISettingsManager settingsManager, NxFileStore store, NxFileStoreUpdater updater, IConnection connection)
+    /// <summary/>
+    /// <param name="archiveLocations">The archive locations, usually obtained from <see cref="DataModelSettings"/>.</param>
+    /// <param name="store">The <see cref="NxFileStore"/> that requires locking for concurrent access.</param>
+    /// <param name="connection">The MneumonicDB <see cref="IConnection"/> to the DataModel.</param>
+    public static void Do(Span<ConfigurablePath> archiveLocations, NxFileStore store, IConnection connection)
     {
         using var lck = store.LockForGC();
+        var updater = new NxFileStoreUpdater(connection);
         var gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
-        DataStoreNxArchiveFinder.FindAllArchives(settingsManager, gc);
+        DataStoreNxArchiveFinder.FindAllArchives(archiveLocations, gc);
         DataStoreReferenceMarker.MarkUsedFiles(connection, gc);
         gc.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archive) =>
         {

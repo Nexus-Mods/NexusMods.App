@@ -14,18 +14,10 @@ using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 
-public class FullSystemTest : AGameTest<StubbedGame>
+public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager settingsManager) : AGameTest<StubbedGame>(serviceProvider)
 {
-    private readonly NxFileStore _fileStore;
-    private readonly NxFileStoreUpdater _updater;
-    private readonly ISettingsManager _settingsManager;
-
-    public FullSystemTest(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _fileStore = serviceProvider.GetRequiredService<NxFileStore>();
-        _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-        _updater = new NxFileStoreUpdater(Connection);
-    }
+    private readonly NxFileStore _fileStore = serviceProvider.GetRequiredService<NxFileStore>();
+    private readonly DataModelSettings _dataModelSettings = settingsManager.Get<DataModelSettings>();
 
     [Fact]
     public async Task FullGarbageCollectionProcess_ShouldRemoveUnusedFiles()
@@ -59,7 +51,7 @@ public class FullSystemTest : AGameTest<StubbedGame>
         Refresh(ref loadout2);
 
         // Act: All files are referenced.
-        RunGarbageCollector.Do(_settingsManager, _fileStore, _updater, Connection);
+        RunGarbageCollector.Do(_dataModelSettings.ArchiveLocations, _fileStore, Connection);
 
         // Assert that all files exist after a GC where everything is used.
         foreach (var hash in loadout2ModHashes.Concat(loadout1ModHashes)
@@ -71,7 +63,7 @@ public class FullSystemTest : AGameTest<StubbedGame>
 
         // Act: All files are referenced.
         await DeleteLoadoutAsync(loadout2);
-        RunGarbageCollector.Do(_settingsManager, _fileStore, _updater, Connection);
+        RunGarbageCollector.Do(_dataModelSettings.ArchiveLocations, _fileStore, Connection);
         
         // Assert that all files except for loadout2ModHashes (deleted via loadout delete).
         foreach (var hash in loadout1ModHashes.Concat(loadout1SharedModHashes)

@@ -16,7 +16,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
 {
     private readonly NxFileStore _fileStore = fileStore;
     private readonly IConnection _connection = connection;
-    private readonly ISettingsManager _settingsManager = settingsManager;
+    private readonly DataModelSettings _dataModelSettings = settingsManager.Get<DataModelSettings>();
 
     [Fact]
     public async Task FindAllArchives_ShouldDetectAllCreatedArchives()
@@ -49,7 +49,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
 
         // Act
         var archiveGc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
-        DataStoreNxArchiveFinder.FindAllArchives(_settingsManager, archiveGc);
+        DataStoreNxArchiveFinder.FindAllArchives(_dataModelSettings.ArchiveLocations, archiveGc);
 
         // Assert
         foreach (var createdArchive in createdArchives)
