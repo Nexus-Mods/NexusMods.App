@@ -27,6 +27,9 @@ public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.ToolTipTextBlock.Text)
                 .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.LoadoutBadgeViewModel, v => v.LoadoutBadge.ViewModel)
+                .DisposeWith(d);
         });
     }
 

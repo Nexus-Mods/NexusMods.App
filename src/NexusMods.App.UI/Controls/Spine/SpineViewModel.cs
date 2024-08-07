@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -37,6 +38,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
+    private readonly ISynchronizerService _syncService;
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
@@ -64,6 +66,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
         _conn = conn;
+        _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
 
         // Setup the special spine items
         Home = homeButtonViewModel;
@@ -93,6 +96,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
+                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService);
+                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
                             vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
                             vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));

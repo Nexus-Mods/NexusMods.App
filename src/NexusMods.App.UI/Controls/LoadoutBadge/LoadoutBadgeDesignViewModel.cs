@@ -61,7 +61,7 @@ public class LoadoutBadgeDesignViewModel : AViewModel<ILoadoutBadgeViewModel>, I
     }
 
     public Optional<Loadout.ReadOnly> LoadoutValue { get; set; } = Optional<Loadout.ReadOnly>.None;
-    [Reactive] public string LoadoutShortName { get; set; } = "A";
+    [Reactive] public string LoadoutShortName { get; set; } = "AC";
     [Reactive] public bool IsLoadoutSelected { get; set; } = false;
     [Reactive] public bool IsLoadoutApplied { get; set; } = false;
     [Reactive] public bool IsLoadoutInProgress { get; set; } = false;
