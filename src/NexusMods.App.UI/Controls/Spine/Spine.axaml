@@ -35,9 +35,11 @@
             </panels:FlexPanel>
         </Border>
         
-        <!-- <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" panels:Flex.Shrink="0"/> -->
+        <Border x:Name="AddBorder">
+            <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add"/>
+        </Border>
         <Border x:Name="DownloadBorder">
-            <reactiveUi:ViewModelViewHost x:Name="Download" panels:Flex.Shrink="0" />
+            <reactiveUi:ViewModelViewHost x:Name="Download" />
         </Border>
     </panels:FlexPanel>
 </reactiveUi:ReactiveUserControl>

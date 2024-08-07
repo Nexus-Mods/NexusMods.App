@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -43,6 +44,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
+    public IIconButtonViewModel AddLoadout { get; }
     public ISpineDownloadButtonViewModel Downloads { get; }
     private IList<ISpineItemViewModel> _specialSpineItems = new List<ISpineItemViewModel>();
 
@@ -74,6 +76,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home.WorkspaceContext = new HomeContext();
         _specialSpineItems.Add(Home);
         Home.Click = ReactiveCommand.Create(NavigateToHome);
+        
+        AddLoadout = addButtonViewModel;
+        AddLoadout.Name = "Add";
+        AddLoadout.WorkspaceContext = new HomeContext();
+        _specialSpineItems.Add(AddLoadout);
+        AddLoadout.Click = ReactiveCommand.Create(NavigateToMyGames);
 
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
@@ -261,5 +269,20 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 Context = new InProgressPageContext()
             }
         );
+    }
+    
+    private void NavigateToMyGames()
+    {
+        var workspaceController = _windowManager.ActiveWorkspaceController;
+
+        var pageData = new PageData
+        {
+            FactoryId = MyGamesPageFactory.StaticId,
+            Context = new MyGamesPageContext(),
+        };
+        
+        var ws = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => pageData);
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(NavigationInput.Default));
+        workspaceController.OpenPage(ws.Id, pageData, behavior);
     }
 }

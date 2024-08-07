@@ -28,6 +28,10 @@
             <Style Selector="^ > Border#DownloadBorder">
                 <Setter Property="panels:Flex.Shrink" Value="0" />
             </Style>
+            
+            <Style Selector="^ > Border#AddBorder">
+                <Setter Property="panels:Flex.Shrink" Value="0" />
+            </Style>
         </Style>
 
         <Style Selector="^ Border#LoadoutSelectorBorder">
