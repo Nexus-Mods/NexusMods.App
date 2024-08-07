@@ -50,7 +50,10 @@ public class NxFileStoreUpdater
         foreach (var retractedHash in toRetract)
         {
             foreach (var archivedFile in ArchivedFile.FindByHash(db, retractedHash))
-                archivedFile.Retract(tx);
+            {
+                if (archivedFile.IsValid())
+                    archivedFile.Retract(tx);
+            }
         }
 
         tx.Commit().ConfigureAwait(false).GetAwaiter().GetResult();
