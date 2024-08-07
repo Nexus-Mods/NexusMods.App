@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
@@ -115,46 +116,112 @@ public class SynchronizerService : ISynchronizerService
             );
     }
 
-    /// <inheritdoc />
+    // /// <inheritdoc />
+    // public IObservable<LoadoutSynchronizerState> StatusFor(LoadoutId loadoutId)
+    // {
+    //     var loadout = Loadout.Load(_conn.Db, loadoutId);
+    //     var gameState = GetOrAddLoadoutState(loadoutId);
+    //     var loadoutState = GetOrAddLoadoutState(loadoutId);
+    //
+    //     var isBusy = Observable.CombineLatest(
+    //             gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
+    //             loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
+    //             (g, l) => g.Value || l.Value
+    //         ).DistinctUntilChanged();
+    //     
+    //     var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance);
+    //     
+    //     var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
+    //     
+    //     return Observable.CombineLatest(isBusy, lastApplied, revisions, (busy, last, rev) =>
+    //     {
+    //         var currentDb = _conn.Db;
+    //         if (busy)
+    //             return LoadoutSynchronizerState.Pending;
+    //         
+    //         // Last DB revision is the same in the applied loadout
+    //         if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
+    //             return LoadoutSynchronizerState.Current;
+    //         
+    //         if (last.Id != loadoutId)
+    //             return LoadoutSynchronizerState.OtherLoadoutSynced;
+    //         
+    //         _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
+    //         var diffTree = GetApplyDiffTree(loadoutId);
+    //         var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+    //         _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
+    //         if (diffFound)
+    //             return LoadoutSynchronizerState.NeedsSync;
+    //         
+    //
+    //         return LoadoutSynchronizerState.Current;
+    //     });
+    //         
+    // }
+    
+    private readonly ConcurrentDictionary<LoadoutId, IObservable<LoadoutSynchronizerState>> _statusObservables = new();
+
     public IObservable<LoadoutSynchronizerState> StatusFor(LoadoutId loadoutId)
     {
-        var loadout = Loadout.Load(_conn.Db, loadoutId);
-        var gameState = GetOrAddLoadoutState(loadoutId);
-        var loadoutState = GetOrAddLoadoutState(loadoutId);
+        
+        return _statusObservables.GetOrAdd(loadoutId,
+            id =>
+            {
+                var loadout = Loadout.Load(_conn.Db, id);
+                var gameState = GetOrAddLoadoutState(id);
+                var loadoutState = GetOrAddLoadoutState(id);
 
-        var isBusy = Observable.CombineLatest(
-                gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
-                loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
-                (g, l) => g.Value || l.Value
-            ).DistinctUntilChanged();
-        
-        var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance);
-        
-        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
-        
-        return Observable.CombineLatest(isBusy, lastApplied, revisions, (busy, last, rev) =>
-        {
-            var currentDb = _conn.Db;
-            if (busy)
-                return LoadoutSynchronizerState.Pending;
-            
-            // Last DB revision is the same in the applied loadout
-            if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
-                return LoadoutSynchronizerState.Current;
-            
-            if (last.Id != loadoutId)
-                return LoadoutSynchronizerState.OtherLoadoutSynced;
-            
-            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
-            var diffTree = GetApplyDiffTree(loadoutId);
-            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
-            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
-            if (diffFound)
-                return LoadoutSynchronizerState.NeedsSync;
-            
+                var isBusy = Observable.CombineLatest(
+                        gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
+                        loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
+                        (g, l) => g.Value || l.Value
+                    )
+                    .DistinctUntilChanged();
 
-            return LoadoutSynchronizerState.Current;
-        });
-            
+                var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance);
+
+                var revisions = Loadout.RevisionsWithChildUpdates(_conn, id);
+
+                var diffTreeObservable = Observable.Defer(() =>
+                        {
+                            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", id);
+                            var diffTree = GetApplyDiffTree(id);
+                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", id, diffFound);
+                            return Observable.Return(diffFound);
+                        }
+                    )
+                    .Publish()
+                    .RefCount();
+
+                var statusObservable = Observable.CombineLatest(isBusy,
+                        lastApplied,
+                        revisions,
+                        diffTreeObservable,
+                        (busy, last, rev, diffFound) =>
+                        {
+                            var currentDb = _conn.Db;
+                            if (busy)
+                                return LoadoutSynchronizerState.Pending;
+
+                            // Last DB revision is the same in the applied loadout
+                            if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
+                                return LoadoutSynchronizerState.Current;
+
+                            if (last.Id != id)
+                                return LoadoutSynchronizerState.OtherLoadoutSynced;
+
+                            if (diffFound)
+                                return LoadoutSynchronizerState.NeedsSync;
+
+                            return LoadoutSynchronizerState.Current;
+                        }
+                    )
+                    .Replay(1)
+                    .RefCount();
+
+                return statusObservable;
+            }
+        );
     }
 }
