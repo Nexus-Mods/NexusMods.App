@@ -24,8 +24,8 @@ public class PacificDriveLoadoutSynchronizer : ALoadoutSynchronizer
 
     private static readonly GamePath[] IgnoredFolders =
     [
-        new GamePath(LocationId.AppData, "Saved/Logs"),
-        new GamePath(LocationId.AppData, "Saved/Crashes"),
+        new GamePath(LocationId.AppData, Constants.LogsPath),
+        new GamePath(LocationId.AppData, Constants.CrashesPath),
     ];
 
     public override bool IsIgnoredPath(GamePath path)
