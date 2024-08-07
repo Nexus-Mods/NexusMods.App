@@ -22,6 +22,19 @@ public static partial class Constants
     /// Relative to <see cref="LocationId.AppData"/>
     /// </summary>
     public static readonly RelativePath SaveGamesPath = "Saved/SaveGames".ToRelativePath();
+    /// <summary>
+    /// Relative to <see cref="LocationId.AppData"/>
+    /// </summary>
+    public static readonly RelativePath ConfigPath = "Saved/Config".ToRelativePath();
+    /// <summary>
+    /// Relative to <see cref="LocationId.AppData"/>
+    /// </summary>
+    public static readonly RelativePath LogsPath = "Saved/Logs".ToRelativePath();
+    /// <summary>
+    /// Relative to <see cref="LocationId.AppData"/>
+    /// </summary>
+    public static readonly RelativePath CrashesPath = "Saved/Crashes".ToRelativePath();
+
     public static readonly Extension PakExt = new(".pak");
     public static readonly Extension UcasExt = new(".ucas");
     public static readonly Extension UtocExt = new(".utoc");
