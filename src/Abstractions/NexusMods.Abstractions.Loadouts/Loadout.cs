@@ -36,7 +36,7 @@ public partial class Loadout : IModelDefinition
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
-    public static readonly ReferenceAttribute<GameMetadata> Installation = new(Namespace, nameof(Installation));
+    public static readonly ReferenceAttribute<GameInstallMetadata> Installation = new(Namespace, nameof(Installation));
     
     /// <summary>
     /// A revision number for this loadout. Each change to a file/mod in the loadout should increment

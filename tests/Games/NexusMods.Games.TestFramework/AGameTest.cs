@@ -52,6 +52,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
     private readonly ILogger<AGameTest<TGame>> _logger;
+
+    private bool _gameFilesWritten = false;
     
     public IDiagnosticManager DiagnosticManager { get; set; }
 
@@ -88,6 +90,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     }
 
+    /// <summary>
+    /// Override this method to generate the game files for the tests in this class. 
+    /// </summary>
+    protected virtual Task GenerateGameFiles()
+    {
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
@@ -123,7 +132,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
                     ParentId = groupId,
                     Name = path.Path,
                 },
-                TargetPath = path,
+                TargetPath = path.ToGamePathParentTuple(loadoutId),
             },
             Hash = path.Path.ToString().XxHash64AsUtf8(),
             Size = Size.FromLong(path.Path.ToString().Length),
@@ -146,6 +155,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             newLocations[k] = TemporaryFileManager.CreateFolder().Path;
         }
         register.Reset(newLocations);
+        _gameFilesWritten = false;
     }
 
     /// <summary>
@@ -154,6 +164,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
+        if (!_gameFilesWritten)
+        {
+            await GenerateGameFiles();
+            _gameFilesWritten = true;
+        }
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
 

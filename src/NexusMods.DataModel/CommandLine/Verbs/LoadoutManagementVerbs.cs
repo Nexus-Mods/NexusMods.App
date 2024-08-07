@@ -129,8 +129,6 @@ public static class LoadoutManagementVerbs
         {
             if (file.TryGetAsStoredFile(out var stored))
                 rows.Add([file.To, stored.Hash]);
-            else if (file.TryGetAsGeneratedFile(out var generatedFile))
-                rows.Add([file.To, generatedFile.Generator.GetType().ToString()]);
             else
                 rows.Add([file.GetType().ToString(), "<none>"]);
         }

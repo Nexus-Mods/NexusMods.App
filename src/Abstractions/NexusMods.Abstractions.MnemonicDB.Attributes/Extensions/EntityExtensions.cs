@@ -25,7 +25,8 @@ public static class EntityExtensions
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    public static DateTime GetCreatedAt(this IReadOnlyModel model)
+    public static DateTime GetCreatedAt<T>(this T model)
+    where T : IReadOnlyModel
     {
         var tx = new Transaction.ReadOnly(model.Db, EntityId.From(model.Min(m => m.T).Value));
         return Transaction.Timestamp.Get(tx);

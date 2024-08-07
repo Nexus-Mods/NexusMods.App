@@ -594,6 +594,9 @@
         <Compile Update="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledViewModel.cs">
           <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

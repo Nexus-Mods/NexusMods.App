@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -49,6 +50,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public IImage? Avatar => _avatar.Value;
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
+
+    [Reactive] public IPanelTabViewModel? SelectedTab { get; set; }
 
     public TopBarViewModel(
         IServiceProvider serviceProvider,
@@ -149,6 +152,10 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
+                .DisposeWith(d);
+
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)
+                .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(d);
         });
     }

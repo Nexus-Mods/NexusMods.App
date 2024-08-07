@@ -16,5 +16,5 @@ public partial class LoadoutItemWithTargetPath : IModelDefinition
     /// <summary>
     /// The target path.
     /// </summary>
-    public static readonly GamePathAttribute TargetPath = new(Namespace, nameof(TargetPath)) { IsIndexed = true };
+    public static readonly GamePathParentAttribute TargetPath = new(Namespace, nameof(TargetPath)) { IsIndexed = true };
 }

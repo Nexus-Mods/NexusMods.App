@@ -115,7 +115,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller, IModInstaller
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
-                    TargetPath = new GamePath(LocationId.Game, relativePath),
+                    TargetPath = (loadout.Id, LocationId.Game, relativePath),
                     LoadoutItem = new LoadoutItem.New(tx, id)
                     {
                         Name = relativePath.Name,

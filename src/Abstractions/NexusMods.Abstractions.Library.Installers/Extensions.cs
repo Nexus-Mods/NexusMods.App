@@ -36,7 +36,7 @@ public static class Extensions
                     Name = input.Item.Value.FileName,
                     ParentId = parent,
                 },
-                TargetPath = to,
+                TargetPath = to.ToGamePathParentTuple(loadoutId),
             },
             Hash = libraryFile.Hash,
             Size = libraryFile.Size,

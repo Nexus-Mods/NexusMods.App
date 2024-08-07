@@ -1,3 +1,6 @@
+using System.Reactive;
+using ReactiveUI;
+
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IPanelTabViewModel : IViewModelInterface
@@ -21,6 +24,10 @@ public interface IPanelTabViewModel : IViewModelInterface
     /// Gets or sets whether the tab contents is visible.
     /// </summary>
     public bool IsVisible { get; set; }
+
+    public ReactiveCommand<Unit, Unit> GoBackInHistoryCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> GoForwardInHistoryCommand { get; }
 
     /// <summary>
     /// Transforms the current state of the tab into a serializable data format.

@@ -60,7 +60,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller
                     Size = fileEntry.AsLibraryFile().Size,
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
                     {
-                        TargetPath = to,
+                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
                         LoadoutItem = new LoadoutItem.New(transaction, entityId)
                         {
                             Name = fileEntry.AsLibraryFile().FileName,
