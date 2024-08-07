@@ -106,11 +106,14 @@ nav:
             - '0C: Single Process Application': developers/decisions/backend/0012-single-process-application.md
             - '0D: Default Datastore Locations': developers/decisions/backend/0013-default-datastore-locations.md
             - '0E: Synchronizer Structure': developers/decisions/backend/0014-synchronizer-structure.md
-            - '10: Garbage Collector Design': developers/decisions/backend/0016-garbage-collector-design.md
+            - '0F: Loadout Items': developers/decisions/backend/0015-loadout-items.md
+            - '10: Garbage Collector Design': developers/decisions/backend/0016-disk-state-storage.md
+            - '11: Garbage Collector Design': developers/decisions/backend/0017-garbage-collector-design.md
         - Frontend:
             - '01: UI Panel Layout': developers/decisions/frontend/0001-UI-Panel-Layout.md
             - '02: Workspaces': developers/decisions/frontend/0002-Workspaces.md
             - '03: UI Styling Approach': developers/decisions/frontend/0003-UI-Styling-Approach.md
+            - '04: Using FlexPanel': developers/decisions/frontend/0004-Using-FlexPanel.md
         - Meeting Notes:
             - '00: Datastore Locations': developers/decisions/meeting-notes/0000-datastore-locations.md
         - Project:
