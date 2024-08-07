@@ -1050,7 +1050,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
     }
 
-    /// <inheritdoc />b
+    /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
@@ -1088,7 +1088,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         using var tx = Connection.BeginTransaction();
-        tx.Delete(loadoutId, true);
+        tx.Delete(loadoutId, false);
+        foreach (var item in loadout.Items)
+        {
+            tx.Delete(item.Id, false);
+        }
         await tx.Commit();
     }
 
