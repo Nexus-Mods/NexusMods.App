@@ -37,10 +37,10 @@
 		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
 	<data name="Updater_LATER" xml:space="preserve">
-		<value>PÓŹNIEJ</value>
+		<value>Później</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
-		<value>ZAKTUALIZUJ</value>
+		<value>Zaktualizuj</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
 		<value>Dostępna aktualizacja</value>
@@ -67,10 +67,10 @@
 		<value>Nieznane</value>
 	</data>
 	<data name="MessageBox_Button_Yes" xml:space="preserve">
-		<value>TAK</value>
+		<value>Tak</value>
 	</data>
 	<data name="MessageBox_Button_No" xml:space="preserve">
-		<value>NIE</value>
+		<value>Nie</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
 		<value>Anulować proces pobierania {0} i usunąć pliki?</value>
@@ -103,10 +103,10 @@
 		<value>STATUS</value>
 	</data>
 	<data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
-		<value>URUCHAMIANIE...</value>
+		<value>Uruchamianie...</value>
 	</data>
 	<data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-		<value>ZAGRAJ</value>
+		<value>Zagraj</value>
 	</data>
 	<data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
 		<value>{0} s</value>
@@ -133,13 +133,13 @@
 		<value>Szukaj</value>
 	</data>
 	<data name="TopBarActions__LOG_IN" xml:space="preserve">
-		<value>ZALOGUJ</value>
+		<value>Zaloguj</value>
 	</data>
 	<data name="GameWidget__Add_game" xml:space="preserve">
 		<value>Dodaj grę</value>
 	</data>
 	<data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-		<value>POBIERANIE</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
 		<value>Następne</value>
@@ -163,16 +163,16 @@
 		<value>Proszę skopiować poniższy adres URL do okna przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
 	</data>
 	<data name="DownloadCompleted_COMPLETED" xml:space="preserve">
-		<value>UKOŃCZONE</value>
+		<value>Ukończone</value>
 	</data>
 	<data name="DownloadCompleted_Clear_All" xml:space="preserve">
 		<value>Wyczyść wszystko</value>
 	</data>
 	<data name="DownloadHistoryView__HISTORY" xml:space="preserve">
-		<value>HISTORIA</value>
+		<value>Historia</value>
 	</data>
 	<data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
-		<value>W TRAKCIE</value>
+		<value>W trakcie</value>
 	</data>
 	<data name="DownloadInProgressView__Cancel" xml:space="preserve">
 		<value>Anuluj</value>
@@ -199,10 +199,10 @@
 		<value>Znaleziono gry gotowe do modowania!</value>
 	</data>
 	<data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
-		<value>NIE WYKRYTO TWOJEJ GRY</value>
+		<value>Nie wykryto twojej gry</value>
 	</data>
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
-		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
+		<value>Przeglądaj wszystkie gry</value>
 	</data>
     <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Dodaj</value>
@@ -286,25 +286,25 @@
 		<value>Pobieranie</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-		<value>AKTYWUJ ZESTAW</value>
+		<value>Aktywuj zestaw</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
+		<value>Zastosuj</value>
 	</data>
 	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
+		<value>Zastosuj</value>
 	</data>
 	<data name="ApplyingControlView__ApplyingText" xml:space="preserve">
 		<value>Zastosowywanie...</value>
 	</data>
 	<data name="ViewModFilesView_Location" xml:space="preserve">
-		<value>ŚCIEŻKA:</value>
+		<value>Ścieżka:</value>
 	</data>
 	<data name="ViewModFilesView_Locations" xml:space="preserve">
-		<value>ŚCIEŻKI:</value>
+		<value>Ścieżki:</value>
 	</data>
 	<data name="Helpers_ERROR" xml:space="preserve">
-		<value>BŁĄD</value>
+		<value>Błąd</value>
 	</data>
 	<data name="ErrorView_Title" xml:space="preserve">
 		<value>Coś poszło nie tak</value>
@@ -319,19 +319,19 @@
 		<value>Nie znaleziono moda</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
-		<value>SUGESTIA</value>
+		<value>Sugestia</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
-		<value>OSTRZEŻENIE</value>
+		<value>Ostrzeżenie</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
-		<value>BŁĄD KRYTYCZNY</value>
+		<value>Błąd krytyczny</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
 		<value>Kontrola kondycji</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
-		<value>UKRYTE</value>
+		<value>Ukryte</value>
 	</data>
 	<data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
 		<value>Wszystkie ({0})</value>
@@ -360,7 +360,7 @@
 		<value>ILOŚĆ PLIKÓW</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
-		<value>ZAŁADUJ</value>
+		<value>Załaduj</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
 		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
@@ -417,10 +417,10 @@
 		<value>Ustawienia</value>
 	</data>
 	<data name="DialogButton_CANCEL" xml:space="preserve">
-		<value>ANULUJ</value>
+		<value>Anuluj</value>
 	</data>
 	<data name="DialogButton_SAVE" xml:space="preserve">
-		<value>ZAPISZ</value>
+		<value>Zapisz</value>
 	</data>
 	<data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
 		<value>Uruchom ponownie aplikację, aby zastosować to ustawienie</value>
@@ -429,7 +429,7 @@
 		<value>Dodaj</value>
 	</data>
 	<data name="DialogButton_Discard" xml:space="preserve">
-		<value>ODRZUĆ</value>
+		<value>Odrzuć</value>
 	</data>
 	<data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
 		<value>Dziennik zmian</value>
