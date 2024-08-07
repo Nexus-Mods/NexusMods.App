@@ -21,4 +21,15 @@ public class PacificDriveLoadoutSynchronizer : ALoadoutSynchronizer
     {
         return !_settings.DoFullGameBackup;
     }
+
+    private static readonly GamePath[] IgnoredFolders =
+    [
+        new GamePath(LocationId.AppData, "Saved/Logs"),
+        new GamePath(LocationId.AppData, "Saved/Crashes"),
+    ];
+
+    public override bool IsIgnoredPath(GamePath path)
+    {
+        return IgnoredFolders.Any(ignore => path.Path.InFolder(ignore.Path));
+    }
 }
