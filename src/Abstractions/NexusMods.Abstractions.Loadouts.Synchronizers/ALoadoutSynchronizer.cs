@@ -803,7 +803,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var initialState = await GetOrCreateInitialDiskState(installation);
 
         var shortName = LoadoutNameProvider.GetNewShortName(Loadout.All(Connection.Db)
-            .Where(l => l.IsVisible())
+            .Where(l => l.IsVisible() 
+                        && l.InstallationInstance.LocationsRegister[LocationId.Game] == installation.LocationsRegister[LocationId.Game])
             .Select(l => l.ShortName)
             .ToArray()
         );
