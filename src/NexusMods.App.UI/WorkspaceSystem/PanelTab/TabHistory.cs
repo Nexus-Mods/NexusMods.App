@@ -10,6 +10,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 /// </summary>
 internal class TabHistory : ReactiveObject
 {
+
     /// <summary>
     /// Arbitrarily chosen limit.
     /// </summary>
@@ -28,7 +29,7 @@ internal class TabHistory : ReactiveObject
     /// <summary>
     /// Points to the head, the first position.
     /// </summary>
-    [Reactive] private int Head { get; set; }
+    [Reactive] private int Head { get; set; } = -1;
 
     /// <summary>
     /// Points to the current position in the history.
@@ -44,53 +45,41 @@ internal class TabHistory : ReactiveObject
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
     public ReactiveCommand<Unit, Unit> GoForwardCommand { get; }
 
+    private readonly Action<PageData> _openPageFunc;
     public TabHistory(Action<PageData> openPageFunc)
     {
+        _openPageFunc = openPageFunc;
+
         var canGoBack = this.WhenAnyValue(
             vm => vm.Position,
             vm => vm.Head).Select(_ => Position > Tail);
 
-        GoBackCommand = ReactiveCommand.Create(() =>
-        {
-            var next = Position - 1;
-            var index = next % Limit;
-            var pageData = _history[index];
-
-            Position = next;
-
-            try
-            {
-                IsTraversing = true;
-                openPageFunc(pageData);
-            }
-            finally
-            {
-                IsTraversing = false;
-            }
-        }, canGoBack);
+        GoBackCommand = ReactiveCommand.Create(() => TraverseHistory(offset: -1), canGoBack);
 
         var canGoForward = this.WhenAnyValue(
             vm => vm.Position,
             vm => vm.Head).Select(_ => Position < Head);
 
-        GoForwardCommand = ReactiveCommand.Create(() =>
+        GoForwardCommand = ReactiveCommand.Create(() => TraverseHistory(offset: +1), canGoForward);
+    }
+
+    private void TraverseHistory(int offset)
+    {
+        var next = Position + offset;
+        var index = next % Limit;
+        var pageData = _history[index];
+
+        Position = next;
+
+        try
         {
-            var next = Position + 1;
-            var index = next % Limit;
-            var pageData = _history[index];
-
-            Position = next;
-
-            try
-            {
-                IsTraversing = true;
-                openPageFunc(pageData);
-            }
-            finally
-            {
-                IsTraversing = false;
-            }
-        }, canGoForward);
+            IsTraversing = true;
+            _openPageFunc(pageData);
+        }
+        finally
+        {
+            IsTraversing = false;
+        }
     }
 
     public void AddToHistory(PageData pageData)
