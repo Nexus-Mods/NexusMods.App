@@ -27,6 +27,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     
     public LoadoutCardViewModel(Loadout.ReadOnly loadout, IConnection conn, IServiceProvider serviceProvider)
     {
+        LoadoutVal = loadout;
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutCardViewModel>>();
         var applyService = serviceProvider.GetRequiredService<ISynchronizerService>();
         LoadoutName = loadout.Name;
@@ -88,7 +89,8 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         });
         
     }
-
+    
+    public Loadout.ReadOnly LoadoutVal { get; }
     public ILoadoutBadgeViewModel LoadoutBadgeViewModel { get; private set; }
     [Reactive] public string LoadoutName { get; private set; }
     [Reactive] public IImage? LoadoutImage { get; private set; } 

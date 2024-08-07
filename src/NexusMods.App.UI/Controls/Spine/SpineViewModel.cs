@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Spine.Buttons;
@@ -42,6 +43,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly ISynchronizerService _syncService;
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
+    private static readonly LoadoutSpineEntriesComparer LoadoutComparerInstance = new();
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
     public IIconButtonViewModel AddLoadout { get; }
@@ -112,6 +114,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             return vm;
                         }
                     )
+                    .Sort(LoadoutComparerInstance)
                     .OnUI()
                     .Bind(out _loadoutSpineItems)
                     .SubscribeWithErrorLogging()
@@ -284,5 +287,22 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var ws = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => pageData);
         var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(NavigationInput.Default));
         workspaceController.OpenPage(ws.Id, pageData, behavior);
+    }
+    
+    private class LoadoutSpineEntriesComparer : IComparer<IImageButtonViewModel>
+    {
+        public int Compare(IImageButtonViewModel? x, IImageButtonViewModel? y)
+        {
+            var xloadout = x?.LoadoutBadgeViewModel?.LoadoutValue;
+            var yloadout = y?.LoadoutBadgeViewModel?.LoadoutValue;
+            
+            if (xloadout == null) return yloadout == null ? 0 : -1;
+            if (yloadout == null) return 1;
+            
+            if (xloadout.Value.Value.Installation.Path != yloadout.Value.Value.Installation.Path)
+                return DateTime.Compare( xloadout.Value.Value.Installation.GetCreatedAt(), yloadout.Value.Value.Installation.GetCreatedAt());
+            
+            return DateTime.Compare(xloadout.Value.Value.GetCreatedAt(), yloadout.Value.Value.GetCreatedAt());
+        }
     }
 }
