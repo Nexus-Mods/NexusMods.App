@@ -54,13 +54,13 @@ internal class TabHistory : ReactiveObject
             vm => vm.Position,
             vm => vm.Head).Select(_ => Position > Tail);
 
-        GoBackCommand = ReactiveCommand.Create(() => TraverseHistory(offset: -1), canGoBack);
+        GoBackCommand = ReactiveCommand.Create(() => TraverseHistory(offset: _isEphemeralPage ? 0 : -1), canGoBack);
 
         var canGoForward = this.WhenAnyValue(
             vm => vm.Position,
             vm => vm.Head).Select(_ => Position < Head);
 
-        GoForwardCommand = ReactiveCommand.Create(() => TraverseHistory(offset: +1), canGoForward);
+        GoForwardCommand = ReactiveCommand.Create(() => TraverseHistory(offset: _isEphemeralPage ? 0 : +1), canGoForward);
     }
 
     private void TraverseHistory(int offset)
@@ -82,10 +82,25 @@ internal class TabHistory : ReactiveObject
         }
     }
 
+    /// <summary>
+    /// Whether the current page displayed is an ephemeral page, and thus not
+    /// in the history.
+    /// </summary>
+    private bool _isEphemeralPage;
+
     public void AddToHistory(PageData pageData)
     {
+        _isEphemeralPage = pageData.Context.IsEphemeral;
         if (IsTraversing) return;
-        if (pageData.Context.IsEphemeral) return;
+
+        // NOTE(erri120): ephemeral pages don't get added to the
+        // history, but we still want to move the head to prevent
+        // going forwards.
+        if (_isEphemeralPage)
+        {
+            Head = Position;
+            return;
+        }
 
         var next = Position + 1;
 
