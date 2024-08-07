@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
+using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.App.GarbageCollection.DataModel;
 
@@ -9,8 +10,9 @@ namespace NexusMods.App.GarbageCollection.DataModel;
 /// </summary>
 public static class RunGarbageCollector
 {
-    public static void Do(ISettingsManager settingsManager, NxFileStoreUpdater updater, IConnection connection)
+    public static void Do(ISettingsManager settingsManager, NxFileStore store, NxFileStoreUpdater updater, IConnection connection)
     {
+        using var lck = store.LockForGC();
         var gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
         DataStoreNxArchiveFinder.FindAllArchives(settingsManager, gc);
         DataStoreReferenceMarker.MarkUsedFiles(connection, gc);

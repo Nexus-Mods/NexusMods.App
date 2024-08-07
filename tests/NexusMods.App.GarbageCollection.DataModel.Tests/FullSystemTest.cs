@@ -59,7 +59,7 @@ public class FullSystemTest : AGameTest<StubbedGame>
         Refresh(ref loadout2);
 
         // Act: All files are referenced.
-        RunGarbageCollector.Do(_settingsManager, _updater, Connection);
+        RunGarbageCollector.Do(_settingsManager, _fileStore, _updater, Connection);
 
         // Assert that all files exist after a GC where everything is used.
         foreach (var hash in loadout2ModHashes.Concat(loadout1ModHashes)
@@ -71,7 +71,7 @@ public class FullSystemTest : AGameTest<StubbedGame>
 
         // Act: All files are referenced.
         await DeleteLoadoutAsync(loadout2);
-        RunGarbageCollector.Do(_settingsManager, _updater, Connection);
+        RunGarbageCollector.Do(_settingsManager, _fileStore, _updater, Connection);
         
         // Assert that all files except for loadout2ModHashes (deleted via loadout delete).
         foreach (var hash in loadout1ModHashes.Concat(loadout1SharedModHashes)

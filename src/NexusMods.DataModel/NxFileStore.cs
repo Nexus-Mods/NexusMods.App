@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -31,6 +30,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class NxFileStore : IFileStore
 {
+    private readonly NxGarbageCollectorLock _lock = new(); // See details on struct.
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
@@ -60,6 +60,7 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public ValueTask<bool> HaveFile(Hash hash)
     {
+        using var lck = _lock.LockForFileStore();
         var db = _conn.Db;
         var archivedFiles = ArchivedFile.FindByHash(db, hash).Any(x => x.IsValid());
         return ValueTask.FromResult(archivedFiles);
@@ -71,7 +72,7 @@ public class NxFileStore : IFileStore
         var hasAnyFiles = backups.Any();
         if (hasAnyFiles == false)
             return;
-        
+     
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
@@ -109,6 +110,7 @@ public class NxFileStore : IFileStore
 
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
+        using var lck = _lock.LockForFileStore();
         using var tx = _conn.BeginTransaction();
 
         var container = new ArchivedFileContainer.New(tx)
@@ -134,6 +136,8 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
+        using var lck = _lock.LockForFileStore();
+        
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
@@ -209,6 +213,8 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
+        using var lck = _lock.LockForFileStore();
+        
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
@@ -274,6 +280,8 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
+        
+        using var lck = _lock.LockForFileStore();
         if (!TryGetLocation(_conn.Db, hash, null,
                 out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
@@ -290,6 +298,8 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public HashSet<ulong> GetFileHashes()
     {
+        using var lck = _lock.LockForFileStore();
+        
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
 
@@ -298,6 +308,12 @@ public class NxFileStore : IFileStore
 
         return fileHashes;
     }
+
+    /// <summary>
+    /// Acquires a lock for the garbage collector.
+    /// Use with `using` statement, see <see cref="NxGarbageCollectorLock"/> docs for more info.
+    /// </summary>
+    public NxGarbageCollectorLock.WriteLockDisposable LockForGC() => _lock.LockForGc();
 
     private class ChunkedArchiveStream : IChunkedStreamSource
     {
@@ -503,5 +519,63 @@ public class NxFileStore : IFileStore
         }
 
         return result;
+    }
+}
+
+/// <summary>
+/// This is a lock that prevents the concurrent running of the garbage collector
+/// and the file store.
+///
+/// It works by abstracting a reader-writer lock.
+/// 
+/// When a Garbage Collector is being run, it acquires a write lock (during the process
+/// of the whole operation), meaning that no <see cref="NxFileStore"/> operations may be done
+/// during that time.
+///
+/// When using the <see cref="NxFileStore"/> on the other hand, we acquire a read lock,
+/// meaning we can run as many operations as we want concurrently, but cannot run
+/// the GC during that time.
+/// </summary>
+public readonly struct NxGarbageCollectorLock : IDisposable
+{
+    private readonly ReaderWriterLockSlim _lock = new();
+
+    internal WriteLockDisposable LockForGc() => new(_lock);
+
+    internal ReadLockDisposable LockForFileStore() => new(_lock);
+
+    /// <summary/>
+    public NxGarbageCollectorLock() { }
+
+    /// <inheritdoc />
+    public void Dispose() => _lock.Dispose();
+
+    /// <summary/>
+    public readonly struct WriteLockDisposable : IDisposable
+    {
+        private readonly ReaderWriterLockSlim _lock;
+
+        /// <summary/>
+        public WriteLockDisposable(ReaderWriterLockSlim @lock)
+        {
+            _lock = @lock;
+            _lock.EnterWriteLock();
+        }
+
+        /// <inheritdoc />
+        public void Dispose() => _lock.ExitWriteLock();
+    }
+
+    internal readonly struct ReadLockDisposable : IDisposable
+    {
+        private readonly ReaderWriterLockSlim _lock;
+
+        public ReadLockDisposable(ReaderWriterLockSlim @lock)
+        {
+            _lock = @lock;
+            _lock.EnterReadLock();
+        }
+
+        public void Dispose() => _lock.ExitReadLock();
     }
 }
