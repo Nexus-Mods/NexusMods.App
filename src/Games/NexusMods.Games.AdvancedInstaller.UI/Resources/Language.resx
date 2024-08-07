@@ -19,10 +19,10 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Footer_CANCEL" xml:space="preserve">
-        <value>CANCEL</value>
+        <value>Cancel</value>
     </data>
     <data name="Footer_INSTALL" xml:space="preserve">
-        <value>INSTALL</value>
+        <value>Install</value>
     </data>
     <data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
         <value>Advanced installer</value>
@@ -43,13 +43,13 @@
         <value>Create new folder</value>
     </data>
     <data name="NewFilePill_NEW" xml:space="preserve">
-        <value>NEW</value>
+        <value>New</value>
     </data>
     <data name="Pill_DUPE_FOLDER" xml:space="preserve">
-        <value>DUPE FOLDER</value>
+        <value>Dupe folder</value>
     </data>
     <data name="Pill_FOLDER_MERGED" xml:space="preserve">
-        <value>FOLDER MERGED</value>
+        <value>Folder merged</value>
     </data>
     <data name="SelectLocationButton_Select_location" xml:space="preserve">
         <value>Select location</value>
@@ -70,16 +70,16 @@
         <value>Select which files to install from the mod archive on the left.</value>
     </data>
     <data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
-        <value>SELECT INSTALL LOCATION</value>
+        <value>Select install location</value>
     </data>
     <data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
         <value>Select where to install the mod file/folder.</value>
     </data>
     <data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
-        <value>SUGGESTED</value>
+        <value>Suggested</value>
     </data>
     <data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
-        <value>ALL FOLDERS</value>
+        <value>All folders</value>
     </data>
     <data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
         <value>Select from the full folder structure</value>
@@ -106,10 +106,10 @@
         <value>If you are confident this mod is safe, and you know where the files need to be installed, you can attempt an advanced manual install.</value>
     </data>
     <data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
-        <value>ADVANCED INSTALL</value>
+        <value>Advanced Install</value>
     </data>
     <data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
-        <value>CLOSE</value>
+        <value>Close</value>
     </data>
     <data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
         <value>All mod files</value>

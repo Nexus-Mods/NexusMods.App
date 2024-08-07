@@ -96,7 +96,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTIVATE &amp; APPLY.
+        ///   Looks up a localized string similar to Activate &amp; Apply.
         /// </summary>
         public static string ApplyControlViewModel__ACTIVATE_AND_APPLY {
             get {
@@ -105,7 +105,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTIVATE LOADOUT.
+        ///   Looks up a localized string similar to Activate Loadout.
         /// </summary>
         public static string ApplyControlViewModel__ACTIVATE_LOADOUT {
             get {
@@ -114,7 +114,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to APPLY.
+        ///   Looks up a localized string similar to Apply.
         /// </summary>
         public static string ApplyControlViewModel__APPLY {
             get {
@@ -231,7 +231,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CRITICAL ERROR.
+        ///   Looks up a localized string similar to Critical Error.
         /// </summary>
         public static string DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR {
             get {
@@ -240,7 +240,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HIDDEN.
+        ///   Looks up a localized string similar to Hidden.
         /// </summary>
         public static string DiagnosticDetailsView_SeverityTitle_HIDDEN {
             get {
@@ -249,7 +249,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SUGGESTION.
+        ///   Looks up a localized string similar to Suggestion.
         /// </summary>
         public static string DiagnosticDetailsView_SeverityTitle_SUGGESTION {
             get {
@@ -258,7 +258,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WARNING.
+        ///   Looks up a localized string similar to Warning.
         /// </summary>
         public static string DiagnosticDetailsView_SeverityTitle_WARNING {
             get {
@@ -339,7 +339,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CANCEL.
+        ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string DialogButton_CANCEL {
             get {
@@ -348,7 +348,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DISCARD.
+        ///   Looks up a localized string similar to Discard.
         /// </summary>
         public static string DialogButton_Discard {
             get {
@@ -357,7 +357,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SAVE.
+        ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string DialogButton_SAVE {
             get {
@@ -402,7 +402,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMPLETED.
+        ///   Looks up a localized string similar to Completed.
         /// </summary>
         public static string DownloadCompleted_COMPLETED {
             get {
@@ -411,7 +411,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HISTORY.
+        ///   Looks up a localized string similar to History.
         /// </summary>
         public static string DownloadHistoryView__HISTORY {
             get {
@@ -447,7 +447,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IN PROGRESS.
+        ///   Looks up a localized string similar to In Progress.
         /// </summary>
         public static string DownloadInProgressView__IN_PROGRESS {
             get {
@@ -618,7 +618,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DOWNLOADS.
+        ///   Looks up a localized string similar to Downloads.
         /// </summary>
         public static string DownloadsView__DOWNLOADS {
             get {
@@ -897,7 +897,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ERROR.
+        ///   Looks up a localized string similar to Error.
         /// </summary>
         public static string Helpers_ERROR {
             get {
@@ -996,7 +996,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BROWSE ALL GAMES.
+        ///   Looks up a localized string similar to Browse all games.
         /// </summary>
         public static string HomeView__BROWSE_ALL_GAMES {
             get {
@@ -1005,7 +1005,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CAN&apos;T SEE YOUR GAME.
+        ///   Looks up a localized string similar to Can&apos;t see your game.
         /// </summary>
         public static string HomeView__CANT_SEE_YOUR_GAME {
             get {
@@ -1113,7 +1113,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INGEST.
+        ///   Looks up a localized string similar to Ingest.
         /// </summary>
         public static string IngestButtonTextBlock_Text {
             get {
@@ -1158,7 +1158,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PLAY.
+        ///   Looks up a localized string similar to Play.
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
             get {
@@ -1167,7 +1167,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RUNNING....
+        ///   Looks up a localized string similar to Running....
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_RUNNING {
             get {
@@ -1329,7 +1329,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NO.
+        ///   Looks up a localized string similar to No.
         /// </summary>
         public static string MessageBox_Button_No {
             get {
@@ -1338,7 +1338,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to YES.
+        ///   Looks up a localized string similar to Yes.
         /// </summary>
         public static string MessageBox_Button_Yes {
             get {
@@ -1729,7 +1729,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOG IN.
+        ///   Looks up a localized string similar to Log In.
         /// </summary>
         public static string TopBarActions__LOG_IN {
             get {
@@ -1738,7 +1738,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LATER.
+        ///   Looks up a localized string similar to Later.
         /// </summary>
         public static string Updater_LATER {
             get {
@@ -1756,7 +1756,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE.
+        ///   Looks up a localized string similar to Update.
         /// </summary>
         public static string Updater_UPDATE {
             get {
@@ -1810,7 +1810,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOCATION:.
+        ///   Looks up a localized string similar to Location:.
         /// </summary>
         public static string ViewModFilesView_Location {
             get {
@@ -1819,7 +1819,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOCATIONS:.
+        ///   Looks up a localized string similar to Location:.
         /// </summary>
         public static string ViewModFilesView_Locations {
             get {
