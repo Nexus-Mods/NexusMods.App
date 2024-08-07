@@ -44,11 +44,6 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        // TODO: add support for executable files
-        // TODO: add support for config ini files, preferably merge and not replace
-        // TODO: test with mod downloaded with metadata, i.e. via website
-        // TODO: see what can be done with IDs extracted from archive filename
-
         var gameFolderPath = info.Locations[LocationId.Game];
         var gameMainUEFolderPath = info.Locations[Constants.GameMainUE];
 
@@ -83,7 +78,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                         }
                         else
                             return kv.ToStoredFile(
-                                new GamePath(Constants.GameMainUE, Constants.ContentModsPath.Join(kv.FileName()))
+                                Constants.ContentModsPath.Join(kv.FileName())
                             );
                     }
                 case Extension ext when ext == Constants.DLLExt:
@@ -98,7 +93,7 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                         }
                         else
                             return kv.ToStoredFile(
-                                    new GamePath(Constants.GameMainUE, Constants.InjectorModsPath.Join(kv.FileName()))
+                                    Constants.InjectorModsPath.Join(kv.FileName())
                                 );
                     }
                 default:
@@ -176,6 +171,11 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
+        // TODO: add support for executable files
+        // TODO: add merge support for config ini files
+        // TODO: test with mod downloaded with metadata, i.e. via website
+        // TODO: see if later names and versions can be supplied for mods installed from archive
+
         var achiveFiles = libraryArchive.GetTree().EnumerateChildrenBfs().ToArray();
 
         if (achiveFiles.Length == 0)
@@ -216,26 +216,26 @@ public class SmartUEInstaller : ALibraryArchiveInstaller
                 case Extension ext when Constants.ContentExts.Contains(ext):
                     {
                         return kv.Value.ToLoadoutFile(
-                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(Constants.GameMainUE, Constants.ContentModsPath.Join(filePath.FileName))
+                                loadout.Id, loadoutGroup.Id, transaction, Constants.ContentModsPath.Join(filePath.FileName)
                                     );
                     }
                 case Extension ext when ext == Constants.DLLExt:
                     {
                         return kv.Value.ToLoadoutFile(
-                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(Constants.GameMainUE, Constants.InjectorModsPath.Join(filePath.FileName))
+                                loadout.Id, loadoutGroup.Id, transaction, Constants.InjectorModsPath.Join(filePath.FileName)
                                     );
 
                     }
                 case Extension ext when ext == Constants.SavedGameExt:
                     {
                         return kv.Value.ToLoadoutFile(
-                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.Saves, filePath.FileName)
+                                loadout.Id, loadoutGroup.Id, transaction, new(LocationId.Saves, filePath.FileName)
                                     );
                     }
                 case Extension ext when ext == Constants.ConfigExt:
                     {
                         return kv.Value.ToLoadoutFile(
-                                loadout.Id, loadoutGroup.Id, transaction, new GamePath(LocationId.AppData, Constants.ConfigPath.Join(filePath.FileName))
+                                loadout.Id, loadoutGroup.Id, transaction, Constants.ConfigPath.Join(filePath.FileName)
                                     );
                     }
                 default:
