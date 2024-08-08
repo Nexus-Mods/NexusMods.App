@@ -135,12 +135,12 @@ public partial class Loadout : IModelDefinition
             
             // Start with a backref. This assumes that the number of loadouts with a given library item will be fairly small.
             // This could be false, but it's a good starting point.
-            return LibraryLinkedLoadoutItem.FindByLibraryItem(Db, libraryItem)
+            return LibraryLinkedLoadoutItem
+                .FindByLibraryItem(Db, libraryItem)
                 .Where(linked => linked.AsLoadoutItem().LoadoutId == thisId);
         }
     }
 }
-
 
 public partial struct LoadoutId
 {

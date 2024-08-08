@@ -126,9 +126,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .Select(loadoutId => Loadout.Observe(_connection, loadoutId))
                 .Switch()
-                .Select(loadout => loadout
-                    .Items
-                    .Where(LoadoutUserFilters.ShouldShow)
+                .Select(loadout => LoadoutUserFilters.GetItems(loadout)
                     .OfTypeLoadoutItemGroup()
                     .Select(group => group.LoadoutItemGroupId)
                 )
