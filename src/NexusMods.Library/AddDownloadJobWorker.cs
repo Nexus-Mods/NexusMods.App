@@ -24,7 +24,7 @@ internal class AddDownloadJobWorker : AJobWorker<AddDownloadJob>
         cancellationToken.ThrowIfCancellationRequested();
         if (!job.DownloadJobResult.HasValue)
         {
-            await job.StartAsync(cancellationToken: cancellationToken);
+            await job.DownloadJob.StartAsync(cancellationToken: cancellationToken);
             var result = await job.DownloadJob.WaitToFinishAsync(cancellationToken: cancellationToken);
             job.DownloadJobResult = result.RequireData<AbsolutePath>();
         }

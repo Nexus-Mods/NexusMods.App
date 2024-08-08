@@ -102,7 +102,7 @@ public abstract class AJob : IJobGroup
         throw new NotImplementedException();
     }
 
-    internal void SetStatus(JobStatus value)
+    internal virtual void SetStatus(JobStatus value)
     {
         Status.AssertTransition(value);
         Status = value;
