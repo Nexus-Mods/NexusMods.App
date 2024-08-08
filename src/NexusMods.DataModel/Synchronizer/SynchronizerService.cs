@@ -137,7 +137,7 @@ public class SynchronizerService : ISynchronizerService
     private IObservable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
-        var gameState = GetOrAddLoadoutState(loadoutId);
+        var gameState = GetOrAddGameState(loadoutId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
         var isBusy = Observable.CombineLatest(
