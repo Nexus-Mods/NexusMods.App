@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="240"
-    d:DesignWidth="200"
+    d:DesignHeight="320"
+    d:DesignWidth="220"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.GameWidget.GameWidget"
     x:TypeArguments="gameWidget:IGameWidgetViewModel"
@@ -19,51 +19,60 @@
     </Design.DataContext>
 
     <Border
-        Height="228"
-        Width="180"
+        Height="293"
+        Width="184"
         x:Name="GameWidgetBorder">
-        <Border x:Name="MainBorder"
-            Height="228"
-            Width="180">
-            <Grid RowDefinitions="106, *">
-                <Image
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Height="228"
-                    Stretch="UniformToFill"
-                    Width="180"
-                    x:Name="BlurryImage" />
-                <Image
-                    Grid.Row="0"
-                    Width="180"
-                    x:Name="GameImage" />
-                <Border Grid.Row="1">
-                    <Grid RowDefinitions="Auto, 1,  *"
-                          Margin="16,0,16,0"
-                          VerticalAlignment="Top"
-                          Width="148">
-                        <TextBlock
-                            Grid.Row="0"
-                            Height="34"
-                            Margin="0,8"
-                            VerticalAlignment="Center"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="Wrap"
-                            x:Name="NameTextBlock" />
-                        <Border
-                            BorderThickness="0,0,0,1"
-                            Grid.Row="1"
-                            Margin="0"
-                            x:Name="SeparationLine"/>
-                        
-                        <!-- DetectedGame -->
+        
+            <StackPanel Spacing="12">
+                
+                <!-- image section -->
+                
+                <!-- using a grid so we can layer elements -->
+                <Border x:Name="ImageSectionBorder">
+                    <Grid RowDefinitions="Auto" Height="184" x:Name="ImageGrid">
+                        <Image Grid.Row="0"
+                               x:Name="GameImage"
+                        />
+                        <Border Grid.Row="0"
+                                Height="36"
+                                Width="36"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Left"
+                                x:Name="StoreBackground"
+                                ToolTip.Tip="{Binding Store}">
+                            <icons:UnifiedIcon Size="24" x:Name="StoreIcon"/>
+                        </Border>
+                    </Grid>
+                </Border>
+                
+                <!-- details section -->
+                
+                <StackPanel x:Name="DetailsSectionStackPanel">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap"
+                        x:Name="NameTextBlock" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap"
+                        x:Name="VersionTextBlock" />
+                </StackPanel>
+                
+                <!-- buttons section -->
+                
+                <StackPanel>
+                    
+                    <!-- DetectedGame -->
                         <StackPanel x:Name="DetectedGameStackPanel"
-                            Grid.Row="2"
-                            Margin="0,16,0,0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
+                            HorizontalAlignment="Stretch"
                             IsVisible="False">
-                            <Button Classes="Rounded Primary" x:Name="AddGameButton">
+                            <Button Classes="Standard Secondary" x:Name="AddGameButton" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="Add" />
                                     <TextBlock Classes="BodyMDNormal" 
@@ -74,30 +83,26 @@
                         
                         <!-- AddingGame -->
                         <StackPanel x:Name="AddingGameStackPanel"
-                            Grid.Row="2"
-                            Margin="0,16,0,0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
                             Classes="Spacing-1"
+                            Spacing="8"
                             IsVisible="False">
                             <progressRing:ProgressRing Height="24" Width="24"
                                                        VerticalAlignment="Center"/>
-                            <TextBlock Classes="BodyMDNormal" 
+                            <TextBlock x:Name="AddingGameTextBlock"  
                                        VerticalAlignment="Center"
                                        Text="{x:Static resources:Language.GameWidget__Adding_game}"/>
                         </StackPanel>
                         
                         <!-- ManagedGame -->
                         <Grid x:Name="ManagedGameGrid"
-                              ColumnDefinitions="*, Auto, Auto" 
-                              Grid.Row="2"
+                              ColumnDefinitions="*, 12, Auto" 
                               IsVisible="False"
                               VerticalAlignment="Center"
                               HorizontalAlignment="Stretch"
-                              Classes="Spacing-1"
-                              Margin="4,16,-6,0">
-                            <Button Classes="Rounded Primary" x:Name="ViewGameButton"
-                                    Margin="-6,0,8,0"
+                              Classes="Spacing-2">
+                            <Button Classes="Standard Tertiary Weak" x:Name="ViewGameButton"
                                     HorizontalAlignment="Stretch"
                                     Grid.Column="0">
                                 <StackPanel Orientation="Horizontal">
@@ -106,7 +111,7 @@
                                                Text="{x:Static resources:Language.GameWidget__View}"/>
                                 </StackPanel>
                             </Button>
-                            <Button Classes="Rounded Primary" 
+                            <Button Classes="Standard Tertiary Weak" 
                                     HorizontalAlignment="Right"
                                     x:Name="RemoveGameButton"
                                     Grid.Column="2">
@@ -116,22 +121,22 @@
                         
                         <!-- RemovingGame -->
                         <StackPanel x:Name="RemovingGameStackPanel"
-                                    Grid.Row="2"
-                                    Margin="0,16,0,0"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center"
                                     Classes="Spacing-1"
+                                    Spacing="8"
                                     IsVisible="False">
                             <progressRing:ProgressRing Height="24" Width="24"
                                                        VerticalAlignment="Center"/>
-                            <TextBlock Classes="BodyMDNormal" 
+                            <TextBlock x:Name="RemovingGameTextBlock" 
                                        VerticalAlignment="Center"
                                        Text="{x:Static resources:Language.GameWidget__Removing_game}"/>
                         </StackPanel>
-                        
-                    </Grid>
-                </Border>
-            </Grid>
+                    
+                    
+                </StackPanel>
+
+            </StackPanel>
         </Border>
-    </Border>
+    
 </reactiveUi:ReactiveUserControl>

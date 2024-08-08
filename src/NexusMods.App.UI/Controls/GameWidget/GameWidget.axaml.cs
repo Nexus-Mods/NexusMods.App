@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 using SkiaSharp;
@@ -31,17 +32,12 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                 this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                     .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.Image)
-                    .WhereNotNull()
-                    .OffUi()
-                    .Select(BlurAvaloniaImage)
-                    .OnUI()
-                    .BindToView(this, view => view.BlurryImage.Source)
-                    .DisposeWith(d);
-
                 this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
-
+                
+                this.OneWayBind(ViewModel, vm => vm.Version, v => v.VersionTextBlock.Text)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddGameButton)
                     .DisposeWith(d);
                 
@@ -50,27 +46,25 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                 
                 this.BindCommand(ViewModel, vm => vm.ViewGameCommand, v => v.ViewGameButton)
                     .DisposeWith(d);
+                
+                StoreIcon.Classes.Add(MapGameStoreToIconClass(ViewModel!.Installation.Store));
             }
         );
     }
 
-    private static Bitmap BlurAvaloniaImage(Bitmap bitmap)
+    /// <summary>
+    /// Returns a game store icon class for a given game store. The plain text store and the icon class name aren't always the same.
+    /// </summary>
+    /// <param name="store">A <see cref="GameStore"/> object</param>
+    /// <returns>An icon representing the game store or a question mark icon if not found.</returns>
+    private string MapGameStoreToIconClass(GameStore store) => store.Value switch
     {
-        using var inputSkBitmap = bitmap.ToSkiaBitmap();
-        using var outputSkBitmap = new SKBitmap(inputSkBitmap.Info, SKBitmapAllocFlags.ZeroPixels);
-
-        using (var skCanvas = new SKCanvas(outputSkBitmap))
-        using (var skPaint = new SKPaint())
-        {
-            skPaint.ImageFilter = SKImageFilter.CreateBlur(
-                sigmaX: 100f,
-                sigmaY: 100f
-            );
-
-            var skRect = inputSkBitmap.Info.Rect;
-            skCanvas.DrawBitmap(inputSkBitmap, skRect, skPaint);
-        }
-
-        return outputSkBitmap.ToAvaloniaImage();
-    }
+        "Steam" => "Steam",
+        "GOG" => "GOG",
+        "Epic Games Store" => "Epic",
+        "Origin" => "Ubisoft",
+        "EA Desktop" => "EA",
+        "Xbox Game Pass" => "Xbox",
+        _ => "Help",
+    };
 }

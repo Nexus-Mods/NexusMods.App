@@ -35,19 +35,30 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.Installation)
-                .Select(inst => $"{inst.Game.Name} v{inst.Version}")
+                .Select(inst => $"{inst.Game.Name}")
                 .BindToVM(this, vm => vm.Name)
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => $"Version: {inst.Version}")
+                .BindToVM(this, vm => vm.Version)
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => $"{inst.Store.Value}")
+                .BindToVM(this, vm => vm.Store)
                 .DisposeWith(disposables);
 
             _image.DisposeWith(disposables);
         });
+        
     }
 
     private async Task<Bitmap?> LoadImage(GameInstallation source)
     {
         try
         {
-            var stream = await ((IGame)source.Game).GameImage.GetStreamAsync();
+            var stream = await ((IGame)source.Game).Icon.GetStreamAsync();
             return new Bitmap(stream);
         }
         catch (Exception ex)
@@ -61,6 +72,8 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     public GameInstallation Installation { get; set; } = GameInstallation.Empty;
 
     [Reactive] public string Name { get; set; } = "";
+    [Reactive] public string Version { get; set; } = "";
+    [Reactive] public string Store { get; set; } = "";
 
     private readonly ObservableAsPropertyHelper<Bitmap> _image;
     public Bitmap Image => _image.Value;
