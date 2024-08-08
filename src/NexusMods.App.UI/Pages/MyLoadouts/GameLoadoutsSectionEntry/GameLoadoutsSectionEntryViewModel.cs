@@ -40,9 +40,9 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
         Loadout.ObserveAll(conn)
             .Filter(l => l.IsVisible() && l.InstallationInstance.LocationsRegister[LocationId.Game] == _gameInstallation.LocationsRegister[LocationId.Game])
-            .Transform(loadout =>
+            .TransformAsync(loadout =>
                 {
-                    return (IViewModelInterface)new LoadoutCardViewModel(loadout, conn, serviceProvider)
+                    return Task.Run(() =>(IViewModelInterface)new LoadoutCardViewModel(loadout, conn, serviceProvider)
                     {
                         VisitLoadoutCommand = ReactiveCommand.Create(() => NavigateToLoadout(loadout)),
                         CloneLoadoutCommand = ReactiveCommand.Create(() =>
@@ -50,7 +50,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                                 // TODO: Implement Loadout cloning
                             }
                         ),
-                    };
+                    });
                 }
             )
             .Bind(out _loadoutCardViewModels)

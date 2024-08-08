@@ -32,12 +32,16 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
                 .Filter(l => l.IsVisible())
                 .GroupOn(loadout => loadout.Installation.Path)
                 .Transform(group => group.List.Items.First().InstallationInstance)
-                .OnUI()
-                .Transform(managedGameInstall => (IGameLoadoutsSectionEntryViewModel)new GameLoadoutsSectionEntryViewModel(
-                        managedGameInstall,
-                        conn,
-                        serviceProvider,
-                        windowManager)
+                .TransformAsync(managedGameInstall =>
+                    {
+                        return Task.Run(() => (IGameLoadoutsSectionEntryViewModel)new GameLoadoutsSectionEntryViewModel(
+                                managedGameInstall,
+                                conn,
+                                serviceProvider,
+                                windowManager
+                            )
+                        );
+                    }
                 )
                 .Bind(out _gameSectionViewModels)
                 // These entries are not used as actual vms, just as data source for DataTemplates in a ItemsControl,
