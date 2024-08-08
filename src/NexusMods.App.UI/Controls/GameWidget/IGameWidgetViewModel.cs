@@ -1,6 +1,7 @@
 using System.Reactive;
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.GameWidget;
@@ -11,6 +12,7 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public string Name { get; }
     public string Version { get; }
     public string Store { get; }
+    public IconValue GameStoreIcon { get; }
     public Bitmap Image { get; }
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
     public ReactiveCommand<Unit,Unit> ViewGameCommand { get; set; }

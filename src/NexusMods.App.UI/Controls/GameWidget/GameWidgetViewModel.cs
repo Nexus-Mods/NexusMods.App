@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -74,6 +75,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     [Reactive] public string Name { get; set; } = "";
     [Reactive] public string Version { get; set; } = "";
     [Reactive] public string Store { get; set; } = "";
+    public IconValue GameStoreIcon { get; } = new IconValue();
 
     private readonly ObservableAsPropertyHelper<Bitmap> _image;
     public Bitmap Image => _image.Value;

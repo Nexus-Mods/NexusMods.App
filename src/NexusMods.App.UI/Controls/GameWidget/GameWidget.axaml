@@ -27,7 +27,6 @@
                 
                 <!-- image section -->
                 
-                <!-- using a grid so we can layer elements -->
                 <Border x:Name="ImageSectionBorder">
                     <Grid RowDefinitions="Auto" Height="184" x:Name="ImageGrid">
                         <Image Grid.Row="0"
@@ -40,7 +39,7 @@
                                 HorizontalAlignment="Left"
                                 x:Name="StoreBackground"
                                 ToolTip.Tip="{Binding Store}">
-                            <icons:UnifiedIcon Size="24" x:Name="StoreIcon"/>
+                            <icons:UnifiedIcon Size="24" x:Name="GameStoreIcon"/>
                         </Border>
                     </Grid>
                 </Border>
