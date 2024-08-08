@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
@@ -51,7 +52,7 @@ public class SynchronizerService : ISynchronizerService
         var loadoutState = GetOrAddLoadoutState(loadoutId);
         using var _ = loadoutState.WithLock();
 
-        var gameState = GetOrAddLoadoutState(loadout.InstallationInstance.GameMetadataId);
+        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         using var _2 = gameState.WithLock();
         
         await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
@@ -103,7 +104,8 @@ public class SynchronizerService : ISynchronizerService
         return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) 
+                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }
@@ -137,17 +139,17 @@ public class SynchronizerService : ISynchronizerService
     private IObservable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
-        var gameState = GetOrAddGameState(loadout.Installation.Id);
+        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
         var isBusy = Observable.CombineLatest(
                 gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
                 loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
-                (g, l) => g.Value || l.Value
-            )
+                (g, l) => g.Value || l.Value)
             .DistinctUntilChanged();
 
-        var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance);
+        var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
+            .Where(last => last != default(LoadoutWithTxId));
 
         var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
 
@@ -160,12 +162,15 @@ public class SynchronizerService : ISynchronizerService
                 async tuple =>
                 {
                     var (busy, last, rev) = tuple;
-                    var currentDb = _conn.Db;
+
+                    // make sure we have the latest value
+                    rev = rev.Rebase();
+
                     if (busy)
                         return LoadoutSynchronizerState.Pending;
 
                     // Last DB revision is the same in the applied loadout
-                    if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
+                    if (last.Id == rev.LoadoutId && rev.MostRecentTxId() == last.Tx)
                         return LoadoutSynchronizerState.Current;
 
                     if (last.Id != loadoutId)
@@ -187,9 +192,10 @@ public class SynchronizerService : ISynchronizerService
                     return LoadoutSynchronizerState.Current;
                 }
             )
-            .Replay(1)
-            .RefCount();
+            .Replay(1);
 
+        statusObservable.Connect();
+        
         return statusObservable;
     }
 }
