@@ -38,9 +38,6 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                         }
                     )
                     .SubscribeWithErrorLogging();;
-                    
-                    applyStatusSerialDisposable.DisposeWith(d);
-
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
