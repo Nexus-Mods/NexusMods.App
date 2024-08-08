@@ -96,7 +96,7 @@ public interface ILoadoutSynchronizer
     /// Deletes the loadout for the game. If the loadout is the currently active loadout,
     /// the game's folder will be reset to its initial state.
     /// </summary>
-    Task DeleteLoadout(LoadoutId loadout, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunSynchronously);
+    Task DeleteLoadout(LoadoutId loadout, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun);
 
     /// <summary>
     /// Removes all the loadouts for a game, and resets the game folder to its
