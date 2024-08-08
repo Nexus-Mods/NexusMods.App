@@ -13,10 +13,10 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="Footer_CANCEL" xml:space="preserve">
-		<value>ANULUJ</value>
+		<value>Anuluj</value>
 	</data>
 	<data name="Footer_INSTALL" xml:space="preserve">
-		<value>ZAINSTALUJ</value>
+		<value>Zainstaluj</value>
 	</data>
 	<data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
 		<value>Zaawansowany instalator</value>
@@ -37,13 +37,13 @@
 		<value>Utwórz nowy folder</value>
 	</data>
 	<data name="NewFilePill_NEW" xml:space="preserve">
-		<value>NOWY</value>
+		<value>Nowy</value>
 	</data>
 	<data name="Pill_DUPE_FOLDER" xml:space="preserve">
-		<value>DUPLIKAT FOLDERU</value>
+		<value>Duplikat folderu</value>
 	</data>
 	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
-		<value>FOLDER SCALONY</value>
+		<value>Folder scalony</value>
 	</data>
 	<data name="SelectLocationButton_Select_location" xml:space="preserve">
 		<value>Wybierz ścieżkę</value>
@@ -64,16 +64,16 @@
 		<value>Wybierz pliki do zainstalowania z archiwum moda po lewej stronie.</value>
 	</data>
 	<data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
-		<value>WYBIERZ ŚCIEŻKĘ INSTALACJI</value>
+		<value>Wybierz ścieżkę instalacji</value>
 	</data>
 	<data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
 		<value>Wybierz scieżkę instalacji pliku/folderu moda.</value>
 	</data>
 	<data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
-		<value>SUGEROWANE</value>
+		<value>Sugerowane</value>
 	</data>
 	<data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
-		<value>WSZYSTKIE FOLDERY</value>
+		<value>Wszystkie foldery</value>
 	</data>
 	<data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
 		<value>Wybierz z pełnej struktury folderów</value>
@@ -100,10 +100,10 @@
 		<value>Jeśli masz pewność, że pliki moda są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
-		<value>ZAAWANSOWANA INSTALACJA</value>
+		<value>Zaawansowana instalacja</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
-		<value>ZAMKNIJ</value>
+		<value>Zamknij</value>
 	</data>
 	<data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
 		<value>Wszystkie pliki moda</value>

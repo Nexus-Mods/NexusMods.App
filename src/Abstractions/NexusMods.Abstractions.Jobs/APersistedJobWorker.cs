@@ -1,10 +1,14 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.Abstractions.Jobs;
 
+/// <summary>
+/// Base class for persisted job workers.
+/// </summary>
+[PublicAPI]
 public abstract class APersistedJobWorker<T> : AJobWorker<T>, IPersistedJobWorker
     where T : AJob
 {
-    private PersistedJobStateId _stateId;
-
     /// <inheritdoc />
     public abstract Guid Id { get; }
 

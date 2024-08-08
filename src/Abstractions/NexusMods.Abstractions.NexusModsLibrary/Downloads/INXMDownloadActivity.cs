@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.HttpDownloads;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -8,4 +7,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 /// Represents an NXM download.
 /// </summary>
 [PublicAPI]
-public interface INXMDownloadJob : IHttpDownloadJob;
+public interface INXMDownloadJob : IDownloadJob
+{
+    NexusModsFileMetadata.ReadOnly FileMetadata { get; }
+}

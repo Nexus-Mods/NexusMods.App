@@ -19,6 +19,7 @@ public class JobRestarter(IConnection connection, ILogger<JobRestarter> logger) 
         {
             try
             {
+                // TODO: can't start running jobs
                 var job = jobState.Worker.LoadJob(jobState);
                 await job.StartAsync(CancellationToken.None);
             }

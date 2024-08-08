@@ -13,9 +13,9 @@ namespace NexusMods.Abstractions.Downloads;
 public interface IDownloadJob : IPersistedJob
 {
     /// <summary>
-    /// Gets the path where the file will be downloaded to.
+    /// Gets the destination path for the downloaded file.
     /// </summary>
-    AbsolutePath DownloadPath { get; }
+    AbsolutePath Destination { get; }
 
     /// <summary>
     /// Adds metadata from the download to the library file

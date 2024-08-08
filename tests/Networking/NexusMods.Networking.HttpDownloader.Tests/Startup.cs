@@ -15,10 +15,9 @@ public class Startup
             .GetKnownPath(KnownPath.EntryDirectory)
             .Combine($"NexusMods.Networking.HttpDownloader.Tests-{Guid.NewGuid()}");
 
-        container.AddAdvancedHttpDownloader()
+        container
             .AddSettingsManager()
             .AddSingleton<SimpleHttpDownloader>()
-            .AddSingleton<AdvancedHttpDownloader>()
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()
