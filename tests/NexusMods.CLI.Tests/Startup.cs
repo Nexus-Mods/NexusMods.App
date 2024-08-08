@@ -30,6 +30,9 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
+
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
                 .AddSingleton<CommandLineConfigurator>()
@@ -42,6 +45,10 @@ public class Startup
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,
+                    MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
+                    ArchiveLocations = [
+                        new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
+                    ],
                 })
                 .AddFileExtractors()
                 .AddCLI()

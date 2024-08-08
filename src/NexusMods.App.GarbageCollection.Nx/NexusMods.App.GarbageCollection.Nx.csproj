@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+    <ItemGroup>
+        <PackageReference Include="NexusMods.Archives.Nx"/>
+        <PackageReference Include="NexusMods.Paths.Extensions.Nx" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.NMA.Tests"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.App.GarbageCollection\NexusMods.App.GarbageCollection.csproj"/>
+    </ItemGroup>
+</Project>

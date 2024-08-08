@@ -1,7 +1,6 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-
-namespace NexusMods.DataModel.ArchiveContents;
+namespace NexusMods.Abstractions.FileStore.Nx.Models;
 
 /// <summary>
 /// Represents a container for archived files. 

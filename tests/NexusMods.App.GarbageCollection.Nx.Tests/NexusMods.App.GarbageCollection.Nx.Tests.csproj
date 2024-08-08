@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <PackageReference Include="NexusMods.Paths.TestingHelpers"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NexusMods.App.GarbageCollection.Nx\NexusMods.App.GarbageCollection.Nx.csproj"/>
+    </ItemGroup>
+</Project>

@@ -1,34 +1,25 @@
 using System.IO.Compression;
 using System.Text;
+using DynamicData;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
-using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -87,7 +78,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
             _logger.LogInformation("Resetting game files for {Game}", Game.Name);
             ResetGameFolders();
         }
-
     }
 
     /// <summary>
@@ -117,30 +107,78 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
     
     /// <summary>
-    /// Creates a file in the loadout for the given mod. The file will be named with the given path, the hash will be the hash
+    /// Creates a file in the loadout for the given mod.
+    /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
     public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path)
     {
-        var file = new LoadoutFile.New(tx, out var id)
-        {
-            LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
-            {
-                LoadoutItem = new LoadoutItem.New(tx, id)
-                {
-                    LoadoutId = loadoutId,
-                    ParentId = groupId,
-                    Name = path.Path,
-                },
-                TargetPath = path.ToGamePathParentTuple(loadoutId),
-            },
-            Hash = path.Path.ToString().XxHash64AsUtf8(),
-            Size = Size.FromLong(path.Path.ToString().Length),
-        };
-        
-        return file.Id;
+        return AddFile(tx, loadoutId, groupId, path, out _, out _);
     }
+    
+    /// <summary>
+    /// Creates a file in the loadout for the given mod.
+    /// The file will be named with the given path, the hash will be the hash
+    /// of the name, and the size will be the length of the name. 
+    /// </summary>
+    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, out Hash hash, out Size size)
+    {
+        hash = path.Path.ToString().XxHash64AsUtf8();
+        size = Size.FromLong(path.Path.ToString().Length);
+        return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
+    }
+    private static LoadoutFile.New AddFileInternal(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
+    {
+        LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
+        {
+            LoadoutItem = new LoadoutItem.New(tx, id)
+            {
+                LoadoutId = loadoutId,
+                ParentId = groupId,
+                Name = path.Path,
+            },
+            TargetPath = path.ToGamePathParentTuple(loadoutId),
+        },
+        Hash = hash,
+        Size = size,
+    };
 
+    /// <summary>
+    /// Creates a file in the loadout for the given mod.
+    /// The file will be named with the given path, the hash will be the hash
+    /// of the name, and the size will be the length of the name. 
+    /// </summary>
+    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName)
+    {
+        var records = new List<ArchivedFileEntry>();
+        var hashes = new List<Hash>();
+        var modGroup = AddEmptyGroup(tx, loadoutId, modName);
+        foreach (var path in paths)
+        {
+            var data = Encoding.UTF8.GetBytes(path);
+            var hash = data.XxHash64();
+            var size = Size.FromLong(path.Path.Length);
+            
+            // Create the LoadoutFile in DB
+            AddFileInternal(tx, loadoutId, modGroup, new GamePath(LocationId.Game, path), hash, size);
+            
+            // Create the file to backup.
+            hashes.Add(hash);
+            if (!await FileStore.HaveFile(hash))
+            {
+                records.Add(new ArchivedFileEntry(
+                    new MemoryStreamFactory(path, new MemoryStream(data)),
+                    hash,
+                    size
+                ));
+            }
+        }
+
+        if (records.Count > 0)
+            await FileStore.BackupFiles(records);
+
+        return (GetArchivePath(hashes.First()), hashes);
+    }
     
     /// <summary>
     /// Resets the game folders to a clean state.
@@ -159,9 +197,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
+    /// Creates a new loadout and returns the <see cref="Loadout.ReadOnly"/> of it.
     /// </summary>
-    /// <returns></returns>
     protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
         if (!_gameFilesWritten)
@@ -171,6 +208,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
         }
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
+    
+    /// <summary>
+    /// Deletes a loadout with a given ID.
+    /// </summary>
+    protected Task DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId, gcRunMode);
 
     /// <summary>
     /// Reloads the entity from the database.
@@ -240,4 +282,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
+    
+    private AbsolutePath GetArchivePath(Hash hash)
+    {
+        if (FileStore is not NxFileStore store)
+            throw new NotSupportedException("GetArchivePath is not currently supported in stubbed file stores.");
+
+        store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        return archivePath;
+    }
 }
