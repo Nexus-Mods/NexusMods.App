@@ -1347,7 +1347,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ALLOW.
+        ///   Looks up a localized string similar to Allow.
         /// </summary>
         public static string MetricsOptIn_ALLOW {
             get {
@@ -1356,7 +1356,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DENY.
+        ///   Looks up a localized string similar to Deny.
         /// </summary>
         public static string MetricsOptIn_DENY {
             get {

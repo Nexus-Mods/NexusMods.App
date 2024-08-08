@@ -28,10 +28,10 @@
         <value>Browse Games</value>
     </data>
     <data name="MetricsOptIn_ALLOW" xml:space="preserve">
-        <value>ALLOW</value>
+        <value>Allow</value>
     </data>
     <data name="MetricsOptIn_DENY" xml:space="preserve">
-        <value>DENY</value>
+        <value>Deny</value>
     </data>
     <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
         <value>Diagnostics and usage data</value>
