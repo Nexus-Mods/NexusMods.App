@@ -31,6 +31,8 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                     )
                     .DisposeWith(d);
 
+                this.OneWayBind(ViewModel, vm => vm.Store, v => v.GameStoreToolTipTextBlock.Text)
+                    .DisposeWith(d);
 
                 this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                     .DisposeWith(d);
@@ -41,9 +43,7 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                 this.OneWayBind(ViewModel, vm => vm.Version, v => v.VersionTextBlock.Text)
                     .DisposeWith(d);
 
-                this.OneWayBind(ViewModel, vm => vm.GameStoreIcon, view => view.GameStoreIcon.Value,
-                        image => MapGameStoreToIconClass(ViewModel!.Installation.Store)
-                    )
+                this.OneWayBind(ViewModel, vm => vm.GameStoreIcon, v => v.GameStoreIcon.Value)
                     .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddGameButton)
@@ -56,29 +56,5 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                     .DisposeWith(d);
             }
         );
-    }
-
-
-    /// <summary>
-    /// Returns an <see cref="IconValue"/> for a given <see cref="GameStore"/>.
-    /// </summary>
-    /// <param name="store">A <see cref="GameStore"/> object</param>
-    /// <returns>An <see cref="IconValue"/> icon representing the game store or a question mark icon if not found.</returns>
-    private IconValue MapGameStoreToIconClass(GameStore store)
-    {
-        if (store == GameStore.Steam)
-            return IconValues.Steam;
-        else if (store == GameStore.GOG)
-            return IconValues.GOG;
-        else if (store == GameStore.EGS)
-            return IconValues.Epic;
-        else if (store == GameStore.Origin)
-            return IconValues.Ubisoft;
-        else if (store == GameStore.EADesktop)
-            return IconValues.EA;
-        else if (store == GameStore.XboxGamePass)
-            return IconValues.Xbox;
-
-        return IconValues.Help;
     }
 }

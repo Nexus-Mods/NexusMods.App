@@ -37,9 +37,11 @@
                                 Width="36"
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Left"
-                                x:Name="StoreBackground"
-                                ToolTip.Tip="{Binding Store}">
+                                x:Name="StoreBackground">
                             <icons:UnifiedIcon Size="24" x:Name="GameStoreIcon"/>
+                            <ToolTip.Tip>
+                                <TextBlock x:Name="GameStoreToolTipTextBlock" />
+                            </ToolTip.Tip>
                         </Border>
                     </Grid>
                 </Border>
