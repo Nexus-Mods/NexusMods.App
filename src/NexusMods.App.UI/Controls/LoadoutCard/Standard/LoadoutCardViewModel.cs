@@ -66,10 +66,9 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutCreationTime);
             
-            // TODO: implement getting LastApplied time by updating Apply detection code to use Revision changes instead of tx changes 
-            // interval.Select(_ => FormatCreatedTime(loadout.LastAppliedAt))
-            //     .OnUI()
-            //     .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime);
+            interval.Select(_ => FormatLastAppliedTime(loadout.LastAppliedDateTime))
+                .OnUI()
+                .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime);
 
             Loadout.Observe(conn, loadout.Id)
             	.OffUi()
@@ -107,19 +106,20 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     [Reactive] public bool IsLastLoadout { get; set; } = true;
     
     
-    private string FormatNumMods(int numMods)
+    private static string FormatNumMods(int numMods)
     {
         return string.Format(Language.LoadoutCardViewModel_FormatNumMods_Mods__0_, numMods);
     }
     
-    private string FormatCreatedTime(DateTime creationTime)
+    private static string FormatCreatedTime(DateTime creationTime)
     {
         return string.Format(Language.LoadoutCardViewModel_CreationTimeConverter_Created__0_, creationTime.Humanize());
     }
     
-    private string FormatLastAppliedTime(DateTime creationTime)
+    private static string FormatLastAppliedTime(DateTime lastAppliedTime)
     {
-        return string.Format(Language.LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_, creationTime.Humanize());
+        var stringTime = lastAppliedTime == DateTime.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
+        return string.Format(Language.LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_, stringTime);
     }
     private async Task<Bitmap?> LoadImage(GameInstallation source)
     {
@@ -138,7 +138,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         });
     }
     
-    private Task DeleteLoadout(Loadout.ReadOnly loadout)
+    private static Task DeleteLoadout(Loadout.ReadOnly loadout)
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
     }

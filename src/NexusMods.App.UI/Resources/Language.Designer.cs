@@ -1032,6 +1032,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Never.
+        /// </summary>
+        public static string HumanizedDateTime_Never {
+            get {
+                return ResourceManager.GetString("HumanizedDateTime_Never", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File will be added.
         /// </summary>
         public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added {
@@ -1221,7 +1230,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last applied {0}.
+        ///   Looks up a localized string similar to Last applied: {0}.
         /// </summary>
         public static string LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_ {
             get {

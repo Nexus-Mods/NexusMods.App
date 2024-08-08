@@ -325,6 +325,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, Loadout.LastAppliedDateTime, DateTime.UtcNow);
         await tx.Commit();
 
         loadout = loadout.Rebase();
