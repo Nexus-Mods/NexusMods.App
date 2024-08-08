@@ -64,11 +64,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         this.WhenActivated(disposables =>
             {
                 // Newest Loadout
-                Observable.FromAsync(() =>
-                        {
-                            return Task.Run(()=> _syncService.StatusFor(_loadoutId));
-                        }
-                    )
+                Observable.FromAsync(() => _syncService.StatusFor(_loadoutId))
                     .Switch()
                     .OnUI()
                     .Subscribe(status =>
