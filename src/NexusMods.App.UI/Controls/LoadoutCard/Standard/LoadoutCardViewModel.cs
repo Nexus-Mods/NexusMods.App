@@ -72,14 +72,8 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             //     .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime);
 
             Loadout.Observe(conn, loadout.Id)
-                .OffUi()
-                .Select(l =>
-                {
-                    var numMods = LoadoutItem.FindByLoadout(conn.Db, loadout.Id)
-                        .Where(LoadoutUserFilters.ShouldShow)
-                        .Count();
-                    return FormatNumMods(numMods);
-                })
+            	.OffUi()
+                .Select(l => FormatNumMods(LoadoutUserFilters.GetItems(l).Count()))
                 .OnUI()
                 .BindToVM(this, x => x.LoadoutModCount)
                 .DisposeWith(d);

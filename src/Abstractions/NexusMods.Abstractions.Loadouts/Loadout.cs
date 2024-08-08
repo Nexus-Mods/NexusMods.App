@@ -131,15 +131,16 @@ public partial class Loadout : IModelDefinition
         /// </summary>
         public IEnumerable<LibraryLinkedLoadoutItem.ReadOnly> GetLoadoutItemsByLibraryItem(LibraryItem.ReadOnly libraryItem)
         {
-            return Items.Where(item =>
-            {
-                if (!item.TryGetAsLibraryLinkedLoadoutItem(out var linked)) return false;
-                return linked.LibraryItemId == libraryItem.LibraryItemId;
-            }).Select(item => item.ToLibraryLinkedLoadoutItem());
+            var thisId = LoadoutId; // Compiler complains about using `this` in a lambda otherwise
+            
+            // Start with a backref. This assumes that the number of loadouts with a given library item will be fairly small.
+            // This could be false, but it's a good starting point.
+            return LibraryLinkedLoadoutItem
+                .FindByLibraryItem(Db, libraryItem)
+                .Where(linked => linked.AsLoadoutItem().LoadoutId == thisId);
         }
     }
 }
-
 
 public partial struct LoadoutId
 {
