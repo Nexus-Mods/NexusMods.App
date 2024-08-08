@@ -10,7 +10,7 @@ public class SynchronizerState : ReactiveObject
 {
     private volatile bool _busy = false;
 
-    [Reactive] public bool Busy
+    public bool Busy
     {
         get => _busy;
         set => this.RaiseAndSetIfChanged(ref _busy, value);
