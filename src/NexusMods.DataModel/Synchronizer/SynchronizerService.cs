@@ -1,11 +1,11 @@
 ﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
@@ -52,7 +52,7 @@ public class SynchronizerService : ISynchronizerService
         var loadoutState = GetOrAddLoadoutState(loadoutId);
         using var _ = loadoutState.WithLock();
 
-        var gameState = GetOrAddLoadoutState(loadout.InstallationInstance.GameMetadataId);
+        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         using var _2 = gameState.WithLock();
         
         await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
@@ -104,7 +104,8 @@ public class SynchronizerService : ISynchronizerService
         return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) 
+                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }
@@ -114,44 +115,87 @@ public class SynchronizerService : ISynchronizerService
             );
     }
 
+    private readonly Dictionary<LoadoutId, IObservable<LoadoutSynchronizerState>> _statusObservables = new();
+    private readonly SemaphoreSlim _statusSemaphore = new(1, 1);
+
     /// <inheritdoc />
-    public IObservable<LoadoutSynchronizerState> StatusFor(LoadoutId loadoutId)
+    public async Task<IObservable<LoadoutSynchronizerState>> StatusFor(LoadoutId loadoutId)
+    {
+        await _statusSemaphore.WaitAsync();
+        try
+        {
+            if (_statusObservables.TryGetValue(loadoutId, out var observable)) return observable;
+
+            observable = CreateStatusObservable(loadoutId);
+            _statusObservables[loadoutId] = observable;
+            return observable;
+        }
+        finally
+        {
+            _statusSemaphore.Release();
+        }
+    }
+
+    private IObservable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
-        var gameState = GetOrAddLoadoutState(loadoutId);
+        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
-        
-        var isBusy = Observable.CombineLatest(gameState.ObservableForProperty(g => g.Busy), 
-            loadoutState.ObservableForProperty(l => l.Busy),
-            (g, l) => g.Value || l.Value);
-        
-        var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance);
-        
-        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
-        
-        return Observable.CombineLatest(isBusy, lastApplied, revisions, (busy, last, rev) =>
-        {
-            var currentDb = _conn.Db;
-            if (busy)
-                return LoadoutSynchronizerState.Pending;
-            
-            // Last DB revision is the same in the applied loadout
-            if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
-                return LoadoutSynchronizerState.Current;
-            
-            if (last.Id != loadoutId)
-                return LoadoutSynchronizerState.OtherLoadoutSynced;
-            
-            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
-            var diffTree = GetApplyDiffTree(loadoutId);
-            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
-            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
-            if (diffFound)
-                return LoadoutSynchronizerState.NeedsSync;
-            
 
-            return LoadoutSynchronizerState.Current;
-        });
-            
+        var isBusy = Observable.CombineLatest(
+                gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
+                loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
+                (g, l) => g.Value || l.Value)
+            .DistinctUntilChanged();
+
+        var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
+            .Where(last => last != default(LoadoutWithTxId));
+
+        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
+
+        var statusObservable = Observable.CombineLatest(isBusy,
+                lastApplied,
+                revisions,
+                (busy, last, rev) => (busy, last, rev)
+            )
+            .SelectMany(
+                async tuple =>
+                {
+                    var (busy, last, rev) = tuple;
+
+                    // make sure we have the latest value
+                    rev = rev.Rebase();
+
+                    if (busy)
+                        return LoadoutSynchronizerState.Pending;
+
+                    // Last DB revision is the same in the applied loadout
+                    if (last.Id == rev.LoadoutId && rev.MostRecentTxId() == last.Tx)
+                        return LoadoutSynchronizerState.Current;
+
+                    if (last.Id != loadoutId)
+                        return LoadoutSynchronizerState.OtherLoadoutSynced;
+
+                    var diffFound = await Task.Run(() =>
+                        {
+                            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
+                            var diffTree = GetApplyDiffTree(loadoutId);
+                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
+                            return diffFound;
+                        }
+                    );
+
+                    if (diffFound)
+                        return LoadoutSynchronizerState.NeedsSync;
+
+                    return LoadoutSynchronizerState.Current;
+                }
+            )
+            .Replay(1);
+
+        statusObservable.Connect();
+        
+        return statusObservable;
     }
 }

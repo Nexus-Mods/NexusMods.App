@@ -5,25 +5,48 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public static class LoadoutNameProvider
 {
-    private static readonly string[] Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(c => c.ToString()).ToArray();
-
     /// <summary>
-    /// Returns a capital one-letter short name for a loadout.
-    /// It will cycle through the alphabet, starting with 'A'.
-    /// If all letters are used,'Z' will be returned.
+    /// Returns a capital one or two letter short name for a loadout.
+    /// It will cycle through the alphabet, starting with 'A' and continue to AA.
+    /// If all two letter combinations are used, a duplicate name will be returned.
     /// Short names should not be assumed to be unique, they are only used for user disambiguation.
     /// </summary>
-    public static string GetNewShortName(string[] existingLoadoutsShortNames)
+    public static string GetNewShortName(ReadOnlySpan<string> existingLoadoutsShortNames)
     {
-        var usedLetters = new HashSet<string>(existingLoadoutsShortNames);
-        foreach (var letter in Alphabet)
+        for (var i = 'A'; i <= 'Z'; i++)
         {
-            if (!usedLetters.Contains(letter))
+            var found = false;
+            foreach (var name in existingLoadoutsShortNames)
             {
-                return letter;
+                if (name.Length != 1) continue;
+                if (name[0] != i) continue;
+
+                found = true;
+                break;
+            }
+
+            if (!found) return $"{i}";
+        }
+
+        for (var i = 'A'; i <= 'Z'; i++)
+        {
+            for (var j = 'A'; j <= 'Z'; j++)
+            {
+                var found = false;
+                foreach (var name in existingLoadoutsShortNames)
+                {
+                    if (name.Length != 2) continue;
+                    if (name[0] != i || name[1] != j) continue;
+
+                    found = true;
+                    break;
+                }
+
+                if (!found) return $"{i}{j}";
             }
         }
-        // If all letters are used, use "Z".
-        return "Z";
+
+        return "ZZ";
     }
+    
 }

@@ -10,7 +10,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge">
     <Design.DataContext>
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
@@ -24,6 +25,7 @@
         <Border x:Name="ClippingBorder">
             <Grid x:Name="InnerGrid">
                 <icons:UnifiedIcon x:Name="Image" />
+                <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
                 <Rectangle x:Name="Mask" />
                 <Border x:Name="DecorationBorder" />
             </Grid>

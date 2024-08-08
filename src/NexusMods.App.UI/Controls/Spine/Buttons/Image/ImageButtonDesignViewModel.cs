@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.App.UI.Controls.LoadoutBadge;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -11,5 +12,6 @@ public class ImageButtonDesignViewModel : ImageButtonViewModel
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         Click = ReactiveCommand.Create(() => { IsActive = !IsActive; });
         Name = "Image Text";
+        LoadoutBadgeViewModel = new LoadoutBadgeDesignViewModel();
     }
 }

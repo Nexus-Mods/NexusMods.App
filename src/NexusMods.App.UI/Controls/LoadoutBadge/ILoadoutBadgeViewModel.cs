@@ -9,7 +9,7 @@ public interface ILoadoutBadgeViewModel : IViewModelInterface
     
     string LoadoutShortName { get; }
     
-    bool IsLoadoutSelected { get; }
+    bool IsLoadoutSelected { get; set; }
     
     bool IsLoadoutApplied { get; }
     

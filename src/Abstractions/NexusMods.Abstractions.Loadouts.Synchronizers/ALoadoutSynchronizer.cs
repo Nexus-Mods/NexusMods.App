@@ -325,6 +325,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(loadout.Id, Loadout.LastAppliedDateTime, DateTime.UtcNow);
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -611,7 +612,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
+            {
                 await Synchronize(prevLoadout);
+                await DeactivateCurrentLoadout(loadout.InstallationInstance);
+                await ActivateLoadout(loadout);
+                return loadout.Rebase();
+            }
         }
 
         var tree = await BuildSyncTree(loadout);
@@ -944,7 +950,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var initialState = await GetOrCreateInitialDiskState(installation);
 
         var shortName = LoadoutNameProvider.GetNewShortName(Loadout.All(Connection.Db)
-            .Where(l => l.IsVisible())
+            .Where(l => l.IsVisible() 
+                        && l.InstallationInstance.LocationsRegister[LocationId.Game] == installation.LocationsRegister[LocationId.Game])
             .Select(l => l.ShortName)
             .ToArray()
         );

@@ -11,6 +11,7 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     public ILeftMenuViewModel? LeftMenuViewModel => null;
 
     public IIconButtonViewModel Home { get; } = new IconButtonDesignViewModel();
+    public IIconButtonViewModel AddLoadout { get; } = new IconButtonDesignViewModel();
 
     public ISpineDownloadButtonViewModel Downloads { get; } = new SpineDownloadButtonDesignerViewModel();
 

@@ -48,5 +48,6 @@
     <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LoadoutCards/LoadoutCardStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/MyLoadoutsView/MyLoadoutsViewStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/Spine/SpineStyles.axaml"/>
 
 </Styles>

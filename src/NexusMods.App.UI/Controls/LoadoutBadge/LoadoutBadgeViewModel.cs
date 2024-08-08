@@ -17,7 +17,7 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
     {
         this.WhenActivated(d =>
         {
-            var isLastAppliedSerialDisposable = new SerialDisposable().DisposeWith(d);
+            var applyStatusSerialDisposable = new SerialDisposable().DisposeWith(d);
             
             this.WhenAnyValue(vm => vm.LoadoutValue)
                 .Where(l => l.HasValue)
@@ -26,14 +26,16 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                 {
                     LoadoutShortName = loadout.ShortName;
                     
-                    isLastAppliedSerialDisposable.Disposable = syncService
-                        .LastAppliedRevisionFor(loadout.InstallationInstance)
-                        .Select(lastAppliedLoadout => lastAppliedLoadout.Id == loadout.LoadoutId)
-                        .BindToVM(this, vm => vm.IsLoadoutApplied)
-                        .DisposeWith(d);
-                    
-                    // TODO: Implement IsLoadoutInProgress
-                    
+                    applyStatusSerialDisposable.Disposable = Observable.FromAsync(() => syncService.StatusFor(loadout.LoadoutId))
+                    .Switch()
+                    .OnUI()
+                    .Do(applyStatus =>
+                        {
+                            IsLoadoutApplied = applyStatus == LoadoutSynchronizerState.Current;
+                            IsLoadoutInProgress = applyStatus == LoadoutSynchronizerState.Pending;
+                        }
+                    )
+                    .SubscribeWithErrorLogging();;
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
