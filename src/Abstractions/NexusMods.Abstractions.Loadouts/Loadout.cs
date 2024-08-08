@@ -59,8 +59,8 @@ public partial class Loadout : IModelDefinition
     /// </summary>
     public static readonly DateTimeAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime))
     {
-        DefaultValue = DateTime.MinValue,
         IsOptional = true,
+        DefaultValue = DateTime.MinValue,
     };
     
     /// <summary>

@@ -31,6 +31,7 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                         return Task.Run(() => syncService.StatusFor(loadout.LoadoutId));
                     })
                     .Switch()
+                    .OnUI()
                     .Do(applyStatus =>
                         {
                             IsLoadoutApplied = applyStatus == LoadoutSynchronizerState.Current;
