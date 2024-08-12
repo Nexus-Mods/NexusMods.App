@@ -624,6 +624,6 @@
         <value>Nigdy</value>
     </data>
     <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
-        <value>Zastosowanie zmian do grze</value>
+        <value>Zastosowanie zmian w grze</value>
     </data>
 </root>
