@@ -143,10 +143,8 @@ public class SynchronizerService : ISynchronizerService
         var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
-        var isBusy = Observable.CombineLatest(
-                gameState.ObservableForProperty(g => g.Busy, skipInitial: false),
-                loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false),
-                (g, l) => g.Value || l.Value)
+        var isBusy = loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false)
+            .Select(e => e.Value)
             .DistinctUntilChanged();
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
