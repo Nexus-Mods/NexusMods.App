@@ -161,9 +161,7 @@ public class SynchronizerService : ISynchronizerService
                 async tuple =>
                 {
                     var (busy, last, rev) = tuple;
-
-                    // make sure we have the latest value
-                    rev = rev.Rebase();
+                    var currentDb = _conn.Db;
                     // if the loadout is not found, it means it was deleted
                     if (!rev.IsValid())
                         return LoadoutSynchronizerState.OtherLoadoutSynced;
@@ -172,7 +170,7 @@ public class SynchronizerService : ISynchronizerService
                         return LoadoutSynchronizerState.Pending;
 
                     // Last DB revision is the same in the applied loadout
-                    if (last.Id == rev.LoadoutId && rev.MostRecentTxId() == last.Tx)
+                    if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
                         return LoadoutSynchronizerState.Current;
 
                     if (last.Id != loadoutId)
