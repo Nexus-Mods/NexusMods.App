@@ -124,6 +124,7 @@ public class SynchronizerService : ISynchronizerService
         await _statusSemaphore.WaitAsync();
         try
         {
+            // This observable may perform heavy diffing operation, so it needs to be shared between all subscribers
             if (_statusObservables.TryGetValue(loadoutId, out var observable)) return observable;
 
             observable = CreateStatusObservable(loadoutId);
