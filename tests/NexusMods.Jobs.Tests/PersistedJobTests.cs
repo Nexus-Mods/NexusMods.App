@@ -42,7 +42,7 @@ public class PersistedJobTests
     {
         // Setup
         var worker = _services.GetRequiredService<SlowResumableJobWorker>();
-        var job = await SlowResumableJob.Create(_connection, null!, worker, 40);
+        var job = await SlowResumableJob.Create(_connection, worker, 40);
 
         job.Should().BeOfType<SlowResumableJob>();
         var castedJob = (SlowResumableJob) job;

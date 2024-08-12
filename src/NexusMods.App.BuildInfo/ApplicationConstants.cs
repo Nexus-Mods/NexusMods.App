@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
+using JetBrains.Annotations;
 
 namespace NexusMods.App.BuildInfo;
 
 /// <summary>
 /// Constants supplied during runtime.
 /// </summary>
+[PublicAPI]
 public static class ApplicationConstants
 {
     static ApplicationConstants()
@@ -41,6 +43,8 @@ public static class ApplicationConstants
                 Version = debugVersion;
             }
         }
+
+        UserAgent = $"NexusModsApp/{Version.ToString(fieldCount: 3)}";
     }
 
     private static string? GetSha(string input)
@@ -59,5 +63,10 @@ public static class ApplicationConstants
     /// Gets the hash of the current commit.
     /// </summary>
     public static string? CommitHash { get; }
+
+    /// <summary>
+    /// Gets the default user-agent.
+    /// </summary>
+    public static string UserAgent { get; }
 }
 

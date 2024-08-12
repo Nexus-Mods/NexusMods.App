@@ -15,13 +15,4 @@
         <InternalsVisibleTo Include="NexusMods.Networking.Downloaders.Tests" />
         <PackageReference Include="ReactiveUI.Fody"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="HttpDownloadJobWorker.cs">
-        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="HttpDownloadJobPersistedState.cs">
-        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
 </Project>

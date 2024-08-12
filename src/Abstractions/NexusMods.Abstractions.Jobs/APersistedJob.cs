@@ -1,20 +1,31 @@
+using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Jobs;
 
+/// <summary>
+/// Base class for persisted jobs.
+/// </summary>
+[PublicAPI]
 public abstract class APersistedJob : AJob, IPersistedJob
 {
     private readonly IConnection _connection;
 
     /// <inheritdoc />
-    protected APersistedJob(IConnection connection, PersistedJobStateId id, MutableProgress progress, IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default) : 
-        base(progress, group, worker, monitor)
+    protected APersistedJob(
+        IConnection connection,
+        PersistedJobState.ReadOnly state,
+        MutableProgress progress,
+        IJobGroup? group = default,
+        IJobWorker? worker = default,
+        IJobMonitor? monitor = default) : base(progress, group, worker, monitor)
     {
         _connection = connection;
-        PersistedJobStateId = id;
-        _state = PersistedJobState.Load(_connection.Db, PersistedJobStateId);
+
+        PersistedJobStateId = state;
+        _state = state;
     }
 
     /// <inheritdoc />
@@ -61,5 +72,11 @@ public abstract class APersistedJob : AJob, IPersistedJob
         attr.Add(tx, PersistedJobStateId, value);
         await tx.Commit();
         _state = _state.Rebase();
+    }
+
+    internal override void SetStatus(JobStatus value)
+    {
+        base.SetStatus(value);
+        // TODO: Set(PersistedJobState.Status, value);
     }
 }

@@ -37,10 +37,10 @@
 		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
 	<data name="Updater_LATER" xml:space="preserve">
-		<value>PÓŹNIEJ</value>
+		<value>Później</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
-		<value>ZAKTUALIZUJ</value>
+		<value>Zaktualizuj</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
 		<value>Dostępna aktualizacja</value>
@@ -67,10 +67,10 @@
 		<value>Nieznane</value>
 	</data>
 	<data name="MessageBox_Button_Yes" xml:space="preserve">
-		<value>TAK</value>
+		<value>Tak</value>
 	</data>
 	<data name="MessageBox_Button_No" xml:space="preserve">
-		<value>NIE</value>
+		<value>Nie</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
 		<value>Anulować proces pobierania {0} i usunąć pliki?</value>
@@ -103,10 +103,10 @@
 		<value>STATUS</value>
 	</data>
 	<data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
-		<value>URUCHAMIANIE...</value>
+		<value>Uruchamianie...</value>
 	</data>
 	<data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-		<value>ZAGRAJ</value>
+		<value>Zagraj</value>
 	</data>
 	<data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
 		<value>{0} s</value>
@@ -133,16 +133,16 @@
 		<value>Szukaj</value>
 	</data>
 	<data name="TopBarActions__LOG_IN" xml:space="preserve">
-		<value>ZALOGUJ</value>
+		<value>Zaloguj</value>
 	</data>
 	<data name="GameWidget__Add_game" xml:space="preserve">
 		<value>Dodaj grę</value>
 	</data>
 	<data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-		<value>POBIERANIE</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
-		<value>Pobieranie</value>
+		<value>Następne</value>
 	</data>
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
@@ -154,25 +154,25 @@
 		<value>Historia pobierania</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-		<value>PROSZĘ KLIKNĄĆ "AUTHORISE" NA STRONIE INTERNETOWEJ</value>
+		<value>Proszę kliknąć "Authorise" na stronie internetowej</value>
 	</data>
 	<data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
-		<value>PRZEGLĄDARKA NIE URUCHOMIŁA SIĘ AUTOMATYCZNIE?</value>
+		<value>Przeglądarka nie uruchomiła się automatycznie?</value>
 	</data>
 	<data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
 		<value>Proszę skopiować poniższy adres URL do okna przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
 	</data>
 	<data name="DownloadCompleted_COMPLETED" xml:space="preserve">
-		<value>UKOŃCZONE</value>
+		<value>Ukończone</value>
 	</data>
 	<data name="DownloadCompleted_Clear_All" xml:space="preserve">
 		<value>Wyczyść wszystko</value>
 	</data>
 	<data name="DownloadHistoryView__HISTORY" xml:space="preserve">
-		<value>HISTORIA</value>
+		<value>Historia</value>
 	</data>
 	<data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
-		<value>W TRAKCIE</value>
+		<value>W trakcie</value>
 	</data>
 	<data name="DownloadInProgressView__Cancel" xml:space="preserve">
 		<value>Anuluj</value>
@@ -184,7 +184,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>Pobieranie</value>
+		<value>Zarządzaj pobieraniem</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
@@ -199,10 +199,10 @@
 		<value>Znaleziono gry gotowe do modowania!</value>
 	</data>
 	<data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
-		<value>NIE WYKRYTO TWOJEJ GRY</value>
+		<value>Nie wykryto twojej gry</value>
 	</data>
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
-		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
+		<value>Przeglądaj wszystkie gry</value>
 	</data>
     <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Dodaj</value>
@@ -286,25 +286,25 @@
 		<value>Pobieranie</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-		<value>AKTYWUJ ZESTAW</value>
+		<value>Aktywuj zestaw</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
+		<value>Zastosuj</value>
 	</data>
 	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
+		<value>Zastosuj</value>
 	</data>
 	<data name="ApplyingControlView__ApplyingText" xml:space="preserve">
 		<value>Zastosowywanie...</value>
 	</data>
 	<data name="ViewModFilesView_Location" xml:space="preserve">
-		<value>ŚCIEŻKA:</value>
+		<value>Ścieżka:</value>
 	</data>
 	<data name="ViewModFilesView_Locations" xml:space="preserve">
-		<value>ŚCIEŻKI:</value>
+		<value>Ścieżki:</value>
 	</data>
 	<data name="Helpers_ERROR" xml:space="preserve">
-		<value>BŁĄD</value>
+		<value>Błąd</value>
 	</data>
 	<data name="ErrorView_Title" xml:space="preserve">
 		<value>Coś poszło nie tak</value>
@@ -319,19 +319,19 @@
 		<value>Nie znaleziono moda</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
-		<value>SUGESTIA</value>
+		<value>Sugestia</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
-		<value>OSTRZEŻENIE</value>
+		<value>Ostrzeżenie</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
-		<value>BŁĄD KRYTYCZNY</value>
+		<value>Błąd krytyczny</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
 		<value>Kontrola kondycji</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
-		<value>UKRYTE</value>
+		<value>Ukryte</value>
 	</data>
 	<data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
 		<value>Wszystkie ({0})</value>
@@ -360,7 +360,7 @@
 		<value>ILOŚĆ PLIKÓW</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
-		<value>ZAŁADUJ</value>
+		<value>Załaduj</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
 		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
@@ -417,10 +417,10 @@
 		<value>Ustawienia</value>
 	</data>
 	<data name="DialogButton_CANCEL" xml:space="preserve">
-		<value>ANULUJ</value>
+		<value>Anuluj</value>
 	</data>
 	<data name="DialogButton_SAVE" xml:space="preserve">
-		<value>ZAPISZ</value>
+		<value>Zapisz</value>
 	</data>
 	<data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
 		<value>Uruchom ponownie aplikację, aby zastosować to ustawienie</value>
@@ -429,7 +429,7 @@
 		<value>Dodaj</value>
 	</data>
 	<data name="DialogButton_Discard" xml:space="preserve">
-		<value>ODRZUĆ</value>
+		<value>Odrzuć</value>
 	</data>
 	<data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
 		<value>Dziennik zmian</value>
@@ -570,5 +570,54 @@
     <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
         <value>Pobierz mody dla {0} z Nexus Mods</value>
         <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Twój zestaw przeszedł kontrolę kondycji bez problemów</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Gotowy do gry</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Utworzony {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Ostatnio zastosowany {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Mody: {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>Moje zestawy</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Zestawy pozwalają przełączać się między różnymi stylami gry, dostosowując każdy z nich za sprawą różnych modów i konfiguracji. Po prostu wybierz i zastosuj zestaw, którego chcesz użyć.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>Zestawy {0}</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Utwórz nowy zestaw</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Aktualnie zastosowany</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Utwórz kopię</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Usuwanie...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Tworzenie...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Zestawy pozwalają przełączać się między różnymi stylami gry, dostosowując każdy z nich za sprawą różnych modów i konfiguracji.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>Musisz dodać grę przed użyciem zestawów</value>
     </data>
 </root>
