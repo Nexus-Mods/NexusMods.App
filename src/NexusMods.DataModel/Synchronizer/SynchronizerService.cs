@@ -164,7 +164,10 @@ public class SynchronizerService : ISynchronizerService
 
                     // make sure we have the latest value
                     rev = rev.Rebase();
-
+                    // if the loadout is not found, it means it was deleted
+                    if (!rev.IsValid())
+                        return LoadoutSynchronizerState.OtherLoadoutSynced;
+                    
                     if (busy)
                         return LoadoutSynchronizerState.Pending;
 
