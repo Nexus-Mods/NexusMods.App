@@ -64,8 +64,11 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                     .DisposeWith(d);
                 
                 // Hide Delete button if last loadout
-                this.WhenAnyValue(view => view.ViewModel!.IsLastLoadout)
-                    .Select(isLastLoadout => !isLastLoadout)
+                Observable.CombineLatest(
+                        this.WhenAnyValue(view => view.ViewModel!.IsLastLoadout),
+                        this.WhenAnyValue(view => view.ViewModel!.IsLoadoutApplied),
+                        (isLastLoadout, isApplied) => !isLastLoadout && !isApplied
+                    )
                     .OnUI()
                     .BindToView(this, view => view.DeleteButton.IsVisible)
                     .DisposeWith(d);
