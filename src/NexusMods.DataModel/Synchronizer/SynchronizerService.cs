@@ -144,24 +144,25 @@ public class SynchronizerService : ISynchronizerService
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
         var isBusy = loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false)
-            .Select(e => e.Value)
-            .DistinctUntilChanged();
+            .Select(e => e.Value);
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
             .Where(last => last != default(LoadoutWithTxId));
 
-        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId);
+        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId)
+            // Use DB transaction, since child updates are not part of the loadout
+            .Select(rev => (loadout:rev, revDbTx:_conn.Db.BasisTxId));
 
         var statusObservable = Observable.CombineLatest(isBusy,
                 lastApplied,
                 revisions,
-                (busy, last, rev) => (busy, last, rev)
+                (busy, last, rev) => (busy, last, rev.loadout, rev.revDbTx)
             )
+            .DistinctUntilChanged()
             .SelectMany(
                 async tuple =>
                 {
-                    var (busy, last, rev) = tuple;
-                    var currentDb = _conn.Db;
+                    var (busy, last, rev, revDbTx) = tuple;
                     // if the loadout is not found, it means it was deleted
                     if (!rev.IsValid())
                         return LoadoutSynchronizerState.OtherLoadoutSynced;
@@ -170,7 +171,7 @@ public class SynchronizerService : ISynchronizerService
                         return LoadoutSynchronizerState.Pending;
 
                     // Last DB revision is the same in the applied loadout
-                    if (last.Id == rev.LoadoutId && currentDb.BasisTxId == last.Tx)
+                    if (last.Id == rev.LoadoutId && revDbTx == last.Tx)
                         return LoadoutSynchronizerState.Current;
 
                     if (last.Id != loadoutId)
