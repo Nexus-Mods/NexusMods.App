@@ -150,6 +150,22 @@
                     </Button>
                 </StackPanel>
 
+                <!-- Standard Tertiary -->
+                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                    <TextBlock>Standard Tertiary Weak</TextBlock>
+                    <Button Classes="Standard Tertiary Weak">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Play" />
+                            <TextBlock Text="Button" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="Standard Tertiary Weak" IsEnabled="False">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Play" />
+                            <TextBlock Text="Button" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
 
                 <!-- Standard Success -->
                 <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
@@ -349,6 +365,23 @@
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        </Style>
+    </Style>
+    
+    <!-- Standard Tertiary Weak -->
+    <Style Selector="Button.Standard.Tertiary.Weak">
+        <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
         </Style>
     </Style>
 
