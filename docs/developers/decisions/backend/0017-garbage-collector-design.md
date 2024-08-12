@@ -59,11 +59,30 @@ and obtain the hashes of all files in the archive.
 As with any `Garbage Collector`, we need to identify all the 'roots' of a tree
 from which files may be referenced from.
 
-***As of current time, the only roots in the `DataStore` are the `Loadouts`,***
-with each Loadout having the following approximate structure:
+***As of current time, the following are the known roots in the `DataStore`:***
+
+- Mod Library
+    - Any item in the library may be added to a loadout at any time, thus must
+      not be deleted.
+- Loadouts
+    - Loadouts have some `LoadoutItems` which do not correspond to a `LibraryItem`.
+    - Example: `Game Files` and `Overrides` files.
+
+The `DataModel` has the following approximate structure:
 
 ```mermaid
 erDiagram
+    Loadout ||--|{ LoadoutItem : contains
+
+    LibraryLinkedLoadoutItem {
+        LibraryItem LibraryItem
+    }
+
+    LibraryItem ||--|| LibraryLinkedLoadoutItem : references
+
+    LoadoutItemGroup ||--|{ LoadoutItem : contains
+    LoadoutItemGroup ||--|| LoadoutItem : is_a
+
     LoadoutItem {
         string Name
         bool IsDisabled
@@ -71,36 +90,35 @@ erDiagram
         OptionalLoadoutItemGroup Parent
     }
 
+    LoadoutItemWithTargetPath ||--|| LoadoutItem : is_a
     LoadoutItemWithTargetPath {
         GamePath TargetPath
     }
 
-    LoadoutItemWithTargetPath ||--|| LoadoutItem : includes
-
+    LoadoutFile ||--|| LoadoutItemWithTargetPath : is_a
     LoadoutFile {
         Hash Hash
         Size Size
     }
 
-    LoadoutFile ||--|| LoadoutItemWithTargetPath : includes
-
-    LoadoutItemGroup {
-        LoadoutItem[] Children
-    }
-
-    LoadoutItemGroup ||--|| LoadoutItem : includes
-    LoadoutItemGroup ||--|{ LoadoutItem : references
-    
-    Loadout { }
-    Loadout ||--|{ LoadoutItemGroup : references
+    LibraryLinkedLoadoutItem ||--|| LoadoutItem : is_a
 ```
+
+!!! note "`Loadouts` can contain any item which derives from `LoadoutItem`."
+
+    This includes `LoadoutItemGroup`, `LoadoutItemWithTargetPath`, `LoadoutFile` etc.
+    These links have been omitted for clarity.
 
 !!! note "Additional types based on `LoadoutItemWithTargetPath` may exist."
 
     For example something like `{ModFramework}LoadoutFile`, etc.
 
 In order to scan for files, you iterate over all loadouts that are not retracted/deleted;
-then walk through all of the `LoadoutItem` instances which derive from `LoadoutItemWithTargetPath`.
+then walk through all of the `LoadoutItem` instances which derive from `LoadoutItemWithTargetPath`; this
+will get us the `Game Files` and `Overrides` files.
+
+Then we must walk through all the files associated with `LibraryItem` instances, as
+these may be re-added any time through the mod library.
 
 All of these items would go in the [UsedFileList (B)](#design-overview).
 
