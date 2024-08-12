@@ -187,16 +187,12 @@ public class SynchronizerService : ISynchronizerService
                         }
                     );
 
-                    if (diffFound)
-                        return LoadoutSynchronizerState.NeedsSync;
-
-                    return LoadoutSynchronizerState.Current;
+                    return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
                 }
             )
-            .Replay(1);
+            .Replay(1)
+            .RefCount();
 
-        statusObservable.Connect();
-        
         return statusObservable;
     }
 }
