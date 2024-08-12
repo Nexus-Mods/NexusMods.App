@@ -26,7 +26,7 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                 {
                     LoadoutShortName = loadout.ShortName;
                     
-                    applyStatusSerialDisposable.Disposable = Observable.FromAsync(() => syncService.StatusFor(loadout.LoadoutId))
+                    applyStatusSerialDisposable.Disposable = Observable.FromAsync(() => syncService.StatusForLoadout(loadout.LoadoutId))
                     .Switch()
                     .OnUI()
                     .Do(applyStatus =>

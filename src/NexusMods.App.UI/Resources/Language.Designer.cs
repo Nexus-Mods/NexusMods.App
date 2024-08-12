@@ -69,6 +69,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applying changes to the game.
+        /// </summary>
+        public static string ApplyControlView__ApplyingToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView__ApplyingToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply your changes to the game folder.
         /// </summary>
         public static string ApplyControlView_Apply_ToolTip {

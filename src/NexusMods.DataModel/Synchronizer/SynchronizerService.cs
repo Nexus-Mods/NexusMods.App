@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
@@ -115,11 +114,20 @@ public class SynchronizerService : ISynchronizerService
             );
     }
 
+    
+    /// <inheritdoc />
+    public IObservable<GameSynchronizerState> StatusForGame(GameInstallMetadataId gameInstallId)
+    {
+        var gameState = GetOrAddGameState(gameInstallId);
+        return gameState.ObservableForProperty(s => s.Busy, skipInitial: false)
+            .Select(e => e.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
+    } 
+    
     private readonly Dictionary<LoadoutId, IObservable<LoadoutSynchronizerState>> _statusObservables = new();
     private readonly SemaphoreSlim _statusSemaphore = new(1, 1);
 
     /// <inheritdoc />
-    public async Task<IObservable<LoadoutSynchronizerState>> StatusFor(LoadoutId loadoutId)
+    public async Task<IObservable<LoadoutSynchronizerState>> StatusForLoadout(LoadoutId loadoutId)
     {
         await _statusSemaphore.WaitAsync();
         try
@@ -140,7 +148,6 @@ public class SynchronizerService : ISynchronizerService
     private IObservable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
-        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
         var isBusy = loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false)

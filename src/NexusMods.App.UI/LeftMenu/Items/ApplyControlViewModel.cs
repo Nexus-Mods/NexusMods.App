@@ -20,6 +20,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly ISynchronizerService _syncService;
 
     private readonly LoadoutId _loadoutId;
+    private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
@@ -36,6 +37,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
+        
+        _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
 
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
@@ -63,14 +66,21 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         this.WhenActivated(disposables =>
             {
-                // Newest Loadout
-                Observable.FromAsync(() => _syncService.StatusFor(_loadoutId))
-                    .Switch()
+                var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
+                    .Switch();
+
+                var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
+
+                Observable.CombineLatest(loadoutStatuses, gameStatuses, (loadout, game) => (loadout, game))
                     .OnUI()
                     .Subscribe(status =>
                     {
-                        CanApply = status != LoadoutSynchronizerState.Pending && status != LoadoutSynchronizerState.Current;
-                        IsLaunchButtonEnabled = status == LoadoutSynchronizerState.Current;
+                        var (ldStatus, gameStatus) = status;
+                        
+                        CanApply = gameStatus != GameSynchronizerState.Busy 
+                                   && ldStatus != LoadoutSynchronizerState.Pending 
+                                   && ldStatus != LoadoutSynchronizerState.Current;
+                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy;
                     })
                     .DisposeWith(disposables);
                 

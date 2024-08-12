@@ -629,4 +629,7 @@
     <data name="HumanizedDateTime_Never" xml:space="preserve">
         <value>Never</value>
     </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Applying changes to the game</value>
+    </data>
 </root>

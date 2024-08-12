@@ -33,7 +33,6 @@
                     <TextBlock x:Name="ViewApplyChangesTextBlock"
                                Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}" />
                 </StackPanel>
-                
             </navigation:NavigationControl>
 
             <!-- Apply button -->
@@ -58,6 +57,9 @@
             <Border HorizontalAlignment="Stretch"
                     x:Name="InProgressBorder"
                     VerticalAlignment="Center">
+                <ToolTip.Tip>
+                    <TextBlock Text="{x:Static resources:Language.ApplyControlView__ApplyingToolTip}" />
+                </ToolTip.Tip>
                 <StackPanel Orientation="Horizontal"
                             Classes="Spacing-1_5">
                     <progressRing:ProgressRing />
