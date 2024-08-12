@@ -21,15 +21,6 @@
     <!-- FlexPanel Styles -->
     <Style Selector="panels|FlexPanel">
         
-        <!-- NOTE(Al12rs): `FlexPanel` has initial values that don't match the `FlexBox` specification. -->
-        <!-- Specification: https://www.w3.org/TR/css-flexbox-1/#property-index -->
-        <!-- This workaround can be removed once this PR on Avalonia.Labs repo is merged: -->
-        <!-- https://github.com/Nexus-Mods/NexusMods.App/pull/1725 -->
-        <Setter Property="AlignItems" Value="Stretch" />
-        <Setter Property="AlignContent" Value="Stretch" />
-        <Setter Property="Wrap" Value="NoWrap" />
-        
-        
         <!-- NOTE(Al12rs): FlexPanel layout doesn't work correctly if its children don't have the default alignment (Stretch). -->
         <!-- As a notable example, Buttons have Left alignment by default set in Avalonia.Fluent theme. -->
         <Style Selector="^ > :is(Control)">

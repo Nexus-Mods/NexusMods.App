@@ -35,18 +35,16 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         if (path.LocationId != LocationId.Game) return false;
         return path.Path.InFolder(ContentFolder.Path);
     }
-    
-    protected override async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, LoadoutFile.ReadOnly[] newFiles)
+
+    protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
-        using var tx = Connection.BeginTransaction();
         var smapiModDirectoryNameToModel = new Dictionary<RelativePath, SMAPIModLoadoutItem.ReadOnly>();
 
-        var modified = 0;
-        
         foreach (var newFile in newFiles)
         {
-            var gamePath = newFile.AsLoadoutItemWithTargetPath().TargetPath;
-            if (!IsModFile(gamePath, out var modDirectoryName))
+            GamePath gamePath;
+
+            if (!IsModFile(newFile.LoadoutItemWithTargetPath.TargetPath, out var modDirectoryName))
             {
                 continue;
             }
@@ -61,24 +59,16 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
 
-            tx.Add(newFile.Id, LoadoutItem.Parent, smapiMod.Id);
-            modified += 1;
+            newFile.LoadoutItem.ParentId = smapiMod.Id;
         }
-
-        // Only commit if we have changes
-        if (modified <= 0)
-            return loadout;
-        
-        
-        var result = await tx.Commit();
-        return loadout.Rebase();
+        return ValueTask.CompletedTask;
     }
 
     private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out SMAPIModLoadoutItem.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath)
+        if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath.ToGamePathParentTuple(loadout))
                 .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == loadout && x.Contains(SMAPIManifestLoadoutFile.ManifestFile), out var file))
         {
             mod = default(SMAPIModLoadoutItem.ReadOnly);

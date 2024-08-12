@@ -72,7 +72,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             //     .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime);
 
             Loadout.Observe(conn, loadout.Id)
-                .Select(l => FormatNumMods(l.Items.Count(LoadoutUserFilters.ShouldShow)))
+                .Select(l => FormatNumMods(LoadoutUserFilters.GetItems(l).Count()))
                 .OnUI()
                 .BindToVM(this, x => x.LoadoutModCount)
                 .DisposeWith(d);
@@ -138,7 +138,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     
     private Task DeleteLoadout(Loadout.ReadOnly loadout)
     {
-        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout.InstallationInstance, loadout.LoadoutId));
+        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
     }
     
 }

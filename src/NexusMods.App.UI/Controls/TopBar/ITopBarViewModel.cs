@@ -26,4 +26,6 @@ public interface ITopBarViewModel : IViewModelInterface
     public IImage? Avatar { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
+
+    public IPanelTabViewModel? SelectedTab { get; set; }
 }

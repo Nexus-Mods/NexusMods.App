@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
@@ -44,6 +46,10 @@ public static class Services
         collection.AddAttributeCollection(typeof(ApiKey));
         
         return collection
+            .AddNexusModsLibraryModels()
+            .AddSingleton<NexusModsLibrary>()
+            .AddWorker<NexusModsDownloadJobWorker>()
+            .AddNexusModsDownloadJobPersistedStateModel()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
             .AddHostedService<HandlerRegistration>()

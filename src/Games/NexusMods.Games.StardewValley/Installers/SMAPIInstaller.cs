@@ -133,7 +133,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                 Size = fileEntry.AsLibraryFile().Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
                 {
-                    TargetPath = to,
+                    TargetPath = to.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = loadoutItem,
                 },
             };
@@ -155,7 +155,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var foundGameFilesGroup = LoadoutGameFilesGroup
-            .FindByGameMetadata(loadout.Db, loadout.Installation.GameMetadataId)
+            .FindByGameMetadata(loadout.Db, loadout.Installation.GameInstallMetadataId)
             .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
 
         if (!foundGameFilesGroup)
@@ -183,7 +183,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                     Size = gameFile.Size,
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                     {
-                        TargetPath = to,
+                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
                         LoadoutItem = new LoadoutItem.New(transaction, id)
                         {
                             Name = to.FileName,

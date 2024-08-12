@@ -19,7 +19,7 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
 
     ReactiveCommand<NavigationInformation, Unit> ViewLibraryCommand { get; }
     ReactiveCommand<NavigationInformation, Unit> ViewFilesCommand { get; }
-    ReactiveCommand<NavigationInformation, Unit> DeleteCommand { get; }
+    ReactiveCommand<Unit, Unit> DeleteCommand { get; }
 
     string? EmptyStateTitle { get; }
 }

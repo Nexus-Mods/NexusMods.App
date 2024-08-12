@@ -1,9 +1,15 @@
 using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Paths;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
 
@@ -21,15 +27,20 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private readonly DownloadService _downloadService;
     private readonly OAuth _oauth;
 
+    private readonly IServiceProvider _serviceProvider;
+
     /// <summary>
     /// constructor
     /// </summary>
     public NxmIpcProtocolHandler(
+        IServiceProvider serviceProvider,
         ILogger<NxmIpcProtocolHandler> logger, 
         DownloadService downloadService, 
         OAuth oauth,
         ILoginManager loginManager)
     {
+        _serviceProvider = serviceProvider;
+
         _logger = logger;
         _downloadService = downloadService;
         _oauth = oauth;
@@ -51,8 +62,20 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 var userInfo = await _loginManager.GetUserInfoAsync(cancel);
                 if (userInfo is not null)
                 {
-                    var task = await _downloadService.AddTask(modUrl);
-                    _ = task.StartAsync();
+                    var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
+                    var library = _serviceProvider.GetRequiredService<ILibraryService>();
+                    var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+
+                    await using var destination = temporaryFileManager.CreateFile();
+                    var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
+
+                    await using var libraryJob = library.AddDownload(downloadJob);
+                    await libraryJob.StartAsync(cancellationToken: cancel);
+                    var res = await libraryJob.WaitToFinishAsync(cancellationToken: cancel);
+                    _logger.LogInformation("{Result}", res);
+
+                    // var task = await _downloadService.AddTask(modUrl);
+                    // _ = task.StartAsync();
                 }
                 else
                 {

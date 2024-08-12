@@ -31,8 +31,7 @@
                 <Style Selector="^ StackPanel#DetailsSectionStackPanel">
                     <Setter Property="Opacity" Value="0.4" />
                 </Style>
-            </Style>
-            
+            </Style>            
         </Style>
         
         <Style Selector="^ Border#ImageSectionBorder">
@@ -59,8 +58,7 @@
         <Style Selector="^ TextBlock#VersionTextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-        </Style>
-        
+        </Style>        
         
         <Style Selector="^ progressRing|ProgressRing">
             <Style Selector="^ Arc">
@@ -82,6 +80,5 @@
         </Style>
         
     </Style>
-
 
 </Styles>

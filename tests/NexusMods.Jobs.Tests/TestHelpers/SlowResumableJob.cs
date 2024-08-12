@@ -5,23 +5,18 @@ namespace NexusMods.Jobs.Tests.TestHelpers;
 
 public class SlowResumableJob : APersistedJob
 {
-    internal SlowResumableJob(IConnection connection, PersistedJobStateId persistedJobStateId, MutableProgress progress, IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default) :
-        base(connection, persistedJobStateId, progress, group, worker, monitor)
-    {
-    }
+    internal SlowResumableJob(
+        IConnection connection,
+        PersistedJobState.ReadOnly persistedJobState,
+        IJobGroup? group = default,
+        IJobWorker? worker = default,
+        IJobMonitor? monitor = default) : base(connection, persistedJobState, null!, group, worker, monitor) { }
 
-    /// <summary>
-    /// Creates a new SlowResumableJob.
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="progress"></param>
-    /// <param name="worker"></param>
-    /// <returns></returns>
-    public static async Task<IJob> Create(IConnection connection, MutableProgress progress, SlowResumableJobWorker worker, ulong maxCount)
+    public static async Task<IJob> Create(IConnection connection, SlowResumableJobWorker worker, ulong maxCount)
     {
         using var tx = connection.BeginTransaction(); 
         
-        _ = new SlowResumableJobPersistedState.New(tx, out var id)
+        var newState = new SlowResumableJobPersistedState.New(tx, out var id)
         {
             PersistedJobState = new PersistedJobState.New(tx, id)
             {
@@ -33,6 +28,6 @@ public class SlowResumableJob : APersistedJob
         };
 
         var results = await tx.Commit();
-        return new SlowResumableJob(connection, results[id], progress, worker: worker);
+        return new SlowResumableJob(connection, results.Remap(newState).AsPersistedJobState(), worker: worker);
     }
 }
