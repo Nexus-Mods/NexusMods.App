@@ -949,12 +949,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Get the initial state of the game folder
         var initialState = await GetOrCreateInitialDiskState(installation);
 
-        var shortName = LoadoutNameProvider.GetNewShortName(Loadout.All(Connection.Db)
-            .Where(l => l.IsVisible() 
-                        && l.InstallationInstance.LocationsRegister[LocationId.Game] == installation.LocationsRegister[LocationId.Game])
+        var existingLoadoutNames = Loadout.All(Connection.Db)
+            .Where(l => l.IsVisible()
+                        && l.InstallationInstance.LocationsRegister[LocationId.Game]
+                        == installation.LocationsRegister[LocationId.Game]
+            )
             .Select(l => l.ShortName)
-            .ToArray()
-        );
+            .ToArray();
+        
+        var isOnlyLoadout = existingLoadoutNames.Length == 0;
+        
+        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
 
         using var tx = Connection.BeginTransaction();
 
@@ -1003,6 +1008,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Remap the ids
         var remappedLoadout = result.Remap(loadout);
+        
+        // If this is the only loadout, activate it
+        if (isOnlyLoadout)
+        {
+            await ActivateLoadout(remappedLoadout.Id);
+        }
 
         return remappedLoadout;
     }
