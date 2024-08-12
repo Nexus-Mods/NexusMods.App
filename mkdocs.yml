@@ -107,7 +107,7 @@ nav:
             - '0D: Default Datastore Locations': developers/decisions/backend/0013-default-datastore-locations.md
             - '0E: Synchronizer Structure': developers/decisions/backend/0014-synchronizer-structure.md
             - '0F: Loadout Items': developers/decisions/backend/0015-loadout-items.md
-            - '10: Garbage Collector Design': developers/decisions/backend/0016-disk-state-storage.md
+            - '10: Disk State Storage': developers/decisions/backend/0016-disk-state-storage.md
             - '11: Garbage Collector Design': developers/decisions/backend/0017-garbage-collector-design.md
         - Frontend:
             - '01: UI Panel Layout': developers/decisions/frontend/0001-UI-Panel-Layout.md
