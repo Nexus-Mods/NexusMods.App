@@ -597,6 +597,9 @@
         <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Library\LibraryViewModel.cs">
+          <DependentUpon>ILibraryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

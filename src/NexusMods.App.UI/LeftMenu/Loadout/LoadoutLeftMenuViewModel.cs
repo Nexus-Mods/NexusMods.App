@@ -12,6 +12,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
@@ -66,7 +67,27 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ),
         };
         
-        var modLibraryItem = new IconViewModel
+        var oldLibraryItem = new IconViewModel
+        {
+            Name = Language.FileOriginsPageTitle,
+            Icon = IconValues.ModLibrary,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = FileOriginsPageFactory.StaticId,
+                    Context = new FileOriginsPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                    },
+                };
+
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
+
+        var libraryItem = new IconViewModel
         {
             Name = Language.FileOriginsPageTitle,
             Icon = IconValues.ModLibrary,
@@ -76,8 +97,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
                 var pageData = new PageData
                 {
-                    FactoryId = FileOriginsPageFactory.StaticId,
-                    Context = new FileOriginsPageContext
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext
                     {
                         LoadoutId = loadoutContext.LoadoutId,
                     },
@@ -107,12 +128,13 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
-        
+
 
         var items = new ILeftMenuItemViewModel[]
         {
             loadoutItem,
-            modLibraryItem,
+            oldLibraryItem,
+            libraryItem,
             diagnosticItem,
         };
 
@@ -149,7 +171,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
             this.WhenAnyValue(vm => vm.NewDownloadModelCount)
                 .Select(count => count == 0 ? [] : new[] { count.ToString() })
-                .BindToVM(modLibraryItem, vm => vm.Badges)
+                .BindToVM(libraryItem, vm => vm.Badges)
                 .DisposeWith(disposable);
         });
     }
