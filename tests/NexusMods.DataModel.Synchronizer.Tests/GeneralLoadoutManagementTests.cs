@@ -40,20 +40,11 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
             """);
         var loadoutA = await CreateLoadout(false);
 
-        LogState(sb, "## 2 - Loadout Created (A) - No Sync",
+        LogState(sb, "## 2 - Loadout Created (A) - Synced",
             """
-            A new loadout has been created, but it hasn't been synchronized yet, so the 'Last Synced State' isn't set to a value even though the loadout contains the initial
-            game files.
+            A new loadout has been created and has been synchronized, so the 'Last Synced State' should be set to match the new loadout.
             """, [loadoutA]);
-        loadoutA = await Synchronizer.Synchronize(loadoutA);
 
-        await Synchronizer.Synchronize(loadoutA);
-        LogState(sb, "## 3 - Loadout Created - Synced",
-            """
-            Now that the loadout has been synchronized, the 'Last Synced State' should match the 'Current State' as the loadout has been applied to the game folder.
-            """,
-            loadouts: [loadoutA]);
-        
         var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
         var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
