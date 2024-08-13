@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library;
@@ -118,7 +119,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 await using var job = _libraryService.InstallItem(libraryItem, Loadout.Load(_connection.Db, loadoutId));
                 await job.StartAsync(cancellationToken: cancellationToken);
                 await job.WaitToFinishAsync(cancellationToken: cancellationToken);
-            }, awaitOperation: AwaitOperation.Parallel, cancelOnCompleted: true, configureAwait: true);
+            }, awaitOperation: AwaitOperation.Parallel, cancelOnCompleted: true, configureAwait: false);
 
         Source = CreateSource(nodes, createHierarchicalSource: ViewHierarchical);
 
@@ -142,6 +143,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .Transform(file => (file, new LibraryNode(_ticker)
             {
                 Id = file.Id,
+                ParentId = ViewHierarchical ? Optional<LibraryNodeId>.Create(file.FileMetadata.ModPageId.Value) : Optional<LibraryNodeId>.None,
                 DateAddedToLibrary = file.GetCreatedAt(),
                 Name = file.FileMetadata.Name,
                 Size = file.AsDownloadedFile().AsLibraryFile().Size,
@@ -163,12 +165,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     var modPageNode = new NexusModsModPageLibraryNode(_ticker)
                     {
                         Id = modPage.Id,
+                        ParentId = Optional<LibraryNodeId>.None,
                         DateAddedToLibrary = file.GetCreatedAt(),
                         Name = modPage.Name,
                     };
 
                     modPageNode.Children.Add(node);
-                    node.ParentId = modPageNode.Id;
                     modPageSourceCache.Edit(updater => updater.AddOrUpdate(modPageNode, modPage.NexusModsModPageMetadataId));
                 }
             })
@@ -200,6 +202,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var fileNode = new LibraryNode(_ticker)
                 {
                     Id = file.Id,
+                    ParentId = ViewHierarchical ? new LibraryNodeId(prefix: 1, file.Id) : Optional<LibraryNodeId>.None,
                     DateAddedToLibrary = file.GetCreatedAt(),
                     Name = file.AsLibraryFile().FileName,
                     Size = file.AsLibraryFile().Size,
@@ -208,13 +211,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var node = new LibraryNode(_ticker)
                 {
                     Id = new LibraryNodeId(prefix: 1, file.Id),
+                    ParentId = Optional<LibraryNodeId>.None,
                     DateAddedToLibrary = file.GetCreatedAt(),
                     Name = file.AsLibraryFile().FileName.ReplaceExtension(Extension.None),
                     Size = file.AsLibraryFile().Size,
                 };
 
                 node.Children.Add(fileNode);
-                fileNode.ParentId = node.Id;
                 return node;
             });
 
