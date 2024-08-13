@@ -2,7 +2,6 @@ using DynamicData.Binding;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -22,7 +21,6 @@ public class NexusModsModPageLibraryNode : LibraryNode
                 // TODO: use same file as shown on nexus mods
                 var primaryFile = Children.MaxBy<LibraryNode, string>(static node => node.Version, StringComparer.OrdinalIgnoreCase);
                 PrimaryFile.Value = primaryFile;
-
             })
             .AddTo(ref d);
 
@@ -36,7 +34,7 @@ public class NexusModsModPageLibraryNode : LibraryNode
         PrimaryFile
             .Where(static node => node is not null)
             .Select(static node => node!)
-            .Select(static node => node.WhenAnyValue(static node => node.DateAddedToLoadout).ToObservable())
+            .Select(static node => Observable.EveryValueChanged(node, static node => node.DateAddedToLoadout, frameProvider: ObservableSystem.DefaultFrameProvider))
             .Switch()
             .Subscribe(this, static (date, node) => node.DateAddedToLoadout = date)
             .AddTo(ref d);

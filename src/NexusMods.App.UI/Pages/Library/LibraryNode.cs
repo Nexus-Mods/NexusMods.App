@@ -103,23 +103,24 @@ public class LibraryNode : Node<LibraryNode>
             })
             .AddTo(ref d);
 
-        Observable.Return(Unit.Default).Merge(Observable.IntervalFrame(periodFrame: 30, frameProvider: ObservableSystem.DefaultFrameProvider))
+        Observable
+            .Interval(period: TimeSpan.FromSeconds(1), timeProvider: ObservableSystem.DefaultTimeProvider)
+            // .IntervalFrame(periodFrame: 60, frameProvider: ObservableSystem.DefaultFrameProvider)
             .Subscribe(this, static (_, node) =>
             {
                 var now = DateTime.Now;
-                node.FormattedDateAddedToLibrary = Format(now, node.DateAddedToLibrary);
-                node.FormattedDateAddedToLoadout = Format(now, node.DateAddedToLoadout);
-
-                return;
-                static string Format(DateTime now, DateTime other)
-                {
-                    if (other == DateTime.UnixEpoch || other == default(DateTime)) return "-";
-                    return other.Humanize(dateToCompareAgainst: now);
-                }
+                node.FormattedDateAddedToLibrary = FormatDate(now, node.DateAddedToLibrary);
+                node.FormattedDateAddedToLoadout = FormatDate(now, node.DateAddedToLoadout);
             })
             .AddTo(ref d);
 
         _disposable = d.Build();
+    }
+
+    private static string FormatDate(DateTime now, DateTime other)
+    {
+        if (other == DateTime.UnixEpoch || other == default(DateTime)) return "-";
+        return other.Humanize(dateToCompareAgainst: now);
     }
 
     public virtual LibraryItem.ReadOnly GetLibraryItemToInstall(IConnection connection)
