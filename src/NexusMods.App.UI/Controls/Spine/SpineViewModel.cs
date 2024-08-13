@@ -90,7 +90,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         
         this.WhenActivated(disposables =>
             {
-                var loadouts = Loadout.ObserveAllWithChildUpdates(_conn);
+                var loadouts = Loadout.ObserveAll(_conn);
                 
                     loadouts
                     .Filter(loadout => loadout.IsVisible())
