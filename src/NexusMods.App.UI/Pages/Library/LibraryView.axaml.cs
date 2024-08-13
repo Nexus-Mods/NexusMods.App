@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
@@ -24,17 +25,28 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler
-            ).Subscribe(tuple =>
-            {
-                var (_, args) = tuple;
-                var row = args.Row;
+            )
+                .Select(tuple =>
+                {
+                    var (_, args) = tuple;
+                    var row = args.Row;
 
-                var model = row.Model;
-                if (model is not Node node) return;
+                    var model = row.Model;
+                    if (model is not Node node) return null;
+                    node.Activate();
 
-                // TODO: deactivation
-                node.Activate();
-            }).AddTo(disposables);
+                    // NOTE(erri120): this assumes that the row will not be assigned
+                    // a different model between now and when it gets detached
+                    return Observable.FromEventHandler<VisualTreeAttachmentEventArgs>(
+                        addHandler: handler => row.DetachedFromVisualTree += handler,
+                        removeHandler: handler => row.DetachedFromVisualTree -= handler
+                    ).Select(node, static (_, node) => node);
+                })
+                .Where(static x => x is not null)
+                .Select(x => x!)
+                .Merge()
+                .Subscribe(static node => node.Deactivate())
+                .AddTo(disposables);
         });
     }
 }

@@ -102,9 +102,6 @@ public class LibraryNode : Node<LibraryNode>
 
         WhenNodeActivated(this, static (node, disposables) =>
         {
-            Console.WriteLine($"activated: {node.Name}");
-            Disposable.Create(node, static node => Console.WriteLine($"deactivated: {node.Name}")).AddTo(disposables);
-
             node.LinkedLoadoutItems
                 .ObserveCollectionChanges()
                 .ToObservable()
