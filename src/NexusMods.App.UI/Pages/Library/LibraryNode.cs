@@ -88,7 +88,7 @@ public class LibraryNode : Node<LibraryNode>
     public ReactiveCommand<System.Reactive.Unit, LibraryNode> AddToLoadoutCommand { get; }
 
     private readonly IDisposable _disposable;
-    public LibraryNode()
+    public LibraryNode(ConnectableObservable<DateTime> ticker)
     {
         AddToLoadoutCommand = ReactiveCommand.Create(() => this);
 
@@ -103,16 +103,11 @@ public class LibraryNode : Node<LibraryNode>
             })
             .AddTo(ref d);
 
-        Observable
-            .Interval(period: TimeSpan.FromSeconds(1), timeProvider: ObservableSystem.DefaultTimeProvider)
-            // .IntervalFrame(periodFrame: 60, frameProvider: ObservableSystem.DefaultFrameProvider)
-            .Subscribe(this, static (_, node) =>
-            {
-                var now = DateTime.Now;
-                node.FormattedDateAddedToLibrary = FormatDate(now, node.DateAddedToLibrary);
-                node.FormattedDateAddedToLoadout = FormatDate(now, node.DateAddedToLoadout);
-            })
-            .AddTo(ref d);
+        ticker.Subscribe(this, static (now, node) =>
+        {
+            node.FormattedDateAddedToLibrary = FormatDate(now, node.DateAddedToLibrary);
+            node.FormattedDateAddedToLoadout = FormatDate(now, node.DateAddedToLoadout);
+        }).AddTo(ref d);
 
         _disposable = d.Build();
     }

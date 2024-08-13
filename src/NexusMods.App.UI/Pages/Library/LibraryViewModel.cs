@@ -30,6 +30,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     [Reactive] public bool ViewHierarchical { get; set; } = true;
 
     private readonly SourceCache<LibraryNode, LibraryNodeId> _sourceCache = new(static node => node.Id);
+    private readonly ConnectableObservable<DateTime> _ticker;
 
     public LibraryViewModel(
         IWindowManager windowManager,
@@ -38,6 +39,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+
+        _ticker = R3.Observable.Interval(period: TimeSpan.FromSeconds(1), timeProvider: ObservableSystem.DefaultTimeProvider).Select(_ => DateTime.Now).Publish(DateTime.Now);
+        _ticker.Connect();
 
         var loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = loadout.InstallationInstance.Game;
@@ -135,7 +139,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var nexusModsLibraryFileObservable = NexusModsLibraryFile.ObserveAll(_connection)
             .OnUI()
             .Filter(file => file.FileMetadata.ModPage.GameDomain == game.Domain)
-            .Transform(file => (file, new LibraryNode
+            .Transform(file => (file, new LibraryNode(_ticker)
             {
                 Id = file.Id,
                 DateAddedToLibrary = file.GetCreatedAt(),
@@ -156,7 +160,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 else
                 {
                     var modPage = file.FileMetadata.ModPage;
-                    var modPageNode = new NexusModsModPageLibraryNode
+                    var modPageNode = new NexusModsModPageLibraryNode(_ticker)
                     {
                         Id = modPage.Id,
                         DateAddedToLibrary = file.GetCreatedAt(),
@@ -193,7 +197,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .OnUI()
             .Transform(file =>
             {
-                var fileNode = new LibraryNode
+                var fileNode = new LibraryNode(_ticker)
                 {
                     Id = file.Id,
                     DateAddedToLibrary = file.GetCreatedAt(),
@@ -201,7 +205,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     Size = file.AsLibraryFile().Size,
                 };
 
-                var node = new LibraryNode
+                var node = new LibraryNode(_ticker)
                 {
                     Id = new LibraryNodeId(prefix: 1, file.Id),
                     DateAddedToLibrary = file.GetCreatedAt(),

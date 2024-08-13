@@ -10,7 +10,7 @@ public class NexusModsModPageLibraryNode : LibraryNode
     private R3.ReactiveProperty<LibraryNode?> PrimaryFile { get; } = new();
 
     private readonly IDisposable _disposable;
-    public NexusModsModPageLibraryNode()
+    public NexusModsModPageLibraryNode(ConnectableObservable<DateTime> ticker) : base(ticker)
     {
         var d = Disposable.CreateBuilder();
 
