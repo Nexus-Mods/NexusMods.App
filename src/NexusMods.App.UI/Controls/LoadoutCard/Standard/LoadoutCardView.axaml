@@ -81,7 +81,7 @@
                                             <ToolTip.Tip>
                                                 <TextBlock Text="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
                                             </ToolTip.Tip>
-                                            <icons:UnifiedIcon Classes="TrashCanOutline" />
+                                            <icons:UnifiedIcon Classes="DeleteForever" />
                                         </Button>
                                     </panels:FlexPanel>
                                 </Border>
