@@ -112,6 +112,7 @@ public class LibraryNode : Node<LibraryNode>
                         .Max();
 
                     node.DateAddedToLoadout = dateAddedToLoadout;
+                    node.FormattedDateAddedToLoadout = FormatDate(DateTime.Now, node.DateAddedToLoadout);
                 })
                 .AddTo(disposables);
 
