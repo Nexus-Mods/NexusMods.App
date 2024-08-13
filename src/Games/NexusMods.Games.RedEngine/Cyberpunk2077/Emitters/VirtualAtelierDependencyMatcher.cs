@@ -31,8 +31,8 @@ public partial class VirtualAtelierDependencyMatcher(IFileStore store) : AFileSt
     ];
 
 
-    
-    protected override GameDomain Domain { get; } = GameDomain.From("cyberpunk2077");
+
+    protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
     protected override ModId ModId { get; } = ModId.From(2987);
 
     [GeneratedRegex("ref<VirtualShopRegistration>")]

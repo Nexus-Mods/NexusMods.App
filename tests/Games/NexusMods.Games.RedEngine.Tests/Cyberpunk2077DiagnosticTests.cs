@@ -33,6 +33,7 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         typeof(Red4ExtMissingEmitter),
         typeof(TweakXLMissingEmitter),
         typeof(VirtualAtelierDependencyMatcher),
+        typeof(AppearanceModMenuDependencyEmitter)
     ];
 
     public static string TemplateData(Type diagnosticType) =>
