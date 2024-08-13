@@ -1,12 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
 namespace NexusMods.Library;
@@ -62,5 +64,13 @@ public sealed class LibraryService : ILibraryService
         };
 
         return job;
+    }
+    public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun)
+    {
+        using var tx = _connection.BeginTransaction();
+        foreach (var item in libraryItems)
+            tx.Delete(item.Id, false);
+
+        await tx.Commit();
     }
 }

@@ -21,6 +21,11 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
 
     ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection { get; }
     
+    /// <summary>
+    /// Remove the mod from the library.
+    /// </summary>
+    ReactiveCommand<Unit, Unit> RemoveMod { get; }
+    
     string EmptyLibrarySubtitleText { get; }
 
     /// <summary>

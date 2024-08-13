@@ -23,6 +23,9 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
 
             DataGrid.Width = Double.NaN;
 
+            this.BindCommand(ViewModel, vm => vm.RemoveMod, view => view.RemoveModButton)
+                .DisposeWith(d);
+            
             this.BindCommand(ViewModel, vm => vm.AddMod, view => view.AddModButton)
                 .DisposeWith(d);
 

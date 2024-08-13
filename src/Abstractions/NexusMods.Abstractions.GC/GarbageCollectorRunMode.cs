@@ -1,4 +1,4 @@
-namespace NexusMods.Abstractions.Loadouts.Synchronizers;
+namespace NexusMods.Abstractions.GC;
 
 /// <summary>
 /// Defines the mode used to run the Garbage Collector as part of deletion of a loadout.

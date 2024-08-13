@@ -1,6 +1,7 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GC;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel;

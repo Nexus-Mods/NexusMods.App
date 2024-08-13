@@ -207,6 +207,9 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>Browse all games</value>
     </data>
+    <data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+        <value>Delete</value>
+    </data>
     <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Add</value>
     </data>
@@ -531,7 +534,10 @@
         <value>Help and feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Add mod to your mod list</value>
+        <value>Add mod to your loadout</value>
+    </data>
+    <data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
+        <value>Remove mod from the library, saving disk space</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
         <value>Use advanced installer to manually select files to include</value>

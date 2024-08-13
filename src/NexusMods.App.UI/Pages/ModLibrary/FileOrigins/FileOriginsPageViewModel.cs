@@ -8,9 +8,7 @@ using DynamicData;
 using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -57,7 +55,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     }
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection => _selectedModsCollection;
-    
+    public ReactiveCommand<Unit, Unit> RemoveMod { get; }
+
     public string EmptyLibrarySubtitleText { get; }
 
     public ReactiveCommand<Unit, Unit> AddMod { get; private set; } = null!;
@@ -94,14 +93,18 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
-        var canAddMod = new Subject<bool>();
+        var hasSelection = new Subject<bool>();
         var advancedInstaller = _provider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
-        AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
+        AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), hasSelection);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
             await DoAddModImpl(advancedInstaller, cancellationToken);
-        }, canAddMod);
-        
+        }, hasSelection);
+        RemoveMod = ReactiveCommand.CreateFromTask(async token =>
+        {
+            await RemoveSelectedItems(token);
+        }, hasSelection);
+
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
         
         this.WhenActivated(d =>
@@ -154,11 +157,16 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 {
                     return observable
                         .Select(_ => SelectedModsCollection.Count > 0)
-                        .SubscribeWithErrorLogging(hasSelection => canAddMod.OnNext(hasSelection));
+                        .SubscribeWithErrorLogging(hasSel => hasSelection.OnNext(hasSel));
                 })
                 .SubscribeWithErrorLogging(disposable => serialDisposable.Disposable = disposable)
                 .DisposeWith(d);
         });
+    }
+    private async Task RemoveSelectedItems(CancellationToken ct)
+    {
+        var itemsToRemove = SelectedModsCollection.ToList();
+        await _libraryService.RemoveItems(itemsToRemove.Select(x => x.LibraryFile.AsLibraryItem()));
     }
 
     public async Task RegisterFromDisk(IStorageProvider storageProvider)

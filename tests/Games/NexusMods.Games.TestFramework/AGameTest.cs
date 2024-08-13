@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
