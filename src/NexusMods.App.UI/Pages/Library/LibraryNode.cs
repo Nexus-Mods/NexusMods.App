@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Binding;
 using DynamicData.Kernel;
@@ -88,7 +90,6 @@ public class LibraryNode : Node<LibraryNode>
 
     public ReactiveCommand<System.Reactive.Unit, LibraryNode> AddToLoadoutCommand { get; }
 
-    private readonly Subject<bool> _activation = new();
     private readonly ConnectableObservable<DateTime> _ticker;
 
     private readonly IDisposable _disposable;
@@ -99,8 +100,11 @@ public class LibraryNode : Node<LibraryNode>
 
         var d = Disposable.CreateBuilder();
 
-        WhenActivated(static (node, disposables) =>
+        WhenNodeActivated(this, static (node, disposables) =>
         {
+            Console.WriteLine($"activated: {node.Name}");
+            Disposable.Create(node, static node => Console.WriteLine($"deactivated: {node.Name}")).AddTo(disposables);
+
             node.LinkedLoadoutItems
                 .ObserveCollectionChanges()
                 .ToObservable()
@@ -123,48 +127,7 @@ public class LibraryNode : Node<LibraryNode>
             }).AddTo(disposables);
         }).AddTo(ref d);
 
-        Observable
-            .EveryValueChanged(this, static node => node.IsExpanded)
-            .DefaultIfEmpty(false)
-            .DistinctUntilChanged()
-            .Subscribe(this, static (isExpanded, node) =>
-            {
-                node._activation.OnNext(isExpanded);
-
-                foreach (var child in node.Children)
-                {
-                    child._activation.OnNext(isExpanded);
-                }
-            }).AddTo(ref d);
-
-        // root nodes are activated by default
-        if (!ParentId.HasValue) _activation.OnNext(true);
-
         _disposable = d.Build();
-    }
-
-    protected IDisposable WhenActivated(Action<LibraryNode, CompositeDisposable> block)
-    {
-        var d = Disposable.CreateBuilder();
-
-        var serialDisposable = new SerialDisposable();
-        serialDisposable.AddTo(ref d);
-
-        _activation.DistinctUntilChanged().Subscribe((this, serialDisposable, block), static (isActivated, state) =>
-        {
-            var (node, serialDisposable, block) = state;
-
-            serialDisposable.Disposable = null;
-            if (isActivated)
-            {
-                var compositeDisposable = new CompositeDisposable();
-                serialDisposable.Disposable = compositeDisposable;
-
-                block(node, compositeDisposable);
-            }
-        }).AddTo(ref d);
-
-        return d.Build();
     }
 
     private static string FormatDate(DateTime now, DateTime other)
@@ -185,7 +148,7 @@ public class LibraryNode : Node<LibraryNode>
         {
             if (disposing)
             {
-                Disposable.Dispose(_disposable, _activation);
+                _disposable.Dispose();
             }
 
             _isDisposed = true;

@@ -18,6 +18,7 @@ using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -41,7 +42,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
-        _ticker = R3.Observable.Interval(period: TimeSpan.FromSeconds(1), timeProvider: ObservableSystem.DefaultTimeProvider).Select(_ => DateTime.Now).Publish(DateTime.Now);
+        _ticker = Observable
+            .Return(DateTime.Now)
+            .Merge(Observable.Interval(period: TimeSpan.FromHours(1), timeProvider: ObservableSystem.DefaultTimeProvider).Select(_ => DateTime.Now))
+            .Prepend(DateTime.Now)
+            .DefaultIfEmpty(DateTime.Now)
+            .Publish(initialValue: DateTime.Now);
+            // .Replay(bufferSize: 1);
+
         _ticker.Connect();
 
         var loadout = Loadout.Load(_connection.Db, loadoutId.Value);
