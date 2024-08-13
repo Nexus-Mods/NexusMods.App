@@ -7,14 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using ObservableCollections;
-using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -45,15 +43,20 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var localFileObservable = ObserveLocalFiles();
         var modPageObservable = ObserveModPages(game);
 
+        var stack = new Stack<LibraryNode>();
+
         localFileObservable
             .MergeChangeSets(modPageObservable)
+            .Synchronize(stack)
             .OnItemAdded(node =>
             {
-                var stack = new Stack<LibraryNode>();
                 stack.Push(node);
 
                 while (stack.TryPop(out var current))
                 {
+                    current.LinkedLoadoutItems.Clear();
+                    current.LinkedLoadoutItems.Add(LibraryLinkedLoadoutItem.FindByLibraryItem(_connection.Db, current.Id.Id));
+
                     _sourceCache.AddOrUpdate(current);
                     foreach (var child in current.Children)
                     {
@@ -63,7 +66,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             })
             .OnItemRemoved(node =>
             {
-                var stack = new Stack<LibraryNode>();
                 stack.Push(node);
 
                 while (stack.TryPop(out var current))
@@ -77,6 +79,25 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             })
             .DisposeMany()
             .Bind(out var nodes)
+            .SubscribeWithErrorLogging();
+
+        LibraryLinkedLoadoutItem
+            .ObserveAll(_connection)
+            .Filter(item => item.AsLoadoutItem().LoadoutId == loadoutId)
+            .OnItemAdded(item =>
+            {
+                var lookup = _sourceCache.Lookup(item.LibraryLinkedLoadoutItemId.Value);
+                if (!lookup.HasValue) return;
+
+                lookup.Value.LinkedLoadoutItems.Add(item);
+            })
+            .OnItemRemoved(item =>
+            {
+                var lookup = _sourceCache.Lookup(item.LibraryLinkedLoadoutItemId.Value);
+                if (!lookup.HasValue) return;
+
+                lookup.Value.LinkedLoadoutItems.Remove(item);
+            })
             .SubscribeWithErrorLogging();
 
         Source = CreateSource(nodes, createHierarchicalSource: ViewHierarchical);
@@ -101,6 +122,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .Transform(file => (file, new LibraryNode
             {
                 Id = file.Id,
+                DateAddedToLibrary = file.GetCreatedAt(),
                 Name = file.FileMetadata.Name,
                 Size = file.AsDownloadedFile().AsLibraryFile().Size,
                 Version = file.FileMetadata.Version,
@@ -121,6 +143,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     var modPageNode = new NexusModsModPageLibraryNode
                     {
                         Id = modPage.Id,
+                        DateAddedToLibrary = file.GetCreatedAt(),
                         Name = modPage.Name,
                     };
 
@@ -157,6 +180,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var fileNode = new LibraryNode
                 {
                     Id = file.Id,
+                    DateAddedToLibrary = file.GetCreatedAt(),
                     Name = file.AsLibraryFile().FileName,
                     Size = file.AsLibraryFile().Size,
                 };
@@ -164,6 +188,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var node = new LibraryNode
                 {
                     Id = new LibraryNodeId(prefix: 1, file.Id),
+                    DateAddedToLibrary = file.GetCreatedAt(),
                     Name = file.AsLibraryFile().FileName.ReplaceExtension(Extension.None),
                     Size = file.AsLibraryFile().Size,
                 };
@@ -195,12 +220,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private static void AddColumns(ColumnList<LibraryNode> columnList, bool viewAsTree)
     {
         var nameColumn = LibraryNode.CreateNameColumn();
-        var versionColumn = LibraryNode.CreateVersionColumn();
-        var sizeColumn = LibraryNode.CreateSizeColumn();
 
         columnList.Add(viewAsTree ? LibraryNode.CreateExpanderColumn(nameColumn) : nameColumn);
-        columnList.Add(versionColumn);
-        columnList.Add(sizeColumn);
+        columnList.Add(LibraryNode.CreateVersionColumn());
+        columnList.Add(LibraryNode.CreateSizeColumn());
+        columnList.Add(LibraryNode.CreateDateAddedToLibraryColumn());
+        columnList.Add(LibraryNode.CreateDateAddedToLoadoutColumn());
     }
 }
-

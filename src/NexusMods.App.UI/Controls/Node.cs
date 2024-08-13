@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using JetBrains.Annotations;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls;
@@ -9,7 +10,7 @@ namespace NexusMods.App.UI.Controls;
 /// Base class for models displayed in a <see cref="Avalonia.Controls.TreeDataGrid"/>.
 /// </summary>
 [PublicAPI]
-public class Node<TNode> : IDisposable
+public class Node<TNode> : ReactiveObject, IDisposable
     where TNode : Node<TNode>
 {
     [Reactive] public bool IsExpanded { get; [UsedImplicitly] set; }
