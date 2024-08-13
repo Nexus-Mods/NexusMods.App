@@ -8,7 +8,7 @@ namespace NexusMods.DataModel.Synchronizer;
 
 public class SynchronizerState : ReactiveObject
 {
-    private volatile bool _busy = false;
+    private bool _busy = false;
 
     public bool Busy
     {
