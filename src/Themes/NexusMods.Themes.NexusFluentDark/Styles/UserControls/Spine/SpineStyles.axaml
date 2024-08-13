@@ -34,6 +34,7 @@
             </Style>
         </Style>
 
+        <!-- Region containing the Loadout ImageButtons -->
         <Style Selector="^ Border#LoadoutSelectorBorder">
             <Setter Property="BorderThickness" Value="0,1,0,0" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
