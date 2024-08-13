@@ -87,21 +87,23 @@ public class LibraryNode : Node<LibraryNode>
 
     public ReactiveCommand<System.Reactive.Unit, LibraryNode> AddToLoadoutCommand { get; }
 
-    private readonly CompositeDisposable _disposables = new();
+    private readonly IDisposable _disposable;
     public LibraryNode()
     {
         AddToLoadoutCommand = ReactiveCommand.Create(() => this);
 
-        var disposable1 = LinkedLoadoutItems
+        var d = Disposable.CreateBuilder();
+
+        LinkedLoadoutItems
             .ObserveCollectionChanges()
             .ToObservable()
             .Subscribe(this, static (_, node) =>
             {
                 node.DateAddedToLoadout = node.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).DefaultIfEmpty(DateTime.UnixEpoch).Max();
-            });
-        _disposables.Add(disposable1);
+            })
+            .AddTo(ref d);
 
-        var disposable2 = Observable.Return(Unit.Default).Merge(Observable.IntervalFrame(periodFrame: 30, frameProvider: ObservableSystem.DefaultFrameProvider))
+        Observable.Return(Unit.Default).Merge(Observable.IntervalFrame(periodFrame: 30, frameProvider: ObservableSystem.DefaultFrameProvider))
             .Subscribe(this, static (_, node) =>
             {
                 var now = DateTime.Now;
@@ -114,9 +116,10 @@ public class LibraryNode : Node<LibraryNode>
                     if (other == DateTime.UnixEpoch || other == default(DateTime)) return "-";
                     return other.Humanize(dateToCompareAgainst: now);
                 }
-            });
+            })
+            .AddTo(ref d);
 
-        _disposables.Add(disposable2);
+        _disposable = d.Build();
     }
 
     public virtual LibraryItem.ReadOnly GetLibraryItemToInstall(IConnection connection)
@@ -131,7 +134,7 @@ public class LibraryNode : Node<LibraryNode>
         {
             if (disposing)
             {
-                _disposables.Dispose();
+                _disposable.Dispose();
             }
 
             _isDisposed = true;
