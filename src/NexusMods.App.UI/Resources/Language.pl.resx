@@ -615,7 +615,7 @@
         <value>Tworzenie...</value>
     </data>
     <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
-        <value>Zestawy pozwalają przełączać się między różnymi stylami gry, dostosowując każdy z nich za sprawą różnych modów i konfiguracji.</value>
+        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez finezyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
     </data>
     <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
         <value>Dodaj grę przed użyciem zestawów</value>
