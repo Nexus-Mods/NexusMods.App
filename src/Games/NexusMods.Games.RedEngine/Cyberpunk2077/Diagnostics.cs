@@ -19,7 +19,7 @@ public static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing Mod with Known Nexus URI")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The group '{Group}' requires {DependencyName} to function properly, but it is missing.")
+        .WithSummary("The mod '{Group}' requires {DependencyName} to function properly, but it is missing.")
         .WithDetails("""
 
 You can download the latest version of `{DependencyName}` from {NexusModsDependencyUri}.

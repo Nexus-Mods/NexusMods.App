@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -57,11 +58,19 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         var dependantPaths = DependantPaths;
         var dependantExtensions = DependantExtensions;
         
-        var groups = loadout.Items.GetEnabledLoadoutFiles()
-            .Where(file => IsDependant(dependantPaths, dependantExtensions, file.AsLoadoutItemWithTargetPath().TargetPath))
-            .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
+        var groups = await loadout.Items.GetEnabledLoadoutFiles()
+            .SelectAsync(async file =>
+                {
+                    var withPath = file.AsLoadoutItemWithTargetPath();
+                    if (!IsDependantPath(dependantPaths, dependantExtensions, withPath.TargetPath))
+                        return (file, false);
+                    return (file, await CheckIsDependant(withPath));
+                }
+            )
+            .Where(row => row.Item2)
+            .Select(row => row.file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
             .Distinct()
-            .ToList();
+            .ToListAsync(cancellationToken: cancellationToken);
 
         if (groups.Count == 0)
             yield break;
@@ -105,6 +114,12 @@ public abstract class APathBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         return (enabled, disabled);
     }
 
-    private bool IsDependant(GamePath[] dependantPaths, Extension[] dependantExtensions, GamePath path) =>
+    /// <summary>
+    /// A filter to check if the item is dependant on the dependency, return false if something about the file makes it not dependant, for example
+    /// if the other filters are too broad and something inside the file itself needs to be checked.
+    /// </summary>
+    protected virtual ValueTask<bool> CheckIsDependant(LoadoutItemWithTargetPath.ReadOnly item) => new(true);
+
+    private bool IsDependantPath(GamePath[] dependantPaths, Extension[] dependantExtensions, GamePath path) =>
         dependantExtensions.Contains(path.Extension) && dependantPaths.Any(path.InFolder);
 }

@@ -29,6 +29,7 @@ public static class Services
             .AddSingleton<CyberEngineTweaksMissingEmitter>()
             .AddSingleton<Red4ExtMissingEmitter>()
             .AddSingleton<TweakXLMissingEmitter>()
+            .AddSingleton<VirtualAtelierDependencyMatcher>()
             
             .AddSettings<Cyberpunk2077Settings>();
         return services;

@@ -72,7 +72,8 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         _serviceProvider.GetRequiredService<ArchiveXLMissingEmitter>(),
         _serviceProvider.GetRequiredService<CyberEngineTweaksMissingEmitter>(),
         _serviceProvider.GetRequiredService<Red4ExtMissingEmitter>(),
-        _serviceProvider.GetRequiredService<TweakXLMissingEmitter>()
+        _serviceProvider.GetRequiredService<TweakXLMissingEmitter>(),
+        _serviceProvider.GetRequiredService<VirtualAtelierDependencyMatcher>(),
     ];
 
     /// <inheritdoc />
