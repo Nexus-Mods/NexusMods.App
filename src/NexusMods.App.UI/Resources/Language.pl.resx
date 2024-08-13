@@ -624,6 +624,9 @@
         <value>Nigdy</value>
     </data>
     <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
-        <value>Zastosowanie zmian w grze</value>
+        <value>Zastosowanie zmian do gry</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Usuń zestaw</value>
     </data>
 </root>
