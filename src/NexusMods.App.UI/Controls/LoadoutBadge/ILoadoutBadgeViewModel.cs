@@ -14,4 +14,6 @@ public interface ILoadoutBadgeViewModel : IViewModelInterface
     bool IsLoadoutApplied { get; }
     
     bool IsLoadoutInProgress { get; }
+    
+    bool IsVisible { get; }
 }

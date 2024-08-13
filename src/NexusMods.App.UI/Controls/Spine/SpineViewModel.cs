@@ -102,7 +102,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
-                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService);
+                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
                             vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
                             vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };

@@ -65,4 +65,5 @@ public class LoadoutBadgeDesignViewModel : AViewModel<ILoadoutBadgeViewModel>, I
     [Reactive] public bool IsLoadoutSelected { get; set; } = false;
     [Reactive] public bool IsLoadoutApplied { get; set; } = false;
     [Reactive] public bool IsLoadoutInProgress { get; set; } = false;
+    public bool IsVisible { get; } = true;
 }
