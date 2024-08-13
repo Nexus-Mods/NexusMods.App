@@ -5,6 +5,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
@@ -13,6 +14,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -20,8 +22,8 @@ namespace NexusMods.App.UI.Pages.Library;
 
 public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewModel
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
+    private readonly ILibraryService _libraryService;
 
     [Reactive] public ITreeDataGridSource<LibraryNode> Source { get; set; }
 
@@ -34,8 +36,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
-        _serviceProvider = serviceProvider;
-        _connection = _serviceProvider.GetRequiredService<IConnection>();
+        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         var loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = loadout.InstallationInstance.Game;
@@ -100,6 +102,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 lookup.Value.LinkedLoadoutItems.Remove(item);
             })
             .SubscribeWithErrorLogging();
+
+        _sourceCache
+            .Connect()
+            .MergeMany(static node => node.AddToLoadoutCommand)
+            .ToObservable()
+            .Select(_connection, static (node, connection) => node.GetLibraryItemToInstall(connection))
+            .Where(libraryItem => libraryItem.IsValid())
+            .SubscribeAwait(async (libraryItem, cancellationToken) =>
+            {
+                await using var job = _libraryService.InstallItem(libraryItem, Loadout.Load(_connection.Db, loadoutId));
+                await job.StartAsync(cancellationToken: cancellationToken);
+                await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+            }, awaitOperation: AwaitOperation.Parallel, cancelOnCompleted: true, configureAwait: true);
 
         Source = CreateSource(nodes, createHierarchicalSource: ViewHierarchical);
 
@@ -227,5 +242,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         columnList.Add(LibraryNode.CreateSizeColumn());
         columnList.Add(LibraryNode.CreateDateAddedToLibraryColumn());
         columnList.Add(LibraryNode.CreateDateAddedToLoadoutColumn());
+        columnList.Add(LibraryNode.CreateAddToLoadoutButtonColumn());
     }
 }

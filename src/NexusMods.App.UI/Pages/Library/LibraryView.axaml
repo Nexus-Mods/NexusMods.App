@@ -12,7 +12,13 @@
     <TreeDataGrid x:Name="TreeDataGrid"
                   ShowColumnHeaders="True"
                   CanUserResizeColumns="True"
-                  CanUserSortColumns="True" />
+                  CanUserSortColumns="True">
+        <TreeDataGrid.Resources>
+            <DataTemplate x:Key="AddToLoadoutButtonColumnTemplate" x:DataType="local:LibraryNode">
+                <Button Command="{CompiledBinding AddToLoadoutCommand}">Add</Button>
+            </DataTemplate>
+        </TreeDataGrid.Resources>
+    </TreeDataGrid>
 
 </reactive:ReactiveUserControl>
 

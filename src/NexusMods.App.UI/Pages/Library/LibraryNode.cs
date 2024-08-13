@@ -3,12 +3,14 @@ using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Binding;
 using Humanizer;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 
@@ -81,9 +83,15 @@ public class LibraryNode : Node<LibraryNode>
     [Reactive] public DateTime DateAddedToLoadout { get; set; }
     [Reactive] public string FormattedDateAddedToLoadout { get; private set; } = "-";
 
+    public bool IsInLoadout => LinkedLoadoutItems.Any();
+
+    public ReactiveCommand<System.Reactive.Unit, LibraryNode> AddToLoadoutCommand { get; }
+
     private readonly CompositeDisposable _disposables = new();
     public LibraryNode()
     {
+        AddToLoadoutCommand = ReactiveCommand.Create(() => this);
+
         var disposable1 = LinkedLoadoutItems
             .ObserveCollectionChanges()
             .ToObservable()
@@ -109,6 +117,11 @@ public class LibraryNode : Node<LibraryNode>
             });
 
         _disposables.Add(disposable2);
+    }
+
+    public virtual LibraryItem.ReadOnly GetLibraryItemToInstall(IConnection connection)
+    {
+        return LibraryItem.Load(connection.Db, Id.Id);
     }
 
     private bool _isDisposed;
@@ -220,6 +233,25 @@ public class LibraryNode : Node<LibraryNode>
         )
         {
             Tag = "date_added_to_loadout",
+        };
+    }
+
+    public static IColumn<LibraryNode> CreateAddToLoadoutButtonColumn()
+    {
+        return new TemplateColumn<LibraryNode>(
+            header: "Install",
+            cellTemplateResourceKey: "AddToLoadoutButtonColumnTemplate",
+            options: new TemplateColumnOptions<LibraryNode>
+            {
+                CompareAscending = static (a, b) => a?.IsInLoadout.CompareTo(b?.IsInLoadout) ?? 1,
+                CompareDescending = static (a, b) => b?.IsInLoadout.CompareTo(a?.IsInLoadout) ?? 1,
+                IsTextSearchEnabled = false,
+                CanUserResizeColumn = true,
+                CanUserSortColumn = true,
+            }
+        )
+        {
+            Tag = "add_to_loadout_button",
         };
     }
 }

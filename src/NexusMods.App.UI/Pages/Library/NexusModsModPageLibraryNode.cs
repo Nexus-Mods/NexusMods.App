@@ -1,4 +1,6 @@
 using DynamicData.Binding;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 
@@ -39,6 +41,13 @@ public class NexusModsModPageLibraryNode : LibraryNode
             .Subscribe(this, static (date, node) => node.DateAddedToLoadout = date);
 
         _disposables.Add(disposable3);
+    }
+
+    public override LibraryItem.ReadOnly GetLibraryItemToInstall(IConnection connection)
+    {
+        var primaryFile = PrimaryFile.Value;
+        if (primaryFile is null) return base.GetLibraryItemToInstall(connection);
+        return primaryFile.GetLibraryItemToInstall(connection);
     }
 
     private bool _isDisposed;
