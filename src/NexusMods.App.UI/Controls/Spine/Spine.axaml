@@ -35,7 +35,9 @@
             </panels:FlexPanel>
         </Border>
         
-        <Border x:Name="AddBorder">
+        <!-- TODO: Make "Add" button visible again after Improved Loadout/Game creation is implemented -->
+        <!-- https://www.figma.com/design/TbJiArfCPTv9fQFIEPuwd5/%F0%9F%93%B1-Loadouts?node-id=2-8562&m=dev -->
+        <Border x:Name="AddBorder" IsVisible="False">
             <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add"/>
         </Border>
         <Border x:Name="DownloadBorder">
