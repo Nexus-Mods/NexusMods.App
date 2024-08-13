@@ -8,10 +8,13 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using ObservableCollections;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,6 +28,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     [Reactive] public ITreeDataGridSource<LibraryNode> Source { get; set; }
 
     [Reactive] public bool ViewHierarchical { get; set; } = true;
+
+    private readonly SourceCache<LibraryNode, LibraryNodeId> _sourceCache = new(static node => node.Id);
 
     public LibraryViewModel(
         IWindowManager windowManager,
@@ -42,6 +47,34 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         localFileObservable
             .MergeChangeSets(modPageObservable)
+            .OnItemAdded(node =>
+            {
+                var stack = new Stack<LibraryNode>();
+                stack.Push(node);
+
+                while (stack.TryPop(out var current))
+                {
+                    _sourceCache.AddOrUpdate(current);
+                    foreach (var child in current.Children)
+                    {
+                        stack.Push(child);
+                    }
+                }
+            })
+            .OnItemRemoved(node =>
+            {
+                var stack = new Stack<LibraryNode>();
+                stack.Push(node);
+
+                while (stack.TryPop(out var current))
+                {
+                    _sourceCache.RemoveKey(current.Id);
+                    foreach (var child in current.Children)
+                    {
+                        stack.Push(child);
+                    }
+                }
+            })
             .DisposeMany()
             .Bind(out var nodes)
             .SubscribeWithErrorLogging();
@@ -62,11 +95,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var modPageSourceCache = new SourceCache<NexusModsModPageLibraryNode, NexusModsModPageMetadataId>(_ => throw new NotSupportedException());
 
-        NexusModsLibraryFile.ObserveAll(_connection)
+        var nexusModsLibraryFileObservable = NexusModsLibraryFile.ObserveAll(_connection)
             .OnUI()
             .Filter(file => file.FileMetadata.ModPage.GameDomain == game.Domain)
             .Transform(file => (file, new LibraryNode
             {
+                Id = file.Id,
                 Name = file.FileMetadata.Name,
                 Size = file.AsDownloadedFile().AsLibraryFile().Size,
                 Version = file.FileMetadata.Version,
@@ -86,10 +120,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     var modPage = file.FileMetadata.ModPage;
                     var modPageNode = new NexusModsModPageLibraryNode
                     {
+                        Id = modPage.Id,
                         Name = modPage.Name,
                     };
 
                     modPageNode.Children.Add(node);
+                    node.ParentId = modPageNode.Id;
                     modPageSourceCache.Edit(updater => updater.AddOrUpdate(modPageNode, modPage.NexusModsModPageMetadataId));
                 }
             })
@@ -103,33 +139,39 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
                 modPageLookup.Value.Children.Remove(node);
             })
-            .Transform(tuple => tuple.Item2)
-            .SubscribeWithErrorLogging();
+            .Transform(tuple => tuple.Item2);
+
+        if (!ViewHierarchical) return nexusModsLibraryFileObservable;
+        nexusModsLibraryFileObservable.SubscribeWithErrorLogging();
 
         return modPageSourceCache.Connect().RemoveKey().Cast(static node => (LibraryNode)node);
     }
 
     private IObservable<IChangeSet<LibraryNode>> ObserveLocalFiles()
     {
-        var localFileObservable = LocalFile.ObserveAll(_connection).OnUI().Transform(file =>
-        {
-            var fileNode = new LibraryNode
+        var localFileObservable = LocalFile
+            .ObserveAll(_connection)
+            .OnUI()
+            .Transform(file =>
             {
-                Name = file.AsLibraryFile().FileName,
-                Size = file.AsLibraryFile().Size,
-            };
+                var fileNode = new LibraryNode
+                {
+                    Id = file.Id,
+                    Name = file.AsLibraryFile().FileName,
+                    Size = file.AsLibraryFile().Size,
+                };
 
-            if (!ViewHierarchical) return fileNode;
+                var node = new LibraryNode
+                {
+                    Id = new LibraryNodeId(prefix: 1, file.Id),
+                    Name = file.AsLibraryFile().FileName.ReplaceExtension(Extension.None),
+                    Size = file.AsLibraryFile().Size,
+                };
 
-            var node = new LibraryNode
-            {
-                Name = file.AsLibraryFile().FileName.ReplaceExtension(Extension.None),
-                Size = file.AsLibraryFile().Size,
-            };
-
-            node.Children.Add(fileNode);
-            return node;
-        });
+                node.Children.Add(fileNode);
+                fileNode.ParentId = node.Id;
+                return node;
+            });
 
         return localFileObservable;
     }

@@ -1,5 +1,4 @@
-using ObservableCollections;
-using R3;
+using DynamicData.Binding;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -10,13 +9,13 @@ public class NexusModsModPageLibraryNode : LibraryNode
     public NexusModsModPageLibraryNode()
     {
         _disposable = Children
-            .ObserveCountChanged()
-            .Subscribe(this, static (_, node) =>
+            .ObserveCollectionChanges()
+            .Subscribe(_ =>
             {
                 // TODO: use same file as shown on nexus mods
-                var primaryFile = Enumerable.MaxBy<LibraryNode, string>(node.Children, static node => node.Version, StringComparer.OrdinalIgnoreCase);
-                node.Version = primaryFile?.Version ?? DefaultVersion;
-                node.Size = primaryFile?.Size ?? DefaultSize;
+                var primaryFile = Children.MaxBy<LibraryNode, string>(static node => node.Version, StringComparer.OrdinalIgnoreCase);
+                Version = primaryFile?.Version ?? DefaultVersion;
+                Size = primaryFile?.Size ?? DefaultSize;
             });
     }
 

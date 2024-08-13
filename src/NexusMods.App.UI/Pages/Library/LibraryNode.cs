@@ -1,13 +1,34 @@
 using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Library;
 
+public readonly struct LibraryNodeId
+{
+    public readonly ulong Prefix;
+    public readonly EntityId Id;
+
+    public LibraryNodeId(ulong prefix, EntityId id)
+    {
+        Prefix = prefix;
+        Id = id;
+    }
+
+    public static LibraryNodeId Empty => new();
+
+    public static implicit operator LibraryNodeId(EntityId id) => new(0, id);
+    public static implicit operator EntityId(LibraryNodeId id) => id.Id;
+}
+
 public class LibraryNode : Node<LibraryNode>
 {
+    public required LibraryNodeId Id { get; init; }
+    [Reactive] public LibraryNodeId ParentId { get; set; }
+
     public required string Name { get; init; }
 
     protected const string DefaultVersion = "-";

@@ -1,6 +1,6 @@
+using System.Collections.ObjectModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using JetBrains.Annotations;
-using ObservableCollections;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls;
@@ -14,7 +14,7 @@ public class Node<TNode> : IDisposable
 {
     [Reactive] public bool IsExpanded { get; [UsedImplicitly] set; }
 
-    public ObservableList<TNode> Children { get; private set; } = [];
+    public ObservableCollection<TNode> Children { get; private set; } = [];
     public bool HasChildren => Children.Count > 0;
 
     public void Dispose()
