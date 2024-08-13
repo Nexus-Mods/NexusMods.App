@@ -632,4 +632,7 @@
     <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
         <value>Applying changes to the game</value>
     </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Delete Loadout</value>
+    </data>
 </root>

@@ -1194,6 +1194,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Loadout.
+        /// </summary>
+        public static string LoadoutCard_DeleteLoadoutToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Copy.
         /// </summary>
         public static string LoadoutCardViewCreateCopyButton {
