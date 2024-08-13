@@ -9,7 +9,10 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Library.LibraryView">
 
-    hi
+    <TreeDataGrid x:Name="TreeDataGrid"
+                  ShowColumnHeaders="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True" />
 
 </reactive:ReactiveUserControl>
 
