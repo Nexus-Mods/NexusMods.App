@@ -56,9 +56,8 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         Version = "-";
 
         ArchiveDate = libraryFile.GetCreatedAt();
-        
-        var loadout = Loadout.Load(conn.Db, loadoutId);
 
+        var loadout = Loadout.Load(conn.Db, loadoutId);
         _isModAddedToLoadout = loadout.Revisions()
             .Select(x => x.GetLoadoutItemsByLibraryItem(libraryFile.AsLibraryItem()).Any())
             .ToProperty(this, vm => vm.IsModAddedToLoadout, scheduler: RxApp.MainThreadScheduler);

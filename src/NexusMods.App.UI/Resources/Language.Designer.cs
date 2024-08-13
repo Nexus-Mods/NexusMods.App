@@ -1244,5 +1244,53 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("MyLoadoutsEmptyState_Header", resourceCulture);
             }
         }
+        
+        public static string LibraryItemDeleteConfirmation_Title {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_Title", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_Question {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_Question", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_NonPermanentWarning {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_NonPermanentWarning", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_NonPermanentWarning_Tip {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_NonPermanentWarning_Tip", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_ManuallyAddedWarning {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_ManuallyAddedWarning", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_LoadoutWarning {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_LoadoutWarning", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemDeleteConfirmation_LoadoutWarning_Tip {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_LoadoutWarning_Tip", resourceCulture);
+            }
+        }
     }
 }
