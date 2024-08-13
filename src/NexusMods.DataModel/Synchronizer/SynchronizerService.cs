@@ -184,6 +184,7 @@ public class SynchronizerService : ISynchronizerService
                     if (last.Id != loadoutId)
                         return LoadoutSynchronizerState.OtherLoadoutSynced;
 
+                    // Potentially long operation, run on thread pool
                     var diffFound = await Task.Run(() =>
                         {
                             _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
