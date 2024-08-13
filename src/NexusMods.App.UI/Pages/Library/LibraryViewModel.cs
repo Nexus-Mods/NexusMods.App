@@ -84,16 +84,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
             .Filter(item => item.AsLoadoutItem().LoadoutId == loadoutId)
+            .OnUI()
             .OnItemAdded(item =>
             {
-                var lookup = _sourceCache.Lookup(item.LibraryLinkedLoadoutItemId.Value);
+                var lookup = _sourceCache.Lookup(item.LibraryItemId.Value);
                 if (!lookup.HasValue) return;
 
                 lookup.Value.LinkedLoadoutItems.Add(item);
             })
             .OnItemRemoved(item =>
             {
-                var lookup = _sourceCache.Lookup(item.LibraryLinkedLoadoutItemId.Value);
+                var lookup = _sourceCache.Lookup(item.LibraryItemId.Value);
                 if (!lookup.HasValue) return;
 
                 lookup.Value.LinkedLoadoutItems.Remove(item);

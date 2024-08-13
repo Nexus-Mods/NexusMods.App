@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Binding;
+using Humanizer;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls;
@@ -9,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI.Fody.Helpers;
+using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -64,7 +66,6 @@ public class LibraryNode : Node<LibraryNode>
     public ObservableCollection<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; } = new();
 
     public required string Name { get; init; }
-    public required DateTime DateAddedToLibrary { get; init; }
 
     protected const string DefaultVersion = "-";
     [Reactive] public string Version { get; set; } = DefaultVersion;
@@ -73,18 +74,41 @@ public class LibraryNode : Node<LibraryNode>
     [Reactive] public Size Size { get; set; } = DefaultSize;
 
     protected static readonly DateTime DefaultDateAddedToLoadout = DateTime.UnixEpoch;
-    [Reactive] public DateTime DateAddedToLoadout { get; set; }
 
-    private readonly IDisposable _disposable;
+    public required DateTime DateAddedToLibrary { get; init; }
+    [Reactive] public string FormattedDateAddedToLibrary { get; private set; } = "-";
+
+    [Reactive] public DateTime DateAddedToLoadout { get; set; }
+    [Reactive] public string FormattedDateAddedToLoadout { get; private set; } = "-";
+
+    private readonly CompositeDisposable _disposables = new();
     public LibraryNode()
     {
-        _disposable = LinkedLoadoutItems
+        var disposable1 = LinkedLoadoutItems
             .ObserveCollectionChanges()
             .ToObservable()
             .Subscribe(this, static (_, node) =>
             {
                 node.DateAddedToLoadout = node.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).DefaultIfEmpty(DateTime.UnixEpoch).Max();
             });
+        _disposables.Add(disposable1);
+
+        var disposable2 = Observable.Return(Unit.Default).Merge(Observable.IntervalFrame(periodFrame: 30, frameProvider: ObservableSystem.DefaultFrameProvider))
+            .Subscribe(this, static (_, node) =>
+            {
+                var now = DateTime.Now;
+                node.FormattedDateAddedToLibrary = Format(now, node.DateAddedToLibrary);
+                node.FormattedDateAddedToLoadout = Format(now, node.DateAddedToLoadout);
+
+                return;
+                static string Format(DateTime now, DateTime other)
+                {
+                    if (other == DateTime.UnixEpoch || other == default(DateTime)) return "-";
+                    return other.Humanize(dateToCompareAgainst: now);
+                }
+            });
+
+        _disposables.Add(disposable2);
     }
 
     private bool _isDisposed;
@@ -94,7 +118,7 @@ public class LibraryNode : Node<LibraryNode>
         {
             if (disposing)
             {
-                _disposable.Dispose();
+                _disposables.Dispose();
             }
 
             _isDisposed = true;
@@ -163,9 +187,9 @@ public class LibraryNode : Node<LibraryNode>
 
     public static IColumn<LibraryNode> CreateDateAddedToLibraryColumn()
     {
-        return new TextColumn<LibraryNode, DateTime>(
+        return new TextColumn<LibraryNode, string>(
             header: "Date added to Library",
-            getter: model => model.DateAddedToLibrary,
+            getter: model => model.FormattedDateAddedToLibrary,
             options: new TextColumnOptions<LibraryNode>
             {
                 CompareAscending = static (a, b) => DateTime.Compare(a?.DateAddedToLibrary ?? DateTime.UnixEpoch, b?.DateAddedToLibrary ?? DateTime.UnixEpoch),
@@ -182,9 +206,9 @@ public class LibraryNode : Node<LibraryNode>
 
     public static IColumn<LibraryNode> CreateDateAddedToLoadoutColumn()
     {
-        return new TextColumn<LibraryNode, DateTime>(
+        return new TextColumn<LibraryNode, string>(
             header: "Date added to Loadout",
-            getter: model => model.DateAddedToLoadout,
+            getter: model => model.FormattedDateAddedToLoadout,
             options: new TextColumnOptions<LibraryNode>
             {
                 CompareAscending = static (a, b) => DateTime.Compare(a?.DateAddedToLoadout ?? DateTime.UnixEpoch, b?.DateAddedToLoadout ?? DateTime.UnixEpoch),
