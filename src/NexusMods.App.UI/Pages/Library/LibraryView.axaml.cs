@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
@@ -35,17 +36,25 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     if (model is not Node node) return null;
                     node.Activate();
 
+                    var cts = new CancellationTokenSource();
+
                     // NOTE(erri120): this assumes that the row will not be assigned
                     // a different model between now and when it gets detached
                     return Observable.FromEventHandler<VisualTreeAttachmentEventArgs>(
                         addHandler: handler => row.DetachedFromVisualTree += handler,
-                        removeHandler: handler => row.DetachedFromVisualTree -= handler
-                    ).Select(node, static (_, node) => node);
+                        removeHandler: handler => row.DetachedFromVisualTree -= handler,
+                        cancellationToken: cts.Token
+                    ).Select((node, cts), static (_, tuple) => tuple);
                 })
                 .Where(static x => x is not null)
                 .Select(x => x!)
                 .Merge()
-                .Subscribe(static node => node.Deactivate())
+                .Subscribe(static tuple =>
+                {
+                    var (node, cts) = tuple;
+                    node.Deactivate();
+                    cts.Cancel();
+                })
                 .AddTo(disposables);
         });
     }
