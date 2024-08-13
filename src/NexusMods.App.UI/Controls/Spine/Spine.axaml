@@ -22,7 +22,7 @@
 
         <Border x:Name="LoadoutSelectorBorder" >
             <panels:FlexPanel x:Name="LoadoutSelector" >
-                <ScrollViewer x:Name="LoadoutSelectorSroller" >
+                <ScrollViewer x:Name="LoadoutSelectorScroller" >
                     <ItemsControl x:Name="Loadouts">
 
                         <ItemsControl.ItemsPanel>
