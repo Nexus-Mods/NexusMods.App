@@ -160,7 +160,7 @@
 		<value>Przeglądarka nie uruchomiła się automatycznie?</value>
 	</data>
 	<data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
-		<value>Proszę skopiować poniższy adres URL do okna przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
+		<value>Proszę, skopiuj poniższy adres URL i wklej go w oknie swojej przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge, więc z pewnością wszystko zadziała!</value>
 	</data>
 	<data name="DownloadCompleted_COMPLETED" xml:space="preserve">
 		<value>Ukończone</value>
@@ -184,7 +184,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>Zarządzaj pobieraniem</value>
+		<value>Zarządzaj pobraniami</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
@@ -196,7 +196,7 @@
 		<value>do końca</value>
 	</data>
 	<data name="HomeView__We_found_games" xml:space="preserve">
-		<value>Znaleziono gry gotowe do modowania!</value>
+		<value>Z radością informujemy, że znalazły się gry, które czekają na Twoje twórcze pomysły!</value>
 	</data>
 	<data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
 		<value>Nie wykryto twojej gry</value>
@@ -310,10 +310,10 @@
 		<value>Coś poszło nie tak</value>
 	</data>
 	<data name="ErrorView_MissingMod_Description" xml:space="preserve">
-		<value>Aplikacja nie może uzyskać dostępu do określonego moda, ponieważ został usunięty lub już nie istnieje.</value>
+		<value>Wygląda na to, że nie możemy uzyskać dostępu do tego moda, ponieważ został usunięty lub nie jest już dostępny. Proszę sprawdzić, czy masz odpowiednią wersję lub wybierz inny mod. Dziękujemy za zrozumienie!</value>
 	</data>
 	<data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-		<value>Brak moda</value>
+		<value>Problem z dostępem do moda</value>
 	</data>
 	<data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
 		<value>Nie znaleziono moda</value>
@@ -363,10 +363,10 @@
 		<value>Załaduj</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
-		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
+		<value>Wszystkie wspierane gry zostały już dodane, jednakże nie wykryto nowych gier.</value>
 	</data>
 	<data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-		<value>Dodaj gry, aby rozpocząć modowanie</value>
+		<value>Dodaj swoje ulubione gry, aby zacząć przygodę z modowaniem.</value>
 	</data>
 	<data name="GameWidget__Adding_game" xml:space="preserve">
 		<value>Dodawanie gry</value>
@@ -474,10 +474,10 @@
         <value>Usuń</value>
     </data>
     <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+        <value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods! Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.&#x0a;&#x0a;Życzymy udanego modowania i wspaniałych przygód!</value>
     </data>
     <data name="LoginMessageView_Title" xml:space="preserve">
-        <value>Zaloguj się, by rozpocząć</value>
+        <value>Zaloguj się i zacznij swoją przygodę</value>
     </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
         <value>Uzyskaj mody:</value>
@@ -593,7 +593,7 @@
         <value>Moje zestawy</value>
     </data>
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Zestawy pozwalają przełączać się między różnymi stylami gry, dostosowując każdy z nich za sprawą różnych modów i konfiguracji. Po prostu wybierz i zastosuj zestaw, którego chcesz użyć.</value>
+        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez finezyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najbardziej Ci odpowiada, aby zacząć przygodę z modowaniem.</value>
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>Zestawy {0}</value>
