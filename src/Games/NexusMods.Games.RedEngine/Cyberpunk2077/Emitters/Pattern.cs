@@ -19,7 +19,7 @@ public record Pattern
     /// <summary>
     /// A documentation string that explains why we think the mod is required.
     /// </summary>
-    public required string Explination { get; init; }
+    public required string Explanation { get; init; }
     
     /// <summary>
     /// The NexusMods mod ID of the required mod.

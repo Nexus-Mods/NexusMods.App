@@ -145,14 +145,14 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                if (row.MatchingSegment.HasValue)
                {
                    yield return Diagnostics.CreateDisabledGroupDependencyWithStringSegment(parent.ToReference(loadout), disabledGroup.ToReference(loadout), requiredMod,
-                       pattern.Explination, row.File.TargetPath, row.SearchPattern.Path,
+                       pattern.Explanation, row.File.TargetPath, row.SearchPattern.Path,
                        row.SearchPattern.Extension, row.MatchingSegment.Value, row.StartingLineNumber
                    );
                }
                else
                {
                    yield return Diagnostics.CreateDisabledGroupDependency(parent.ToReference(loadout), disabledGroup.ToReference(loadout), requiredMod,
-                       pattern.Explination, row.File.TargetPath, row.SearchPattern.Path,
+                       pattern.Explanation, row.File.TargetPath, row.SearchPattern.Path,
                        row.SearchPattern.Extension
                    );
                    
@@ -165,13 +165,13 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                 if (row.MatchingSegment.HasValue)
                 {
                     yield return Diagnostics.CreateMissingModWithKnownNexusUriWithStringSegment(
-                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explination,
+                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explanation,
                         row.File.TargetPath, row.SearchPattern.Path, row.SearchPattern.Extension, row.MatchingSegment.Value, row.StartingLineNumber);
                 }
                 else
                 {
                     yield return Diagnostics.CreateMissingModWithKnownNexusUri(
-                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explination,
+                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explanation,
                         row.File.TargetPath, row.SearchPattern.Path, row.SearchPattern.Extension);
                     
                 }

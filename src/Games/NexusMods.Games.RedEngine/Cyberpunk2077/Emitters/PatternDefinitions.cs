@@ -32,7 +32,7 @@ public static partial class PatternDefinitions
                     Regex = CodewareRegex(),
                 },
             ],
-            Explination = """
+            Explanation = """
 Codeware is an extension to Cyberpunk that adds several utility classes and methods to the game. We detect the use of this library by looking for uses of 'ScriptableService' in
 '.reds' files, and the global 'Codeware' in '.lua' files.                                                    
 """,
@@ -56,7 +56,7 @@ Codeware is an extension to Cyberpunk that adds several utility classes and meth
                     Regex = VirtualShopRegistrationMatcher(), 
                 },
             ],
-            Explination = """
+            Explanation = """
 Virtual Atelier is a mod that adds a virtual shop to the game. It provides a RedScript hook that other mods can use to register their own items 
 with the shop. We scan `.reds` files for this hook to detect the use of this mod.
 """,
@@ -76,7 +76,7 @@ with the shop. We scan `.reds` files for this hook to detect the use of this mod
                     Extension = new Extension(".lua"),
                 },
             ],
-            Explination = """
+            Explanation = """
 Appearance Menu Mod is a mod based on CET that adds an in-game menu for changing appearances of NPCs and the player. It has a lua registration
 script, and a `Collabs` folder that allows other mods to extend its functionality. We look for `.lua` files in the `Collabs` folder to detect the use of this mod.                          
 """,
@@ -97,7 +97,7 @@ script, and a `Collabs` folder that allows other mods to extend its functionalit
                     Extension = new Extension(".dll"),
                 },
             ],
-            Explination = """
+            Explanation = """
 Red4Ext is a mod loader for Cyberpunk that allows other mods to hook into the game. We detect the use of this mod by looking for `.dll` files in the `red4ext/plugins` folder. We 
 detect that this mod is installed by looking for the presence of `winmm.dll` in the game folder, and `RED4ext.dll` in the `red4ext` folder.                          
 """,
@@ -127,7 +127,7 @@ detect that this mod is installed by looking for the presence of `winmm.dll` in 
                     Extension = new Extension(".yaml"),
                 },
             ],
-            Explination = """
+            Explanation = """
 TweakXL is a mod that allows other mods to add tweaks to the game's internal data structures. We detect the use of this mod by looking for `.tweak`, `.yml`, and `.yaml` files in the `r6/tweaks` folder.
 And we detect that this mod is installed by looking for `TweakXL.dll` in the `red4ext/plugins` folder.                          
 """,
@@ -147,7 +147,7 @@ And we detect that this mod is installed by looking for `TweakXL.dll` in the `re
                     Extension = new Extension(".xl"),
                 },
             ],
-            Explination = """
+            Explanation = """
 ArchiveXL is a mod that allows other mods to load custom resources without touching the original game files. We detect the use of this mod by looking for `.xl` files in the game folder, and we 
 detect that this mod is installed by looking for `ArchiveXL.dll` in the `red4ext/plugins` folder.                          
 """,
@@ -167,7 +167,7 @@ detect that this mod is installed by looking for `ArchiveXL.dll` in the `red4ext
                     Extension = new Extension(".lua"),
                 },
             ],
-            Explination = """
+            Explanation = """
 Cyber Engine Tweaks (also known as CET) is a mod that allows other mods to hook into the game. We detect the use of this mod by looking for `.lua` files
 in the `bin/x64/plugins/cyber_engine_tweaks` folder, and we detect that this mod is installed by looking for `version.dll` in the game folder.                          
 """,
