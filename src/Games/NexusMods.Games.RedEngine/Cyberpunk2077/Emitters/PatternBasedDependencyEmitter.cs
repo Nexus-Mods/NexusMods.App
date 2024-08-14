@@ -60,33 +60,45 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         // TODO: use a sorted index scan here to speed this up
+        
+        // All loadout items that are parts of dependency mods
         var allFiles = loadout.Items.OfTypeLoadoutItemWithTargetPath()
             .Where(item => _dependencyFiles.Contains(item.TargetPath))
             .ToHashSet();
         
+        // Just the files that are part of enabled mods
         var enabledFiles = allFiles
             .Where(f => f.AsLoadoutItem().GetThisAndParents().All(p => p.IsEnabled()))
             .ToHashSet();
         
+        // Just the paths, as a hashset for quick lookup
         var allPaths = allFiles.Select(f => (GamePath)f.TargetPath).ToHashSet();
         var enabledPaths = enabledFiles.Select(f => (GamePath)f.TargetPath).ToHashSet();
         
+        // The installed dependencies are those where all paths are present
         var installedDependencies = _dependencies
             .Where(dependency => dependency.Paths.All(path => allPaths.Contains(path)))
             .ToDictionary(pattern => pattern.Pattern.DependencyName);
         
+        // The enabled dependencies are those where all paths are present and the mod is enabled
         var enabledDependencies = _dependencies
             .Where(dependency => dependency.Paths.All(path => enabledPaths.Contains(path)))
             .ToDictionary(pattern => pattern.Pattern.DependencyName);
         
+        
         var requiredMods = new Dictionary<string, MatchingDependency>();
         
-        
+        // Loop through all loadout items that match one of the patterns we have
         foreach (var file in loadout.Items.OfTypeLoadoutItemWithTargetPath())
         {
             if (!_byExtension.TryGetValue(file.TargetPath.Item3.Extension, out var patterns))
                 continue;
 
+            // Ignore disabled files
+            if (!file.AsLoadoutItem().GetThisAndParents().All(f => f.IsEnabled()))
+                continue;
+            
+            // Check if the file is part of a dependency mod
             foreach (var (pattern, searchPattern) in patterns)
             {
                 if (requiredMods.ContainsKey(pattern.DependencyName))
@@ -94,6 +106,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                 
                 if (((GamePath)file.TargetPath).InFolder(searchPattern.Path))
                 {
+                    // If there is an attached regex, we need to search the file contents
                     if (searchPattern.Regex.HasValue && file.TryGetAsLoadoutFile(out var loadoutFile))
                     {
                         var (isMatch, matchingSegment, startingLineNumber) = await SearchContents(loadoutFile, searchPattern.Regex.Value);
@@ -117,23 +130,28 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                             Pattern = pattern,
                             SearchPattern = searchPattern,
                             MatchingSegment = Optional<string>.None,
-                            StartingLineNumber = 0
+                            StartingLineNumber = 0,
                         });
                     }
                 }
             }
         }
         
+        // Output diagnostics for all required mods that are not installed
         foreach (var (requiredMod, row) in requiredMods)
         {
+            // Check if the dependency is already installed, enabled or disabled
             if (enabledDependencies.ContainsKey(requiredMod))
             {
                 continue;
             }
             else if (installedDependencies.TryGetValue(requiredMod, out var group))
             {
+               // Disabled Dependency Group 
                var (dependencyPaths, pattern) = group;
                var parent = row.File.AsLoadoutItem().Parent;
+               
+               // Group that is disabled
                var disabledGroup = loadout.Items.OfTypeLoadoutItemGroup()
                    .Where(group =>
                        {
@@ -160,6 +178,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             }
             else
             {
+                // Missing mod
                 var parent = row.File.AsLoadoutItem().Parent;
                 var downloadLink = new NamedLink("Nexus Mods", new($"https://www.nexusmods.com/cyberpunk2077/mods/{row.Pattern.ModId}"));
                 if (row.MatchingSegment.HasValue)
