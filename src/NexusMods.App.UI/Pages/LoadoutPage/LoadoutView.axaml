@@ -9,11 +9,9 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
-    Hi
-
-    <!-- <TreeDataGrid x:Name="TreeDataGrid" -->
-    <!--               ShowColumnHeaders="True" -->
-    <!--               CanUserResizeColumns="True" -->
-    <!--               CanUserSortColumns="True"/> -->
+    <TreeDataGrid x:Name="TreeDataGrid"
+                  ShowColumnHeaders="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"/>
 
 </reactive:ReactiveUserControl>

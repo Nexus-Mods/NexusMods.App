@@ -49,6 +49,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
         var (loadoutGroup, transaction) = result.Value;
         using var tx = transaction;
 
+        // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
         _ = new LibraryLinkedLoadoutItem.New(tx, loadoutGroup.Id)
         {
             LoadoutItem = loadoutGroup.GetLoadoutItem(tx),
@@ -81,6 +82,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
                 },
             };
 
+            // TODO(erri120): add safeguards to only allow groups to be added to the parent groups
             var result = await installer.ExecuteAsync(job.LibraryItem, loadoutGroup, transaction, job.Loadout, cancellationToken);
             if (result.IsNotSupported)
             {
