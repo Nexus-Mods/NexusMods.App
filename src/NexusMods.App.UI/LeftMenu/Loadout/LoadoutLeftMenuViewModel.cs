@@ -14,6 +14,7 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -49,7 +50,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
 
-        var loadoutItem = new IconViewModel
+        var oldLoadoutItem = new IconViewModel
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
             Icon = IconValues.Collections,
@@ -66,7 +67,27 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 }
             ),
         };
-        
+
+        var loadoutItem = new IconViewModel
+        {
+            Name = "My Mods (new)",
+            Icon = IconValues.Collections,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                    },
+                };
+
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
+
         var oldLibraryItem = new IconViewModel
         {
             Name = Language.FileOriginsPageTitle,
@@ -89,7 +110,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var libraryItem = new IconViewModel
         {
-            Name = Language.FileOriginsPageTitle,
+            Name = "Library (new)",
             Icon = IconValues.ModLibrary,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -132,6 +153,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var items = new ILeftMenuItemViewModel[]
         {
+            oldLoadoutItem,
             loadoutItem,
             oldLibraryItem,
             libraryItem,
