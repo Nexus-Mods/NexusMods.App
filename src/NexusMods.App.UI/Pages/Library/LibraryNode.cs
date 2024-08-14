@@ -159,7 +159,7 @@ public class LibraryNode : Node<LibraryNode>
 
     public static IColumn<LibraryNode> CreateNameColumn()
     {
-        return new TextColumn<LibraryNode, string>(
+        return new CustomTextColumn<LibraryNode, string>(
             header: "Name",
             getter: model => model.Name,
             options: new TextColumnOptions<LibraryNode>
@@ -173,13 +173,13 @@ public class LibraryNode : Node<LibraryNode>
         )
         {
             SortDirection = ListSortDirection.Ascending,
-            Tag = "name",
+            Id = "name",
         };
     }
 
     public static IColumn<LibraryNode> CreateVersionColumn()
     {
-        return new TextColumn<LibraryNode, string>(
+        return new CustomTextColumn<LibraryNode, string>(
             header: "Version",
             getter: model => model.Version,
             options: new TextColumnOptions<LibraryNode>
@@ -192,13 +192,13 @@ public class LibraryNode : Node<LibraryNode>
             }
         )
         {
-            Tag = "version",
+            Id = "version",
         };
     }
 
     public static IColumn<LibraryNode> CreateSizeColumn()
     {
-        return new TextColumn<LibraryNode, Size>(
+        return new CustomTextColumn<LibraryNode, Size>(
             header: "Size",
             getter: model => model.Size,
             options: new TextColumnOptions<LibraryNode>
@@ -211,13 +211,13 @@ public class LibraryNode : Node<LibraryNode>
             }
         )
         {
-            Tag = "size",
+            Id = "size",
         };
     }
 
     public static IColumn<LibraryNode> CreateDateAddedToLibraryColumn()
     {
-        return new TextColumn<LibraryNode, string>(
+        return new CustomTextColumn<LibraryNode, string>(
             header: "Date added to Library",
             getter: model => model.FormattedDateAddedToLibrary,
             options: new TextColumnOptions<LibraryNode>
@@ -230,13 +230,13 @@ public class LibraryNode : Node<LibraryNode>
             }
         )
         {
-            Tag = "date_added_to_library",
+            Id = "date_added_to_library",
         };
     }
 
     public static IColumn<LibraryNode> CreateDateAddedToLoadoutColumn()
     {
-        return new TextColumn<LibraryNode, string>(
+        return new CustomTextColumn<LibraryNode, string>(
             header: "Date added to Loadout",
             getter: model => model.FormattedDateAddedToLoadout,
             options: new TextColumnOptions<LibraryNode>
@@ -249,7 +249,7 @@ public class LibraryNode : Node<LibraryNode>
             }
         )
         {
-            Tag = "date_added_to_loadout",
+            Id = "date_added_to_loadout",
         };
     }
 

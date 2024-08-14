@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
@@ -18,11 +16,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         InitializeComponent();
 
+        TreeDataGrid.ElementFactory = new CustomElementFactory();
+
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
-
             Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler
@@ -56,7 +53,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     cts.Cancel();
                 })
                 .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
+                .DisposeWith(disposables);
         });
     }
 }
-

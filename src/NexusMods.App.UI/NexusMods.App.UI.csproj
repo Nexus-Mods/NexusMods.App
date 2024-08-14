@@ -607,6 +607,9 @@
         <Compile Update="Pages\Library\NexusModsModPageLibraryNode.cs">
           <DependentUpon>LibraryNode.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\CustomTextCell.cs">
+          <DependentUpon>CustomTextColumn.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
