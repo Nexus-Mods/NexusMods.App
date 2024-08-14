@@ -3,6 +3,7 @@ using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModLibrary;
@@ -35,6 +36,7 @@ internal class TypeFinder : ITypeFinder
         typeof(TextEditorPageContext),
         typeof(MyLoadoutsPageContext),
         typeof(LoadoutGroupFilesPageContext),
+        typeof(LibraryPageContext),
 
         // workspace context
         typeof(EmptyContext),

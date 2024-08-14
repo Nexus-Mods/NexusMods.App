@@ -99,6 +99,7 @@ public class Startup
             .Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
+            .UseR3()
             .UseReactiveUI();
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));

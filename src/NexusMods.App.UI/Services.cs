@@ -44,6 +44,7 @@ using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
@@ -213,6 +214,8 @@ public static class Services
             .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
             .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
 
+            .AddView<LibraryView, ILibraryViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddAttributeCollection(typeof(WindowDataAttributes))
@@ -245,6 +248,7 @@ public static class Services
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
+            .AddSingleton<IPageFactory, LibraryPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

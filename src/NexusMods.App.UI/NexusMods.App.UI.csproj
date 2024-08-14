@@ -71,8 +71,11 @@
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="ObservableCollections.R3" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+        <PackageReference Include="R3" />
+        <PackageReference Include="R3Extensions.Avalonia" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
         <PackageReference Include="System.Reactive" />
@@ -82,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
@@ -596,6 +600,15 @@
         </Compile>
         <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Library\LibraryViewModel.cs">
+          <DependentUpon>ILibraryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Library\NexusModsModPageLibraryNode.cs">
+          <DependentUpon>LibraryNode.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\CustomTextCell.cs">
+          <DependentUpon>CustomTextColumn.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
