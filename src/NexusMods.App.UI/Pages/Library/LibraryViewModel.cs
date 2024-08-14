@@ -43,12 +43,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
         _ticker = Observable
-            .Return(DateTime.Now)
-            .Merge(Observable.Interval(period: TimeSpan.FromHours(1), timeProvider: ObservableSystem.DefaultTimeProvider).Select(_ => DateTime.Now))
-            .Prepend(DateTime.Now)
-            .DefaultIfEmpty(DateTime.Now)
+            .Interval(period: TimeSpan.FromMinutes(1), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
-            // .Replay(bufferSize: 1);
 
         _ticker.Connect();
 

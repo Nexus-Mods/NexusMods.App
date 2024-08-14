@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Binding;
@@ -105,6 +106,8 @@ public class LibraryNode : Node<LibraryNode>
             node.LinkedLoadoutItems
                 .ObserveCollectionChanges()
                 .ToObservable()
+                .Select(_ => Unit.Default)
+                .Prepend(Unit.Default)
                 .Subscribe(node, static (_, node) =>
                 {
                     var dateAddedToLoadout = node.LinkedLoadoutItems
