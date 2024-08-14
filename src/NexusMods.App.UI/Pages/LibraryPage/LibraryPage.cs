@@ -6,7 +6,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LibraryPage;
 
 [JsonName("NexusMods.App.UI.Pages.Library.LibraryPageContext")]
 public record LibraryPageContext : IPageFactoryContext

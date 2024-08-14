@@ -1,8 +1,5 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Binding;
 using DynamicData.Kernel;
@@ -16,9 +13,8 @@ using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public readonly struct LibraryNodeId : IEquatable<LibraryNodeId>
 {

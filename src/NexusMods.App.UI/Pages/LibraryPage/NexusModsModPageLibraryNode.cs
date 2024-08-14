@@ -4,7 +4,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class NexusModsModPageLibraryNode : LibraryNode
 {

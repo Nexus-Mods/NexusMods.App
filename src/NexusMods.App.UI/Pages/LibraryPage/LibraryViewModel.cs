@@ -20,7 +20,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Observable = R3.Observable;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewModel
 {

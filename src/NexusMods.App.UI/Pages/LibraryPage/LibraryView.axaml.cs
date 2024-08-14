@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
@@ -7,7 +6,7 @@ using NexusMods.App.UI.Controls;
 using R3;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LibraryPage;
 
 [UsedImplicitly]
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
