@@ -20,39 +20,23 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
-            Observable.FromEventHandler<TreeDataGridRowEventArgs>(
+            var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler
-            )
-                .Select(tuple =>
-                {
-                    var (_, args) = tuple;
-                    var row = args.Row;
+            ).Select(static tuple => (tuple.e.Row.Model, true));
 
-                    var model = row.Model;
-                    if (model is not Node node) return null;
-                    node.Activate();
+            var deactivate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
+                addHandler: handler => TreeDataGrid.RowClearing += handler,
+                removeHandler: handler => TreeDataGrid.RowClearing -= handler
+            ).Select(static tuple => (tuple.e.Row.Model, false));
 
-                    var cts = new CancellationTokenSource();
-
-                    // NOTE(erri120): this assumes that the row will not be assigned
-                    // a different model between now and when it gets detached
-                    return Observable.FromEventHandler<VisualTreeAttachmentEventArgs>(
-                        addHandler: handler => row.DetachedFromVisualTree += handler,
-                        removeHandler: handler => row.DetachedFromVisualTree -= handler,
-                        cancellationToken: cts.Token
-                    ).Select((node, cts), static (_, tuple) => tuple);
-                })
-                .Where(static x => x is not null)
-                .Select(x => x!)
-                .Merge()
-                .Subscribe(static tuple =>
-                {
-                    var (node, cts) = tuple;
-                    node.Deactivate();
-                    cts.Cancel();
-                })
-                .AddTo(disposables);
+            deactivate.Merge(activate).Subscribe(static tuple =>
+            {
+                var (model, isActivating) = tuple;
+                if (model is not Node node) return;
+                if (isActivating) node.Activate();
+                else node.Deactivate();
+            }).AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
                 .DisposeWith(disposables);
