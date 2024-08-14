@@ -33,13 +33,15 @@ public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AG
         typeof(Red4ExtMissingEmitter),
         typeof(TweakXLMissingEmitter),
         typeof(VirtualAtelierDependencyMatcher),
-        typeof(AppearanceModMenuDependencyEmitter)
+        typeof(AppearanceModMenuDependencyEmitter),
+        typeof(CodewareDependencyEmitter),
     ];
 
     public static string TemplateData(Type diagnosticType) =>
         diagnosticType.Name switch
         {
             nameof(VirtualAtelierDependencyMatcher) => "\n\nprotected cb func RegisterMyStore(event: ref<VirtualShopRegistration>) -> Bool {\n\n",
+            nameof(CodewareDependencyEmitter) => "extends ScriptableService {\n\n",
             _ => "NO DATA",
         };
 

@@ -7,6 +7,11 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 
+/// <summary>
+/// Virtual Atelier is a mod that adds a virtual shop to the game. It provides a redscript function that other mods can use to register their own
+/// items with the shop. We scan .reds files for this function.
+/// </summary>
+/// <param name="store"></param>
 public partial class VirtualAtelierDependencyMatcher(IFileStore store) : AFileStringContentsDependencyEmitter(store)
 {
     public override Regex[] DependantRegexes { get; } = [RegistrationMatcher()];
@@ -29,9 +34,7 @@ public partial class VirtualAtelierDependencyMatcher(IFileStore store) : AFileSt
         new GamePath(LocationId.Game, "archive/pc/mod/VirtualAtelier.archive.xl"),
         new GamePath(LocationId.Game, "r6/scripts/virtual-atelier-full/core/Events.reds")
     ];
-
-
-
+    
     protected override GameDomain Domain => Cyberpunk2077Game.StaticDomain;
     protected override ModId ModId { get; } = ModId.From(2987);
 
