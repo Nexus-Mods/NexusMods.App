@@ -18,6 +18,7 @@ public partial class MyLoadoutsView : ReactiveUserControl<IMyLoadoutsViewModel>
 
             this.WhenAnyValue(v => v.ViewModel!.GameSectionViewModels.Count)
                 .Select(count => count == 0)
+                .OnUI()
                 .BindToView(this, view => view.MyLoadoutsEmptyState.IsActive);
         });
     }

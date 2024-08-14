@@ -588,7 +588,7 @@
         <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
     </data>
     <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
-        <value>Last applied {0}</value>
+        <value>Last applied: {0}</value>
         <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
     </data>
     <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
@@ -625,5 +625,14 @@
     </data>
     <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
         <value>You need to add a game before using Loadouts</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>Never</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Applying changes to the game</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Delete Loadout</value>
     </data>
 </root>
