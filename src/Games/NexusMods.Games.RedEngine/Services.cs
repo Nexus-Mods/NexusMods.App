@@ -25,13 +25,7 @@ public static class Services
             .AddSingleton<ITool, RedModDeployTool>()
 
             // Diagnostics
-            .AddSingleton<ArchiveXLMissingEmitter>()
-            .AddSingleton<CyberEngineTweaksMissingEmitter>()
-            .AddSingleton<Red4ExtMissingEmitter>()
-            .AddSingleton<TweakXLMissingEmitter>()
-            .AddSingleton<VirtualAtelierDependencyMatcher>()
-            .AddSingleton<AppearanceModMenuDependencyEmitter>()
-            .AddSingleton<CodewareDependencyEmitter>()
+            
             
             .AddSettings<Cyberpunk2077Settings>();
         return services;

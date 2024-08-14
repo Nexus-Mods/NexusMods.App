@@ -36,6 +36,15 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
 
     private readonly IFileStore _fileStore;
 
+    internal record MatchingDependency
+    {
+        public required LoadoutItemWithTargetPath.ReadOnly File { get; init; } 
+        public required Pattern Pattern { get; init; }
+        public required DependantSearchPattern SearchPattern { get; init; }
+        public required Optional<string> MatchingSegment { get; init; }
+        public required int StartingLineNumber { get; init; }
+    }
+
     public PatternBasedDependencyEmitter(Pattern[] patterns, IServiceProvider provider)
     {
         _fileStore = provider.GetRequiredService<IFileStore>();
@@ -59,15 +68,18 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             .Where(f => f.AsLoadoutItem().GetThisAndParents().All(p => p.IsEnabled()))
             .ToHashSet();
         
+        var allPaths = allFiles.Select(f => (GamePath)f.TargetPath).ToHashSet();
+        var enabledPaths = enabledFiles.Select(f => (GamePath)f.TargetPath).ToHashSet();
+        
         var installedDependencies = _dependencies
-            .Where(dependency => dependency.Paths.All(path => allFiles.All(f => f.TargetPath == path)))
+            .Where(dependency => dependency.Paths.All(path => allPaths.Contains(path)))
             .ToDictionary(pattern => pattern.Pattern.DependencyName);
         
         var enabledDependencies = _dependencies
-            .Where(dependency => dependency.Paths.All(path => enabledFiles.All(f => f.TargetPath == path)))
+            .Where(dependency => dependency.Paths.All(path => enabledPaths.Contains(path)))
             .ToDictionary(pattern => pattern.Pattern.DependencyName);
         
-        var requiredMods = new Dictionary<string, (LoadoutItemWithTargetPath.ReadOnly File, Pattern Pattern, Optional<string> ExampleUsage)>();
+        var requiredMods = new Dictionary<string, MatchingDependency>();
         
         
         foreach (var file in loadout.Items.OfTypeLoadoutItemWithTargetPath())
@@ -84,14 +96,29 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                 {
                     if (searchPattern.Regex.HasValue && file.TryGetAsLoadoutFile(out var loadoutFile))
                     {
-                        if (await SearchContents(loadoutFile, searchPattern.Regex.Value))
+                        var (isMatch, matchingSegment, startingLineNumber) = await SearchContents(loadoutFile, searchPattern.Regex.Value);
+                        if (isMatch)
                         {
-                            requiredMods.Add(pattern.DependencyName, (file, pattern, searchPattern.Regex.Value.ToString()));
+                            requiredMods.Add(pattern.DependencyName, new MatchingDependency
+                            {
+                                File = file,
+                                Pattern = pattern,
+                                SearchPattern = searchPattern,
+                                MatchingSegment = matchingSegment,
+                                StartingLineNumber = startingLineNumber,
+                            });
                         }
                     }
                     else
                     {
-                        requiredMods.Add(pattern.DependencyName, (file, pattern, Optional<string>.None));
+                        requiredMods.Add(pattern.DependencyName, new MatchingDependency
+                        {
+                            File = file,
+                            Pattern = pattern,
+                            SearchPattern = searchPattern,
+                            MatchingSegment = Optional<string>.None,
+                            StartingLineNumber = 0
+                        });
                     }
                 }
             }
@@ -115,28 +142,71 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                            return dependencyPaths.All(path => groupPaths.Contains(path));
                        }
                    ).First();
-               yield return Diagnostics.CreateDisabledGroupDependency(parent.ToReference(loadout), disabledGroup.ToReference(loadout));
+               if (row.MatchingSegment.HasValue)
+               {
+                   yield return Diagnostics.CreateDisabledGroupDependencyWithStringSegment(parent.ToReference(loadout), disabledGroup.ToReference(loadout), requiredMod,
+                       pattern.Explination, row.File.TargetPath, row.SearchPattern.Path,
+                       row.SearchPattern.Extension, row.MatchingSegment.Value, row.StartingLineNumber
+                   );
+               }
+               else
+               {
+                   yield return Diagnostics.CreateDisabledGroupDependency(parent.ToReference(loadout), disabledGroup.ToReference(loadout), requiredMod,
+                       pattern.Explination, row.File.TargetPath, row.SearchPattern.Path,
+                       row.SearchPattern.Extension
+                   );
+                   
+               }
             }
             else
             {
                 var parent = row.File.AsLoadoutItem().Parent;
                 var downloadLink = new NamedLink("Nexus Mods", new($"https://www.nexusmods.com/cyberpunk2077/mods/{row.Pattern.ModId}"));
-                yield return Diagnostics.CreateMissingModWithKnownNexusUri(parent.ToReference(loadout), requiredMod, downloadLink);
+                if (row.MatchingSegment.HasValue)
+                {
+                    yield return Diagnostics.CreateMissingModWithKnownNexusUriWithStringSegment(
+                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explination,
+                        row.File.TargetPath, row.SearchPattern.Path, row.SearchPattern.Extension, row.MatchingSegment.Value, row.StartingLineNumber);
+                }
+                else
+                {
+                    yield return Diagnostics.CreateMissingModWithKnownNexusUri(
+                        parent.ToReference(loadout), requiredMod, downloadLink, row.Pattern.Explination,
+                        row.File.TargetPath, row.SearchPattern.Path, row.SearchPattern.Extension);
+                    
+                }
             }
         }
     }
     
-    public async Task<bool> SearchContents(LoadoutFile.ReadOnly file, Regex regex)
+    public async Task<(bool isMatch, string matchingSegment, int startingLineNumber)> SearchContents(LoadoutFile.ReadOnly file, Regex regex)
     {
         try
         {
             var data = await _fileStore.GetFileStream(file.Hash);
             var content = await data.ReadAllTextAsync();
-            return regex.IsMatch(content);
+        
+            var match = regex.Match(content);
+            if (!match.Success)
+            {
+                return (false, "", 0);
+            }
+
+            // Find the first \n before and after the matching segment
+            var start = content.LastIndexOf('\n', match.Index) + 1;
+            var end = content.IndexOf('\n', match.Index + match.Length);
+            if (end == -1) end = content.Length;
+
+            var matchingSegment = content.Substring(start, end - start);
+
+            // Calculate the starting line number
+            var startingLineNumber = content.Substring(0, start).Count(c => c == '\n') + 1;
+
+            return (true, matchingSegment, startingLineNumber);
         }
         catch (Exception e)
         {
-            return false;
+            return (false, "", 0);
         }
     }
 }

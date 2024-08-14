@@ -57,7 +57,7 @@ Codeware is an extension to Cyberpunk that adds several utility classes and meth
                 },
             ],
             Explination = """
-Virtual Atelier is a mod that adds a virtual shop to the game. It provides a RedScript hoook that other mods can use to register their own items 
+Virtual Atelier is a mod that adds a virtual shop to the game. It provides a RedScript hook that other mods can use to register their own items 
 with the shop. We scan `.reds` files for this hook to detect the use of this mod.
 """,
         },
