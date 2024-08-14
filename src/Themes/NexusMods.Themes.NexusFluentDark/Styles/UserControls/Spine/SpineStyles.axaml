@@ -48,7 +48,6 @@
         </Style>
 
         <Style Selector="^ ItemsControl#Loadouts">
-            <Setter Property="Margin" Value="0,12,0,0" />
             <Setter Property="Padding" Value="0" />
         </Style>
 
