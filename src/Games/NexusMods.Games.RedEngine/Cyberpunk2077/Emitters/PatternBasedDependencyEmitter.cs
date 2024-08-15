@@ -27,7 +27,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     /// <summary>
     /// Patterns and their dependency paths in a hashset for quick lookup.
     /// </summary>
-    private readonly IEnumerable<(HashSet<GamePath> Paths, Pattern Pattern)> _dependencies;
+    private readonly (HashSet<GamePath> Paths, Pattern Pattern)[] _dependencies;
     
     /// <summary>
     /// A union of all dependency files.
