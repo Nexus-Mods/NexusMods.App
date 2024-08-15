@@ -57,7 +57,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     }
     
     
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         // TODO: use a sorted index scan here to speed this up
         
