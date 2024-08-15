@@ -601,17 +601,26 @@
         <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Library\LibraryViewModel.cs">
-          <DependentUpon>ILibraryViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Library\NexusModsModPageLibraryNode.cs">
-          <DependentUpon>LibraryNode.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\TreeDataGrid\CustomTextCell.cs">
           <DependentUpon>CustomTextColumn.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Loadout\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
+          <DependentUpon>ILibraryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\NexusModsModPagePageItemModel.cs">
+            <DependentUpon>LibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
+          <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LocalFileDataProvider.cs">
+          <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\NexusModsDataProvider.cs">
+          <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

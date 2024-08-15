@@ -19,6 +19,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
+            this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
+                .DisposeWith(disposables);
+
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler
@@ -29,13 +32,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 removeHandler: handler => TreeDataGrid.RowClearing -= handler
             ).Select(static tuple => (tuple.e.Row.Model, false));
 
-            deactivate.Merge(activate).Subscribe(static tuple =>
-            {
-                var (model, isActivating) = tuple;
-                if (model is not Node node) return;
-                if (isActivating) node.Activate();
-                else node.Deactivate();
-            }).AddTo(disposables);
+            deactivate.Merge(activate)
+                .Where(static tuple => tuple.Model is LibraryItemModel)
+                .Select(static tuple => ((tuple.Model as LibraryItemModel)!, tuple.Item2))
+                .Subscribe(this, static (tuple, view) => view.ViewModel!.ActivationSubject.OnNext(tuple))
+                .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
                 .DisposeWith(disposables);

@@ -12,11 +12,11 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
     {
         InitializeComponent();
 
-        this.WhenActivated(disposables =>
-        {
-            this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
-        });
+        // this.WhenActivated(disposables =>
+        // {
+        //     this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
+        //         .DisposeWith(disposables);
+        // });
     }
 }
 

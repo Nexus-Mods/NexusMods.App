@@ -40,6 +40,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
@@ -279,6 +280,8 @@ public static class Services
 
             // Other
             .AddSingleton<InjectedViewLocator>()
+            .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
+            .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddFileSystem();
     }
 
