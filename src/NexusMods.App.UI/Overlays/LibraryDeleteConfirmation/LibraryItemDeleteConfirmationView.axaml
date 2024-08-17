@@ -11,10 +11,12 @@
     xmlns:deleteConf="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d"
-    VerticalAlignment="Stretch"
-    HorizontalAlignment="Stretch"
+    d:DesignWidth="1280"
+    d:DesignHeight="800"
     d:DataContext="{x:Static deleteConf:LibraryItemDeleteConfirmationDesignViewModels.NonPermanentItemsOnly}">
     <!-- 👆 Design ViewModel, Since `Design.DataContext` can't bind -->
+    <!-- For design width/height. We set the design width/height to 1280x800.
+         This matches the Steam Deck. At runtime, the actual modal will scale to content. -->
 
     <reactiveUi:ReactiveUserControl.Styles>
         <!-- Title Bar -->
@@ -58,7 +60,7 @@
         
     </reactiveUi:ReactiveUserControl.Styles>
     
-    <base:MessageBoxBackground MinWidth="700" MaxWidth="1500">
+    <base:MessageBoxBackground MinWidth="700" HorizontalAlignment="Center" VerticalAlignment="Center">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="24">
                 
