@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 namespace NexusMods.App.UI.Pages.Library;
 
 /// <summary>
@@ -22,8 +24,28 @@ public static class LibraryItemRemover
         var controller = overlayController;
         alphaWarningViewModel.Controller = controller;
         var result = await controller.EnqueueAndWait(alphaWarningViewModel);
-        
+
         if (result)
+        {
+            // Note(sewer) Can the person reviewing this code let me know their opinion of
+            // whether this should be inlined into LibraryService or not?
+            var loadouts = Loadout.All(conn.Db).ToArray();
+            using var tx = conn.BeginTransaction();
+            
+            // Note. A loadout may technically still be updated in the background via the CLI,
+            // However this is unlikelu, and the possibility of a concurrent update
+            // is always possible, as long as we show a blocking dialog to the user.
+            foreach (var itemInLoadout in warnings.ItemsInLoadouts)
+            {
+                foreach (var loadout in loadouts)
+                {
+                    foreach (var loadoutItem in loadout.GetLoadoutItemsByLibraryItem(itemInLoadout))
+                        tx.Delete(loadoutItem, recursive: true);
+                }
+            }
+            
+            await tx.Commit();
             await libraryService.RemoveItems(toRemove);
+        }
     }
 }
