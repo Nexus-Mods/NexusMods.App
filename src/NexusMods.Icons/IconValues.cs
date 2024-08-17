@@ -295,6 +295,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/sync/
     public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
+
+    // https://pictogrammers.com/library/mdi/icon/lightbulb/
+    public static readonly IconValue Lightbulb = new ProjektankerIcon("mdi-lightbulb");
     
 #endregion
 

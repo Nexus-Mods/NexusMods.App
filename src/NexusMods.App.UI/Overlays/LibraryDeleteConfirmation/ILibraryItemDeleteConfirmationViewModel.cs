@@ -6,6 +6,19 @@ namespace NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 /// </summary>
 public interface ILibraryItemDeleteConfirmationViewModel : IOverlayViewModel<bool>
 {
-    LibraryItemDeleteWarningDetector WarningDetector { get; set; }
+    /// <summary>
+    /// Gets the list of library items that are not guaranteed to be redownloadable.
+    /// </summary>
+    public List<string> NonPermanentItems { get; }
+
+    /// <summary>
+    /// Gets the list of library items that were manually added to the library.
+    /// </summary>
+    public List<string> ManuallyAddedItems { get; }
+
+    /// <summary>
+    /// Gets the list of library items that are currently part of one or more loadouts.
+    /// </summary>
+    public List<string> ItemsInLoadouts { get; }
 }
 

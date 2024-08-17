@@ -643,15 +643,15 @@
     </data>
 
     <data name="LibraryItemDeleteConfirmation_NonPermanentWarning" xml:space="preserve">
-        <value>The following items may not be restorable if have been deleted from their original source:</value>
+        <value>The following items may not be restorable if have been deleted from their original source.</value>
     </data>
 
     <data name="LibraryItemDeleteConfirmation_NonPermanentWarning_Tip" xml:space="preserve">
-        <value>To keep your mod files safe forever, consider hosting them on Nexus Mods.</value>
+        <value>To keep your mod files safe forever, consider uploading them to Nexus Mods.</value>
     </data>
 
     <data name="LibraryItemDeleteConfirmation_ManuallyAddedWarning" xml:space="preserve">
-        <value>The following items were manually added from disk and may not be restorable:</value>
+        <value>The following items were manually added from disk and may not be restorable.</value>
     </data>
 
     <data name="LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip" xml:space="preserve">
@@ -659,7 +659,7 @@
     </data>
 
     <data name="LibraryItemDeleteConfirmation_LoadoutWarning" xml:space="preserve">
-        <value>The following items are currently at least 1 loadout and will be removed from them:</value>
+        <value>The following items are currently at least 1 loadout and will be removed from them.</value>
     </data>
 
     <data name="LibraryItemDeleteConfirmation_LoadoutWarning_Tip" xml:space="preserve">

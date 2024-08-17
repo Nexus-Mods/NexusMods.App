@@ -89,6 +89,7 @@
             <icons:UnifiedIcon Classes="ColorLens"/>
             <icons:UnifiedIcon Classes="CheckBox"/>
             <icons:UnifiedIcon Classes="ViewCarousel"/>
+            <icons:UnifiedIcon Classes="Lightbulb"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -440,5 +441,9 @@
     
     <Style Selector="icons|UnifiedIcon.ViewCarousel">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ViewCarousel}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Lightbulb">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Lightbulb}"/>
     </Style>
 </Styles>

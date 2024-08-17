@@ -1,22 +1,69 @@
 <reactiveUi:ReactiveUserControl
     x:Class="NexusMods.App.UI.Overlays.LibraryDeleteConfirmation.LibraryItemDeleteConfirmationView"
-    x:TypeArguments="libraryDeleteConfirmation:ILibraryItemDeleteConfirmationViewModel"
+    x:TypeArguments="deleteConf:ILibraryItemDeleteConfirmationViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:libraryDeleteConfirmation="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
-    mc:Ignorable="d">
+    xmlns:rsrc="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:deleteConf="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d"
+    VerticalAlignment="Stretch"
+    HorizontalAlignment="Stretch"
+    d:DataContext="{x:Static deleteConf:LibraryItemDeleteConfirmationDesignViewModels.NonPermanentItemsOnly}">
+    <!-- 👆 Design ViewModel, Since `Design.DataContext` can't bind -->
 
-    <base:MessageBoxBackground MinWidth="400" MaxWidth="600">
+    <reactiveUi:ReactiveUserControl.Styles>
+        <!-- Title Bar -->
+        <Style Selector="DockPanel#ModalTitlePanel">
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- Warning Category Stack Panel -->
+        <Style Selector="StackPanel.WarningTypeStackPanel">
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="Spacing" Value="8"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+        
+        <!-- Warning/Success Box -->
+        <Style Selector="Border.InfoBorder">
+            <Setter Property="Padding" Value="16"/>
+        </Style>
+        
+        <Style Selector="Border.InfoBorder TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <Style Selector="Border.InfoBorder icons|UnifiedIcon">
+            <Setter Property="Size" Value="21"/>
+        </Style>
+
+        <!-- Mod Listing -->
+        <Style Selector="ItemsControl.ModsList">
+            <Setter Property="ItemTemplate">
+                <!-- Note(sewer) ReSharper is wrong here, it is used. -->
+                <!-- ReSharper disable once Xaml.RedundantResource -->
+                <DataTemplate>
+                    <TextBlock>
+                        <Run Text="-"/>
+                        <Run Text="{Binding}"/>
+                    </TextBlock>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        
+    </reactiveUi:ReactiveUserControl.Styles>
+    
+    <base:MessageBoxBackground MinWidth="700" MaxWidth="1500">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="24">
                 
                 <!-- Title -->
-                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                <DockPanel x:Name="ModalTitlePanel">
                     <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
 
                     <!-- 'Cross' button. -->
@@ -31,56 +78,77 @@
                 
                 <!-- Content -->
                 
-                <!-- Non Permanent Warnings (External Files May be Deleted) -->
-                <StackPanel x:Name="NonPermanentWarningPanel" Margin="0,0,0,16" IsVisible="False">
-                    <TextBlock Text="{x:Static resources:Language.LibraryItemDeleteConfirmation_NonPermanentWarning}"
-                               TextWrapping="Wrap"
-                               FontWeight="Bold"
-                               Margin="0,0,0,8"/>
-                    <ItemsControl x:Name="NonPermanentItemsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" Margin="16,0,0,0"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                <!-- Non-Permanent Warnings (External Files May be Deleted) -->
+                <StackPanel x:Name="NonPermanentWarningPanel" Classes="WarningTypeStackPanel">
+                    
+                    <!-- Title -->
+                    <Border Classes="Rounded-lg WarningSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Alert"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_NonPermanentWarning}" />
+                        </TextBlock>
+                    </Border>
+                    
+                    <!-- Items -->
+                    <ItemsControl x:Name="NonPermanentItemsList" Classes="ModsList"/>
+                    
+                    <!-- Hint -->
+                    <Border Classes="Rounded-lg SuccessSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Lightbulb"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_NonPermanentWarning_Tip}" />
+                        </TextBlock>
+                    </Border>
                 </StackPanel>
                 
                 <!-- Manually Added Warnings (Source Files May be Deleted) -->
-                <StackPanel x:Name="ManuallyAddedWarningPanel" Margin="0,0,0,16" IsVisible="False">
-                    <TextBlock Text="{x:Static resources:Language.LibraryItemDeleteConfirmation_ManuallyAddedWarning}"
-                               TextWrapping="Wrap"
-                               FontWeight="Bold"
-                               Margin="0,0,0,8"/>
-                    <ItemsControl x:Name="ManuallyAddedItemsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" Margin="16,0,0,0"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                <StackPanel x:Name="ManuallyAddedWarningPanel" Classes="WarningTypeStackPanel">
+                    
+                    <!-- Title -->
+                    <Border Classes="Rounded-lg WarningSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Alert"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_ManuallyAddedWarning}" />
+                        </TextBlock>
+                    </Border>
+                    
+                    <!-- Items -->
+                    <ItemsControl x:Name="ManuallyAddedItemsList" Classes="ModsList"/>
+                    
+                    <!-- Hint -->
+                    <Border Classes="Rounded-lg SuccessSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Lightbulb"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip}" />
+                        </TextBlock>
+                    </Border>
                 </StackPanel>
 
-                <!-- Manually Added Warnings (Source Files May be Deleted) -->
-                <StackPanel x:Name="LoadoutWarningPanel" Margin="0,0,0,16" IsVisible="False">
-                    <TextBlock Text="{x:Static resources:Language.LibraryItemDeleteConfirmation_LoadoutWarning}"
-                               TextWrapping="Wrap"
-                               FontWeight="Bold"
-                               Margin="0,0,0,8"/>
-                    <ItemsControl x:Name="LoadoutItemsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" Margin="16,0,0,0"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                <!-- Already in Loadout Warning -->
+                <StackPanel x:Name="LoadoutWarningPanel" Classes="WarningTypeStackPanel">
+                    <!-- Title -->
+                    <Border Classes="Rounded-lg WarningSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Alert"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_LoadoutWarning}" />
+                        </TextBlock>
+                    </Border>
+                    
+                    <!-- Items -->
+                    <ItemsControl x:Name="LoadoutItemsList" Classes="ModsList"/>
+                    
+                    <!-- Hint -->
+                    <Border Classes="Rounded-lg SuccessSubdued20 InfoBorder">
+                        <TextBlock Classes="BodyMDNormal">
+                            <icons:UnifiedIcon Classes="Lightbulb"/>
+                            <Run BaselineAlignment="Center" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_LoadoutWarning_Tip}" />
+                        </TextBlock>
+                    </Border>
                 </StackPanel>
 
-                <!-- Final Question -->
-                <TextBlock Text="{x:Static resources:Language.LibraryItemDeleteConfirmation_Question}"
-                           TextWrapping="Wrap"
-                           Margin="0,16,0,0"
-                           FontWeight="Bold"/>
+                <!-- Final Question: Confirm Deletion -->
+                <TextBlock Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_Question}"
+                           TextWrapping="Wrap" FontWeight="Bold"/>
             </StackPanel>
         </base:MessageBoxBackground.TopContent>
 
@@ -91,13 +159,13 @@
                         Classes="Standard Tertiary"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
+                    <TextBlock Text="{x:Static rsrc:Language.MessageBox_Button_No}" />
                 </Button>
                 <Button x:Name="YesButton"
                         Classes="Standard Primary"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
+                    <TextBlock Text="{x:Static rsrc:Language.MessageBox_Button_Yes}" />
                 </Button>
             </StackPanel>
         </base:MessageBoxBackground.BottomContent>
