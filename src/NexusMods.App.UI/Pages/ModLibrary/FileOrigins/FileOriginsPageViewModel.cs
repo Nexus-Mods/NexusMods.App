@@ -104,9 +104,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         {
             await DoAddModImpl(advancedInstaller, cancellationToken);
         }, hasSelection);
-        RemoveMod = ReactiveCommand.CreateFromTask(async token =>
+        RemoveMod = ReactiveCommand.CreateFromTask(async _ =>
         {
-            await RemoveSelectedItems(token);
+            await RemoveSelectedItems();
         }, hasSelection);
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
@@ -167,7 +167,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .DisposeWith(d);
         });
     }
-    private async Task RemoveSelectedItems(CancellationToken ct)
+    private async Task RemoveSelectedItems()
     {
         var itemsToRemove = SelectedModsCollection.ToList();
         var toDelete = itemsToRemove.Select(x => x.LibraryFile.AsLibraryItem()).ToArray();
