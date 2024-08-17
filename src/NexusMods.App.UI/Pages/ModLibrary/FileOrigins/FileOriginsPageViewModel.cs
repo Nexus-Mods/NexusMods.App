@@ -15,6 +15,10 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.Resources;
@@ -166,7 +170,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private async Task RemoveSelectedItems(CancellationToken ct)
     {
         var itemsToRemove = SelectedModsCollection.ToList();
-        await _libraryService.RemoveItems(itemsToRemove.Select(x => x.LibraryFile.AsLibraryItem()));
+        var toDelete = itemsToRemove.Select(x => x.LibraryFile.AsLibraryItem()).ToArray();
+        await LibraryItemRemover.RemoveAsync(_conn, _provider.GetRequiredService<IOverlayController>(), _libraryService, toDelete);
     }
 
     public async Task RegisterFromDisk(IStorageProvider storageProvider)

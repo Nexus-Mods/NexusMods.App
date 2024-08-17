@@ -37,6 +37,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
+using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
@@ -207,6 +208,9 @@ public static class Services
             .AddView<TextEditorPageView, ITextEditorPageViewModel>()
             .AddViewModel<TextEditorPageViewModel, ITextEditorPageViewModel>()
 
+            .AddView<LibraryItemDeleteConfirmationView, ILibraryItemDeleteConfirmationViewModel>()
+            .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
+            
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
 

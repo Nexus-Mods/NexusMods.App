@@ -39,18 +39,18 @@ public record struct LibraryItemDeleteWarningDetector
     /// deletion warning criteria.
     /// </summary>
     /// <param name="connection">The database connection used to retrieve additional information.</param>
-    /// <param name="libraryItems">The collection of library items to process.</param>
+    /// <param name="toRemove">The collection of library items to process.</param>
     /// <returns>A new instance of LibraryItemDeleteWarningProcessor containing the categorized items.</returns>
     public static LibraryItemDeleteWarningDetector Process(
         IConnection connection,
-        IEnumerable<LibraryItem.ReadOnly> libraryItems)
+        IEnumerable<LibraryItem.ReadOnly> toRemove)
     {
         var loadouts = Loadout.All(connection.Db).ToArray();
         var nonPermanentItems = new List<LibraryItem.ReadOnly>();
         var manuallyAddedItems = new List<LibraryItem.ReadOnly>();
         var itemsInLoadouts = new List<LibraryItem.ReadOnly>();
 
-        foreach (var item in libraryItems)
+        foreach (var item in toRemove)
         {
             var info = LibraryItemRemovalInfo.Determine(connection, item, loadouts);
 

@@ -16,12 +16,12 @@ namespace NexusMods.App.UI.Pages.Library;
 /// <param name="IsAddedToAnyLoadout">True if this item has been added to any loadout.</param>
 public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, bool IsManuallyAdded, bool IsAddedToAnyLoadout)
 {
-    public static LibraryItemRemovalInfo Determine(IConnection connection, LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly[] loadouts)
+    public static LibraryItemRemovalInfo Determine(IConnection connection, LibraryItem.ReadOnly toRemove, Loadout.ReadOnly[] loadouts)
     {
         var info = new LibraryItemRemovalInfo();
 
         // Check if it's a file which was downloaded.
-        var isDownloadedFile = libraryItem.TryGetAsDownloadedFile(out var downloadedFile);;
+        var isDownloadedFile = toRemove.TryGetAsDownloadedFile(out var downloadedFile);;
         switch (isDownloadedFile)
         {
             case true:
@@ -29,13 +29,13 @@ public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, b
                 info.IsNonPermanent = !info.IsNexus;
                 break;
             // Check if it's a LocalFile (manually added)
-            case false when libraryItem.TryGetAsLocalFile(out _):
+            case false when toRemove.TryGetAsLocalFile(out _):
                 info.IsManuallyAdded = true;
                 break;
         }
 
         // Check if it's added to any loadout
-        info.IsAddedToAnyLoadout = loadouts.Any(loadout => loadout.GetLoadoutItemsByLibraryItem(libraryItem).Any());
+        info.IsAddedToAnyLoadout = loadouts.Any(loadout => loadout.GetLoadoutItemsByLibraryItem(toRemove).Any());
         return info;
     }
 }
