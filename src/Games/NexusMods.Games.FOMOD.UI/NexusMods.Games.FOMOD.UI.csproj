@@ -6,6 +6,8 @@
 
     <ItemGroup>
         <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 
     <ItemGroup>

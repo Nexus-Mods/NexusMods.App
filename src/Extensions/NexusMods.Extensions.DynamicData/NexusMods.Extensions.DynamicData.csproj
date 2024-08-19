@@ -4,6 +4,7 @@
     
     <ItemGroup>
       <PackageReference Include="DynamicData" />
+      <PackageReference Include="System.Reactive" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />

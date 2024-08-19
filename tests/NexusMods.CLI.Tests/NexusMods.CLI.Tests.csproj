@@ -33,5 +33,6 @@
 
     <ItemGroup>
       <PackageReference Include="Spectre.Console.Testing" />
+      <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 </Project>

@@ -12,7 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Verify.Xunit"/>
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="Verify.Xunit" />
     </ItemGroup>
 
     <ItemGroup>

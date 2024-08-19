@@ -24,6 +24,10 @@
       <None Remove="LibraryArchiveInstallerTests\RedModInstallerTests.CanInstallRedMod.verified.txt" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.Text.Json" />
+    </ItemGroup>
+
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
             <_Resources Include="Resources\**" />

@@ -11,6 +11,7 @@
       <PackageReference Include="Nerdbank.FullDuplexStream" />
       <PackageReference Include="Nerdbank.Streams" />
       <PackageReference Include="Spectre.Console.Testing" />
+      <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 
 </Project>

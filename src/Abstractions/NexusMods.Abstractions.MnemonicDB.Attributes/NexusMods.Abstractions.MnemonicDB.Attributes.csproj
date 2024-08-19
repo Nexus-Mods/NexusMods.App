@@ -5,6 +5,7 @@
     <ItemGroup>
       <PackageReference Include="NexusMods.Hashing.xxHash64" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+      <PackageReference Include="System.Reactive" />
     </ItemGroup>
 
     <ItemGroup>

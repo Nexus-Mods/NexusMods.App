@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit"/>
-        <PackageReference Include="Verify.Xunit"/>
-        <PackageReference Include="Verify.SourceGenerators"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" />
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="Verify.SourceGenerators" />
 
         <PackageReference Remove="Xunit.DependencyInjection" />
         <PackageReference Remove="Xunit.DependencyInjection.Logging" />

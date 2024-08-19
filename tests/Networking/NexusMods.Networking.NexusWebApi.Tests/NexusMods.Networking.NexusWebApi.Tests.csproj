@@ -15,4 +15,8 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Text.Json" />
+    </ItemGroup>
 </Project>

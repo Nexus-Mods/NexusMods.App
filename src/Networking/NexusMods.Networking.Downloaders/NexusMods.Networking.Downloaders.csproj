@@ -3,6 +3,8 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+      <PackageReference Include="System.Reactive" />
+      <PackageReference Include="System.Text.Json" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloads\NexusMods.Abstractions.HttpDownloads.csproj" />
@@ -13,6 +15,6 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Networking.Downloaders.Tests" />
-        <PackageReference Include="ReactiveUI.Fody"/>
+        <PackageReference Include="ReactiveUI.Fody" />
     </ItemGroup>
 </Project>

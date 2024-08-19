@@ -12,8 +12,10 @@
         <PackageReference Include="Noggog.CSharpExt" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Avalonia.Headless" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="System.Text.Json" />
         <PackageReference Include="Verify.Xunit" />
-        <PackageReference Include="Verify.ImageMagick"/>
+        <PackageReference Include="Verify.ImageMagick" />
     </ItemGroup>
 
     <ItemGroup>

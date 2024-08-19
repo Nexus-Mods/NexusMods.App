@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
-        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
-        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj"/>
+        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests" />
+        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Controls.TreeDataGrid"/>
-        <PackageReference Include="ReactiveUI.Fody"/>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 
     <ItemGroup>
