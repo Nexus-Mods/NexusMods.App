@@ -59,4 +59,6 @@ public class NexusModsModPageItemModel : LibraryItemModel
 
         base.Dispose(disposing);
     }
+
+    public override string ToString() => $"{base.ToString()} (Mod Page)";
 }

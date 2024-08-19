@@ -58,14 +58,14 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
     public IObservable<IChangeSet<TModel>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel>>();
     private ObservableCollectionExtended<TModel> _children = [];
 
-    private readonly BehaviorSubject<bool> _childrenActivation = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
     [DebuggerBrowsable(state: DebuggerBrowsableState.Never)]
     public ObservableCollectionExtended<TModel> Children
     {
         get
         {
-            _childrenActivation.OnNext(true);
+            _childrenCollectionInitialization.OnNext(true);
             return _children;
         }
     }
@@ -76,12 +76,16 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         get => _isExpanded;
         set
         {
-            if (_isExpanded && !value) _childrenActivation.OnNext(false);
+            if (_isExpanded && !value) _childrenCollectionInitialization.OnNext(false);
             this.RaiseAndSetIfChanged(ref _isExpanded, value);
         }
     }
 
     private readonly IDisposable _modelActivationDisposable;
+
+    private readonly SerialDisposable _childrenCollectionInitializationSerialDisposable = new();
+    private readonly SerialDisposable _childrenObservableSerialDisposable = new();
+
     protected TreeDataGridItemModel()
     {
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
@@ -92,45 +96,42 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                 .SubscribeWithErrorLogging(hasChildren => model.HasChildren = hasChildren)
                 .AddTo(disposables);
 
-            var serialDisposable = new SerialDisposable();
-            serialDisposable.AddTo(disposables);
-
-            // NOTE(erri120): TreeDataGrid accesses the `Children` collection only when
-            // the user opens the expander. The order is as follows:
-            // 1) TreeDataGrid checks `HasChildren` to show/hide the expander.
-            // 2) The user clicks on the visible expander icon.
-            // 3) TreeDataGrid checks `Children` first, since `HasChildren` and the `Children` collection
-            //    can be out-of-sync, TreeDataGrid will check if there are any children and possibly
-            //    hides the expander even if `HasChildren` is `true`.
-            // 4) If `Children` is non-empty, TreeDataGrid sets `IsExpanded` to `true` and adds rows to the tree.
-            // To get a lazy-initialized collection, we use the `Children` getter to introduce a side effect
-            // that will activate the subject below.
-            // Since this ordering is depended on the TreeDataGrid implementation, it's not very robust and
-            // mostly out of our control.
-            // Additionally, subscribing to `ChildrenObservable` has to return at least one item immediately,
-            // otherwise we return an empty collection.
-            model._childrenActivation
-                .DistinctUntilChanged()
-                .Subscribe((model, serialDisposable), static (isActivated, state) =>
-                {
-                    var (model, serialDisposable) = state;
-
-                    // NOTE(erri120): We always need to reset when the observable triggers.
-                    // Note that the observable we're currently in with the `DistinctUntilChanged`
-                    // gets disposed when the model is deactivated. This is important to
-                    // understand for the model and child activation/deactivation relationships.
-                    serialDisposable.Disposable = null;
-                    CleanupChildren(model._children);
-
-                    if (isActivated)
+            if (model._childrenCollectionInitializationSerialDisposable.Disposable is null)
+            {
+                // NOTE(erri120): TreeDataGrid accesses the `Children` collection only when
+                // the user opens the expander. The order is as follows:
+                // 1) TreeDataGrid checks `HasChildren` to show/hide the expander.
+                // 2) The user clicks on the visible expander icon.
+                // 3) TreeDataGrid checks `Children` first, since `HasChildren` and the `Children` collection
+                //    can be out-of-sync, TreeDataGrid will check if there are any children and possibly
+                //    hides the expander even if `HasChildren` is `true`.
+                // 4) If `Children` is non-empty, TreeDataGrid sets `IsExpanded` to `true` and adds rows to the tree.
+                // To get a lazy-initialized collection, we use the `Children` getter to introduce a side effect
+                // that will activate the subject below.
+                // Since this ordering is depended on the TreeDataGrid implementation, it's not very robust and
+                // mostly out of our control.
+                // Additionally, subscribing to `ChildrenObservable` has to return at least one item immediately,
+                // otherwise we return an empty collection.
+                model._childrenCollectionInitializationSerialDisposable.Disposable = model._childrenCollectionInitialization
+                    .DistinctUntilChanged()
+                    .Subscribe(model, onNext: static (isInitializing, model) =>
                     {
-                        serialDisposable.Disposable = model.ChildrenObservable
-                            .OnUI()
-                            .Bind(model._children)
-                            .SubscribeWithErrorLogging();
-                    }
-                })
-                .AddTo(disposables);
+                        // NOTE(erri120): We always need to reset when the observable triggers.
+                        // Note that the observable we're currently in with the `DistinctUntilChanged`
+                        // gets disposed when the model is deactivated. This is important to
+                        // understand for the model and child activation/deactivation relationships.
+                        model._childrenObservableSerialDisposable.Disposable = null;
+                        CleanupChildren(model._children);
+
+                        if (isInitializing)
+                        {
+                            model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
+                                .OnUI()
+                                .Bind(model._children)
+                                .SubscribeWithErrorLogging();
+                        }
+                    });
+            }
         });
     }
 
@@ -151,7 +152,12 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         {
             if (disposing)
             {
-                Disposable.Dispose(_childrenActivation, _modelActivationDisposable);
+                Disposable.Dispose(
+                    _childrenCollectionInitialization,
+                    _modelActivationDisposable,
+                    _childrenObservableSerialDisposable,
+                    _childrenCollectionInitializationSerialDisposable
+                );
             }
 
             _children = null!;

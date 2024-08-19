@@ -9,12 +9,12 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
-    <StackPanel Orientation="Vertical">
-        <Button x:Name="SwitchView">
+    <Grid RowDefinitions="Auto, *">
+        <Button Grid.Row="0" x:Name="SwitchView">
             <TextBlock>Switch View</TextBlock>
         </Button>
 
-        <TreeDataGrid x:Name="TreeDataGrid"
+        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True">
@@ -26,8 +26,7 @@
                 </DataTemplate>
             </TreeDataGrid.Resources>
         </TreeDataGrid>
-    </StackPanel>
-
+    </Grid>
 
 </reactive:ReactiveUserControl>
 

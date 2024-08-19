@@ -106,6 +106,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
         base.Dispose(disposing);
     }
 
+    public override string ToString() => Name;
+
     public static IColumn<LibraryItemModel> CreateNameColumn()
     {
         return new CustomTextColumn<LibraryItemModel, string>(
