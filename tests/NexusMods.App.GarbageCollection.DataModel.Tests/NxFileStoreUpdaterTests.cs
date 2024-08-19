@@ -16,10 +16,7 @@ namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connection, NxFileStore nxFileStore)
 {
-    private readonly IFileStore _fileStore = fileStore;
     private readonly NxFileStoreUpdater _updater = new(connection);
-    private readonly IConnection _connection = connection;
-    private readonly NxFileStore _nxFileStore = nxFileStore;
 
     [Fact]
     public async Task UpdateNxFileStore_ShouldUpdateArchivedFileEntries()
@@ -53,7 +50,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
         }
 
         // Arrange [Backup the test files], and get their location.
-        await _fileStore.BackupFiles(records);
+        await fileStore.BackupFiles(records);
         var archivePath = GetArchivePath(fileHashes.Values.First());
 
         // Arrange: Perform a repack through the GC.
@@ -73,7 +70,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
 
         foreach (var (fileName, hash) in fileHashes)
         {
-            var archivedFiles = ArchivedFile.FindByHash(_connection.Db, hash).ToList();
+            var archivedFiles = ArchivedFile.FindByHash(connection.Db, hash).ToList();
 
             if (fileName is "infinite.txt" or "with.txt")
             {
@@ -100,7 +97,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
 
     private AbsolutePath GetArchivePath(Hash hash)
     {
-        _nxFileStore.TryGetLocation(_connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        nxFileStore.TryGetLocation(connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
 

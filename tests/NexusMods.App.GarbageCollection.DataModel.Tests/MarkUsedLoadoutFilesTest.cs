@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Games.TestFramework;
@@ -12,7 +11,7 @@ using NexusMods.Paths.Extensions.Nx.FileProviders;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
-public class MarkUsedFilesTest(IServiceProvider serviceProvider) : AGameTest<StubbedGame>(serviceProvider)
+public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameTest<StubbedGame>(serviceProvider)
 {
     [Fact]
     public async Task MarkUsedFiles_ShouldMarkAndUnmarkFilesCorrectly()
