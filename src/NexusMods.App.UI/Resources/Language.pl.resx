@@ -40,13 +40,13 @@
 		<value>Później</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
-		<value>Zaktualizuj</value>
+		<value>Zobacz aktualizację</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
 		<value>Dostępna aktualizacja</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Aktualizuj swoją aplikację, aby otrzymywać najnowsze ulepszenia.</value>
+		<value>Ważne: Odinstaluj aktualną wersję aplikacji przed dokonaniem aktualizacji. Aktualizacja usuwa wszystkie mody.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
 		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
@@ -310,7 +310,7 @@
 		<value>Coś poszło nie tak</value>
 	</data>
 	<data name="ErrorView_MissingMod_Description" xml:space="preserve">
-		<value>Wygląda na to, że nie możemy uzyskać dostępu do tego moda, ponieważ został usunięty lub nie jest już dostępny. Proszę sprawdzić, czy masz odpowiednią wersję lub wybierz inny mod. Dziękujemy za zrozumienie!</value>
+		<value>Wygląda na to, że nie możemy uzyskać dostępu do tego moda, ponieważ został usunięty lub nie jest już dostępny. Proszę sprawdzić, czy masz odpowiednią wersję lub wybierz inny mod.</value>
 	</data>
 	<data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
 		<value>Problem z dostępem do moda</value>
@@ -357,16 +357,16 @@
 		<comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
 	</data>
 	<data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
-		<value>ILOŚĆ PLIKÓW</value>
+		<value>PLIKI</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
 		<value>Załaduj</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
-		<value>Wszystkie wspierane gry zostały już dodane, jednakże nie wykryto nowych gier.</value>
+		<value>Wszystkie wspierane gry zostały już dodane. Nie wykryto nowych gier.</value>
 	</data>
 	<data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-		<value>Dodaj swoje ulubione gry, aby zacząć przygodę z modowaniem.</value>
+		<value>Dodaj swoje ulubione gry, aby rozpocząć ekscytującą przygodę modowaniem.</value>
 	</data>
 	<data name="GameWidget__Adding_game" xml:space="preserve">
 		<value>Dodawanie gry</value>
@@ -397,7 +397,7 @@
 	</data>
 	<data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
 		<value>Pliki: Zestaw {0} ({1})  Dysk {2} ({3})</value>
-		<comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+		<comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes</comment>
 	</data>
 	<data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
 		<value>Zastosowane zmiany: Dodane {0} Zmodyfikowane {1} Usunięte {2}</value>
@@ -474,10 +474,10 @@
         <value>Usuń</value>
     </data>
     <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-        <value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods! Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.&#x0a;&#x0a;Życzymy udanego modowania i wspaniałych przygód!</value>
+        <value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods!&#x0a;&#x0a;Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.&#x0a;&#x0a;Życzymy udanego modowania i wspaniałych przygód!</value>
     </data>
     <data name="LoginMessageView_Title" xml:space="preserve">
-        <value>Zaloguj się i zacznij swoją przygodę</value>
+        <value>Zaloguj się i rozpocznij swoją przygodę</value>
     </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
         <value>Uzyskaj mody:</value>
@@ -572,7 +572,7 @@
         <comment>{0} is the name of the currently managed game</comment>
     </data>
     <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
-        <value>Twój zestaw przeszedł kontrolę kondycji bez problemów</value>
+        <value>Kontrola kondycji zestawu zakończona pomyślnie</value>
     </data>
     <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
         <value>Gotowy do gry</value>
@@ -593,7 +593,7 @@
         <value>Moje zestawy</value>
     </data>
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez finezyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najbardziej Ci odpowiada, aby zacząć przygodę z modowaniem.</value>
+        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najlepiej odpowiada twoim preferencjom, aby rozpocząć przygodę z modowaniem.</value>
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>Zestawy {0}</value>
@@ -615,7 +615,7 @@
         <value>Tworzenie...</value>
     </data>
     <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
-        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez finezyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
+        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
     </data>
     <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
         <value>Dodaj grę przed użyciem zestawów</value>
