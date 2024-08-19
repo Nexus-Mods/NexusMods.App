@@ -38,6 +38,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
 
     public ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
 
+    private readonly IDisposable _modelActivationDisposable;
     public LibraryItemModel()
     {
         var canInstall = this.WhenAnyValue(
@@ -48,7 +49,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
 
         InstallCommand = ReactiveCommand.Create(() => LibraryItemId.Value, canInstall);
 
-        WhenModelActivated(this, static (model, disposables) =>
+        _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.FormattedCreatedAtDate = FormatDate(DateTime.Now, model.CreatedAt);
             model.FormattedInstalledDate = FormatDate(DateTime.Now, model.InstalledDate);
@@ -95,7 +96,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
         {
             if (disposing)
             {
-                InstallCommand.Dispose();
+                Disposable.Dispose(InstallCommand, _modelActivationDisposable);
             }
 
             LinkedLoadoutItems = null!;

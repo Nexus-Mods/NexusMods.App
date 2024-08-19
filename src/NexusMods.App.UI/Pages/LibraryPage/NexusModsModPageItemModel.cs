@@ -13,9 +13,10 @@ public class NexusModsModPageItemModel : LibraryItemModel
     public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly>> LibraryFilesObservable { get; init; }
     private ObservableCollectionExtended<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
 
+    private readonly IDisposable _modelActivationDisposable;
     public NexusModsModPageItemModel()
     {
-        WhenModelActivated(this, static (model, disposables) =>
+        _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.LibraryFiles
                 .ObserveCollectionChanges()
@@ -47,6 +48,11 @@ public class NexusModsModPageItemModel : LibraryItemModel
     {
         if (!_isDisposed)
         {
+            if (disposing)
+            {
+                _modelActivationDisposable.Dispose();
+            }
+
             LibraryFiles = null!;
             _isDisposed = true;
         }

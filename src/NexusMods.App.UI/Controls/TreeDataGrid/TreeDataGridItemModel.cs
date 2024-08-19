@@ -81,9 +81,10 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         }
     }
 
+    private readonly IDisposable _modelActivationDisposable;
     protected TreeDataGridItemModel()
     {
-        WhenModelActivated(this, static (model, disposables) =>
+        _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             // NOTE(erri120): TreeDataGrid uses `HasChildren` to show/hide the expander.
             model.HasChildrenObservable
@@ -150,7 +151,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         {
             if (disposing)
             {
-                _childrenActivation.Dispose();
+                Disposable.Dispose(_childrenActivation, _modelActivationDisposable);
             }
 
             _children = null!;
@@ -160,7 +161,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         base.Dispose(disposing);
     }
 
-    protected static IDisposable WhenModelActivated<TItemModel>(TItemModel model, Action<TItemModel, CompositeDisposable> block)
+    [MustDisposeResource] protected static IDisposable WhenModelActivated<TItemModel>(TItemModel model, Action<TItemModel, CompositeDisposable> block)
         where TItemModel : TreeDataGridItemModel
     {
         var d = Disposable.CreateBuilder();
@@ -168,7 +169,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         var serialDisposable = new SerialDisposable();
         serialDisposable.AddTo(ref d);
 
-        model.Activation.DistinctUntilChanged().Subscribe((model, serialDisposable, block), static (isActivated, state) =>
+        model.Activation.DistinctUntilChanged().Subscribe((model, serialDisposable, block), onNext: static (isActivated, state) =>
         {
             var (model, serialDisposable, block) = state;
 
@@ -180,6 +181,10 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
 
                 block(model, compositeDisposable);
             }
+        }, onCompleted: static (_, state) =>
+        {
+            var (_, serialDisposable, _) = state;
+            serialDisposable.Disposable = null;
         }).AddTo(ref d);
 
         return d.Build();
