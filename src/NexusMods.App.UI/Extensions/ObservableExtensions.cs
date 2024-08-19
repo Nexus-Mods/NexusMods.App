@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -8,6 +9,15 @@ public static class ObservableExtensions
     public static IConnectableObservable<T> PublishWithFunc<T>(this IObservable<T> source, Func<T> initialValueFunc)
     {
         return source.Multicast(new PublishWithFuncSubject<T>(func: initialValueFunc));
+    }
+
+    public static IObservable<T> ReturnFactory<T>(Func<T> factory)
+    {
+        return Observable.Create<T>(observer =>
+        {
+            observer.OnNext(factory());
+            return Disposable.Empty;
+        });
     }
 
     private class PublishWithFuncSubject<T> : SubjectBase<T>
