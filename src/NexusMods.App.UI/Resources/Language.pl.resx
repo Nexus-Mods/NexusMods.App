@@ -366,7 +366,7 @@
 		<value>Wszystkie wspierane gry zostały już dodane. Nie wykryto nowych gier.</value>
 	</data>
 	<data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-		<value>Dodaj swoje ulubione gry, aby rozpocząć ekscytującą przygodę modowaniem.</value>
+		<value>Dodaj swoje ulubione gry, aby rozpocząć ekscytującą przygodę z modowaniem.</value>
 	</data>
 	<data name="GameWidget__Adding_game" xml:space="preserve">
 		<value>Dodawanie gry</value>
