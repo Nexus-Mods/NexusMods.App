@@ -1,7 +1,6 @@
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using DynamicData.Kernel;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -41,8 +40,8 @@ public class NavigationMenuItem : MenuItem
 
         _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
         {
-            NavigationInformation = NavigationInformation.From(openPageBehaviorType);
-            OnClick(new RoutedEventArgs());
+            var navigationInformation = NavigationInformation.From(openPageBehaviorType);
+            NavigationCommand?.Execute(navigationInformation).Subscribe();
         });
 
         var contextMenu = new ContextMenu
