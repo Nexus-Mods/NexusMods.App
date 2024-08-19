@@ -41,6 +41,12 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             }
         );
         
+        CloneLoadoutCommand = ReactiveCommand.CreateFromTask(() =>
+            {
+                return CopyLoadout(loadout);
+            }
+        );
+        
         this.WhenActivated(d =>
         {
             Observable.FromAsync(() => LoadImage(loadout.InstallationInstance))
@@ -102,7 +108,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     [Reactive] public bool IsDeleting { get;  private set; } = false;
     public bool IsSkeleton => false;
     public required ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; init; }
-    public required ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; init; } 
+    public ReactiveCommand<Unit, Unit> CloneLoadoutCommand { get; } 
     public ReactiveCommand<Unit, Unit> DeleteLoadoutCommand { get; }
     
     [Reactive] public bool IsLastLoadout { get; set; } = true;
@@ -143,6 +149,11 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     private static Task DeleteLoadout(Loadout.ReadOnly loadout)
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
+    }
+    
+    private static Task CopyLoadout(Loadout.ReadOnly loadout)
+    {
+        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.CopyLoadout(loadout));
     }
     
 }

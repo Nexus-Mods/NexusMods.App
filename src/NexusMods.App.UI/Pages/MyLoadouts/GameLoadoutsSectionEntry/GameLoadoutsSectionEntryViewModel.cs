@@ -45,11 +45,6 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                     return (IViewModelInterface)new LoadoutCardViewModel(loadout, conn, serviceProvider)
                     {
                         VisitLoadoutCommand = ReactiveCommand.Create(() => NavigateToLoadout(loadout)),
-                        CloneLoadoutCommand = ReactiveCommand.Create(() =>
-                            {
-                                // TODO: Implement Loadout cloning
-                            }
-                        ),
                     };
                 }
             )

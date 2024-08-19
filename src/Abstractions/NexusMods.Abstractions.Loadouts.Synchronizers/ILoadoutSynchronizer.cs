@@ -122,4 +122,8 @@ public interface ILoadoutSynchronizer
 
 #endregion
 
+    /// <summary>
+    /// Create a clone of the current loadout
+    /// </summary>
+    Task CopyLoadout(Loadout.ReadOnly loadout);
 }
