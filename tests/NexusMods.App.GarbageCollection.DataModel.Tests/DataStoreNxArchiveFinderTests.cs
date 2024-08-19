@@ -14,8 +14,6 @@ namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection connection, ISettingsManager settingsManager)
 {
-    private readonly NxFileStore _fileStore = fileStore;
-    private readonly IConnection _connection = connection;
     private readonly DataModelSettings _dataModelSettings = settingsManager.Get<DataModelSettings>();
 
     [Fact]
@@ -43,7 +41,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
         foreach (var files in archiveContents)
         {
             var records = CreateArchivedFileEntries(files);
-            await _fileStore.BackupFiles(records);
+            await fileStore.BackupFiles(records);
             createdArchives.Add(GetArchivePath(records[0].Hash));
         }
 
@@ -78,7 +76,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
 
     private AbsolutePath GetArchivePath(Hash hash)
     {
-        _fileStore.TryGetLocation(_connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        fileStore.TryGetLocation(connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
     
