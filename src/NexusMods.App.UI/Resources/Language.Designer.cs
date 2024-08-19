@@ -1765,6 +1765,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to How to uninstall the Nexus Mods app.
+        /// </summary>
+        public static string Updated_ViewUninstallDocs {
+            get {
+                return ResourceManager.GetString("Updated_ViewUninstallDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Later.
         /// </summary>
         public static string Updater_LATER {
@@ -1774,7 +1783,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keep your app updated to get the latest improvements..
+        ///   Looks up a localized string similar to Important: In order to install this version you will need to uninstall first. This will delete all your mods..
         /// </summary>
         public static string Updater_MainMessage {
             get {
@@ -1783,7 +1792,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update.
+        ///   Looks up a localized string similar to View update.
         /// </summary>
         public static string Updater_UPDATE {
             get {

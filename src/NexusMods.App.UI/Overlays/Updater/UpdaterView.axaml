@@ -15,36 +15,31 @@
     </Design.DataContext>
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 0" Classes="Spacing-3_5">
+                <StackPanel Orientation="Vertical" Margin="24, 16, 24, 24" Classes="Spacing-3_5">
 
-                <TextBlock Classes="HeadingXSSemi"
-                           Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
+                    <TextBlock x:Name="UpdateHeadingTextBlock"
+                               Classes="HeadingXSSemi"
+                               Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
 
-                <!-- Message -->
-                <StackPanel Classes="Spacing-2">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Classes="BodyMDBold"
-                                   x:Name="FromVersionTextBlock"/>
-                        <TextBlock Text=" -> "
-                                   Classes="BodyMDNormal"/>
-                        <TextBlock Classes="BodyMDBold"
-                                   x:Name="ToVersionTextBlock"/>
+                    <!-- Message -->
+                    <StackPanel Classes="Spacing-2">
+                        
+                        <TextBlock TextWrapping="WrapWithOverflow"
+                                   Text="{x:Static resources:Language.Updater_MainMessage}"
+                                   Classes="BodyMDNormal" />
+
+                        <TextBlock x:Name="UseSystemUpdater"
+                                   TextWrapping="WrapWithOverflow"
+                                   Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
+                                   Classes="BodyMDNormal" />
+                        
+                        <Button Classes="Hyperlink Secondary" x:Name="ViewUninstallDocsButton">
+                            <TextBlock Classes="BodyMDNormal"
+                                       Text="{x:Static resources:Language.Updated_ViewUninstallDocs}"/>
+                        </Button>
+                        
                     </StackPanel>
-                    <TextBlock TextWrapping="WrapWithOverflow"
-                               Text="{x:Static resources:Language.Updater_MainMessage}"
-                               Classes="BodyMDNormal" />
-
-                    <TextBlock x:Name="UseSystemUpdater"
-                               TextWrapping="WrapWithOverflow"
-                               Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
-                               Classes="BodyMDNormal" />
-
-                    <Button Classes="Hyperlink Secondary" x:Name="ChangelogButton">
-                        <TextBlock Classes="BodyMDNormal"
-                                   Text="{x:Static resources:Language.Updater_ViewChangelog}"/>
-                    </Button>
                 </StackPanel>
-            </StackPanel>
 
         </base:MessageBoxBackground.TopContent>
 
