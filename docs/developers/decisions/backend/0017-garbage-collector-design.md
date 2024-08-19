@@ -64,6 +64,9 @@ from which files may be referenced from.
 - Mod Library
     - Any item in the library may be added to a loadout at any time, thus must
       not be deleted.
+    - More specifically, we're interested in `LibraryArchiveFileEntry` objects
+      which are not retracted. These are the files that are stored inside archives
+      added to the library.
 - Loadouts
     - Loadouts have some `LoadoutItems` which do not correspond to a `LibraryItem`.
     - Example: `Game Files` and `Overrides` files.

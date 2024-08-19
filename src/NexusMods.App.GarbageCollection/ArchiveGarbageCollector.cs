@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NexusMods.App.GarbageCollection.Errors;
 using NexusMods.App.GarbageCollection.Interfaces;
@@ -85,7 +86,8 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
         lock (archiveRef!.Entries)
         {
             ref var entry = ref CollectionsMarshal.GetValueRefOrNullRef(archiveRef.Entries, hash);
-            entry.IncrementRefCount();
+            if (!Unsafe.IsNullRef(ref entry))
+                entry.IncrementRefCount();
         }
     }
 

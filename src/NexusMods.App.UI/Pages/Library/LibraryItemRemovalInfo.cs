@@ -1,7 +1,6 @@
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.App.UI.Pages.Library;
 
 /// <summary>
@@ -16,7 +15,7 @@ namespace NexusMods.App.UI.Pages.Library;
 /// <param name="IsAddedToAnyLoadout">True if this item has been added to any loadout.</param>
 public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, bool IsManuallyAdded, bool IsAddedToAnyLoadout)
 {
-    public static LibraryItemRemovalInfo Determine(IConnection connection, LibraryItem.ReadOnly toRemove, Loadout.ReadOnly[] loadouts)
+    public static LibraryItemRemovalInfo Determine(LibraryItem.ReadOnly toRemove, Loadout.ReadOnly[] loadouts)
     {
         var info = new LibraryItemRemovalInfo();
 

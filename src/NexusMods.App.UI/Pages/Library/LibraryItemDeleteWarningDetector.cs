@@ -52,7 +52,7 @@ public record struct LibraryItemDeleteWarningDetector
 
         foreach (var item in toRemove)
         {
-            var info = LibraryItemRemovalInfo.Determine(connection, item, loadouts);
+            var info = LibraryItemRemovalInfo.Determine(item, loadouts);
 
             if (info.IsNonPermanent)
                 nonPermanentItems.Add(item);
