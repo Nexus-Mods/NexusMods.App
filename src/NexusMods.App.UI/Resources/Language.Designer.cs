@@ -69,6 +69,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applying changes to the game.
+        /// </summary>
+        public static string ApplyControlView__ApplyingToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView__ApplyingToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply your changes to the game folder.
         /// </summary>
         public static string ApplyControlView_Apply_ToolTip {
@@ -1032,6 +1041,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Never.
+        /// </summary>
+        public static string HumanizedDateTime_Never {
+            get {
+                return ResourceManager.GetString("HumanizedDateTime_Never", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File will be added.
         /// </summary>
         public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added {
@@ -1176,6 +1194,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Loadout.
+        /// </summary>
+        public static string LoadoutCard_DeleteLoadoutToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Copy.
         /// </summary>
         public static string LoadoutCardViewCreateCopyButton {
@@ -1221,7 +1248,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last applied {0}.
+        ///   Looks up a localized string similar to Last applied: {0}.
         /// </summary>
         public static string LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_ {
             get {

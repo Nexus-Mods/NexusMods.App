@@ -7,6 +7,7 @@ using DynamicData.Binding;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
@@ -88,10 +89,10 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
             return (x, y) switch
             {
-                (LoadoutCardViewModel lx, LoadoutCardViewModel ly) => string.Compare(lx.LoadoutName, ly.LoadoutName, StringComparison.Ordinal),
+                (LoadoutCardViewModel lx, LoadoutCardViewModel ly) => DateTime.Compare(lx.LoadoutVal.GetCreatedAt(), ly.LoadoutVal.GetCreatedAt()),
                 (SkeletonLoadoutCardViewModel sx, SkeletonLoadoutCardViewModel sy) => string.Compare(sx.LoadoutName, sy.LoadoutName, StringComparison.Ordinal),
-                (LoadoutCardViewModel lxs, SkeletonLoadoutCardViewModel sys) => string.Compare(lxs.LoadoutName, sys.LoadoutName, StringComparison.Ordinal),
-                (SkeletonLoadoutCardViewModel sxs, LoadoutCardViewModel lys) => string.Compare(sxs.LoadoutName, lys.LoadoutName, StringComparison.Ordinal),
+                (LoadoutCardViewModel lxs, SkeletonLoadoutCardViewModel sys) => -1,
+                (SkeletonLoadoutCardViewModel sxs, LoadoutCardViewModel lys) => 1,
                 _ => 0,
             };
         }

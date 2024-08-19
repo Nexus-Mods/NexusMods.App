@@ -1,5 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
@@ -13,11 +15,11 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
  
     [Reactive] public Optional<Loadout.ReadOnly> LoadoutValue { get; set; }
     
-    public LoadoutBadgeViewModel(IConnection conn, ISynchronizerService syncService)
+    public LoadoutBadgeViewModel(IConnection conn, ISynchronizerService syncService, bool hideOnSingleLoadout = false)
     {
         this.WhenActivated(d =>
         {
-            var isLastAppliedSerialDisposable = new SerialDisposable().DisposeWith(d);
+            var applyStatusSerialDisposable = new SerialDisposable().DisposeWith(d);
             
             this.WhenAnyValue(vm => vm.LoadoutValue)
                 .Where(l => l.HasValue)
@@ -26,21 +28,36 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                 {
                     LoadoutShortName = loadout.ShortName;
                     
-                    isLastAppliedSerialDisposable.Disposable = syncService
-                        .LastAppliedRevisionFor(loadout.InstallationInstance)
-                        .Select(lastAppliedLoadout => lastAppliedLoadout.Id == loadout.LoadoutId)
-                        .BindToVM(this, vm => vm.IsLoadoutApplied)
-                        .DisposeWith(d);
-                    
-                    // TODO: Implement IsLoadoutInProgress
-                    
+                    applyStatusSerialDisposable.Disposable = Observable.FromAsync(() => syncService.StatusForLoadout(loadout.LoadoutId))
+                    .Switch()
+                    .OnUI()
+                    .Do(applyStatus =>
+                        {
+                            IsLoadoutApplied = applyStatus == LoadoutSynchronizerState.Current;
+                            IsLoadoutInProgress = applyStatus == LoadoutSynchronizerState.Pending;
+                        }
+                    )
+                    .SubscribeWithErrorLogging();;
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
+            
+            if (hideOnSingleLoadout)
+            {
+                var startingLoadouts = Loadout.All(conn.Db);
+                Loadout.ObserveAll(conn)
+                    .Filter(l => l.InstallationId == LoadoutValue.Value.InstallationId)
+                    .Count()
+                    .Select(count => count > 1)
+                    .OnUI()
+                    .SubscribeWithErrorLogging(isVisible => IsVisible = isVisible)
+                    .DisposeWith(d);
+            }
         });
     }
     [Reactive] public string LoadoutShortName { get; private set; } = " ";
     [Reactive] public bool IsLoadoutApplied { get; private set; } = false;
     [Reactive] public bool IsLoadoutInProgress { get; set; } = false;
     [Reactive] public bool IsLoadoutSelected { get; set; } = true;
+    [Reactive] public bool IsVisible { get; set; } = true;
 }
