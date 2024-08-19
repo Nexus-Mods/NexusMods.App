@@ -32,6 +32,12 @@
                                    TextWrapping="WrapWithOverflow"
                                    Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
                                    Classes="BodyMDNormal" />
+                        
+                        <Button Classes="Hyperlink Secondary" x:Name="ViewUninstallDocsButton">
+                            <TextBlock Classes="BodyMDNormal"
+                                       Text="{x:Static resources:Language.Updated_ViewUninstallDocs}"/>
+                        </Button>
+                        
                     </StackPanel>
                 </StackPanel>
 

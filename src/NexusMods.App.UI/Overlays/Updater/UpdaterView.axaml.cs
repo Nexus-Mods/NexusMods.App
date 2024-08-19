@@ -29,6 +29,10 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                 .BindToUi(this, view => view.UseSystemUpdater.IsVisible)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.ViewModel!.ShowUninstallInstructionsCommand)
+                .BindToUi(this, view => view.ViewUninstallDocsButton.Command)
+                .DisposeWith(d);
+            
             this.WhenAnyValue(view => view.ViewModel!.UpdateCommand)
                 .BindToUi(this, view => view.UpdateButton.Command)
                 .DisposeWith(d);
