@@ -132,7 +132,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                                 .Bind(model._children)
                                 .SubscribeWithErrorLogging();
                         }
-                    });
+                    }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }
         });
     }
