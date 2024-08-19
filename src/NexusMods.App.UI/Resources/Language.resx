@@ -46,13 +46,13 @@
         <value>Later</value>
     </data>
     <data name="Updater_UPDATE" xml:space="preserve">
-        <value>Update</value>
+        <value>View update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
         <value>Update available</value>
     </data>
     <data name="Updater_MainMessage" xml:space="preserve">
-        <value>Keep your app updated to get the latest improvements.</value>
+        <value>Please note: In order to update to the latest version of the app you need to uninstall all your mods and the current version of the app.</value>
     </data>
     <data name="Updater_UseSystemUpdater" xml:space="preserve">
         <value>It appears that your copy of the app was installed via a system managed package manager, please update via your operating system's update application.</value>

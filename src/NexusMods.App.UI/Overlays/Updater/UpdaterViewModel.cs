@@ -102,12 +102,12 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
             if (asset is null) return false;
 
             _logger.LogInformation("Asset found: {Asset}", asset.Name);
-            UpdateUrl = asset.BrowserDownloadUrl;
+            UpdateUrl = latestRelease.HtmlUrl;
             NewVersion = latestRelease.Version;
 
             if (Method is InstallationMethod.AppImage or InstallationMethod.PackageManager)
             {
-                ShowSystemUpdateMessage = true;
+                 ShowSystemUpdateMessage = true;
             }
 
             return true;

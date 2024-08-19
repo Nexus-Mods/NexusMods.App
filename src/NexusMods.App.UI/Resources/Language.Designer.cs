@@ -1747,7 +1747,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keep your app updated to get the latest improvements..
+        ///   Looks up a localized string similar to Please note: In order to update to the latest version of the app you need to uninstall all your mods and the current version of the app..
         /// </summary>
         public static string Updater_MainMessage {
             get {
@@ -1756,7 +1756,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update.
+        ///   Looks up a localized string similar to View update.
         /// </summary>
         public static string Updater_UPDATE {
             get {
