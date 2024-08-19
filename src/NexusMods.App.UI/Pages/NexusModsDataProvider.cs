@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.App.UI.Pages;
@@ -59,7 +61,24 @@ internal class NexusModsDataProvider : ILibraryDataProvider
         var nexusModsLibraryFileObservable = _connection
             .ObserveDatoms(NexusModsFileMetadata.ModPageId, modPageMetadata.Id)
             .MergeManyChangeSets(datom => _connection.ObserveDatoms(NexusModsLibraryFile.FileMetadataId, datom.E))
-            .Replay(bufferSize: 1)
+            .PublishWithFunc(initialValueFunc: () =>
+            {
+                var changeSet = new ChangeSet<Datom>();
+                var list = new List<Datom>();
+
+                var fileDatoms = _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPageMetadata.Id);
+                foreach (var entityIdDatom in fileDatoms)
+                {
+                    var libraryFileDatom = _connection.Db.Datoms(NexusModsLibraryFile.FileMetadataId, entityIdDatom.E);
+                    foreach (var datom in libraryFileDatom)
+                    {
+                        list.Add(datom);
+                    }
+                }
+
+                changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, list));
+                return changeSet;
+            })
             .AutoConnect();
 
         var hasChildrenObservable = nexusModsLibraryFileObservable.IsNotEmpty();
