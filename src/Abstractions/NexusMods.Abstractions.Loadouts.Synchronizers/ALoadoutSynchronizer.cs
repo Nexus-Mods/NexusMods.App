@@ -1098,7 +1098,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task CopyLoadout(Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> CopyLoadout(Loadout.ReadOnly loadout)
     {
         Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(1024);
         
@@ -1154,9 +1154,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        await tx.Commit();
+        var result = await tx.Commit();
 
-        return;
+        return Loadout.Load(Connection.Db, result[entityIdList[loadout.Id]]);
         
         EntityId RemapFn(EntityId entityId)
         {

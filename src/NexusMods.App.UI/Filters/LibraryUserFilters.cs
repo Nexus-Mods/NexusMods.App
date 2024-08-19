@@ -29,6 +29,6 @@ public static class LibraryUserFilters
     /// </summary>
     public static IObservable<IChangeSet<LibraryItem.ReadOnly>> ObserveFilteredLibraryItems(IConnection connection)
     {
-        return LibraryItem.ObserveAll(connection).Where(ShouldShow);
+        return LibraryItem.ObserveAll(connection).Where(ShouldShow).RemoveKey();
     }
 }

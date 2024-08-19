@@ -30,6 +30,7 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
         {
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
+                .RemoveKey()
                 .GroupOn(loadout => loadout.Installation.Path)
                 .Transform(group => group.List.Items.First().InstallationInstance)
                 .Transform(managedGameInstall =>
