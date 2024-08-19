@@ -6,25 +6,25 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 
-namespace NexusMods.App.UI.Pages.Library;
+namespace NexusMods.App.UI.Pages.LoadoutPage;
 
-[JsonName("NexusMods.App.UI.Pages.Library.LibraryPageContext")]
-public record LibraryPageContext : IPageFactoryContext
+[JsonName("NexusMods.App.UI.Pages.Library.LoadoutPageContext")]
+public record LoadoutPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
 }
 
 [UsedImplicitly]
-public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageContext>
+public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageContext>
 {
-    public LibraryPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public LoadoutPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("547926e3-56ba-4ed1-912d-d0d7e8b7e287"));
+    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("62fda6ce-e6b7-45d6-936f-a8f325bfc644"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILibraryViewModel CreateViewModel(LibraryPageContext context)
+    public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
-        var vm = new LibraryViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
         return vm;
     }
 
@@ -35,12 +35,12 @@ public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageCon
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = "Library",
-            Icon = IconValues.ModLibrary,
+            ItemName = "My Mods",
+            Icon = IconValues.Collections,
             PageData = new PageData
             {
                 FactoryId = Id,
-                Context = new LibraryPageContext
+                Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
                 },
