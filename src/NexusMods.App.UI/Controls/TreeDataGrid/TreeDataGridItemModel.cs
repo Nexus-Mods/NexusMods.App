@@ -96,6 +96,8 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                 .SubscribeWithErrorLogging(hasChildren => model.HasChildren = hasChildren)
                 .AddTo(disposables);
 
+            // NOTE(erri120): We only do this once. If you have an expanded parent and scroll
+            // past it, we don't want the subscription to be disposed.
             if (model._childrenCollectionInitializationSerialDisposable.Disposable is null)
             {
                 // NOTE(erri120): TreeDataGrid accesses the `Children` collection only when
