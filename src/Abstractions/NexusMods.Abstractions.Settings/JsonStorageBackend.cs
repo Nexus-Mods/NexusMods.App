@@ -11,6 +11,8 @@ namespace NexusMods.Abstractions.Settings;
 public sealed class JsonStorageBackend : ISettingsStorageBackend
 {
     internal static SettingsStorageBackendId StaticId = SettingsStorageBackendId.From(Guid.Parse("ef1470a8-871a-440a-8352-b8d930b776de"));
+    
+    private const string PathPostfix = "_21082024";
 
     private readonly ILogger _logger;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
@@ -45,7 +47,7 @@ public sealed class JsonStorageBackend : ISettingsStorageBackend
         );
         
         // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
-        var baseDirectoryName = os.IsOSX ? "NexusMods_App/Configs" : "NexusMods.App/Configs";
+        var baseDirectoryName = os.IsOSX ? $"NexusMods_App/Configs_{PathPostfix}" : $"NexusMods.App/Configs_{PathPostfix}";
         return fileSystem.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
     }
 

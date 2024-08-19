@@ -11,6 +11,8 @@ namespace NexusMods.DataModel;
 [PublicAPI]
 public record DataModelSettings : ISettings
 {
+    public const string PathPostfix = "_21082024";
+    
     /// <summary>
     /// If true, data model will be stored in memory only and the paths will be ignored.
     /// </summary>
@@ -44,9 +46,9 @@ public record DataModelSettings : ISettings
 
         return new DataModelSettings
         {
-            MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/MnemonicDB.rocksdb"),
+            MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/MnemonicDB{PathPostfix}.rocksdb"),
             ArchiveLocations = [
-                new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),
+                new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives{PathPostfix}"),
             ],
         };
     }
