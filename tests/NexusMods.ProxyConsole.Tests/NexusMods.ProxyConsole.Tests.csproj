@@ -8,6 +8,8 @@
     
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
       <PackageReference Include="Nerdbank.FullDuplexStream" />
       <PackageReference Include="Nerdbank.Streams" />
       <PackageReference Include="Spectre.Console.Testing" />

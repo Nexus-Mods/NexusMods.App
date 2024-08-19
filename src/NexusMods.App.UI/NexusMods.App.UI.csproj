@@ -66,11 +66,12 @@
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="AvaloniaEdit.TextMate" />
-        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
         <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="ObservableCollections.R3" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />

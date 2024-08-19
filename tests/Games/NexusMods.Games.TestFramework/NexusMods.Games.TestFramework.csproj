@@ -12,7 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Verify.Xunit"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Verify.Xunit" />
     </ItemGroup>
 
     <ItemGroup>

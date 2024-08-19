@@ -1,9 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit"/>
-        <PackageReference Include="Verify.Xunit"/>
-        <PackageReference Include="Verify.SourceGenerators"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="Verify.SourceGenerators" />
 
         <PackageReference Remove="Xunit.DependencyInjection" />
         <PackageReference Remove="Xunit.DependencyInjection.Logging" />
