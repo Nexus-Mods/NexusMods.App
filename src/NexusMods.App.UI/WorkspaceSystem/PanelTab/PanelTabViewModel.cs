@@ -1,4 +1,5 @@
 using System.Reactive;
+using DynamicData.Kernel;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -7,7 +8,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewModel
 {
     /// <inheritdoc/>
-    public PanelTabId Id { get; } = PanelTabId.From(Guid.NewGuid());
+    public PanelTabId Id { get; }
 
     /// <inheritdoc/>
     public IPanelTabHeaderViewModel Header { get; }
@@ -26,8 +27,9 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
 
     private TabHistory History { get; }
 
-    public PanelTabViewModel(IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId)
+    public PanelTabViewModel(IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId = default)
     {
+        Id = tabId.HasValue ? tabId.Value : PanelTabId.From(Guid.NewGuid());
         Header = new PanelTabHeaderViewModel(Id);
         History = new TabHistory(
             openPageFunc: pageData => {
