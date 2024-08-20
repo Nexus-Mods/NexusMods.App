@@ -81,7 +81,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     NameObservable = nameObservable,
                     IsEnabledObservable = isEnabledObservable,
                 };
-            });
+            })
+            .RemoveKey();
     }
 
     private static ITreeDataGridSource<LoadoutItemModel> CreateSource(IEnumerable<LoadoutItemModel> models, bool createHierarchicalSource)
