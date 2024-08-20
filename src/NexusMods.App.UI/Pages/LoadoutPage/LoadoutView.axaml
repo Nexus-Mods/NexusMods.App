@@ -12,6 +12,19 @@
     <TreeDataGrid x:Name="TreeDataGrid"
                   ShowColumnHeaders="True"
                   CanUserResizeColumns="True"
-                  CanUserSortColumns="True"/>
+                  CanUserSortColumns="True">
+        <TreeDataGrid.Resources>
+            <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
+                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">
+                    <ToggleSwitch.OnContent>
+                        <ContentControl />
+                    </ToggleSwitch.OnContent>
+                    <ToggleSwitch.OffContent>
+                        <ContentControl />
+                    </ToggleSwitch.OffContent>
+                </ToggleSwitch>
+            </DataTemplate>
+        </TreeDataGrid.Resources>
+    </TreeDataGrid>
 
 </reactive:ReactiveUserControl>
