@@ -2,25 +2,57 @@ using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.App.UI.Controls;
 using NexusMods.Paths;
+using ReactiveUI.Fody.Helpers;
+using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
 {
-    public string Name { get; set; } = "Unknown";
-
-    public string Version { get; set; } = "-";
-
-    public Size Size { get; set; } = Size.Zero;
-
     public required DateTime InstalledAt { get; init; }
 
-    public bool IsEnabled { get; set; }
-    public R3.ReactiveCommand<R3.Unit> ToggleEnableStateCommand { get; }
+    public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
+    [Reactive] public string Name { get; set; } = "-";
 
+    public IObservable<string> VersionObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
+    [Reactive] public string Version { get; set; } = "-";
+
+    public IObservable<Size> SizeObservable { get; init; } = System.Reactive.Linq.Observable.Return(Size.Zero);
+    [Reactive] public Size Size { get; set; } = Size.Zero;
+
+    public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
+    [Reactive] public bool IsEnabled { get; set; }
+
+    public ReactiveCommand<Unit> ToggleEnableStateCommand { get; }
+
+    private readonly IDisposable _modelActivationDisposable;
     public LoadoutItemModel()
     {
-        ToggleEnableStateCommand = new R3.ReactiveCommand<R3.Unit>(_ => { /* TODO */ });
+        ToggleEnableStateCommand = new ReactiveCommand<Unit>(_ => { /* TODO */ });
+
+        _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
+        {
+            model.NameObservable.OnUI().Subscribe(name => model.Name = name).AddTo(disposables);
+            model.VersionObservable.OnUI().Subscribe(version => model.Version = version).AddTo(disposables);
+            model.SizeObservable.OnUI().Subscribe(size => model.Size = size).AddTo(disposables);
+            model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled = isEnabled).AddTo(disposables);
+        });
+    }
+
+    private bool _isDisposed;
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                Disposable.Dispose(ToggleEnableStateCommand, _modelActivationDisposable);
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
     }
 
     public override string ToString() => Name;

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
@@ -59,12 +60,27 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         return LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
-            .Transform(loadoutItem => new LoadoutItemModel
+            .Transform(loadoutItem =>
             {
-                Name = loadoutItem.AsLoadoutItem().Name,
-                InstalledAt = loadoutItem.GetCreatedAt(),
-                Size = Size.Zero,
-                Version = "-",
+                var observable = LibraryLinkedLoadoutItem
+                    .Observe(_connection, loadoutItem.Id)
+                    .Publish()
+                    .AutoConnect();
+
+                var nameObservable = observable.Select(static item => item.AsLoadoutItem().Name);
+                var isEnabledObservable = observable.Select(static item => !item.AsLoadoutItem().IsDisabled);
+
+                // TODO: version
+                // TODO: size (probably with RevisionsWithChildUpdates)
+
+                return new LoadoutItemModel
+                {
+                    InstalledAt = loadoutItem.GetCreatedAt(),
+                    Name = loadoutItem.AsLoadoutItem().Name,
+
+                    NameObservable = nameObservable,
+                    IsEnabledObservable = isEnabledObservable,
+                };
             });
     }
 
