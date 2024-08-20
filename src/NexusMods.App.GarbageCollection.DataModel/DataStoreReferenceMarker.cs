@@ -38,7 +38,7 @@ public static class DataStoreReferenceMarker
     {
         /*
             Note(sewer)
-         
+
             How the whole system is built is not particularly easy to understand
             at first, so here's a short explainer that's also in the docs.
 
@@ -48,25 +48,24 @@ public static class DataStoreReferenceMarker
             Essentially, we want to scan for all cases of `LibraryArchiveFileEntry` here.
             These belong to an `LibraryArchive`; which is the primitive you usually
             interact with in the UI to add items. Both are of type `LibraryFile`.
-            
+
             Therefore, we need to scan for all non-retracted `LibraryArchiveFileEntry`
             items.
-            
-            ---------------
-            
-            There is however a caveat that has to be considered here. Essentially, 
-            `LibraryFile` itself has a `Hash` attribute, so it's possible that in
-            the future there may be more derivatives. Therefore, just in case,
-            we should scan for all `LibraryFile` items that are not retracted.
-            
-            A false positive is better than a false negative in the context of a GC.
-            False positive may have unoptimal disk usage, but at least it wouldn't
-            break the system.
          */
-        
-        var libraryFiles = LibraryFile.All(db);
+
+        var libraryFiles = LibraryArchiveFileEntry.All(db);
         foreach (var file in libraryFiles)
-            archiveGc.AddReferencedFile(file.Hash);
+            archiveGc.AddReferencedFile(file.AsLibraryFile().Hash);
+
+        /*
+            There is however a caveat that has to be considered here.
+            
+            There is a base assumption that all `LibraryArchiveFileEntry` items
+            are used to represent items that are archived in the File Store.
+            
+            If this assumption is broken, then the GC will miss files.
+            An appropriate warning has been added to the relevant classes.
+        */
     }
 
     private static void MarkItemsUsedInLoadouts<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, Entities<LoadoutFile.ReadOnly> loadoutFiles, IDb db, Dictionary<LoadoutId, bool> isLoadoutValidDict)

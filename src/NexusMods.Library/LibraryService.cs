@@ -69,7 +69,7 @@ public sealed class LibraryService : ILibraryService
     {
         using var tx = _connection.BeginTransaction();
         foreach (var item in libraryItems)
-            tx.Delete(item.Id, false);
+            tx.Delete(item.Id, true);
 
         await tx.Commit();
     }

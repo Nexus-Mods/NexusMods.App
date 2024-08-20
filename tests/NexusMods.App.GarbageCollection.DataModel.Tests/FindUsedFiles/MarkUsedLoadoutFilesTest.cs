@@ -3,18 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
-using NexusMods.Archives.Nx.Headers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions.Nx.FileProviders;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-namespace NexusMods.App.GarbageCollection.DataModel.Tests;
+using static NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles.Helpers;
+namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
 
 public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameTest<StubbedGame>(serviceProvider)
 {
     [Fact]
-    public async Task MarkUsedFiles_ShouldMarkAndUnmarkFilesCorrectly()
+    public async Task ShouldMarkAndUnmarkFilesCorrectly()
     {
         // Arrange
         var loadout = await CreateLoadout();
@@ -76,23 +75,6 @@ public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameT
             
             IsFileReferenced(gc, loadoutFile.Hash).Should().BeFalse($"LoadoutFile with hash {loadoutFile.Hash} should not be marked as used after deletion.");
         }
-    }
-
-    private static NxParsedHeaderState GetParsedNxHeader(AbsolutePath path)
-    {
-        var streamProvider = new FromAbsolutePathProvider { FilePath = path };
-        return new NxParsedHeaderState(HeaderParser.ParseHeader(streamProvider));
-    }
-
-    private static bool IsFileReferenced(ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> gc, Hash hash)
-    {
-        if (!gc.HashToArchive.TryGetValue(hash, out var archiveRef))
-            return false;
-
-        if (archiveRef.Entries.TryGetValue(hash, out var entry))
-            return entry.GetRefCount() > 0;
-
-        return false;
     }
     
     public class Startup

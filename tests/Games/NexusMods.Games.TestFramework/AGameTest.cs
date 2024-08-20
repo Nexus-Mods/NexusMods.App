@@ -12,6 +12,7 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel;
@@ -145,11 +146,43 @@ public abstract class AGameTest<TGame> where TGame : AGame
     };
 
     /// <summary>
+    /// Creates a <see cref="LibraryArchive"/> to simulate an item in the library.
+    /// This item can be used in conjunction with <see cref="AddModAsync"/> to simulate
+    /// adding a mod from the library.
+    /// </summary>
+    /// <param name="conn">The connection with the DataStore</param>
+    /// <param name="fileName">Name of the archive.</param>
+    public async Task<LibraryArchive.ReadOnly> CreateLibraryArchive(IConnection conn, string fileName)
+    {
+        using var tx = conn.BeginTransaction();
+        var libraryFile = CreateLibraryFile(fileName, tx, out var entityId);
+        
+        // Note(sewer): These are the same entity, just an API caveat that 2 objects are needed.
+        var archive = new LibraryArchive.New(tx, entityId)
+        {
+            LibraryFile = libraryFile,
+            IsArchive = true,
+        };
+
+        var result = await tx.Commit();
+        return result.Remap(archive);
+    }
+
+    /// <summary>
     /// Creates a file in the loadout for the given mod.
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName)
+    /// <param name="tx">The transaction.</param>
+    /// <param name="paths">The names of the file paths to add. The file contents will be the UTF-8 of these paths.</param>
+    /// <param name="loadoutId">The loadout to add the mod to.</param>
+    /// <param name="modName">Name of the mod in the loadout.</param>
+    /// <param name="libraryArchive">
+    ///     The library item created with <see cref="CreateLibraryArchive"/> to attach the mod files to.
+    ///     Specifying this parameter will add DB entries to simulate this being the original archive which
+    ///     the files have come from.
+    /// </param>
+    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName, LibraryArchive.ReadOnly? libraryArchive = null)
     {
         var records = new List<ArchivedFileEntry>();
         var hashes = new List<Hash>();
@@ -173,6 +206,17 @@ public abstract class AGameTest<TGame> where TGame : AGame
                     size
                 ));
             }
+
+            if (libraryArchive == null)
+                continue;
+
+            var libraryArchiveFileEntry = CreateLibraryFile(path.Path, tx, out _);
+            _ = new LibraryArchiveFileEntry.New(tx, libraryArchiveFileEntry.Id)
+            {
+                Path = path,
+                ParentId = libraryArchive,
+                LibraryFile = libraryArchiveFileEntry,
+            };
         }
 
         if (records.Count > 0)
@@ -180,6 +224,17 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         return (GetArchivePath(hashes.First()), hashes);
     }
+
+    private static LibraryFile.New CreateLibraryFile(string fileName, ITransaction tx, out EntityId entityId) => new(tx, out entityId)
+    {
+        FileName = fileName,
+        Hash = fileName.XxHash64AsUtf8(),
+        Size = Size.FromLong(fileName.Length),
+        LibraryItem = new LibraryItem.New(tx, entityId)
+        {
+            Name = fileName,
+        },
+    };
     
     /// <summary>
     /// Resets the game folders to a clean state.
