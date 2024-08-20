@@ -115,7 +115,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// </summary>
     public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
     {
-        return AddFile(tx, loadoutId, groupId, path, out _, out _);
+        return AddFile(tx, loadoutId, groupId, path, content, out _, out _);
     }
     
     /// <summary>
@@ -123,10 +123,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, out Hash hash, out Size size)
+    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content, out Hash hash, out Size size)
     {
-        hash = path.Path.ToString().XxHash64AsUtf8();
-        size = Size.FromLong(path.Path.ToString().Length);
+        content ??= path.Path.ToString();
+        var contentArray = Encoding.UTF8.GetBytes(content);
+
+        hash = contentArray.XxHash64();
+        size = Size.FromLong(contentArray.Length);
         return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
     }
     private static LoadoutFile.New AddFileInternal(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
