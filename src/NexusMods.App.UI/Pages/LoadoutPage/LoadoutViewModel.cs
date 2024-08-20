@@ -6,6 +6,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
@@ -20,6 +21,8 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewModel
 {
     private readonly IConnection _connection;
+
+    public Subject<(LoadoutItemModel, bool)> ActivationSubject { get; } = new();
 
     [Reactive] public ITreeDataGridSource<LoadoutItemModel>? Source { get; set; }
     private readonly ObservableCollectionExtended<LoadoutItemModel> _itemModels = [];
@@ -39,6 +42,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         this.WhenActivated(disposables =>
         {
+            ActivationSubject
+                .Subscribe(this, static (tuple, vm) =>
+                {
+                    var (model, isActivated) = tuple;
+
+                    if (isActivated)
+                    {
+                        model.Activate();
+                    }
+                    else
+                    {
+                        model.Deactivate();
+                    }
+                })
+                .AddTo(disposables);
+
             this.WhenAnyValue(vm => vm.ViewHierarchical)
                 .Select(viewHierarchical =>
                 {
@@ -64,7 +83,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 var observable = LibraryLinkedLoadoutItem
                     .Observe(_connection, loadoutItem.Id)
-                    .Publish()
+                    .Replay(bufferSize: 1)
                     .AutoConnect();
 
                 var nameObservable = observable.Select(static item => item.AsLoadoutItem().Name);
@@ -77,6 +96,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     InstalledAt = loadoutItem.GetCreatedAt(),
                     Name = loadoutItem.AsLoadoutItem().Name,
+                    IsEnabled = !loadoutItem.AsLoadoutItem().IsDisabled,
 
                     NameObservable = nameObservable,
                     IsEnabledObservable = isEnabledObservable,
