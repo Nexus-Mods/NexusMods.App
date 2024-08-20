@@ -66,8 +66,7 @@ public class ArchiveGarbageCollectorTests
         collector.HashToArchive[hash2].Entries[hash2].GetRefCount().Should().Be(2);
     }
 
-    // TODO: Disabled until I re-enable the exception. There's a false positive I need to fix first.
-    //[Fact]
+    [Fact]
     public void AddReferencedFile_ShouldThrowForUnknownHash()
     {
         // Arrange
@@ -75,7 +74,7 @@ public class ArchiveGarbageCollectorTests
         var unknownHash = (Hash)999;
 
         // Act & Assert
-        var act = () => collector.AddReferencedFile(unknownHash);
+        var act = () => collector.AddReferencedFile(unknownHash, true);
         act.Should().Throw<UnknownFileException>();
     }
 

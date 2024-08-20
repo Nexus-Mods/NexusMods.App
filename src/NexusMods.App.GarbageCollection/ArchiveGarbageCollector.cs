@@ -74,16 +74,19 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     ///     [Thread Safe]
     /// </summary>
     /// <param name="hash">The hash for which the ref count is to be incremented.</param>
+    /// <param name="throwOnUnknownFile">Throws if an unknown file is being added to the ref counter.</param>
     /// <exception cref="UnknownFileException">
     ///     An archive is being added via <see cref="AddReferencedFile"/> but
     ///     was not originally collected via <see cref="AddArchive"/>.
     /// </exception>
-    public void AddReferencedFile(Hash hash)
+    public void AddReferencedFile(Hash hash, bool throwOnUnknownFile = false)
     {
         if (!HashToArchive.TryGetValue(hash, out var archiveRef))
         {
+            if (throwOnUnknownFile)
+                ThrowHelpers.ThrowUnknownFileException(hash);
+
             return;
-            ThrowHelpers.ThrowUnknownFileException(hash);
         }
 
         lock (archiveRef!.Entries)
