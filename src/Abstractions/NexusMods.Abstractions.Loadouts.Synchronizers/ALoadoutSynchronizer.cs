@@ -1083,7 +1083,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun)
+    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
@@ -1101,7 +1101,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
         
         // Execute the garbage collector
-        RunGC(gcRunMode);
+        _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
 
     /// <summary>
@@ -1181,24 +1181,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var groups = ProcessSyncTree(syncTree);
 
         await RunGroupings(syncTree, groups, installation);
-    }
-    
-    // ReSharper disable once InconsistentNaming
-    private void RunGC(GarbageCollectorRunMode gcRunMode)
-    {
-        switch (gcRunMode)
-        {
-            case GarbageCollectorRunMode.RunSynchronously:
-                _garbageCollectorRunner.Run();
-                break;
-            case GarbageCollectorRunMode.RunInBackground:
-                _ = Task.Run(() => _garbageCollectorRunner.Run());
-                break;
-            case GarbageCollectorRunMode.DoNotRun:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(gcRunMode), gcRunMode, null);
-        }
     }
 }
 
