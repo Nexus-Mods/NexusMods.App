@@ -12,7 +12,7 @@ Workspaces are a collection of arranged tabs and panels. A new workspace is crea
 ### Tabs
 At the top of the workspace, there is a tab bar. New tabs can be opened by pressing the :material-plus: icon and closed by pressing the :material-close: icon.
 
-![The tab bar showing several open tabs](../images/0.5.2/TabBar.webp)
+![The tab bar showing several open tabs](../images/0.6.0/TabBar.webp)
 
 Each panel can have as many tabs as required. When the number of tabs exceed the available space, a scrollbar and arrows will appear to allow browse through the tab names. 
 
@@ -23,6 +23,6 @@ A panel is section of the workspace which contains it's own set of tabs. The wor
 
 To create a new panel, click on the Add Panel button (![Add panel icon](../images/add-panel-icon.svg "Add Panel"){ style="height:1.125em;" }) located on the right of the top bar.
 
-![The two small panels side-by-side.](../images/0.5.2/PanelsExample.webp)
+![The two small panels side-by-side.](../images/0.6.0/PanelsExample.webp)
 
 Panels can be resized by dragging the edges and can be closed using the :material-close: button. 
