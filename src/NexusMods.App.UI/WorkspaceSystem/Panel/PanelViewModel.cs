@@ -65,6 +65,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             .Bind(out _tabs)
             .Subscribe();
 
+        this.WhenAnyValue(vm => vm.SelectedTabId)
+            .Select(selectedTabId => Tabs.FirstOrDefault(tab => tab.Id == selectedTabId))
+            .WhereNotNull()
+            .SubscribeWithErrorLogging(selectedTab => SelectedTab = selectedTab);
+        
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.LogicalBounds)
@@ -129,9 +134,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender)
-                .Do(vm => SelectedTab = vm)
-                .Select(vm => vm.Id)
+                .Select(propertyValue => propertyValue.Sender.Id)
                 .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 
@@ -226,9 +229,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
 
-                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
+                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id, tab.Id)
                 {
                     Contents = newTabPage,
                     Header =
@@ -237,8 +240,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                         Title = newTabPage.ViewModel.TabTitle,
                     },
                 };
-
-                newTabPage.ViewModel.TabId = vm.Id;
 
                 updater.Add(vm);
             }
