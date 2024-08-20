@@ -19,6 +19,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
         this.WhenActivated(disposables =>
         {
+            this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
+                .DisposeWith(disposables);
+
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler

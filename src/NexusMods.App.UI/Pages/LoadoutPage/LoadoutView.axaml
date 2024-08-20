@@ -9,22 +9,28 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
-    <TreeDataGrid x:Name="TreeDataGrid"
-                  ShowColumnHeaders="True"
-                  CanUserResizeColumns="True"
-                  CanUserSortColumns="True">
-        <TreeDataGrid.Resources>
-            <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
-                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">
-                    <ToggleSwitch.OnContent>
-                        <ContentControl />
-                    </ToggleSwitch.OnContent>
-                    <ToggleSwitch.OffContent>
-                        <ContentControl />
-                    </ToggleSwitch.OffContent>
-                </ToggleSwitch>
-            </DataTemplate>
-        </TreeDataGrid.Resources>
-    </TreeDataGrid>
+    <Grid RowDefinitions="Auto, *">
+        <Button Grid.Row="0" x:Name="SwitchView">
+            <TextBlock>Switch View</TextBlock>
+        </Button>
+
+        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
+                      ShowColumnHeaders="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True">
+            <TreeDataGrid.Resources>
+                <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
+                    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">
+                        <ToggleSwitch.OnContent>
+                            <ContentControl />
+                        </ToggleSwitch.OnContent>
+                        <ToggleSwitch.OffContent>
+                            <ContentControl />
+                        </ToggleSwitch.OffContent>
+                    </ToggleSwitch>
+                </DataTemplate>
+            </TreeDataGrid.Resources>
+        </TreeDataGrid>
+    </Grid>
 
 </reactive:ReactiveUserControl>
