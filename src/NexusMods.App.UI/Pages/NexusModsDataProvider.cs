@@ -36,6 +36,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider
     {
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
+            // TODO: observable filter
             .Filter(modPage => _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id).Count > 0)
             .Transform(ToLibraryItemModel)
             .RemoveKey();

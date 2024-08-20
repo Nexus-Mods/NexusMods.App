@@ -281,6 +281,7 @@ public static class Services
             // Other
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
+            .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddFileSystem();
     }

@@ -1,10 +1,13 @@
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Observable = System.Reactive.Linq.Observable;
@@ -13,7 +16,7 @@ using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 namespace NexusMods.App.UI.Pages;
 
 [UsedImplicitly]
-internal class LocalFileDataProvider : ILibraryDataProvider
+internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
 
@@ -76,6 +79,50 @@ internal class LocalFileDataProvider : ILibraryDataProvider
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
+                };
+            })
+            .RemoveKey();
+    }
+
+    public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
+    {
+        return _connection
+            .ObserveDatoms(LocalFile.PrimaryAttribute)
+            // TODO: observable filter
+            .Filter(datom => _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E).Count > 0)
+            .Transform(datom =>
+            {
+                var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
+
+                var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
+                {
+                    var innerChildrenObservable = _connection
+                        .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
+                        .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
+                        .RemoveKey()
+                        .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
+
+                    var model = new LoadoutItemModel
+                    {
+                        InstalledAt = DateTime.UnixEpoch, // TODO:
+                        Name = libraryFile.AsLibraryItem().Name,
+                        NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
+
+                        HasChildrenObservable = Observable.Return(true),
+                        ChildrenObservable = innerChildrenObservable,
+                    };
+
+                    return new ChangeSet<LoadoutItemModel>([new Change<LoadoutItemModel>(ListChangeReason.Add, model)]);
+                });
+
+                return new LoadoutItemModel
+                {
+                    InstalledAt = DateTime.UnixEpoch, // TODO:
+                    Name = libraryFile.AsLibraryItem().Name,
+                    NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
+
+                    HasChildrenObservable = Observable.Return(true),
+                    ChildrenObservable = childrenObservable,
                 };
             })
             .RemoveKey();

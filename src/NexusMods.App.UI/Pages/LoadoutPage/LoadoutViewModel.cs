@@ -6,7 +6,6 @@ using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
@@ -36,7 +35,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
-        var dataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
+        var dataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
 
         SwitchViewCommand = new R3.ReactiveCommand<R3.Unit>(_ =>
         {
@@ -74,14 +73,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     _itemModels.Clear();
 
-                    return ObserveFlatLoadoutItems()
+                    var observable = viewHierarchical
+                        ? dataProviders.Select(provider => provider.ObserveNestedLoadoutItems()).MergeChangeSets()
+                        : ObserveFlatLoadoutItems();
+
+                    return observable
                         .DisposeMany()
                         .OnUI()
                         .Bind(_itemModels);
                 })
                 .Switch()
                 .Select(_ => CreateSource(_itemModels, createHierarchicalSource: ViewHierarchical))
-                .BindTo(this, vm => vm.Source)
+                .SubscribeWithErrorLogging(s => Source = s)
+                // .BindTo(this, vm => vm.Source)
                 .AddTo(disposables);
 
             // TODO: can be optimized with chunking or debounce
@@ -111,31 +115,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         return LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
-            .Transform(loadoutItem =>
-            {
-                var observable = LibraryLinkedLoadoutItem
-                    .Observe(_connection, loadoutItem.Id)
-                    .Replay(bufferSize: 1)
-                    .AutoConnect();
-
-                var nameObservable = observable.Select(static item => item.AsLoadoutItem().Name);
-                var isEnabledObservable = observable.Select(static item => !item.AsLoadoutItem().IsDisabled);
-
-                // TODO: version (need to ask the game extension)
-                // TODO: size (probably with RevisionsWithChildUpdates)
-
-                return new LoadoutItemModel
-                {
-                    LoadoutItemId = loadoutItem.Id,
-                    InstalledAt = loadoutItem.GetCreatedAt(),
-                    Name = loadoutItem.AsLoadoutItem().Name,
-                    IsEnabled = !loadoutItem.AsLoadoutItem().IsDisabled,
-
-                    NameObservable = nameObservable,
-                    IsEnabledObservable = isEnabledObservable,
-                };
-            })
-            .RemoveKey();
+            .RemoveKey()
+            .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
     }
 
     private static ITreeDataGridSource<LoadoutItemModel> CreateSource(IEnumerable<LoadoutItemModel> models, bool createHierarchicalSource)
