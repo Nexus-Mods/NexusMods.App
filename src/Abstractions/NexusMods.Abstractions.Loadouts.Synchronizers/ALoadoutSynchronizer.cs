@@ -1100,9 +1100,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> CopyLoadout(Loadout.ReadOnly loadout)
     {
+        loadout = loadout.Rebase();
         Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(1024);
         
-        var baseDb = loadout.Rebase().Db;
+        var baseDb = loadout.Db;
 
         var registry = baseDb.Registry;
         var nameId = Loadout.Name.GetDbId(registry.Id);
