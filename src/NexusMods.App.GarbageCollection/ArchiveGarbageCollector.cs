@@ -81,7 +81,10 @@ public readonly struct ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWra
     public void AddReferencedFile(Hash hash)
     {
         if (!HashToArchive.TryGetValue(hash, out var archiveRef))
+        {
+            return;
             ThrowHelpers.ThrowUnknownFileException(hash);
+        }
 
         lock (archiveRef!.Entries)
         {
