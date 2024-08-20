@@ -34,7 +34,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private Dictionary<LibraryItemModel, IDisposable> InstallCommandDisposables { get; set; } = new();
     private Subject<LibraryItemId> InstallLibraryItemSubject { get; } = new();
 
-    public ReactiveCommand<Unit, Unit> SwitchViewCommand { get; }
+    public R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
 
     private readonly ConnectableObservable<DateTime> _ticker;
     public LibraryViewModel(
@@ -57,7 +57,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = loadout.InstallationInstance.Game;
 
-        SwitchViewCommand = ReactiveCommand.Create(() =>
+        SwitchViewCommand = new R3.ReactiveCommand<R3.Unit>(_ =>
         {
             ViewHierarchical = !ViewHierarchical;
         });
@@ -83,7 +83,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     if (isActivated)
                     {
                         model.Ticker = vm._ticker;
-                        var disposable = model.InstallCommand.Subscribe(libraryItemId => vm.InstallLibraryItemSubject.OnNext(libraryItemId));
+                        var disposable = model.InstallCommand.Subscribe(vm, static (libraryItemId, vm) => vm.InstallLibraryItemSubject.OnNext(libraryItemId));
                         var didAdd = vm.InstallCommandDisposables.TryAdd(model, disposable);
                         Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
 
