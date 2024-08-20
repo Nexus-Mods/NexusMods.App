@@ -16,7 +16,8 @@ public partial class Loadout
         var analyzerDatas = connection.Revisions.Select(db => db.AnalyzerData<TreeAnalyzer, FrozenSet<EntityId>>());
         
         return Loadout.ObserveAll(connection)
-            .AutoRefreshOnObservable(itm => analyzerDatas.Where(set => set.Contains(itm.Id)));
+            .AutoRefreshOnObservable(itm => analyzerDatas.Where(set => set.Contains(itm.Id)))
+            .RemoveKey();
     }
     
     /// <summary>

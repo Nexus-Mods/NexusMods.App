@@ -28,7 +28,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider
     {
         return NexusModsLibraryFile
             .ObserveAll(_connection)
-            .Transform(ToLibraryItemModel);
+            .Transform(ToLibraryItemModel)
+            .RemoveKey();
     }
 
     public IObservable<IChangeSet<LibraryItemModel>> ObserveNestedLibraryItems()
@@ -36,14 +37,16 @@ internal class NexusModsDataProvider : ILibraryDataProvider
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             .Filter(modPage => _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id).Count > 0)
-            .Transform(ToLibraryItemModel);
+            .Transform(ToLibraryItemModel)
+            .RemoveKey();
     }
 
     private LibraryItemModel ToLibraryItemModel(NexusModsLibraryFile.ReadOnly nexusModsLibraryFile)
     {
         var linkedLoadoutItemsObservable = _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, nexusModsLibraryFile.Id)
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E));
+            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
+            .RemoveKey();
 
         return new LibraryItemModel
         {
@@ -61,6 +64,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider
         var nexusModsLibraryFileObservable = _connection
             .ObserveDatoms(NexusModsFileMetadata.ModPageId, modPageMetadata.Id)
             .MergeManyChangeSets(datom => _connection.ObserveDatoms(NexusModsLibraryFile.FileMetadataId, datom.E))
+            .RemoveKey()
             .PublishWithFunc(initialValueFunc: () =>
             {
                 var changeSet = new ChangeSet<Datom>();
@@ -90,7 +94,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider
 
         var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
             .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E));
+            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
+            .RemoveKey();
 
         var libraryFilesObservable = nexusModsLibraryFileObservable.Transform(datom => NexusModsLibraryFile.Load(_connection.Db, datom.E));
 

@@ -111,9 +111,17 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
             """, [loadoutA, loadoutB]
         );
         
+        var loadoutC = await Synchronizer.CopyLoadout(loadoutA);
+        
+        LogState(sb, "## 11 - Loadout A Copied to Loadout C",
+            """
+            Loadout A has been copied to Loadout C, and the contents should match.
+            """, [loadoutA, loadoutB, loadoutC]
+        );
+        
         await Synchronizer.UnManage(GameInstallation);
         
-        LogState(sb, "## 11 - Game Unmanaged",
+        LogState(sb, "## 12 - Game Unmanaged",
             """
             The loadouts have been deleted and the game folder should be back to its initial state.
             """,

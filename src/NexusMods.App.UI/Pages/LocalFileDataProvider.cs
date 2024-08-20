@@ -30,14 +30,16 @@ internal class LocalFileDataProvider : ILibraryDataProvider
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
                 return ToLibraryItemModel(libraryFile);
-            });
+            })
+            .RemoveKey();
     }
 
     private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile)
     {
         var linkedLoadoutItemsObservable = _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E));
+            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
+            .RemoveKey();
 
         return new LibraryItemModel
         {
@@ -62,7 +64,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider
 
                 var linkedLoadoutItemsObservable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-                    .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E));
+                    .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
+                    .RemoveKey();
 
                 return new LibraryItemModel
                 {
@@ -72,8 +75,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider
                     Size = libraryFile.Size,
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
-                    LinkedLoadoutItemsObservable =linkedLoadoutItemsObservable,
+                    LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
                 };
-            });
+            })
+            .RemoveKey();
     }
 }

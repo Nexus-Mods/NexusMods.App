@@ -18,7 +18,9 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
@@ -1094,7 +1096,91 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return false;
     }
-    
+
+    /// <inheritdoc />
+    public async Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadoutId)
+    {
+        var baseDb = Connection.Db;
+        var loadout = Loadout.Load(baseDb, loadoutId);
+        
+        // Temp space for datom values
+        Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(32);
+        
+        // Cache some attribute ids
+        var registry = baseDb.Registry;
+        var nameId = Loadout.Name.GetDbId(registry.Id);
+        var shortNameId = Loadout.ShortName.GetDbId(registry.Id);
+        
+        // Generate a new name and short name
+        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb).Select(l => l.ShortName).ToArray());
+        var newName = loadout.Name + " Copy";
+        
+        // Create a mapping of old entity ids to new (temp) entity ids
+        Dictionary<EntityId, EntityId> entityIdList = new();
+        var remapFn = RemapFn;
+        
+        using var tx = Connection.BeginTransaction();
+
+        // Add the loadout
+        entityIdList[loadout.Id] = tx.TempId();
+        
+        // And each item
+        foreach (var item in loadout.Items)
+        {
+            entityIdList[item.Id] = tx.TempId();
+        }
+
+        foreach (var (oldId, newId) in entityIdList)
+        {
+            // Get the original entity
+            var entity = baseDb.Get(oldId);
+            
+            foreach (var datom in entity)
+            {
+                // Rename the loadout
+                if (datom.A == nameId)
+                {
+                    tx.Add(newId, Loadout.Name, newName);
+                    continue;
+                }
+                if (datom.A == shortNameId)
+                {
+                    tx.Add(newId, Loadout.ShortName, newShortName);
+                    continue;
+                }
+
+                // Make sure we have enough buffer space
+                if (buffer.Length < datom.ValueSpan.Length)
+                    buffer = GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
+                
+                // Copy the value over
+                datom.ValueSpan.CopyTo(buffer.Span);
+                
+                // Create the new datom and reference the copied value
+                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, false, datom.Prefix.ValueTag);
+                var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length], registry);
+                
+                // Remap any entity ids in the value
+                var attr = registry.GetAttribute(datom.A);
+                attr.Remap(remapFn, buffer[..datom.ValueSpan.Length].Span);
+                
+                // Add the new datom
+                tx.Add(newDatom);
+            }
+        }
+
+        var result = await tx.Commit();
+
+        return Loadout.Load(Connection.Db, result[entityIdList[loadout.Id]]);
+        
+        // Local function to remap entity ids in the format Attribute.Remap wants
+        EntityId RemapFn(EntityId entityId)
+        {
+            return entityIdList.GetValueOrDefault(entityId, entityId);
+        }
+    }
+
+
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId)
     {
