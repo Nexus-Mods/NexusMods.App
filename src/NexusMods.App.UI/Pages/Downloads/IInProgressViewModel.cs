@@ -3,6 +3,7 @@ using System.Reactive;
 using DynamicData;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
@@ -13,6 +14,12 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public interface IInProgressViewModel : IPageViewModelInterface
 {
+    
+    /// <summary>
+    /// Temporary progress value until we redo the downloads page
+    /// </summary>
+    public Percent NewProgress { get; }
+    
     /// <summary>
     /// Collection of in progress download tasks (downloading, paused, etc.)
     /// </summary>

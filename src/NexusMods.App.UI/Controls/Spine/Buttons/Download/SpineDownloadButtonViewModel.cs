@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Resources;
@@ -16,14 +17,14 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 [UsedImplicitly]
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
-    public SpineDownloadButtonViewModel(IJobMonitor jobMonitor)
+    public SpineDownloadButtonViewModel(IJobMonitor jobMonitor, ILogger<SpineDownloadButtonViewModel> logger)
     {
         this.WhenActivated(disposables =>
         {
             jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
                 .AverageProgressPercent()
                 .OnUI()
-                .Subscribe(rate => Progress = rate)
+                .Subscribe(rate => { Progress = rate.Value > 0 ? rate : Optional<Percent>.None; })
                 .DisposeWith(disposables);
             
             jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()

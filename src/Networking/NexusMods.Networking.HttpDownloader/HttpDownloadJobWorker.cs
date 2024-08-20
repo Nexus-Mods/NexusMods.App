@@ -49,7 +49,6 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
             SetProgressRate(job, args.BytesPerSecondSpeed);
         };
 
-        // TODO: progress reporting
         await downloadService.DownloadFileTaskAsync(
             package: job.DownloadPackage.Value,
             cancellationToken: cancellationToken

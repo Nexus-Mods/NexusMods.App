@@ -20,7 +20,8 @@ public static class IJobMonitorExtensions
         where TJobType : IJob
     {
         return jobMonitor.GetObservableChangeSet<TJobType>()
-            .FilterOnObservable(job => job.ObservableStatus.Select(status => status is JobStatus.Running or JobStatus.Paused));
+            .FilterOnObservable(job => job.ObservableStatus
+                .Select(status => status is JobStatus.Running or JobStatus.Paused));
     } 
     
     
@@ -37,7 +38,13 @@ public static class IJobMonitorExtensions
                     return determinateProgress.ObservablePercent;
                 }
             )
-            .QueryWhenChanged(coll => Percent.CreateClamped(coll.Items.Aggregate(0.0d, (acc, source) => acc + source.Value) / coll.Count));
+            .QueryWhenChanged(coll =>
+                {
+                    if (coll.Count == 0)
+                        return Percent.Zero;
+                    return Percent.CreateClamped(coll.Items.Aggregate(0.0d, (acc, source) => acc + source.Value) / coll.Count);
+                }
+            );
     }
     
     /// <summary>
@@ -53,6 +60,12 @@ public static class IJobMonitorExtensions
                     return determinateProgress.ObservableProgressRate;
                 }
             )
-            .QueryWhenChanged(coll => coll.Items.Select(r => r.Value).Sum());
+            .QueryWhenChanged(coll =>
+                {
+                    if (coll.Count == 0)
+                        return 0.0d;
+                    return coll.Items.Select(r => r.Value).Sum();
+                }
+            );
     }
 }
