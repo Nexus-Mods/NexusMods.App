@@ -10,13 +10,21 @@ namespace NexusMods.App.UI;
 public static class LoadoutUserFilters
 {
     /// <summary>
-    /// Returns whether the given loadout item should be shown to the user.
+    /// Returns an enumerable containing all items to be shown to the user.
     /// </summary>
-    public static bool ShouldShow(LoadoutItem.ReadOnly loadoutItem)
+    public static IEnumerable<LoadoutItem.ReadOnly> GetItems(Loadout.ReadOnly loadout)
     {
-        if (!loadoutItem.IsLoadoutItemGroup()) return false;
+        var db = loadout.Db;
+        var loadoutId = loadout.LoadoutId;
 
-        if (!loadoutItem.TryGetAsLibraryLinkedLoadoutItem(out var linked)) return false;
-        return LibraryUserFilters.ShouldShow(linked.LibraryItem);
+        var libraryLinkedLoadoutItems = db.Datoms(LibraryLinkedLoadoutItem.LibraryItem).AsModels<LoadoutItem.ReadOnly>(db);
+        foreach (var entity in libraryLinkedLoadoutItems)
+        {
+            if (entity.LoadoutId != loadoutId) continue;
+            if (!entity.IsLoadoutItemGroup()) continue;
+            if (!LibraryUserFilters.ShouldShow(entity.ToLibraryLinkedLoadoutItem().LibraryItem)) continue;
+
+            yield return entity;
+        }
     }
 }

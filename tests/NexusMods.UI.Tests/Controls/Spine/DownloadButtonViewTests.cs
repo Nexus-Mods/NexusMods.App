@@ -85,7 +85,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
 
         await EventuallyOnUi(() =>
         {
-            numberBlock.Text.Should().Be("4.20");
+            numberBlock.Text.Should().Be("4.2");
             unitsBlock.Text.Should().Be("FOOS");
         });
 
@@ -93,7 +93,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
 
         await EventuallyOnUi(() =>
         {
-            numberBlock.Text.Should().Be("0.00");
+            numberBlock.Text.Should().Be("0.0");
             unitsBlock.Text.Should().Be("FOOS");
         });
 
@@ -101,7 +101,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
 
         await EventuallyOnUi(() =>
         {
-            numberBlock.Text.Should().Be("0.00");
+            numberBlock.Text.Should().Be("0.0");
             unitsBlock.Text.Should().Be("FOOS");
         });
 
@@ -109,7 +109,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
 
         await EventuallyOnUi(() =>
         {
-            numberBlock.Text.Should().Be("1000.00");
+            numberBlock.Text.Should().Be("1000.0");
             unitsBlock.Text.Should().Be("FOOS");
         });
     }

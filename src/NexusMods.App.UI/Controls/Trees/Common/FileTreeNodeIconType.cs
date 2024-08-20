@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using NexusMods.Icons;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;

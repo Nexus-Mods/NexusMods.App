@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="720"
+    d:DesignHeight="700"
     d:DesignWidth="72"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Spine"
@@ -9,26 +9,39 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:spine="clr-namespace:NexusMods.App.UI.Controls.Spine"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
     <Design.DataContext>
         <spine:SpineDesignViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="*, Auto" Margin="0,12,0,12" Width="72">
-        <StackPanel Grid.Row="0">
-            <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
-            <ItemsControl
-                Margin="0,12,0,0"
-                Padding="0"
-                x:Name="Loadouts">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Classes="Spacing-3" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-            <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
-        </StackPanel>
-        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="Download" />
-    </Grid>
 
+    <panels:FlexPanel x:Name="SpineFlexPanel" >
+        <Border x:Name="HomeBorder">
+            <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
+        </Border>
+
+        <Border x:Name="LoadoutSelectorBorder" >
+            <panels:FlexPanel x:Name="LoadoutSelector" >
+                <ScrollViewer x:Name="LoadoutSelectorScroller" >
+                    <ItemsControl x:Name="Loadouts">
+
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Classes="Spacing-3" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </panels:FlexPanel>
+        </Border>
+        
+        <!-- TODO: Make "Add" button visible again after Improved Loadout/Game creation is implemented -->
+        <!-- https://www.figma.com/design/TbJiArfCPTv9fQFIEPuwd5/%F0%9F%93%B1-Loadouts?node-id=2-8562&m=dev -->
+        <Border x:Name="AddBorder" IsVisible="False">
+            <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add"/>
+        </Border>
+        <Border x:Name="DownloadBorder">
+            <reactiveUi:ViewModelViewHost x:Name="Download" />
+        </Border>
+    </panels:FlexPanel>
 </reactiveUi:ReactiveUserControl>

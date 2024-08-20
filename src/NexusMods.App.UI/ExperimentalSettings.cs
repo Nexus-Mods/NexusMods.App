@@ -14,11 +14,6 @@ public record ExperimentalSettings : ISettings
     /// </summary>
     public bool EnableAllGames { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
 
-    /// <summary>
-    /// Enables the ability to have multiple loadouts within the app.
-    /// </summary>
-    public bool EnableMultipleLoadouts { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
-
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         return settingsBuilder
@@ -30,12 +25,6 @@ public record ExperimentalSettings : ISettings
                     .WithDescription("Allows you to manage unsupported games.")
                     .UseBooleanContainer()
                     .RequiresRestart()
-                )
-                .AddPropertyToUI(x => x.EnableMultipleLoadouts, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.Experimental)
-                    .WithDisplayName("Enable multiple loadouts")
-                    .WithDescription("Allows you to create multiple Loadouts.")
-                    .UseBooleanContainer()
                 )
             );
     }

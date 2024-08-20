@@ -21,7 +21,7 @@ public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpd
 
     public ICommand LaterCommand { get; }
     public ICommand UpdateCommand { get; }
-    public ICommand ShowChangelog { get;}
+    public ICommand ShowUninstallInstructionsCommand { get;}
 
     [Reactive]
     public bool ShowSystemUpdateMessage { get; set; }
@@ -52,10 +52,9 @@ public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpd
             Close();
         });
 
-        ShowChangelog = ReactiveCommand.Create(() =>
+        ShowUninstallInstructionsCommand = ReactiveCommand.Create(() =>
         {
-            ChangelogShown = true;
-            Close();
+            UninstallInstructionsShown = true;
         });
     }
 
@@ -63,5 +62,5 @@ public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpd
     public bool UpdateClicked { get; set; }
 
     [Reactive]
-    public bool ChangelogShown { get; set; }
+    public bool UninstallInstructionsShown { get; set; }
 }

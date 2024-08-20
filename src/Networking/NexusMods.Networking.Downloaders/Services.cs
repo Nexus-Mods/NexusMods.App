@@ -25,8 +25,6 @@ public static class Services
             .AddSingleton<IDownloadService>(sp=> sp.GetRequiredService<DownloadService>())
             .AddTransient<NxmDownloadTask>()
             .AddTransient<HttpDownloadTask>()
-            .AddWorker<HttpDownloadJobWorker>()
-            .AddHttpDownloadJobPersistedStateModel()
             .AddAttributeCollection(typeof(DownloaderState))
             .AddAttributeCollection(typeof(HttpDownloadState))
             .AddAttributeCollection(typeof(NxmDownloadState))

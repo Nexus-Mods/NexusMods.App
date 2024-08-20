@@ -30,17 +30,17 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
 
     [Fact]
     [Trait("FlakeyTest", "True")]
-    public async Task ShowChangelogIsWiredCorrectly()
+    public async Task ShowUninstallInstructionsShownIsWiredCorrectly()
     {
         var controller = new OverlayController();
         controller.Enqueue(ViewModel);
 
-        var btn = await Host.GetViewControl<Button>("ChangelogButton");
+        var btn = await Host.GetViewControl<Button>("ViewUninstallDocsButton");
         await Click(btn);
 
         await EventuallyOnUi(() =>
         {
-            ViewModel.ChangelogShown.Should().BeTrue();
+            ViewModel.UninstallInstructionsShown.Should().BeTrue();
         });
     }
 

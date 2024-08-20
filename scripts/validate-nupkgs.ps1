@@ -1,3 +1,4 @@
+#! /usr/bin/env pwsh
 # This script extracts all "*.nupkg" files and parses the ".nuspec" file.
 # It looks at the dependencies of that package and alerts if a dependency is
 # a local project in the current solution that isn't being packaged and

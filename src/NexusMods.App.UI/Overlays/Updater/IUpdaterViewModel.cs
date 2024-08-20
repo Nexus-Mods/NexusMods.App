@@ -34,9 +34,9 @@ public interface IUpdaterViewModel : IOverlayViewModel
     public ICommand LaterCommand { get; }
 
     /// <summary>
-    /// The command to show the changelog
+    /// The command to show the uninstall instructions
     /// </summary>
-    public ICommand ShowChangelog { get; }
+    public ICommand ShowUninstallInstructionsCommand { get; }
 
     /// <summary>
     /// The UI should show a message about the system updater. For example AppImage users should be told to use the

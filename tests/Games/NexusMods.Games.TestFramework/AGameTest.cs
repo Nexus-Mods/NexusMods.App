@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -120,8 +121,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a file in the loadout for the given mod. The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path)
+    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
     {
+        content ??= path.Path.ToString();
+        var contentArray = Encoding.UTF8.GetBytes(content);
         var file = new LoadoutFile.New(tx, out var id)
         {
             LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
@@ -134,10 +137,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
                 },
                 TargetPath = path.ToGamePathParentTuple(loadoutId),
             },
-            Hash = path.Path.ToString().XxHash64AsUtf8(),
-            Size = Size.FromLong(path.Path.ToString().Length),
+            Hash = contentArray.XxHash64(),
+            Size = Size.FromLong(contentArray.Length),
         };
-        
         return file.Id;
     }
 

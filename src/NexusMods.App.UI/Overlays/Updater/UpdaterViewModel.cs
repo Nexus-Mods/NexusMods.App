@@ -29,13 +29,13 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
 
     public ICommand LaterCommand { get; }
 
-    public ICommand ShowChangelog { get; }
+    public ICommand ShowUninstallInstructionsCommand { get; }
 
     [Reactive]
     public Uri UpdateUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
 
     [Reactive]
-    public Uri ChangelogUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
+    public Uri UninstallInstructionsUrl { get; set; } = new("https://nexus-mods.github.io/NexusMods.App/users/Uninstall/");
 
     [Reactive] public bool ShowSystemUpdateMessage { get; set; } = false;
 
@@ -56,9 +56,9 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
             Close();
         });
 
-        ShowChangelog = ReactiveCommand.Create(() =>
+        ShowUninstallInstructionsCommand = ReactiveCommand.Create(() =>
         {
-            interop.OpenUrl(ChangelogUrl);
+            interop.OpenUrl(UninstallInstructionsUrl);
         });
     }
 
@@ -88,8 +88,6 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
                 return false;
             }
 
-            ChangelogUrl = latestRelease.HtmlUrl;
-
             if (latestRelease.Version < OldVersion)
             {
                 _logger.LogInformation("No new release available");
@@ -102,12 +100,12 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
             if (asset is null) return false;
 
             _logger.LogInformation("Asset found: {Asset}", asset.Name);
-            UpdateUrl = asset.BrowserDownloadUrl;
+            UpdateUrl = latestRelease.HtmlUrl;
             NewVersion = latestRelease.Version;
 
             if (Method is InstallationMethod.AppImage or InstallationMethod.PackageManager)
             {
-                ShowSystemUpdateMessage = true;
+                 ShowSystemUpdateMessage = true;
             }
 
             return true;

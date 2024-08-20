@@ -52,6 +52,16 @@ public partial class Loadout : IModelDefinition
     /// a game's base state as it was added to the App.
     /// </summary>
     public static readonly EnumByteAttribute<LoadoutKind> LoadoutKind = new(Namespace, nameof(LoadoutKind));
+
+    /// <summary>
+    /// DateTime when the loadout was last applied.
+    /// Returns DateTime.MinValue if the loadout has never been applied.
+    /// </summary>
+    public static readonly DateTimeAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime))
+    {
+        IsOptional = true,
+        DefaultValue = DateTime.MinValue,
+    };
     
     /// <summary>
     /// Mods that are part of this loadout point to this entity via Mod.Loadout
@@ -69,7 +79,7 @@ public partial class Loadout : IModelDefinition
     /// All items in the Loadout.
     /// </summary>
     public static readonly BackReferenceAttribute<LoadoutItem> Items = new(LoadoutItem.Loadout);
-
+    
     public partial struct ReadOnly
     {
         /// <summary>
@@ -135,12 +145,12 @@ public partial class Loadout : IModelDefinition
             
             // Start with a backref. This assumes that the number of loadouts with a given library item will be fairly small.
             // This could be false, but it's a good starting point.
-            return LibraryLinkedLoadoutItem.FindByLibraryItem(Db, libraryItem)
+            return LibraryLinkedLoadoutItem
+                .FindByLibraryItem(Db, libraryItem)
                 .Where(linked => linked.AsLoadoutItem().LoadoutId == thisId);
         }
     }
 }
-
 
 public partial struct LoadoutId
 {

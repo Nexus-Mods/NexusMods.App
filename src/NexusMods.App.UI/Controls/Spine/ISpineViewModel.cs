@@ -17,6 +17,11 @@ public interface ISpineViewModel : IViewModelInterface
     /// Gets the home button.
     /// </summary>
     public IIconButtonViewModel Home { get; }
+    
+    /// <summary>
+    /// Gets the add loadout button.
+    /// </summary>
+    public IIconButtonViewModel AddLoadout { get; }
 
     /// <summary>
     /// Gets the downloads button.

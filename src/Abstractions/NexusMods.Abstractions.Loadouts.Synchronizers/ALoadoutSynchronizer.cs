@@ -18,7 +18,9 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
@@ -325,6 +327,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(loadout.Id, Loadout.LastAppliedDateTime, DateTime.UtcNow);
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -611,7 +614,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
+            {
                 await Synchronize(prevLoadout);
+                await DeactivateCurrentLoadout(loadout.InstallationInstance);
+                await ActivateLoadout(loadout);
+                return loadout.Rebase();
+            }
         }
 
         var tree = await BuildSyncTree(loadout);
@@ -943,17 +951,23 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Get the initial state of the game folder
         var initialState = await GetOrCreateInitialDiskState(installation);
 
-        var shortName = LoadoutNameProvider.GetNewShortName(Loadout.All(Connection.Db)
-            .Where(l => l.IsVisible())
+        var existingLoadoutNames = Loadout.All(Connection.Db)
+            .Where(l => l.IsVisible()
+                        && l.InstallationInstance.LocationsRegister[LocationId.Game]
+                        == installation.LocationsRegister[LocationId.Game]
+            )
             .Select(l => l.ShortName)
-            .ToArray()
-        );
+            .ToArray();
+        
+        var isOnlyLoadout = existingLoadoutNames.Length == 0;
+        
+        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
 
         using var tx = Connection.BeginTransaction();
 
         var loadout = new Loadout.New(tx)
         {
-            Name = suggestedName ?? installation.Game.Name + " " + shortName,
+            Name = suggestedName ?? "Loadout " + shortName,
             ShortName = shortName,
             InstallationId = installation.GameMetadataId,
             Revision = 0,
@@ -996,6 +1010,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Remap the ids
         var remappedLoadout = result.Remap(loadout);
+        
+        // If this is the only loadout, activate it
+        if (isOnlyLoadout)
+        {
+            await ActivateLoadout(remappedLoadout.Id);
+        }
 
         return remappedLoadout;
     }
@@ -1076,7 +1096,96 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return false;
     }
-    
+
+    /// <inheritdoc />
+    public async Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadoutId)
+    {
+        var baseDb = Connection.Db;
+        var loadout = Loadout.Load(baseDb, loadoutId);
+        var installation = loadout.InstallationInstance;
+        
+        // Temp space for datom values
+        Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(32);
+        
+        // Cache some attribute ids
+        var registry = baseDb.Registry;
+        var nameId = Loadout.Name.GetDbId(registry.Id);
+        var shortNameId = Loadout.ShortName.GetDbId(registry.Id);
+        
+        // Generate a new name and short name
+        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
+            .Where(l => l.IsVisible() && l.InstallationId == loadout.InstallationId)
+            .Select(l => l.ShortName)
+            .ToArray()
+        );
+        var newName = "Loadout " + newShortName;
+        
+        // Create a mapping of old entity ids to new (temp) entity ids
+        Dictionary<EntityId, EntityId> entityIdList = new();
+        var remapFn = RemapFn;
+        
+        using var tx = Connection.BeginTransaction();
+
+        // Add the loadout
+        entityIdList[loadout.Id] = tx.TempId();
+        
+        // And each item
+        foreach (var item in loadout.Items)
+        {
+            entityIdList[item.Id] = tx.TempId();
+        }
+
+        foreach (var (oldId, newId) in entityIdList)
+        {
+            // Get the original entity
+            var entity = baseDb.Get(oldId);
+            
+            foreach (var datom in entity)
+            {
+                // Rename the loadout
+                if (datom.A == nameId)
+                {
+                    tx.Add(newId, Loadout.Name, newName);
+                    continue;
+                }
+                if (datom.A == shortNameId)
+                {
+                    tx.Add(newId, Loadout.ShortName, newShortName);
+                    continue;
+                }
+
+                // Make sure we have enough buffer space
+                if (buffer.Length < datom.ValueSpan.Length)
+                    buffer = GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
+                
+                // Copy the value over
+                datom.ValueSpan.CopyTo(buffer.Span);
+                
+                // Create the new datom and reference the copied value
+                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, false, datom.Prefix.ValueTag);
+                var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length], registry);
+                
+                // Remap any entity ids in the value
+                var attr = registry.GetAttribute(datom.A);
+                attr.Remap(remapFn, buffer[..datom.ValueSpan.Length].Span);
+                
+                // Add the new datom
+                tx.Add(newDatom);
+            }
+        }
+
+        var result = await tx.Commit();
+
+        return Loadout.Load(Connection.Db, result[entityIdList[loadout.Id]]);
+        
+        // Local function to remap entity ids in the format Attribute.Remap wants
+        EntityId RemapFn(EntityId entityId)
+        {
+            return entityIdList.GetValueOrDefault(entityId, entityId);
+        }
+    }
+
+
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId)
     {

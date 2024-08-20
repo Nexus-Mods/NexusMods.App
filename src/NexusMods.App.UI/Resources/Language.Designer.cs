@@ -69,6 +69,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applying changes to the game.
+        /// </summary>
+        public static string ApplyControlView__ApplyingToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView__ApplyingToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply your changes to the game folder.
         /// </summary>
         public static string ApplyControlView_Apply_ToolTip {
@@ -1032,6 +1041,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Never.
+        /// </summary>
+        public static string HumanizedDateTime_Never {
+            get {
+                return ResourceManager.GetString("HumanizedDateTime_Never", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File will be added.
         /// </summary>
         public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added {
@@ -1176,6 +1194,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Loadout.
+        /// </summary>
+        public static string LoadoutCard_DeleteLoadoutToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Copy.
         /// </summary>
         public static string LoadoutCardViewCreateCopyButton {
@@ -1221,7 +1248,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last applied {0}.
+        ///   Looks up a localized string similar to Last applied: {0}.
         /// </summary>
         public static string LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_ {
             get {
@@ -1347,7 +1374,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ALLOW.
+        ///   Looks up a localized string similar to Allow.
         /// </summary>
         public static string MetricsOptIn_ALLOW {
             get {
@@ -1356,7 +1383,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DENY.
+        ///   Looks up a localized string similar to Deny.
         /// </summary>
         public static string MetricsOptIn_DENY {
             get {
@@ -1738,6 +1765,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to How to uninstall the Nexus Mods app.
+        /// </summary>
+        public static string Updated_ViewUninstallDocs {
+            get {
+                return ResourceManager.GetString("Updated_ViewUninstallDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Later.
         /// </summary>
         public static string Updater_LATER {
@@ -1747,7 +1783,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keep your app updated to get the latest improvements..
+        ///   Looks up a localized string similar to Important: In order to install this version you will need to uninstall first. This will delete all your mods..
         /// </summary>
         public static string Updater_MainMessage {
             get {
@@ -1756,7 +1792,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update.
+        ///   Looks up a localized string similar to View update.
         /// </summary>
         public static string Updater_UPDATE {
             get {

@@ -1,5 +1,8 @@
 namespace NexusMods.Abstractions.Loadouts;
 
+/// <summary>
+/// The synchronization state of a loadout.
+/// </summary>
 public enum LoadoutSynchronizerState
 {
     /// <summary>

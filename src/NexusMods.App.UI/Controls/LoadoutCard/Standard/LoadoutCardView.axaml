@@ -65,20 +65,19 @@
                                 <Border x:Name="ActionsBorder">
                                     <panels:FlexPanel x:Name="ActionsFlexPanel">
 
-                                        <!-- TODO: Make button visible after LoadoutCloning is implemented and remove border -->
-                                        <!-- CreateCopyBorder is used to maintain the layout of the buttons in the meantime  -->
-                                        <Border x:Name="CreateCopyBorder">
-                                            <Button x:Name="CreateCopyButton" IsVisible="False"
-                                                    Classes="Rounded Primary">
-                                                <StackPanel HorizontalAlignment="Center">
-                                                    <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
-                                                </StackPanel>
-                                            </Button>
-                                        </Border>
+                                        <Button x:Name="CreateCopyButton"
+                                                Classes="Rounded Primary">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
+                                            </StackPanel>
+                                        </Button>
 
                                         <Button x:Name="DeleteButton"
                                                 Classes="Rounded Primary">
-                                            <icons:UnifiedIcon Classes="TrashCanOutline" />
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
+                                            </ToolTip.Tip>
+                                            <icons:UnifiedIcon Classes="DeleteForever" />
                                         </Button>
                                     </panels:FlexPanel>
                                 </Border>
