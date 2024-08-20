@@ -226,9 +226,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
 
-                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
+                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id, tab.Id)
                 {
                     Contents = newTabPage,
                     Header =
@@ -237,8 +237,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                         Title = newTabPage.ViewModel.TabTitle,
                     },
                 };
-
-                newTabPage.ViewModel.TabId = vm.Id;
 
                 updater.Add(vm);
             }
