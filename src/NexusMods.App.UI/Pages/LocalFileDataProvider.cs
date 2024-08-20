@@ -1,6 +1,4 @@
-using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -94,29 +92,14 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
 
-                var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
-                {
-                    var innerChildrenObservable = _connection
-                        .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
-                        .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
-                        .RemoveKey()
-                        .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
-
-                    var model = new LoadoutItemModel
-                    {
-                        InstalledAt = DateTime.UnixEpoch, // TODO:
-                        NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
-
-                        HasChildrenObservable = Observable.Return(true),
-                        ChildrenObservable = innerChildrenObservable,
-                    };
-
-                    return new ChangeSet<LoadoutItemModel>([new Change<LoadoutItemModel>(ListChangeReason.Add, model)]);
-                });
+                var childrenObservable = _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
+                    .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
+                    .RemoveKey()
+                    .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
 
                 return new LoadoutItemModel
                 {
-                    InstalledAt = DateTime.UnixEpoch, // TODO:
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
 
                     HasChildrenObservable = Observable.Return(true),

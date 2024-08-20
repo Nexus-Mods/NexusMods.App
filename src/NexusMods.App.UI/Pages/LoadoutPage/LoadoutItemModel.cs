@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
 {
     public LoadoutItemId LoadoutItemId { get; set; }
-    public required DateTime InstalledAt { get; init; }
+    public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     [Reactive] public string Name { get; set; } = "-";
