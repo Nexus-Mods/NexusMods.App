@@ -1,6 +1,6 @@
 using System.Reactive;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
