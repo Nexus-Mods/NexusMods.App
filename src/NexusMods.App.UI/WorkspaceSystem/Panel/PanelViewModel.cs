@@ -65,6 +65,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             .Bind(out _tabs)
             .Subscribe();
 
+        this.WhenAnyValue(vm => vm.SelectedTabId)
+            .Select(selectedTabId => Tabs.FirstOrDefault(tab => tab.Id == selectedTabId))
+            .WhereNotNull()
+            .SubscribeWithErrorLogging(selectedTab => SelectedTab = selectedTab);
+        
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.LogicalBounds)
@@ -129,9 +134,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender)
-                .Do(vm => SelectedTab = vm)
-                .Select(vm => vm.Id)
+                .Select(propertyValue => propertyValue.Sender.Id)
                 .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 
