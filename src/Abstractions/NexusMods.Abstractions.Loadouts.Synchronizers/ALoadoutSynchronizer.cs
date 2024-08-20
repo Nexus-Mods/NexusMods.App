@@ -967,7 +967,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var loadout = new Loadout.New(tx)
         {
-            Name = suggestedName ?? installation.Game.Name + " " + shortName,
+            Name = suggestedName ?? "Loadout " + shortName,
             ShortName = shortName,
             InstallationId = installation.GameMetadataId,
             Revision = 0,
@@ -1102,6 +1102,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var baseDb = Connection.Db;
         var loadout = Loadout.Load(baseDb, loadoutId);
+        var installation = loadout.InstallationInstance;
         
         // Temp space for datom values
         Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(32);
@@ -1112,8 +1113,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var shortNameId = Loadout.ShortName.GetDbId(registry.Id);
         
         // Generate a new name and short name
-        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb).Select(l => l.ShortName).ToArray());
-        var newName = loadout.Name + " Copy";
+        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
+            .Where(l => l.IsVisible() && l.InstallationId == loadout.InstallationId)
+            .Select(l => l.ShortName)
+            .ToArray()
+        );
+        var newName = "Loadout " + newShortName;
         
         // Create a mapping of old entity ids to new (temp) entity ids
         Dictionary<EntityId, EntityId> entityIdList = new();
