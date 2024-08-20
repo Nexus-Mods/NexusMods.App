@@ -100,7 +100,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.Name;
+                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
                             vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
