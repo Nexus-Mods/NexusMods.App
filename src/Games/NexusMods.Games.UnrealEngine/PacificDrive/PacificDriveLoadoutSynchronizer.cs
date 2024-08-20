@@ -30,6 +30,6 @@ public class PacificDriveLoadoutSynchronizer : ALoadoutSynchronizer
 
     public override bool IsIgnoredPath(GamePath path)
     {
-        return IgnoredFolders.Any(ignore => path.Path.InFolder(ignore.Path));
+        return IgnoredFolders.Any(ignore => path.InFolder(ignore));
     }
 }
