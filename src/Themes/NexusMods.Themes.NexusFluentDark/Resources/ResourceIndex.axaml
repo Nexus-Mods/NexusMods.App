@@ -4,7 +4,7 @@
         <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadious.axaml"/>
+        <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
         <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>

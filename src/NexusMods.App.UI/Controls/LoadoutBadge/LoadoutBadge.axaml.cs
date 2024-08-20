@@ -32,6 +32,9 @@ public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeViewModel>
                 
                 this.OneWayBind(ViewModel, vm => vm.LoadoutShortName, v => v.ShortName.Text)
                     .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsVisible, v => v.IsVisible)
+                    .DisposeWith(d);
             }
         );
     }

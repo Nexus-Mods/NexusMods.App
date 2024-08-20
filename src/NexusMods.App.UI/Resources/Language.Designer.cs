@@ -1292,5 +1292,29 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("LibraryItemDeleteConfirmation_LoadoutWarning_Tip", resourceCulture);
             }
         }
+        
+        public static string Updated_ViewUninstallDocs {
+            get {
+                return ResourceManager.GetString("Updated_ViewUninstallDocs", resourceCulture);
+            }
+        }
+        
+        public static string HumanizedDateTime_Never {
+            get {
+                return ResourceManager.GetString("HumanizedDateTime_Never", resourceCulture);
+            }
+        }
+        
+        public static string ApplyControlView__ApplyingToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView__ApplyingToolTip", resourceCulture);
+            }
+        }
+        
+        public static string LoadoutCard_DeleteLoadoutToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
+            }
+        }
     }
 }

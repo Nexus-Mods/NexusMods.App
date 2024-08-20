@@ -28,14 +28,16 @@ public interface ISynchronizerService
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation
     /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns></returns>
     public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation);
 
-
     /// <summary>
-    /// Gets the status of the synchronizer for a specific loadout.
+    /// Returns an observable of the status of the synchronizer for a specific game installation.
     /// </summary>
-    public IObservable<LoadoutSynchronizerState> StatusFor(LoadoutId loadoutId);
+    public IObservable<GameSynchronizerState> StatusForGame(GameInstallMetadataId gameInstallId);
+    
+    /// <summary>
+    /// Returns an observable of the status of the synchronizer for a specific loadout.
+    /// </summary>
+    public Task<IObservable<LoadoutSynchronizerState>> StatusForLoadout(LoadoutId loadoutId);
 }
 

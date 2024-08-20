@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.MnemonicDB.Analyzers;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -25,7 +25,6 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -37,10 +36,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
+    private readonly ISynchronizerService _syncService;
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
+    private static readonly LoadoutSpineEntriesComparer LoadoutComparerInstance = new();
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
+    public IIconButtonViewModel AddLoadout { get; }
     public ISpineDownloadButtonViewModel Downloads { get; }
     private IList<ISpineItemViewModel> _specialSpineItems = new List<ISpineItemViewModel>();
 
@@ -64,6 +66,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
         _conn = conn;
+        _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
 
         // Setup the special spine items
         Home = homeButtonViewModel;
@@ -71,6 +74,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home.WorkspaceContext = new HomeContext();
         _specialSpineItems.Add(Home);
         Home.Click = ReactiveCommand.Create(NavigateToHome);
+        
+        AddLoadout = addButtonViewModel;
+        AddLoadout.Name = "Add";
+        AddLoadout.WorkspaceContext = new HomeContext();
+        _specialSpineItems.Add(AddLoadout);
+        AddLoadout.Click = ReactiveCommand.Create(NavigateToMyGames);
 
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
@@ -81,7 +90,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         
         this.WhenActivated(disposables =>
             {
-                var loadouts = Loadout.ObserveAllWithChildUpdates(_conn);
+                var loadouts = Loadout.ObserveAll(_conn);
                 
                     loadouts
                     .Filter(loadout => loadout.IsVisible())
@@ -91,14 +100,17 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.Name;
+                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
+                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
+                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
                             vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
                             vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                             return vm;
                         }
                     )
+                    .Sort(LoadoutComparerInstance)
                     .OnUI()
                     .Bind(out _loadoutSpineItems)
                     .SubscribeWithErrorLogging()
@@ -256,5 +268,37 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 Context = new InProgressPageContext()
             }
         );
+    }
+    
+    private void NavigateToMyGames()
+    {
+        var workspaceController = _windowManager.ActiveWorkspaceController;
+
+        var pageData = new PageData
+        {
+            FactoryId = MyGamesPageFactory.StaticId,
+            Context = new MyGamesPageContext(),
+        };
+        
+        var ws = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => pageData);
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(NavigationInput.Default));
+        workspaceController.OpenPage(ws.Id, pageData, behavior);
+    }
+    
+    private class LoadoutSpineEntriesComparer : IComparer<IImageButtonViewModel>
+    {
+        public int Compare(IImageButtonViewModel? x, IImageButtonViewModel? y)
+        {
+            var xloadout = x?.LoadoutBadgeViewModel?.LoadoutValue;
+            var yloadout = y?.LoadoutBadgeViewModel?.LoadoutValue;
+            
+            if (xloadout == null) return yloadout == null ? 0 : -1;
+            if (yloadout == null) return 1;
+            
+            if (xloadout.Value.Value.Installation.Path != yloadout.Value.Value.Installation.Path)
+                return DateTime.Compare( xloadout.Value.Value.Installation.GetCreatedAt(), yloadout.Value.Value.Installation.GetCreatedAt());
+            
+            return DateTime.Compare(xloadout.Value.Value.GetCreatedAt(), yloadout.Value.Value.GetCreatedAt());
+        }
     }
 }

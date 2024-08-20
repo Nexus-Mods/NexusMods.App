@@ -1,14 +1,21 @@
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts.Ids;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.DataModel.Synchronizer;
 
-public class SynchronizerState
+public class SynchronizerState : ReactiveObject
 {
-    [Reactive] public bool Busy { get; set; } = false;
-    
+    private bool _busy = false;
+
+    public bool Busy
+    {
+        get => _busy;
+        set => this.RaiseAndSetIfChanged(ref _busy, value);
+    }
+
     [Reactive] public Optional<LoadoutWithTxId> LastApplied { get; set; }
 
     /// <summary>

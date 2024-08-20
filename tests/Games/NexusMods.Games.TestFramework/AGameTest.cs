@@ -113,7 +113,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path)
+    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
     {
         return AddFile(tx, loadoutId, groupId, path, out _, out _);
     }

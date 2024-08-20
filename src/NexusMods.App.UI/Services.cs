@@ -41,15 +41,18 @@ using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGroupFiles;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
@@ -217,6 +220,9 @@ public static class Services
             .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
             .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
 
+            .AddView<LibraryView, ILibraryViewModel>()
+            .AddView<LoadoutView, ILoadoutViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddAttributeCollection(typeof(WindowDataAttributes))
@@ -249,6 +255,8 @@ public static class Services
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
+            .AddSingleton<IPageFactory, LibraryPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -276,6 +284,8 @@ public static class Services
 
             // Other
             .AddSingleton<InjectedViewLocator>()
+            .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
+            .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddFileSystem();
     }
 

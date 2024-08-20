@@ -52,6 +52,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 // Managed games widgets
                 Loadout.ObserveAll(conn)
                     .Filter(l => l.IsVisible())
+                    .RemoveKey()
                     .GroupOn(loadout => loadout.InstallationInstance.LocationsRegister[LocationId.Game])
                     .Transform(group=> group.List.Items.First())
                     .OnUI()

@@ -32,6 +32,8 @@ public class NexusModsDownloadJob : APersistedJob, INXMDownloadJob
     /// <inheritdoc/>
     public ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
     {
+        libraryFile.GetLibraryItem(transaction).Name = FileMetadata.Name;
+
         _ = new NexusModsLibraryFile.New(transaction, libraryFile.Id)
         {
             FileMetadataId = FileMetadata,
