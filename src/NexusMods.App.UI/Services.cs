@@ -283,6 +283,7 @@ public static class Services
             .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
+            .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddFileSystem();
     }
 

@@ -8,6 +8,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -15,7 +16,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 namespace NexusMods.App.UI.Pages;
 
 [UsedImplicitly]
-internal class NexusModsDataProvider : ILibraryDataProvider
+internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
 
@@ -109,5 +110,86 @@ internal class NexusModsDataProvider : ILibraryDataProvider
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             LibraryFilesObservable = libraryFilesObservable,
         };
+    }
+
+    public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
+    {
+        // return Observable.Empty<IChangeSet<LoadoutItemModel>>();
+
+        return NexusModsModPageMetadata
+            .ObserveAll(_connection)
+            // TODO: observable filter
+            .Transform(modPage =>
+            {
+                var observable = _connection
+                    .ObserveDatoms(NexusModsFileMetadata.ModPageId, modPage.Id)
+                    .RemoveKey()
+                    .PublishWithFunc(() =>
+                    {
+                        var changeSet = new ChangeSet<Datom>();
+
+                        var datoms = _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id);
+                        changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, datoms));
+
+                        return changeSet;
+                    })
+                    .AutoConnect();
+
+                var hasChildrenObservable = observable.IsNotEmpty();
+                var childrenObservable = observable.Transform(fileDatom =>
+                {
+                    var fileMetadata = NexusModsFileMetadata.Load(_connection.Db, fileDatom.E);
+
+                    var innerObservable = _connection
+                        .ObserveDatoms(NexusModsLibraryFile.FileMetadataId, fileMetadata.Id)
+                        .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
+                        .RemoveKey()
+                        .PublishWithFunc(() =>
+                        {
+                            var changeSet = new ChangeSet<Datom>();
+                            var list = new List<Datom>();
+
+                            var libraryFileDatoms = _connection.Db.Datoms(NexusModsLibraryFile.FileMetadataId, fileMetadata.Id);
+                            foreach (var entityIdDatom in libraryFileDatoms)
+                            {
+                                var libraryLinkedLoadoutItemDatoms = _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, entityIdDatom.E);
+                                foreach (var datom in libraryLinkedLoadoutItemDatoms)
+                                {
+                                    list.Add(datom);
+                                }
+                            }
+
+                            changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, list));
+                            return changeSet;
+                        })
+                        .AutoConnect();
+
+                    var innerHasChildrenObservable = innerObservable.IsNotEmpty();
+                    var innerChildrenObservable = innerObservable.TransformMany(libraryLinkedLoadoutItemDatom =>
+                    {
+                        var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
+                        return LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem);
+                    });
+
+                    return new LoadoutItemModel
+                    {
+                        InstalledAt = DateTime.UnixEpoch, // TODO:
+                        NameObservable = Observable.Return(fileMetadata.Name),
+
+                        HasChildrenObservable = innerHasChildrenObservable,
+                        ChildrenObservable = innerChildrenObservable,
+                    };
+                });
+
+                return new LoadoutItemModel
+                {
+                    InstalledAt = DateTime.UnixEpoch, // TODO:
+                    NameObservable = Observable.Return(modPage.Name),
+
+                    HasChildrenObservable = hasChildrenObservable,
+                    ChildrenObservable = childrenObservable,
+                };
+            })
+            .RemoveKey();
     }
 }

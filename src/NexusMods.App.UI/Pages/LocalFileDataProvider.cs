@@ -105,7 +105,6 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     var model = new LoadoutItemModel
                     {
                         InstalledAt = DateTime.UnixEpoch, // TODO:
-                        Name = libraryFile.AsLibraryItem().Name,
                         NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
 
                         HasChildrenObservable = Observable.Return(true),
@@ -118,7 +117,6 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 return new LoadoutItemModel
                 {
                     InstalledAt = DateTime.UnixEpoch, // TODO:
-                    Name = libraryFile.AsLibraryItem().Name,
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
 
                     HasChildrenObservable = Observable.Return(true),
