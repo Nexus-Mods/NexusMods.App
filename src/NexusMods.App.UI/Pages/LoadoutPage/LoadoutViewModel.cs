@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
@@ -6,12 +7,11 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.Paths;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -29,6 +29,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
     [Reactive] public bool ViewHierarchical { get; set; } = true;
+
+    private Dictionary<LoadoutItemModel, IDisposable> ToggleEnableStateCommandDisposables { get; set; } = new();
+    private Subject<LoadoutItemId> ToggleEnableSubject { get; } = new();
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
@@ -49,10 +52,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (isActivated)
                     {
+                        var disposable = model.ToggleEnableStateCommand.Subscribe(vm, static (loadoutItemId, vm) => vm.ToggleEnableSubject.OnNext(loadoutItemId));
+                        var didAdd = vm.ToggleEnableStateCommandDisposables.TryAdd(model, disposable);
+                        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+
                         model.Activate();
                     }
                     else
                     {
+                        var didRemove = vm.ToggleEnableStateCommandDisposables.Remove(model, out var disposable);
+                        Debug.Assert(didRemove, "subscription for the model should exist");
+                        disposable?.Dispose();
+
                         model.Deactivate();
                     }
                 })
@@ -72,6 +83,27 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Select(_ => CreateSource(_itemModels, createHierarchicalSource: ViewHierarchical))
                 .BindTo(this, vm => vm.Source)
                 .AddTo(disposables);
+
+            // TODO: can be optimized with chunking or debounce
+            ToggleEnableSubject
+                .SubscribeAwait(async (loadoutItemId, cancellationToken) =>
+                {
+                    using var tx = _connection.BeginTransaction();
+                    tx.Add(loadoutItemId, static (tx, db, loadoutItemId) =>
+                    {
+                        var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
+                        if (loadoutItem.IsDisabled)
+                        {
+                            tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        } else
+                        {
+                            tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        }
+                    });
+
+                    await tx.Commit();
+                }, awaitOperation: AwaitOperation.Parallel, configureAwait: false)
+                .AddTo(disposables);
         });
     }
 
@@ -89,11 +121,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var nameObservable = observable.Select(static item => item.AsLoadoutItem().Name);
                 var isEnabledObservable = observable.Select(static item => !item.AsLoadoutItem().IsDisabled);
 
-                // TODO: version
+                // TODO: version (need to ask the game extension)
                 // TODO: size (probably with RevisionsWithChildUpdates)
 
                 return new LoadoutItemModel
                 {
+                    LoadoutItemId = loadoutItem.Id,
                     InstalledAt = loadoutItem.GetCreatedAt(),
                     Name = loadoutItem.AsLoadoutItem().Name,
                     IsEnabled = !loadoutItem.AsLoadoutItem().IsDisabled,

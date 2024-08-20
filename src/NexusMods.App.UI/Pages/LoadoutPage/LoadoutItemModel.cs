@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
@@ -9,6 +10,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
 {
+    public LoadoutItemId LoadoutItemId { get; set; }
     public required DateTime InstalledAt { get; init; }
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
@@ -23,12 +25,12 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
     [Reactive] public bool IsEnabled { get; set; }
 
-    public ReactiveCommand<Unit> ToggleEnableStateCommand { get; }
+    public ReactiveCommand<Unit, LoadoutItemId> ToggleEnableStateCommand { get; }
 
     private readonly IDisposable _modelActivationDisposable;
     public LoadoutItemModel()
     {
-        ToggleEnableStateCommand = new ReactiveCommand<Unit>(_ => { /* TODO */ });
+        ToggleEnableStateCommand = new ReactiveCommand<Unit, LoadoutItemId>(_ => LoadoutItemId);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
