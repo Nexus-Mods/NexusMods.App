@@ -125,5 +125,5 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Create a clone of the current loadout
     /// </summary>
-    Task<Loadout.ReadOnly> CopyLoadout(Loadout.ReadOnly loadout);
+    Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadout);
 }
