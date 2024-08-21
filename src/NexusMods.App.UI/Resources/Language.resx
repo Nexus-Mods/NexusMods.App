@@ -431,6 +431,9 @@
     <data name="DialogButton_SAVE" xml:space="preserve">
         <value>Save</value>
     </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Delete mod(s)</value>
+    </data>
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
     </data>
@@ -635,36 +638,25 @@
 
     <!-- Library Item Delete Confirmation Dialog -->
     <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
-        <value>Confirm Deletion</value>
+        <value>Permanently delete mod(s)</value>
     </data>
 
-    <data name="LibraryItemDeleteConfirmation_Question" xml:space="preserve">
-        <value>Are you sure you want to delete these items?</value>
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>Deleting these mods permanently removes them from the app:</value>
     </data>
 
-    <data name="LibraryItemDeleteConfirmation_NonPermanentWarning" xml:space="preserve">
-        <value>The following items may not be restorable if have been deleted from their original source.</value>
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>Used by {0}:</value>
     </data>
 
-    <data name="LibraryItemDeleteConfirmation_NonPermanentWarning_Tip" xml:space="preserve">
-        <value>To keep your mod files safe forever, consider uploading them to Nexus Mods.</value>
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>Used by {0} - {1}:</value>
     </data>
 
-    <data name="LibraryItemDeleteConfirmation_ManuallyAddedWarning" xml:space="preserve">
-        <value>The following items were manually added from disk and may not be restorable.</value>
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>Delete mod(s)</value>
     </data>
 
-    <data name="LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip" xml:space="preserve">
-        <value>Make sure you have a backup of them somewhere!</value>
-    </data>
-
-    <data name="LibraryItemDeleteConfirmation_LoadoutWarning" xml:space="preserve">
-        <value>The following items are currently at least 1 loadout and will be removed from them.</value>
-    </data>
-
-    <data name="LibraryItemDeleteConfirmation_LoadoutWarning_Tip" xml:space="preserve">
-        <value>Make really really sure that you want to delete these!</value>
-    </data>
     <data name="Updated_ViewUninstallDocs" xml:space="preserve">
         <value>How to uninstall the Nexus Mods app</value>
     </data>

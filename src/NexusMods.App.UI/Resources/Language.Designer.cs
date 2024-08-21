@@ -855,6 +855,12 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
+        public static string DialogButton_DELETE_MODS {
+            get {
+                return ResourceManager.GetString("DialogButton_DELETE_MODS", resourceCulture);
+            }
+        }
+        
         public static string SettingEntryView_NeedRestartMessage {
             get {
                 return ResourceManager.GetString("SettingEntryView_NeedRestartMessage", resourceCulture);
@@ -1251,45 +1257,27 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string LibraryItemDeleteConfirmation_Question {
+        public static string LibraryItemDeleteConfirmation_HeaderQuestion {
             get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_Question", resourceCulture);
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_HeaderQuestion", resourceCulture);
             }
         }
         
-        public static string LibraryItemDeleteConfirmation_NonPermanentWarning {
+        public static string LibraryItemDeleteConfirmation_UsedBy {
             get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_NonPermanentWarning", resourceCulture);
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedBy", resourceCulture);
             }
         }
         
-        public static string LibraryItemDeleteConfirmation_NonPermanentWarning_Tip {
+        public static string LibraryItemDeleteConfirmation_UsedByWithLoadout {
             get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_NonPermanentWarning_Tip", resourceCulture);
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedByWithLoadout", resourceCulture);
             }
         }
         
-        public static string LibraryItemDeleteConfirmation_ManuallyAddedWarning {
+        public static string LibraryItemDeleteConfirmation_DeleteModsButton {
             get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_ManuallyAddedWarning", resourceCulture);
-            }
-        }
-        
-        public static string LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip {
-            get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_ManuallyAddedWarning_Tip", resourceCulture);
-            }
-        }
-        
-        public static string LibraryItemDeleteConfirmation_LoadoutWarning {
-            get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_LoadoutWarning", resourceCulture);
-            }
-        }
-        
-        public static string LibraryItemDeleteConfirmation_LoadoutWarning_Tip {
-            get {
-                return ResourceManager.GetString("LibraryItemDeleteConfirmation_LoadoutWarning_Tip", resourceCulture);
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_DeleteModsButton", resourceCulture);
             }
         }
         

@@ -12,8 +12,8 @@ namespace NexusMods.App.UI.Pages.Library;
 ///     (As of time of writing it means 'not from Nexus Mods')
 /// </param>
 /// <param name="IsManuallyAdded">Whether this library item was manually added from FileSystem to library.</param>
-/// <param name="IsAddedToAnyLoadout">True if this item has been added to any loadout.</param>
-public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, bool IsManuallyAdded, bool IsAddedToAnyLoadout)
+/// <param name="Loadouts">The loadouts that this library item is used within.</param>
+public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, bool IsManuallyAdded, Loadout.ReadOnly[] Loadouts)
 {
     public static LibraryItemRemovalInfo Determine(LibraryItem.ReadOnly toRemove, Loadout.ReadOnly[] loadouts)
     {
@@ -34,7 +34,7 @@ public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, b
         }
 
         // Check if it's added to any loadout
-        info.IsAddedToAnyLoadout = loadouts.Any(loadout => loadout.GetLoadoutItemsByLibraryItem(toRemove).Any());
+        info.Loadouts = loadouts.Where(loadout => loadout.GetLoadoutItemsByLibraryItem(toRemove).Any()).ToArray();
         return info;
     }
 }

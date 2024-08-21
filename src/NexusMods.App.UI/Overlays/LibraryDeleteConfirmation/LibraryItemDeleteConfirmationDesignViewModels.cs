@@ -1,57 +1,58 @@
+using NexusMods.App.UI.Pages.Library;
 namespace NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 
 public static class LibraryItemDeleteConfirmationDesignViewModels
 {
-    public static readonly LibraryItemDeleteConfirmationViewModel NonPermanentItemsOnly = new()
+    public static readonly LibraryItemDeleteConfirmationViewModel NotInAnyLoadout = new()
     {
-        NonPermanentItems = [
-            "Experimental Prototype Mod II XRD V2 (1.0.0) 3 & Knuckles",
-            "Some Test Mod you got from not Nexus",
+        AllItems =
+        [
+            "Some Mod that's not in Any Loadout",
+            "Some other Mod that's not in Any Loadout",
         ],
-        ManuallyAddedItems = [],
-        ItemsInLoadouts = [],
+        LoadoutsUsed = [],
     };
     
-    public static readonly LibraryItemDeleteConfirmationViewModel ManuallyAddedItemsOnly = new()
+    public static readonly LibraryItemDeleteConfirmationViewModel InLoadoutsInSingleStardewValleyLoadout = new()
     {
-        NonPermanentItems = [],
-        ManuallyAddedItems = [
-            "Some Cool Mod you added from Disk",
-            "Another Cool Mod from Disk",
-        ],
-        ItemsInLoadouts = [],
-    };
-    
-    public static readonly LibraryItemDeleteConfirmationViewModel InLoadoutsOnly = new()
-    {
-        NonPermanentItems = [],
-        ManuallyAddedItems = [],
-        ItemsInLoadouts = [
-            "Some Mod that's already Added to a Loadout",
+        AllItems =
+        [
+            "Some Mod that's in a Loadout",
             "Another Mod that's in a Loadout",
         ],
+        LoadoutsUsed =
+        [
+            new LibraryItemUsedLoadoutInfo
+            {
+                GameName = "Stardew Valley",
+                LoadoutName = "Loadout A",
+                IsOnlyLoadoutForGame = true,
+            },
+        ],
     };
     
-    public static readonly LibraryItemDeleteConfirmationViewModel AllItems = new()
+    public static readonly LibraryItemDeleteConfirmationViewModel InLoadoutsInMultipleStardewValleyLoadout = new()
     {
-        NonPermanentItems = [
-            "Experimental Prototype Mod II XRD V2 (1.0.0) 3 & Knuckles",
-            "Some Test Mod you got from not Nexus",
-        ],
-        ManuallyAddedItems = [
-            "Some Cool Mod you added from Disk",
-            "Another Cool Mod from Disk",
-        ],
-        ItemsInLoadouts = [
-            "Some Mod that's already Added to a Loadout",
+        AllItems =
+        [
+            "Some Mod that's in a Loadout",
             "Another Mod that's in a Loadout",
         ],
-    };
-    
-    public static readonly LibraryItemDeleteConfirmationViewModel NoItems = new()
-    {
-        NonPermanentItems = [],
-        ManuallyAddedItems = [],
-        ItemsInLoadouts = [],
+        LoadoutsUsed =
+        [
+            new LibraryItemUsedLoadoutInfo
+            {
+                GameName = "Stardew Valley",
+                LoadoutName = "Loadout A",
+                IsOnlyLoadoutForGame = false,
+            },
+
+            new LibraryItemUsedLoadoutInfo
+            {
+                GameName = "Stardew Valley",
+                LoadoutName = "Loadout B",
+                IsOnlyLoadoutForGame = false,
+            },
+        ],
     };
 }

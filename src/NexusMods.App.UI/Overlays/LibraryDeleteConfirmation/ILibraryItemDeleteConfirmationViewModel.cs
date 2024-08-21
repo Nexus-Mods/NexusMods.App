@@ -1,3 +1,4 @@
+using NexusMods.App.UI.Pages.Library;
 namespace NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 
 /// <summary>
@@ -7,18 +8,13 @@ namespace NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 public interface ILibraryItemDeleteConfirmationViewModel : IOverlayViewModel<bool>
 {
     /// <summary>
-    /// Gets the list of library items that are not guaranteed to be redownloadable.
+    /// Names of all items that are about to be removed.
     /// </summary>
-    public List<string> NonPermanentItems { get; }
-
+    public List<string> AllItems { get; }
+    
     /// <summary>
-    /// Gets the list of library items that were manually added to the library.
+    /// Listing of all loadouts that contain the mods listed in <see cref="AllItems"/>.
     /// </summary>
-    public List<string> ManuallyAddedItems { get; }
-
-    /// <summary>
-    /// Gets the list of library items that are currently part of one or more loadouts.
-    /// </summary>
-    public List<string> ItemsInLoadouts { get; }
+    public List<LibraryItemUsedLoadoutInfo> LoadoutsUsed { get; } 
 }
 

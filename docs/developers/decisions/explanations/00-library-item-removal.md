@@ -91,7 +91,8 @@ One of these should show a warning, the other should not.
 
 - `IsNexus`: N/A
 - `IsDownload` && `!IsNexus`: N/A
-- `IsManuallyAdded`: ✅
+- `IsManuallyAdded`: ⚠ 
+    - Implemented, but we're choosing not to show it until we get user feedback.
 - `IsAddedToAnyLoadout`: ✅
 
 If the case is not checked, we don't currently support the use case

@@ -14,44 +14,31 @@ public partial class LibraryItemDeleteConfirmationView : ReactiveUserControl<ILi
         this.WhenActivated(d =>
         {
             HeadingText.Text = Language.LibraryItemDeleteConfirmation_Title;
-            
-            // Hide the individual item sections.
-            this.OneWayBind(ViewModel,
-                vm => vm.NonPermanentItems.Count,
-                v => v.NonPermanentWarningPanel.IsVisible,
-                count => count > 0)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel,
-                vm => vm.ManuallyAddedItems.Count,
-                v => v.ManuallyAddedWarningPanel.IsVisible,
-                count => count > 0)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel,
-                vm => vm.ItemsInLoadouts.Count,
-                v => v.LoadoutWarningPanel.IsVisible,
-                count => count > 0)
-                .DisposeWith(d);
 
             // Bind item lists
             this.OneWayBind(ViewModel,
-                vm => vm.NonPermanentItems,
-                v => v.NonPermanentItemsList.ItemsSource)
+                vm => vm.AllItems,
+                v => v.RemovedItemsList.ItemsSource)
+                .DisposeWith(d);
+            
+            // Show/hide the loadouts section.
+            this.WhenAnyValue(view => view.ViewModel!.LoadoutsUsed)
+                .Subscribe(loadoutsUsed =>
+                    {
+                        var visible = loadoutsUsed.Count > 0;
+                        LoadoutsPanel.IsVisible = visible;
+                    }
+                )
                 .DisposeWith(d);
 
+            // Show loadouts section
             this.OneWayBind(ViewModel,
-                vm => vm.ManuallyAddedItems,
-                v => v.ManuallyAddedItemsList.ItemsSource)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel,
-                vm => vm.ItemsInLoadouts,
-                v => v.LoadoutItemsList.ItemsSource)
+                    vm => vm.LoadoutsUsed,
+                    v => v.SourceLoadoutsList.ItemsSource)
                 .DisposeWith(d);
 
             // Bind button commands
-            YesButton.Command = ReactiveCommand.Create(() => ViewModel!.Complete(true));
+            DeleteButton.Command = ReactiveCommand.Create(() => ViewModel!.Complete(true));
             NoButton.Command = ReactiveCommand.Create(() => ViewModel!.Complete(false));
             CloseButton.Command = ReactiveCommand.Create(() => ViewModel!.Complete(false));
         });
