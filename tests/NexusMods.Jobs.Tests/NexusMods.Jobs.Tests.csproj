@@ -11,6 +11,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="NexusMods.MnemonicDB" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
 
     <ItemGroup>

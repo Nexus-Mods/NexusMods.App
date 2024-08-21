@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <PackageReference Include="NexusMods.Paths" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
@@ -40,8 +41,8 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
-        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
-        <InternalsVisibleTo Include="NexusMods.Games.TestFramework"/>
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests" />
+        <InternalsVisibleTo Include="NexusMods.Games.TestFramework" />
     </ItemGroup>
 
     <ItemGroup>

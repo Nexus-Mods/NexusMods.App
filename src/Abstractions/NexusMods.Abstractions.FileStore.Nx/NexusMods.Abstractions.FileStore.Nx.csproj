@@ -8,6 +8,7 @@
         <!-- TODO: This is technically a problem in terms of binary size if other abstractions packages touch this, would need Nx structs to go into its own abstractions project. -->
         <!-- However right now this is technically fine, as only the DataModel and its extensions reference this. -->
         <PackageReference Include="NexusMods.Archives.Nx" />
+        <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />

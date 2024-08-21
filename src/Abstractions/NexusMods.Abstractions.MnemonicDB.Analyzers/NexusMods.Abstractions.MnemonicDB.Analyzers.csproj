@@ -4,6 +4,7 @@
     
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+      <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
 
 </Project>
