@@ -117,11 +117,10 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var observable = _connection
                     .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id)
                     .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
-                    .RemoveKey()
+                    .ChangeKey(datom => datom.E)
                     .PublishWithFunc(() =>
                     {
-                        var changeSet = new ChangeSet<Datom>();
-                        var list = new List<Datom>();
+                        var changeSet = new ChangeSet<Datom, EntityId>();
 
                         var libraryFileDatoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id);
                         foreach (var entityIdDatom in libraryFileDatoms)
@@ -129,11 +128,10 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                             var libraryLinkedLoadoutItemDatoms = _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, entityIdDatom.E);
                             foreach (var datom in libraryLinkedLoadoutItemDatoms)
                             {
-                                list.Add(datom);
+                                changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
                             }
                         }
 
-                        changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, list));
                         return changeSet;
                     })
                     .AutoConnect();
@@ -143,15 +141,33 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 {
                     var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
                     return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem);
-                });
+                }).RemoveKey();
 
-                return new LoadoutItemModel
+                var installedAtObservable = observable
+                    .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E).GetCreatedAt())
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.FirstOrDefault());
+
+                var loadoutItemIdsObservable = observable.Transform(datom => (LoadoutItemId) datom.E).RemoveKey();
+
+                var isEnabledObservable = observable
+                    .TransformOnObservable(d => LoadoutItem.Observe(_connection, d.E))
+                    .Transform(item => !item.IsDisabled)
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.All(x => x));
+
+                LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {
                     NameObservable = Observable.Return(modPage.Name),
+                    InstalledAtObservable = installedAtObservable,
+                    LoadoutItemIdsObservable = loadoutItemIdsObservable,
+                    IsEnabledObservable = isEnabledObservable,
 
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                 };
+
+                return model;
             })
             .RemoveKey();
     }

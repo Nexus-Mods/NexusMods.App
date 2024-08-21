@@ -31,7 +31,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public bool ViewHierarchical { get; set; } = true;
 
     private Dictionary<LoadoutItemModel, IDisposable> ToggleEnableStateCommandDisposables { get; set; } = new();
-    private Subject<LoadoutItemId> ToggleEnableSubject { get; } = new();
+    private Subject<IReadOnlyCollection<LoadoutItemId>> ToggleEnableSubject { get; } = new();
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
@@ -55,7 +55,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (isActivated)
                     {
-                        var disposable = model.ToggleEnableStateCommand.Subscribe(vm, static (loadoutItemId, vm) => vm.ToggleEnableSubject.OnNext(loadoutItemId));
+                        var disposable = model.ToggleEnableStateCommand.Subscribe(vm, static (ids, vm) => vm.ToggleEnableSubject.OnNext(ids));
                         var didAdd = vm.ToggleEnableStateCommandDisposables.TryAdd(model, disposable);
                         Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
 
@@ -88,26 +88,29 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 })
                 .Switch()
                 .Select(_ => CreateSource(_itemModels, createHierarchicalSource: ViewHierarchical))
-                .SubscribeWithErrorLogging(s => Source = s)
-                // .BindTo(this, vm => vm.Source)
+                .BindTo(this, vm => vm.Source)
                 .AddTo(disposables);
 
             // TODO: can be optimized with chunking or debounce
             ToggleEnableSubject
-                .SubscribeAwait(async (loadoutItemId, cancellationToken) =>
+                .SubscribeAwait(async (ids, cancellationToken) =>
                 {
                     using var tx = _connection.BeginTransaction();
-                    tx.Add(loadoutItemId, static (tx, db, loadoutItemId) =>
+
+                    foreach (var id in ids)
                     {
-                        var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
-                        if (loadoutItem.IsDisabled)
+                        tx.Add(id, static (tx, db, loadoutItemId) =>
                         {
-                            tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                        } else
-                        {
-                            tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                        }
-                    });
+                            var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
+                            if (loadoutItem.IsDisabled)
+                            {
+                                tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                            } else
+                            {
+                                tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                            }
+                        });
+                    }
 
                     await tx.Commit();
                 }, awaitOperation: AwaitOperation.Parallel, configureAwait: false)

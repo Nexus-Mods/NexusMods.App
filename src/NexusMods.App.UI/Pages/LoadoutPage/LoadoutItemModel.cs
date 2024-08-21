@@ -10,8 +10,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
 {
-    public LoadoutItemId LoadoutItemId { get; set; }
-    public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
+    [Reactive] public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     [Reactive] public string Name { get; set; } = "-";
@@ -25,12 +24,13 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
     [Reactive] public bool IsEnabled { get; set; }
 
-    public ReactiveCommand<Unit, LoadoutItemId> ToggleEnableStateCommand { get; }
+    public virtual ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
 
     private readonly IDisposable _modelActivationDisposable;
-    public LoadoutItemModel()
+    public LoadoutItemModel(LoadoutItemId loadoutItemId)
     {
-        ToggleEnableStateCommand = new ReactiveCommand<Unit, LoadoutItemId>(_ => LoadoutItemId);
+        LoadoutItemId[] arr = [loadoutItemId];
+        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>>(_ => arr);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {

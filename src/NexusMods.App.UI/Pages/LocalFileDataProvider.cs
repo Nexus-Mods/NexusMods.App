@@ -1,11 +1,14 @@
+using System.Reactive.Linq;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Observable = System.Reactive.Linq.Observable;
@@ -99,19 +102,55 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
 
-                var childrenObservable = _connection
+                var observable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
                     .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
+                    .ChangeKey(static entity => entity.Id)
+                    .PublishWithFunc(() =>
+                    {
+                        var changeSet = new ChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>();
+                        var entities = LibraryLinkedLoadoutItem.FindByLibraryItem(_connection.Db, libraryFile.Id);
+
+                        foreach (var entity in entities)
+                        {
+                            changeSet.Add(new Change<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entity.Id, entity));
+                        }
+
+                        return changeSet;
+                    })
+                    .AutoConnect();
+
+                var childrenObservable = observable
                     .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem))
                     .RemoveKey();
 
-                return new LoadoutItemModel
+                var installedAtObservable = observable
+                    .Transform(item => item.GetCreatedAt())
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.FirstOrDefault());
+
+                var loadoutItemIdsObservable = observable
+                    .Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId)
+                    .RemoveKey();
+
+                var isEnabledObservable = observable
+                    .TransformOnObservable(item => LoadoutItem.Observe(_connection, item.Id))
+                    .Transform(item => !item.IsDisabled)
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.All(x => x));
+
+                LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
+                    InstalledAtObservable = installedAtObservable,
+                    LoadoutItemIdsObservable = loadoutItemIdsObservable,
+                    IsEnabledObservable = isEnabledObservable,
 
                     HasChildrenObservable = Observable.Return(true),
                     ChildrenObservable = childrenObservable,
                 };
+
+                return model;
             })
             .RemoveKey();
     }

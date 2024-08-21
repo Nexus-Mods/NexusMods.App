@@ -64,12 +64,9 @@ public static class LoadoutDataProviderHelper
         // TODO: version (need to ask the game extension)
         // TODO: size (probably with RevisionsWithChildUpdates)
 
-        return new LoadoutItemModel
+        return new LoadoutItemModel(loadoutItemGroup.Id)
         {
-            LoadoutItemId = loadoutItemGroup.Id,
             InstalledAt = loadoutItemGroup.GetCreatedAt(),
-            Name = loadoutItemGroup.AsLoadoutItem().Name,
-            IsEnabled = !loadoutItemGroup.AsLoadoutItem().IsDisabled,
 
             NameObservable = nameObservable,
             IsEnabledObservable = isEnabledObservable,
