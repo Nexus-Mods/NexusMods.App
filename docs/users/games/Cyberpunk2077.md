@@ -1,10 +1,10 @@
 Use the Nexus Mods app to manage your Cyberpunk 2077 mods!
 
-## Features
 !!! example "We're working on it"
     Cyberpunk 2077 support is currently in development. Get involved by joining us on [GitHub](https://github.com/Nexus-Mods/NexusMods.App/issues/new/choose), [Discord](https://discord.gg/ReWTxb93jS) or the [forums](https://forums.nexusmods.com/forum/9052-nexus-mods-app/)!
 
-On top of the basic mod management features, players also benefit from these dedicated features:
+## Features
+In addition to basic mod management features, players also benefit from these dedicated features:
 
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
