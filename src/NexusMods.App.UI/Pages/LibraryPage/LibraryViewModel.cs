@@ -37,6 +37,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly ObservableCollectionExtended<LibraryItemModel> _itemModels = [];
 
     public bool IsEmpty { get; [UsedImplicitly] private set; }
+    public string EmptyLibrarySubtitleText { get; }
 
     public Subject<(LibraryItemModel, bool)> ActivationSubject { get; } = new();
 
@@ -85,6 +86,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _ticker.Connect();
 
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
+        var game = _loadout.InstallationInstance.Game;
+        var gameDomain = game.Domain;
+
+        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
@@ -122,7 +127,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var gameDomain = _loadout.InstallationInstance.Game.Domain;
         var gameUri = new Uri($"https://www.nexusmods.com/{gameDomain}");
 
         OpenNexusModsCommand = new ReactiveCommand<Unit>(

@@ -64,9 +64,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsEmpty, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
 
-            // TODO:
-            // Bind view.EmptyLibrarySubtitleTextBlock.Text to string based on game name
-            // Bind view.EmptyLibraryLinkButton to open Nexus game page
+            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibrarySubtitleTextBlock.Text)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.EmptyLibraryLinkButton)
+                .AddTo(disposables);
         });
     }
 }

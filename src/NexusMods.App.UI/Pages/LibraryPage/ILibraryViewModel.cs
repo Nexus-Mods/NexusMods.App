@@ -10,6 +10,7 @@ public interface ILibraryViewModel : IPageViewModelInterface
     ITreeDataGridSource<LibraryItemModel>? Source { get; }
 
     bool IsEmpty { get; }
+    string EmptyLibrarySubtitleText { get; }
 
     Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
 
