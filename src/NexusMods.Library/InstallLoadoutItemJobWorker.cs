@@ -36,7 +36,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 
         if (!result.HasValue)
         {
-            if (job.Installer is not AdvancedManualInstaller)
+            if (job.Installer is AdvancedManualInstaller)
                 return JobResult.CreateFailed($"Advanced installer did not succeed for `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
             
             var manualInstaller = AdvancedManualInstaller.Create(_serviceProvider);
