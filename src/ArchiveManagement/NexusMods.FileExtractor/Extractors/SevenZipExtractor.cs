@@ -202,9 +202,16 @@ public class SevenZipExtractor : IExtractor
 
     private static string GetExtractorExecutable(IFileSystem fileSystem)
     {
-        var fileName = GetExtractorExecutableFileName();
-        if (UseSystemExtractor) return fileName;
+        if (UseSystemExtractor)
+        {
+            // Depending on the user's distro and package of choice, 7z
+            // may have different names, so we'll check for the common ones.
+            return !OSInformation.IsLinux
+                ? GetExtractorExecutableFileName() :
+                FindSystem7zOnLinux();
+        }
 
+        var fileName = GetExtractorExecutableFileName();
         var directory = OSInformation.MatchPlatform(
             onWindows: static () => "runtimes/win-x64/native/",
             onLinux: static () => "runtimes/linux-x64/native/",
@@ -226,4 +233,19 @@ public class SevenZipExtractor : IExtractor
 #else
         false;
 #endif
+    
+    private static string FindSystem7zOnLinux()
+    {
+        string[] potentialBinaryNames = ["7z", "7zz", "7zzs"];
+        var pathDirectories = Environment.GetEnvironmentVariable("PATH")!.Split(':');
+
+        foreach (var pathDir in pathDirectories)
+        foreach (var binaryName in potentialBinaryNames)
+        {
+            if (File.Exists(Path.Combine(pathDir, binaryName)))
+                return binaryName;
+        }
+
+        throw new Exception("Cannot find system 7z binary in PATH");
+    }
 }
