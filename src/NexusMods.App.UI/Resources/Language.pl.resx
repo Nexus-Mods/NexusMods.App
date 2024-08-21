@@ -22,10 +22,10 @@
 		<value>Przeglądaj gry</value>
 	</data>
 	<data name="MetricsOptIn_ALLOW" xml:space="preserve">
-		<value>ZEZWÓL</value>
+		<value>Zezwól</value>
 	</data>
 	<data name="MetricsOptIn_DENY" xml:space="preserve">
-		<value>ODRZUĆ</value>
+		<value>Odrzuć</value>
 	</data>
 	<data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
 		<value>Diagnostyka i dane</value>
@@ -130,7 +130,7 @@
 		<value>PREMIUM</value>
 	</data>
 	<data name="SearchBox__Search" xml:space="preserve">
-		<value>Szukaj</value>
+		<value>Wyszukaj</value>
 	</data>
 	<data name="TopBarActions__LOG_IN" xml:space="preserve">
 		<value>Zaloguj</value>
@@ -147,11 +147,11 @@
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
 	</data>
-	<data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
-		<value>Analizowanie</value>
-	</data>
 	<data name="DownloadsView__Download_history" xml:space="preserve">
 		<value>Historia pobierania</value>
+	</data>
+	<data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+		<value>Strona pobierania jest aktualnie przerabiana i zostanie zastąpiona w przyszłej aktualizacji. Przepraszamy za niedogodności.</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
 		<value>Proszę kliknąć "Authorise" na stronie internetowej</value>
@@ -204,12 +204,12 @@
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
 		<value>Przeglądaj wszystkie gry</value>
 	</data>
-    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
-        <value>Dodaj</value>
-    </data>
-    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
-        <value>Dodaj (zaawansowane)</value>
-    </data>
+	<data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+		<value>Dodaj</value>
+	</data>
+	<data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+		<value>Dodaj (zaawansowane)</value>
+	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Dodane gry</value>
 	</data>
@@ -236,6 +236,9 @@
 	</data>
 	<data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
 		<value>Ukończone</value>
+	</data>
+	<data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+		<value>Analizowanie</value>
 	</data>
 	<data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
 		<value>W kolejce 0%</value>
@@ -422,6 +425,9 @@
 	<data name="DialogButton_SAVE" xml:space="preserve">
 		<value>Zapisz</value>
 	</data>
+	<data name="DialogButton_DELETE_MODS" xml:space="preserve">
+		<value>Usuń</value>
+	</data>
 	<data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
 		<value>Uruchom ponownie aplikację, aby zastosować to ustawienie</value>
 	</data>
@@ -452,181 +458,206 @@
 	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
 		<value>POBRANE</value>
 	</data>
-    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-        <value>ZAINSTALOWANE</value>
-    </data>
+	<data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+		<value>ZAINSTALOWANE</value>
+	</data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
 		<value>DZIAŁANIA</value>
 	</data>
-    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
-        <value>Anulowane</value>
-    </data>
-    <data name="DownloadInProgressView__Clear" xml:space="preserve">
-        <value>Wyczyść</value>
-    </data>
-    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
-        <value>Wyczyść ukończone</value>
-    </data>
-    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
-        <value>Pokaż w bibliotece</value>
-    </data>
-    <data name="LoadoutGridView__Remove" xml:space="preserve">
-        <value>Usuń</value>
-    </data>
-    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-        <value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods!&#x0a;&#x0a;Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.&#x0a;&#x0a;Życzymy udanego modowania i wspaniałych przygód!</value>
-    </data>
-    <data name="LoginMessageView_Title" xml:space="preserve">
-        <value>Zaloguj się i rozpocznij swoją przygodę</value>
-    </data>
-    <data name="FileOriginsPage_GetMods" xml:space="preserve">
-        <value>Uzyskaj mody:</value>
-    </data>
-    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
-        <value>Z dysku</value>
-    </data>
-    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
-        <value>Z Nexus Mods</value>
-    </data>
-    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
-        <value>Pokaż</value>
-    </data>
-    <data name="AddPanelToolTip" xml:space="preserve">
-        <value>Dodaj dodatkowy panel na podzielonym ekranie</value>
-    </data>
-    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
-        <value>Dodaj kartę</value>
-    </data>
-    <data name="TopBar_MyProfile" xml:space="preserve">
-        <value>Mój profil</value>
-    </data>
-    <data name="TopBar_SignOut" xml:space="preserve">
-        <value>Wyloguj</value>
-    </data>
-    <data name="TopBar_AccountSettings" xml:space="preserve">
-        <value>Ustawienia konta</value>
-    </data>
-    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
-        <value>Pokaż dziennik zmian</value>
-    </data>
-    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
-        <value>Pokaż logi aplikacji</value>
-    </data>
-    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
-        <value>Przekaż opinię</value>
-    </data>
-    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
-        <value>Otwórz w nowej karcie</value>
-    </data>
-    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
-        <value>Otwórz w nowym panelu</value>
-    </data>
-    <data name="TopBar_Help_ToolTip" xml:space="preserve">
-        <value>Pomoc i opinie</value>
-    </data>
-    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Dodaj mod do swojej listy modów</value>
-    </data>
-    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
-    </data>
-    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
-        <value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
-    </data>
-    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
-        <value>Zastosuj zmiany w folderze gry</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
-        <value>Plik zostanie dodany</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
-        <value>Plik zostanie zmodyfikowany</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
-        <value>Plik zostanie usunięty</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
-        <value>Folder zawiera zmodyfikowane pliki</value>
-    </data>
-    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
-        <value>Czy wiesz?</value>
-    </data>
-    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
-        <value>Możesz dodać dodatkowy panel na podzielonym ekranie poprzez wybranie tego</value>
-    </data>
-    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
-        <value>przycisku na pasku narzędzi</value>
-    </data>
-    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-        <value>Dodaj pobrane mody z</value>
-    </data>
-    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
-        <value>Brak dodanych modów do {0}</value>
-        <comment>{0} is the name of the currently managed game</comment>
-    </data>
-    <data name="EmptyLibraryTitleText" xml:space="preserve">
-        <value>Brak modów w bibliotece</value>
-    </data>
-    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
-        <value>Pobierz mody dla {0} z Nexus Mods</value>
-        <comment>{0} is the name of the currently managed game</comment>
-    </data>
-    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
-        <value>Kontrola kondycji zestawu zakończona pomyślnie</value>
-    </data>
-    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
-        <value>Gotowy do gry</value>
-    </data>
-    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
-        <value>Utworzony {0}</value>
-        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
-    </data>
-    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
-        <value>Ostatnio zastosowany: {0}</value>
-        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
-    </data>
-    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
-        <value>Mody: {0}</value>
-        <comment>Where {0} is the number of mods in a loadout</comment>
-    </data>
-    <data name="MyLoadoutsPageTitle" xml:space="preserve">
-        <value>Moje zestawy</value>
-    </data>
-    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najlepiej odpowiada twoim preferencjom, aby rozpocząć przygodę z modowaniem.</value>
-    </data>
-    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
-        <value>Zestawy {0}</value>
-        <comment>Where {0} is the name of the game</comment>
-    </data>
-    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-        <value>Utwórz nowy zestaw</value>
-    </data>
-    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
-        <value>Aktualnie zastosowany</value>
-    </data>
-    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
-        <value>Utwórz kopię</value>
-    </data>
-    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
-        <value>Usuwanie...</value>
-    </data>
-    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
-        <value>Tworzenie...</value>
-    </data>
-    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
-        <value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
-    </data>
-    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
-        <value>Dodaj grę przed użyciem zestawów</value>
-    </data>
-    <data name="HumanizedDateTime_Never" xml:space="preserve">
-        <value>Nigdy</value>
-    </data>
-    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
-        <value>Zastosowanie zmian do gry</value>
-    </data>
-    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
-        <value>Usuń zestaw</value>
-    </data>
+	<data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+		<value>Anulowane</value>
+	</data>
+	<data name="DownloadInProgressView__Clear" xml:space="preserve">
+		<value>Wyczyść</value>
+	</data>
+	<data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+		<value>Wyczyść ukończone</value>
+	</data>
+	<data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+		<value>Pokaż w bibliotece</value>
+	</data>
+	<data name="LoadoutGridView__Remove" xml:space="preserve">
+		<value>Usuń</value>
+	</data>
+	<data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+		<value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods!&#x0a;&#x0a;Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.</value>
+	</data>
+	<data name="LoginMessageView_Title" xml:space="preserve">
+		<value>Zaloguj się i rozpocznij swoją przygodę</value>
+	</data>
+	<data name="FileOriginsPage_GetMods" xml:space="preserve">
+		<value>Uzyskaj mody:</value>
+	</data>
+	<data name="FileOriginsPage_FromDrive" xml:space="preserve">
+		<value>Z dysku</value>
+	</data>
+	<data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+		<value>Z Nexus Mods</value>
+	</data>
+	<data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+		<value>Pokaż</value>
+	</data>
+	<data name="AddPanelToolTip" xml:space="preserve">
+		<value>Dodaj dodatkowy panel na podzielonym ekranie</value>
+	</data>
+	<data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+		<value>Dodaj kartę</value>
+	</data>
+	<data name="TopBar_MyProfile" xml:space="preserve">
+		<value>Mój profil</value>
+	</data>
+	<data name="TopBar_SignOut" xml:space="preserve">
+		<value>Wyloguj</value>
+	</data>
+	<data name="TopBar_AccountSettings" xml:space="preserve">
+		<value>Ustawienia konta</value>
+	</data>
+	<data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+		<value>Pokaż dziennik zmian</value>
+	</data>
+	<data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+		<value>Pokaż logi aplikacji</value>
+	</data>
+	<data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+		<value>Przekaż opinię</value>
+	</data>
+	<data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+		<value>Otwórz w nowej karcie</value>
+	</data>
+	<data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+		<value>Otwórz w nowym panelu</value>
+	</data>
+	<data name="TopBar_Help_ToolTip" xml:space="preserve">
+		<value>Pomoc i opinie</value>
+	</data>
+	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+		<value>Dodaj mod do swojej listy modów</value>
+	</data>
+	<data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
+		<value>Usuń moda z biblioteki, aby zwolnić miejsce na dysku</value>
+	</data>
+	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+		<value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
+	</data>
+	<data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+		<value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
+	</data>
+	<data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+		<value>Zastosuj zmiany w folderze gry</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+		<value>Plik zostanie dodany</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+		<value>Plik zostanie zmodyfikowany</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+		<value>Plik zostanie usunięty</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+		<value>Folder zawiera zmodyfikowane pliki</value>
+	</data>
+	<data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+		<value>Czy wiesz?</value>
+	</data>
+	<data name="NewTabPageInfoBannerText1" xml:space="preserve">
+		<value>Możesz dodać dodatkowy panel na podzielonym ekranie poprzez wybranie tego</value>
+	</data>
+	<data name="NewTabPageInfoBannerText2" xml:space="preserve">
+		<value>przycisku na pasku narzędzi</value>
+	</data>
+	<data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+		<value>Dodaj pobrane mody z</value>
+	</data>
+	<data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+		<value>Brak dodanych modów do {0}</value>
+		<comment>{0} is the name of the currently managed game</comment>
+	</data>
+	<data name="EmptyLibraryTitleText" xml:space="preserve">
+		<value>Brak modów w bibliotece</value>
+	</data>
+	<data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+		<value>Pobierz mody dla {0} z Nexus Mods</value>
+		<comment>{0} is the name of the currently managed game</comment>
+	</data>
+	<data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+		<value>Kontrola kondycji zestawu zakończona pomyślnie</value>
+	</data>
+	<data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+		<value>Gotowy do gry</value>
+	</data>
+	<data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+		<value>Utworzony {0}</value>
+		<comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+	</data>
+	<data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+		<value>Ostatnio zastosowany: {0}</value>
+		<comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+	</data>
+	<data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+		<value>Mody: {0}</value>
+		<comment>Where {0} is the number of mods in a loadout</comment>
+	</data>
+	<data name="MyLoadoutsPageTitle" xml:space="preserve">
+		<value>Moje zestawy</value>
+	</data>
+	<data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+		<value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najlepiej odpowiada twoim preferencjom, aby rozpocząć przygodę z modowaniem.</value>
+	</data>
+	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+		<value>Zestawy {0}</value>
+		<comment>Where {0} is the name of the game</comment>
+	</data>
+	<data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+		<value>Utwórz nowy zestaw</value>
+	</data>
+	<data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+		<value>Aktualnie zastosowany</value>
+	</data>
+	<data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+		<value>Utwórz kopię</value>
+	</data>
+	<data name="LoadoutCardViewDeletingText" xml:space="preserve">
+		<value>Usuwanie...</value>
+	</data>
+	<data name="LoadoutCardViewCreatingText" xml:space="preserve">
+		<value>Tworzenie...</value>
+	</data>
+	<data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+		<value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
+	</data>
+	<data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+		<value>Dodaj grę przed użyciem zestawów</value>
+	</data>
+	<!-- Library Item Delete Confirmation Dialog -->
+	<data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+		<value>Trwałe usunięcie</value>
+	</data>
+	<data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+		<value>Czy na pewno chcesz trwale usunąć poniższe mody z aplikacji:</value>
+	</data>
+	<data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+		<value>Używany przez {0}:</value>
+	</data>
+	<data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+		<value>Używany przez {0} - {1}:</value>
+	</data>
+	<data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+		<value>Usuń</value>
+	</data>
+	<data name="Updated_ViewUninstallDocs" xml:space="preserve">
+		<value>Jak odinstalować aplikację Nexus Mods</value>
+	</data>
+	<data name="HumanizedDateTime_Never" xml:space="preserve">
+		<value>Nigdy</value>
+	</data>
+	<data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+		<value>Zastosowanie zmian do gry</value>
+	</data>
+	<data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+		<value>Usuń zestaw</value>
+	</data>
+	<data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+		<value>Usuń</value>
+	</data>
 </root>
