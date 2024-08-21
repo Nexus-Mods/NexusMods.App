@@ -480,10 +480,10 @@
 		<value>Usuń</value>
 	</data>
 	<data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-		<value>Zaloguj się na swoje konto, aby w pełni czerpać przyjemność z pobierania modów z Nexus Mods!&#x0a;&#x0a;Zawsze możesz także ręcznie dodawać mody z dysku bez logowania.</value>
+		<value>Zaloguj się na swoje konto, aby pobierać mody z Nexus Mods!&#x0a;&#x0a;Zawsze możesz ręcznie dodawać mody z dysku bez logowania.</value>
 	</data>
 	<data name="LoginMessageView_Title" xml:space="preserve">
-		<value>Zaloguj się i rozpocznij swoją przygodę</value>
+		<value>Logowanie</value>
 	</data>
 	<data name="FileOriginsPage_GetMods" xml:space="preserve">
 		<value>Uzyskaj mody:</value>
