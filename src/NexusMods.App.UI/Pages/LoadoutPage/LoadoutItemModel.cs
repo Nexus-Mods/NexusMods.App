@@ -121,6 +121,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     {
         return new CustomTextColumn<LoadoutItemModel, DateTime>(
             header: "Installed",
+            // TODO: use formatted date
             getter: model => model.InstalledAt,
             options: new TextColumnOptions<LoadoutItemModel>
             {

@@ -115,8 +115,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         return LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
-            .RemoveKey()
-            .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
+            .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem))
+            .RemoveKey();
     }
 
     private static ITreeDataGridSource<LoadoutItemModel> CreateSource(IEnumerable<LoadoutItemModel> models, bool createHierarchicalSource)
@@ -139,8 +139,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         var nameColumn = LoadoutItemModel.CreateNameColumn();
         columnList.Add(viewAsTree ? LoadoutItemModel.CreateExpanderColumn(nameColumn) : nameColumn);
-        columnList.Add(LoadoutItemModel.CreateVersionColumn());
-        columnList.Add(LoadoutItemModel.CreateSizeColumn());
+        // TODO: columnList.Add(LoadoutItemModel.CreateVersionColumn());
+        // TODO: columnList.Add(LoadoutItemModel.CreateSizeColumn());
         columnList.Add(LoadoutItemModel.CreateInstalledAtColumn());
         columnList.Add(LoadoutItemModel.CreateToggleEnableColumn());
     }

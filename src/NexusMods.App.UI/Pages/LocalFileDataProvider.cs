@@ -25,6 +25,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     public IObservable<IChangeSet<LibraryItemModel>> ObserveFlatLibraryItems()
     {
+        // NOTE(erri120): For the flat library view, we just get all LocalFiles
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
             .Transform(datom =>
@@ -54,6 +55,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     public IObservable<IChangeSet<LibraryItemModel>> ObserveNestedLibraryItems()
     {
+        // NOTE(erri120): For the nested library view, design wanted to have a
+        // parent for the LocalFile, we create a parent with one child that will
+        // both be the same.
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
             .Transform(datom =>
@@ -84,6 +88,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
     {
+        // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
+        // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
+        // back to the LocalFile
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
             // TODO: observable filter
@@ -95,8 +102,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var childrenObservable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
                     .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
-                    .RemoveKey()
-                    .TransformMany(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModels(_connection, libraryLinkedLoadoutItem));
+                    .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem))
+                    .RemoveKey();
 
                 return new LoadoutItemModel
                 {
