@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using NexusMods.App.UI.WorkspaceSystem;
 using R3;
 
@@ -19,4 +20,6 @@ public interface ILibraryViewModel : IPageViewModelInterface
 
     ReactiveCommand<Unit> OpenFilePickerCommand { get; }
     ReactiveCommand<Unit> OpenNexusModsCommand { get; }
+
+    IStorageProvider? StorageProvider { get; set; }
 }

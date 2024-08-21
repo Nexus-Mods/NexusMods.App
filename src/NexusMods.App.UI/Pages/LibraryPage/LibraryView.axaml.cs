@@ -18,6 +18,15 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
+            var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
+            if (storageProvider is not null)
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
+                    .AddTo(disposables);
+            }
+
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .AddTo(disposables);
 

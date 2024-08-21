@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
+using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
@@ -12,10 +13,13 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -51,8 +55,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
 
+    [Reactive] public IStorageProvider? StorageProvider { get; set; }
+
+    private readonly ILibraryItemInstaller _advancedInstaller;
     private readonly Loadout.ReadOnly _loadout;
-    private readonly ILibraryItemInstaller? _advancedInstaller;
 
     private readonly ConnectableObservable<DateTime> _ticker;
     public LibraryViewModel(
@@ -60,7 +66,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
-        _advancedInstaller = serviceProvider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
+        _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
         TabTitle = "Library (new)";
         TabIcon = IconValues.ModLibrary;
@@ -69,6 +75,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+
 
         _ticker = Observable
             .Interval(period: TimeSpan.FromSeconds(10), timeProvider: ObservableSystem.DefaultTimeProvider)
@@ -95,26 +102,41 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             configureAwait: false
         );
 
-        if (_advancedInstaller is not null)
-        {
-            InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
-                executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
-                awaitOperation: AwaitOperation.Parallel,
-                initialCanExecute: false,
-                configureAwait: false
-            );
-        } else
-        {
-            InstallSelectedItemsWithAdvancedInstallerCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
-        }
+        InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
 
-        OpenFilePickerCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
-        OpenNexusModsCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
+        var canUseFilePicker = this.WhenAnyValue(vm => vm.StorageProvider)
+            .ToObservable()
+            .WhereNotNull()
+            .Select(x => x.CanOpen);
+
+        OpenFilePickerCommand = canUseFilePicker.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => AddFilesFromDisk(StorageProvider!, cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: true,
+            configureAwait: false
+        );
+
+        var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
+        var gameDomain = _loadout.InstallationInstance.Game.Domain;
+        var gameUri = new Uri($"https://www.nexusmods.com/{gameDomain}");
+
+        OpenNexusModsCommand = new ReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            configureAwait: false
+        );
 
         var selectedItemsSerialDisposable = new SerialDisposable();
 
         this.WhenActivated(disposables =>
         {
+            Disposable.Create(this, static vm => vm.StorageProvider = null);
+
             this.WhenAnyValue(vm => vm._itemModels.Count)
                 .Select(count => count == 0)
                 .BindToVM(this, vm => vm.IsEmpty)
@@ -220,6 +242,42 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         await using var job = _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
         await job.StartAsync(cancellationToken: cancellationToken);
         await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+    }
+
+    private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
+    {
+        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            AllowMultiple = true,
+            Title = Language.LoadoutGridView_AddMod_FilePicker_Title,
+            FileTypeFilter =
+            [
+                // TODO: fetch from some service
+                new FilePickerFileType(Language.LoadoutGridView_AddMod_FileType_Archive)
+                {
+                    Patterns = ["*.zip", "*.7z", "*.rar"],
+                },
+            ],
+        });
+
+        var paths = files
+            .Select(file => file.TryGetLocalPath())
+            .NotNull()
+            .Select(path => FileSystem.Shared.FromUnsanitizedFullPath(path))
+            .Where(path => path.FileExists)
+            .ToArray();
+
+        await Parallel.ForAsync(
+            fromInclusive: 0,
+            toExclusive: paths.Length,
+            body: async (i, innerCancellationToken) =>
+            {
+                await using var job = _libraryService.AddLocalFile(paths[i]);
+                await job.StartAsync(cancellationToken: innerCancellationToken);
+                await job.WaitToFinishAsync(cancellationToken: innerCancellationToken);
+            },
+            cancellationToken: cancellationToken
+        );
     }
 
     private static (ITreeDataGridSource<LibraryItemModel> source, Observable<LibraryItemModel[]> selectionObservable) CreateSource(IEnumerable<LibraryItemModel> models, bool createHierarchicalSource)
