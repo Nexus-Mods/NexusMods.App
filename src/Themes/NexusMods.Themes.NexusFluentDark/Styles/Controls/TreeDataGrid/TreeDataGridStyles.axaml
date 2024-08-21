@@ -1,5 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls.TreeDataGrid">
 
     <!-- Style Definitions -->
     <Style Selector="TreeDataGrid.TreeWhiteCaret">
@@ -59,30 +60,46 @@
 
         <Setter Property="BorderThickness" Value="0" />
 
-        <Style Selector="^/template/ Border#ColumnHeadersPresenterBorder">
+        <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="Height" Value="52" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="CornerRadius" Value="0" />
         </Style>
 
         <!-- Column Header Style -->
         <Style Selector="^ TreeDataGridColumnHeader">
-            <Setter Property="Padding" Value="12, 8, 24, 8" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Height" Value="52" />
             <Setter Property="BorderThickness" Value="0,0,0,0" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
             </Style>
         </Style>
+        
+        <Style Selector="^ TreeDataGridColumnHeader:nth-child(1)">
+            <Setter Property="Padding" Value="24,0,0,0"/>
+        </Style>
+        
+        <Style Selector="^ TreeDataGridColumnHeader:nth-last-child(1)">
+            <Setter Property="Padding" Value="0,0,24,0"/>
+        </Style>
 
         <Style Selector="^ TreeDataGridRow">
             <Setter Property="Height" Value="52" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            
+        </Style>
+        
+        <Style Selector="^ TreeDataGridExpanderCell /template/ Border#CellBorder">
+            <Setter Property="Padding" Value="{TemplateBinding Indent, Converter={x:Static conv:IndentConverter.Instance}}"/>
+        </Style>
+        
+        <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
+            <Setter Property="Padding" Value="4,2,24,2"/>
+        </Style>
+
+        <Style Selector="^ Control:is(TreeDataGridCell):selected">
+            <Setter Property="Background" Value="{DynamicResource TreeDataGridSelectedCellBackgroundBrush}" />
         </Style>
 
         <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
@@ -97,8 +114,9 @@
             <Style Selector="^ /template/ Border">
                 <Setter Property="Width" Value="12" />
                 <Setter Property="Height" Value="12" />
+                <Setter Property="Margin" Value="0"/>
             </Style>
-            
+
         </Style>
 
     </Style>
