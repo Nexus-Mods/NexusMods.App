@@ -65,6 +65,12 @@ public class ProcessFactory : IProcessFactory
     {
         if (!logProcessOutput)
         {
+            // We require a non-null pipe here, for more details, see:
+            // https://github.com/Nexus-Mods/NexusMods.App/issues/1905#issuecomment-2302503110
+            // https://github.com/Nexus-Mods/NexusMods.App/issues/1905#issuecomment-2302486535
+            command = command.WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
+                .WithStandardInputPipe(PipeSource.FromStream(Stream.Null))
+                .WithStandardErrorPipe(PipeTarget.ToStream(Stream.Null));
             return await ExecuteAsync(command, cancellationToken);
         }
 
@@ -86,6 +92,7 @@ public class ProcessFactory : IProcessFactory
 
             command = command
                 .WithStandardOutputPipe(mergedStdOutPipe)
+                .WithStandardInputPipe(PipeSource.FromStream(Stream.Null))
                 .WithStandardErrorPipe(mergedStdErrPipe);
 
             var result = await ExecuteAsync(command, cancellationToken);
