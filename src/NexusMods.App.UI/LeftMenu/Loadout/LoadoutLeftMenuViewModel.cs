@@ -68,25 +68,26 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ),
         };
 
-        var loadoutItem = new IconViewModel
-        {
-            Name = "My Mods (new)",
-            Icon = IconValues.Collections,
-            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-            {
-                var pageData = new PageData
-                {
-                    FactoryId = LoadoutPageFactory.StaticId,
-                    Context = new LoadoutPageContext
-                    {
-                        LoadoutId = loadoutContext.LoadoutId,
-                    },
-                };
-
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-            }),
-        };
+        // TODO: enable this
+        // var loadoutItem = new IconViewModel
+        // {
+        //     Name = "My Mods (new)",
+        //     Icon = IconValues.Collections,
+        //     NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        //     {
+        //         var pageData = new PageData
+        //         {
+        //             FactoryId = LoadoutPageFactory.StaticId,
+        //             Context = new LoadoutPageContext
+        //             {
+        //                 LoadoutId = loadoutContext.LoadoutId,
+        //             },
+        //         };
+        //
+        //         var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+        //         workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        //     }),
+        // };
 
         var oldLibraryItem = new IconViewModel
         {
@@ -108,27 +109,28 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }),
         };
 
-        var libraryItem = new IconViewModel
-        {
-            Name = "Library (new)",
-            Icon = IconValues.ModLibrary,
-            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-            {
-                NewDownloadModelCount = 0;
-
-                var pageData = new PageData
-                {
-                    FactoryId = LibraryPageFactory.StaticId,
-                    Context = new LibraryPageContext
-                    {
-                        LoadoutId = loadoutContext.LoadoutId,
-                    },
-                };
-
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-            }),
-        };
+        // TODO: enable this
+        // var libraryItem = new IconViewModel
+        // {
+        //     Name = "Library (new)",
+        //     Icon = IconValues.ModLibrary,
+        //     NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        //     {
+        //         NewDownloadModelCount = 0;
+        //
+        //         var pageData = new PageData
+        //         {
+        //             FactoryId = LibraryPageFactory.StaticId,
+        //             Context = new LibraryPageContext
+        //             {
+        //                 LoadoutId = loadoutContext.LoadoutId,
+        //             },
+        //         };
+        //
+        //         var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+        //         workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        //     }),
+        // };
 
         var diagnosticItem = new IconViewModel
         {
@@ -154,9 +156,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var items = new ILeftMenuItemViewModel[]
         {
             oldLoadoutItem,
-            loadoutItem,
+            // TODO: loadoutItem,
             oldLibraryItem,
-            libraryItem,
+            // TODO: libraryItem,
             diagnosticItem,
         };
 
@@ -193,7 +195,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
             this.WhenAnyValue(vm => vm.NewDownloadModelCount)
                 .Select(count => count == 0 ? [] : new[] { count.ToString() })
-                .BindToVM(libraryItem, vm => vm.Badges)
+                .BindToVM(oldLibraryItem, vm => vm.Badges)
                 .DisposeWith(disposable);
         });
     }

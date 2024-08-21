@@ -22,7 +22,7 @@ public static class LoadoutUserFilters
         {
             if (entity.LoadoutId != loadoutId) continue;
             if (!entity.IsLoadoutItemGroup()) continue;
-            if (!LibraryUserFilters.ShouldShow(entity.ToLibraryLinkedLoadoutItem().LibraryItem)) continue;
+            if (!LibraryUserFilters.ShouldShow(entity.ToLoadoutItemGroup().ToLibraryLinkedLoadoutItem().LibraryItem)) continue;
 
             yield return entity;
         }

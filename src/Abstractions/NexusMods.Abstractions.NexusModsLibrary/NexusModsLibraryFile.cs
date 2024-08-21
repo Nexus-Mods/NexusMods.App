@@ -18,4 +18,9 @@ public partial class NexusModsLibraryFile : IModelDefinition
     /// Remote metadata of the file on Nexus Mods.
     /// </summary>
     public static readonly ReferenceAttribute<NexusModsFileMetadata> FileMetadata = new(Namespace, nameof(FileMetadata));
+
+    /// <summary>
+    /// Remote metadata of the mod page on Nexus Mods.
+    /// </summary>
+    public static readonly ReferenceAttribute<NexusModsModPageMetadata> ModPageMetadata = new(Namespace, nameof(ModPageMetadata));
 }

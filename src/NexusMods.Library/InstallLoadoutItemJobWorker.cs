@@ -52,7 +52,7 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
         _ = new LibraryLinkedLoadoutItem.New(tx, loadoutGroup.Id)
         {
-            LoadoutItem = loadoutGroup.GetLoadoutItem(tx),
+            LoadoutItemGroup = loadoutGroup,
             LibraryItemId = job.LibraryItem,
         };
 
