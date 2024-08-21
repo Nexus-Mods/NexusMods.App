@@ -17,9 +17,6 @@ While the spinner is displayed the app is taking a backup of the current state o
 
 Once the process is complete a new entry will be added to the spine menu on the left side. 
 
-!!! tip "Multiple Loadouts"
-    In a future release it will be possible to add multiple loadouts per game. This is currently unsupported.
-
 ## Removing a Game
 !!! warning "Warning"
     Removing a game from the app will permanently delete any loadouts. This cannot be undone.
