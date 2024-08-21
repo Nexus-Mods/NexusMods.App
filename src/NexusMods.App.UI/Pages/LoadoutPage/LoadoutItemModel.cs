@@ -62,7 +62,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public static IColumn<LoadoutItemModel> CreateNameColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
-            header: "Name",
+            header: "NAME",
             getter: model => model.Name,
             options: new TextColumnOptions<LoadoutItemModel>
             {
@@ -82,7 +82,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
         public static IColumn<LoadoutItemModel> CreateVersionColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
-            header: "Version",
+            header: "VERSION",
             getter: model => model.Version,
             options: new TextColumnOptions<LoadoutItemModel>
             {
@@ -101,7 +101,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public static IColumn<LoadoutItemModel> CreateSizeColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, Size>(
-            header: "Size",
+            header: "SIZE",
             getter: model => model.Size,
             options: new TextColumnOptions<LoadoutItemModel>
             {
@@ -120,7 +120,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public static IColumn<LoadoutItemModel> CreateInstalledAtColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, DateTime>(
-            header: "Installed",
+            header: "INSTALLED",
             // TODO: use formatted date
             getter: model => model.InstalledAt,
             options: new TextColumnOptions<LoadoutItemModel>
@@ -140,7 +140,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public static IColumn<LoadoutItemModel> CreateToggleEnableColumn()
     {
         return new TemplateColumn<LoadoutItemModel>(
-            header: "Toggle",
+            header: "TOGGLE",
             cellTemplateResourceKey: "ToggleEnableColumnTemplate",
             options: new TemplateColumnOptions<LoadoutItemModel>
             {

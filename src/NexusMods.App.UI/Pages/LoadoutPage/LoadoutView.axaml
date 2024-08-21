@@ -6,31 +6,69 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
     <Grid RowDefinitions="Auto, *">
-        <Button Grid.Row="0" x:Name="SwitchView">
-            <TextBlock>Switch View</TextBlock>
-        </Button>
+        <Border Grid.Row="0" Classes="Toolbar">
+            <StackPanel>
+                <Button x:Name="SwitchView">
+                    <TextBlock>Switch View</TextBlock>
+                </Button>
+                <Line />
 
-        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
-                      ShowColumnHeaders="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True">
-            <TreeDataGrid.Resources>
-                <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
-                    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">
-                        <ToggleSwitch.OnContent>
-                            <ContentControl />
-                        </ToggleSwitch.OnContent>
-                        <ToggleSwitch.OffContent>
-                            <ContentControl />
-                        </ToggleSwitch.OffContent>
-                    </ToggleSwitch>
-                </DataTemplate>
-            </TreeDataGrid.Resources>
-        </TreeDataGrid>
+                <navigation:NavigationControl x:Name="ViewFilesButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="FolderOutline" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}" />
+                    </StackPanel>
+                </navigation:NavigationControl>
+                <Button x:Name="DeleteButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlaylistRemove" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+
+        <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
+            <controls:EmptyState.Subtitle>
+                <StackPanel>
+                    <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
+                    <navigation:NavigationControl Classes="Square Primary" x:Name="ViewLibraryButton">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
+                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued" VerticalAlignment="Center" Size="18" />
+                            <TextBlock Text="Library" />
+                        </StackPanel>
+                    </navigation:NavigationControl>
+                </StackPanel>
+            </controls:EmptyState.Subtitle>
+
+            <TreeDataGrid x:Name="TreeDataGrid"
+                          ShowColumnHeaders="True"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          Classes="MainListsStyling">
+                <TreeDataGrid.Resources>
+                    <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
+                        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">
+                            <ToggleSwitch.OnContent>
+                                <ContentControl />
+                            </ToggleSwitch.OnContent>
+                            <ToggleSwitch.OffContent>
+                                <ContentControl />
+                            </ToggleSwitch.OffContent>
+                        </ToggleSwitch>
+                    </DataTemplate>
+                </TreeDataGrid.Resources>
+            </TreeDataGrid>
+        </controls:EmptyState>
     </Grid>
 
 </reactive:ReactiveUserControl>

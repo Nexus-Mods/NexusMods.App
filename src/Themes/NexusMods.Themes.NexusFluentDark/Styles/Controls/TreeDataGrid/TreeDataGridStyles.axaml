@@ -6,10 +6,10 @@
         <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
             <Setter Property="Width" Value="16" />
             <Setter Property="Height" Value="16" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
             <Style Selector="^:pointerover">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
         </Style>
     </Style>
@@ -20,7 +20,7 @@
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
             <Setter Property="BorderThickness" Value="0,1,0,1" />
-            <Setter Property="Height" Value="38"/>
+            <Setter Property="Height" Value="38" />
         </Style>
 
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
@@ -28,7 +28,7 @@
                     Value="{StaticResource NeutralSubdued}" />
         </Style>
     </Style>
-    
+
     <!-- Column Header/Text Style -->
     <Style Selector="TreeDataGridColumnHeader">
         <!-- Text Inside Column Header -->
@@ -42,8 +42,65 @@
         <Style Selector="^ TextBlock">
             <Setter Property="TextBlock.Foreground"
                     Value="{StaticResource NeutralSubdued}" />
-            <Setter Property="TextBlock.Theme" Value="{StaticResource TitleSMSemiTheme}"/>
+            <Setter Property="TextBlock.Theme" Value="{StaticResource TitleSMSemiTheme}" />
         </Style>
+    </Style>
+
+
+    <!-- Modlist and Library TreeDataGrid Styles -->
+    <Style Selector="TreeDataGrid.MainListsStyling">
+        <Style.Resources>
+            <ResourceDictionary>
+                <StreamGeometry x:Key="TreeDataGridItemCollapsedChevronPathData">M7.15833 13.825L10.975 10L7.15833 6.175L8.33333 5L13.3333 10L8.33333 15L7.15833 13.825Z</StreamGeometry>
+                <StreamGeometry x:Key="TreeDataGridItemExpandedChevronPathData">M6.175 7.15833L10 10.975L13.825 7.15833L15 8.33333L10 13.3333L5 8.33333L6.175 7.15833Z</StreamGeometry>
+            </ResourceDictionary>
+        </Style.Resources>
+
+
+        <Setter Property="BorderThickness" Value="0" />
+
+        <Style Selector="^/template/ Border#ColumnHeadersPresenterBorder">
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+
+        <!-- Column Header Style -->
+        <Style Selector="^ TreeDataGridColumnHeader">
+            <Setter Property="Padding" Value="12, 8, 24, 8" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Height" Value="52" />
+            <Setter Property="BorderThickness" Value="0,0,0,0" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Height" Value="52" />
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            
+        </Style>
+
+        <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border">
+                <Setter Property="Width" Value="12" />
+                <Setter Property="Height" Value="12" />
+            </Style>
+            
+        </Style>
+
     </Style>
 
 </Styles>
