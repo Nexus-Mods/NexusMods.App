@@ -228,6 +228,10 @@
     <Style Selector="Border.WarningSubdued20">
         <Setter Property="Background" Value="{StaticResource WarningSubdued20Brush}"/>
     </Style>
+    
+    <Style Selector="Border.SuccessSubdued20">
+        <Setter Property="Background" Value="{StaticResource SuccessSubdued20Brush}"/>
+    </Style>
 
     <Style Selector="Border.InfoStrong">
         <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />

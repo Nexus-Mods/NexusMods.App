@@ -8,6 +8,10 @@ namespace NexusMods.Abstractions.Library.Models;
 /// <summary>
 /// Represents a file inside a library archive.
 /// </summary>
+/// <remarks>
+///     Please do not create alternatives to LibraryArchiveFileEntry that can store
+///     archived files without updating the GC.
+/// </remarks>
 [PublicAPI]
 [Include<LibraryFile>]
 public partial class LibraryArchiveFileEntry : IModelDefinition

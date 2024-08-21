@@ -7,12 +7,11 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
@@ -40,6 +39,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly ILogger _logger;
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
+    private readonly IGarbageCollectorRunner _garbageCollectorRunner;
 
     /// <summary>
     /// Connection.
@@ -54,13 +54,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IFileStore fileStore,
         ISorter sorter,
         IConnection conn,
-        IOSInformation os)
+        IOSInformation os,
+        IGarbageCollectorRunner garbageCollectorRunner)
     {
         _logger = logger;
         _fileStore = fileStore;
         _sorter = sorter;
         Connection = conn;
         _os = os;
+        _garbageCollectorRunner = garbageCollectorRunner;
     }
 
     /// <summary>
@@ -72,7 +74,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
-        provider.GetRequiredService<IOSInformation>()
+        provider.GetRequiredService<IOSInformation>(),
+        provider.GetRequiredService<IGarbageCollectorRunner>()
     )
     {
     }
@@ -1071,7 +1074,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task UnManage(GameInstallation installation)
+    public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
         var metadata = installation.GetMetadata(Connection);
         
@@ -1081,8 +1084,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         foreach (var loadout in metadata.Loadouts)
         {
             _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-            await DeleteLoadout(loadout);
+            await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
         }
+
+        if (runGc)
+            _garbageCollectorRunner.Run();
     }
 
     /// <inheritdoc />
@@ -1090,7 +1096,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return false;
     }
-    
+
     /// <inheritdoc />
     public virtual bool IsIgnoredPath(GamePath path)
     {
@@ -1102,10 +1108,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var baseDb = Connection.Db;
         var loadout = Loadout.Load(baseDb, loadoutId);
-        var installation = loadout.InstallationInstance;
-        
+
         // Temp space for datom values
-        Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(32);
+        Memory<byte> buffer = System.GC.AllocateUninitializedArray<byte>(32);
         
         // Cache some attribute ids
         var registry = baseDb.Registry;
@@ -1156,7 +1161,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 // Make sure we have enough buffer space
                 if (buffer.Length < datom.ValueSpan.Length)
-                    buffer = GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
+                    buffer = System.GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
                 
                 // Copy the value over
                 datom.ValueSpan.CopyTo(buffer.Span);
@@ -1187,7 +1192,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(LoadoutId loadoutId)
+    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
@@ -1203,6 +1208,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             tx.Delete(item.Id, false);
         }
         await tx.Commit();
+        
+        // Execute the garbage collector
+        _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
 
     /// <summary>

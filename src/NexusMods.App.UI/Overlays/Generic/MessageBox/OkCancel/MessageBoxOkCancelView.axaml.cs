@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Resources;
@@ -30,8 +31,22 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
     public MessageBoxOkCancelView()
     {
         InitializeComponent();
+        
+        // Note: In the previewer, this control doesn't expand correctly.
+        // Unless the items are set immediately. I have no idea how to fix this,
+        // - Sewer
+        
+        // Bind the View's properties to the UI elements
+        this.WhenAnyValue(x => x.Title)
+            .BindTo(this, x => x.HeadingText.Text);
+            
+        this.WhenAnyValue(x => x.Description)
+            .BindTo(this, x => x.MessageTextBlock.Text);
+        
         this.WhenActivated(d =>
         {
+
+            
             OkButton.Command = ReactiveCommand.Create(() =>
             {
                 ViewModel!.Complete(true);

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Top/Bottom Splitter -->
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="Auto, Auto">
 
         <!-- Note: https://github.com/AvaloniaUI/Avalonia/issues/2105 , issues with radius. -->
         <!-- Using two borders here for rendering is not ideal, but it will have to do -->

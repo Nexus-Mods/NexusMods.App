@@ -1,11 +1,9 @@
 using NexusMods.Archives.Nx.Headers.Managed;
-using NexusMods.Archives.Nx.Headers.Native;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-
-namespace NexusMods.DataModel.ArchiveContents;
+namespace NexusMods.Abstractions.FileStore.Nx.Models;
 
 /// <summary>
 /// Stores a NXArchive file entry as a blob.

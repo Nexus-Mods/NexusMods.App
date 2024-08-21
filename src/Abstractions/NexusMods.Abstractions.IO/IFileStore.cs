@@ -53,6 +53,12 @@ public interface IFileStore
     /// Retrieves hashes of all files associated with this FileStore.
     /// </summary>
     HashSet<ulong> GetFileHashes();
+
+    /// <summary>
+    /// Locks the file store, preventing it from being used until the returned
+    /// <see cref="IDisposable"/> is disposed.
+    /// </summary>
+    AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock();
 }
 
 

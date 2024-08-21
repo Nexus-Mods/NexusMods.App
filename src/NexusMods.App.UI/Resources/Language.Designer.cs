@@ -357,6 +357,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete mod(s).
+        /// </summary>
+        public static string DialogButton_DELETE_MODS {
+            get {
+                return ResourceManager.GetString("DialogButton_DELETE_MODS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discard.
         /// </summary>
         public static string DialogButton_Discard {
@@ -708,7 +717,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add mod to your mod list.
+        ///   Looks up a localized string similar to Add mod to your loadout.
         /// </summary>
         public static string FileOriginPage_AddMod_ToolTip {
             get {
@@ -722,6 +731,15 @@ namespace NexusMods.App.UI.Resources {
         public static string FileOriginPage_AddModAdvanced_ToolTip {
             get {
                 return ResourceManager.GetString("FileOriginPage_AddModAdvanced_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove mod from the library, saving disk space.
+        /// </summary>
+        public static string FileOriginPage_RemoveMod_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginPage_RemoveMod_ToolTip", resourceCulture);
             }
         }
         
@@ -740,6 +758,15 @@ namespace NexusMods.App.UI.Resources {
         public static string FileOriginsPage__Add_Mod_Advanced {
             get {
                 return ResourceManager.GetString("FileOriginsPage__Add_Mod_Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string FileOriginsPage__Delete_Mod {
+            get {
+                return ResourceManager.GetString("FileOriginsPage__Delete_Mod", resourceCulture);
             }
         }
         
@@ -1199,6 +1226,51 @@ namespace NexusMods.App.UI.Resources {
         public static string LaunchButtonViewModel_LaunchGame_RUNNING {
             get {
                 return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete mod(s).
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_DeleteModsButton {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_DeleteModsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting these mods permanently removes them from the app:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_HeaderQuestion {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_HeaderQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permanently delete mod(s).
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_Title {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used by {0}:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_UsedBy {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used by {0} - {1}:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_UsedByWithLoadout {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedByWithLoadout", resourceCulture);
             }
         }
         

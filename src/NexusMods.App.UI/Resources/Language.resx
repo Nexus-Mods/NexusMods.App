@@ -210,6 +210,9 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>Browse all games</value>
     </data>
+    <data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+        <value>Delete</value>
+    </data>
     <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Add</value>
     </data>
@@ -431,6 +434,9 @@
     <data name="DialogButton_SAVE" xml:space="preserve">
         <value>Save</value>
     </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Delete mod(s)</value>
+    </data>
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
     </data>
@@ -534,7 +540,10 @@
         <value>Help and feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Add mod to your mod list</value>
+        <value>Add mod to your loadout</value>
+    </data>
+    <data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
+        <value>Remove mod from the library, saving disk space</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
         <value>Use advanced installer to manually select files to include</value>
@@ -629,6 +638,28 @@
     <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
         <value>You need to add a game before using Loadouts</value>
     </data>
+
+    <!-- Library Item Delete Confirmation Dialog -->
+    <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>Permanently delete mod(s)</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>Deleting these mods permanently removes them from the app:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>Used by {0}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>Used by {0} - {1}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>Delete mod(s)</value>
+    </data>
+
     <data name="Updated_ViewUninstallDocs" xml:space="preserve">
         <value>How to uninstall the Nexus Mods app</value>
     </data>

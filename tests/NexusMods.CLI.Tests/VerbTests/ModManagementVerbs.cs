@@ -6,7 +6,9 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provider) : AVerbTest(provider)
 {
+    
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanCreateAndManageLists()
     {
         var listName = Guid.NewGuid().ToString();

@@ -6,15 +6,16 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -119,6 +120,9 @@ public static class Services
         
         // Jobs System
         coll.AddPersistedJobStateModel();
+        
+        // GC
+        coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
         
         // Verbs
         coll.AddLoadoutManagementVerbs()
