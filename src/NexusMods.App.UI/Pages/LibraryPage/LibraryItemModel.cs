@@ -111,7 +111,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateNameColumn()
     {
         return new CustomTextColumn<LibraryItemModel, string>(
-            header: "Name",
+            header: "NAME",
             getter: model => model.Name,
             options: new TextColumnOptions<LibraryItemModel>
             {
@@ -121,7 +121,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
             },
-            width: GridLength.Star
+            width: GridLength.Auto
         )
         {
             SortDirection = ListSortDirection.Ascending,
@@ -132,7 +132,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateVersionColumn()
     {
         return new CustomTextColumn<LibraryItemModel, string>(
-            header: "Version",
+            header: "VERSION",
             getter: model => model.Version,
             options: new TextColumnOptions<LibraryItemModel>
             {
@@ -152,7 +152,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateSizeColumn()
     {
         return new CustomTextColumn<LibraryItemModel, Size>(
-            header: "Size",
+            header: "SIZE",
             getter: model => model.Size,
             options: new TextColumnOptions<LibraryItemModel>
             {
@@ -172,7 +172,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateAddedAtColumn()
     {
         return new CustomTextColumn<LibraryItemModel, string>(
-            header: "Added",
+            header: "ADDED",
             getter: model => model.FormattedCreatedAtDate,
             options: new TextColumnOptions<LibraryItemModel>
             {
@@ -192,7 +192,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateInstalledAtColumn()
     {
         return new CustomTextColumn<LibraryItemModel, string>(
-            header: "Installed",
+            header: "INSTALLED",
             getter: model => model.FormattedInstalledDate,
             options: new TextColumnOptions<LibraryItemModel>
             {
@@ -212,7 +212,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     public static IColumn<LibraryItemModel> CreateInstallColumn()
     {
         return new TemplateColumn<LibraryItemModel>(
-            header: "Install",
+            header: "ACTIONS",
             cellTemplateResourceKey: "InstallColumnTemplate",
             options: new TemplateColumnOptions<LibraryItemModel>
             {

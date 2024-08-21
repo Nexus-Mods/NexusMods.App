@@ -17,7 +17,8 @@
         <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"
                       CanUserResizeColumns="True"
-                      CanUserSortColumns="True">
+                      CanUserSortColumns="True"
+                      Classes="MainListsStyling">
             <TreeDataGrid.Resources>
                 <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
                     <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled}">

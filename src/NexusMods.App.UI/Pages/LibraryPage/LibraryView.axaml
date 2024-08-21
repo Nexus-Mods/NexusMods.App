@@ -85,7 +85,6 @@
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
                               Classes="MainListsStyling"
-                              Width="1"
                               HorizontalAlignment="Stretch">
                     <TreeDataGrid.Resources>
                         <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
