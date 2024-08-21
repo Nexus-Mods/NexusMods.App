@@ -96,9 +96,14 @@ script, and a `Collabs` folder that allows other mods to extend its functionalit
                     Path = new GamePath(LocationId.Game, "red4ext/plugins"),
                     Extension = new Extension(".dll"),
                 },
+                new DependantSearchPattern
+                {
+                    Path = new GamePath(LocationId.Game, "r6"),
+                    Extension = new Extension(".reds"),
+                },
             ],
             Explanation = """
-Red4Ext is a mod loader for Cyberpunk that allows other mods to hook into the game. We detect the use of this mod by looking for `.dll` files in the `red4ext/plugins` folder. We 
+Red4Ext is a mod loader for Cyberpunk that allows other mods to hook into the game. We detect the use of this mod by looking for `.dll` files in the `red4ext/plugins` folder, and for `.reds` files in the `r6` folder. We 
 detect that this mod is installed by looking for the presence of `winmm.dll` in the game folder, and `RED4ext.dll` in the `red4ext` folder.                          
 """,
         },
@@ -170,6 +175,27 @@ detect that this mod is installed by looking for `ArchiveXL.dll` in the `red4ext
             Explanation = """
 Cyber Engine Tweaks (also known as CET) is a mod that allows other mods to hook into the game. We detect the use of this mod by looking for `.lua` files
 in the `bin/x64/plugins/cyber_engine_tweaks` folder, and we detect that this mod is installed by looking for `version.dll` in the game folder.                          
+""",
+        },
+        new Pattern
+        {
+            DependencyName = "Appearance Change Unlocker",
+            DependencyPaths =
+            [
+                new GamePath(LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/init.lua"),
+            ],
+            ModId = ModId.From(3850),
+            DependantSearchPatterns = [
+                new DependantSearchPattern
+                {
+                    Path = new GamePath(LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset"),
+                    Extension = new Extension(".preset"),
+                },
+            ],
+            Explanation = """
+Appearance Change Unlocker is a mod that allows you to load and save character presets during character creation. 
+We detect the use of this mod by looking for `.preset` files in the `character-preset` folder, and we 
+detect that this mod is installed by looking for `init.lua` in the `bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker` folder.                          
 """,
         },
     ];
