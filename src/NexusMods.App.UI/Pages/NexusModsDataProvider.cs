@@ -8,6 +8,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -15,7 +16,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 namespace NexusMods.App.UI.Pages;
 
 [UsedImplicitly]
-internal class NexusModsDataProvider : ILibraryDataProvider
+internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
 
@@ -26,6 +27,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider
 
     public IObservable<IChangeSet<LibraryItemModel>> ObserveFlatLibraryItems()
     {
+        // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryFile
             .ObserveAll(_connection)
             .Transform(ToLibraryItemModel)
@@ -34,8 +36,12 @@ internal class NexusModsDataProvider : ILibraryDataProvider
 
     public IObservable<IChangeSet<LibraryItemModel>> ObserveNestedLibraryItems()
     {
+        // NOTE(erri120): For the nested library view, the parents are "fake" library
+        // models that represent the Nexus Mods mod page, with each child being a
+        // NexusModsLibraryFile that links to the mod page.
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
+            // TODO: observable filter
             .Filter(modPage => _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id).Count > 0)
             .Transform(ToLibraryItemModel)
             .RemoveKey();
@@ -62,25 +68,13 @@ internal class NexusModsDataProvider : ILibraryDataProvider
     private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata)
     {
         var nexusModsLibraryFileObservable = _connection
-            .ObserveDatoms(NexusModsFileMetadata.ModPageId, modPageMetadata.Id)
-            .MergeManyChangeSets(datom => _connection.ObserveDatoms(NexusModsLibraryFile.FileMetadataId, datom.E))
+            .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id)
             .RemoveKey()
             .PublishWithFunc(initialValueFunc: () =>
             {
                 var changeSet = new ChangeSet<Datom>();
-                var list = new List<Datom>();
-
-                var fileDatoms = _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPageMetadata.Id);
-                foreach (var entityIdDatom in fileDatoms)
-                {
-                    var libraryFileDatom = _connection.Db.Datoms(NexusModsLibraryFile.FileMetadataId, entityIdDatom.E);
-                    foreach (var datom in libraryFileDatom)
-                    {
-                        list.Add(datom);
-                    }
-                }
-
-                changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, list));
+                var datoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id);
+                changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, datoms));
                 return changeSet;
             })
             .AutoConnect();
@@ -108,5 +102,73 @@ internal class NexusModsDataProvider : ILibraryDataProvider
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             LibraryFilesObservable = libraryFilesObservable,
         };
+    }
+
+    public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
+    {
+        // NOTE(erri120): For the nested loadout view, we create "fake" models for
+        // the mod pages as parents. Each child will be a LibraryLinkedLoadoutItem
+        // that links to a NexusModsLibraryFile that links to the mod page.
+        return NexusModsModPageMetadata
+            .ObserveAll(_connection)
+            // TODO: observable filter
+            .Transform(modPage =>
+            {
+                var observable = _connection
+                    .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id)
+                    .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
+                    .ChangeKey(datom => datom.E)
+                    .PublishWithFunc(() =>
+                    {
+                        var changeSet = new ChangeSet<Datom, EntityId>();
+
+                        var libraryFileDatoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id);
+                        foreach (var entityIdDatom in libraryFileDatoms)
+                        {
+                            var libraryLinkedLoadoutItemDatoms = _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, entityIdDatom.E);
+                            foreach (var datom in libraryLinkedLoadoutItemDatoms)
+                            {
+                                changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
+                            }
+                        }
+
+                        return changeSet;
+                    })
+                    .AutoConnect();
+
+                var hasChildrenObservable = observable.IsNotEmpty();
+                var childrenObservable = observable.Transform(libraryLinkedLoadoutItemDatom =>
+                {
+                    var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
+                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem);
+                }).RemoveKey();
+
+                var installedAtObservable = observable
+                    .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E).GetCreatedAt())
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.FirstOrDefault());
+
+                var loadoutItemIdsObservable = observable.Transform(datom => (LoadoutItemId) datom.E).RemoveKey();
+
+                var isEnabledObservable = observable
+                    .TransformOnObservable(d => LoadoutItem.Observe(_connection, d.E))
+                    .Transform(item => !item.IsDisabled)
+                    .RemoveKey()
+                    .QueryWhenChanged(collection => collection.All(x => x));
+
+                LoadoutItemModel model = new FakeParentLoadoutItemModel
+                {
+                    NameObservable = Observable.Return(modPage.Name),
+                    InstalledAtObservable = installedAtObservable,
+                    LoadoutItemIdsObservable = loadoutItemIdsObservable,
+                    IsEnabledObservable = isEnabledObservable,
+
+                    HasChildrenObservable = hasChildrenObservable,
+                    ChildrenObservable = childrenObservable,
+                };
+
+                return model;
+            })
+            .RemoveKey();
     }
 }
