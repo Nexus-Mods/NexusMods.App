@@ -645,6 +645,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Downloads page is currently being reworked and will be replaced in a future update. We apologize for the inconvenience..
+        /// </summary>
+        public static string DownloadsView_UnderDevelopment {
+            get {
+                return ResourceManager.GetString("DownloadsView_UnderDevelopment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown.
         /// </summary>
         public static string DownloadTaskViewModel_Field_Unknown {

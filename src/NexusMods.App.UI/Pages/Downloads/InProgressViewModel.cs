@@ -9,6 +9,8 @@ using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using NexusMods.Abstractions.HttpDownloads;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
@@ -92,6 +94,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive] public ReactiveCommand<Unit,Unit> ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideSelectedCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideAllCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    
+    [Reactive] public Percent NewProgress { get; private set; }
 
     private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
     private readonly ISeries _lineSeries;
@@ -114,6 +118,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
+        IJobMonitor jobMonitor,
         IConnection conn,
         IOverlayController overlayController) : base(windowManager)
     {
@@ -127,6 +132,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         };
 
         Series = new ReadOnlyObservableCollection<ISeries>([_lineSeries]);
+        
+
 
         YAxes =
         [
@@ -234,6 +241,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         this.WhenActivated(d =>
         {
             GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+            
+            jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
+                .AverageProgressPercent()
+                .OnUI()
+                .Subscribe(x => NewProgress = x)
+                .DisposeWith(d);
 
             ShowCancelDialogCommand = ReactiveCommand.CreateFromTask(async () =>
                 {

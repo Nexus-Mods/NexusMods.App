@@ -20,6 +20,7 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
         _connection = connection;
         _jobMonitor = jobMonitor;
         _settingsManager = settingsManager;
+        ProgressRateFormatter = new BytesPerSecondFormatter();
     }
 
     /// <inheritdoc/>
@@ -40,8 +41,13 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
 
         var settings = _settingsManager.Get<HttpDownloaderSettings>();
         var downloadService = new DownloadService(settings.ToConfiguration());
-
-        // TODO: progress reporting
+        
+        downloadService.DownloadProgressChanged += (sender, args) =>
+        {
+            // Divide by 100 because the library gives us a value between 0 and 100.
+            SetProgress(job, Percent.CreateClamped(args.ProgressPercentage / 100));
+            SetProgressRate(job, args.BytesPerSecondSpeed);
+        };
 
         await downloadService.DownloadFileTaskAsync(
             package: job.DownloadPackage.Value,

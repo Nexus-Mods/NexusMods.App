@@ -28,6 +28,7 @@ public record HttpDownloaderSettings : ISettings
         return new DownloadConfiguration
         {
             ChunkCount = ChunkCount,
+            BufferBlockSize = 1024 * 8,
             ParallelDownload = ParallelDownload,
             Timeout = (int)Timeout.TotalMilliseconds,
 

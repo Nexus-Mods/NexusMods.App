@@ -152,10 +152,14 @@ public class NexusModsLibrary
 
         var txResult = await tx.Commit();
         var state = txResult.Remap(newState);
+        
+        var monitor = _serviceProvider.GetRequiredService<IJobMonitor>();
 
-        var job = new NexusModsDownloadJob(_connection, state, worker: worker)
+        var job = new NexusModsDownloadJob(_connection, state, worker: worker, monitor: monitor)
         {
-            HttpDownloadJob = new HttpDownloadJob(_connection, state.AsHttpDownloadJobPersistedState(), worker: _serviceProvider.GetRequiredService<HttpDownloadJobWorker>()),
+            HttpDownloadJob = new HttpDownloadJob(_connection, state.AsHttpDownloadJobPersistedState(), 
+                worker: _serviceProvider.GetRequiredService<HttpDownloadJobWorker>(),
+                monitor: monitor),
         };
 
         return job;
