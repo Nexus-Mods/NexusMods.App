@@ -30,13 +30,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public ITreeDataGridSource<LoadoutItemModel>? Source { get; set; }
     private readonly ObservableCollectionExtended<LoadoutItemModel> _itemModels = [];
 
-    public R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+    public ReactiveCommand<Unit> SwitchViewCommand { get; }
     [Reactive] public bool ViewHierarchical { get; set; } = true;
 
     [Reactive] public LoadoutItemModel[] SelectedItemModels { get; private set; } = [];
 
     private Dictionary<LoadoutItemModel, IDisposable> ToggleEnableStateCommandDisposables { get; set; } = new();
     private Subject<IReadOnlyCollection<LoadoutItemId>> ToggleEnableSubject { get; } = new();
+
+    public ReactiveCommand<Unit> ViewFilesCommand { get; }
+    public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
@@ -46,10 +49,33 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         var dataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
 
-        SwitchViewCommand = new R3.ReactiveCommand<R3.Unit>(_ =>
+        SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
             ViewHierarchical = !ViewHierarchical;
         });
+
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItemModels).ToObservable().Select(arr => arr.Length > 0);
+
+        ViewFilesCommand = hasSelection.ToReactiveCommand<Unit>(_ =>
+        {
+            // TODO:
+        });
+
+        RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+        {
+            var ids = SelectedItemModels
+                .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
+                .ToHashSet();
+
+            using var tx = _connection.BeginTransaction();
+
+            foreach (var id in ids)
+            {
+                tx.Delete(id, recursive: true);
+            }
+
+            await tx.Commit();
+        }, awaitOperation: AwaitOperation.Sequential, initialCanExecute: false, configureAwait: false);
 
         var selectedItemsSerialDisposable = new SerialDisposable();
 

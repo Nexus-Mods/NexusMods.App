@@ -10,4 +10,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     R3.Subject<(LoadoutItemModel, bool)> ActivationSubject { get; }
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+
+    R3.ReactiveCommand<R3.Unit> ViewFilesCommand { get; }
+
+    R3.ReactiveCommand<R3.Unit> RemoveItemCommand { get; }
 }

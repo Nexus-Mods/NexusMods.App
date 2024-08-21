@@ -1,4 +1,3 @@
-using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
@@ -20,7 +19,13 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
         this.WhenActivated(disposables =>
         {
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.RemoveItemCommand, view => view.DeleteButton)
+                .AddTo(disposables);
 
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
@@ -39,7 +44,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
         });
     }
 }
