@@ -6,10 +6,10 @@
         <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
             <Setter Property="Width" Value="16" />
             <Setter Property="Height" Value="16" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
             <Style Selector="^:pointerover">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
         </Style>
     </Style>
@@ -20,7 +20,7 @@
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
             <Setter Property="BorderThickness" Value="0,1,0,1" />
-            <Setter Property="Height" Value="38"/>
+            <Setter Property="Height" Value="38" />
         </Style>
 
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
@@ -28,7 +28,7 @@
                     Value="{StaticResource NeutralSubdued}" />
         </Style>
     </Style>
-    
+
     <!-- Column Header/Text Style -->
     <Style Selector="TreeDataGridColumnHeader">
         <!-- Text Inside Column Header -->
@@ -42,8 +42,46 @@
         <Style Selector="^ TextBlock">
             <Setter Property="TextBlock.Foreground"
                     Value="{StaticResource NeutralSubdued}" />
-            <Setter Property="TextBlock.Theme" Value="{StaticResource TitleSMSemiTheme}"/>
+            <Setter Property="TextBlock.Theme" Value="{StaticResource TitleSMSemiTheme}" />
         </Style>
+    </Style>
+
+    <!-- Modlist and Library TreeDataGrid Styles -->
+    <Style Selector="TreeDataGrid.MainListsStyling">
+
+        <Setter Property="BorderThickness" Value="0" />
+        
+        <Style Selector="^/template/ Border#ColumnHeadersPresenterBorder">
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+        
+        <!-- Column Header Style -->
+        <Style Selector="^ TreeDataGridColumnHeader">
+            <Setter Property="Padding" Value="12, 8, 24, 8" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Height" Value="52" />
+            <Setter Property="BorderThickness" Value="0,0,0,0" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ TreeDataGridCell:nth-child(1)">
+            <Setter Property="Padding" Value="24,0,0,0" />
+        </Style>
+
+        <Style Selector="^ TreeDataGridCell:nth-last-child(1)">
+            <Setter Property="Padding" Value="0,0,24,0" />
+        </Style>
+
+        
+        
+        
     </Style>
 
 </Styles>

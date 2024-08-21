@@ -36,6 +36,11 @@
                             <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="True" />
                         </StackPanel>
+                        
+                        <StackPanel Classes="Spacing-none" Margin="6">
+                            <TextBlock Classes="BodyMDBold">Enabled, Indeterminate</TextBlock>
+                            <ToggleSwitch IsEnabled="True" IsChecked="{x:Null}"/>
+                        </StackPanel>
 
                         <StackPanel Classes="Spacing-none" Margin="6">
                             <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
@@ -67,6 +72,11 @@
                         <StackPanel Classes="Spacing-none" Margin="6">
                             <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="True" />
+                        </StackPanel>
+                        
+                        <StackPanel Classes="Spacing-none" Margin="6">
+                            <TextBlock Classes="BodyMDBold">Enabled, Indeterminate</TextBlock>
+                            <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
                         <StackPanel Classes="Spacing-none" Margin="6">

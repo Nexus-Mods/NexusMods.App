@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -120,7 +121,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Star
         )
         {
             SortDirection = ListSortDirection.Ascending,
@@ -140,7 +142,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Auto
         )
         {
             Id = "version",
@@ -159,7 +162,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Auto
         )
         {
             Id = "size",
@@ -178,7 +182,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Auto
         )
         {
             Id = "AddedAt",
@@ -197,7 +202,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Auto
         )
         {
             Id = "InstalledAt",
@@ -216,7 +222,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: GridLength.Auto
         );
     }
 }

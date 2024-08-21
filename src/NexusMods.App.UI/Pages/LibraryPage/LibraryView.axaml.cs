@@ -19,6 +19,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
+            TreeDataGrid.Width = Double.NaN;
+            
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .DisposeWith(disposables);
 
@@ -40,6 +42,14 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
                 .DisposeWith(disposables);
+            
+            // TODO:
+            // Bind view.EmptyState.IsActive to number of items > 0 in the source
+            // Bind view.EmptyLibrarySubtitleTextBlock.Text to string based on game name
+            // Bind view.EmptyLibraryLinkButton to open Nexus game page
+            // Bind ToolBars buttons to 
+            
+            // This is a workaround to make the TreeDataGrid fill the available space
         });
     }
 }
