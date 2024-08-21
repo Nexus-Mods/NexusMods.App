@@ -135,11 +135,16 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
-        var mod = loadout.Mods.First(m => m.Name == modName);
-        foreach (var file in mod.Files)
+        var mod = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .First(m => m.AsLoadoutItem().Name == modName);
+        foreach (var file in mod.Children)
         {
-            if (file.TryGetAsStoredFile(out var stored))
-                rows.Add([file.To, stored.Hash]);
+            if (!file.TryGetAsLoadoutItemWithTargetPath(out var withPath))
+                continue;
+            
+            if (withPath.TryGetAsLoadoutFile(out var stored))
+                rows.Add([withPath.TargetPath, stored.Hash]);
             else
                 rows.Add([file.GetType().ToString(), "<none>"]);
         }

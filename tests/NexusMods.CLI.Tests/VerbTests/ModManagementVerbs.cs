@@ -8,7 +8,6 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
 {
     
     [Fact]
-    [Trait("FlakeyTest", "True")]
     public async Task CanCreateAndManageLists()
     {
         var listName = Guid.NewGuid().ToString();
@@ -31,7 +30,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log = await Run("list-mods", "-l", listName);
         log.LastTable.Rows.Length.Should().Be(2);
 
-        log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.GetFileNameWithoutExtension());
+        log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.FileName);
         log.LastTable.Rows.Length.Should().Be(3);
         
         log = await Run("synchronize", "-l", listName);

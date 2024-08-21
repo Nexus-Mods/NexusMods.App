@@ -34,8 +34,11 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
 
         var result = await ExecuteInstallersAsync(job, installers, cancellationToken);
 
-        if (!result.HasValue && job.Installer is not AdvancedManualInstaller)
+        if (!result.HasValue)
         {
+            if (job.Installer is not AdvancedManualInstaller)
+                return JobResult.CreateFailed($"Advanced installer did not succeed for `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
+            
             var manualInstaller = AdvancedManualInstaller.Create(_serviceProvider);
             result = await ExecuteInstallersAsync(job, [manualInstaller], cancellationToken);
 
@@ -43,10 +46,6 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             {
                 return JobResult.CreateFailed($"Found no installer that supports `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`), including the advanced installer!");
             }
-        }
-        else
-        {
-            return JobResult.CreateFailed($"Advanced installer did not succeed for `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
         }
 
         var (loadoutGroup, transaction) = result.Value;
