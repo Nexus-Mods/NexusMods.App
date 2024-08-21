@@ -45,6 +45,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
                 .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.IsEmpty, view => view.EmptyState.IsActive)
+                .AddTo(disposables);
         });
     }
 }

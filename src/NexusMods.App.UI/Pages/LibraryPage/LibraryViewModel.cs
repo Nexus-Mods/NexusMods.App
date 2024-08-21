@@ -5,6 +5,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
@@ -32,6 +33,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     [Reactive] public ITreeDataGridSource<LibraryItemModel>? Source { get; set; }
     [Reactive] public bool ViewHierarchical { get; set; } = true;
     private readonly ObservableCollectionExtended<LibraryItemModel> _itemModels = [];
+
+    public bool IsEmpty { get; [UsedImplicitly] private set; }
 
     public Subject<(LibraryItemModel, bool)> ActivationSubject { get; } = new();
 
@@ -71,10 +74,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             ViewHierarchical = !ViewHierarchical;
         });
 
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItemModels).ToObservable().Select(arr => arr.Length > 0);
+
         var selectedItemsSerialDisposable = new SerialDisposable();
 
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(vm => vm._itemModels.Count)
+                .Select(count => count == 0)
+                .BindToVM(this, vm => vm.IsEmpty)
+                .AddTo(disposables);
+
             Disposable.Create(this, static vm =>
             {
                 foreach (var kv in vm.InstallCommandDisposables)

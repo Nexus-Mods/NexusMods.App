@@ -6,6 +6,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public interface ILoadoutViewModel : IPageViewModelInterface
 {
     ITreeDataGridSource<LoadoutItemModel>? Source { get; }
+    bool IsEmpty { get; }
 
     R3.Subject<(LoadoutItemModel, bool)> ActivationSubject { get; }
 

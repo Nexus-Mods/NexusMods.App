@@ -7,6 +7,8 @@ public interface ILibraryViewModel : IPageViewModelInterface
 {
     ITreeDataGridSource<LibraryItemModel>? Source { get; }
 
+    bool IsEmpty { get; }
+
     R3.Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }

@@ -5,6 +5,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
@@ -29,6 +30,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     [Reactive] public ITreeDataGridSource<LoadoutItemModel>? Source { get; set; }
     private readonly ObservableCollectionExtended<LoadoutItemModel> _itemModels = [];
+
+    public bool IsEmpty { get; [UsedImplicitly] private set; }
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
     [Reactive] public bool ViewHierarchical { get; set; } = true;
@@ -83,6 +86,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         {
             Disposable.Create(this, vm => vm.SelectedItemModels = []);
             Disposable.Create(selectedItemsSerialDisposable, d => d.Disposable = null).AddTo(disposables);
+
+            this.WhenAnyValue(vm => vm._itemModels.Count)
+                .Select(count => count == 0)
+                .BindToVM(this, vm => vm.IsEmpty)
+                .AddTo(disposables);
+
+            Disposable.Create(this, static vm =>
+            {
+                foreach (var kv in vm.ToggleEnableStateCommandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
+
+                vm.ToggleEnableStateCommandDisposables.Clear();
+            });
 
             ActivationSubject
                 .Subscribe(this, static (tuple, vm) =>

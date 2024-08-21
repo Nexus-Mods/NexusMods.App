@@ -1,4 +1,3 @@
-using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
@@ -19,9 +18,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
-            
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
 
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
@@ -40,14 +38,15 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
-            
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.IsEmpty, view => view.EmptyState.IsActive)
+                .AddTo(disposables);
+
             // TODO:
-            // Bind view.EmptyState.IsActive to number of items > 0 in the source
             // Bind view.EmptyLibrarySubtitleTextBlock.Text to string based on game name
             // Bind view.EmptyLibraryLinkButton to open Nexus game page
-            // Bind ToolBars buttons to 
-            
+            // Bind ToolBars buttons
         });
     }
 }
