@@ -30,6 +30,9 @@ Easily edit mod config files in your loadout(s). When new config files are creat
 
 ![Using the app to edit a config.json](../images/0.5.3/SDVEditConfig.webp)
 
+### Selective Game Backup
+When managing Stardew Valley the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
+
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
 

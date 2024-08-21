@@ -9,12 +9,21 @@ On top of the basic mod management features, players also benefit from these ded
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-<!--![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)-->
+![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExampleCyberpunk.webp)
 
 Diagnostics are shown in the following situations: 
 
-- A mod has a requirement that is not been downloaded.
-- A mod has a requirement which has been downloaded but is not present/enabled in the loadout. 
+- A mod is installed and requires any of the following dependencies by they are not installed or enabled:
+    - [Codeware](https://www.nexusmods.com/cyberpunk2077/mods/7780) - Detected by `.reds` files or Lua scripts with the `Codeware` global. 
+    - [Virtual Atelier](https://www.nexusmods.com/cyberpunk2077/mods/2987) - Detected by `.reds` files uses hooks for this mod.
+    - [Appearance Menu Mode](https://www.nexusmods.com/cyberpunk2077/mods/790) - Detected by Lua scripts in the `bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceMenuMod/Collabs` folder.
+    - [RED4Ext](https://www.nexusmods.com/cyberpunk2077/mods/2380) - Detected by `.dll` files in the `red4ext/plugins` folder.
+    - [TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197) - Detected by `.tweak` files in the `r6/tweaks` folder.
+    - [ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) - Detected by `.xl` files in the `archives` folder. 
+    - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
+
+### Selective Game Backup
+When managing Cyberpunk 2077 the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
