@@ -1,7 +1,5 @@
-using System.Reactive;
 using Avalonia.Controls;
 using NexusMods.App.UI.WorkspaceSystem;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -11,5 +9,5 @@ public interface ILibraryViewModel : IPageViewModelInterface
 
     R3.Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
 
-    ReactiveCommand<Unit, Unit> SwitchViewCommand { get; }
+    R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
 }

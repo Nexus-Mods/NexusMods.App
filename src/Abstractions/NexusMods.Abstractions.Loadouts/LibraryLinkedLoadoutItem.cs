@@ -6,9 +6,12 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
-/// Represents a loadout item that is linked to a library item.
+/// Represents a loadout item group that is linked to a library item.
 /// </summary>
-[Include<LoadoutItem>]
+/// <remarks>
+/// This is only created by the installer and shouldn't be created manually.
+/// </remarks>
+[Include<LoadoutItemGroup>]
 [PublicAPI]
 public partial class LibraryLinkedLoadoutItem : IModelDefinition
 {
