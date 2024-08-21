@@ -2,12 +2,15 @@ using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -31,6 +34,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly ObservableCollectionExtended<LibraryItemModel> _itemModels = [];
 
     public Subject<(LibraryItemModel, bool)> ActivationSubject { get; } = new();
+
+    [Reactive] public LibraryItemModel[] SelectedItemModels { get; private set; } = [];
 
     private Dictionary<LibraryItemModel, IDisposable> InstallCommandDisposables { get; set; } = new();
     private Subject<LibraryItemId> InstallLibraryItemSubject { get; } = new();
@@ -65,6 +70,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             ViewHierarchical = !ViewHierarchical;
         });
+
+        var selectedItemsSerialDisposable = new SerialDisposable();
 
         this.WhenActivated(disposables =>
         {
@@ -119,6 +126,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 })
                 .Switch()
                 .Select(_ => CreateSource(_itemModels, createHierarchicalSource: ViewHierarchical))
+                .Do(tuple =>
+                {
+                    selectedItemsSerialDisposable.Disposable = tuple.selectionObservable
+                        .Subscribe(this, static (arr, vm) => vm.SelectedItemModels = arr);
+                })
+                .Select(tuple => tuple.source)
                 .BindTo(this, vm => vm.Source)
                 .AddTo(disposables);
 
@@ -135,19 +148,29 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private static ITreeDataGridSource<LibraryItemModel> CreateSource(IEnumerable<LibraryItemModel> models, bool createHierarchicalSource)
+    private static (ITreeDataGridSource<LibraryItemModel> source, Observable<LibraryItemModel[]> selectionObservable) CreateSource(IEnumerable<LibraryItemModel> models, bool createHierarchicalSource)
     {
         if (createHierarchicalSource)
         {
             var source = new HierarchicalTreeDataGridSource<LibraryItemModel>(models);
+            var selectionObservable = Observable.FromEventHandler<TreeSelectionModelSelectionChangedEventArgs<LibraryItemModel>>(
+                addHandler: handler => source.RowSelection!.SelectionChanged += handler,
+                removeHandler: handler => source.RowSelection!.SelectionChanged -= handler
+            ).Select(tuple => tuple.e.SelectedItems.NotNull().ToArray());
+
             AddColumns(source.Columns, viewAsTree: true);
-            return source;
+            return (source, selectionObservable);
         }
         else
         {
             var source = new FlatTreeDataGridSource<LibraryItemModel>(models);
+            var selectionObservable = Observable.FromEventHandler<TreeSelectionModelSelectionChangedEventArgs<LibraryItemModel>>(
+                addHandler: handler => source.RowSelection!.SelectionChanged += handler,
+                removeHandler: handler => source.RowSelection!.SelectionChanged -= handler
+            ).Select(tuple => tuple.e.SelectedItems.NotNull().ToArray());
+
             AddColumns(source.Columns, viewAsTree: false);
-            return source;
+            return (source, selectionObservable);
         }
     }
 
