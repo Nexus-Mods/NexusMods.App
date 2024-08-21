@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using NexusMods.App.UI.WorkspaceSystem;
+using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -9,7 +10,13 @@ public interface ILibraryViewModel : IPageViewModelInterface
 
     bool IsEmpty { get; }
 
-    R3.Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
+    Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
 
-    R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+    ReactiveCommand<Unit> SwitchViewCommand { get; }
+
+    ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
+    ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
+
+    ReactiveCommand<Unit> OpenFilePickerCommand { get; }
+    ReactiveCommand<Unit> OpenNexusModsCommand { get; }
 }

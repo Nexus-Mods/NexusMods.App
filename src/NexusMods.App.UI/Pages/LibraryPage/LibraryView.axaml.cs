@@ -21,6 +21,18 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .AddTo(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.AddModButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AddModAdvancedButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.GetModsFromNexusButton)
+                .AddTo(disposables);
+
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
                 removeHandler: handler => TreeDataGrid.RowPrepared -= handler
@@ -46,7 +58,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             // TODO:
             // Bind view.EmptyLibrarySubtitleTextBlock.Text to string based on game name
             // Bind view.EmptyLibraryLinkButton to open Nexus game page
-            // Bind ToolBars buttons
         });
     }
 }

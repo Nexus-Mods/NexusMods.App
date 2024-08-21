@@ -8,20 +8,18 @@ using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Observable = R3.Observable;
-using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -43,7 +41,18 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private Dictionary<LibraryItemModel, IDisposable> InstallCommandDisposables { get; set; } = new();
     private Subject<LibraryItemId> InstallLibraryItemSubject { get; } = new();
 
-    public R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+    public ReactiveCommand<Unit> SwitchViewCommand { get; }
+
+    public ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
+
+    public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
+
+    public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
+
+    public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
+
+    private readonly Loadout.ReadOnly _loadout;
+    private readonly ILibraryItemInstaller? _advancedInstaller;
 
     private readonly ConnectableObservable<DateTime> _ticker;
     public LibraryViewModel(
@@ -51,6 +60,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
+        _advancedInstaller = serviceProvider.GetKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
+
         TabTitle = "Library (new)";
         TabIcon = IconValues.ModLibrary;
 
@@ -66,15 +77,39 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         _ticker.Connect();
 
-        var loadout = Loadout.Load(_connection.Db, loadoutId.Value);
-        var game = loadout.InstallationInstance.Game;
+        _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
 
-        SwitchViewCommand = new R3.ReactiveCommand<R3.Unit>(_ =>
+        SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
             ViewHierarchical = !ViewHierarchical;
         });
 
-        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItemModels).ToObservable().Select(arr => arr.Length > 0);
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItemModels)
+            .ToObservable()
+            .Select(arr => arr.Length > 0);
+
+        InstallSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: false, cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
+
+        if (_advancedInstaller is not null)
+        {
+            InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
+                executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
+                awaitOperation: AwaitOperation.Parallel,
+                initialCanExecute: false,
+                configureAwait: false
+            );
+        } else
+        {
+            InstallSelectedItemsWithAdvancedInstallerCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
+        }
+
+        OpenFilePickerCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
+        OpenNexusModsCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
 
         var selectedItemsSerialDisposable = new SerialDisposable();
 
@@ -148,14 +183,43 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             InstallLibraryItemSubject
                 .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id))
                 .Where(static item => item.IsValid())
-                .SubscribeAwait(async (libraryItem, cancellationToken) =>
-                {
-                    await using var job = _libraryService.InstallItem(libraryItem, loadout);
-                    await job.StartAsync(cancellationToken: cancellationToken);
-                    await job.WaitToFinishAsync(cancellationToken: cancellationToken);
-                }, awaitOperation: AwaitOperation.Parallel, configureAwait: false)
-                .AddTo(disposables);
+                .SubscribeAwait(
+                    onNextAsync: (libraryItem, cancellationToken) => InstallLibraryItem(libraryItem, _loadout, cancellationToken),
+                    awaitOperation: AwaitOperation.Parallel,
+                    configureAwait: false
+                ).AddTo(disposables);
         });
+    }
+
+    private async ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    {
+        // TODO: get correct IDs
+        var db = _connection.Db;
+        var items = SelectedItemModels
+            .Select(model => model.LibraryItemId)
+            .Where(x => x.HasValue)
+            .Select(x => x.Value)
+            .Distinct()
+            .Select(id => LibraryItem.Load(db, id))
+            .ToArray();
+
+        await Parallel.ForAsync(
+            fromInclusive: 0,
+            toExclusive: items.Length,
+            body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private async ValueTask InstallLibraryItem(
+        LibraryItem.ReadOnly libraryItem,
+        Loadout.ReadOnly loadout,
+        CancellationToken cancellationToken,
+        bool useAdvancedInstaller = false)
+    {
+        await using var job = _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
+        await job.StartAsync(cancellationToken: cancellationToken);
+        await job.WaitToFinishAsync(cancellationToken: cancellationToken);
     }
 
     private static (ITreeDataGridSource<LibraryItemModel> source, Observable<LibraryItemModel[]> selectionObservable) CreateSource(IEnumerable<LibraryItemModel> models, bool createHierarchicalSource)
