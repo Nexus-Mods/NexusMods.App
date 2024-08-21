@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using R3;
@@ -42,6 +43,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
+        TabTitle = "Library (new)";
+        TabIcon = IconValues.ModLibrary;
+
         var dataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
 
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();

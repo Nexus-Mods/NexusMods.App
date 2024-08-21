@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -34,6 +35,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
+        TabTitle = "My Mods (new)";
+        TabIcon = IconValues.Collections;
+
         _connection = serviceProvider.GetRequiredService<IConnection>();
         var dataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
 
