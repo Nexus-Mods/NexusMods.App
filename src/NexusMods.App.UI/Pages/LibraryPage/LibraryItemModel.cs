@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
@@ -36,7 +35,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     [Reactive] public string FormattedCreatedAtDate { get; set; } = new("-");
     [Reactive] public string FormattedInstalledDate { get; set; } = new("-");
 
-    public R3.ReactiveCommand<R3.Unit, LibraryItemId> InstallCommand { get; }
+    public R3.ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
 
     private readonly IDisposable _modelActivationDisposable;
     public LibraryItemModel()
@@ -47,7 +46,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
             static (isInstalled, libraryItemId) => !isInstalled && libraryItemId.HasValue
         ).ToObservable();
 
-        InstallCommand = new R3.ReactiveCommand<R3.Unit, LibraryItemId>(canExecuteSource: canInstall, initialCanExecute: false, convert: _ => LibraryItemId.Value);
+        InstallCommand = new R3.ReactiveCommand<Unit, LibraryItemId>(canExecuteSource: canInstall, initialCanExecute: false, convert: _ => LibraryItemId.Value);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {

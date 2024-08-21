@@ -1,6 +1,5 @@
 using DynamicData;
 using DynamicData.Binding;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using R3;
 
@@ -13,13 +12,11 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     public required IObservable<IChangeSet<LoadoutItemId>> LoadoutItemIdsObservable { get; init; }
     public ObservableCollectionExtended<LoadoutItemId> LoadoutItemIds { get; private set; } = [];
 
-    public override ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
+    public override IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => LoadoutItemIds;
 
     private readonly IDisposable _modelActivationDisposable;
     public FakeParentLoadoutItemModel() : base(default(LoadoutItemId))
     {
-        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>>(_ => LoadoutItemIds);
-
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.InstalledAtObservable.OnUI().Subscribe(date => model.InstalledAt = date).AddTo(disposables);

@@ -2,10 +2,13 @@ using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -15,6 +18,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -27,11 +31,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public ITreeDataGridSource<LoadoutItemModel>? Source { get; set; }
     private readonly ObservableCollectionExtended<LoadoutItemModel> _itemModels = [];
 
-    public R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+    public bool IsEmpty { get; [UsedImplicitly] private set; }
+
+    public ReactiveCommand<Unit> SwitchViewCommand { get; }
     [Reactive] public bool ViewHierarchical { get; set; } = true;
+
+    [Reactive] public LoadoutItemModel[] SelectedItemModels { get; private set; } = [];
 
     private Dictionary<LoadoutItemModel, IDisposable> ToggleEnableStateCommandDisposables { get; set; } = new();
     private Subject<IReadOnlyCollection<LoadoutItemId>> ToggleEnableSubject { get; } = new();
+
+    public ReactiveCommand<Unit> ViewFilesCommand { get; }
+    public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
@@ -41,13 +52,57 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         var dataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
 
-        SwitchViewCommand = new R3.ReactiveCommand<R3.Unit>(_ =>
+        SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
             ViewHierarchical = !ViewHierarchical;
         });
 
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItemModels).ToObservable().Select(arr => arr.Length > 0);
+
+        ViewFilesCommand = hasSelection.ToReactiveCommand<Unit>(_ =>
+        {
+            // TODO:
+        });
+
+        RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+        {
+            var ids = SelectedItemModels
+                .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
+                .ToHashSet();
+
+            using var tx = _connection.BeginTransaction();
+
+            foreach (var id in ids)
+            {
+                tx.Delete(id, recursive: true);
+            }
+
+            await tx.Commit();
+        }, awaitOperation: AwaitOperation.Sequential, initialCanExecute: false, configureAwait: false);
+
+        var selectedItemsSerialDisposable = new SerialDisposable();
+
         this.WhenActivated(disposables =>
         {
+            Disposable.Create(this, vm => vm.SelectedItemModels = []);
+            Disposable.Create(selectedItemsSerialDisposable, d => d.Disposable = null).AddTo(disposables);
+
+            this.WhenAnyValue(vm => vm._itemModels.Count)
+                .Select(count => count == 0)
+                .BindToVM(this, vm => vm.IsEmpty)
+                .AddTo(disposables);
+
+            Disposable.Create(this, static vm =>
+            {
+                foreach (var kv in vm.ToggleEnableStateCommandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
+
+                vm.ToggleEnableStateCommandDisposables.Clear();
+            });
+
             ActivationSubject
                 .Subscribe(this, static (tuple, vm) =>
                 {
@@ -88,6 +143,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 })
                 .Switch()
                 .Select(_ => CreateSource(_itemModels, createHierarchicalSource: ViewHierarchical))
+                .Do(tuple =>
+                {
+                    selectedItemsSerialDisposable.Disposable = tuple.selectionObservable
+                        .Subscribe(this, static (arr, vm) => vm.SelectedItemModels = arr);
+                })
+                .Select(tuple => tuple.source)
                 .BindTo(this, vm => vm.Source)
                 .AddTo(disposables);
 
@@ -126,19 +187,29 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .RemoveKey();
     }
 
-    private static ITreeDataGridSource<LoadoutItemModel> CreateSource(IEnumerable<LoadoutItemModel> models, bool createHierarchicalSource)
+    private static (ITreeDataGridSource<LoadoutItemModel> source, Observable<LoadoutItemModel[]> selectionObservable) CreateSource(IEnumerable<LoadoutItemModel> models, bool createHierarchicalSource)
     {
         if (createHierarchicalSource)
         {
             var source = new HierarchicalTreeDataGridSource<LoadoutItemModel>(models);
+            var selectionObservable = Observable.FromEventHandler<TreeSelectionModelSelectionChangedEventArgs<LoadoutItemModel>>(
+                addHandler: handler => source.RowSelection!.SelectionChanged += handler,
+                removeHandler: handler => source.RowSelection!.SelectionChanged -= handler
+            ).Select(tuple => tuple.e.SelectedItems.NotNull().ToArray());
+
             AddColumns(source.Columns, viewAsTree: true);
-            return source;
+            return (source, selectionObservable);
         }
         else
         {
             var source = new FlatTreeDataGridSource<LoadoutItemModel>(models);
+            var selectionObservable = Observable.FromEventHandler<TreeSelectionModelSelectionChangedEventArgs<LoadoutItemModel>>(
+                addHandler: handler => source.RowSelection!.SelectionChanged += handler,
+                removeHandler: handler => source.RowSelection!.SelectionChanged -= handler
+            ).Select(tuple => tuple.e.SelectedItems.NotNull().ToArray());
+
             AddColumns(source.Columns, viewAsTree: false);
-            return source;
+            return (source, selectionObservable);
         }
     }
 
