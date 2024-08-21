@@ -20,7 +20,7 @@ To get the most out of the app, we highly recommend signing in with your Nexus M
 
 When you first open the app, you will have the option to sign in. If you skipped this step you can always get started by clicking the "Log In" button in the top-right of the application. 
 
-![The top bar navigation of the app while logged out.](./images/0.5.2/Topbar.webp)
+![The top bar navigation of the app while logged out.](./images/0.6.0/Topbar.webp)
 
 On clicking the button, a new page will open in your default web browser where you will be asked to authorise the Nexus Mods app to access your account. 
 

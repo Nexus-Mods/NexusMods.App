@@ -9,6 +9,7 @@ using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
@@ -17,6 +18,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -46,6 +48,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId);
         var game = loadout.InstallationInstance.Game;
+
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
@@ -154,16 +158,35 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var items = new ILeftMenuItemViewModel[]
         {
             oldLoadoutItem,
-            loadoutItem,
+            // TODO: loadoutItem,
             oldLibraryItem,
-            libraryItem,
+            // TODO: libraryItem,
             diagnosticItem,
         };
 
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
+        var observableCollection = new ObservableCollection<ILeftMenuItemViewModel>(items);
+
+        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(observableCollection);
 
         this.WhenActivated(disposable =>
         {
+            settingsManager
+                .GetChanges<ExperimentalViewSettings>(prependCurrent: true)
+                .OnUI()
+                .Select(x => x.ShowNewTreeViews)
+                .SubscribeWithErrorLogging(showNewTreeViews =>
+                {
+                    observableCollection.Remove(libraryItem);
+                    observableCollection.Remove(loadoutItem);
+
+                    if (showNewTreeViews)
+                    {
+                        observableCollection.Add(libraryItem);
+                        observableCollection.Add(loadoutItem);
+                    }
+                })
+                .DisposeWith(disposable);
+
             diagnosticManager
                 .CountDiagnostics(loadoutContext.LoadoutId)
                 .OnUI()
@@ -193,7 +216,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
             this.WhenAnyValue(vm => vm.NewDownloadModelCount)
                 .Select(count => count == 0 ? [] : new[] { count.ToString() })
-                .BindToVM(libraryItem, vm => vm.Badges)
+                .BindToVM(oldLibraryItem, vm => vm.Badges)
                 .DisposeWith(disposable);
         });
     }

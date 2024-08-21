@@ -37,6 +37,7 @@ public class NexusModsDownloadJob : APersistedJob, INXMDownloadJob
         _ = new NexusModsLibraryFile.New(transaction, libraryFile.Id)
         {
             FileMetadataId = FileMetadata,
+            ModPageMetadataId = FileMetadata.ModPage,
             DownloadedFile = new DownloadedFile.New(transaction, libraryFile.Id)
             {
                 DownloadPageUri = HttpDownloadJob.DownloadPageUri,

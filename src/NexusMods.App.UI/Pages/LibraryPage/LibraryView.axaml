@@ -6,27 +6,98 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
     <Grid RowDefinitions="Auto, *">
-        <Button Grid.Row="0" x:Name="SwitchView">
-            <TextBlock>Switch View</TextBlock>
-        </Button>
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Classes="Toolbar">
+            <StackPanel Orientation="Horizontal">
+                <!-- Add Buttons Section -->
+                <Button x:Name="SwitchView">
+                    <StackPanel>
+                        <TextBlock>Switch View</TextBlock>
+                    </StackPanel>
+                </Button>
 
-        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
-                      ShowColumnHeaders="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True">
-            <TreeDataGrid.Resources>
-                <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
-                    <Button Command="{CompiledBinding InstallCommand}">
-                        <TextBlock>Install</TextBlock>
+                <Button x:Name="AddModButton">
+                    <ToolTip.Tip>
+                        <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
+                    </ToolTip.Tip>
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlaylistAdd" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="AddModAdvancedButton">
+                    <ToolTip.Tip>
+                        <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
+                    </ToolTip.Tip>
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlaylistAdd" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod_Advanced}" />
+                    </StackPanel>
+                </Button>
+
+                <Line />
+
+                <!-- Get Mods Section -->
+                <TextBlock Classes="NotTitle" Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+
+                <Button x:Name="GetModsFromDriveButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="HardDrive" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromDrive}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="GetModsFromNexusButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Nexus" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Empty State -->
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+            <controls:EmptyState.Subtitle>
+                <StackPanel>
+                    <Button Classes="Hyperlink Secondary"
+                            x:Name="EmptyLibraryLinkButton">
+                        <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                                   x:Name="EmptyLibrarySubtitleTextBlock" />
                     </Button>
-                </DataTemplate>
-            </TreeDataGrid.Resources>
-        </TreeDataGrid>
+                    <Button Classes="BareIcon OpenInNew ForegroundSubdued"
+                            Height="18"
+                            Width="18"
+                            x:Name="OpenLinkBareIconButton" />
+                </StackPanel>
+            </controls:EmptyState.Subtitle>
+
+            <Grid>
+                <!-- TreeDataGrid -->
+                <TreeDataGrid x:Name="TreeDataGrid"
+                              ShowColumnHeaders="True"
+                              CanUserResizeColumns="True"
+                              CanUserSortColumns="True"
+                              Classes="MainListsStyling"
+                              HorizontalAlignment="Stretch">
+                    <TreeDataGrid.Resources>
+                        <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
+                            <Button Command="{CompiledBinding InstallCommand}">
+                                <TextBlock Text="Install" />
+                            </Button>
+                        </DataTemplate>
+                    </TreeDataGrid.Resources>
+                </TreeDataGrid>
+            </Grid>
+
+
+        </controls:EmptyState>
     </Grid>
 
 </reactive:ReactiveUserControl>
-

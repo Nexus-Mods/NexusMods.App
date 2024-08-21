@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
@@ -20,6 +21,17 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
         this.WhenActivated(d =>
         {
             CompletedDataGrid.Width = double.NaN;
+            
+            ViewModel.WhenAnyValue(vm => vm.NewProgress)
+                .Select(p => p.Value)
+                .BindTo(this, view => view.DownloadProgressBarNew.Value)
+                .DisposeWith(d);
+            
+            ViewModel.WhenAnyValue(vm => vm.NewProgress)
+                .Select(p => p.Value > 0)
+                .StartWith(false)
+                .BindTo(this, view => view.DownloadProgressBarNew.IsVisible)
+                .DisposeWith(d);
             
             this.OneWayBind(ViewModel, vm => vm.Series, view => view.Chart.Series)
                 .DisposeWith(d);

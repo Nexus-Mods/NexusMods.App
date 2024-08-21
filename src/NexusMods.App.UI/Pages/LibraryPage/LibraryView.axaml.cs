@@ -1,4 +1,3 @@
-using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
@@ -19,8 +18,29 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
         {
+            var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
+            if (storageProvider is not null)
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
+                    .AddTo(disposables);
+            }
+
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.AddModButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AddModAdvancedButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.GetModsFromNexusButton)
+                .AddTo(disposables);
 
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => TreeDataGrid.RowPrepared += handler,
@@ -39,7 +59,16 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.IsEmpty, view => view.EmptyState.IsActive)
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibrarySubtitleTextBlock.Text)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.EmptyLibraryLinkButton)
+                .AddTo(disposables);
         });
     }
 }

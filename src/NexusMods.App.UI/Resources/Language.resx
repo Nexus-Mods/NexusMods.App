@@ -156,6 +156,9 @@
     <data name="DownloadsView__Download_history" xml:space="preserve">
         <value>Download history</value>
     </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologize for the inconvenience.</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorize" on the website</value>
     </data>

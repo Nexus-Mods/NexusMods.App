@@ -20,7 +20,7 @@ public class HttpDownloadJob : APersistedJob, IHttpDownloadJob
         HttpDownloadJobPersistedState.ReadOnly state,
         IJobGroup? group = default,
         IJobWorker? worker = default,
-        IJobMonitor? monitor = default) : base(connection, state.AsPersistedJobState(), null!, group, worker, monitor
+        IJobMonitor? monitor = default) : base(connection, state.AsPersistedJobState(), new MutableProgress(new DeterminateProgress(new BytesPerSecondFormatter())), group, worker, monitor
     ) { }
 
     /// <inheritdoc/>

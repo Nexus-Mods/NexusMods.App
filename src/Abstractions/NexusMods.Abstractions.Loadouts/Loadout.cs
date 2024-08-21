@@ -147,7 +147,7 @@ public partial class Loadout : IModelDefinition
             // This could be false, but it's a good starting point.
             return LibraryLinkedLoadoutItem
                 .FindByLibraryItem(Db, libraryItem)
-                .Where(linked => linked.AsLoadoutItem().LoadoutId == thisId);
+                .Where(linked => linked.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == thisId);
         }
     }
 }

@@ -10,7 +10,7 @@ public readonly struct Percent : IEquatable<Percent>, IComparable<Percent>
     public readonly double Value;
 
     public static readonly Percent One = new(1.0);
-    public static readonly Percent Zero = new(1.0);
+    public static readonly Percent Zero = new(0.0);
 
     public Percent(double value)
     {
