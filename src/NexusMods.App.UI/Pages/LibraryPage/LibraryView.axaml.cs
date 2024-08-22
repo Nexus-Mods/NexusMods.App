@@ -55,13 +55,13 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             deactivate.Merge(activate)
                 .Where(static tuple => tuple.Model is LibraryItemModel)
                 .Select(static tuple => ((tuple.Model as LibraryItemModel)!, tuple.Item2))
-                .Subscribe(this, static (tuple, view) => view.ViewModel!.ActivationSubject.OnNext(tuple))
+                .Subscribe(this, static (tuple, view) => view.ViewModel!.Adapter.ModelActivationSubject.OnNext(tuple))
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.Source, view => view.TreeDataGrid.Source)
+            this.OneWayBind(ViewModel, vm => vm.Adapter.Source.Value, view => view.TreeDataGrid.Source)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.IsEmpty, view => view.EmptyState.IsActive)
+            this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibrarySubtitleTextBlock.Text)
