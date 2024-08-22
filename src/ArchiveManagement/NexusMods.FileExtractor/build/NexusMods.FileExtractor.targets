@@ -13,7 +13,7 @@
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'true' Or '$(PlatformTarget)' == 'x86')">win-x86</_NativeRuntime>
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">win-x64</_NativeRuntime>
 
-    <_UseSystemExtractor Condition="$([System.String]::new('$(DefineConstants)').Contains('USE_SYSTEM_EXTRACTOR')) or $([System.String]::new('$(DefineConstants)').Contains('NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR'))">true</_UseSystemExtractor>
+    <_UseSystemExtractor Condition="$([System.String]::new('$(DefineConstants)').Contains('NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR'))">true</_UseSystemExtractor>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(_UseSystemExtractor)' == '' Or '$(_UseSystemExtractor)' == 'false'">
