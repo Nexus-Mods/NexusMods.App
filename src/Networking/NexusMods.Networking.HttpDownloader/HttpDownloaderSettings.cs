@@ -2,6 +2,7 @@ using Downloader;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -12,6 +13,8 @@ namespace NexusMods.Networking.HttpDownloader;
 public record HttpDownloaderSettings : ISettings
 {
     public int ChunkCount { get; set; } = 4;
+
+    public Size BufferBlockSize { get; set; } = Size.KB * 8;
 
     public bool ParallelDownload { get; set; } = true;
 
@@ -28,7 +31,7 @@ public record HttpDownloaderSettings : ISettings
         return new DownloadConfiguration
         {
             ChunkCount = ChunkCount,
-            BufferBlockSize = 1024 * 8,
+            BufferBlockSize = (int)BufferBlockSize.Value,
             ParallelDownload = ParallelDownload,
             Timeout = (int)Timeout.TotalMilliseconds,
 
