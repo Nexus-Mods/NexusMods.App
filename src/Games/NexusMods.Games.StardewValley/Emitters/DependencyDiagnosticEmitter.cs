@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -77,7 +78,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
+                var smapiLoadoutItem = SMAPILoadoutItem.Load(loadout.Db, loadoutItemId);
+                return smapiLoadoutItem.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
             })
             .Select(kv =>
             {
@@ -87,7 +89,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var disabledDependencies = requiredDependencies
                     .Select(uniqueIdToLoadoutItemId.GetValueOrDefault)
                     .Where(id => id != default(SMAPIModLoadoutItemId))
-                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
+                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsEnabled())
                     .ToArray();
 
                 return (Id: loadoutItemId, DisabledDependencies: disabledDependencies);
@@ -118,7 +120,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                return !SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
+                return SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
             })
             .Select(kv =>
             {
