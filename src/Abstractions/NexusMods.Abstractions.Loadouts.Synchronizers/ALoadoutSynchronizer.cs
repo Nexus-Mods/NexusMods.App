@@ -85,7 +85,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
 
-        var newStatePaths = newState.Select(e => (GamePath)e.Path).ToHashSet();
+        var newStatePaths = newState.SelectMany(e => ((GamePath)e.Path).GetAllParents()).ToHashSet();
 
         foreach (var entry in toDelete)
         {
