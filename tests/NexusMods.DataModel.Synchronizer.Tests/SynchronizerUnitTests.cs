@@ -1,20 +1,21 @@
 using FluentAssertions;
+using MartinCostello.Logging.XUnit;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
 
 /// <summary>
 /// Tests for specific issues or regressions in the Synchronizer.
 /// </summary>
-public class SynchronizerUnitTests : AGameTest<Cyberpunk2077Game>
+public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberpunkIsolatedGameTest<SynchronizerUnitTests>(testOutputHelper)
 {
-    public SynchronizerUnitTests(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-    }
-
     [Fact]
     [GithubIssue(1925)]
     public async Task EmptyChildFoldersDontDeleteNonEmptyParents()
