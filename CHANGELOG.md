@@ -1,5 +1,50 @@
 # Changelog
 
+## [v0.6.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.0) - 2024-08-22
+
+This release enhances support for Cyberpunk 2077, adds multiple Loadouts per game and implements the back-end changes to support our new "Loadout items" data model. 
+
+### Cyberpunk 2077 Improvements
+
+**IMPORTANT: It is not currently possible for the app to run REDmod automatically on Linux - Windows users are unaffected. If you are using REDmods on Linux you may need to manually run the REDmod.exe file located at `tools\redmod\bin\redmod.exe` before launching the game.**
+
+This version further refines the modding experience for Cyberpunk 2077 players by adding additional diagnostics to the Health Check and automatically running REDmod - if necessary - before starting the game. [Learn More](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/).
+
+### Multiple Loadouts
+
+![The "My Loadouts" page showing two loadouts for Cyberpunk 2077](./docs/changelog-assets/LoadoutsMultiple.webp)
+
+### EXPERIMENTAL - Tree views for My Mods and Library
+TBC
+
+### Known issues
+- Downloads page not working
+- Cyberpunk 2077 REDmod support not working on Linux
+
+### Other Features
+- Updated the Games page to include new tile designs.
+- Game tiles now show a store icon to indicate where the game was downloaded from. 
+- It is now possible to delete mods from your Library. 
+- Within a [Workspace](https://nexus-mods.github.io/NexusMods.App/users/features/Workspaces/) the active panel is now highlighted in the UI.
+- All panels and tabs in Workspace now have a history, allowing the user to navigate forward or backward using the new arrows on the top toolbar. 
+- The fonts used in the UI have been updated to Inter in line with our new design system. 
+
+### Bugfixes
+- Fixed the game icon in the spine flickering when updating a loadout. 
+- Updated the "Update available" pop-up to make it more clear that updating the app requires a full reset of your mod setup. 
+- Fixed an issue where Steam games would fail to launch of Ubuntu. 
+
+### Technical Changes
+- Downloading files now uses a new "Jobs" system to make them easier to manage. 
+- We are continuing our backend work to convert from "Mods" to "Loadout items". [More Info]()
+- The synchronizer for handling loadout state has been reworked to provide much more robust coverage of edge cases.
+- Added general support for path-based diagnostic checks when checking for missing dependencies. 
+
+### External Contributors
+
+- [@Patriot99](https://github.com/Patriot99): Polish translation updates.
+
+
 ## [v0.5.3](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.3) - 2024-07-11
 
 This release makes some refinements to the Stardew Valley modding experience based on user feedback, improves various UI elements and includes a number of back-end bugfixes.
