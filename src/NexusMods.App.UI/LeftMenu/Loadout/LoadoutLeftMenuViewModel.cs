@@ -9,6 +9,7 @@ using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
@@ -17,6 +18,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -47,6 +49,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId);
         var game = loadout.InstallationInstance.Game;
 
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
 
@@ -68,26 +72,25 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ),
         };
 
-        // TODO: enable this
-        // var loadoutItem = new IconViewModel
-        // {
-        //     Name = "My Mods (new)",
-        //     Icon = IconValues.Collections,
-        //     NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        //     {
-        //         var pageData = new PageData
-        //         {
-        //             FactoryId = LoadoutPageFactory.StaticId,
-        //             Context = new LoadoutPageContext
-        //             {
-        //                 LoadoutId = loadoutContext.LoadoutId,
-        //             },
-        //         };
-        //
-        //         var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-        //         workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-        //     }),
-        // };
+        var loadoutItem = new IconViewModel
+        {
+            Name = "My Mods (new)",
+            Icon = IconValues.Collections,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                    },
+                };
+
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
 
         var oldLibraryItem = new IconViewModel
         {
@@ -109,28 +112,27 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }),
         };
 
-        // TODO: enable this
-        // var libraryItem = new IconViewModel
-        // {
-        //     Name = "Library (new)",
-        //     Icon = IconValues.ModLibrary,
-        //     NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        //     {
-        //         NewDownloadModelCount = 0;
-        //
-        //         var pageData = new PageData
-        //         {
-        //             FactoryId = LibraryPageFactory.StaticId,
-        //             Context = new LibraryPageContext
-        //             {
-        //                 LoadoutId = loadoutContext.LoadoutId,
-        //             },
-        //         };
-        //
-        //         var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-        //         workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-        //     }),
-        // };
+        var libraryItem = new IconViewModel
+        {
+            Name = "Library (new)",
+            Icon = IconValues.ModLibrary,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                NewDownloadModelCount = 0;
+
+                var pageData = new PageData
+                {
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                    },
+                };
+
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
 
         var diagnosticItem = new IconViewModel
         {
@@ -162,10 +164,29 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             diagnosticItem,
         };
 
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
+        var observableCollection = new ObservableCollection<ILeftMenuItemViewModel>(items);
+
+        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(observableCollection);
 
         this.WhenActivated(disposable =>
         {
+            settingsManager
+                .GetChanges<ExperimentalViewSettings>(prependCurrent: true)
+                .OnUI()
+                .Select(x => x.ShowNewTreeViews)
+                .SubscribeWithErrorLogging(showNewTreeViews =>
+                {
+                    observableCollection.Remove(libraryItem);
+                    observableCollection.Remove(loadoutItem);
+
+                    if (showNewTreeViews)
+                    {
+                        observableCollection.Add(libraryItem);
+                        observableCollection.Add(loadoutItem);
+                    }
+                })
+                .DisposeWith(disposable);
+
             diagnosticManager
                 .CountDiagnostics(loadoutContext.LoadoutId)
                 .OnUI()

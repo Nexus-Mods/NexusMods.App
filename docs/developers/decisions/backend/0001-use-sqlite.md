@@ -1,6 +1,13 @@
 ﻿# Use SqlLite as a datastore
 
-!!! todo "Update this, our DataStore is moving to RocksDB after becoming a Single Process Application once again."
+!!! warning "This is outdated."
+
+    As of August 2024; the following is true:
+
+    - The DataStore now runs on RocksDB.
+    - The application is (truly) single process once again for DB access.
+
+    This document remains available for historical purposes; but should be amended.
 
 ## Context and Problem Statement
 

@@ -1,13 +1,14 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Activities;
+using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.HttpDownloads;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -16,22 +17,22 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 [UsedImplicitly]
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
-    private const int PollTimeMilliseconds = 1000;
-
-    private IObservable<Unit> Tick { get; } = Observable.Defer(() =>
-        Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
-            .Select(_ => Unit.Default));
-
-    public SpineDownloadButtonViewModel(IDownloadService downloadService)
+    public SpineDownloadButtonViewModel(IJobMonitor jobMonitor, ILogger<SpineDownloadButtonViewModel> logger)
     {
         this.WhenActivated(disposables =>
         {
-            Tick.OnUI().Subscribe(_ =>
-            {
-                Number = downloadService.GetThroughput() / Size.MB;
-                Units = "MB/s";
-                Progress = downloadService.GetTotalProgress();
-            }).DisposeWith(disposables);
+            jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
+                .AverageProgressPercent()
+                .OnUI()
+                .Subscribe(rate => { Progress = rate.Value > 0 ? rate : Optional<Percent>.None; })
+                .DisposeWith(disposables);
+            
+            jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
+                .SumProgressRate()
+                .OnUI()
+                // Convert from bytes to MB/s
+                .Subscribe(rate => Number = rate / 1024 / 1024 / 8)
+                .DisposeWith(disposables);
         });
     }
 

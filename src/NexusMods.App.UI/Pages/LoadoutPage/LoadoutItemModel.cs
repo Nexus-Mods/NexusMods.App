@@ -24,13 +24,16 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
     [Reactive] public bool IsEnabled { get; set; }
 
-    public virtual ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
+    public ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
+
+    private readonly LoadoutItemId[] _fixedId;
+    public virtual IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
     public LoadoutItemModel(LoadoutItemId loadoutItemId)
     {
-        LoadoutItemId[] arr = [loadoutItemId];
-        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>>(_ => arr);
+        _fixedId = [loadoutItemId];
+        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>>(_ => GetLoadoutItemIds());
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {

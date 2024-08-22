@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using OneOf;
 
@@ -162,6 +163,11 @@ public abstract class AJobWorker : IJobWorker
 public abstract class AJobWorker<TJob> : AJobWorker
     where TJob : AJob
 {
+    /// <summary>
+    /// The progress rate formatter used when setting the progress rate, this must be set before .SetProgressRate is called.
+    /// </summary>
+    protected Optional<IProgressRateFormatter> ProgressRateFormatter { get; set; } = Optional<IProgressRateFormatter>.None;
+    
     /// <inheritdoc/>
     protected override Task<JobResult> ExecuteAsync(AJob job, CancellationToken cancellationToken)
     {
@@ -171,4 +177,27 @@ public abstract class AJobWorker<TJob> : AJobWorker
 
     /// <inheritdoc cref="AJobWorker.ExecuteAsync"/>
     protected abstract Task<JobResult> ExecuteAsync(TJob job, CancellationToken cancellationToken);
+    
+    
+    /// <summary>
+    /// Sets the absolute progress percentage of the job.
+    /// </summary>
+    protected void SetProgress(TJob job, Percent progress)
+    {
+        if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
+            throw new InvalidOperationException("Job does not have determinate progress");
+        
+        determinateProgress.SetPercent(progress);
+    }
+    
+    /// <summary>
+    /// Sets the relative progress rate of the job.
+    /// </summary>
+    protected void SetProgressRate(TJob job, double rate)
+    {
+        if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
+            throw new InvalidOperationException("Job does not have determinate progress");
+        
+        determinateProgress.SetProgressRate(new ProgressRate(rate, ProgressRateFormatter.Value));
+    }
 }

@@ -4,6 +4,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
@@ -13,6 +15,7 @@
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+        <ProjectReference Include="..\NexusMods.App.GarbageCollection.DataModel\NexusMods.App.GarbageCollection.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
@@ -37,8 +40,9 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
+        <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
+        <InternalsVisibleTo Include="NexusMods.Games.TestFramework"/>
     </ItemGroup>
-
 
     <ItemGroup>
       <Compile Remove="DirectoryIndexer.cs" />

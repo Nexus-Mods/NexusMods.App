@@ -28,15 +28,17 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var installers = job.Loadout.InstallationInstance.GetGame().LibraryItemInstallers;
-        
-        if (job.Installer != null)
-            installers = [job.Installer];
+        var installers = job.Installer is not null
+            ? [job.Installer]
+            : job.Loadout.InstallationInstance.GetGame().LibraryItemInstallers;
 
         var result = await ExecuteInstallersAsync(job, installers, cancellationToken);
 
         if (!result.HasValue)
         {
+            if (job.Installer is AdvancedManualInstaller)
+                return JobResult.CreateFailed($"Advanced installer did not succeed for `{job.LibraryItem.Name}` (`{job.LibraryItem.Id}`)");
+            
             var manualInstaller = AdvancedManualInstaller.Create(_serviceProvider);
             result = await ExecuteInstallersAsync(job, [manualInstaller], cancellationToken);
 

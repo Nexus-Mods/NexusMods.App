@@ -6,6 +6,7 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provider) : AVerbTest(provider)
 {
+    
     [Fact]
     public async Task CanCreateAndManageLists()
     {
@@ -29,7 +30,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log = await Run("list-mods", "-l", listName);
         log.LastTable.Rows.Length.Should().Be(2);
 
-        log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.GetFileNameWithoutExtension());
+        log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.FileName);
         log.LastTable.Rows.Length.Should().Be(3);
         
         log = await Run("synchronize", "-l", listName);

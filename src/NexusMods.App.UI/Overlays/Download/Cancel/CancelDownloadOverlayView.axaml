@@ -15,7 +15,7 @@
         <cancel:CancelDownloadOverlayViewModel />
     </Design.DataContext>
 
-    <okCancel:MessageBoxOkCancelView MinWidth="300" MaxWidth="450"
+    <okCancel:MessageBoxOkCancelView MinWidth="450" MaxWidth="450"
                                      Title="{x:Static resources:Language.CancelDownloadOverlayView_Title}"
                                      x:Name="OkCancelView" />
 

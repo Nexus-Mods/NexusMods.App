@@ -89,6 +89,7 @@
             <icons:UnifiedIcon Classes="ColorLens"/>
             <icons:UnifiedIcon Classes="CheckBox"/>
             <icons:UnifiedIcon Classes="ViewCarousel"/>
+            <icons:UnifiedIcon Classes="Lightbulb"/>
             <icons:UnifiedIcon Classes="Steam"/>
             <icons:UnifiedIcon Classes="EA"/>
             <icons:UnifiedIcon Classes="Ubisoft"/>
@@ -446,6 +447,10 @@
     
     <Style Selector="icons|UnifiedIcon.ViewCarousel">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ViewCarousel}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Lightbulb">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Lightbulb}"/>
     </Style>
     
     <Style Selector="icons|UnifiedIcon.Steam">

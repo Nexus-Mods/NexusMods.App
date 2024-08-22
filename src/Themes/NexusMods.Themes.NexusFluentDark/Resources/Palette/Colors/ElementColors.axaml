@@ -120,6 +120,7 @@
     <SolidColorBrush x:Key="SuccessModerateBrush" Color="{StaticResource SuccessModerate}" />
     <SolidColorBrush x:Key="SuccessStrongBrush" Color="{StaticResource SuccessStrong}" />
 
+    <SolidColorBrush x:Key="SuccessSubdued20Brush" Color="{StaticResource SuccessSubdued}" Opacity="{StaticResource OpacitySubdued}" />
 
     <!-- Info -->
 

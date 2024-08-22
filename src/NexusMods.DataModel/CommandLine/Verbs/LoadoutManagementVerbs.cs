@@ -6,6 +6,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -87,16 +89,25 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "loadout to add the mod to")] Loadout.ReadOnly loadout,
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
-        [Injected] IArchiveInstaller archiveInstaller,
-        [Injected] IFileOriginRegistry fileOriginRegistry,
+        [Injected] ILibraryService libraryService,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
-            var downloadId = await fileOriginRegistry.RegisterDownload(file, 
-            (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), name, token);
+            
+            await using var job = libraryService.AddLocalFile(file);
+            await job.StartAsync(token);
+            await job.WaitToFinishAsync(token);
+            
+            if (!job.Result!.TryGetCompleted(out var completed))
+                throw new Exception("Failed to store the file");
+            
+            if (!completed.TryGetData<LocalFile.ReadOnly>(out var localFile))
+                throw new Exception("Failed to store the file");
 
-            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, name, token: token);
+            await using var installJob = libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
+            await installJob.StartAsync(token);
+            await installJob.WaitToFinishAsync(token);
             return 0;
         });
     }
@@ -124,11 +135,16 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
-        var mod = loadout.Mods.First(m => m.Name == modName);
-        foreach (var file in mod.Files)
+        var mod = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .First(m => m.AsLoadoutItem().Name == modName);
+        foreach (var file in mod.Children)
         {
-            if (file.TryGetAsStoredFile(out var stored))
-                rows.Add([file.To, stored.Hash]);
+            if (!file.TryGetAsLoadoutItemWithTargetPath(out var withPath))
+                continue;
+            
+            if (withPath.TryGetAsLoadoutFile(out var stored))
+                rows.Add([withPath.TargetPath, stored.Hash]);
             else
                 rows.Add([file.GetType().ToString(), "<none>"]);
         }
