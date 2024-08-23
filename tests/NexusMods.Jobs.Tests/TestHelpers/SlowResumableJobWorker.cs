@@ -13,7 +13,7 @@ public class SlowResumableJobWorker : APersistedJobWorker<SlowResumableJob>
         while (current < job.Get(SlowResumableJobPersistedState.Max))
         {
             await job.Set(SlowResumableJobPersistedState.Current, current);
-            await Task.Delay(100, cancellationToken);
+            await Task.Delay(25, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             current++;
         }
