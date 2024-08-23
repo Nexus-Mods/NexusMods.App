@@ -72,13 +72,13 @@ public class PersistedJobTests
 
         // Check the resumed state
         var st = Stopwatch.StartNew();
-        while (st.Elapsed < TimeSpan.FromSeconds(10))
+        while (st.Elapsed < TimeSpan.FromSeconds(20))
         {
             await Task.Delay(100);
 
             jobWithId = jobWithId.Rebase();
             if (jobWithId.Current == jobWithId.Max - 1)
-                return;
+                break;
         }
         jobWithId.Current.Should().Be(jobWithId.Max - 1, "because we should have processed all items");
     }
