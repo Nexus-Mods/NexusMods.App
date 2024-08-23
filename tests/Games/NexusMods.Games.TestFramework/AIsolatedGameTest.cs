@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text;
 using FluentAssertions;
+using FomodInstaller.Interface;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,7 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -43,6 +45,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
+    protected readonly ILibraryService LibraryService;
     protected readonly IFileStore FileStore;
     protected readonly IGameRegistry GameRegistry;
 
@@ -56,6 +59,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     private bool _gameFilesWritten = false;
     private readonly IHost _host;
     private readonly ITestOutputHelper _helper;
+    protected readonly ConfigOptionsRecord ConfigOptions;
 
     public IDiagnosticManager DiagnosticManager { get; set; }
 
@@ -70,6 +74,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// </summary>
     protected AIsolatedGameTest(ITestOutputHelper helper)
     {
+        ConfigOptions = new ConfigOptionsRecord();
         _helper = helper;
         _host = new HostBuilder()
             .ConfigureServices(s => AddServices(s))
@@ -92,12 +97,20 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         HttpDownloader = ServiceProvider.GetRequiredService<IHttpDownloader>();
 
         Logger = ServiceProvider.GetRequiredService<ILogger<TTest>>();
+        LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+    }
+
+    public record ConfigOptionsRecord
+    {
+        public bool RegisterNullGuidedInstaller { get; set; } = true;
     }
     
     protected virtual IServiceCollection AddServices(IServiceCollection services)
     {
+        if (ConfigOptions.RegisterNullGuidedInstaller)
+            services.AddSingleton<IGuidedInstaller, NullGuidedInstaller>();
+        
         return services.AddDefaultServicesForTesting()
-            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddFomod()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
@@ -394,5 +407,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     public async Task DisposeAsync()
     {
         await _host.StopAsync();
+        _host.Dispose();
     }
 }

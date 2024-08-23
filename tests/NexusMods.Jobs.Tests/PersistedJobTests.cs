@@ -42,7 +42,7 @@ public class PersistedJobTests
     {
         // Setup
         var worker = _services.GetRequiredService<SlowResumableJobWorker>();
-        var job = await SlowResumableJob.Create(_connection, worker, 40);
+        var job = await SlowResumableJob.Create(_connection, worker, 100);
 
         job.Should().BeOfType<SlowResumableJob>();
         var castedJob = (SlowResumableJob) job;
@@ -63,7 +63,7 @@ public class PersistedJobTests
         
         jobWithId.Current.Should().BeGreaterThan(0, "because we should have processed at least one item");
         jobWithId.Current.Should().BeLessThan(jobWithId.Max, "because we paused the job");
-        jobWithId.Max.Should().Be(40, "because we set the max to 40");
+        jobWithId.Max.Should().Be(100, "because we set the max to 40");
         
         // Get the restarter and resume all jobs
         var restarter = _services.GetRequiredService<JobRestarter>();
@@ -72,13 +72,13 @@ public class PersistedJobTests
 
         // Check the resumed state
         var st = Stopwatch.StartNew();
-        while (st.Elapsed < TimeSpan.FromSeconds(10))
+        while (st.Elapsed < TimeSpan.FromSeconds(20))
         {
             await Task.Delay(100);
 
             jobWithId = jobWithId.Rebase();
             if (jobWithId.Current == jobWithId.Max - 1)
-                return;
+                break;
         }
         jobWithId.Current.Should().Be(jobWithId.Max - 1, "because we should have processed all items");
     }

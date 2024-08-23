@@ -14,22 +14,14 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
-
+using Xunit.Abstractions;
 using PathTuple = (NexusMods.MnemonicDB.Abstractions.EntityId, NexusMods.Abstractions.GameLocators.LocationId, NexusMods.Paths.RelativePath);
 
 namespace NexusMods.Games.TestFramework;
 
-public abstract class ALibraryArchiveInstallerTests<TGame> : AGameTest<TGame>
-where TGame : AGame
+public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHelper outputHelper) : AIsolatedGameTest<TTest, TGame>(outputHelper)
+    where TGame : AGame
 {
-    private readonly ILibraryService _libraryService;
-    private readonly TemporaryFileManager _tempFileManager;
-
-    protected ALibraryArchiveInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        _tempFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-    }
 
     /// <summary>
     /// Creates a test archive with the given paths, where each path represents a file whos content is the path itself,
@@ -37,7 +29,7 @@ where TGame : AGame
     /// </summary>
     protected async Task<LibraryArchive.ReadOnly> AddFromPaths(params string[] paths)
     {
-        await using var file = _tempFileManager.CreateFile();
+        await using var file = TemporaryFileManager.CreateFile();
         {
             await using var archiveStream = file.Path.Create();
             using var zip = new ZipArchive(archiveStream, ZipArchiveMode.Create);
@@ -56,7 +48,7 @@ where TGame : AGame
     {
         var archiveHash = await file.XxHash64Async();
         
-        await using var job = _libraryService.AddLocalFile(file);
+        await using var job = LibraryService.AddLocalFile(file);
         await job.StartAsync();
         var result = await job.WaitToFinishAsync();
         
