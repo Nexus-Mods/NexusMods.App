@@ -15,13 +15,13 @@ public class NullGuidedInstaller : IGuidedInstaller
     /// <inheritdoc />
     public void SetupInstaller(string name)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("Cannot setup the installer, this is a null implementation");
     }
 
     /// <inheritdoc />
     public void CleanupInstaller()
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("Cannot cleanup the installer, this is a null implementation");
     }
 
     /// <inheritdoc />
