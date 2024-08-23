@@ -1,31 +1,12 @@
 using System.Text;
-using DynamicData.Kernel;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
-using NexusMods.Games.TestFramework.FluentAssertionExtensions;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.Paths;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
 
-public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
+public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<GeneralLoadoutManagementTests>(helper)
 {
-    private ILogger<GeneralLoadoutManagementTests> _logger;
-    public GeneralLoadoutManagementTests(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _logger = serviceProvider.GetRequiredService<ILogger<GeneralLoadoutManagementTests>>();
-    }
 
     [Fact]
     public async Task SynchronizerIntegrationTests()
@@ -134,4 +115,5 @@ public class GeneralLoadoutManagementTests : AGameTest<Cyberpunk2077Game>
         
         await Verify(sb.ToString(), extension: "md");
     }
+
 }

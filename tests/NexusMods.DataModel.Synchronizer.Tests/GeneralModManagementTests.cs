@@ -6,14 +6,12 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
 
-public class GeneralModManagementTests : AGameTest<Cyberpunk2077Game>
+public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<GeneralModManagementTests>(helper)
 {
-    public GeneralModManagementTests(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-    }
 
     [Fact]
     public async Task SynchronizerAddAndDisableMods()

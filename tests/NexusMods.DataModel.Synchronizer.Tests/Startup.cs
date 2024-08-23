@@ -23,6 +23,7 @@ public class Startup
     /// <param name="container"></param>
     public void ConfigureServices(IServiceCollection container)
     {
+        /*
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
@@ -36,6 +37,7 @@ public class Startup
             .AddFileStoreAbstractions()
             .AddInstallerTypes()
             .Validate();
+            */
     }
 }
 

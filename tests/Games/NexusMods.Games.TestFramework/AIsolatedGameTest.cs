@@ -1,22 +1,28 @@
 using System.IO.Compression;
 using System.Text;
-using DynamicData;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
+using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
@@ -24,15 +30,18 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AGameTest<TGame> where TGame : AGame
+public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGame : AGame
 {
+    protected readonly ILogger Logger;
     protected readonly IServiceProvider ServiceProvider;
-    protected readonly TGame Game;
-    protected readonly GameInstallation GameInstallation;
+    protected TGame Game;
+    protected GameInstallation GameInstallation;
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
@@ -46,42 +55,60 @@ public abstract class AGameTest<TGame> where TGame : AGame
     
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
-    private readonly ILogger<AGameTest<TGame>> _logger;
-
     private bool _gameFilesWritten = false;
-    
+    private readonly IHost _host;
+    private readonly ITestOutputHelper _helper;
+
     public IDiagnosticManager DiagnosticManager { get; set; }
 
 
+    private class Accessor : ITestOutputHelperAccessor
+    {
+        public ITestOutputHelper? Output { get; set; }
+    }
+    
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="serviceProvider"></param>
-    protected AGameTest(IServiceProvider serviceProvider)
+    protected AIsolatedGameTest(ITestOutputHelper helper)
     {
-        ServiceProvider = serviceProvider;
+        _helper = helper;
+        _host = new HostBuilder()
+            .ConfigureServices(s => AddServices(s))
+            .Build();
         
-        GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
+        ServiceProvider = _host.Services;
+
+        GameRegistry = ServiceProvider.GetRequiredService<IGameRegistry>();
         
-        GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
-        Game = (TGame)GameInstallation.Game;
 
-        FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
-        FileStore = serviceProvider.GetRequiredService<IFileStore>();
-        TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-        Connection = serviceProvider.GetRequiredService<IConnection>();
 
-        DiagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
+        FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
+        FileStore = ServiceProvider.GetRequiredService<IFileStore>();
+        TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
+        Connection = ServiceProvider.GetRequiredService<IConnection>();
 
-        NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
-        HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
+        DiagnosticManager = ServiceProvider.GetRequiredService<IDiagnosticManager>();
 
-        _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
-        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
-        {
-            _logger.LogInformation("Resetting game files for {Game}", Game.Name);
-            ResetGameFolders();
-        }
+        NexusNexusApiClient = ServiceProvider.GetRequiredService<NexusApiClient>();
+        HttpDownloader = ServiceProvider.GetRequiredService<IHttpDownloader>();
+
+        Logger = ServiceProvider.GetRequiredService<ILogger<TTest>>();
+    }
+    
+    protected virtual IServiceCollection AddServices(IServiceCollection services)
+    {
+        return services.AddDefaultServicesForTesting()
+            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
+            .AddFomod()
+            .AddLogging(builder => builder.AddXUnit())
+            .AddGames()
+            .AddSerializationAbstractions()
+            .AddLoadoutAbstractions()
+            .AddFileStoreAbstractions()
+            .AddInstallerTypes()
+            .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
+            .Validate();
     }
 
     /// <summary>
@@ -344,9 +371,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
     
-
-    
-    
     private AbsolutePath GetArchivePath(Hash hash)
     {
         if (FileStore is not NxFileStore store)
@@ -354,5 +378,66 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
+    }
+    
+            /// <summary>
+    /// Uses Verify to validate all the states of the game, previously applied states, etc.
+    /// </summary>
+    protected void LogDiskState(StringBuilder sb, string sectionName, string comments = "", Loadout.ReadOnly[]? loadouts = null)
+    {
+        Logger.LogInformation("Logging State {SectionName}", sectionName);
+        
+        var metadata = GameInstallation.GetMetadata(Connection);
+        sb.AppendLine($"{sectionName}:");
+        if (!string.IsNullOrEmpty(comments))
+            sb.AppendLine(comments);
+        
+        Section("### Initial State", metadata.InitialDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
+            Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
+        Section("### Current State", metadata.LastScannedDiskStateTransaction);
+        foreach (var loadout in loadouts ?? [])
+        {
+            if (!loadout.Items.Any())
+                continue;
+
+            var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
+                .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
+            
+            sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
+            sb.AppendLine("| Path | Hash | Size | TxId |");
+            sb.AppendLine("| --- | --- | --- | --- |");
+            foreach (var entry in files) 
+                sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+        }
+        sb.AppendLine("\n\n");
+        
+        void Section(string sectionName, Transaction.ReadOnly asOf)
+        {
+            var entries = metadata.DiskStateAsOf(asOf);
+            sb.AppendLine($"{sectionName} - ({entries.Count}) - {TxId.From(asOf.Id.Value)}");
+            sb.AppendLine("| Path | Hash | Size | TxId |");
+            sb.AppendLine("| --- | --- | --- | --- |");
+            foreach (var entry in entries) 
+                sb.AppendLine($"| {entry.Path} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+        }
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _host.StartAsync();
+        GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
+        Game = (TGame)GameInstallation.Game;
+        
+        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
+        {
+            Logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            ResetGameFolders();
+        }
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _host.StopAsync();
     }
 }
