@@ -78,7 +78,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                     vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToLoadout(conn, loadout); });
 
-                    vm.State = ToState(GetJobRunningForGameInstallation(loadout.InstallationInstance), GameWidgetState.ManagedGame);
+                    var job = GetJobRunningForGameInstallation(loadout.InstallationInstance);
+                    vm.State = job.IsT2 ? GameWidgetState.RemovingGame : GameWidgetState.ManagedGame;
+
                     return vm;
                 })
                 .Bind(out _managedGames)
@@ -105,22 +107,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         vm.State = GameWidgetState.ManagedGame;
                     });
 
-                    vm.State = ToState(GetJobRunningForGameInstallation(install), GameWidgetState.DetectedGame);
+                    var job = GetJobRunningForGameInstallation(install);
+                    vm.State = job.IsT1 ? GameWidgetState.AddingGame : GameWidgetState.DetectedGame;
+
                     return vm;
                 })
                 .Bind(out _detectedGames)
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
         });
-    }
-
-    private static GameWidgetState ToState(OneOf<None, CreateLoadoutJob, UnmanageGameJob> res, GameWidgetState initial)
-    {
-        return res.Match(
-            f0: _ => initial,
-            f1: _ => GameWidgetState.AddingGame,
-            f2: _ => GameWidgetState.RemovingGame
-        );
     }
 
     private OneOf<None, CreateLoadoutJob, UnmanageGameJob> GetJobRunningForGameInstallation(GameInstallation installation)
