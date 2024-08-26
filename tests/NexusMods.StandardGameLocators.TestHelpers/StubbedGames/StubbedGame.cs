@@ -1,7 +1,5 @@
-using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -13,15 +11,11 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 // ReSharper disable InconsistentNaming
 
@@ -68,17 +62,12 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => new();
     
 
-    public IEnumerable<uint> SteamIds => new[] { 42u };
-    public IEnumerable<long> GogIds => new[] { (long)42 };
-    public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
-    public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
-    public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
-    public IEnumerable<string> XboxIds => new[] { "xbox-game-id" };
-
-    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
-    {
-        (IModInstaller)new StubbedGameInstaller(_serviceProvider),
-    };
+    public IEnumerable<uint> SteamIds => [42u];
+    public IEnumerable<long> GogIds => [42];
+    public IEnumerable<string> EADesktopSoftwareIDs => ["ea-game-id"];
+    public IEnumerable<string> EpicCatalogItemId => ["epic-game-id"];
+    public IEnumerable<string> OriginGameIds => ["origin-game-id"];
+    public IEnumerable<string> XboxIds => ["xbox-game-id"];
     
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

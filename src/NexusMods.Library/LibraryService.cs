@@ -55,13 +55,14 @@ public sealed class LibraryService : ILibraryService
         return group;
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? itemInstaller = null)
+    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? itemInstaller = null)
     {
+        var loadout = Loadout.Load(_connection.Db, targetLoadout);
         var job = new InstallLoadoutItemJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
         {
             Connection = _connection,
             LibraryItem = libraryItem,
-            Loadout = targetLoadout,
+            Loadout = loadout,
             Installer = itemInstaller,
         };
 
