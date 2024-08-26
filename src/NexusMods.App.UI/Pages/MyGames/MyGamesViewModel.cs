@@ -63,12 +63,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 {
                     var vm = provider.GetRequiredService<IGameWidgetViewModel>();
                     vm.Installation = loadout.InstallationInstance;
-                    vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                    {
-                        vm.State = GameWidgetState.AddingGame;
-                        await Task.Run(async () => await ManageGame(loadout.InstallationInstance));
-                        vm.State = GameWidgetState.ManagedGame;
-                    });
+
                     vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
                         vm.State = GameWidgetState.RemovingGame;
@@ -101,12 +96,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     {
                         vm.State = GameWidgetState.AddingGame;
                         await Task.Run(async () => await ManageGame(install));
-                        vm.State = GameWidgetState.ManagedGame;
-                    });
-                    vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
-                    {
-                        vm.State = GameWidgetState.RemovingGame;
-                        await Task.Run(async () => await RemoveAllLoadouts(install));
                         vm.State = GameWidgetState.ManagedGame;
                     });
 
