@@ -17,7 +17,7 @@ using NexusMods.Abstractions.Library.Installers;
 namespace NexusMods.Games.UnrealEngine.PacificDrive;
 
 [UsedImplicitly]
-public class PacificDriveGame : AGame, ISteamGame//, IEpicGame
+public class PacificDriveGame : AGame, ISteamGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("pacificdrive");
     private readonly IFileSystem _fileSystem;
@@ -55,7 +55,7 @@ public class PacificDriveGame : AGame, ISteamGame//, IEpicGame
     }
 
     public IEnumerable<uint> SteamIds => [1458140u];
-    public IEnumerable<string> EpicCatalogItemId => ["5beededaad9743df90e8f07d92df153f"]; // TODO: ask someone
+    public IEnumerable<string> EpicCatalogItemId => ["c75f6d17cb064f52bbf07c61df32e30f"];
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<PacificDriveGame>("NexusMods.Games.UnrealEngine.Resources.PacificDrive.icon.png");
