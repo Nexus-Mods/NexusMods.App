@@ -58,7 +58,7 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
         using var request = PrepareRequest(job, out var isRangeRequest);
         using var response = await Client.SendAsync(
             request: request,
-            completionOption: HttpCompletionOption.ResponseContentRead,
+            completionOption: HttpCompletionOption.ResponseHeadersRead,
             cancellationToken: cancellationToken
         );
 
