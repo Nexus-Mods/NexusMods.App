@@ -2,9 +2,12 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
+using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Icons;
 using ReactiveUI;
@@ -16,7 +19,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 {
     private readonly ILogger<GameWidgetViewModel> _logger;
 
-    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager)
+    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, IJobMonitor jobMonitor)
     {
         _logger = logger;
 
@@ -34,30 +37,59 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
             .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
 
         this.WhenActivated(disposables =>
-            {
-                this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"{inst.Game.Name}")
-                    .BindToVM(this, vm => vm.Name)
-                    .DisposeWith(disposables);
+        {
+            jobMonitor
+                .ObserveActiveJobs<CreateLoadoutJob>()
+                .Filter(job => job.Installation.Equals(Installation))
+                .OnUI()
+                .OnItemAdded(_ =>
+                {
+                    State = GameWidgetState.AddingGame;
+                })
+                .OnItemRemoved(_ =>
+                {
+                    State = GameWidgetState.ManagedGame;
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
 
-                this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"Version: {inst.Version}")
-                    .BindToVM(this, vm => vm.Version)
-                    .DisposeWith(disposables);
+            jobMonitor
+                .ObserveActiveJobs<UnmanageGameJob>()
+                .Filter(job => job.Installation.Equals(Installation))
+                .OnUI()
+                .OnItemAdded(_ =>
+                {
+                    State = GameWidgetState.RemovingGame;
+                })
+                .OnItemRemoved(_ =>
+                {
+                    State = GameWidgetState.DetectedGame;
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
 
-                this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"{inst.Store.Value}")
-                    .BindToVM(this, vm => vm.Store)
-                    .DisposeWith(disposables);
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => $"{inst.Game.Name}")
+                .BindToVM(this, vm => vm.Name)
+                .DisposeWith(disposables);
 
-                this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => MapGameStoreToIcon(inst.Store))
-                    .BindToVM(this, vm => vm.GameStoreIcon)
-                    .DisposeWith(disposables);
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => $"Version: {inst.Version}")
+                .BindToVM(this, vm => vm.Version)
+                .DisposeWith(disposables);
 
-                _image.DisposeWith(disposables);
-            }
-        );
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => $"{inst.Store.Value}")
+                .BindToVM(this, vm => vm.Store)
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.Installation)
+                .Select(inst => MapGameStoreToIcon(inst.Store))
+                .BindToVM(this, vm => vm.GameStoreIcon)
+                .DisposeWith(disposables);
+
+            _image.DisposeWith(disposables);
+        });
     }
 
     private async Task<Bitmap?> LoadImage(GameInstallation source)

@@ -70,16 +70,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
                         if (GetJobRunningForGameInstallation(loadout.InstallationInstance).IsT2) return;
-
-                        vm.State = GameWidgetState.RemovingGame;
                         await Task.Run(async () => await RemoveAllLoadouts(loadout.InstallationInstance));
-                        vm.State = GameWidgetState.ManagedGame;
                     });
 
                     vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToLoadout(conn, loadout); });
-
-                    var job = GetJobRunningForGameInstallation(loadout.InstallationInstance);
-                    vm.State = job.IsT2 ? GameWidgetState.RemovingGame : GameWidgetState.ManagedGame;
 
                     return vm;
                 })
@@ -101,14 +95,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
                         if (GetJobRunningForGameInstallation(install).IsT1) return;
-
-                        vm.State = GameWidgetState.AddingGame;
                         await Task.Run(async () => await ManageGame(install));
-                        vm.State = GameWidgetState.ManagedGame;
                     });
-
-                    var job = GetJobRunningForGameInstallation(install);
-                    vm.State = job.IsT1 ? GameWidgetState.AddingGame : GameWidgetState.DetectedGame;
 
                     return vm;
                 })
