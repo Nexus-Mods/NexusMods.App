@@ -254,11 +254,13 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>
     protected override void BeforeModelActivationHook(LibraryItemModel model)
     {
         model.Ticker = _ticker;
+        base.BeforeModelActivationHook(model);
     }
 
     protected override void BeforeModelDeactivationHook(LibraryItemModel model)
     {
         model.Ticker = null;
+        base.BeforeModelDeactivationHook(model);
     }
 
     protected override IObservable<IChangeSet<LibraryItemModel>> GetRootsObservable(bool viewHierarchical)
