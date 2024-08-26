@@ -133,26 +133,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         if (jobRunning) return;
 
         var install = await ((IGame)installation.Game).Synchronizer.CreateLoadout(installation);
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            var workspaceController = _windowManager.ActiveWorkspaceController;
-
-            workspaceController.ChangeOrCreateWorkspaceByContext(
-                context => context.LoadoutId == install.LoadoutId,
-                () => new PageData
-                {
-                    FactoryId = LoadoutGridPageFactory.StaticId,
-                    Context = new LoadoutGridContext
-                    {
-                        LoadoutId = install.LoadoutId,
-                    },
-                },
-                () => new LoadoutContext
-                {
-                    LoadoutId = install.LoadoutId,
-                }
-            );
-        });
     }
 
     private void NavigateToLoadout(IConnection conn, Loadout.ReadOnly loadout)
