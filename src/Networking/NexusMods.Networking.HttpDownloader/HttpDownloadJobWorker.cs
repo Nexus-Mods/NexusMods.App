@@ -44,6 +44,7 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
             await FetchMetadata(job, cancellationToken);
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
         await using var outputStream = job.Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         if (job.ContentLength.HasValue)
         {
@@ -97,11 +98,11 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
 
         try
         {
+            // TODO: use delegating Stream with progress reporting support
             await response.Content.CopyToAsync(outputStream, cancellationToken);
-        } catch (Exception)
-        {
+        }
+        finally{
             job.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
-            throw;
         }
 
         return JobResult.CreateCompleted(job.Destination);
