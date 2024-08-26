@@ -86,7 +86,8 @@ public class StressTest
 
                         var list = await game.Synchronizer.CreateLoadout(install);
                         
-                        var modId = await libraryService.AddLocalFileAndInstall(tmpPath, list.Id, token: token);
+                        var localFile = await libraryService.AddLocalFileAndWait(tmpPath, token);
+                        await libraryService.InstallItemAndWait(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId, token: token);
                         
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, file.FileId,

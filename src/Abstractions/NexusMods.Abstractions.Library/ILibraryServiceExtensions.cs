@@ -15,7 +15,7 @@ public static class ILibraryServiceExtensions
     /// <summary>
     /// Adds a local file to the library and installs it.
     /// </summary>
-    public static async Task<LoadoutItemGroup.ReadOnly> AddLocalFileAndInstall(this ILibraryService libraryService, AbsolutePath file, LoadoutId targetLoadout, ILibraryItemInstaller? installer = null, CancellationToken token = default)
+    public static async Task<LocalFile.ReadOnly> AddLocalFileAndWait(this ILibraryService libraryService, AbsolutePath file, CancellationToken token = default)
     {
         await using var job = libraryService.AddLocalFile(file);
         await job.StartAsync(token);
@@ -27,7 +27,15 @@ public static class ILibraryServiceExtensions
         if (!completed.TryGetData<LocalFile.ReadOnly>(out var localFile))
             throw new Exception("Failed to store the file");
 
-        await using var installJob = libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), targetLoadout);
+        return localFile;
+    }
+    
+    /// <summary>
+    /// Adds a local file to the library and installs it.
+    /// </summary>
+    public static async Task<LoadoutItemGroup.ReadOnly> InstallItemAndWait(this ILibraryService libraryService, LibraryItem.ReadOnly item, LoadoutId targetLoadout, ILibraryItemInstaller? installer = null, CancellationToken token = default)
+    {
+        await using var installJob = libraryService.InstallItem(item, targetLoadout, installer);
         await installJob.StartAsync(token);
         await installJob.WaitToFinishAsync(token);
         
