@@ -16,7 +16,6 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
@@ -58,9 +57,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             // Managed games widgets
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
-                .RemoveKey()
-                .GroupOn(loadout => loadout.InstallationInstance.LocationsRegister[LocationId.Game])
-                .Transform(group=> group.List.Items.First())
+                .ChangeKey(loadout => loadout.InstallationInstance.LocationsRegister[LocationId.Game])
+                .EnsureUniqueKeys()
                 .OnUI()
                 .Transform(loadout =>
                 {
