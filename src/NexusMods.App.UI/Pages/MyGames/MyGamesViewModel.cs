@@ -59,7 +59,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
                 .DistinctValues(loadout => loadout.InstallationInstance)
-                .RemoveKey()
                 .OnUI()
                 .Transform(installation =>
                 {
