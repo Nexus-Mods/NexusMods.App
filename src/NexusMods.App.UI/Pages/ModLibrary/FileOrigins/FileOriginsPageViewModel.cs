@@ -135,7 +135,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 }
             );
 
-            LibraryUserFilters.ObserveFilteredLibraryItems(connection: _conn)
+            LibraryItem.ObserveAll(_conn).Where(LibraryUserFilters.ShouldShow)
                 .Select(item => item.ToLibraryFile())
                 .Where(file => file.IsValid())
                 .OnUI()
