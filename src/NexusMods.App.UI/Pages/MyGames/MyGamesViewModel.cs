@@ -16,8 +16,11 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using OneOf;
+using OneOf.Types;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -66,7 +69,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                     vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
-                        if (IsJobRunningForGameInstallation(loadout.InstallationInstance)) return;
+                        if (GetJobRunningForGameInstallation(loadout.InstallationInstance).IsT2) return;
 
                         vm.State = GameWidgetState.RemovingGame;
                         await Task.Run(async () => await RemoveAllLoadouts(loadout.InstallationInstance));
@@ -75,7 +78,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                     vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToLoadout(conn, loadout); });
 
-                    vm.State = IsJobRunningForGameInstallation(loadout.InstallationInstance) ? GameWidgetState.RemovingGame : GameWidgetState.ManagedGame;
+                    vm.State = ToState(GetJobRunningForGameInstallation(loadout.InstallationInstance), GameWidgetState.ManagedGame);
                     return vm;
                 })
                 .Bind(out _managedGames)
@@ -95,14 +98,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                     vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
-                        if (IsJobRunningForGameInstallation(install)) return;
+                        if (GetJobRunningForGameInstallation(install).IsT1) return;
 
                         vm.State = GameWidgetState.AddingGame;
                         await Task.Run(async () => await ManageGame(install));
                         vm.State = GameWidgetState.ManagedGame;
                     });
 
-                    vm.State = IsJobRunningForGameInstallation(install) ? GameWidgetState.AddingGame : GameWidgetState.DetectedGame;
+                    vm.State = ToState(GetJobRunningForGameInstallation(install), GameWidgetState.DetectedGame);
                     return vm;
                 })
                 .Bind(out _detectedGames)
@@ -111,36 +114,35 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         });
     }
 
-    private bool IsJobRunningForGameInstallation(GameInstallation installation)
+    private static GameWidgetState ToState(OneOf<None, CreateLoadoutJob, UnmanageGameJob> res, GameWidgetState initial)
     {
-        return _jobMonitor.Jobs
-            .Any(job =>
-            {
-                if (job.Status != JobStatus.Running) return false;
+        return res.Match(
+            f0: _ => initial,
+            f1: _ => GameWidgetState.AddingGame,
+            f2: _ => GameWidgetState.RemovingGame
+        );
+    }
 
-                if (job is CreateLoadoutJob createLoadoutJob)
-                {
-                    return createLoadoutJob.Installation.Equals(installation);
-                }
+    private OneOf<None, CreateLoadoutJob, UnmanageGameJob> GetJobRunningForGameInstallation(GameInstallation installation)
+    {
+        foreach (var job in _jobMonitor.Jobs)
+        {
+            if (job.Status != JobStatus.Running) continue;
 
-                if (job is UnmanageGameJob unmanageGameJob)
-                {
-                    return unmanageGameJob.Installation.Equals(installation);
-                }
+            if (job is CreateLoadoutJob createLoadoutJob && createLoadoutJob.Installation.Equals(installation)) return createLoadoutJob;
+            if (job is UnmanageGameJob unmanageGameJob && unmanageGameJob.Installation.Equals(installation)) return unmanageGameJob;
+        }
 
-                return false;
-            });
+        return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
     }
 
     private async Task RemoveAllLoadouts(GameInstallation installation)
     {
-        IsJobRunningForGameInstallation(installation);
         await installation.GetGame().Synchronizer.UnManage(installation);
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
-        IsJobRunningForGameInstallation(installation);
         await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
 
