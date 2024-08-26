@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <PackageReference Include="Polly" />
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
@@ -11,11 +12,11 @@
         <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
         <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Downloader" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>

@@ -1,4 +1,4 @@
-using Downloader;
+using System.Net.Http.Headers;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.HttpDownloads;
@@ -32,9 +32,12 @@ public class HttpDownloadJob : APersistedJob, IHttpDownloadJob
     /// <inheritdoc/>
     public Uri DownloadPageUri => Get(HttpDownloadJobPersistedState.DownloadPageUri);
 
-    public Optional<DownloadPackage> DownloadPackage { get; set; }
+    public Size TotalBytesDownloaded { get; set; }
+    public Optional<bool> AcceptRanges { get; set; }
+    public Optional<Size> ContentLength { get; set; }
+    public Optional<EntityTagHeaderValue> ETag { get; set; }
 
-    public Optional<DownloadConfiguration> DownloadConfiguration { get; set; }
+    public bool IsFirstRequest => TotalBytesDownloaded == default(Size);
 
     /// <inheritdoc/>
     public ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)

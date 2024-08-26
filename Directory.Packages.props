@@ -3,10 +3,10 @@
     <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.1.0" />
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.1.0" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
-    <PackageVersion Include="Downloader" Version="3.1.2" />
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.8.0" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
     <PackageVersion Include="NexusMods.Paths" Version="0.10.0" />
@@ -25,6 +25,7 @@
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="ObservableCollections" Version="2.2.0" />
     <PackageVersion Include="ObservableCollections.R3" Version="2.2.0" />
+    <PackageVersion Include="Polly" Version="8.4.1" />
     <PackageVersion Include="R3" Version="1.2.8" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.8" />
     <PackageVersion Include="ReactiveUI" Version="20.1.1" />
