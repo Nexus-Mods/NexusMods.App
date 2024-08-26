@@ -1,5 +1,6 @@
 using DynamicData;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls;
 using ObservableCollections;
 using R3;
 
@@ -8,6 +9,40 @@ namespace NexusMods.App.UI.Extensions;
 [PublicAPI]
 public static class R3Extensions
 {
+    /// <summary>
+    /// Provides an activation block for <see cref="ReactiveR3Object"/>.
+    /// </summary>
+    [MustDisposeResource] public static IDisposable WhenActivated<T>(
+        this T obj,
+        Action<T, CompositeDisposable> block)
+        where T : ReactiveR3Object
+    {
+        var d = Disposable.CreateBuilder();
+
+        var serialDisposable = new SerialDisposable();
+        serialDisposable.AddTo(ref d);
+
+        obj.Activation.DistinctUntilChanged().Subscribe((obj, serialDisposable, block), onNext: static (isActivated, state) =>
+        {
+            var (model, serialDisposable, block) = state;
+
+            serialDisposable.Disposable = null;
+            if (isActivated)
+            {
+                var compositeDisposable = new CompositeDisposable();
+                serialDisposable.Disposable = compositeDisposable;
+
+                block(model, compositeDisposable);
+            }
+        }, onCompleted: static (_, state) =>
+        {
+            var (_, serialDisposable, _) = state;
+            serialDisposable.Disposable = null;
+        }).AddTo(ref d);
+
+        return d.Build();
+    }
+
     public static (ObservableHashSet<TValue> set, IDisposable disposable) ToObservableHashSet<TValue>(this IObservable<IChangeSet<TValue>> source)
         where TValue : notnull
     {
