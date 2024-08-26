@@ -9,6 +9,9 @@ namespace NexusMods.App.UI.Extensions;
 [PublicAPI]
 public static class R3Extensions
 {
+    /// <summary>
+    /// Provides an activation block for <see cref="ReactiveR3Object"/>.
+    /// </summary>
     [MustDisposeResource] public static IDisposable WhenActivated<T>(
         this T obj,
         Action<T, CompositeDisposable> block)

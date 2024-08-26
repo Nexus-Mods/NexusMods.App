@@ -1,8 +1,15 @@
+using System.ComponentModel;
+using JetBrains.Annotations;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
 
-public class ReactiveR3Object : ReactiveUI.ReactiveObject, IDisposable
+/// <summary>
+/// Base class using R3 with support for activation/deactivation,
+/// <see cref="INotifyPropertyChanged"/>, and <see cref="INotifyPropertyChanging"/>.
+/// </summary>
+[PublicAPI]
+public class ReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
 {
     private readonly BehaviorSubject<bool> _activation = new(initialValue: false);
     public Observable<bool> Activation => _activation;
@@ -30,5 +37,19 @@ public class ReactiveR3Object : ReactiveUI.ReactiveObject, IDisposable
         }
 
         _isDisposed = true;
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangingEventHandler? PropertyChanging;
+    public void RaisePropertyChanging(PropertyChangingEventArgs args)
+    {
+        var propertyChanging = PropertyChanging;
+        propertyChanging?.Invoke(this, args);
+    }
+
+    public void RaisePropertyChanged(PropertyChangedEventArgs args)
+    {
+        var propertyChanged = PropertyChanged;
+        propertyChanged?.Invoke(this, args);
     }
 }

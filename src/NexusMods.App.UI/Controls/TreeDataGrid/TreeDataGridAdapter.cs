@@ -8,6 +8,9 @@ using R3;
 
 namespace NexusMods.App.UI.Controls;
 
+/// <summary>
+/// Adapter class for working with <see cref="TreeDataGrid"/>.
+/// </summary>
 public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
     where TModel : TreeDataGridItemModel<TModel>
 {
