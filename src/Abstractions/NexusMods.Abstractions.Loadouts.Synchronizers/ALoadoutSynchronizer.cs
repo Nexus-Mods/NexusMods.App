@@ -1092,19 +1092,32 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
-        var metadata = installation.GetMetadata(Connection);
-        
-        if (GetCurrentlyActiveLoadout(installation).HasValue)
-            await DeactivateCurrentLoadout(installation);
-
-        foreach (var loadout in metadata.Loadouts)
+        var initialJob = new UnmanageGameJob(monitor: _serviceProvider.GetService<IJobMonitor>())
         {
-            _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-            await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
-        }
+            Installation = installation,
+        };
 
-        if (runGc)
-            _garbageCollectorRunner.Run();
+        var worker = JobWorker.Create(initialJob, async (job, jobWorker, cancellationToken) =>
+        {
+            var metadata = job.Installation.GetMetadata(Connection);
+
+            if (GetCurrentlyActiveLoadout(job.Installation).HasValue)
+                await DeactivateCurrentLoadout(job.Installation);
+
+            foreach (var loadout in metadata.Loadouts)
+            {
+                _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+                await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
+            }
+
+            if (runGc)
+                _garbageCollectorRunner.Run();
+
+            return JobResult.CreateCompleted(true);
+        });
+
+        await initialJob.StartAsync();
+        await initialJob.WaitToFinishAsync();
     }
 
     /// <inheritdoc />
