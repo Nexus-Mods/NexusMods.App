@@ -151,7 +151,7 @@
 		<value>Historia pobierania</value>
 	</data>
 	<data name="DownloadsView_UnderDevelopment" xml:space="preserve">
-		<value>Strona pobierania jest aktualnie przerabiana i zostanie zastąpiona w przyszłej aktualizacji. Przepraszamy za niedogodności.</value>
+		<value>Strona pobierania jest aktualnie przerabiana i zostanie zastąpiona w przyszłej aktualizacji.&#xA;Przepraszamy za niedogodności.</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
 		<value>Proszę kliknąć "Authorise" na stronie internetowej</value>
