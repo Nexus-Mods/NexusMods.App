@@ -564,6 +564,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutItem.New LoadoutItem { get; init; }
         public required LoadoutItemWithTargetPath.New LoadoutItemWithTargetPath { get; init; }
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
+        public required SyncTreeNode SyncTreeNode { get; init; }
     }
 
     private async Task ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
@@ -576,6 +577,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
+            if (file.LoadoutFileId.HasValue)
+            {
+                var prevLoadoutFile = LoadoutItemWithTargetPath.Load(Connection.Db, file.LoadoutFileId.Value);
+                if (prevLoadoutFile.IsValid() && prevLoadoutFile.AsLoadoutItem().ParentId.Value == overridesMod.Value)
+                {
+                    // If the file is already in the overrides mod, we need to remove the old entry
+                    tx.Delete(prevLoadoutFile.Id, false);
+                }
+            }
+            
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
@@ -601,6 +612,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutItem = loadoutItem,
                     LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
                     LoadoutFileEntry = loadoutFile,
+                    SyncTreeNode = file,
                 }
             );
             tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
