@@ -6,6 +6,7 @@
                                 xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+                                xmlns:chevron="clr-namespace:NexusMods.App.UI.Controls.Chevron"
                                 mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
     <Design.DataContext>
@@ -13,16 +14,24 @@
     </Design.DataContext>
 
     <navigation:NavigationControl x:Name="EntryButton" HorizontalAlignment="Stretch" Padding="12">
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Stretch"
-                    Spacing="{StaticResource Spacing-2}"
-                    VerticalAlignment="Center">
+        <Grid ColumnDefinitions="Auto, *">
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="0"
+                        Spacing="{StaticResource Spacing-2}"
+                        VerticalAlignment="Center">
 
-            <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
-            <TextBlock x:Name="DescriptionText"
-                       Theme="{StaticResource BodyMDBoldTheme}"
-                       VerticalAlignment="Center"/>
-        </StackPanel>
+                <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
+                <TextBlock x:Name="DescriptionText"
+                           Theme="{StaticResource BodyMDBoldTheme}"
+                           VerticalAlignment="Center"/>
+            
+            </StackPanel>
+            
+            <chevron:Chevron Grid.Column="1" 
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center"/>
+        </Grid>
+
     </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>

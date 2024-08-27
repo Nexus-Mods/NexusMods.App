@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="32" d:DesignHeight="32"
+             x:Class="NexusMods.App.UI.Controls.Chevron.Chevron">
+    <UserControl.Styles>
+        <Style Selector="Path.Chevron">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Fill" Value="{StaticResource NeutralSubduedBrush}" />
+            <Style Selector="^:pointerover">
+                <Setter Property="Fill" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+    
+    <!-- This is a chevron 'decoration' control, that's used to add an arrow to an existing view -->
+    <Path x:Name="ChevronPath"
+          Classes="Chevron"
+          Data="M 1,0 10,10 l -9,10 -1,-1 L 8,10 -0,1 Z"
+          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}"
+          Stretch="Uniform"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center" />
+</UserControl>
+
