@@ -9,7 +9,7 @@ namespace NexusMods.Networking.HttpDownloader;
 /// A simple implementation of <see cref="IHttpDownloader"/> used for diagnostic
 /// purposes, or as a fallback.
 /// </summary>
-[Obsolete(message: "To be replaced with Jobs and an easier implementation using the Downloader package")]
+[Obsolete(message: "To be replaced with Jobs")]
 public class SimpleHttpDownloader : IHttpDownloader
 {
     private static readonly HttpClient HttpClient = new();
@@ -24,10 +24,11 @@ public class SimpleHttpDownloader : IHttpDownloader
     {
         var url = sources[0].RequestUri!.ToString();
 
-        await using var inStream = await HttpClient.GetStreamAsync(url, cancellationToken: cancellationToken);
-        await using var outStream = destination.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-
-        await inStream.CopyToAsync(outStream, cancellationToken: cancellationToken);
+        await using (var inStream = await HttpClient.GetStreamAsync(url, cancellationToken: cancellationToken))
+        await using (var outStream = destination.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+        {
+            await inStream.CopyToAsync(outStream, cancellationToken: cancellationToken);
+        }
 
         return await destination.XxHash64Async(token: cancellationToken);
     }
