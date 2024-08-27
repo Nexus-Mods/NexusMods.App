@@ -4,7 +4,6 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
