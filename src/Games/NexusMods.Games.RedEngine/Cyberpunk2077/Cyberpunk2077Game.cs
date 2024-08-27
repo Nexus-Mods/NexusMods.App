@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -7,7 +7,6 @@ using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -19,15 +18,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
+[UsedImplicitly]
 public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
-    private readonly IFileSystem _fileSystem;
     private readonly IServiceProvider _serviceProvider;
 
-    public Cyberpunk2077Game(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(provider)
+    public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
     {
-        _fileSystem = fileSystem;
         _serviceProvider = provider;
     }
 
@@ -71,15 +69,6 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     [
         new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, _serviceProvider),
     ];
-
-    /// <inheritdoc />
-    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
-    {
-        new RedModInstaller(_serviceProvider),
-        new SimpleOverlayModInstaller(_serviceProvider),
-        new AppearancePresetInstaller(_serviceProvider),
-        new FolderlessModInstaller(_serviceProvider),
-    };
     
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>

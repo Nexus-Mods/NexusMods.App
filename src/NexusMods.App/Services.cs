@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
@@ -20,7 +19,6 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -81,7 +79,6 @@ public static class Services
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
-                .AddInstallerTypes()
                 .AddSupportedGames(experimentalSettings)
                 .AddActivityMonitor()
                 .AddCrossPlatform()
@@ -89,7 +86,6 @@ public static class Services
                 .AddGenericGameSupport()
                 .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
-                .AddReshade()
                 .AddFomod()
                 .AddNexusWebApi()
                 .AddHttpDownloader()

@@ -10,7 +10,6 @@ using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
@@ -97,7 +96,6 @@ public static class Services
         coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
         
-        coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
 
         // Disk State and Synchronizer

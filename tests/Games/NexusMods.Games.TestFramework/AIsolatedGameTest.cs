@@ -1,7 +1,6 @@
 using System.IO.Compression;
 using System.Text;
 using FluentAssertions;
-using FomodInstaller.Interface;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +12,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
@@ -117,7 +115,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
             .AddFileStoreAbstractions()
-            .AddInstallerTypes()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }
