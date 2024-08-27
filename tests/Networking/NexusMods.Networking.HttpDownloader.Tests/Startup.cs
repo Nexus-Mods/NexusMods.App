@@ -1,7 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.DataModel;
+using NexusMods.Games.TestFramework;
+using NexusMods.Jobs;
 using NexusMods.Paths;
 using NexusMods.Settings;
 
@@ -16,13 +20,9 @@ public class Startup
             .Combine($"NexusMods.Networking.HttpDownloader.Tests-{Guid.NewGuid()}");
 
         container
-            .AddSettingsManager()
+            .AddDefaultServicesForTesting(prefix)
             .AddSingleton<SimpleHttpDownloader>()
-            .AddFileSystem()
-            .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddSingleton<HttpClient>()
             .AddSingleton<LocalHttpServer>()
-            .AddActivityMonitor()
             .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }

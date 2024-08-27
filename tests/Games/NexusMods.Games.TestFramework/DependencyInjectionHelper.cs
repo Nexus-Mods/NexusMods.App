@@ -43,13 +43,13 @@ public static class DependencyInjectionHelper
     /// </summary>
     /// <param name="serviceCollection"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection, AbsolutePath prefix = default(AbsolutePath))
     {
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"DataModel.{Guid.NewGuid()}";
-        var prefix = FileSystem.Shared
+        prefix = prefix == default(AbsolutePath) ? FileSystem.Shared
             .GetKnownPath(KnownPath.EntryDirectory)
-            .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
+            .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}") : prefix;
 
         return serviceCollection
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
