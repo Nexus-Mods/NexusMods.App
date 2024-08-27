@@ -27,7 +27,7 @@ public sealed class StreamProgressWrapper<TState> : Stream
         _state = state;
         _notifyWritten = notifyWritten;
 
-        _period = period == default(TimeSpan) ? TimeSpan.FromMilliseconds(250) : period;
+        _period = period == default(TimeSpan) ? TimeSpan.FromSeconds(1) : period;
         timeProvider ??= TimeProvider.System;
 
         _timer = timeProvider.CreateTimer(NotifyLoop, state: this, dueTime: TimeSpan.Zero, period: _period);
