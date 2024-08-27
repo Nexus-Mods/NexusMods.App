@@ -18,7 +18,6 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -576,6 +575,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
+            // If the file is already in the loadout, we just need to update entry's hash and size
+            if (file.LoadoutFileId.HasValue)
+            {
+                var prevLoadoutFile = LoadoutItemWithTargetPath.Load(Connection.Db, file.LoadoutFileId.Value);
+                if (prevLoadoutFile.IsValid())
+                {
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
+                    
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    continue;
+                }
+            }
+            
+            // If the file is not in the loadout, we need to add it
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
