@@ -31,9 +31,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public string EmptyLibrarySubtitleText { get; }
 
-    private Dictionary<LibraryItemModel, IDisposable> InstallCommandDisposables { get; set; } = new();
-    private Subject<LibraryItemId> InstallLibraryItemSubject { get; } = new();
-
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
 
     public ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
@@ -125,44 +122,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
+            Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
+
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
-
-            Disposable.Create(this, static vm =>
-            {
-                foreach (var kv in vm.InstallCommandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                vm.InstallCommandDisposables.Clear();
-            }).AddTo(disposables);
-
-            Adapter.ModelActivationSubject
-                .Subscribe(this, static (tuple, vm) =>
-                {
-                    var (model, isActivated) = tuple;
-
-                    if (isActivated)
-                    {
-                        var disposable = model.InstallCommand.Subscribe(vm, static (libraryItemId, vm) => vm.InstallLibraryItemSubject.OnNext(libraryItemId));
-                        var didAdd = vm.InstallCommandDisposables.TryAdd(model, disposable);
-                        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-                    }
-                    else
-                    {
-                        var didRemove = vm.InstallCommandDisposables.Remove(model, out var disposable);
-                        Debug.Assert(didRemove, "subscription for the model should exist");
-                        disposable?.Dispose();
-                    }
-                })
-                .AddTo(disposables);
-
-            InstallLibraryItemSubject
-                .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id))
+            Adapter.MessageSubject
+                .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id.Id))
                 .Where(static item => item.IsValid())
                 .SubscribeAwait(
                     onNextAsync: (libraryItem, cancellationToken) => InstallLibraryItem(libraryItem, _loadout, cancellationToken),
@@ -240,26 +206,61 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 }
 
-public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>
+public readonly record struct InstallMessage(LibraryItemId Id);
+
+public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>,
+    ITreeDataGirdMessageAdapter<InstallMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly ConnectableObservable<DateTime> _ticker;
 
+    public Subject<InstallMessage> MessageSubject { get; } = new();
+    private readonly Dictionary<LibraryItemModel, IDisposable> _commandDisposables = new();
+
+    private readonly IDisposable _activationDisposable;
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
     {
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
         _ticker = ticker;
+
+        _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
+        {
+            Disposable.Create(adapter._commandDisposables, static commandDisposables =>
+            {
+                foreach (var kv in commandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
+
+                commandDisposables.Clear();
+            }).AddTo(disposables);
+        });
     }
 
     protected override void BeforeModelActivationHook(LibraryItemModel model)
     {
         model.Ticker = _ticker;
+
+        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (libraryItemId, subject) =>
+        {
+            subject.OnNext(new InstallMessage(libraryItemId));
+        });
+
+        var didAdd = _commandDisposables.TryAdd(model, disposable);
+        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+
         base.BeforeModelActivationHook(model);
     }
 
     protected override void BeforeModelDeactivationHook(LibraryItemModel model)
     {
         model.Ticker = null;
+
+        var didRemove = _commandDisposables.Remove(model, out var disposable);
+        Debug.Assert(didRemove, "subscription for the model should exist");
+        disposable?.Dispose();
+
         base.BeforeModelDeactivationHook(model);
     }
 
@@ -285,5 +286,21 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>
             LibraryItemModel.CreateInstalledAtColumn(),
             LibraryItemModel.CreateInstallColumn(),
         ];
+    }
+
+    private bool _isDisposed;
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                _activationDisposable.Dispose();
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
     }
 }

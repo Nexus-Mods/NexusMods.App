@@ -46,7 +46,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
             static (isInstalled, libraryItemId) => !isInstalled && libraryItemId.HasValue
         ).ToObservable();
 
-        InstallCommand = new R3.ReactiveCommand<Unit, LibraryItemId>(canExecuteSource: canInstall, initialCanExecute: false, convert: _ => LibraryItemId.Value);
+        InstallCommand = canInstall.ToReactiveCommand<Unit, LibraryItemId>(_ => LibraryItemId.Value, initialCanExecute: false);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
