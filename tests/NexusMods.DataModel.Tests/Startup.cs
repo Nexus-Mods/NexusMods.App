@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
@@ -13,8 +12,12 @@ using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
+using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
+using NexusMods.Games.TestFramework;
 using NexusMods.Jobs;
 using NexusMods.Library;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
@@ -46,34 +49,10 @@ public static class Startup
             .Combine(baseDirectory);
 
         return container
-            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
-            .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
-            .AddFileSystem()
-            .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddSettingsManager()
-            .AddDataModel()
-            .AddLibrary()
-            .AddLibraryModels()
-            .AddJobMonitor()
-            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
-            {
-                UseInMemoryDataModel = true,
-                MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
-                ArchiveLocations = [
-                    new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
-                ],
-            })
-            .AddGames()
-            .AddStandardGameLocators(false)
-            .AddFileExtractors()
-            .AddStubbedGameLocators()
-            .AddFileStoreAbstractions()
+            .AddDefaultServicesForTesting()
+            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
+            .AddRedEngineGames()
             .AddLoadoutAbstractions()
-            .AddSerializationAbstractions()
-            .AddActivityMonitor()
-            .AddInstallerTypes()
-            .AddCrossPlatform()
-            .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
             .Validate();
     }
 }

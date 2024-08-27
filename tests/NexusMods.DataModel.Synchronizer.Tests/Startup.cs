@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
@@ -23,6 +22,7 @@ public class Startup
     /// <param name="container"></param>
     public void ConfigureServices(IServiceCollection container)
     {
+        /*
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
@@ -36,6 +36,7 @@ public class Startup
             .AddFileStoreAbstractions()
             .AddInstallerTypes()
             .Validate();
+            */
     }
 }
 

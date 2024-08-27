@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
@@ -60,7 +59,6 @@ public class Startup
                 .AddFileStoreAbstractions()
                 .AddSerializationAbstractions()
                 .AddGames()
-                .AddInstallerTypes()
                 .AddCrossPlatform()
                 .AddSettings<LoggingSettings>()
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))

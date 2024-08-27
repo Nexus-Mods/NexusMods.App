@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using NexusMods.App.UI.WorkspaceSystem;
 using R3;
@@ -7,12 +6,9 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public interface ILibraryViewModel : IPageViewModelInterface
 {
-    ITreeDataGridSource<LibraryItemModel>? Source { get; }
+    LibraryTreeDataGridAdapter Adapter { get; }
 
-    bool IsEmpty { get; }
     string EmptyLibrarySubtitleText { get; }
-
-    Subject<(LibraryItemModel, bool)> ActivationSubject { get; }
 
     ReactiveCommand<Unit> SwitchViewCommand { get; }
 

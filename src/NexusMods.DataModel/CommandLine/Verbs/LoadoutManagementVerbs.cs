@@ -5,7 +5,6 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;

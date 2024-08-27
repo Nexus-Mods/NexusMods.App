@@ -3,7 +3,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Types;
-using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -33,7 +32,6 @@ public static class Services
 
         // Protocol Handlers
         services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
-        services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
 
         services.AddProtocolVerbs();
         return services;

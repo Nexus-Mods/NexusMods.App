@@ -1,14 +1,9 @@
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -34,8 +29,7 @@ public class StressTest
         [Injected] INexusApiClient nexusApiClient,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] IHttpDownloader downloader,
-        [Injected] IArchiveInstaller archiveInstaller,
-        [Injected] IFileOriginRegistry fileOriginRegistry,
+        [Injected] ILibraryService libraryService,
         [Injected] IEnumerable<IGameLocator> gameLocators,
         [Injected] IGuidedInstaller optionSelector,
         [Injected] CancellationToken token)
@@ -91,11 +85,10 @@ public class StressTest
                             Size.FromLong(file.SizeInBytes ?? 0));
 
                         var list = await game.Synchronizer.CreateLoadout(install);
-                        var downloadId = await fileOriginRegistry.RegisterDownload(tmpPath, 
-                            (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, tmpPath.Path.Name),
-                            tmpPath.Path.Name, token);
-                        await archiveInstaller.AddMods(LoadoutId.From(list.Id), downloadId, token: token);
-
+                        
+                        var localFile = await libraryService.AddLocalFileAndWait(tmpPath, token);
+                        await libraryService.InstallItemAndWait(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId, token: token);
+                        
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, file.FileId,
                             file.FileName, Size.FromLong(file.SizeInBytes ?? 0));

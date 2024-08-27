@@ -1,7 +1,5 @@
 ﻿using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -17,7 +15,7 @@ public static class Services
     public static IServiceCollection AddFomod(this IServiceCollection services)
     {
         services.AddAttributeCollection(typeof(EmptyDirectory));
-        services.AddAllSingleton<ICoreDelegates, InstallerDelegates>();
+        services.AddSingleton<ICoreDelegates, InstallerDelegates>();
         return services;
     }
 }

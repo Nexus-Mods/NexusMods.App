@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.ProxyConsole;
 using Xunit.DependencyInjection.Logging;
 
-namespace NexusMods.Spectre.ProxyConsole.Tests;
+namespace NexusMods.ProxyConsole.Tests;
 
 public class Startup
 {
