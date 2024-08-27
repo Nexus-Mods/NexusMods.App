@@ -9,10 +9,10 @@
 
 
     <!-- Zinc -->
-    <Color x:Key="PrimitiveZinc950">#09090B</Color>
-    <Color x:Key="PrimitiveZinc900">#18181B</Color>
-    <Color x:Key="PrimitiveZinc800">#27272A</Color>
-    <Color x:Key="PrimitiveZinc700">#3F3F46</Color>
+    <Color x:Key="PrimitiveZinc950">#0F0F10</Color>
+    <Color x:Key="PrimitiveZinc900">#1D1D21</Color>
+    <Color x:Key="PrimitiveZinc800">#29292E</Color>
+    <Color x:Key="PrimitiveZinc700">#3E3E47</Color>
     <Color x:Key="PrimitiveZinc600">#52525B</Color>
     <Color x:Key="PrimitiveZinc500">#71717A</Color>
     <Color x:Key="PrimitiveZinc400">#A1A1AA</Color>
