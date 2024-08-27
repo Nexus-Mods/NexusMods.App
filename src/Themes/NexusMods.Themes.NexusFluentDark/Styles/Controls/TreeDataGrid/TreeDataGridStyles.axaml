@@ -2,7 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters">
 
+
     <!-- Style Definitions -->
+
+
     <Style Selector="TreeDataGrid.TreeWhiteCaret">
         <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
             <Setter Property="Width" Value="16" />
@@ -14,6 +17,7 @@
             </Style>
         </Style>
     </Style>
+
 
     <!-- Default Header Style for TreeDataGrid, for when the header exists -->
     <Style Selector="TreeDataGrid">
@@ -30,16 +34,12 @@
         </Style>
     </Style>
 
+
     <!-- Column Header/Text Style -->
     <Style Selector="TreeDataGridColumnHeader">
         <!-- Text Inside Column Header -->
         <!-- Note: Keeping Highlight as White for now. -->
-        <!-- Note(Sewer): This is not ideal.
-             I tried selecting with `^ /template/ ContentPresenter#PART_ContentPresenter TextBlock`
-             but it seems the style system isn't happy to let me nest inside the ContentPresenter.
-             
-             I'm not 100% sure what to do.
-        -->
+
         <Style Selector="^ TextBlock">
             <Setter Property="TextBlock.Foreground"
                     Value="{StaticResource NeutralSubdued}" />
@@ -50,13 +50,6 @@
 
     <!-- Modlist and Library TreeDataGrid Styles -->
     <Style Selector="TreeDataGrid.MainListsStyling">
-        <Style.Resources>
-            <ResourceDictionary>
-                <StreamGeometry x:Key="TreeDataGridItemCollapsedChevronPathData">M7.15833 13.825L10.975 10L7.15833 6.175L8.33333 5L13.3333 10L8.33333 15L7.15833 13.825Z</StreamGeometry>
-                <StreamGeometry x:Key="TreeDataGridItemExpandedChevronPathData">M6.175 7.15833L10 10.975L13.825 7.15833L15 8.33333L10 13.3333L5 8.33333L6.175 7.15833Z</StreamGeometry>
-            </ResourceDictionary>
-        </Style.Resources>
-
 
         <Setter Property="BorderThickness" Value="0" />
 
@@ -77,81 +70,101 @@
             </Style>
         </Style>
 
+        <!-- First column header padding -->
         <Style Selector="^ TreeDataGridColumnHeader:nth-child(1)">
             <Setter Property="Padding" Value="24,0,0,0" />
         </Style>
 
+        <!-- Last column header padding -->
         <Style Selector="^ TreeDataGridColumnHeader:nth-last-child(1)">
             <Setter Property="Padding" Value="0,0,24,0" />
         </Style>
 
+        <!-- Row Style -->
         <Style Selector="^ TreeDataGridRow">
             <Setter Property="Height" Value="52" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-        </Style>
-        
-        <!-- Update the padding converter on the Border inside the TreeDataGridExpanderCell template -->
-        <!-- This is to adjust the left padding based on the indent level of the row. -->
-        <!-- Rest is copied from the default style: -->
-        <!-- https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/blob/38dce086b6c06503ab29bf824063f6fd113ea309/src/Avalonia.Controls.TreeDataGrid/Themes/Generic.axaml#L226-L245 -->
-        <Style Selector="^ TreeDataGridExpanderCell">
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="CellBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            Padding="{TemplateBinding Indent, Converter={x:Static converters1:TreeDataGridIndentToPaddingConverter.Instance}}">
-                        <DockPanel>
-                            <Border DockPanel.Dock="Left"
-                                    Margin="4 0"
-                                    Width="12" Height="12">
-                                <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
-                                              Focusable="False"
-                                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
-                                              IsVisible="{TemplateBinding ShowExpander}" />
-                            </Border>
-                            <Decorator Name="PART_Content" />
-                        </DockPanel>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </Style>
 
-        <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
-            <Setter Property="Padding" Value="4,2,24,2" />
-        </Style>
-        
+            <!-- Expander column styling -->
+            <Style Selector="^ TreeDataGridExpanderCell">
 
-        <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <!-- Update the padding converter on the Border inside the TreeDataGridExpanderCell template -->
+                <!-- Rest is copied from the default style: -->
+                <!-- https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/blob/38dce086b6c06503ab29bf824063f6fd113ea309/src/Avalonia.Controls.TreeDataGrid/Themes/Generic.axaml#L226-L245 -->
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border x:Name="CellBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Padding="{TemplateBinding Indent, Converter={x:Static converters1:TreeDataGridIndentToPaddingConverter.Instance}}">
+                            <!-- This is to adjust the left padding based on the indent level of the row. -->
 
-            <Style Selector="^:pointerover">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left"
+                                        Margin="4 0"
+                                        Width="12" Height="12">
+                                    <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
+                                                  Focusable="False"
+                                                  IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+                                                  IsVisible="{TemplateBinding ShowExpander}" />
+                                </Border>
+                                <Decorator Name="PART_Content" />
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <!-- Expander Toggle button size and color  -->
+                <Style Selector="^ > Border > DockPanel > Border > ToggleButton">
+                    <Setter Property="Width" Value="20" />
+                    <Setter Property="Height" Value="20" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+
+                    <Style Selector="^:pointerover">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
+
+                    <Style Selector="^ /template/ Border">
+                        <Setter Property="Width" Value="12" />
+                        <Setter Property="Height" Value="12" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </Style>
             </Style>
 
-            <Style Selector="^ /template/ Border">
-                <Setter Property="Width" Value="12" />
-                <Setter Property="Height" Value="12" />
-                <Setter Property="Margin" Value="0" />
-            </Style>
-        </Style>
-        
-        <!-- Subdued for text in all columns -->
-        <Style Selector="^ TreeDataGridTextCell /template/ Border#CellBorder > TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}"/>
-        </Style>
-
-        <!-- Except for first column -->
-        <Style Selector="^ TreeDataGridExpanderCell" >
+            <!-- Subdued for text in all columns -->
             <Style Selector="^ TreeDataGridTextCell /template/ Border#CellBorder > TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             </Style>
+
+            <!-- Except for expander column -->
+            <Style Selector="^ TreeDataGridExpanderCell">
+                <Style Selector="^ TreeDataGridTextCell /template/ Border#CellBorder > TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                </Style>
+            </Style>
+
+            <!-- First column cell padding -->
+            <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
+                <Setter Property="Padding" Value="4,2,24,2" />
+            </Style>
+            
+            <!-- Row hover styling -->
+            <Style Selector="^:pointerover /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+
+            <!-- Row selection styling -->
+            <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            </Style>
+
+            
         </Style>
+
     </Style>
 
 </Styles>
