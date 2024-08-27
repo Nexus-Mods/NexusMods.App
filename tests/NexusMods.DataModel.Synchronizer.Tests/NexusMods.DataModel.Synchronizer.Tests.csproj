@@ -28,6 +28,9 @@
 
     <ItemGroup>
       <None Remove="CanResetToGameOriginalState.md.verified.txt" />
+      <None Update="GeneralModManagementTests.SynchronizerAddAndDisableMods.verified.md">
+        <DependentUpon>GeneralModManagementTests.cs</DependentUpon>
+      </None>
     </ItemGroup>
 
 </Project>
