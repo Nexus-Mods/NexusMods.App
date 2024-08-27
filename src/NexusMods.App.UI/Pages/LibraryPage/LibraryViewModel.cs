@@ -208,7 +208,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
 public readonly record struct InstallMessage(LibraryItemId Id);
 
-public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>,
+public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<InstallMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
@@ -264,7 +264,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>,
         base.BeforeModelDeactivationHook(model);
     }
 
-    protected override IObservable<IChangeSet<LibraryItemModel>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<LibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         var observables = viewHierarchical
             ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems())

@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.Pages;
 
 public interface ILoadoutDataProvider
 {
-    IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems();
+    IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems();
 }
 
 public static class LoadoutDataProviderHelper

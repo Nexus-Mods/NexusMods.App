@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
@@ -16,7 +17,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
-public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
+public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId>
 {
     [Reactive] public DynamicData.Kernel.Optional<LibraryItemId> LibraryItemId { get; set; }
 
@@ -25,7 +26,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
     [Reactive] public Size Size { get; set; } = Size.Zero;
     [Reactive] public string Version { get; set; } = "-";
 
-    public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly>>();
+    public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
     private ObservableCollectionExtended<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
     [Reactive] public bool IsInstalledInLoadout { get; set; }

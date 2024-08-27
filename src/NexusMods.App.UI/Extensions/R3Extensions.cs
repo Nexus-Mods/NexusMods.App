@@ -124,4 +124,30 @@ public static class R3Extensions
             }
         }
     }
+
+    public static void ApplyChanges<TKey, TValue>(this ObservableList<TValue> list, IChangeSet<TValue, TKey> changes)
+        where TValue : notnull
+        where TKey : notnull
+    {
+        foreach (var change in changes)
+        {
+            switch (change.Reason)
+            {
+                case ChangeReason.Add:
+                    list.Add(change.Current);
+                    break;
+                case ChangeReason.Remove:
+                    list.Remove(change.Current);
+                    break;
+                case ChangeReason.Update:
+                    var index = list.IndexOf(change.Previous.Value);
+                    if (index != -1)
+                    {
+                        list[index] = change.Current;
+                    }
+
+                    break;
+            }
+        }
+    }
 }

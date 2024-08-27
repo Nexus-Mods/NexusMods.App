@@ -2,13 +2,14 @@ using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
-public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
+public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
     [Reactive] public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
 
@@ -82,7 +83,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
         };
     }
 
-        public static IColumn<LoadoutItemModel> CreateVersionColumn()
+    public static IColumn<LoadoutItemModel> CreateVersionColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
             header: "VERSION",

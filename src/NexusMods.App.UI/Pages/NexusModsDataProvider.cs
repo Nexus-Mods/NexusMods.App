@@ -25,16 +25,15 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel>> ObserveFlatLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems()
     {
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryFile
             .ObserveAll(_connection)
-            .Transform(ToLibraryItemModel)
-            .RemoveKey();
+            .Transform(ToLibraryItemModel);
     }
 
-    public IObservable<IChangeSet<LibraryItemModel>> ObserveNestedLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems()
     {
         // NOTE(erri120): For the nested library view, the parents are "fake" library
         // models that represent the Nexus Mods mod page, with each child being a
@@ -43,16 +42,15 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .ObserveAll(_connection)
             // TODO: observable filter
             .Filter(modPage => _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id).Count > 0)
-            .Transform(ToLibraryItemModel)
-            .RemoveKey();
+            .Transform(ToLibraryItemModel);
     }
 
     private LibraryItemModel ToLibraryItemModel(NexusModsLibraryFile.ReadOnly nexusModsLibraryFile)
     {
         var linkedLoadoutItemsObservable = _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, nexusModsLibraryFile.Id)
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
-            .RemoveKey();
+            .AsEntityIds()
+            .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         return new LibraryItemModel
         {
@@ -69,29 +67,32 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     {
         var nexusModsLibraryFileObservable = _connection
             .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id)
-            .RemoveKey()
+            .AsEntityIds()
             .PublishWithFunc(initialValueFunc: () =>
             {
-                var changeSet = new ChangeSet<Datom>();
+                var changeSet = new ChangeSet<Datom, EntityId>();
                 var datoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id);
-                changeSet.Add(new Change<Datom>(ListChangeReason.AddRange, datoms));
+                foreach (var datom in datoms)
+                {
+                    changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
+                }
+
                 return changeSet;
             })
             .AutoConnect();
 
         var hasChildrenObservable = nexusModsLibraryFileObservable.IsNotEmpty();
-        var childrenObservable = nexusModsLibraryFileObservable.Transform(libraryFileDatom =>
+        var childrenObservable = nexusModsLibraryFileObservable.Transform((_, e) =>
         {
-            var libraryFile = NexusModsLibraryFile.Load(_connection.Db, libraryFileDatom.E);
+            var libraryFile = NexusModsLibraryFile.Load(_connection.Db, e);
             return ToLibraryItemModel(libraryFile);
         });
 
         var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
-            .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
-            .RemoveKey();
+            .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds())
+            .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-        var libraryFilesObservable = nexusModsLibraryFileObservable.Transform(datom => NexusModsLibraryFile.Load(_connection.Db, datom.E));
+        var libraryFilesObservable = nexusModsLibraryFileObservable.Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e));
 
         return new NexusModsModPageItemModel
         {
@@ -104,7 +105,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         };
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
+    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems()
     {
         // NOTE(erri120): For the nested loadout view, we create "fake" models for
         // the mod pages as parents. Each child will be a LibraryLinkedLoadoutItem
@@ -117,7 +118,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var observable = _connection
                     .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id)
                     .MergeManyChangeSets(libraryFileDatom => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileDatom.E))
-                    .ChangeKey(datom => datom.E)
+                    .AsEntityIds()
                     .PublishWithFunc(() =>
                     {
                         var changeSet = new ChangeSet<Datom, EntityId>();
@@ -141,7 +142,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 {
                     var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
                     return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem);
-                }).RemoveKey();
+                });
 
                 var installedAtObservable = observable
                     .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E).GetCreatedAt())
@@ -168,7 +169,6 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 };
 
                 return model;
-            })
-            .RemoveKey();
+            });
     }
 }

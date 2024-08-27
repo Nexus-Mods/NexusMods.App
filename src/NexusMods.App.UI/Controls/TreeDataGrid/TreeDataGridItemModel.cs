@@ -19,15 +19,15 @@ public class TreeDataGridItemModel : ReactiveR3Object;
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
 /// </summary>
-/// <typeparam name="TModel"></typeparam>
 [PublicAPI]
-public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
-    where TModel : TreeDataGridItemModel<TModel>
+public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
+    where TModel : TreeDataGridItemModel<TModel, TKey>
+    where TKey : notnull
 {
     public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
     [Reactive] public bool HasChildren { get; private set; }
 
-    public IObservable<IChangeSet<TModel>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel>>();
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
     private ObservableCollectionExtended<TModel> _children = [];
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);

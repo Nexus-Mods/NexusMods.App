@@ -3,6 +3,7 @@ using DynamicData.Binding;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
 
@@ -10,7 +11,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class NexusModsModPageItemModel : LibraryItemModel
 {
-    public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly>> LibraryFilesObservable { get; init; }
+    public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly, EntityId>> LibraryFilesObservable { get; init; }
     private ObservableCollectionExtended<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
 
     private readonly IDisposable _modelActivationDisposable;

@@ -8,15 +8,16 @@ namespace NexusMods.App.UI.Controls;
 public static class TreeDataGridViewHelper
 {
     /// <summary>
-    /// Sets up the <see cref="TreeDataGridAdapter{TModel}"/> for the current view.
+    /// Sets up the <see cref="TreeDataGridAdapter{TModel, TKey}"/> for the current view.
     /// </summary>
-    public static void SetupTreeDataGridAdapter<TView, TViewModel, TItemModel>(
+    public static void SetupTreeDataGridAdapter<TView, TViewModel, TItemModel, TKey>(
         TView view,
         TreeDataGrid treeDataGrid,
-        Func<TViewModel, TreeDataGridAdapter<TItemModel>> getAdapter)
+        Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter)
         where TView : ReactiveUserControl<TViewModel>
         where TViewModel : class, IViewModelInterface
-        where TItemModel : TreeDataGridItemModel<TItemModel>
+        where TItemModel : TreeDataGridItemModel<TItemModel, TKey>
+        where TKey : notnull
     {
         treeDataGrid.ElementFactory = new CustomElementFactory();
 

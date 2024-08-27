@@ -102,7 +102,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
 public readonly record struct ToggleEnableState(IReadOnlyCollection<LoadoutItemId> Ids);
 
-public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel>,
+public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<ToggleEnableState>
 {
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
@@ -154,7 +154,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel>,
         base.BeforeModelDeactivationHook(model);
     }
 
-    protected override IObservable<IChangeSet<LoadoutItemModel>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<LoadoutItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         var observable = viewHierarchical
             ? _loadoutDataProviders.Select(provider => provider.ObserveNestedLoadoutItems()).MergeChangeSets()
@@ -163,12 +163,11 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel>,
         return observable;
     }
 
-    private IObservable<IChangeSet<LoadoutItemModel>> ObserveFlatLoadoutItems()
+    private IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveFlatLoadoutItems()
     {
         return LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
-            .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem))
-            .RemoveKey();
+            .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
     }
 
     protected override IColumn<LoadoutItemModel>[] CreateColumns(bool viewHierarchical)
