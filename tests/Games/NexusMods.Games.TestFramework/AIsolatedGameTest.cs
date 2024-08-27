@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using DynamicData.Kernel;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
@@ -24,6 +26,7 @@ using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -386,6 +389,53 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
+    }
+    
+    /// <summary>
+    /// Prints the disk states and the loadout states to the string builder, for verify purposes.
+    /// </summary>
+    protected void LogDiskState(StringBuilder sb, string sectionName, string comments = "", Loadout.ReadOnly[]? loadouts = null)
+    {
+        Logger.LogInformation("Logging State {SectionName}", sectionName);
+        
+        var metadata = GameInstallation.GetMetadata(Connection);
+        sb.AppendLine($"{sectionName}:");
+        if (!string.IsNullOrEmpty(comments))
+            sb.AppendLine(comments);
+        
+        Section("### Initial State", metadata.InitialDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
+            Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
+        Section("### Current State", metadata.LastScannedDiskStateTransaction);
+        if (loadouts is not null)
+        {
+            foreach (var loadout in loadouts.OrderBy(ld=> ld.ShortName))
+            {
+                if (!loadout.Items.Any())
+                    continue;
+
+                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
+                    .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
+            
+                sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
+                sb.AppendLine("| Path | Hash | Size | TxId |");
+                sb.AppendLine("| --- | --- | --- | --- |");
+                foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
+                    sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+            }
+        }
+        
+        sb.AppendLine("\n\n");
+        
+        void Section(string sectionName, Transaction.ReadOnly asOf)
+        {
+            var entries = metadata.DiskStateAsOf(asOf);
+            sb.AppendLine($"{sectionName} - ({entries.Count}) - {TxId.From(asOf.Id.Value)}");
+            sb.AppendLine("| Path | Hash | Size | TxId |");
+            sb.AppendLine("| --- | --- | --- | --- |");
+            foreach (var entry in entries.OrderBy(e=> e.Path)) 
+                sb.AppendLine($"| {entry.Path} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+        }
     }
 
     public async Task InitializeAsync()
