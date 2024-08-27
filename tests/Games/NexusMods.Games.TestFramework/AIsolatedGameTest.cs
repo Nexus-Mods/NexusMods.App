@@ -380,8 +380,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         return archivePath;
     }
     
-            /// <summary>
-    /// Uses Verify to validate all the states of the game, previously applied states, etc.
+    /// <summary>
+    /// Prints the disk states and the loadout states to the string builder, for verify purposes.
     /// </summary>
     protected void LogDiskState(StringBuilder sb, string sectionName, string comments = "", Loadout.ReadOnly[]? loadouts = null)
     {
