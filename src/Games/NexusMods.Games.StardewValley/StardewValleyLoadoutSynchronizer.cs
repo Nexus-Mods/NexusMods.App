@@ -59,16 +59,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
-
-            // Replace the existing entry if it exists
-            if (newFile.SyncTreeNode.LoadoutFileId.HasValue)
-            {
-                var existingFile = LoadoutItemWithTargetPath.Load(loadout.Db, newFile.SyncTreeNode.LoadoutFileId.Value);
-                if (existingFile.IsValid() && existingFile.AsLoadoutItem().ParentId.Value == smapiMod.Id)
-                {
-                    tx.Delete(existingFile.Id, false);
-                }
-            }
+            
             newFile.LoadoutItem.ParentId = smapiMod.Id;
         }
         return ValueTask.CompletedTask;

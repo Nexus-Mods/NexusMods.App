@@ -564,7 +564,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutItem.New LoadoutItem { get; init; }
         public required LoadoutItemWithTargetPath.New LoadoutItemWithTargetPath { get; init; }
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
-        public required SyncTreeNode SyncTreeNode { get; init; }
     }
 
     private async Task ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
@@ -577,16 +576,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
+            // If the file is already in the loadout, we just need to update entry's hash and size
             if (file.LoadoutFileId.HasValue)
             {
                 var prevLoadoutFile = LoadoutItemWithTargetPath.Load(Connection.Db, file.LoadoutFileId.Value);
-                if (prevLoadoutFile.IsValid() && prevLoadoutFile.AsLoadoutItem().ParentId.Value == overridesMod.Value)
+                if (prevLoadoutFile.IsValid())
                 {
-                    // If the file is already in the overrides mod, we need to remove the old entry
-                    tx.Delete(prevLoadoutFile.Id, false);
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
+                    
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    continue;
                 }
             }
             
+            // If the file is not in the loadout, we need to add it
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
@@ -612,7 +616,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutItem = loadoutItem,
                     LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
                     LoadoutFileEntry = loadoutFile,
-                    SyncTreeNode = file,
                 }
             );
             tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
