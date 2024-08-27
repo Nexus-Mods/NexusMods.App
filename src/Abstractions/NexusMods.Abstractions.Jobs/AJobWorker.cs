@@ -177,27 +177,28 @@ public abstract class AJobWorker<TJob> : AJobWorker
 
     /// <inheritdoc cref="AJobWorker.ExecuteAsync"/>
     protected abstract Task<JobResult> ExecuteAsync(TJob job, CancellationToken cancellationToken);
-    
-    
+
+    protected DeterminateProgress GetDeterminateProgress(TJob job)
+    {
+        if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
+            throw new InvalidOperationException("Job does not have determinate progress");
+
+        return determinateProgress;
+    }
+
     /// <summary>
     /// Sets the absolute progress percentage of the job.
     /// </summary>
     protected void SetProgress(TJob job, Percent progress)
     {
-        if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
-            throw new InvalidOperationException("Job does not have determinate progress");
-        
-        determinateProgress.SetPercent(progress);
+        GetDeterminateProgress(job).SetPercent(progress);
     }
-    
+
     /// <summary>
     /// Sets the relative progress rate of the job.
     /// </summary>
     protected void SetProgressRate(TJob job, double rate)
     {
-        if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
-            throw new InvalidOperationException("Job does not have determinate progress");
-        
-        determinateProgress.SetProgressRate(new ProgressRate(rate, ProgressRateFormatter.Value));
+        GetDeterminateProgress(job).SetProgressRate(new ProgressRate(rate, ProgressRateFormatter.Value));
     }
 }

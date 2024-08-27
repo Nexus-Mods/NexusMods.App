@@ -25,21 +25,21 @@ public class DeterminateProgress : AProgress, IDeterminateProgress
         ProgressRate = new ProgressRate(value: 0.0, formatter);
     }
 
-    internal void SetPercent(Percent value)
+    public void SetPercent(Percent value)
     {
         // TODO: sanity checks
         Percent = value;
         _subjectPercent.OnNext(value);
     }
 
-    internal void SetProgressRate(ProgressRate value)
+    public void SetProgressRate(ProgressRate value)
     {
         // TODO: sanity checks
         ProgressRate = value;
         _subjectProgressRate.OnNext(value);
     }
 
-    internal void SetEstimatedFinishTime(DateTime value)
+    public void SetEstimatedFinishTime(DateTime value)
     {
         // TODO: sanity checks
         EstimatedFinishTime = value;

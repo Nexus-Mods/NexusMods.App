@@ -42,9 +42,8 @@ public readonly struct Percent : IEquatable<Percent>, IComparable<Percent>
     public static Percent Create<TNumber>(TNumber current, TNumber maximum)
     where TNumber : INumber<TNumber>, IConvertible
     {
-        var value = current / maximum;
-        var result = value.ToDouble(NumberFormatInfo.InvariantInfo);
-        return CreateClamped(result);
+        var value = current.ToDouble(NumberFormatInfo.InvariantInfo) / maximum.ToDouble(NumberFormatInfo.InvariantInfo);
+        return CreateClamped(value);
     }
 
     /// <inheritdoc/>

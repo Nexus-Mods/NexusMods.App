@@ -45,7 +45,22 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        await using var outputStream = job.Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+        var fileStream = job.Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+
+        var progress = GetDeterminateProgress(job);
+
+        await using var outputStream = new StreamProgressWrapper<(HttpDownloadJobWorker, HttpDownloadJob, DeterminateProgress)>(fileStream, (this, job, progress), static (state, tuple) =>
+        {
+            var (worker, job, determinateProgress) = state;
+            var (bytesWritten, speed) = tuple;
+
+            job.TotalBytesDownloaded = bytesWritten;
+            var percent = Percent.Create(job.TotalBytesDownloaded.Value, job.ContentLength.Value.Value);
+
+            determinateProgress.SetPercent(percent);
+            determinateProgress.SetProgressRate(new ProgressRate(speed, worker.ProgressRateFormatter.Value));
+        });
+
         if (job.ContentLength.HasValue)
         {
             var contentLength = (long)job.ContentLength.Value.Value;
@@ -98,10 +113,10 @@ public class HttpDownloadJobWorker : APersistedJobWorker<HttpDownloadJob>
 
         try
         {
-            // TODO: use delegating Stream with progress reporting support
             await response.Content.CopyToAsync(outputStream, cancellationToken);
         }
-        finally{
+        finally
+        {
             job.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
         }
 
