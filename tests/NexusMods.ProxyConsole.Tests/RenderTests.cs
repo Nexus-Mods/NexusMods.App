@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
-using NexusMods.ProxyConsole;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 using Spectre.Console.Testing;
 
-namespace NexusMods.Spectre.ProxyConsole.Tests;
+namespace NexusMods.ProxyConsole.Tests;
 
 public class RenderTests
 {

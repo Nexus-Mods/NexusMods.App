@@ -2,12 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
-using NexusMods.CrossPlatform;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -32,7 +29,6 @@ public class Startup
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
             .AddSerializationAbstractions()
-            .AddInstallerTypes()
             .Validate();
     }
 }

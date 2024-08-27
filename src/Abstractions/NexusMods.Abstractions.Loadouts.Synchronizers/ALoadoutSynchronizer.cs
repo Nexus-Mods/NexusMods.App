@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Extensions.BCL;
@@ -17,7 +18,6 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -40,6 +40,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Connection.
@@ -50,6 +51,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Loadout synchronizer base constructor.
     /// </summary>
     protected ALoadoutSynchronizer(
+        IServiceProvider serviceProvider,
         ILogger logger,
         IFileStore fileStore,
         ISorter sorter,
@@ -57,6 +59,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IOSInformation os,
         IGarbageCollectorRunner garbageCollectorRunner)
     {
+        _serviceProvider = serviceProvider;
+
         _logger = logger;
         _fileStore = fileStore;
         _sorter = sorter;
@@ -70,22 +74,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="provider"></param>
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
+        provider,
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>(),
         provider.GetRequiredService<IGarbageCollectorRunner>()
-    )
-    {
-    }
+    ) { }
 
     private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskState newState, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
 
-        var newStatePaths = newState.Select(e => (GamePath)e.Path).ToHashSet();
+        var newStatePaths = newState.SelectMany(e =>
+            {
+                // We need folder paths, so skip first path as it is the file path itself
+                return ((GamePath)e.Path).GetAllParents().Skip(1);
+            }
+        ).ToHashSet();
 
         foreach (var entry in toDelete)
         {
@@ -174,7 +182,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     /// <inheritdoc />
     public SyncTree BuildSyncTree<T>(DiskState currentState, DiskState previousTree, IEnumerable<T> loadoutItems)
-    where T : IHavePathHashSizeAndReference
+        where T : IHavePathHashSizeAndReference
     {
         var tree = new Dictionary<GamePath, SyncTreeNode>();
         
@@ -572,6 +580,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var file in toIngest)
         {
+            // If the file is already in the loadout, we just need to update entry's hash and size
+            if (file.LoadoutFileId.HasValue)
+            {
+                var prevLoadoutFile = LoadoutItemWithTargetPath.Load(Connection.Db, file.LoadoutFileId.Value);
+                if (prevLoadoutFile.IsValid())
+                {
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
+                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
+                    
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    continue;
+                }
+            }
+            
+            // If the file is not in the loadout, we need to add it
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
@@ -951,76 +974,88 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        // Get the initial state of the game folder
-        var initialState = await GetOrCreateInitialDiskState(installation);
-
-        var existingLoadoutNames = Loadout.All(Connection.Db)
-            .Where(l => l.IsVisible()
-                        && l.InstallationInstance.LocationsRegister[LocationId.Game]
-                        == installation.LocationsRegister[LocationId.Game]
-            )
-            .Select(l => l.ShortName)
-            .ToArray();
-        
-        var isOnlyLoadout = existingLoadoutNames.Length == 0;
-        
-        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
-
-        using var tx = Connection.BeginTransaction();
-
-        var loadout = new Loadout.New(tx)
+        var initialJob = new CreateLoadoutJob(monitor: _serviceProvider.GetService<IJobMonitor>())
         {
-            Name = suggestedName ?? "Loadout " + shortName,
-            ShortName = shortName,
-            InstallationId = installation.GameMetadataId,
-            Revision = 0,
-            LoadoutKind = LoadoutKind.Default,
+            Installation = installation,
         };
 
-        var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-
-        // Backup the files
-        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-
-        foreach (var file in initialState)
+        var worker = JobWorker.CreateWithData(initialJob, async (job, jobWorker, cancellationToken) =>
         {
-            GamePath path = file.Path;
+            // Get the initial state of the game folder
+            var initialState = await GetOrCreateInitialDiskState(job.Installation);
 
-            if (!IsIgnoredBackupPath(path))
-                filesToBackup.Add((path, file.Hash, file.Size));
+            var existingLoadoutNames = Loadout.All(Connection.Db)
+                .Where(l => l.IsVisible()
+                            && l.InstallationInstance.LocationsRegister[LocationId.Game]
+                            == job.Installation.LocationsRegister[LocationId.Game]
+                )
+                .Select(l => l.ShortName)
+                .ToArray();
 
-            _ = new LoadoutFile.New(tx, out var loadoutFileId)
+            var isOnlyLoadout = existingLoadoutNames.Length == 0;
+
+            var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
+
+            using var tx = Connection.BeginTransaction();
+
+            var loadout = new Loadout.New(tx)
             {
-                Hash = file.Hash,
-                Size = file.Size,
-                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                {
-                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                    {
-                        Name = path.FileName,
-                        LoadoutId = loadout,
-                        ParentId = gameFiles.Id,
-                    },
-                },
+                Name = suggestedName ?? "Loadout " + shortName,
+                ShortName = shortName,
+                InstallationId = job.Installation.GameMetadataId,
+                Revision = 0,
+                LoadoutKind = LoadoutKind.Default,
             };
-        }
 
-        await BackupNewFiles(installation, filesToBackup);
+            var gameFiles = CreateLoadoutGameFilesGroup(loadout, job.Installation, tx);
 
-        // Commit the transaction as of this point the loadout is live
-        var result = await tx.Commit();
+            // Backup the files
+            var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
 
-        // Remap the ids
-        var remappedLoadout = result.Remap(loadout);
-        
-        // If this is the only loadout, activate it
-        if (isOnlyLoadout)
-        {
-            await ActivateLoadout(remappedLoadout.Id);
-        }
+            foreach (var file in initialState)
+            {
+                GamePath path = file.Path;
 
-        return remappedLoadout;
+                if (!IsIgnoredBackupPath(path))
+                    filesToBackup.Add((path, file.Hash, file.Size));
+
+                _ = new LoadoutFile.New(tx, out var loadoutFileId)
+                {
+                    Hash = file.Hash,
+                    Size = file.Size,
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
+                    {
+                        TargetPath = path.ToGamePathParentTuple(loadout.Id),
+                        LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
+                        {
+                            Name = path.FileName,
+                            LoadoutId = loadout,
+                            ParentId = gameFiles.Id,
+                        },
+                    },
+                };
+            }
+
+            await BackupNewFiles(job.Installation, filesToBackup);
+
+            // Commit the transaction as of this point the loadout is live
+            var result = await tx.Commit();
+
+            // Remap the ids
+            var remappedLoadout = result.Remap(loadout);
+
+            // If this is the only loadout, activate it
+            if (isOnlyLoadout)
+            {
+                await ActivateLoadout(remappedLoadout.Id);
+            }
+
+            return remappedLoadout;
+        });
+
+        await initialJob.StartAsync();
+        var result = await initialJob.WaitToFinishAsync();
+        return result.RequireData<Loadout.ReadOnly>();
     }
 
     /// <inheritdoc />
@@ -1076,19 +1111,32 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
-        var metadata = installation.GetMetadata(Connection);
-        
-        if (GetCurrentlyActiveLoadout(installation).HasValue)
-            await DeactivateCurrentLoadout(installation);
-
-        foreach (var loadout in metadata.Loadouts)
+        var initialJob = new UnmanageGameJob(monitor: _serviceProvider.GetService<IJobMonitor>())
         {
-            _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-            await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
-        }
+            Installation = installation,
+        };
 
-        if (runGc)
-            _garbageCollectorRunner.Run();
+        var worker = JobWorker.Create(initialJob, async (job, jobWorker, cancellationToken) =>
+        {
+            var metadata = job.Installation.GetMetadata(Connection);
+
+            if (GetCurrentlyActiveLoadout(job.Installation).HasValue)
+                await DeactivateCurrentLoadout(job.Installation);
+
+            foreach (var loadout in metadata.Loadouts)
+            {
+                _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+                await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
+            }
+
+            if (runGc)
+                _garbageCollectorRunner.Run();
+
+            return JobResult.CreateCompleted(true);
+        });
+
+        await initialJob.StartAsync();
+        await initialJob.WaitToFinishAsync();
     }
 
     /// <inheritdoc />

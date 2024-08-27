@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
@@ -30,9 +31,7 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
         {
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
-                .RemoveKey()
-                .GroupOn(loadout => loadout.Installation.Path)
-                .Transform(group => group.List.Items.First().InstallationInstance)
+                .DistinctValues(loadout => loadout.InstallationInstance)
                 .Transform(managedGameInstall =>
                     {
                         return (IGameLoadoutsSectionEntryViewModel)new GameLoadoutsSectionEntryViewModel(

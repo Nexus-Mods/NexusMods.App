@@ -1,20 +1,26 @@
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
 namespace NexusMods.Games.RedEngine.Tests.LibraryArchiveInstallerTests;
 
-public class PathBasedInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk2077Game>
+public class PathBasedInstallerTests(ITestOutputHelper outputHelper) : ALibraryArchiveInstallerTests<PathBasedInstallerTests, Cyberpunk2077Game>(outputHelper)
 {
-    public PathBasedInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected override IServiceCollection AddServices(IServiceCollection services)
     {
+        return base.AddServices(services)
+            .AddRedEngineGames()
+            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.1"));
     }
-    
+
     /// <summary>
     /// Test cases, key is the name, the values are the archive file paths.
     /// </summary>

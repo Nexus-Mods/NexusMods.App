@@ -1,16 +1,30 @@
 using FluentAssertions;
+using FomodInstaller.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests : ALibraryArchiveInstallerTests<Cyberpunk2077Game>
+public class FomodXmlInstallerTests(ITestOutputHelper outputHelper) : ALibraryArchiveInstallerTests<FomodXmlInstallerTests, Cyberpunk2077Game>(outputHelper)
 {
-    public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    
+    protected override IServiceCollection AddServices(IServiceCollection services)
+    {
+        ConfigOptions.RegisterNullGuidedInstaller = false;
+        return base.AddServices(services)
+            .AddSingleton<ICoreDelegates, MockDelegates>()
+            .AddRedEngineGames()
+            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.1"));
+    }
+    
 
     private async Task<LoadoutItemGroup.ReadOnly> GetResultsFromDirectory(string testCase)
     {

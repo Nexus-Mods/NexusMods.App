@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.BCL;
@@ -10,7 +8,6 @@ using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -58,7 +55,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
-
+            
             newFile.LoadoutItem.ParentId = smapiMod.Id;
         }
         return ValueTask.CompletedTask;

@@ -27,8 +27,8 @@ public static class LibraryUserFilters
     /// Returns an observable stream of all library items that should be shown
     /// to the user.
     /// </summary>
-    public static IObservable<IChangeSet<LibraryItem.ReadOnly>> ObserveFilteredLibraryItems(IConnection connection)
+    public static IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> ObserveFilteredLibraryItems(IConnection connection)
     {
-        return LibraryItem.ObserveAll(connection).Where(ShouldShow).RemoveKey();
+        return LibraryItem.ObserveAll(connection).Where(ShouldShow);
     }
 }

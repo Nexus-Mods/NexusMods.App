@@ -3,6 +3,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Extensions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,36 +14,7 @@ namespace NexusMods.App.UI.Controls;
 /// <summary>
 /// Base class for models of <see cref="Avalonia.Controls.TreeDataGrid"/> items.
 /// </summary>
-public class TreeDataGridItemModel : ReactiveObject, IDisposable
-{
-    private readonly BehaviorSubject<bool> _activation = new(initialValue: false);
-    public Observable<bool> Activation => _activation;
-
-    internal void Activate() => _activation.OnNext(true);
-    internal void Deactivate() => _activation.OnNext(false);
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    private bool _isDisposed;
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_isDisposed) return;
-
-        if (disposing)
-        {
-            _activation.Dispose();
-        }
-
-        _isDisposed = true;
-    }
-}
+public class TreeDataGridItemModel : ReactiveR3Object;
 
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
@@ -172,30 +144,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
     [MustDisposeResource] protected static IDisposable WhenModelActivated<TItemModel>(TItemModel model, Action<TItemModel, CompositeDisposable> block)
         where TItemModel : TreeDataGridItemModel
     {
-        var d = Disposable.CreateBuilder();
-
-        var serialDisposable = new SerialDisposable();
-        serialDisposable.AddTo(ref d);
-
-        model.Activation.DistinctUntilChanged().Subscribe((model, serialDisposable, block), onNext: static (isActivated, state) =>
-        {
-            var (model, serialDisposable, block) = state;
-
-            serialDisposable.Disposable = null;
-            if (isActivated)
-            {
-                var compositeDisposable = new CompositeDisposable();
-                serialDisposable.Disposable = compositeDisposable;
-
-                block(model, compositeDisposable);
-            }
-        }, onCompleted: static (_, state) =>
-        {
-            var (_, serialDisposable, _) = state;
-            serialDisposable.Disposable = null;
-        }).AddTo(ref d);
-
-        return d.Build();
+        return model.WhenActivated(block);
     }
 
     public static HierarchicalExpanderColumn<TModel> CreateExpanderColumn(IColumn<TModel> innerColumn)

@@ -14,10 +14,12 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -341,6 +343,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
+    
+
+    
     
     private AbsolutePath GetArchivePath(Hash hash)
     {
