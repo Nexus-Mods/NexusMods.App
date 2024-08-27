@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using DynamicData.Kernel;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -396,20 +397,24 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
             Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
         Section("### Current State", metadata.LastScannedDiskStateTransaction);
-        foreach (var loadout in loadouts ?? [])
+        if (loadouts is not null)
         {
-            if (!loadout.Items.Any())
-                continue;
+            foreach (var loadout in loadouts.OrderBy(ld=> ld.ShortName))
+            {
+                if (!loadout.Items.Any())
+                    continue;
 
-            var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
-                .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
+                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
+                    .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
             
-            sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
-            sb.AppendLine("| Path | Hash | Size | TxId |");
-            sb.AppendLine("| --- | --- | --- | --- |");
-            foreach (var entry in files) 
-                sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+                sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
+                sb.AppendLine("| Path | Hash | Size | TxId |");
+                sb.AppendLine("| --- | --- | --- | --- |");
+                foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
+                    sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+            }
         }
+        
         sb.AppendLine("\n\n");
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
@@ -418,7 +423,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             sb.AppendLine($"{sectionName} - ({entries.Count}) - {TxId.From(asOf.Id.Value)}");
             sb.AppendLine("| Path | Hash | Size | TxId |");
             sb.AppendLine("| --- | --- | --- | --- |");
-            foreach (var entry in entries) 
+            foreach (var entry in entries.OrderBy(e=> e.Path)) 
                 sb.AppendLine($"| {entry.Path} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
         }
     }
