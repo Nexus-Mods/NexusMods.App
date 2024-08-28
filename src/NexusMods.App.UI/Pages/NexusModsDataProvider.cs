@@ -40,8 +40,10 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         // NexusModsLibraryFile that links to the mod page.
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
-            // TODO: observable filter
-            .Filter(modPage => _connection.Db.Datoms(NexusModsFileMetadata.ModPageId, modPage.Id).Count > 0)
+            .FilterOnObservable((_, e) => _connection
+                .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, e)
+                .IsNotEmpty()
+            )
             .Transform(ToLibraryItemModel);
     }
 
@@ -112,7 +114,11 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         // that links to a NexusModsLibraryFile that links to the mod page.
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
-            // TODO: observable filter
+            .FilterOnObservable((_, modPageEntityId) => _connection
+                .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageEntityId).AsEntityIds()
+                .MergeManyChangeSets((_, libraryFileEntityId) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFileEntityId).AsEntityIds())
+                .IsNotEmpty()
+            )
             .Transform(modPage =>
             {
                 var observable = _connection
