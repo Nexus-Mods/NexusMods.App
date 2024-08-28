@@ -27,12 +27,11 @@ public class HttpDownloaderTests
 
         var resultHash = await _httpDownloader.DownloadAsync(new[]
         {
-            "http://miami.nexus-cdn.com/100M",
-            "http://la.nexus-cdn.com/100M",
-            "http://paris.nexus-cdn.com/100M",
-            "http://chicago.nexus-cdn.com/100M"
-        }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x)))
-        .ToArray(), path);
+            "https://paris.nexus-cdn.com/100M",
+            "https://miami.nexus-cdn.com/100M",
+            "https://la.nexus-cdn.com/100M",
+            "https://chicago.nexus-cdn.com/100M"
+        }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x))).ToArray(), path);
 
         resultHash.Should().Be(Hash.From(0xBEEADB5B05BED390));
     }

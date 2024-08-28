@@ -31,7 +31,8 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
                 .SumProgressRate()
                 .OnUI()
                 // Convert from bytes to MB/s
-                .Subscribe(rate => Number = rate / 1024 / 1024 / 8)
+                // TODO: use Humanizer
+                .Subscribe(rate => Number = rate / 1024 / 1024)
                 .DisposeWith(disposables);
         });
     }
