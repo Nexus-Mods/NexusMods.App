@@ -28,9 +28,7 @@
                 
                 </StackPanel>
                 
-                <chevron:Chevron Grid.Column="1" 
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"/>
+                <icons:UnifiedIcon Grid.Column="1"  Classes="ChevronRight" Size="20" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </navigation:NavigationControl>
     </Border>
