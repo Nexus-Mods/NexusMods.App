@@ -17,7 +17,6 @@
         
         <Style Selector="^ Border#DropShadowBorder">
             <!-- Ensure there's space for the drop shadow by setting an inner margin. -->
-            <Setter Property="Margin" Value="4"/>
             <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
             <Style Selector="^:pointerover">
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
