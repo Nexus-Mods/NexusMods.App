@@ -9,6 +9,7 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ui|DiagnosticEntryView">
+        <Setter Property="ClipToBounds" Value="False"/>
         <Style Selector="^ Button#EntryButton">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
