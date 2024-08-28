@@ -2,7 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Diagnostics;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <ui:DiagnosticEntryView />
+        <Border Classes="Low" Width="500" Height="100">
+            <ui:DiagnosticEntryView />
+        </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
@@ -10,8 +12,16 @@
         <Style Selector="^ Button#EntryButton">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-            
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        </Style>
+        
+        <Style Selector="^ Border#DropShadowBorder">
+            <!-- Ensure there's space for the drop shadow by setting an inner margin. -->
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+            <Style Selector="^:pointerover">
+                <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
+            </Style>
         </Style>
     </Style>
 </Styles>

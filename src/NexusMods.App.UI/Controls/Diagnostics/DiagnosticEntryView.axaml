@@ -7,31 +7,33 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 xmlns:chevron="clr-namespace:NexusMods.App.UI.Controls.Chevron"
-                                mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
+                                mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="290"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
     <Design.DataContext>
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <navigation:NavigationControl x:Name="EntryButton" HorizontalAlignment="Stretch" Padding="12">
-        <Grid ColumnDefinitions="Auto, *">
-            <StackPanel Orientation="Horizontal"
-                        Grid.Column="0"
-                        Spacing="{StaticResource Spacing-2}"
-                        VerticalAlignment="Center">
+    <Border x:Name="DropShadowBorder" VerticalAlignment="Center">
+        <navigation:NavigationControl x:Name="EntryButton" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="12">
+            <Grid ColumnDefinitions="Auto, *">
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="0"
+                            Spacing="{StaticResource Spacing-2}"
+                            VerticalAlignment="Center">
 
-                <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
-                <TextBlock x:Name="DescriptionText"
-                           Theme="{StaticResource BodyMDBoldTheme}"
-                           VerticalAlignment="Center"/>
-            
-            </StackPanel>
-            
-            <chevron:Chevron Grid.Column="1" 
-                             HorizontalAlignment="Right"
-                             VerticalAlignment="Center"/>
-        </Grid>
+                    <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
+                    <TextBlock x:Name="DescriptionText"
+                               Theme="{StaticResource BodyMDBoldTheme}"
+                               VerticalAlignment="Center"/>
+                
+                </StackPanel>
+                
+                <chevron:Chevron Grid.Column="1" 
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"/>
+            </Grid>
+        </navigation:NavigationControl>
+    </Border>
 
-    </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>
