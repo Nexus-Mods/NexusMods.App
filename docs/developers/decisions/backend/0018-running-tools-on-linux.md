@@ -138,6 +138,24 @@ might involve some shenanigans with `LD_PRELOAD` and `LD_LIBRARY_PATH`.
 - Investigate whether `umu-launcher` can be used to generate a WINEPREFIX.
 - If not, we may need to prompt the user to run a game from Steam.
 
+### Missing Runtimes
+
+!!! info "Some tools may require installing additional external runtimes."
+
+We can use [winetricks] to install these runtimes in many cases:
+
+- `dotnet48`: .NET Framework
+- `dotnet6`/`dotnet7`/etc. for .NET Core
+- `vcrun2022`: Visual C++ 2022 Redistributable (use for MSVC >= 2015 builds)
+    - Normally you wouldn't need this with `Proton` installed games.
+    - Because it'll get installed by Steam with the game.
+
+Example:
+
+```
+`WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
+```
+
 [steam-api]: https://partner.steamgames.com/doc/api/steam_api
 [steam-fix-reboot]: https://reloaded-project.github.io/Reloaded-III/Loader/Copy-Protection/Windows-Steam.html#avoid-forced-reboot
 [winetricks]: https://github.com/Winetricks/winetricks
