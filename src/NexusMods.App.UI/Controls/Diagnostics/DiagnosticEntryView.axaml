@@ -28,7 +28,7 @@
                 
                 </StackPanel>
                 
-                <icons:UnifiedIcon Grid.Column="1"  Classes="ChevronRight" Size="20" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <icons:UnifiedIcon Grid.Column="1"  Classes="ChevronRight" Size="28" Margin="-8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </navigation:NavigationControl>
     </Border>
