@@ -119,8 +119,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         )
         {
             SortDirection = ListSortDirection.Ascending,
@@ -140,8 +139,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         )
         {
             Id = "version",
@@ -160,8 +158,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         )
         {
             Id = "size",
@@ -180,8 +177,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         )
         {
             Id = "AddedAt",
@@ -200,8 +196,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         )
         {
             Id = "InstalledAt",
@@ -220,8 +215,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel>
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: GridLength.Auto
+            }
         );
     }
 }
