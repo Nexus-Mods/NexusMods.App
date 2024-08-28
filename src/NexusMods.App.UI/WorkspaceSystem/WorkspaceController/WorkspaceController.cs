@@ -132,6 +132,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         };
 
         vm.Title = _workspaceAttachmentsFactory.CreateTitleFor(vm.Context);
+        vm.Subtitle = _workspaceAttachmentsFactory.CreateSubtitleFor(vm.Context);
 
         _workspaces.AddOrUpdate(vm);
 

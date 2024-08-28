@@ -12,4 +12,11 @@ public class LoadoutAttachmentsFactory(IConnection conn) : IWorkspaceAttachments
         var loadout = Loadout.Load(conn.Db, context.LoadoutId);
         return loadout.InstallationInstance.Game.Name;
     }
+
+    public string CreateSubtitle(LoadoutContext context)
+    {
+        // Use the loadout name as the subtitle
+        var loadout = Loadout.Load(conn.Db, context.LoadoutId);
+        return loadout.Name;
+    }
 }

@@ -20,11 +20,20 @@
 
     <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
-        <TextBlock Grid.Column="0"
-                   Classes="HeadingXSSemi ForegroundSubdued"
-                   VerticalAlignment="Center"
-                   Margin="16,0"
-                   x:Name="ActiveWorkspaceTitleTextBlock" />
+        <StackPanel Grid.Column="0" 
+                    Orientation="Horizontal" 
+                    Classes="Spacing-1_5"
+                    Margin="16,0"
+                    VerticalAlignment="Center">
+            <TextBlock Classes="HeadingXSSemi ForegroundSubdued"
+                       x:Name="ActiveWorkspaceTitleTextBlock" />
+            
+            <TextBlock Classes="BodyMDNormal ForegroundSubdued" 
+                       x:Name="ActiveWorkspaceSubtitleTextBlock"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
             <Button x:Name="GoBackInHistory" Classes="Action" Width="40" Height="40">

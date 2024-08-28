@@ -16,6 +16,7 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     [Reactive] public bool IsPremium { get; set; } = true;
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
     [Reactive] public string ActiveWorkspaceTitle { get; set; } = "Home";
+    [Reactive] public string ActiveWorkspaceSubtitle { get; set; } = "Loadout A";
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
 

@@ -16,6 +16,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
                 .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceSubtitle, view => view.ActiveWorkspaceSubtitleTextBlock.Text)
+                .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.SelectedTab!.GoBackInHistoryCommand, view => view.GoBackInHistory)
                 .DisposeWith(d);
