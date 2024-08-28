@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -99,8 +100,10 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
             .AsEntityIds()
-            // TODO: observable filter
-            .Filter(datom => _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E).Count > 0)
+            .FilterOnObservable((_, e) => _connection
+                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+                .IsNotEmpty()
+            )
             .Transform((_, entityId) =>
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
