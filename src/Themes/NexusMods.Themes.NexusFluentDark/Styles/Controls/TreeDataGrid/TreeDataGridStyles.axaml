@@ -142,26 +142,38 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
                                 Padding="{TemplateBinding Indent, Converter={x:Static converters1:TreeDataGridIndentToPaddingConverter.Instance}}">
-                            <!-- This is to adjust the left padding based on the indent level of the row. -->
+                                <!-- This is to adjust the left padding based on the indent level of the row. -->
 
                             <DockPanel>
-                                <Border DockPanel.Dock="Left"
-                                        Margin="4 0"
-                                        Width="12" Height="12">
-                                    <ToggleButton x:Name="TreeDataGridExpandCollapseChevron"
-                                        Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
-                                                  Focusable="False"
-                                                  IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
-                                                  IsVisible="{TemplateBinding ShowExpander}"/>
+                                <!-- Indent line element -->
+                                <Border DockPanel.Dock="Left" 
+                                        Width="20"
+                                        IsVisible="{TemplateBinding Indent, Converter={x:Static converters1:TreeDataGridIndentToBoolConverter.Instance}}">
+                                        <!-- This is to hide the indent line when the row is not indented. -->
+                                    <Border HorizontalAlignment="Center"
+                                            Width="2"
+                                            Background="{StaticResource SurfaceTranslucentMidBrush}"/>
                                 </Border>
-                                <Decorator Name="PART_Content" />
+                                
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Left"
+                                            Margin="4 0"
+                                            Width="12" Height="12">
+                                        <ToggleButton x:Name="TreeDataGridExpandCollapseChevron"
+                                                      Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
+                                                      Focusable="False"
+                                                      IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+                                                      IsVisible="{TemplateBinding ShowExpander}"/>
+                                    </Border>
+                                    <Decorator Name="PART_Content" />
+                                </DockPanel>
                             </DockPanel>
                         </Border>
                     </ControlTemplate>
                 </Setter>
                 
                 <!-- Expander ToggleButton styling -->
-                <Style Selector="^ > Border > DockPanel > Border > ToggleButton#TreeDataGridExpandCollapseChevron">
+                <Style Selector="^ ToggleButton#TreeDataGridExpandCollapseChevron">
                     <Setter Property="Width" Value="20" />
                     <Setter Property="Height" Value="20" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
