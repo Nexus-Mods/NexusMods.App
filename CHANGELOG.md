@@ -9,7 +9,7 @@ This release enhances support for Cyberpunk 2077, adds multiple Loadouts per gam
 
 ### Cyberpunk 2077 Improvements
 
-**IMPORTANT: It is not currently possible for the app to run REDmod automatically on Linux - Windows users are unaffected. If you are using REDmods on Linux you may need to manually run the REDmod.exe file located at `tools\redmod\bin\redmod.exe` before launching the game.**
+**IMPORTANT: It is not currently possible for the app to run REDmod automatically on Linux - Windows users are unaffected. If you are using REDmods on Linux, you may need to manually run the REDmod.exe file located at `tools\redmod\bin\redmod.exe` before launching the game.**
 
 This version further refines the modding experience for Cyberpunk 2077 players by adding additional diagnostics to the Health Check and automatically running REDmod - if necessary - before starting the game. [Learn More](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/).
 
