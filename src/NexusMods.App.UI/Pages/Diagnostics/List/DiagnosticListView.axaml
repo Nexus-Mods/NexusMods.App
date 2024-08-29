@@ -13,6 +13,8 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
+    <!-- TODO: anymore work on this and it should be moved to a separate style file -->
+
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="OutlineWeak" BorderThickness="0 0 0 1" Padding="24 10">
             <Border.Styles>
@@ -22,7 +24,7 @@
                 </Style>
             </Border.Styles>
 
-            <StackPanel Orientation="Horizontal" Classes="Spacing-2">
+            <StackPanel Orientation="Horizontal" Classes="Spacing-2" MaxWidth="1000">
                 <Button Classes="Rounded Primary" x:Name="AllDiagnosticsButton">
                     <TextBlock x:Name="AllDiagnosticsButtonText" />
                 </Button>
@@ -55,7 +57,7 @@
                     <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" />
+                                <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" MaxWidth="1000" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
