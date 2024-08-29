@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using R3;
 
@@ -51,5 +52,10 @@ public class ReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
     {
         var propertyChanged = PropertyChanged;
         propertyChanged?.Invoke(this, args);
+    }
+
+    protected void RaiseAndSetIfChanged<T>(ref T backingField, T newValue, [CallerMemberName] string? propertyName = null)
+    {
+        ReactiveUI.IReactiveObjectExtensions.RaiseAndSetIfChanged(this, ref backingField, newValue, propertyName);
     }
 }

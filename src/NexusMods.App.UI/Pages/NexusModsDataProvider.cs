@@ -155,13 +155,12 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .RemoveKey()
                     .QueryWhenChanged(collection => collection.FirstOrDefault());
 
-                var loadoutItemIdsObservable = observable.Transform(datom => (LoadoutItemId) datom.E).RemoveKey();
+                var loadoutItemIdsObservable = observable.Transform((_, e) => (LoadoutItemId) e);
 
-                var isEnabledObservable = observable
-                    .TransformOnObservable(d => LoadoutItem.Observe(_connection, d.E))
-                    .Transform(item => !item.IsDisabled)
-                    .RemoveKey()
-                    .QueryWhenChanged(collection => collection.All(x => x));
+                var isEnabledObservable = observable.TrueForAll(
+                    observableSelector: datom => LoadoutItem.Observe(_connection, datom.E).Select(item => !item.IsDisabled),
+                    equalityCondition: static isEnabled => isEnabled
+                );
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {

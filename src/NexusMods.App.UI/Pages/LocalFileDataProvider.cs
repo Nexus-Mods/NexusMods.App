@@ -132,14 +132,12 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Transform(item => item.GetCreatedAt())
                     .QueryWhenChanged(query => query.Items.FirstOrDefault());
 
-                var loadoutItemIdsObservable = observable
-                    .Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId)
-                    .RemoveKey(); // TODO: remove RemoveKey
+                var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
-                var isEnabledObservable = observable
-                    .TransformOnObservable(item => LoadoutItem.Observe(_connection, item.Id))
-                    .Transform(item => !item.IsDisabled)
-                    .QueryWhenChanged(query => query.Items.All(b => !b));
+                var isEnabledObservable = observable.TrueForAll(
+                    observableSelector: item => LoadoutItem.Observe(_connection, item.Id).Select(static item => !item.IsDisabled),
+                    equalityCondition: static isEnabled => isEnabled
+                );
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {
