@@ -6,30 +6,28 @@
                                 xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-                                xmlns:chevron="clr-namespace:NexusMods.App.UI.Controls.Chevron"
-                                mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="290"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
+    
     <Design.DataContext>
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="DropShadowBorder" VerticalAlignment="Center">
-        <navigation:NavigationControl x:Name="EntryButton" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="12">
-            <Grid ColumnDefinitions="Auto, *">
-                <StackPanel Orientation="Horizontal"
-                            Grid.Column="0"
-                            Spacing="{StaticResource Spacing-2}"
-                            VerticalAlignment="Center">
-
-                    <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
+    <Border x:Name="DropShadowBorder" VerticalAlignment="Center" Height="52">
+        <navigation:NavigationControl x:Name="EntryButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Padding="12,0,4,0">
+            
+                <panels:FlexPanel x:Name="EntryFlexPanel" Direction="Row" ColumnSpacing="8">
+                    <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" HorizontalAlignment="Left" />
                     <TextBlock x:Name="DescriptionText"
-                               Theme="{StaticResource BodyMDBoldTheme}"
-                               VerticalAlignment="Center"/>
-                
-                </StackPanel>
-                
-                <icons:UnifiedIcon Grid.Column="1"  Classes="ChevronRight" Size="28" Margin="-8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            </Grid>
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
+                               />
+                    <icons:UnifiedIcon Classes="ChevronRight" Size="32" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </panels:FlexPanel>
+            
         </navigation:NavigationControl>
     </Border>
 

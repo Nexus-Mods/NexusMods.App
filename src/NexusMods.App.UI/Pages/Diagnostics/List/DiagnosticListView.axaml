@@ -24,16 +24,16 @@
 
             <StackPanel Orientation="Horizontal" Classes="Spacing-2">
                 <Button Classes="Rounded Primary" x:Name="AllDiagnosticsButton">
-                    <TextBlock x:Name="AllDiagnosticsButtonText"/>
+                    <TextBlock x:Name="AllDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="CriticalDiagnosticsButton">
-                    <TextBlock x:Name="CriticalDiagnosticsButtonText"/>
+                    <TextBlock x:Name="CriticalDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="WarningDiagnosticsButton">
-                    <TextBlock x:Name="WarningDiagnosticsButtonText"/>
+                    <TextBlock x:Name="WarningDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="SuggestionDiagnosticsButton">
-                    <TextBlock x:Name="SuggestionDiagnosticsButtonText"/>
+                    <TextBlock x:Name="SuggestionDiagnosticsButtonText" />
                 </Button>
             </StackPanel>
         </Border>
@@ -46,30 +46,31 @@
 
             <controls:EmptyState.Styles>
                 <Style Selector="icons|UnifiedIcon#Icon">
-                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}"/>
+                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}" />
                 </Style>
             </controls:EmptyState.Styles>
 
-            <Border Padding="24">
-                <ItemsControl x:Name="ItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-1}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    
-                    <!-- Do not replace with ReactiveUI, the generated component and kills shadows
+            <ScrollViewer>
+                <Border Padding="24">
+                    <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <!-- Do not replace with ReactiveUI, the generated component and kills shadows
                          due to enforced ClipToBounds that can't be overwritten by styles -->
-                    <ItemsControl.DataTemplates>
-                        <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
-                            <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
-                        </DataTemplate>
-                    </ItemsControl.DataTemplates>
-                </ItemsControl>
-            </Border>
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                </Border>
+            </ScrollViewer>
         </controls:EmptyState>
 
     </Grid>
 
 </reactive:ReactiveUserControl>
-

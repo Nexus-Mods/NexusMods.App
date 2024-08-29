@@ -1,26 +1,54 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Diagnostics;assembly=NexusMods.App.UI">
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Diagnostics;assembly=NexusMods.App.UI"
+        xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Classes="Low" Width="500" Height="100">
-            <ui:DiagnosticEntryView />
+        <Border Classes="Low" Width="500" Height="80" Padding="8">
+            <ui:DiagnosticEntryView>
+                <ui:DiagnosticEntryView.DataContext>
+                    <ui:DiagnosticEntryDesignViewModel />
+                </ui:DiagnosticEntryView.DataContext>
+            </ui:DiagnosticEntryView>
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
     <Style Selector="ui|DiagnosticEntryView">
-        <Setter Property="ClipToBounds" Value="False"/>
+        <Setter Property="ClipToBounds" Value="False" />
+
         <Style Selector="^ Button#EntryButton">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+            </Style>
         </Style>
-        
+
         <Style Selector="^ Border#DropShadowBorder">
-            <!-- Ensure there's space for the drop shadow by setting an inner margin. -->
             <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+
             <Style Selector="^:pointerover">
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ panels|FlexPanel#EntryFlexPanel">
+
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="panels:Flex.Shrink" Value="0" />
+            </Style>
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="panels:Flex.Grow" Value="1" />
             </Style>
         </Style>
     </Style>
