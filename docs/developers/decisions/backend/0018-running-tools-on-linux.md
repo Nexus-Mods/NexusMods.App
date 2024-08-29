@@ -156,10 +156,105 @@ Example:
 WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
 ```
 
+## Static Compilation of Dependencies
+
+!!! info "Not all the dependencies may be available on all distros."
+
+For example [umu] would be considered universal, but is still not easily acquirable
+from environments like Ubuntu Linux.
+
+### Python
+
+!!! info "This applies to [umu], [protontricks] and [winetricks]."
+
+Static bundling of Python executables can be done with [PyInstaller].
+
+Set up a virtual environment and enable it:
+
+```
+python -m venv protontricks
+source protontricks/bin/activate
+```
+
+Install [PyInstaller] with:
+
+```bash
+pip install pyinstaller
+```
+
+Then clone a the project:
+
+```bash
+git clone https://github.com/Matoking/protontricks.git
+cd protontricks
+```
+
+Install the project from disk:
+
+```bash
+# This gets you the dependencies, and lets you test a local build
+# before bundling.
+pip install --editable .
+```
+
+Locate the `def main()` function, and build with [PyInstaller]:
+
+```bash
+# The `add-data` flag allows us to bundle additional files with the executable,
+# in this case we want the `data` folder, which will be output to the `data`
+# folder when bundled. For protontricks, this folder contains useful bash scripts.
+pyinstaller --onefile src/protontricks/cli/main.py --name protontricks --add-data "src/protontricks/data:protontricks/data"
+```
+
+This should have output the binary in the `dist` folder, we can run it like this:
+
+```bash
+./dist/protontricks --help
+```
+
+#### Troubleshooting
+
+!!! info "The above sequence of commands usually works, but sometimes, like in the case above it doesn't."
+
+For `protontricks` specifically, we get the following error:
+
+```
+Traceback (most recent call last):
+  File "protontricks/cli/main.py", line 15, in <module>
+ImportError: attempted relative import with no known parent package
+[PYI-654761:ERROR] Failed to execute script 'main' due to unhandled exception!
+```
+
+This is because `protontricks` uses relative imports, and [PyInstaller] doesn't know
+how to work with modules out of the box; 
+
+```
+# TODO: How do I fix this??
+```
+
+##### Running Module Locally
+
+!!! info "I ran into issues running the module locally with `python -m protontricks.cli.main`"
+
+In my case I needed to make a patch from:
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+to
+
+```python
+if __name__ == "__main__":
+    main(None)
+```
+
 [steam-api]: https://partner.steamgames.com/doc/api/steam_api
 [steam-fix-reboot]: https://reloaded-project.github.io/Reloaded-III/Loader/Copy-Protection/Windows-Steam.html#avoid-forced-reboot
 [winetricks]: https://github.com/Winetricks/winetricks
 [DXVK]: https://github.com/doitsujin/dxvk
 [FAudio]: https://github.com/FNA-XNA/FAudio
-[protontricks]: (https://github.com/Matoking/protontricks)
+[protontricks]: https://github.com/Matoking/protontricks
 [umu]: https://github.com/Open-Wine-Components/umu-launcher
+[PyInstaller]: https://www.pyinstaller.org/
