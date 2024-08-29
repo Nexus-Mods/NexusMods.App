@@ -47,7 +47,7 @@ Please be aware that these pages are unfinished and are not stable enough to ful
 ### Technical Changes
 - Downloading files now uses a new "Jobs" system to make them easier to manage. 
 - We are continuing our backend work to convert from "Mods" to "Loadout items". [More Info](https://forums.nexusmods.com/topic/13495763-nexus-mods-app-1-august-progress-update/)
-- The synchronizer for handling loadout state has been reworked to provide much more robust coverage of edge cases.
+- The synchronizer for handling loadout states has been reworked to provide much more robust coverage of edge cases.
 - Added generic support for path-based diagnostic checks when checking for missing dependencies. 
 
 ### External Contributors
