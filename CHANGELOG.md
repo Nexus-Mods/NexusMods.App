@@ -16,14 +16,14 @@ This version further refines the modding experience for Cyberpunk 2077 players b
 ### Multiple Loadouts
 Loadouts offer a convenient way to have manage several different mod setups for a single game. Players can easily swap between simple or complex mod setups by creating multiple loadouts. In this release players can create, copy and delete loadouts for any supported game. [You can learn more about this feature here.](https://nexus-mods.github.io/NexusMods.App/users/features/Loadouts/)
 
-![The "My Loadouts" page showing two loadouts for Cyberpunk 2077](./docs/changelog-assets/LoadoutsMultiple.webp)
+![The "My Loadouts" page showing two loadouts for Cyberpunk 2077](./docs/changelog-assets/3ef13a1bf06643675206ca72295a3d24.webp)
 
 Your mod configuration files for Stardew Valley are synced to the current loadout, so you can have different mod settings for different lists of mods. 
 
 ### EXPERIMENTAL - Tree views for My Mods and Library
 We're still working on the new "tree view" for the My Mods and Library pages, but you can preview them in this version by enabling the "Enable tree UI for Library and My Mods" toggle in the app settings. The image below is the current design we are working towards and does not represent what is available in the app. 
 
-![The design file showing the current plans for tree view](./docs/changelog-assets/TreeViews.webp)
+![The design file showing the current plans for tree view](./docs/changelog-assets/1b28e2fad5b5a6431a72c286d1bcd3fd.webp)
 
 Please be aware that these pages are unfinished and are not stable enough to fully replace the current views, but we are working hard on improving them and hope to start using them in the next release. 
 
