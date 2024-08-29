@@ -15,6 +15,11 @@ public class CustomElementFactory : TreeDataGridElementFactory
         {
             var element = base.CreateElement(customCell.Inner);
             element.Classes.Add(customCell.Id);
+            if (customCell.IsRoot)
+            {
+                element.Classes.Add("RootRow");
+            }
+
             return element;
         }
 

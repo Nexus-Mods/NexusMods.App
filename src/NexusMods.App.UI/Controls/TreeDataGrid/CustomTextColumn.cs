@@ -17,7 +17,15 @@ public class CustomTextColumn<TModel, TValue> : TextColumn<TModel, TValue>
 
     public override ICell CreateCell(IRow<TModel> row)
     {
+        var isRoot = true;
+
+        if (row is HierarchicalRow<TModel> hierarchicalRow)
+        {
+            var indent = hierarchicalRow.Indent;
+            isRoot = indent == 0;
+        }
+
         var inner = base.CreateCell(row);
-        return new CustomTextCell(inner: inner, id: Id);
+        return new CustomTextCell(inner: inner, id: Id, isRoot: isRoot);
     }
 }
