@@ -26,15 +26,15 @@ public class NexusModsModPageItemModel : LibraryItemModel
                     // TODO: different selection, need to check with design
                     if (model.LibraryFiles.TryGetFirst(out var primaryFile))
                     {
-                        model.Size = primaryFile.AsDownloadedFile().AsLibraryFile().Size;
-                        model.Version = primaryFile.FileMetadata.Version;
-                        model.LibraryItemId = primaryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
+                        model.ItemSize.Value = primaryFile.AsDownloadedFile().AsLibraryFile().Size;
+                        model.Version.Value = primaryFile.FileMetadata.Version;
+                        model.LibraryItemId.Value = primaryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
                     }
                     else
                     {
-                        model.Size = Size.Zero;
-                        model.Version = "-";
-                        model.LibraryItemId = DynamicData.Kernel.Optional<LibraryItemId>.None;
+                        model.ItemSize.Value = Size.Zero;
+                        model.Version.Value = "-";
+                        model.LibraryItemId.Value = DynamicData.Kernel.Optional<LibraryItemId>.None;
                     }
                 })
                 .AddTo(disposables);

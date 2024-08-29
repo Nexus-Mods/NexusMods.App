@@ -46,14 +46,16 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(_connection.Db, entityId));
 
-        return new LibraryItemModel
+        var model = new LibraryItemModel
         {
-            LibraryItemId = libraryFile.AsLibraryItem().LibraryItemId,
             Name = libraryFile.AsLibraryItem().Name,
             CreatedAt = libraryFile.GetCreatedAt(),
-            Size = libraryFile.Size,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
+
+        model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
+        model.ItemSize.Value = libraryFile.Size;
+        return model;
     }
 
     public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems()
@@ -79,16 +81,18 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .AsEntityIds()
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-                return new LibraryItemModel
+                var model = new LibraryItemModel
                 {
-                    LibraryItemId = libraryFile.AsLibraryItem().LibraryItemId,
                     Name = libraryFile.AsLibraryItem().Name,
                     CreatedAt = libraryFile.GetCreatedAt(),
-                    Size = libraryFile.Size,
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
                 };
+
+                model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
+                model.ItemSize.Value = libraryFile.Size;
+                return model;
             });
     }
 

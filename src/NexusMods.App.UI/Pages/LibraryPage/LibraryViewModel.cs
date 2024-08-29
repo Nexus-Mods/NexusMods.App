@@ -55,6 +55,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var ticker = Observable
             .Interval(period: TimeSpan.FromSeconds(10), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .ObserveOnUIThreadDispatcher()
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
 
@@ -143,7 +144,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         // TODO: get correct IDs
         var db = _connection.Db;
         var items = Adapter.SelectedModels
-            .Select(model => model.LibraryItemId)
+            .Select(model => model.LibraryItemId.Value)
             .Where(x => x.HasValue)
             .Select(x => x.Value)
             .Distinct()

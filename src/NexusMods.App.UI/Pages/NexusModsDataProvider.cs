@@ -54,15 +54,18 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-        return new LibraryItemModel
+        var model = new LibraryItemModel
         {
-            LibraryItemId = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId,
             CreatedAt = nexusModsLibraryFile.GetCreatedAt(),
             Name = nexusModsLibraryFile.FileMetadata.Name,
-            Size = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size,
-            Version = nexusModsLibraryFile.FileMetadata.Version,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
+
+        model.LibraryItemId.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
+        model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size;
+        model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
+
+        return model;
     }
 
     private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata)

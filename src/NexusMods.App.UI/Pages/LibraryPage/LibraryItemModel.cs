@@ -1,84 +1,83 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Binding;
 using Humanizer;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using ObservableCollections;
 using R3;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId>
 {
-    [Reactive] public DynamicData.Kernel.Optional<LibraryItemId> LibraryItemId { get; set; }
+    public ReactiveProperty<DynamicData.Kernel.Optional<LibraryItemId>> LibraryItemId { get; } = new();
 
     public required string Name { get; init; }
     public required DateTime CreatedAt { get; init; }
-    [Reactive] public Size Size { get; set; } = Size.Zero;
-    [Reactive] public string Version { get; set; } = "-";
+    public BindableReactiveProperty<Size> ItemSize { get; } = new(Size.Zero);
+    public BindableReactiveProperty<string> Version { get; set; } = new("-");
 
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
-    private ObservableCollectionExtended<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
+    private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
-    [Reactive] public bool IsInstalledInLoadout { get; set; }
-    [Reactive] public DateTime InstalledDate { get; set; } = DateTime.UnixEpoch;
+    public ReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
+    public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
 
     public Observable<DateTime>? Ticker { get; set; }
-    [Reactive] public string FormattedCreatedAtDate { get; set; } = new("-");
-    [Reactive] public string FormattedInstalledDate { get; set; } = new("-");
+    public BindableReactiveProperty<string> FormattedCreatedAtDate { get; } = new("-");
+    public BindableReactiveProperty<string> FormattedInstalledDate { get; } = new("-");
 
-    public R3.ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
+    public ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
 
     private readonly IDisposable _modelActivationDisposable;
     public LibraryItemModel()
     {
-        var canInstall = this.WhenAnyValue(
-            static model => model.IsInstalledInLoadout,
-            static model => model.LibraryItemId,
-            static (isInstalled, libraryItemId) => !isInstalled && libraryItemId.HasValue
-        ).ToObservable();
+        var canInstall = IsInstalledInLoadout
+            .Select(static isInstalled => isInstalled)
+            .CombineLatest(
+                source2: LibraryItemId.Select(static libraryItemId => libraryItemId.HasValue),
+                resultSelector: static (isInstalled, hasLibraryItem) => !isInstalled && hasLibraryItem
+            );
 
-        InstallCommand = canInstall.ToReactiveCommand<Unit, LibraryItemId>(_ => LibraryItemId.Value, initialCanExecute: false);
+        InstallCommand = canInstall.ToReactiveCommand<Unit, LibraryItemId>(_ => LibraryItemId.Value.Value, initialCanExecute: false);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.FormattedCreatedAtDate = FormatDate(DateTime.Now, model.CreatedAt);
-            model.FormattedInstalledDate = FormatDate(DateTime.Now, model.InstalledDate);
+            model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAt);
+            model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
 
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
-                model.FormattedCreatedAtDate = FormatDate(now, model.CreatedAt);
-                model.FormattedInstalledDate = FormatDate(now, model.InstalledDate);
+                model.FormattedCreatedAtDate.Value = FormatDate(now, model.CreatedAt);
+                model.FormattedInstalledDate.Value = FormatDate(now, model.InstalledDate.Value);
             }).AddTo(disposables);
 
             model.LinkedLoadoutItems
-                .ObserveCollectionChanges()
-                .SubscribeWithErrorLogging(_ =>
+                .ObserveCountChanged()
+                .Subscribe(model, static (count, model) =>
                 {
-                    if (model.LinkedLoadoutItems.Count > 0)
+                    if (count > 0)
                     {
-                        model.IsInstalledInLoadout = true;
-                        model.InstalledDate = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
-                        model.FormattedInstalledDate = FormatDate(DateTime.Now, model.InstalledDate);
+                        model.IsInstalledInLoadout.Value = true;
+                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
+                        model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
                     }
                     else
                     {
-                        model.IsInstalledInLoadout = false;
-                        model.InstalledDate = DateTime.UnixEpoch;
+                        model.IsInstalledInLoadout.Value = false;
+                        model.InstalledDate.Value = DateTime.UnixEpoch;
                     }
                 }).AddTo(disposables);
 
-            model.LinkedLoadoutItemsObservable.OnUI().Bind(model.LinkedLoadoutItems).SubscribeWithErrorLogging().AddTo(disposables);
+            model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet)).AddTo(disposables);
             Disposable.Create(model.LinkedLoadoutItems, static items => items.Clear()).AddTo(disposables);
         });
     }
@@ -96,7 +95,16 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
         {
             if (disposing)
             {
-                Disposable.Dispose(InstallCommand, _modelActivationDisposable);
+                Disposable.Dispose(
+                    InstallCommand,
+                    _modelActivationDisposable,
+                    FormattedCreatedAtDate,
+                    FormattedInstalledDate,
+                    ItemSize,
+                    LibraryItemId,
+                    IsInstalledInLoadout,
+                    InstalledDate
+                );
             }
 
             LinkedLoadoutItems = null!;
@@ -132,11 +140,11 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     {
         return new CustomTextColumn<LibraryItemModel, string>(
             header: "VERSION",
-            getter: model => model.Version,
+            getter: model => model.Version.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => string.Compare(a?.Version, b?.Version, StringComparison.OrdinalIgnoreCase),
-                CompareDescending = static (a, b) => string.Compare(b?.Version, a?.Version, StringComparison.OrdinalIgnoreCase),
+                CompareAscending = static (a, b) => string.Compare(a?.Version.Value, b?.Version.Value, StringComparison.OrdinalIgnoreCase),
+                CompareDescending = static (a, b) => string.Compare(b?.Version.Value, a?.Version.Value, StringComparison.OrdinalIgnoreCase),
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -151,11 +159,11 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     {
         return new CustomTextColumn<LibraryItemModel, Size>(
             header: "SIZE",
-            getter: model => model.Size,
+            getter: model => model.ItemSize.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a is null ? -1 : a.Size.CompareTo(b?.Size ?? Size.Zero),
-                CompareDescending = static (a, b) => b is null ? -1 : b.Size.CompareTo(a?.Size ?? Size.Zero),
+                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? Size.Zero),
+                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? Size.Zero),
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -170,7 +178,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     {
         return new CustomTextColumn<LibraryItemModel, string>(
             header: "ADDED",
-            getter: model => model.FormattedCreatedAtDate,
+            getter: model => model.FormattedCreatedAtDate.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
                 CompareAscending = static (a, b) => a?.CreatedAt.CompareTo(b?.CreatedAt ?? DateTime.UnixEpoch) ?? 1,
@@ -189,11 +197,11 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     {
         return new CustomTextColumn<LibraryItemModel, string>(
             header: "INSTALLED",
-            getter: model => model.FormattedInstalledDate,
+            getter: model => model.FormattedInstalledDate.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a?.InstalledDate.CompareTo(b?.InstalledDate ?? DateTime.UnixEpoch) ?? 1,
-                CompareDescending = static (a, b) => b?.InstalledDate.CompareTo(a?.InstalledDate ?? DateTime.UnixEpoch) ?? 1,
+                CompareAscending = static (a, b) => a?.InstalledDate.Value.CompareTo(b?.InstalledDate.Value ?? DateTime.UnixEpoch) ?? 1,
+                CompareDescending = static (a, b) => b?.InstalledDate.Value.CompareTo(a?.InstalledDate.Value ?? DateTime.UnixEpoch) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -211,8 +219,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             cellTemplateResourceKey: "InstallColumnTemplate",
             options: new TemplateColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a?.IsInstalledInLoadout.CompareTo(b?.IsInstalledInLoadout ?? false) ?? 1,
-                CompareDescending = static (a, b) => b?.IsInstalledInLoadout.CompareTo(a?.IsInstalledInLoadout ?? false) ?? 1,
+                CompareAscending = static (a, b) => a?.IsInstalledInLoadout.Value.CompareTo(b?.IsInstalledInLoadout.Value ?? false) ?? 1,
+                CompareDescending = static (a, b) => b?.IsInstalledInLoadout.Value.CompareTo(a?.IsInstalledInLoadout.Value ?? false) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
