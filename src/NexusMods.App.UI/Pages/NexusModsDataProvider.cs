@@ -154,9 +154,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 });
 
                 var installedAtObservable = observable
-                    .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E).GetCreatedAt())
-                    .RemoveKey()
-                    .QueryWhenChanged(collection => collection.FirstOrDefault());
+                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e).GetCreatedAt())
+                    .QueryWhenChanged(query => query.Items.FirstOrDefault());
 
                 var loadoutItemIdsObservable = observable.Transform((_, e) => (LoadoutItemId) e);
 
