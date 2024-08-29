@@ -64,6 +64,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 {
                     self.Roots.Clear();
 
+                    // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
+                    self.SelectedModels.Clear();
+
                     return self
                         .GetRootsObservable(viewHierarchical)
                         .DisposeMany()
