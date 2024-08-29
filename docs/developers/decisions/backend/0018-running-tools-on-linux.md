@@ -153,7 +153,7 @@ We can use [winetricks] to install these runtimes in many cases:
 Example:
 
 ```
-`WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
+WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
 ```
 
 [steam-api]: https://partner.steamgames.com/doc/api/steam_api
