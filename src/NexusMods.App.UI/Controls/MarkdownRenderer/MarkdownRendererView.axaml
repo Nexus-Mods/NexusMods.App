@@ -105,6 +105,7 @@
             <!-- TODO: list -->
 
             <Style Selector=".Markdown_Avalonia_MarkdownViewer ctxt|CCode">
+                <Setter Property="MonospaceFontFamily" Value="{StaticResource FontBodyCode}" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                 <Setter Property="Padding" Value="4,3,4,0" />

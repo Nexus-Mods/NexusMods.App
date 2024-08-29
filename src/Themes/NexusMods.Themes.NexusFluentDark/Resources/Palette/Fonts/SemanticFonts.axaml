@@ -14,6 +14,8 @@
     <StaticResource x:Key="FontBodyRegular" ResourceKey="InterRegular"/>
     <StaticResource x:Key="FontBodySemiBold" ResourceKey="InterSemiBold"/>
     <StaticResource x:Key="FontBodyBold" ResourceKey="InterSemiBold"/>
+    
+    <StaticResource x:Key="FontBodyCode" ResourceKey="RobotoMonoRegular"/>
 
 </ResourceDictionary>
 
