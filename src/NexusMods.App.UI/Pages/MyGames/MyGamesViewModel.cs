@@ -1,16 +1,17 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
@@ -18,7 +19,8 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
+using OneOf;
+using OneOf.Types;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -27,6 +29,8 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private readonly IWindowManager _windowManager;
+    private readonly IJobMonitor _jobMonitor;
+
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames = new([]);
 
@@ -41,6 +45,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         ISynchronizerService syncService,
         IGameRegistry gameRegistry) : base(windowManager)
     {
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.Game;
         
@@ -48,120 +54,103 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _windowManager = windowManager;
         
         this.WhenActivated(d =>
-            {
-                // Managed games widgets
-                Loadout.ObserveAll(conn)
-                    .Filter(l => l.IsVisible())
-                    .RemoveKey()
-                    .GroupOn(loadout => loadout.InstallationInstance.LocationsRegister[LocationId.Game])
-                    .Transform(group=> group.List.Items.First())
-                    .OnUI()
-                    .Transform(loadout =>
+        {
+            // Managed games widgets
+            Loadout.ObserveAll(conn)
+                .Filter(l => l.IsVisible())
+                .DistinctValues(loadout => loadout.InstallationInstance)
+                .OnUI()
+                .Transform(installation =>
+                {
+                    var vm = provider.GetRequiredService<IGameWidgetViewModel>();
+                    vm.Installation = installation;
+
+                    vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
-                        var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                        vm.Installation = loadout.InstallationInstance;
-                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                        {
-                            vm.State = GameWidgetState.AddingGame;
-                            await Task.Run(async () => await ManageGame(loadout.InstallationInstance));
-                            vm.State = GameWidgetState.ManagedGame;
-                        });
-                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
-                        {
-                            vm.State = GameWidgetState.RemovingGame;
-                            await Task.Run(async () => await RemoveAllLoadouts(loadout.InstallationInstance));
-                            vm.State = GameWidgetState.ManagedGame;
-                        });
+                        if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
-                        vm.ViewGameCommand = ReactiveCommand.Create(
-                            () => { NavigateToLoadout(conn, loadout); }
-                        );
-
+                        vm.State = GameWidgetState.RemovingGame;
+                        await Task.Run(async () => await RemoveAllLoadouts(installation));
                         vm.State = GameWidgetState.ManagedGame;
-                        return vm;
-                    })
-                    .Bind(out _managedGames)
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(d);
+                    });
 
-                // For the games that are detected, we only want to show those that are not managed, we'll bind directly
-                // to the collection here so we don't need any temporary collections or observables
-                gameRegistry.InstalledGames
-                    .ToObservableChangeSet()
-                    .Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
-                    .OnUI()
-                    .Transform(install =>
+                    vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToFirstLoadout(conn, installation); });
+
+                    var job = GetJobRunningForGameInstallation(installation);
+                    vm.State = job.IsT2 ? GameWidgetState.RemovingGame : GameWidgetState.ManagedGame;
+
+                    return vm;
+                })
+                .Bind(out _managedGames)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(d);
+
+            // For the games that are detected, we only want to show those that are not managed, we'll bind directly
+            // to the collection here so we don't need any temporary collections or observables
+            gameRegistry.InstalledGames
+                .ToObservableChangeSet()
+                .Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
+                .OnUI()
+                .Transform(install =>
+                {
+                    var vm = provider.GetRequiredService<IGameWidgetViewModel>();
+                    vm.Installation = install;
+
+                    vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                     {
-                        var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                        vm.Installation = install;
-                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                        {
-                            vm.State = GameWidgetState.AddingGame;
-                            await Task.Run(async () => await ManageGame(install));
-                            vm.State = GameWidgetState.ManagedGame;
-                        });
-                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
-                        {
-                            vm.State = GameWidgetState.RemovingGame;
-                            await Task.Run(async () => await RemoveAllLoadouts(install));
-                            vm.State = GameWidgetState.ManagedGame;
-                        });
+                        if (GetJobRunningForGameInstallation(install).IsT1) return;
 
-                        vm.State = GameWidgetState.DetectedGame;
-                        return vm;
-                    })
-                    .Bind(out _detectedGames)
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(d);
-                    
-            }
-            
-        );
+                        vm.State = GameWidgetState.AddingGame;
+                        await Task.Run(async () => await ManageGame(install));
+                        vm.State = GameWidgetState.ManagedGame;
+                    });
+
+                    var job = GetJobRunningForGameInstallation(install);
+                    vm.State = job.IsT1 ? GameWidgetState.AddingGame : GameWidgetState.DetectedGame;
+
+                    return vm;
+                })
+                .Bind(out _detectedGames)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(d);
+        });
     }
 
-    private async Task RemoveAllLoadouts(GameInstallation install)
+    private OneOf<None, CreateLoadoutJob, UnmanageGameJob> GetJobRunningForGameInstallation(GameInstallation installation)
     {
-        var synchronizer = install.GetGame().Synchronizer;
-        await synchronizer.UnManage(install);
+        foreach (var job in _jobMonitor.Jobs)
+        {
+            if (job.Status != JobStatus.Running) continue;
+
+            if (job is CreateLoadoutJob createLoadoutJob && createLoadoutJob.Installation.Equals(installation)) return createLoadoutJob;
+            if (job is UnmanageGameJob unmanageGameJob && unmanageGameJob.Installation.Equals(installation)) return unmanageGameJob;
+        }
+
+        return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
+    }
+
+    private async Task RemoveAllLoadouts(GameInstallation installation)
+    {
+        await installation.GetGame().Synchronizer.UnManage(installation);
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
-        var install = await ((IGame)installation.Game).Synchronizer.CreateLoadout(installation);
-        Dispatcher.UIThread.Invoke(() =>
-            {
-                var workspaceController = _windowManager.ActiveWorkspaceController;
-
-                workspaceController.ChangeOrCreateWorkspaceByContext(
-                    context => context.LoadoutId == install.LoadoutId,
-                    () => new PageData
-                    {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext
-                        {
-                            LoadoutId = install.LoadoutId,
-                        },
-                    },
-                    () => new LoadoutContext
-                    {
-                        LoadoutId = install.LoadoutId,
-                    }
-                );
-            }
-        );
+        await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
 
-    private void NavigateToLoadout(IConnection conn, Loadout.ReadOnly loadout)
+    private void NavigateToFirstLoadout(IConnection conn, GameInstallation installation)
     {
-        // We can't navigate to an invisible loadout, make sure we pick a visible one.
         var db = conn.Db;
-        if (!loadout.IsVisible())
+        
+        var loadout = Loadout.All(db).FirstOrOptional(loadout => loadout.IsVisible() 
+                                                                 && loadout.InstallationInstance.Equals(installation));
+        if (!loadout.HasValue)
         {
-            // Note(sewer) | If we're here, last loadout was most likely a LoadoutKind.VanillaState
-            loadout = Loadout.All(db).First(x => x.IsVisible());
+            return;
         }
 
-        var loadoutId = loadout.LoadoutId;
+        var loadoutId = loadout.Value.LoadoutId;
         Dispatcher.UIThread.Invoke(() =>
             {
                 var workspaceController = _windowManager.ActiveWorkspaceController;

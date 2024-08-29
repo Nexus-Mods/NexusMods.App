@@ -2,7 +2,7 @@ using FluentAssertions;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
-namespace NexusMods.Spectre.ProxyConsole.Tests;
+namespace NexusMods.ProxyConsole.Tests;
 
 public class ProxyTests(IServiceProvider provider) : AProxyConsoleTest(provider)
 {

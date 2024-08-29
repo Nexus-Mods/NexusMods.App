@@ -15,10 +15,11 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-public class Cyberpunk2077DiagnosticTests(IServiceProvider serviceProvider) : AGameTest<Cyberpunk2077.Cyberpunk2077Game>(serviceProvider)
+public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyberpunkIsolatedGameTest<Cyberpunk2077DiagnosticTests>(outputHelper)
 {
     public static string TemplateData(string diagnosticType) =>
         diagnosticType switch

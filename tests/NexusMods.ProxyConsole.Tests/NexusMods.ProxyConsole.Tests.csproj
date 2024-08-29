@@ -1,11 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    
-
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
     </ItemGroup>
-    
 
     <ItemGroup>
       <PackageReference Include="Nerdbank.FullDuplexStream" />

@@ -69,4 +69,5 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Projektanker/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Resizers/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=stardew/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=synchronizers/@EntryIndexedValue">True</s:Boolean>
 	</wpf:ResourceDictionary>

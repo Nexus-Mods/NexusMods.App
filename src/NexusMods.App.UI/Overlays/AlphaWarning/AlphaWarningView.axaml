@@ -24,7 +24,7 @@
                                 <TextBlock Classes="BodyLGBold">Important</TextBlock>
                             </StackPanel>
 
-                            <TextBlock Classes="BodyMDNormal" TextWrapping="Wrap">This app is still very early in development and currently only supports Stardew Valley. Please ensure no mods are installed in your game folder before testing.</TextBlock>
+                            <TextBlock Classes="BodyMDNormal" TextWrapping="Wrap">This app is still very early in development and currently only supports a small set of games. Please ensure no mods are installed in your game folder before testing.</TextBlock>
                         </StackPanel>
                     </Border>
 

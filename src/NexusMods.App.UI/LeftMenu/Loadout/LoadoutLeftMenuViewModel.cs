@@ -205,6 +205,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .DisposeWith(disposable);
 
             LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
+                .RemoveKey()
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
                 .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount += changeSet.Adds)

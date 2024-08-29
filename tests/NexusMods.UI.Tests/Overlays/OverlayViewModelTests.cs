@@ -114,6 +114,7 @@ public class OverlayViewModelTests
         // Assert
         await tcs.Task;
         updated.Should().BeTrue();
+        await sub;
     }
     
     public class MockOverlayViewModel : AOverlayViewModel<IOverlayViewModel>

@@ -31,7 +31,7 @@ public interface ILibraryService
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
-    IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? installer = null);
+    IJob InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? installer = null);
 
     /// <summary>
     /// Removes a number of items from the library.
