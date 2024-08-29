@@ -119,15 +119,17 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .ObserveAll(_connection)
             .FilterOnObservable((_, modPageEntityId) => _connection
                 .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageEntityId)
-                .MergeManyChangeSets((d, _) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E))
+                .FilterOnObservable((d, _) => _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E)
+                    .IsNotEmpty())
                 .IsNotEmpty()
             )
             .Transform(modPage =>
             {
                 var observable = _connection
                     .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id).AsEntityIds()
-                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e))
-                    .AsEntityIds()
+                    .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
+                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds())
                     .PublishWithFunc(() =>
                     {
                         var changeSet = new ChangeSet<Datom, EntityId>();
