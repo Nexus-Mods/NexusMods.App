@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.DurableJobs;
+using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DurableJobs.Tests;
 
@@ -21,6 +22,7 @@ public class BasicDurableJobTest
                 .AddSingleton<WaitMany>()
                 .AddSingleton<CatchErrorJob>()
                 .AddSingleton<ThrowOn5Job>()
+                .AddSingleton<AsyncLinqJob>()
             ).Build();
         _host = host;
         _serviceProvider = host.Services;
@@ -41,11 +43,11 @@ public class BasicDurableJobTest
     [Fact]
     public async Task CanWaitAll()
     {
-        var values = 100;
+        var values = new [] { 1, 2, 3, 4, 5 };
         
         var result = await _jobManager.RunNew<WaitMany>(values);
         
-        result.Should().Be(Enumerable.Range(0, values).Select(x => x * x).Sum());
+        result.Should().Be(values.Select(x => x * x).Sum());
     }
 
     [Fact]
@@ -57,7 +59,21 @@ public class BasicDurableJobTest
         
         await act.Should().ThrowAsync<SubJobError>().WithMessage("I don't like 5");
     }
+
+    [Fact]
+    public async Task AsyncLinqWorks()
+    {
+        
+        var values = new[] { 1, 4, 3, 7, 42 };
+
+        var result = await _jobManager.RunNew<AsyncLinqJob>(values);
+
+        result.Should().Be(values.Select(x => x * x).Sum());
+        
+    }
+    
 }
+
 
 public class CatchErrorJob : AJob<CatchErrorJob, int, int>
 {
@@ -85,19 +101,32 @@ public class ThrowOn5Job : AJob<ThrowOn5Job, int, int>
     }
 }
 
-public class WaitMany : AJob<WaitMany, int, int>
+public class WaitMany : AJob<WaitMany, int, int[]>
 {
-    protected override async Task<int> Run(Context context, int maxTasks)
+    protected override async Task<int> Run(Context context, int[] inputs)
     {
         var tasks = new List<Task<int>>();
-        for (var i = 0; i < maxTasks; i++)
+        foreach (var input in inputs)
         {
-            tasks.Add(SquareJob.RunSubJob(context, i));
+            tasks.Add(SquareJob.RunSubJob(context, input));
         }
 
         await Task.WhenAll(tasks);
 
         return tasks.Select(t => t.Result).Sum();
+    }
+}
+
+public class AsyncLinqJob : AJob<AsyncLinqJob, int, int[]>
+{
+    protected override async Task<int> Run(Context context, int[] ints)
+    {
+        var sum = 0;
+        await foreach (var val in ints.SelectAsync(async x => await SquareJob.RunSubJob(context, x)))
+        {
+            sum += val;
+        }
+        return sum;
     }
 }
 

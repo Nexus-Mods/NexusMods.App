@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.DurableJobs\NexusMods.Abstractions.DurableJobs.csproj" />
+      <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.DurableJobs\NexusMods.DurableJobs.csproj" />
     </ItemGroup>
 
