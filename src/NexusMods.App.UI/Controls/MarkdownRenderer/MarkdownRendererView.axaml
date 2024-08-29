@@ -18,7 +18,12 @@
     <!--
         NOTE(erri120): This control can only be styled directly, not through classes.
         https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-customise-style
+        
+        NODE(insomnious): I've also been using this as a reference for styles. The above hasn't been updated since 2020 
+        and I'm not convinced it still works in the same way.
+        https://github.com/whistyun/Markdown.Avalonia/blob/master/Markdown.Avalonia.Tight/StyleCollections/MarkdownStyleDefaultTheme.axaml
     -->
+    
     <md:MarkdownScrollViewer x:Name="MarkdownScrollViewer">
         <md:MarkdownScrollViewer.Styles>
             <!-- NOTE(erri120): designs from https://www.figma.com/design/NuC2DiIdnAZQQkYUSaK514/%F0%9F%93%B1Markdown-styles?node-id=10%3A12&t=mVpreGuSrLB54ms0-1 -->
@@ -91,7 +96,6 @@
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
 
-
             <!-- TODO: bold -->
             <!-- TODO: italic -->
             <!-- TODO: bold and italic -->
@@ -100,24 +104,25 @@
             <!-- TODO: numbered list -->
             <!-- TODO: list -->
 
-            <Style Selector="ctxt|CCode ctxt|CRun">
-                <!-- TODO: use Roboto Mono -->
+            <Style Selector=".Markdown_Avalonia_MarkdownViewer ctxt|CCode">
                 <Setter Property="FontSize" Value="13" />
-                <!-- <Setter Property="LineHeight" Value="19.5" /> -->
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                <Setter Property="Padding" Value="4,3,4,0" />
+                <Setter Property="Margin" Value="2,0" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
 
-            <Style Selector="ctxt|CHyperlink">
+            <Style Selector=".Markdown_Avalonia_MarkdownViewer ctxt|CHyperlink">
+                <Setter Property="IsUnderline" Value="True"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryModerate}"/>
                 <Setter Property="HoverForeground" Value="{StaticResource PrimaryStrong}"/>
-
-                <Style Selector="^ ctxt|CRun">
-                    <Setter Property="Foreground" Value="{StaticResource PrimaryStrong}" />
-                    <Setter Property="IsUnderline" Value="True" />
+                <Style Selector="^:hover">
+                    <Setter Property="IsUnderline" Value="False"/>
                 </Style>
             </Style>
-
-            <Style Selector="ctxt|CImage">
+            
+            <Style Selector=".Markdown_Avalonia_MarkdownViewer ctxt|CImage">
                 <Setter Property="SaveAspectRatio" Value="True"/>
             </Style>
 
