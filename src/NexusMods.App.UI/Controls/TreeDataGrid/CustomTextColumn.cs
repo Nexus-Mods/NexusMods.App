@@ -26,6 +26,6 @@ public class CustomTextColumn<TModel, TValue> : TextColumn<TModel, TValue>
         }
 
         var inner = base.CreateCell(row);
-        return new CustomTextCell(inner: inner, id: Id, isRoot: isRoot);
+        return new CustomCell(inner: inner, id: Id, isRoot: isRoot);
     }
 }

@@ -11,9 +11,10 @@ public class CustomElementFactory : TreeDataGridElementFactory
 {
     protected override Control CreateElement(object? data)
     {
-        if (data is CustomTextCell customCell)
+        if (data is CustomCell customCell)
         {
             var element = base.CreateElement(customCell.Inner);
+
             element.Classes.Add(customCell.Id);
             if (customCell.IsRoot)
             {

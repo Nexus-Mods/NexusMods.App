@@ -206,7 +206,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
     public static IColumn<LibraryItemModel> CreateInstallColumn()
     {
-        return new TemplateColumn<LibraryItemModel>(
+        return new CustomTemplateColumn<LibraryItemModel>(
             header: "ACTIONS",
             cellTemplateResourceKey: "InstallColumnTemplate",
             options: new TemplateColumnOptions<LibraryItemModel>
@@ -217,6 +217,9 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
             }
-        );
+        )
+        {
+            Id = "Install",
+        };
     }
 }

@@ -2,13 +2,13 @@ using Avalonia.Controls.Models.TreeDataGrid;
 
 namespace NexusMods.App.UI.Controls;
 
-public class CustomTextCell : ICell
+public class CustomCell : ICell
 {
     public ICell Inner { get; }
     public string Id { get; }
     public bool IsRoot { get; }
 
-    public CustomTextCell(ICell inner, string id, bool isRoot)
+    public CustomCell(ICell inner, string id, bool isRoot)
     {
         Inner = inner;
         Id = id;

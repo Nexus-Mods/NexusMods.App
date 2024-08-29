@@ -604,9 +604,6 @@
         <Compile Update="Overlays\LibraryDeleteConfirmation\LibraryItemDeleteConfirmationViewModel.cs">
           <DependentUpon>ILibraryItemDeleteConfirmationViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\TreeDataGrid\CustomTextCell.cs">
-          <DependentUpon>CustomTextColumn.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Loadout\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
         </Compile>

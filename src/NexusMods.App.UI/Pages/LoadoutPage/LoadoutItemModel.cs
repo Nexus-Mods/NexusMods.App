@@ -143,7 +143,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     public static IColumn<LoadoutItemModel> CreateToggleEnableColumn()
     {
-        return new TemplateColumn<LoadoutItemModel>(
+        return new CustomTemplateColumn<LoadoutItemModel>(
             header: "TOGGLE",
             cellTemplateResourceKey: "ToggleEnableColumnTemplate",
             options: new TemplateColumnOptions<LoadoutItemModel>
@@ -154,6 +154,9 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
             }
-        );
+        )
+        {
+            Id = "Toggle"
+        };
     }
 }
