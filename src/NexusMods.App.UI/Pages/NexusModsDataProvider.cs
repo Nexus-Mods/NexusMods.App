@@ -94,7 +94,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         });
 
         var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
-            .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds())
+            // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
+            .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = nexusModsLibraryFileObservable.Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e));
@@ -129,7 +130,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var observable = _connection
                     .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id).AsEntityIds()
                     .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
-                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds())
+                    // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
+                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
                     .PublishWithFunc(() =>
                     {
                         var changeSet = new ChangeSet<Datom, EntityId>();
@@ -179,5 +181,20 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 return model;
             });
+    }
+}
+
+file class DatomEntityIdEqualityComparer : IEqualityComparer<Datom>
+{
+    public static readonly IEqualityComparer<Datom> Instance = new DatomEntityIdEqualityComparer();
+
+    public bool Equals(Datom x, Datom y)
+    {
+        return x.E == y.E;
+    }
+
+    public int GetHashCode(Datom obj)
+    {
+        return obj.E.GetHashCode();
     }
 }
