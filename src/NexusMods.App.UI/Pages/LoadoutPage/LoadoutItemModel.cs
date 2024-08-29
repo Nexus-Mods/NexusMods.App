@@ -23,7 +23,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     [Reactive] public Size Size { get; set; } = Size.Zero;
 
     public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
-    [Reactive] public bool IsEnabled { get; set; }
+    public BindableReactiveProperty<bool> IsEnabled { get; } = new(value: false);
 
     public ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
 
@@ -41,7 +41,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             model.NameObservable.OnUI().Subscribe(name => model.Name = name).AddTo(disposables);
             model.VersionObservable.OnUI().Subscribe(version => model.Version = version).AddTo(disposables);
             model.SizeObservable.OnUI().Subscribe(size => model.Size = size).AddTo(disposables);
-            model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled = isEnabled).AddTo(disposables);
+            model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled.Value = isEnabled).AddTo(disposables);
         });
     }
 
@@ -148,8 +148,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             cellTemplateResourceKey: "ToggleEnableColumnTemplate",
             options: new TemplateColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a?.IsEnabled.CompareTo(b?.IsEnabled ?? false) ?? 1,
-                CompareDescending = static (a, b) => b?.IsEnabled.CompareTo(a?.IsEnabled ?? false) ?? 1,
+                CompareAscending = static (a, b) => a?.IsEnabled.Value.CompareTo(b?.IsEnabled.Value ?? false) ?? 1,
+                CompareDescending = static (a, b) => b?.IsEnabled.Value.CompareTo(a?.IsEnabled.Value ?? false) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,

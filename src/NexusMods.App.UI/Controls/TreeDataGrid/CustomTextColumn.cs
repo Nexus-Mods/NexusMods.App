@@ -25,7 +25,10 @@ public class CustomTextColumn<TModel, TValue> : TextColumn<TModel, TValue>
             isRoot = indent == 0;
         }
 
-        var inner = base.CreateCell(row);
-        return new CustomCell(inner: inner, id: Id, isRoot: isRoot);
+        return new CustomTextCell<TValue?>(CreateBindingExpression(row.Model), Binding.Write is null, Options)
+        {
+            Id = Id,
+            IsRoot = isRoot,
+        };
     }
 }

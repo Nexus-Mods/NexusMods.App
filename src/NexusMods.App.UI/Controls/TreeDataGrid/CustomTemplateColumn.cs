@@ -23,7 +23,11 @@ public class CustomTemplateColumn<TModel> : TemplateColumn<TModel>
             isRoot = indent == 0;
         }
 
-        var inner = base.CreateCell(row);
-        return new CustomCell(inner: inner, id: Id, isRoot: isRoot);
+        var inner = (base.CreateCell(row) as TemplateCell)!;
+        return new CustomTemplateCell(inner.Value, inner.GetCellTemplate, inner.GetCellEditingTemplate, Options)
+        {
+            IsRoot = isRoot,
+            Id = Id,
+        };
     }
 }
