@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.DurableJobs;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DurableJobs.Tests;
@@ -16,13 +17,15 @@ public class BasicDurableJobTest
     {
         var host = new HostBuilder()
             .ConfigureServices(s => 
-                s.AddDurableJobs()
-                .AddSingleton<SquareJob>()
-                .AddSingleton<SumJob>()
-                .AddSingleton<WaitMany>()
-                .AddSingleton<CatchErrorJob>()
-                .AddSingleton<ThrowOn5Job>()
-                .AddSingleton<AsyncLinqJob>()
+                s.AddSerializationAbstractions()
+                    .AddDurableJobs()
+                    .AddInMemoryJobStore()
+                .AddJob<SquareJob>()
+                .AddJob<SumJob>()
+                .AddJob<WaitMany>()
+                .AddJob<CatchErrorJob>()
+                .AddJob<ThrowOn5Job>()
+                .AddJob<AsyncLinqJob>()
             ).Build();
         _host = host;
         _serviceProvider = host.Services;
@@ -63,13 +66,9 @@ public class BasicDurableJobTest
     [Fact]
     public async Task AsyncLinqWorks()
     {
-        
         var values = new[] { 1, 4, 3, 7, 42 };
-
         var result = await _jobManager.RunNew<AsyncLinqJob>(values);
-
         result.Should().Be(values.Select(x => x * x).Sum());
-        
     }
     
 }

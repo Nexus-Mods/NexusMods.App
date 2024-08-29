@@ -10,4 +10,10 @@ public static class Services
         services.AddSingleton<IJobManager, JobManager>();
         return services;
     }
+    
+    public static IServiceCollection AddInMemoryJobStore(this IServiceCollection services)
+    {
+        services.AddSingleton<IJobStateStore, InMemoryJobStore>();
+        return services;
+    }
 }

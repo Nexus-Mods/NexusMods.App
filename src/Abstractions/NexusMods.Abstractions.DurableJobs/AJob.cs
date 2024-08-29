@@ -12,6 +12,16 @@ public abstract class AJob
     /// many times before it finishes. All code in this method should be idempotent.
     /// </summary>
     internal abstract Task<object> Run(Context context, params object[] args);
+
+    /// <summary>
+    /// The result type of this job.
+    /// </summary>
+    public abstract Type ResultType { get; }
+    
+    /// <summary>
+    /// The argument types of this job.
+    /// </summary>
+    public abstract Type[] ArgumentTypes { get; }
 }
 
 /// <summary>
@@ -34,7 +44,14 @@ public abstract class AJob<TParent, TResult, TArg1> : AJob
 
         return (await Run(context, (TArg1)args[0]))!;
     }
+
+    /// <inheritdoc />
+    public override Type ResultType => typeof(TResult);
     
+    /// <inheritdoc />
+    public override Type[] ArgumentTypes => [typeof(TArg1)];
+
+
     /// <summary>
     /// Runs this job as a sub job of the given parent job.
     /// </summary>

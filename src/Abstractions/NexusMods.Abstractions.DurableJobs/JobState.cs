@@ -3,7 +3,7 @@ namespace NexusMods.Abstractions.DurableJobs;
 /// <summary>
 /// The possible states of a job.
 /// </summary>
-public enum JobState
+public enum JobStatus
 {
     /// <summary>
     /// The job has been created but has not yet started.

@@ -2,8 +2,6 @@ namespace NexusMods.Abstractions.DurableJobs;
 
 public interface IJobManager
 {
-    public IServiceProvider ServiceProvider { get; }
-    
     /// <summary>
     /// The main entry point for the job manager, don't run this inside of any job context. 
     /// </summary>

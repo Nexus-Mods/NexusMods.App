@@ -1,44 +1,50 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DurableJobs;
-using NexusMods.DurableJobs.StateStore;
 
 namespace NexusMods.DurableJobs;
+using JobActor = Actor<JobState, IJobMessage>;
 
 public class JobManager : IJobManager
 {
-    private readonly object _lock = new();
-    private ImmutableDictionary<JobId, JobHistory> _jobs = ImmutableDictionary<JobId, JobHistory>.Empty;
-    public IServiceProvider ServiceProvider { get; }
+    private readonly ConcurrentDictionary<JobId, JobActor> _jobs = new();
+    private readonly ILogger<JobManager> _logger;
+    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly Dictionary<Type,AJob> _jobInstances;
+    private readonly IJobStateStore _jobStore;
 
     public JobManager(IServiceProvider serviceProvider)
     {
-        ServiceProvider = serviceProvider;
+        _jobStore = serviceProvider.GetRequiredService<IJobStateStore>();
+        _jobInstances = serviceProvider.GetServices<AJob>().ToDictionary(j => j.GetType());
+        _logger = serviceProvider.GetRequiredService<ILogger<JobManager>>();
+        _serializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
     }
-
+    
     /// <inheritdoc />
     public Task<object> RunNew<TJob>(params object[] args)
         where TJob : AJob
     {
-        var jobInstance = ServiceProvider.GetRequiredService<TJob>();
+        var jobInstance = _jobInstances[typeof(TJob)];
         var newJobId = JobId.From(Guid.NewGuid());
         
         var tcs = new TaskCompletionSource<object>();
 
-        lock (_lock)
+        var initialState = new JobState
         {
-            _jobs = _jobs.Add(newJobId, new JobHistory
-                {
-                    JobId = newJobId,
-                    JobType = typeof(TJob),
-                    Continuation = Continuation,
-                    Arguments = args,
-                }
-            );
-        }
-
-        Task.Run(() => StepJob(newJobId));
-
+            Job = jobInstance,
+            Id = newJobId,
+            Manager = this,
+            Arguments = args,
+            Continuation = Continuation,
+        };
+        
+        var actor = new JobActor(_logger, initialState, ProcessActorMessage);
+        actor.Post(RunMessage.Instance);
+        _jobs[newJobId] = actor;
+        
         return tcs.Task;
         
 
@@ -54,158 +60,121 @@ public class JobManager : IJobManager
             }
         }
     }
+    
+    private static async ValueTask<JobState> ProcessActorMessage(JobActor actor, JobState state, IJobMessage message)
+    {
+        switch (message)
+        {
+            case RunMessage:
+                var context = new Context
+                {
+                    JobManager = state.Manager!,
+                    JobId = state.Id,
+                    History = state.History,
+                };
+                try
+                {
+                    var result = await state.Job.Run(context, state.Arguments);
+                    state.Manager!.FinalizeJob(state, result, false);
+                }
+                catch (WaitException)
+                {
+                    return state;
+                }
+                catch (Exception ex)
+                {
+                    state.Manager!.FinalizeJob(state, ex.Message, true);
+                }
+                break;
+            case JobResultMessage rm:
+                var entry = state.History[rm.Offset];
+                entry.Result = rm.Result;
+                entry.Status = rm.IsFailure ? JobStatus.Failed : JobStatus.Completed;
+                actor.Post(RunMessage.Instance);
+                break;
+                
+        }
+
+        state = state.Manager!.SaveState(state);
+        return state;
+    }
+
+    private JobState SaveState(JobState state)
+    {
+        var memoryStream = new MemoryStream();
+        var writer = new Utf8JsonWriter(memoryStream);
+        JsonSerializer.Serialize(writer, state, _serializerOptions);
+        _jobStore.Write(state.Id, memoryStream.ToArray());
+
+#if DEBUG
+        // In debug mode, we deserialize the state to ensure it can be deserialized properly.
+        memoryStream.Position = 0;
+        var newState = JsonSerializer.Deserialize<JobState>(memoryStream)!;
+        newState.Manager = state.Manager;
+        newState.Continuation = state.Continuation;
+        return newState;
+#else
+        return state
+#endif
+        
+}
+
+    private void FinalizeJob(JobState state, object result, bool isFailure)
+    {
+        state.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
+        
+        if (state.ParentJobId == JobId.Empty)
+            return;
+        
+        if (!_jobs.TryGetValue(state.ParentJobId, out var parentJob))
+            return;
+        
+        parentJob.Post(new JobResultMessage(result, state.ParentHistoryIndex, isFailure));
+
+    }
 
     public Task<object> RunSubJob<TSubJob>(Context context, object[] args) where TSubJob : AJob
     {
-        lock (_lock)
+        // If we are replaying and our index is at the end of the history, we need to add a new entry and create a new job.
+        if (context.ReplayIndex == context.History.Count)
         {
-            // Get the parent job's history.
-            var parentJob = _jobs[context.JobId];
-
-            // If the context handed to us by the parent job has a index that is less than the history count, then we know this sub job needs to be replayed
-            // as it was waiting on a previous sub job to complete.
-            if (context.HistoryIndex < parentJob.History.Count)
+            var jobId = JobId.From(Guid.NewGuid());
+            var jobInstance = _jobInstances[typeof(TSubJob)];
+            var entry = new HistoryEntry
             {
-                var historyEntry = parentJob.History[context.HistoryIndex];
-                // If the job is still waiting, we return a task that will throw a WaitException, this allows the job to continue to run,
-                // but throw an exception if the task is awaited
-                if (historyEntry.State == JobState.Waiting)
-                {
-                    return Task.FromException<object>(new WaitException());
-                }
+                ChildJobId = jobId,
+                Status = JobStatus.Running,
+            };
+            var parentIdx = context.History.Count;
+            context.History.Add(entry);
+            
+            var childJobActor = new JobActor(_logger, new JobState
+            {
+                Job = jobInstance,
+                Id = jobId,
+                Manager = this,
+                Arguments = args,
+                ParentJobId = context.JobId,
+                ParentHistoryIndex = parentIdx,
+            }, ProcessActorMessage);
+            _jobs[jobId] = childJobActor;
+            childJobActor.Post(RunMessage.Instance);
 
-                // If the job has ended, we return the result of the job.
-                var resultData = parentJob.History[context.HistoryIndex].Result;
-
-                // If the job has failed, we throw a SubJobError exception, this will be caught by the parent job
-                if (historyEntry.State == JobState.Failed)
-                {
-                    return Task.FromException<object>(new SubJobError(resultData.ToString()!));
-                }
-
-                // If the job has completed, we return the result of the job.
-                var result = Task.FromResult(parentJob.History[context.HistoryIndex].Result);
-                context.HistoryIndex++;
-                return result;
-            }
-
-            // Else we create a new job and add it to the job history.
-            var newJobId = JobId.From(Guid.NewGuid());
-
-            _jobs = _jobs.Add(newJobId, new JobHistory
-                    {
-                        JobId = newJobId,
-                        JobType = typeof(TSubJob),
-                        Continuation = null!,
-                        Arguments = args,
-                        ParentJobId = context.JobId,
-                    }
-                )
-                .SetItem(context.JobId, parentJob with
-                    {
-                        History = parentJob.History.Add(new HistoryEntry
-                            {
-                                ChildJobId = newJobId,
-                                State = JobState.Running,
-                            }
-                        ),
-                        ChildJobs = parentJob.ChildJobs.Add(newJobId, (ushort)parentJob.History.Count),
-                    }
-                );
-            Task.Run(() => StepJob(newJobId));
-
-            // The sub job is now running, we return a task that will throw a WaitException in the parent.
+            context.ReplayIndex++;
             return Task.FromException<object>(new WaitException());
         }
+        if (context.ReplayIndex < context.History.Count)
+        {
+            var entry = context.History[context.ReplayIndex];
+            context.ReplayIndex++;
+            return entry.Status switch
+            {
+                JobStatus.Completed => Task.FromResult(entry.Result!),
+                JobStatus.Failed => Task.FromException<object>(new SubJobError((string)entry.Result!)),
+                _ => Task.FromException<object>(new WaitException()),
+            };
+        }
+        throw new InvalidOperationException("Replay index is out of bounds");
     }
     
-    private void SetJobState(JobId id, JobState state)
-    {
-        lock (_lock)
-        {
-            _jobs = _jobs.SetItem(id, _jobs[id] with { State = state });
-        }
-    }
-
-    private async Task StepJob(JobId jobId)
-    {
-        // Get the job history and create a new instance of the job.
-        if (!_jobs.TryGetValue(jobId, out var history))
-            return;
-        var job = (AJob)ServiceProvider.GetRequiredService(history.JobType);
-        
-        try
-        {
-            // Set the job state to running, and run the job.
-            SetJobState(jobId, JobState.Running);
-            var context = new Context
-            {
-                JobManager = this,
-                JobId = jobId,
-            };
-            var result = await job.Run(context, history.Arguments);
-            if (history.ParentJobId.HasValue) 
-                NotifyParent(history.ParentJobId!.Value, jobId, result);
-            history.Continuation?.Invoke(result, null);
-            lock (_lock)
-            {
-                _jobs = _jobs.Remove(jobId);
-            }
-        }
-        catch (WaitException)
-        {
-            // Set the job state to waiting, and return.
-            SetJobState(jobId, JobState.Waiting);
-        }
-        catch (Exception ex)
-        {
-            // Another exception occurred, set the job state to failed, and notify the parent job.
-            if (history.ParentJobId.HasValue) 
-                NotifyParent(history.ParentJobId!.Value, jobId, null, ex);
-            history.Continuation?.Invoke(null!, ex);
-            lock (_lock)
-            {
-                _jobs = _jobs.Remove(jobId);
-            }
-        }
-    }
-
-    private void NotifyParent(JobId parentJobId, JobId jobJobId, object? result, Exception? ex = null)
-    {
-        lock (_lock) {
-            // If the parent job is not in the history, we can't notify it, it likely was already completed.
-            if (!_jobs.TryGetValue(parentJobId, out var parentHistory))
-                return;
-
-            var parentIndex = parentHistory.ChildJobs[jobJobId];
-
-            HistoryEntry newEntry;
-            if (ex != null)
-            {
-                newEntry = new HistoryEntry
-                {
-                    ChildJobId = jobJobId,
-                    State = JobState.Failed,
-                    Result = ex.Message,
-                };
-            }
-            else
-            {
-                newEntry = new HistoryEntry
-                {
-                    ChildJobId = jobJobId,
-                    State = JobState.Completed,
-                    Result = result!,
-                };
-            }
-
-            _jobs = _jobs.SetItem(parentJobId, parentHistory with
-                {
-                    History = parentHistory.History.SetItem(parentIndex, newEntry),
-                }
-            );
-
-            Task.Run(() => StepJob(parentJobId));
-        }
-    }
 }
