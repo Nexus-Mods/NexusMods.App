@@ -108,7 +108,7 @@
                 <Setter Property="MonospaceFontFamily" Value="{StaticResource FontBodyCode}" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-                <Setter Property="Padding" Value="4,3,4,0" />
+                <Setter Property="Padding" Value="4,2" />
                 <Setter Property="Margin" Value="2,0" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
