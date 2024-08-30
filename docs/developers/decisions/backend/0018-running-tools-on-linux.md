@@ -225,11 +225,22 @@ ImportError: attempted relative import with no known parent package
 [PYI-654761:ERROR] Failed to execute script 'main' due to unhandled exception!
 ```
 
-This is because `protontricks` uses relative imports, and [PyInstaller] doesn't know
-how to work with modules out of the box; 
+This is because `protontricks` uses relative imports from parent directories, and
+[PyInstaller] is unable to resolve these dependencies. To workaround this limitation,
+you can create a simple script outside of the package (i.e. `src/entry.py`) that
+imports and calls the `cli` function to serve as an entrypoint:
 
+```python
+from protontricks.cli.main import cli
+
+if __name__ == "__main__":
+    cli()
 ```
-# TODO: How do I fix this??
+
+The path to this script can then be passed to [PyInstaller] to build the binary:
+
+```bash
+pyinstaller --onefile src/entry.py --name protontricks --add-data "src/protontricks/data:protontricks/data"
 ```
 
 ##### Running Module Locally
