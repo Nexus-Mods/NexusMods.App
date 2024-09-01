@@ -44,6 +44,12 @@
       <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
+        <Compile Update="Process\XDGOpenDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\ExecutableRuntimeDependency.cs">
+            <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

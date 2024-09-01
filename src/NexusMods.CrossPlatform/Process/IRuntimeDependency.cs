@@ -31,10 +31,32 @@ public interface IRuntimeDependency
     OSPlatform[] SupportedPlatforms { get; }
 
     /// <summary>
+    /// Gets the type.
+    /// </summary>
+    RuntimeDependencyType DependencyType { get; }
+
+    /// <summary>
     /// Queries the installation information of the dependency.
     /// </summary>
-    /// <returns>None of the dependency isn't installed.</returns>
+    /// <returns>None if the dependency isn't installed.</returns>
     ValueTask<Optional<RuntimeDependencyInformation>> QueryInstallationInformation(CancellationToken cancellation);
+}
+
+/// <summary>
+/// Dependency Type.
+/// </summary>
+[PublicAPI]
+public enum RuntimeDependencyType
+{
+    /// <summary>
+    /// The dependency is an executable.
+    /// </summary>
+    Executable = 0,
+
+    /// <summary>
+    /// The dependency is a shared or static library.
+    /// </summary>
+    Library = 1,
 }
 
 /// <summary>
@@ -46,5 +68,10 @@ public record RuntimeDependencyInformation
     /// <summary>
     /// Gets the installed version.
     /// </summary>
-    public required string Version { get; init; }
+    public Optional<string> RawVersion { get; init; }
+
+    /// <summary>
+    /// Gets the installed version.
+    /// </summary>
+    public Optional<Version> Version { get; init; }
 }

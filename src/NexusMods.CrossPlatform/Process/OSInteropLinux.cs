@@ -12,6 +12,7 @@ namespace NexusMods.CrossPlatform.Process;
 internal class OSInteropLinux : AOSInterop
 {
     private readonly IFileSystem _fileSystem;
+    private readonly XDGOpenDependency _xdgOpenDependency;
 
     /// <summary>
     /// Constructor.
@@ -19,9 +20,11 @@ internal class OSInteropLinux : AOSInterop
     public OSInteropLinux(
         ILoggerFactory loggerFactory,
         IProcessFactory processFactory,
-        IFileSystem fileSystem) : base(loggerFactory, processFactory)
+        IFileSystem fileSystem,
+        XDGOpenDependency xdgOpenDependency) : base(loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
+        _xdgOpenDependency = xdgOpenDependency;
     }
 
     /// <inheritdoc/>
@@ -32,8 +35,7 @@ internal class OSInteropLinux : AOSInterop
         // may result in xdg-open running for a very long time.
         // This behaviour intentionally differs from most desktop specific openers to allow terminal based applications
         // to run using the same terminal xdg-open was called from.
-
-        return Cli.Wrap("xdg-open").WithArguments(new[] { uri.ToString() }, escape: true);
+        return _xdgOpenDependency.CreateOpenUriCommand(uri);
     }
 
     /// <inheritdoc />

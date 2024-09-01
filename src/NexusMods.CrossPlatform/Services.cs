@@ -39,6 +39,12 @@ public static class Services
 #pragma warning restore CA1416
         );
 
+        if (OSInformation.Shared.IsLinux)
+        {
+            services.AddSingleton<XDGOpenDependency>();
+            services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();
+        }
+
         return services;
     }
 }
