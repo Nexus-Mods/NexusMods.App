@@ -23,7 +23,7 @@ public static class Services
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
-#pragma warning disable CA1416 // macOS
+#pragma warning disable CA1416
             onWindows: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>(),
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>(),
             onOSX: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationOSX>()
@@ -32,9 +32,11 @@ public static class Services
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
+#pragma warning disable CA1416
             onWindows: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropWindows>(),
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropLinux>(),
             onOSX: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropOSX>()
+#pragma warning restore CA1416
         );
 
         return services;

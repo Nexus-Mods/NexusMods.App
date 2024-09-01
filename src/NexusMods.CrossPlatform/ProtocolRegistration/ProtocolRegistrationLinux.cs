@@ -12,7 +12,7 @@ namespace NexusMods.CrossPlatform.ProtocolRegistration;
 /// Protocol registration for Linux.
 /// </summary>
 [SupportedOSPlatform("linux")]
-public class ProtocolRegistrationLinux : IProtocolRegistration
+internal class ProtocolRegistrationLinux : IProtocolRegistration
 {
     private const string ApplicationId = "com.nexusmods.app";
     private const string DesktopFile = $"{ApplicationId}.desktop";

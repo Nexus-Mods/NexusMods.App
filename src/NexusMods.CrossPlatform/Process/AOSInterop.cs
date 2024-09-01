@@ -10,7 +10,7 @@ namespace NexusMods.CrossPlatform.Process;
 /// Base class for <see cref="IOSInterop"/> implementations.
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public abstract class AOSInterop : IOSInterop
+internal abstract class AOSInterop : IOSInterop
 {
     private readonly ILogger _logger;
     private readonly IProcessFactory _processFactory;

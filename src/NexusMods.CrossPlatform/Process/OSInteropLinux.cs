@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
@@ -7,7 +8,8 @@ namespace NexusMods.CrossPlatform.Process;
 /// <summary>
 /// OS interoperation for linux
 /// </summary>
-public class OSInteropLinux : AOSInterop
+[SupportedOSPlatform("linux")]
+internal class OSInteropLinux : AOSInterop
 {
     private readonly IFileSystem _fileSystem;
 

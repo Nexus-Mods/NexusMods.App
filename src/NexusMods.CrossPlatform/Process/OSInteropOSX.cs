@@ -1,6 +1,6 @@
+using System.Runtime.Versioning;
 using CliWrap;
 using Microsoft.Extensions.Logging;
-using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform.Process;
 
@@ -8,7 +8,8 @@ namespace NexusMods.CrossPlatform.Process;
 /// OS interoperation for MacOS
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class OSInteropOSX : AOSInterop
+[SupportedOSPlatform("macos")]
+internal class OSInteropOSX : AOSInterop
 {
     /// <summary>
     /// Constructor.
