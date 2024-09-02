@@ -108,21 +108,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     using var tx = _connection.BeginTransaction();
 
-                    foreach (var tuple in message.Ids)
+                    foreach (var (loadoutItemId, shouldEnable) in message.Ids)
                     {
-                        tx.Add(tuple, static (tx, db, tuple) =>
+                        if (shouldEnable)
                         {
-                            var (loadoutItemId, shouldEnable) = tuple;
-
-                            var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
-                            if (shouldEnable)
-                            {
-                                tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                            } else
-                            {
-                                tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                            }
-                        });
+                            tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        } else
+                        {
+                            tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        }
                     }
 
                     await tx.Commit();
