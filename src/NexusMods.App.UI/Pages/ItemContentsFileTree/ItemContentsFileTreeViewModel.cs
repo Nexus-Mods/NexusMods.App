@@ -71,7 +71,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .WhereNotNull()
                 .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
                 .Where(group => group.IsValid())
-                .Select(group => new LoadoutGroupFileTreeViewModel(group))
+                .Select(group => new LoadoutItemGroupFileTreeViewModel(group))
                 .BindToVM(this, vm => vm.FileTreeViewModel)
                 .DisposeWith(disposables);
 

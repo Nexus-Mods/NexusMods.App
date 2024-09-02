@@ -14,12 +14,12 @@ using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.Trees;
 
-public class LoadoutGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
+public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
     public ReadOnlyObservableCollection<string> StatusBarStrings { get; }
 
-    public LoadoutGroupFileTreeViewModel(LoadoutItemGroup.ReadOnly group)
+    public LoadoutItemGroupFileTreeViewModel(LoadoutItemGroup.ReadOnly group)
     {
         var totalNumFiles = 0;
         var totalSize = Size.Zero;
