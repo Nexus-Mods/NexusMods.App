@@ -1,6 +1,5 @@
 using System.Runtime.Versioning;
 using System.Text;
-using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
@@ -24,6 +23,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     private readonly IFileSystem _fileSystem;
     private readonly IOSInterop _osInterop;
     private readonly XDGSettingsDependency _xdgSettingsDependency;
+    private readonly UpdateDesktopDatabaseDependency _updateDesktopDatabaseDependency;
 
     /// <summary>
     /// Constructor.
@@ -33,13 +33,15 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         IProcessFactory processFactory,
         IFileSystem fileSystem,
         IOSInterop osInterop,
-        XDGSettingsDependency xdgSettingsDependency)
+        XDGSettingsDependency xdgSettingsDependency,
+        UpdateDesktopDatabaseDependency updateDesktopDatabaseDependency)
     {
         _logger = logger;
         _processFactory = processFactory;
         _fileSystem = fileSystem;
         _osInterop = osInterop;
         _xdgSettingsDependency = xdgSettingsDependency;
+        _updateDesktopDatabaseDependency = updateDesktopDatabaseDependency;
     }
 
     /// <inheritdoc/>
@@ -115,10 +117,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     {
         _logger.LogInformation("Updating MIME cache database");
 
-        var command = Cli
-            .Wrap("update-desktop-database")
-            .WithArguments(EscapeWhitespaceForCli(applicationsDirectory));
-
+        var command = _updateDesktopDatabaseDependency.BuildUpdateCommand(EscapeWhitespaceForCli(applicationsDirectory));
         await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
 

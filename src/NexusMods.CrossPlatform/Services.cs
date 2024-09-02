@@ -45,6 +45,8 @@ public static class Services
             services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();
             services.AddSingleton<XDGSettingsDependency>();
             services.AddSingleton<IRuntimeDependency, XDGSettingsDependency>();
+            services.AddSingleton<UpdateDesktopDatabaseDependency>();
+            services.AddSingleton<IRuntimeDependency, UpdateDesktopDatabaseDependency>();
         }
 
         return services.AddHostedService<RuntimeDependencyChecker>();

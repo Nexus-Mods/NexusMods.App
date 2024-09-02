@@ -4,27 +4,25 @@ using CliWrap;
 
 namespace NexusMods.CrossPlatform.Process;
 
-internal class XDGSettingsDependency : ExecutableRuntimeDependency
+internal class UpdateDesktopDatabaseDependency : ExecutableRuntimeDependency
 {
-    public override string DisplayName => "xdg-settings";
-    public override string Description => "Get or set the default URL handlers.";
-    public override Uri Homepage { get; } = new("https://www.freedesktop.org/wiki/Software/xdg-utils/");
+    public override string DisplayName => "update-desktop-database";
+    public override string Description => "Updates the database containing a cache of MIME types handled by desktop files.";
+    public override Uri Homepage { get; } = new("https://www.freedesktop.org/wiki/Software/desktop-file-utils/");
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
 
-    public XDGSettingsDependency(IProcessFactory processFactory) : base(processFactory) { }
+    public UpdateDesktopDatabaseDependency(IProcessFactory processFactory) : base(processFactory) { }
 
-    public Command CreateSetDefaultUrlSchemeHandlerCommand(string uriScheme, string desktopFile)
+    public Command BuildUpdateCommand(string applicationsDirectory)
     {
-        var command = Cli
-            .Wrap("xdg-settings")
-            .WithArguments($"set default-url-scheme-handler {uriScheme} {desktopFile}");
-
-        return command;
+        return Cli
+            .Wrap("update-desktop-database")
+            .WithArguments(applicationsDirectory);
     }
 
     protected override Command BuildQueryCommand(PipeTarget outpuPipeTarget)
     {
-        var command = Cli.Wrap("xdg-settings").WithArguments("--version").WithStandardOutputPipe(outpuPipeTarget);
+        var command = Cli.Wrap("update-desktop-database").WithArguments("--version").WithStandardOutputPipe(outpuPipeTarget);
         return command;
     }
 
@@ -47,8 +45,8 @@ internal class XDGSettingsDependency : ExecutableRuntimeDependency
         [NotNullWhen(true)] out string? rawVersion,
         out Version? version)
     {
-        // expected: "xdg-settings 1.2.1\n"
-        const string prefix = "xdg-settings ";
+        // expected: "update-desktop-database 0.27\n"
+        const string prefix = "update-desktop-database ";
 
         rawVersion = null;
         version = null;
