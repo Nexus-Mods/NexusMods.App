@@ -230,18 +230,21 @@
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
 
-
-
             <!-- Row hover styling -->
             <Style Selector="^:pointerover :is(TreeDataGridCell)">
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+            
+            <!-- Row remove default selection styling, as we want to style the cells instead of rows -->
+            <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             </Style>
             
             <!-- Row selection styling -->
             <Style Selector="^:selected :is(TreeDataGridCell)">
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
-
+            
         </Style>
     </Style>
 
