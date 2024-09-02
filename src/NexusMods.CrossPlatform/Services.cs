@@ -45,6 +45,6 @@ public static class Services
             services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();
         }
 
-        return services;
+        return services.AddHostedService<RuntimeDependencyChecker>();
     }
 }

@@ -6,6 +6,7 @@
         <PackageReference Include="CliWrap" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
@@ -60,4 +61,5 @@
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
+
 </Project>
