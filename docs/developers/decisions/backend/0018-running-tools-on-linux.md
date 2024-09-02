@@ -156,6 +156,17 @@ Example:
 WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
 ```
 
+#### Detecting .NET Framework
+
+!!! info "Sometimes .NET Framework powered tools are still used for some games"
+
+    Although old, some older tools still rely on this technology, so we must try
+    to detect if the user has it installed.
+
+To detect if an application requires .NET Framework, look at the [IMAGE_DATA_DIRECTORY]
+structure of the PE header. If the `The CLR header address and size` field is present
+and not 0; then the application requires .NET Framework.
+
 ## Static Compilation of Dependencies
 
 !!! info "Not all the dependencies may be available on all distros."
@@ -269,3 +280,4 @@ if __name__ == "__main__":
 [protontricks]: https://github.com/Matoking/protontricks
 [umu]: https://github.com/Open-Wine-Components/umu-launcher
 [PyInstaller]: https://www.pyinstaller.org/
+[IMAGE_DATA_DIRECTORY]: https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_data_directory#remarks
