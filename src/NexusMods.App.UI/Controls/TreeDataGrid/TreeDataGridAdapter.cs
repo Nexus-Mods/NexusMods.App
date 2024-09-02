@@ -142,7 +142,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         {
             if (disposing)
             {
-                Disposable.Dispose(_activationDisposable, RootsView, RootsCollectionChangedView, _selectionModelsSerialDisposable);
+                Disposable.Dispose(_activationDisposable, RootsView, RootsCollectionChangedView, _selectionModelsSerialDisposable, ModelActivationSubject);
             }
 
             Roots = null!;
