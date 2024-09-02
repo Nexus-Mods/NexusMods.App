@@ -1,5 +1,5 @@
 <reactive:ReactiveUserControl
-    x:TypeArguments="local:ILoadoutGroupFilesViewModel"
+    x:TypeArguments="itemContentsFileTree:IItemContentsFileTreeViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,9 +8,9 @@
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:reactive="http://reactiveui.net"
-    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutGroupFiles"
+    xmlns:itemContentsFileTree="clr-namespace:NexusMods.App.UI.Pages.ItemContentsFileTree"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.LoadoutGroupFiles.LoadoutGroupFilesView">
+    x:Class="NexusMods.App.UI.Pages.ItemContentsFileTree.ItemContentsFileTreeView">
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">

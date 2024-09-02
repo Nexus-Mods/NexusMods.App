@@ -2,11 +2,11 @@ using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadoutGroupFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 
-public partial class LoadoutGroupFilesView : ReactiveUserControl<ILoadoutGroupFilesViewModel>
+public partial class ItemContentsFileTreeView : ReactiveUserControl<IItemContentsFileTreeViewModel>
 {
-    public LoadoutGroupFilesView()
+    public ItemContentsFileTreeView()
     {
         InitializeComponent();
 
