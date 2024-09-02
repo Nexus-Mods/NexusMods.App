@@ -102,6 +102,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
+                                .DisposeMany()
                                 .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
@@ -111,11 +112,6 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     private static void CleanupChildren(ObservableList<TModel> children)
     {
-        foreach (var child in children)
-        {
-            child.Dispose();
-        }
-
         children.Clear();
     }
 
