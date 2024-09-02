@@ -6,6 +6,7 @@
         <PackageReference Include="CliWrap" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
@@ -44,6 +45,15 @@
       <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
+        <Compile Update="Process\XDGOpenDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\XDGSettingsDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\ExecutableRuntimeDependency.cs">
+            <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -54,4 +64,5 @@
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
+
 </Project>
