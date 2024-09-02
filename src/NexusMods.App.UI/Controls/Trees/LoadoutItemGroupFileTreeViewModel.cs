@@ -13,6 +13,8 @@ using NexusMods.App.UI.Resources;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.Trees;
+using DirectoryData = (Size size, uint numFiles, GamePath path, GamePath parentPath);
+
 
 public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
@@ -25,7 +27,7 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
         var totalSize = Size.Zero;
 
         var nodes = new List<IFileTreeNodeViewModel>();
-        var directories = new Dictionary<GamePath, (Size size, uint numFiles, GamePath path, GamePath parentPath)>();
+        var directories = new Dictionary<GamePath, DirectoryData>();
 
         foreach (var loadoutItem in group.Children.OfTypeLoadoutItemWithTargetPath())
         {
@@ -35,14 +37,7 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
                 size = loadoutFile.Size;
             }
 
-            var node = new FileTreeNodeViewModel(
-                fullPath: loadoutItem.TargetPath,
-                parentPath: ((GamePath)loadoutItem.TargetPath).Parent,
-                isFile: true,
-                fileSize: size.Value,
-                numChildFiles: 0,
-                isDeletion: loadoutItem.IsDeletedFile()
-            );
+            var node = CreateFileNode(loadoutItem, size);
 
             nodes.Add(node);
 
@@ -84,29 +79,14 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
         foreach (var kv in directories)
         {
             var (_, directory) = kv;
-            var (size, numFiles, path, parentPath) = directory;
 
-            if (parentPath.Equals(IFileTreeViewModel.RootParentGamePath))
+            if (directory.parentPath.Equals(IFileTreeViewModel.RootParentGamePath))
             {
-                nodes.Add(new FileTreeNodeViewModel(
-                    name: locationsRegister[path.LocationId].ToString(),
-                    fullPath: path,
-                    parentPath: parentPath,
-                    isFile: false,
-                    fileSize: size.Value,
-                    numChildFiles: numFiles
-                ));
+                nodes.Add(CreateRootNode(locationsRegister, directory));
             }
             else
             {
-                nodes.Add(new FileTreeNodeViewModel(
-                    fullPath: path,
-                    parentPath: parentPath,
-                    isFile: false,
-                    fileSize: size.Value,
-                    numChildFiles: numFiles,
-                    isDeletion: false
-                ));
+                nodes.Add(CreateFolderNode(directory));
             }
         }
 
@@ -126,6 +106,45 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
         {
             string.Format(Language.ModFileTreeViewModel_StatusBar_Files__0__1, totalNumFiles, ByteSize.FromBytes(totalSize.Value).ToString()),
         }));
+    }
+
+    private static FileTreeNodeViewModel CreateFolderNode(DirectoryData directory)
+    {
+        var (size, numFiles, path, parentPath) = directory;
+        return new FileTreeNodeViewModel(
+            fullPath: path,
+            parentPath: parentPath,
+            isFile: false,
+            fileSize: size.Value,
+            numChildFiles: numFiles,
+            isDeletion: false
+        );
+    }
+
+    private static FileTreeNodeViewModel CreateRootNode(IGameLocationsRegister locationsRegister, DirectoryData directory)
+    {
+        var (size, numFiles, path, parentPath) = directory;
+        return new FileTreeNodeViewModel(
+            name: locationsRegister[path.LocationId].ToString(),
+            fullPath: path,
+            parentPath: parentPath,
+            isFile: false,
+            fileSize: size.Value,
+            numChildFiles: numFiles
+        );
+    }
+
+
+    private static FileTreeNodeViewModel CreateFileNode(LoadoutItemWithTargetPath.ReadOnly loadoutItem, Size size)
+    {
+        return new FileTreeNodeViewModel(
+            fullPath: loadoutItem.TargetPath,
+            parentPath: ((GamePath)loadoutItem.TargetPath).Parent,
+            isFile: true,
+            fileSize: size.Value,
+            numChildFiles: 0,
+            isDeletion: loadoutItem.IsDeletedFile()
+        );
     }
 
     internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
