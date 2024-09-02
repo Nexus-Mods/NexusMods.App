@@ -1,10 +1,14 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -23,7 +27,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
 
-    public ReactiveCommand<Unit> ViewFilesCommand { get; }
+    public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
@@ -46,10 +50,36 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .ObserveCountChanged()
             .Select(count => count > 0);
 
-        ViewFilesCommand = hasSelection.ToReactiveCommand<Unit>(_ =>
-        {
-            // TODO:
-        });
+        ViewFilesCommand = Adapter.SelectedModels
+            .ObserveCountChanged()
+            .SelectAwait(async (count, cancellationToken) =>
+                {
+                    if (count != 1) return false;
+
+                    var group = await GetViewModFilesLoadoutItemGroup(cancellationToken);
+                    return group.HasValue;
+                },
+                AwaitOperation.Drop
+            )
+            .ToReactiveCommand<NavigationInformation>(async (info, cancellationToken) =>
+                {
+                    var group = await GetViewModFilesLoadoutItemGroup(cancellationToken);
+                    if (!group.HasValue) return;
+
+                    var pageData = new PageData
+                    {
+                        FactoryId = ItemContentsFileTreePageFactory.StaticId,
+                        Context = new ItemContentsFileTreePageContext
+                        {
+                            GroupId = group.Value.Id,
+                        },
+                    };
+                    var workspaceController = GetWorkspaceController();
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                },
+                false
+            );
 
         RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
         {
@@ -97,6 +127,56 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 }, awaitOperation: AwaitOperation.Parallel, configureAwait: false)
                 .AddTo(disposables);
         });
+    }
+
+    
+    /// <summary>
+    /// Returns the appropriate LoadoutItemGroup of files if the selection contains a LoadoutItemGroup containing files,
+    /// if the selection contains multiple LoadoutItemGroups of files, returns None.
+    /// </summary>
+    private async Task<Optional<LoadoutItemGroup.ReadOnly>> GetViewModFilesLoadoutItemGroup(CancellationToken cancellationToken)
+    {
+        return await Task.Run(() =>
+            {
+                var loadoutItemIds = Adapter.SelectedModels[0].GetLoadoutItemIds();
+                // Only allow when selecting a single item, or an item with a single child
+                if (loadoutItemIds.Count != 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+
+                var loadoutItem = LoadoutItem.Load(_connection.Db, loadoutItemIds.First());
+
+                if (!loadoutItem.TryGetAsLoadoutItemGroup(out var currentGroup)) return Optional<LoadoutItemGroup.ReadOnly>.None;
+
+                // Allow groups of files, or hierarchy of single child groups that end with a group of files
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    var children = LoadoutItem.FindByParent(_connection.Db, currentGroup.Id);
+
+                    switch (children.Count)
+                    {
+                        case 0:
+                            return Optional<LoadoutItemGroup.ReadOnly>.None;
+                        case 1:
+                        {
+                            var firstChild = children.First();
+
+                            if (!firstChild.TryGetAsLoadoutItemGroup(out var nextGroup))
+                            {
+                                return firstChild.IsLoadoutItemWithTargetPath() ? currentGroup : Optional<LoadoutItemGroup.ReadOnly>.None;
+                            }
+
+                            // check if the single child group is valid
+                            currentGroup = nextGroup;
+                            continue;
+                        }
+                        default:
+                            return children.First().IsLoadoutItemWithTargetPath() ? currentGroup : Optional<LoadoutItemGroup.ReadOnly>.None;
+                    }
+                }
+
+                return Optional<LoadoutItemGroup.ReadOnly>.None;
+            },
+            cancellationToken: cancellationToken
+        );
     }
 }
 
