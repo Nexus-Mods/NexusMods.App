@@ -48,6 +48,9 @@
         <Compile Update="Process\XDGOpenDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
         </Compile>
+        <Compile Update="Process\XDGSettingsDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
         <Compile Update="Process\ExecutableRuntimeDependency.cs">
             <DependentUpon>IRuntimeDependency.cs</DependentUpon>
         </Compile>

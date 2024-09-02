@@ -23,6 +23,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     private readonly IProcessFactory _processFactory;
     private readonly IFileSystem _fileSystem;
     private readonly IOSInterop _osInterop;
+    private readonly XDGSettingsDependency _xdgSettingsDependency;
 
     /// <summary>
     /// Constructor.
@@ -31,12 +32,14 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         ILogger<ProtocolRegistrationLinux> logger,
         IProcessFactory processFactory,
         IFileSystem fileSystem,
-        IOSInterop osInterop)
+        IOSInterop osInterop,
+        XDGSettingsDependency xdgSettingsDependency)
     {
         _logger = logger;
         _processFactory = processFactory;
         _fileSystem = fileSystem;
         _osInterop = osInterop;
+        _xdgSettingsDependency = xdgSettingsDependency;
     }
 
     /// <inheritdoc/>
@@ -121,10 +124,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
 
     private async Task SetAsDefaultHandler(string uriScheme, CancellationToken cancellationToken = default)
     {
-        var command = Cli
-            .Wrap("xdg-settings")
-            .WithArguments($"set default-url-scheme-handler {uriScheme} {DesktopFile}");
-
+        var command = _xdgSettingsDependency.CreateSetDefaultUrlSchemeHandlerCommand(uriScheme, DesktopFile);
         await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
 

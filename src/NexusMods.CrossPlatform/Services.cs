@@ -43,6 +43,8 @@ public static class Services
         {
             services.AddSingleton<XDGOpenDependency>();
             services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();
+            services.AddSingleton<XDGSettingsDependency>();
+            services.AddSingleton<IRuntimeDependency, XDGSettingsDependency>();
         }
 
         return services.AddHostedService<RuntimeDependencyChecker>();

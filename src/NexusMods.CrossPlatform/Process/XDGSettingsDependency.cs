@@ -4,23 +4,27 @@ using CliWrap;
 
 namespace NexusMods.CrossPlatform.Process;
 
-internal class XDGOpenDependency : ExecutableRuntimeDependency
+internal class XDGSettingsDependency : ExecutableRuntimeDependency
 {
-    public override string DisplayName => "xdg-open";
-    public override string Description => "Open a URL in the user's preferred application that handles the respective URL or file type.";
+    public override string DisplayName => "xdg-settings";
+    public override string Description => "Get or set the default web browser and URL handlers.";
     public override Uri Homepage { get; } = new("https://www.freedesktop.org/wiki/Software/xdg-utils/");
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
 
-    public XDGOpenDependency(IProcessFactory processFactory) : base(processFactory) { }
+    public XDGSettingsDependency(IProcessFactory processFactory) : base(processFactory) { }
 
-    public Command CreateOpenUriCommand(Uri uri)
+    public Command CreateSetDefaultUrlSchemeHandlerCommand(string uriScheme, string desktopFile)
     {
-        return Cli.Wrap("xdg-open").WithArguments([uri.ToString()], escape: true);
+        var command = Cli
+            .Wrap("xdg-settings")
+            .WithArguments($"set default-url-scheme-handler {uriScheme} {desktopFile}");
+
+        return command;
     }
 
     protected override Command BuildQueryCommand(PipeTarget outpuPipeTarget)
     {
-        var command = Cli.Wrap("xdg-open").WithArguments("--version").WithStandardOutputPipe(outpuPipeTarget);
+        var command = Cli.Wrap("xdg-settings").WithArguments("--version").WithStandardOutputPipe(outpuPipeTarget);
         return command;
     }
 
@@ -43,8 +47,8 @@ internal class XDGOpenDependency : ExecutableRuntimeDependency
         [NotNullWhen(true)] out string? rawVersion,
         out Version? version)
     {
-        // expected: "xdg-open 1.2.1\n"
-        const string prefix = "xdg-open ";
+        // expected: "xdg-settings 1.2.1\n"
+        const string prefix = "xdg-settings ";
 
         rawVersion = null;
         version = null;
