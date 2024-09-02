@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using R3;
 
@@ -15,7 +16,13 @@ public class ReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
     public Observable<bool> Activation => _activation;
 
     internal void Activate() => _activation.OnNext(true);
-    internal void Deactivate() => _activation.OnNext(false);
+    internal void Deactivate()
+    {
+        // NOTE(erri120): no need to deactivate disposed objects, as
+        // any subscriptions and WhenActivated-blocks are already disposed
+        if (_isDisposed) return;
+        _activation.OnNext(false);
+    }
 
     /// <inheritdoc/>
     public void Dispose()
@@ -51,5 +58,10 @@ public class ReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
     {
         var propertyChanged = PropertyChanged;
         propertyChanged?.Invoke(this, args);
+    }
+
+    protected void RaiseAndSetIfChanged<T>(ref T backingField, T newValue, [CallerMemberName] string? propertyName = null)
+    {
+        ReactiveUI.IReactiveObjectExtensions.RaiseAndSetIfChanged(this, ref backingField, newValue, propertyName);
     }
 }

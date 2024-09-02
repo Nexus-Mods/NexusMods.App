@@ -2,13 +2,14 @@ using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
-public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
+public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
     [Reactive] public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
 
@@ -22,7 +23,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
     [Reactive] public Size Size { get; set; } = Size.Zero;
 
     public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
-    [Reactive] public bool IsEnabled { get; set; }
+    public BindableReactiveProperty<bool> IsEnabled { get; } = new(value: false);
 
     public ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
 
@@ -40,7 +41,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
             model.NameObservable.OnUI().Subscribe(name => model.Name = name).AddTo(disposables);
             model.VersionObservable.OnUI().Subscribe(version => model.Version = version).AddTo(disposables);
             model.SizeObservable.OnUI().Subscribe(size => model.Size = size).AddTo(disposables);
-            model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled = isEnabled).AddTo(disposables);
+            model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled.Value = isEnabled).AddTo(disposables);
         });
     }
 
@@ -51,7 +52,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
         {
             if (disposing)
             {
-                Disposable.Dispose(ToggleEnableStateCommand, _modelActivationDisposable);
+                Disposable.Dispose(_modelActivationDisposable, ToggleEnableStateCommand);
             }
 
             _isDisposed = true;
@@ -82,7 +83,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
         };
     }
 
-        public static IColumn<LoadoutItemModel> CreateVersionColumn()
+    public static IColumn<LoadoutItemModel> CreateVersionColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
             header: "VERSION",
@@ -142,17 +143,20 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel>
 
     public static IColumn<LoadoutItemModel> CreateToggleEnableColumn()
     {
-        return new TemplateColumn<LoadoutItemModel>(
+        return new CustomTemplateColumn<LoadoutItemModel>(
             header: "TOGGLE",
             cellTemplateResourceKey: "ToggleEnableColumnTemplate",
             options: new TemplateColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a?.IsEnabled.CompareTo(b?.IsEnabled ?? false) ?? 1,
-                CompareDescending = static (a, b) => b?.IsEnabled.CompareTo(a?.IsEnabled ?? false) ?? 1,
+                CompareAscending = static (a, b) => a?.IsEnabled.Value.CompareTo(b?.IsEnabled.Value ?? false) ?? 1,
+                CompareDescending = static (a, b) => b?.IsEnabled.Value.CompareTo(a?.IsEnabled.Value ?? false) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
             }
-        );
+        )
+        {
+            Id = "Toggle"
+        };
     }
 }

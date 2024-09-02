@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Binding;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
+using ObservableCollections;
 using R3;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;
@@ -19,26 +17,27 @@ public class TreeDataGridItemModel : ReactiveR3Object;
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
 /// </summary>
-/// <typeparam name="TModel"></typeparam>
 [PublicAPI]
-public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
-    where TModel : TreeDataGridItemModel<TModel>
+public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
+    where TModel : TreeDataGridItemModel<TModel, TKey>
+    where TKey : notnull
 {
     public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
-    [Reactive] public bool HasChildren { get; private set; }
+    public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
-    public IObservable<IChangeSet<TModel>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel>>();
-    private ObservableCollectionExtended<TModel> _children = [];
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
+    private ObservableList<TModel> _children = [];
+    private readonly INotifyCollectionChangedSynchronizedView<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
     [DebuggerBrowsable(state: DebuggerBrowsableState.Never)]
-    public ObservableCollectionExtended<TModel> Children
+    public IEnumerable<TModel> Children
     {
         get
         {
             _childrenCollectionInitialization.OnNext(true);
-            return _children;
+            return _childrenView;
         }
     }
 
@@ -49,7 +48,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         set
         {
             if (_isExpanded && !value) _childrenCollectionInitialization.OnNext(false);
-            this.RaiseAndSetIfChanged(ref _isExpanded, value);
+            RaiseAndSetIfChanged(ref _isExpanded, value);
         }
     }
 
@@ -60,12 +59,14 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
 
     protected TreeDataGridItemModel()
     {
+        _childrenView = _children.CreateView(static model => model).ToNotifyCollectionChanged();
+
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             // NOTE(erri120): TreeDataGrid uses `HasChildren` to show/hide the expander.
             model.HasChildrenObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(hasChildren => model.HasChildren = hasChildren)
+                .SubscribeWithErrorLogging(hasChildren => model.HasChildren.Value = hasChildren)
                 .AddTo(disposables);
 
             // NOTE(erri120): We only do this once. If you have an expanded parent and scroll
@@ -101,21 +102,16 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
-                                .Bind(model._children)
-                                .SubscribeWithErrorLogging();
+                                .DisposeMany()
+                                .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }
         });
     }
 
-    private static void CleanupChildren(ObservableCollectionExtended<TModel> children)
+    private static void CleanupChildren(ObservableList<TModel> children)
     {
-        foreach (var child in children)
-        {
-            child.Dispose();
-        }
-
         children.Clear();
     }
 
@@ -130,7 +126,8 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                     _childrenCollectionInitialization,
                     _modelActivationDisposable,
                     _childrenObservableSerialDisposable,
-                    _childrenCollectionInitializationSerialDisposable
+                    _childrenCollectionInitializationSerialDisposable,
+                    HasChildren
                 );
             }
 
@@ -152,7 +149,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         return new HierarchicalExpanderColumn<TModel>(
             inner: innerColumn,
             childSelector: static model => model.Children,
-            hasChildrenSelector: static model => model.HasChildren,
+            hasChildrenSelector: static model => model.HasChildren.Value,
             isExpandedSelector: static model => model.IsExpanded
         )
         {
