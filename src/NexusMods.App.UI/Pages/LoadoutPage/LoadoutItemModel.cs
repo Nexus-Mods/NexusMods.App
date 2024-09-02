@@ -52,7 +52,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
         {
             if (disposing)
             {
-                Disposable.Dispose(ToggleEnableStateCommand, _modelActivationDisposable);
+                Disposable.Dispose(_modelActivationDisposable, ToggleEnableStateCommand);
             }
 
             _isDisposed = true;
