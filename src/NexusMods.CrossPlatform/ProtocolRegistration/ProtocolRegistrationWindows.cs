@@ -10,7 +10,7 @@ namespace NexusMods.CrossPlatform.ProtocolRegistration;
 /// Protocol registration for Windows.
 /// </summary>
 [SupportedOSPlatform("windows")]
-public class ProtocolRegistrationWindows : IProtocolRegistration
+internal class ProtocolRegistrationWindows : IProtocolRegistration
 {
     private readonly ILogger _logger;
     private readonly IOSInterop _osInterop;

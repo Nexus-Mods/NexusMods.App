@@ -31,6 +31,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     private readonly ILogger<TopBarViewModel> _logger;
 
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
+    [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
 
     public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 
@@ -152,6 +153,10 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
+                .DisposeWith(d);
+            
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Subtitle)
+                .BindToVM(this, vm => vm.ActiveWorkspaceSubtitle)
                 .DisposeWith(d);
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)

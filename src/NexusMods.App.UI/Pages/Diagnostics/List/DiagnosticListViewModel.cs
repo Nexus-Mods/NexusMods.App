@@ -114,7 +114,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                 .BindToVM(this, vm => vm.DiagnosticEntries)
                 .DisposeWith(disposable);
 
-            var severityCountObservable = filteredDiagnostics
+            var severityCountObservable = this.WhenAnyValue(vm => vm.Diagnostics)
                 .Select(diagnostics => diagnostics
                     .Select(diagnostic => diagnostic.Severity)
                     .GroupBy(x => x)

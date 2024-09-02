@@ -3,6 +3,7 @@ using DynamicData.Binding;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
 
@@ -10,7 +11,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class NexusModsModPageItemModel : LibraryItemModel
 {
-    public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly>> LibraryFilesObservable { get; init; }
+    public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly, EntityId>> LibraryFilesObservable { get; init; }
     private ObservableCollectionExtended<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
 
     private readonly IDisposable _modelActivationDisposable;
@@ -25,15 +26,15 @@ public class NexusModsModPageItemModel : LibraryItemModel
                     // TODO: different selection, need to check with design
                     if (model.LibraryFiles.TryGetFirst(out var primaryFile))
                     {
-                        model.Size = primaryFile.AsDownloadedFile().AsLibraryFile().Size;
-                        model.Version = primaryFile.FileMetadata.Version;
-                        model.LibraryItemId = primaryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
+                        model.ItemSize.Value = primaryFile.AsDownloadedFile().AsLibraryFile().Size;
+                        model.Version.Value = primaryFile.FileMetadata.Version;
+                        model.LibraryItemId.Value = primaryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
                     }
                     else
                     {
-                        model.Size = Size.Zero;
-                        model.Version = "-";
-                        model.LibraryItemId = DynamicData.Kernel.Optional<LibraryItemId>.None;
+                        model.ItemSize.Value = Size.Zero;
+                        model.Version.Value = "-";
+                        model.LibraryItemId.Value = DynamicData.Kernel.Optional<LibraryItemId>.None;
                     }
                 })
                 .AddTo(disposables);

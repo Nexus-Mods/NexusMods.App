@@ -9,6 +9,8 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public interface ITopBarViewModel : IViewModelInterface
 {
     public string ActiveWorkspaceTitle { get; }
+    
+    public string ActiveWorkspaceSubtitle { get; }
 
     public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 

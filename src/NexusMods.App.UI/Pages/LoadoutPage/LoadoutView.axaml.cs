@@ -1,6 +1,7 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 
@@ -13,7 +14,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {

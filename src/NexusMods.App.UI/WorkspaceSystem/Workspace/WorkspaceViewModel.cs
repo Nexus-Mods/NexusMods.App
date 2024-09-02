@@ -30,6 +30,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     /// <inheritdoc/>
     [Reactive] public string Title { get; set; } = string.Empty;
 
+    [Reactive] public string Subtitle { get; set; } = string.Empty;
+
     /// <inheritdoc/>
     public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
 

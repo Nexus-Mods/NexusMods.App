@@ -11,14 +11,18 @@ public class CustomElementFactory : TreeDataGridElementFactory
 {
     protected override Control CreateElement(object? data)
     {
-        if (data is CustomTextCell customCell)
+        var element = base.CreateElement(data);
+
+        if (data is ICustomCell customCell)
         {
-            var element = base.CreateElement(customCell.Inner);
             element.Classes.Add(customCell.Id);
-            return element;
+            if (customCell.IsRoot)
+            {
+                element.Classes.Add("RootRow");
+            }
         }
 
-        return base.CreateElement(data);
+        return element;
     }
 
     protected override string GetDataRecycleKey(object? data)

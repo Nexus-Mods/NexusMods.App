@@ -9,4 +9,9 @@ public class DownloadsAttachmentsFactory : IWorkspaceAttachmentsFactory<Download
     {
         return Language.Downloads_WorkspaceTitle;
     }
+
+    public string CreateSubtitle(DownloadsContext context)
+    {
+        return string.Empty;
+    }
 }

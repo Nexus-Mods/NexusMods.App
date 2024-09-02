@@ -23,4 +23,11 @@ public class WorkspaceAttachmentsFactoryManager(IEnumerable<ILeftMenuFactory> le
             .Select(f => f.CreateTitle(context))
             .FirstOrDefault(t => t != null) ?? string.Empty;
     }
+
+    public string CreateSubtitleFor(IWorkspaceContext context)
+    {
+        return AttachmentsFactories
+            .Select(f => f.CreateSubtitle(context))
+            .FirstOrDefault(t => t != null) ?? string.Empty;
+    }
 }

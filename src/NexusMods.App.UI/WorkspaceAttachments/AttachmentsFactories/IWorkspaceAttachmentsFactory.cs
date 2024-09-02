@@ -10,16 +10,17 @@ public interface IWorkspaceAttachmentsFactory
     /// <summary>
     /// Returns whether the factory supports the given workspace context.
     /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
     bool IsSupported(IWorkspaceContext context);
 
     /// <summary>
     /// Returns the title for the workspace context, or null if the factory does not support the given context.
     /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
     string? CreateTitle(IWorkspaceContext context);
+    
+    /// <summary>
+    /// Returns the subtitle for the workspace context, or null if the factory does not support the given context.
+    /// </summary>
+    string? CreateSubtitle(IWorkspaceContext context);
 }
 
 
@@ -37,11 +38,21 @@ public interface IWorkspaceAttachmentsFactory<TContext> : IWorkspaceAttachmentsF
     {
         return IsSupported(context) ? CreateTitle((TContext) context) : null;
     }
+    
+    /// <inheritdoc/>
+    string? IWorkspaceAttachmentsFactory.CreateSubtitle(IWorkspaceContext context)
+    {
+        return IsSupported(context) ? CreateSubtitle((TContext) context) : null;
+    }
 
     /// <summary>
     /// Generic version of <see cref="IWorkspaceAttachmentsFactory.CreateTitle"/>, that makes implementing factories easier.
     /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
     string CreateTitle(TContext context);
+    
+    /// <summary>
+    /// Generic version of <see cref="IWorkspaceAttachmentsFactory.CreateSubtitle"/>, that makes implementing factories easier.
+    /// </summary>
+    string CreateSubtitle(TContext context);
+    
 }

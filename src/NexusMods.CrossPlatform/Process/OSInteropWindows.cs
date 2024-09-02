@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
@@ -8,7 +9,8 @@ namespace NexusMods.CrossPlatform.Process;
 /// OS interoperation for windows
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class OSInteropWindows : AOSInterop
+[SupportedOSPlatform("windows")]
+internal class OSInteropWindows : AOSInterop
 {
     private readonly IFileSystem _fileSystem;
 
