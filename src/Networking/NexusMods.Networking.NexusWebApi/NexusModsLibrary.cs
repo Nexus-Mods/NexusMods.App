@@ -50,6 +50,17 @@ public class NexusModsLibrary
             GameDomain = gameDomain,
         };
 
+        if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
+        {
+            newModPage.FullSizedPictureUri = fullSizedPictureUri;
+
+            var thumbnailUrl = modInfo.Data.PictureUrl.Replace("/images/", "/images/thumbnails/", StringComparison.OrdinalIgnoreCase);
+            if (Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
+            {
+                newModPage.ThumbnailUri = thumbnailUri;
+            }
+        }
+
         var txResults = await tx.Commit();
         return txResults.Remap(newModPage);
     }

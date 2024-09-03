@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -30,12 +31,22 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true };
 
     /// <summary>
+    /// Uri for the full sized picture of the mod.
+    /// </summary>
+    public static readonly UriAttribute FullSizedPictureUri = new(Namespace, nameof(FullSizedPictureUri)) { IsOptional = true };
+
+    /// <summary>
+    /// Uri for the thumbnail of the full sized picture.
+    /// </summary>
+    public static readonly UriAttribute ThumbnailUri = new(Namespace, nameof(ThumbnailUri)) { IsOptional = true };
+
+    /// <summary>
     /// Back-reference to all files from this page.
     /// </summary>
     public static readonly BackReferenceAttribute<NexusModsFileMetadata> Files = new(NexusModsFileMetadata.ModPage);
 
     public partial struct ReadOnly
     {
-        public Uri GetUri() => new($"https://nexusmods.com/{GameDomain}/mods/{ModId}");
+        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/{GameDomain}/mods/{ModId}");
     }
 }
