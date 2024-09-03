@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -15,6 +16,7 @@ using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -65,6 +67,19 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             {
                 var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
+            }
+
+            // Dependency check
+            if (OperatingSystem.IsLinux())
+            {
+                var protontricks = serviceProvider.GetRequiredService<ProtontricksDependency>();
+                var installInfo = Task.Run(() => protontricks.QueryInstallationInformation(default(CancellationToken))).Result;
+                if (!installInfo.Result.HasValue)
+                {
+                    var protontricksViewModel = new MissingProtontricksViewModel();
+                    protontricksViewModel.Controller = overlayController;
+                    overlayController.Enqueue(protontricksViewModel);
+                }
             }
 
             loginManager.IsLoggedInObservable

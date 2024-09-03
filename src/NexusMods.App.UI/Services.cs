@@ -35,6 +35,7 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.Dependency.MissingProtontricks;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
@@ -137,6 +138,7 @@ public static class Services
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
+            .AddViewModel<MissingProtontricksViewModel, IMissingProtontricksViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -174,7 +176,7 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
-            
+            .AddView<MissingProtontricksView, IMissingProtontricksViewModel>()
             
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
