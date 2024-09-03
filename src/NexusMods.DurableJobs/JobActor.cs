@@ -27,7 +27,7 @@ public class JobActor : Actor<JobState, IJobMessage>
                 };
                 try
                 {
-                    var result = await ((AJob)state.Job).Run(context, state.Arguments);
+                    var result = await ((AOrchestration)state.Job).Run(context, state.Arguments);
                     state.Manager!.FinalizeJob(state, result, false);
                 }
                 catch (WaitException)

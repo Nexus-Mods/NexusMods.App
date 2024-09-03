@@ -23,7 +23,7 @@ public class JobManager : IJobManager, IHostedService
     public JobManager(IServiceProvider serviceProvider)
     {
         _jobStore = serviceProvider.GetRequiredService<IJobStateStore>();
-        _jobInstances = serviceProvider.GetServices<AJob>().OfType<IJob>()
+        _jobInstances = serviceProvider.GetServices<AOrchestration>().OfType<IJob>()
             .Concat(serviceProvider.GetServices<AUnitOfWork>())
             .ToDictionary(j => j.GetType());
         _logger = serviceProvider.GetRequiredService<ILogger<JobManager>>();
@@ -34,7 +34,7 @@ public class JobManager : IJobManager, IHostedService
     
     /// <inheritdoc />
     public Task<object> RunNew<TJob>(params object[] args)
-        where TJob : AJob
+        where TJob : AOrchestration
     {
         var jobInstance = _jobInstances[typeof(TJob)];
         var newJobId = JobId.From(Guid.NewGuid());
@@ -43,7 +43,7 @@ public class JobManager : IJobManager, IHostedService
 
         var initialState = new JobState
         {
-            Job = (AJob)jobInstance,
+            Job = (AOrchestration)jobInstance,
             Id = newJobId,
             Manager = this,
             Arguments = args,
@@ -122,7 +122,7 @@ public class JobManager : IJobManager, IHostedService
         // If we are replaying and our index is at the end of the history, we need to add a new entry and create a new job.
         if (context.ReplayIndex == context.History.Count)
         {
-            if (typeof(TSubJob).IsAssignableTo(typeof(AJob))) 
+            if (typeof(TSubJob).IsAssignableTo(typeof(AOrchestration))) 
                 CreateSubJobActor<TSubJob>(context, args);
             else if (typeof(TSubJob).IsAssignableTo(typeof(AUnitOfWork)))
                 CreateUnitOfWorkActor<TSubJob>(context, args);
@@ -193,7 +193,7 @@ public class JobManager : IJobManager, IHostedService
             
         var childJobActor = new JobActor(_logger, new JobState
         {
-            Job = (AJob)jobInstance,
+            Job = (AOrchestration)jobInstance,
             Id = jobId,
             Manager = this,
             Arguments = args,

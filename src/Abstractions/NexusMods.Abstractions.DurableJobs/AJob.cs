@@ -1,14 +1,12 @@
-using System.Runtime.CompilerServices;
-
 namespace NexusMods.Abstractions.DurableJobs;
 
 /// <summary>
-/// A durable job that can be paused, resumed, and restarted.
+/// A durable job that combines and orchestrates multiple sub jobs.
 /// </summary>
-public abstract class AJob : IJob
+public abstract class AOrchestration : IJob
 { 
     /// <summary>
-    /// Runs the job. Calls in this method to <see cref="RunSubJob"/> may pause the job, and the job may restart
+    /// Runs the orchestration. Calls in this method to start sub-jobs may pause the orchestration, and the orchestration may restart
     /// many times before it finishes. All code in this method should be idempotent.
     /// </summary>
     internal abstract Task<object> Run(Context context, params object[] args);
@@ -23,8 +21,8 @@ public abstract class AJob : IJob
 /// <summary>
 /// A job with 1 argument, and a result.
 /// </summary>
-public abstract class AJob<TParent, TResult, TArg1> : AJob
-  where TParent : AJob<TParent, TResult, TArg1>
+public abstract class AOrchestration<TParent, TResult, TArg1> : AOrchestration
+  where TParent : AOrchestration<TParent, TResult, TArg1>
 {
     /// <summary>
     /// The main entry point for the job, this will be called multiple times until the job is completed.

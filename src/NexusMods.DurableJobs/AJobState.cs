@@ -73,7 +73,7 @@ internal class JobStateSerializer : JsonConverter<AJobState>
         }
         reader.Read();
 
-        if (job is AJob aJob)
+        if (job is AOrchestration aJob)
         {
 
             var history = JsonSerializer.Deserialize<List<HistoryEntry>>(ref reader, options)!;

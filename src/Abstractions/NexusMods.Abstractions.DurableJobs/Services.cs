@@ -12,9 +12,9 @@ public static class Services
     /// Adds the given durable job to the service collection.
     /// </summary>
     public static IServiceCollection AddJob<TJob>(this IServiceCollection services)
-        where TJob : AJob
+        where TJob : AOrchestration
     {
-        services.AddSingleton<AJob, TJob>();
+        services.AddSingleton<AOrchestration, TJob>();
         return services;
     }
     

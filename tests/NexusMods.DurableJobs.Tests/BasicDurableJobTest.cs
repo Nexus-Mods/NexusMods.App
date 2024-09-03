@@ -120,7 +120,7 @@ public class BasicDurableJobTest
 }
 
 
-public class CatchErrorJob : AJob<CatchErrorJob, int, int>
+public class CatchErrorJob : AOrchestration<CatchErrorJob, int, int>
 {
     protected override async Task<int> Run(Context context, int arg1)
     {
@@ -133,7 +133,7 @@ public class CatchErrorJob : AJob<CatchErrorJob, int, int>
     }
 }
 
-public class ThrowOn5Job : AJob<ThrowOn5Job, int, int>
+public class ThrowOn5Job : AOrchestration<ThrowOn5Job, int, int>
 {
     protected override Task<int> Run(Context context, int arg1)
     {
@@ -146,7 +146,7 @@ public class ThrowOn5Job : AJob<ThrowOn5Job, int, int>
     }
 }
 
-public class WaitMany : AJob<WaitMany, int, int[]>
+public class WaitMany : AOrchestration<WaitMany, int, int[]>
 {
     protected override async Task<int> Run(Context context, int[] inputs)
     {
@@ -162,7 +162,7 @@ public class WaitMany : AJob<WaitMany, int, int[]>
     }
 }
 
-public class AsyncLinqJob : AJob<AsyncLinqJob, int, int[]>
+public class AsyncLinqJob : AOrchestration<AsyncLinqJob, int, int[]>
 {
     protected override async Task<int> Run(Context context, int[] ints)
     {
@@ -175,7 +175,7 @@ public class AsyncLinqJob : AJob<AsyncLinqJob, int, int[]>
     }
 }
 
-public class SquareJob : AJob<SquareJob, int, int>
+public class SquareJob : AOrchestration<SquareJob, int, int>
 {
     protected override Task<int> Run(Context context, int arg1)
     {
@@ -183,7 +183,7 @@ public class SquareJob : AJob<SquareJob, int, int>
     }
 }
 
-public class SumJob : AJob<SumJob, int, int[]>
+public class SumJob : AOrchestration<SumJob, int, int[]>
 {
     protected override async Task<int> Run(Context context, int[] ints)
     {
@@ -199,7 +199,7 @@ public class SumJob : AJob<SumJob, int, int[]>
 }
 
 
-public class WaitFor10 : AJob<WaitFor10, int, int>
+public class WaitFor10 : AOrchestration<WaitFor10, int, int>
 {
     protected override async Task<int> Run(Context context, int arg1)
     {
@@ -228,7 +228,7 @@ public class LongRunningUnitOfWork : AUnitOfWork<LongRunningUnitOfWork, int, int
 /// <summary>
 /// A job that sets the static result when it's done.
 /// </summary>
-public class ManuallyFinishedJob : AJob<ManuallyFinishedJob, int, int>
+public class ManuallyFinishedJob : AOrchestration<ManuallyFinishedJob, int, int>
 {
     public static int LastResult { get; private set; }
     protected override async Task<int> Run(Context context, int arg1)

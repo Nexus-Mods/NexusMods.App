@@ -3,11 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace NexusMods.Abstractions.DurableJobs;
 
+/// <summary>
+/// A JSON serializer for IJob instances
+/// </summary>
 public class JobSerializer : JsonConverter<IJob>
 {
     private readonly Dictionary<string, IJob> _jobs;
 
-    public JobSerializer(IEnumerable<AJob> jobs, IEnumerable<AUnitOfWork> unitsOfWork)
+    public JobSerializer(IEnumerable<AOrchestration> jobs, IEnumerable<AUnitOfWork> unitsOfWork)
     {
         _jobs = jobs.OfType<IJob>().Concat(unitsOfWork).ToDictionary(j => j.GetType().FullName!);
     }
