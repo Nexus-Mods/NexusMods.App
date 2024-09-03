@@ -135,7 +135,7 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
             // We have no child groups, check if children are files
             if (childGroups.Count == 0)
             {
-                return LoadoutItemWithTargetPath.TryGet(db, currentGroupId, out _) 
+                return LoadoutItemWithTargetPath.TryGet(db, childDatoms[0].E, out _) 
                     ? LoadoutItemGroup.Load(db, currentGroupId)
                     : Optional<LoadoutItemGroup.ReadOnly>.None;
             }
