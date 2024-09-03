@@ -24,7 +24,7 @@ public record HistoryEntry
     /// <summary>
     /// The job that will eventually return a result.
     /// </summary>
-    public AJob? Job { get; set; }
+    public AOrchestration? Job { get; set; }
     
     /// <summary>
     /// If the job is completed, this will contain the result of the job, if it's failed it will contain the exception.
@@ -45,7 +45,7 @@ internal class HistoryEntrySerializer : JsonConverter<HistoryEntry>
         reader.Read();
         var status = JsonSerializer.Deserialize<JobStatus>(ref reader, options);
         reader.Read();
-        var job = JsonSerializer.Deserialize<AJob>(ref reader, options);
+        var job = JsonSerializer.Deserialize<AOrchestration>(ref reader, options);
         reader.Read();
         
         var result = JsonSerializer.Deserialize(ref reader, job!.ResultType, options);
@@ -75,7 +75,7 @@ internal class HistoryEntrySerializer : JsonConverter<HistoryEntry>
 /// <summary>
 /// Context for a job.
 /// </summary>
-public class Context
+public class OrchestrationContext
 {
     /// <summary>
     /// The JobManager that owns this job.

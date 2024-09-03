@@ -9,7 +9,7 @@ public abstract class AOrchestration : IJob
     /// Runs the orchestration. Calls in this method to start sub-jobs may pause the orchestration, and the orchestration may restart
     /// many times before it finishes. All code in this method should be idempotent.
     /// </summary>
-    internal abstract Task<object> Run(Context context, params object[] args);
+    internal abstract Task<object> Run(OrchestrationContext context, params object[] args);
 
     /// <inheritdoc />
     public abstract Type ResultType { get; }
@@ -27,9 +27,9 @@ public abstract class AOrchestration<TParent, TResult, TArg1> : AOrchestration
     /// <summary>
     /// The main entry point for the job, this will be called multiple times until the job is completed.
     /// </summary>
-    protected abstract Task<TResult> Run(Context context, TArg1 arg1);
+    protected abstract Task<TResult> Run(OrchestrationContext context, TArg1 arg1);
 
-    internal override async Task<object> Run(Context context, params object[] args)
+    internal override async Task<object> Run(OrchestrationContext context, params object[] args)
     {
         if (args.Length != 1)
         {
@@ -49,8 +49,8 @@ public abstract class AOrchestration<TParent, TResult, TArg1> : AOrchestration
     /// <summary>
     /// Runs this job as a sub job of the given parent job.
     /// </summary>
-    protected static async Task<TResult> RunSubJob(Context parentContext, TArg1 arg1)
+    protected static async Task<TResult> RunSubJob(OrchestrationContext parentOrchestrationContext, TArg1 arg1)
     {
-        return (TResult)await parentContext.JobManager.RunSubJob<TParent>(parentContext, [arg1!]);
+        return (TResult)await parentOrchestrationContext.JobManager.RunSubJob<TParent>(parentOrchestrationContext, [arg1!]);
     }
 }

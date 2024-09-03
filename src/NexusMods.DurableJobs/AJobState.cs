@@ -79,7 +79,7 @@ internal class JobStateSerializer : JsonConverter<AJobState>
             var history = JsonSerializer.Deserialize<List<HistoryEntry>>(ref reader, options)!;
             reader.Read();
 
-            return new JobState
+            return new OrchestrationState
             {
                 Id = id,
                 Job = aJob,
@@ -116,7 +116,7 @@ internal class JobStateSerializer : JsonConverter<AJobState>
         JsonSerializer.Serialize(writer, value.ParentHistoryIndex, options);
         JsonSerializer.Serialize(writer, value.Arguments, options);
         
-        if (value is JobState jobState)
+        if (value is OrchestrationState jobState)
             JsonSerializer.Serialize(writer, jobState.History, options);
         writer.WriteEndArray();
     }

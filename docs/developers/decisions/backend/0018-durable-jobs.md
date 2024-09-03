@@ -72,14 +72,11 @@ routines will be relatively simple. Thus concepts like allocation free code are 
 
 A custom option was chosen as it allows us the maximum flexibility in implementation and the least amount of external dependencies.
 
-As it turns out, the basics of a Durable Task Framework are fairly easy to implement. The basic premise is as follows: 
+As it turns out, the basics of a Durable Task Framework are fairly easy to implement.
 
-1. A job is a class that implements one of the `AJob<T>` base classes
-2. Jobs are singletons and are part of the DI system.
-3. A job's `Run` method may be called many times, and jobs have a "at least once" guarantee. Meaning they will run once, but may run more than once.
-4. All calls to sub-jobs are created via calling a static member on the sub-job class, and passing to it the `context` handed to the parent's `Run` method.
-5. Awaiting the result of a sub-job will `snapshot` the current job and replay all the events of the parent job once the child job is complete. This is fairly 
-hard to understand without an example, but let's example a simple job:
+Logic is divided into two groups: Orchestrations and UnitsOfWork. A unit of work is a non-checkpointing job that is run and if
+the app crashes, it will be re-run from the beginning. It is assumed that these jobs will contain their own restart logic or
+be idempotent. Orchestrations are collectioons of units of work and other sub jobs that may be run, and restarted many times. 
 
 ```csharp
 
@@ -95,7 +92,7 @@ hard to understand without an example, but let's example a simple job:
     }
   
     // A job that takes an array of ints and returns the sum of the squares of those ints
-    public class SumJob : AJob<SumJob, int, int[]>
+    public class SumJob : AOrchestration<SumJob, int, int[]>
     {
         protected override async Task<int> Run(Context context, int[] ints)
         {
@@ -115,7 +112,7 @@ hard to understand without an example, but let's example a simple job:
         }
     }
     
-    public class SquareJob : AJob<SquareJob, int, int>
+    public class SquareJob : AOrchestration<SquareJob, int, int>
     {
         protected override Task<int> Run(Context context, int arg1)
         {
@@ -126,16 +123,16 @@ hard to understand without an example, but let's example a simple job:
     
 ```
 
-As can be seen, we can now write jobs as normal C# code. By default, each time a job is "snapshotted" and goes into an "waiting" state, it is persisted
-via the `IJobStorage` interface. When the application restarts any saved jobs are reloaded and restarted. This system closely 
+As can be seen, we can now write jobs as normal C# code. By default, each time an orchestration is "snapshotted" and goes into 
+a "waiting" state, it is persisted via the `IJobStorage` interface. When the application restarts any saved jobs are reloaded and restarted. This system closely 
 follows the design of the Durable Task Framework, but with all the distributed and fault tolerance parts removed. Since this 
-code is pure C# code and not a DSL or source generator, we can easily debug and understand the code. In addition the code
+code is pure C# code and not a DSL or source generator, we can easily debug and understand the code. In addition, the code
 can use all the normal C# features like `async` and `await` and `foreach` loops:
 
 
 ```csharp
 
-    public class WaitMany : AJob<WaitMany, int, int[]>
+    public class WaitMany : AOrchestration<WaitMany, int, int[]>
     {
         protected override async Task<int> Run(Context context, int[] inputs)
         {
@@ -153,7 +150,7 @@ can use all the normal C# features like `async` and `await` and `foreach` loops:
         }
     }
     
-    public class AsyncLinqJob : AJob<AsyncLinqJob, int, int[]>
+    public class AsyncLinqJob : AOrchestration<AsyncLinqJob, int, int[]>
     {
         protected override async Task<int> Run(Context context, int[] ints)
         {
@@ -202,6 +199,10 @@ The concept of "Replaying" is not very intuitive, but it is easy to understand:
       * If so we send the parent a message to set our result to a given value
       * After the value is set, the parent will awake and replay the job
      * If the job has no parent it almost always has a C# continuation, which we will call when it exists
+
+* When the system restarts, all previously saved job states are loaded into memory, and the system will restart any UnitOfWork instances
+that exist in the system. Since Orchestrations are just a collection of UnitOfWork instances, they will be restarted as well once the
+UnitsOfWork are restarted and complete
 
 Based on this description a few concerns are likely to arise:
 

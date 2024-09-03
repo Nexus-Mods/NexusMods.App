@@ -8,7 +8,7 @@ namespace NexusMods.DurableJobs;
 /// Internal job state for a job. 
 /// </summary>
 
-public class JobState : AJobState
+public class OrchestrationState : AJobState
 {
     /// <summary>
     /// The history of the job, each entry represents a child job that was run by this job.

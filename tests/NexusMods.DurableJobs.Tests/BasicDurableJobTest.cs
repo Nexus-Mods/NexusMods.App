@@ -122,7 +122,7 @@ public class BasicDurableJobTest
 
 public class CatchErrorJob : AOrchestration<CatchErrorJob, int, int>
 {
-    protected override async Task<int> Run(Context context, int arg1)
+    protected override async Task<int> Run(OrchestrationContext context, int arg1)
     {
         var sum = 0;
         for (var i = 0; i < arg1; i++)
@@ -135,7 +135,7 @@ public class CatchErrorJob : AOrchestration<CatchErrorJob, int, int>
 
 public class ThrowOn5Job : AOrchestration<ThrowOn5Job, int, int>
 {
-    protected override Task<int> Run(Context context, int arg1)
+    protected override Task<int> Run(OrchestrationContext context, int arg1)
     {
         if (arg1 == 5)
         {
@@ -148,7 +148,7 @@ public class ThrowOn5Job : AOrchestration<ThrowOn5Job, int, int>
 
 public class WaitMany : AOrchestration<WaitMany, int, int[]>
 {
-    protected override async Task<int> Run(Context context, int[] inputs)
+    protected override async Task<int> Run(OrchestrationContext context, int[] inputs)
     {
         var tasks = new List<Task<int>>();
         foreach (var input in inputs)
@@ -164,7 +164,7 @@ public class WaitMany : AOrchestration<WaitMany, int, int[]>
 
 public class AsyncLinqJob : AOrchestration<AsyncLinqJob, int, int[]>
 {
-    protected override async Task<int> Run(Context context, int[] ints)
+    protected override async Task<int> Run(OrchestrationContext context, int[] ints)
     {
         var sum = 0;
         await foreach (var val in ints.SelectAsync(async x => await SquareJob.RunSubJob(context, x)))
@@ -177,7 +177,7 @@ public class AsyncLinqJob : AOrchestration<AsyncLinqJob, int, int[]>
 
 public class SquareJob : AOrchestration<SquareJob, int, int>
 {
-    protected override Task<int> Run(Context context, int arg1)
+    protected override Task<int> Run(OrchestrationContext context, int arg1)
     {
         return Task.FromResult(arg1 * arg1);
     }
@@ -185,7 +185,7 @@ public class SquareJob : AOrchestration<SquareJob, int, int>
 
 public class SumJob : AOrchestration<SumJob, int, int[]>
 {
-    protected override async Task<int> Run(Context context, int[] ints)
+    protected override async Task<int> Run(OrchestrationContext context, int[] ints)
     {
         var acc = 0;
 
@@ -201,7 +201,7 @@ public class SumJob : AOrchestration<SumJob, int, int[]>
 
 public class WaitFor10 : AOrchestration<WaitFor10, int, int>
 {
-    protected override async Task<int> Run(Context context, int arg1)
+    protected override async Task<int> Run(OrchestrationContext context, int arg1)
     {
         var totalTook = 0;
         for (var i = 0; i < 10; i++)
@@ -231,7 +231,7 @@ public class LongRunningUnitOfWork : AUnitOfWork<LongRunningUnitOfWork, int, int
 public class ManuallyFinishedJob : AOrchestration<ManuallyFinishedJob, int, int>
 {
     public static int LastResult { get; private set; }
-    protected override async Task<int> Run(Context context, int arg1)
+    protected override async Task<int> Run(OrchestrationContext context, int arg1)
     {
         LastResult = await ManuallyFinishedUnitOfWork.RunUnitOfWork(context, arg1);
         return LastResult;

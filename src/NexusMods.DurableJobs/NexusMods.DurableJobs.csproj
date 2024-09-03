@@ -11,7 +11,12 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+      <PackageReference Include="ObservableCollections" />
       <PackageReference Include="System.Reactive" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="UnitOfWorkContext.cs" />
     </ItemGroup>
 
 </Project>

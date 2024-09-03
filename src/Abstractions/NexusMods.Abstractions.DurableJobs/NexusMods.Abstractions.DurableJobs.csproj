@@ -13,7 +13,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="DynamicData" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="ObservableCollections" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 </Project>

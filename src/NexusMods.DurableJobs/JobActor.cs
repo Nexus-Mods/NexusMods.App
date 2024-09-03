@@ -6,20 +6,20 @@ namespace NexusMods.DurableJobs;
 /// <summary>
 /// An actor for a restartable persistent job.
 /// </summary>
-public class JobActor : Actor<JobState, IJobMessage>
+public class JobActor : Actor<OrchestrationState, IJobMessage>
 {
-    public JobActor(ILogger logger, JobState initialState) : base(logger, initialState)
+    public JobActor(ILogger logger, OrchestrationState initialState) : base(logger, initialState)
     {
     }
 
 
-    public override async ValueTask<(JobState, bool)> Handle(JobState state, IJobMessage message)
+    public override async ValueTask<(OrchestrationState, bool)> Handle(OrchestrationState state, IJobMessage message)
     {
         var shouldContinue = true;
         switch (message)
         {
             case RunMessage:
-                var context = new Context
+                var context = new OrchestrationContext
                 {
                     JobManager = state.Manager!,
                     JobId = state.Id,
@@ -50,7 +50,7 @@ public class JobActor : Actor<JobState, IJobMessage>
             default:
                 throw new InvalidOperationException("Unknown message type " + message.GetType());
         }
-        state = (JobState)state.Manager!.SaveState(state);
+        state = (OrchestrationState)state.Manager!.SaveState(state);
         return (state, shouldContinue);
     }
 }

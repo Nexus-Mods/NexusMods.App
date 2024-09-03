@@ -1,3 +1,5 @@
+using DynamicData;
+
 namespace NexusMods.Abstractions.DurableJobs;
 
 /// <summary>
@@ -13,5 +15,5 @@ public interface IJobManager
     /// <summary>
     /// Runs a sub job from the parent job.
     /// </summary>
-    Task<object> RunSubJob<TSubJob>(Context parent, object[] args) where TSubJob : IJob;
+    Task<object> RunSubJob<TSubJob>(OrchestrationContext parent, object[] args) where TSubJob : IJob;
 }

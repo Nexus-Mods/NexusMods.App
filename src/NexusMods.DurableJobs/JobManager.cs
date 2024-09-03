@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DurableJobs;
+
 namespace NexusMods.DurableJobs;
 
 /// <summary>
@@ -41,7 +42,7 @@ public class JobManager : IJobManager, IHostedService
         
         var tcs = new TaskCompletionSource<object>();
 
-        var initialState = new JobState
+        var initialState = new OrchestrationState
         {
             Job = (AOrchestration)jobInstance,
             Id = newJobId,
@@ -92,8 +93,8 @@ public class JobManager : IJobManager, IHostedService
         memoryStream.Position = 0;
         var newState = JsonSerializer.Deserialize<AJobState>(memoryStream, _serializerOptions)!;
         newState.Manager = state.Manager;
-        if (state is JobState js)
-            js.Continuation = ((JobState)newState).Continuation;
+        if (state is OrchestrationState js)
+            js.Continuation = ((OrchestrationState)newState).Continuation;
         return newState;
 #else
         return state;
@@ -103,7 +104,7 @@ public class JobManager : IJobManager, IHostedService
 
     internal void FinalizeJob(AJobState state, object result, bool isFailure)
     {
-        if (state is JobState js)
+        if (state is OrchestrationState js)
             js.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
         
         if (state.ParentJobId == JobId.Empty)
@@ -117,7 +118,7 @@ public class JobManager : IJobManager, IHostedService
         _jobStore.Delete(state.Id);
     }
 
-    public Task<object> RunSubJob<TSubJob>(Context context, object[] args) where TSubJob : IJob
+    public Task<object> RunSubJob<TSubJob>(OrchestrationContext context, object[] args) where TSubJob : IJob
     {
         // If we are replaying and our index is at the end of the history, we need to add a new entry and create a new job.
         if (context.ReplayIndex == context.History.Count)
@@ -145,7 +146,7 @@ public class JobManager : IJobManager, IHostedService
         throw new InvalidOperationException("Replay index is out of bounds");
     }
 
-    private void CreateUnitOfWorkActor<TSubJob>(Context context, object[] args) where TSubJob : IJob
+    private void CreateUnitOfWorkActor<TSubJob>(OrchestrationContext context, object[] args) where TSubJob : IJob
     {
         var jobId = JobId.From(Guid.NewGuid());
         var jobInstance = _jobInstances[typeof(TSubJob)];
@@ -179,7 +180,7 @@ public class JobManager : IJobManager, IHostedService
         });
     }
 
-    private void CreateSubJobActor<TSubJob>(Context context, object[] args) where TSubJob : IJob
+    private void CreateSubJobActor<TSubJob>(OrchestrationContext context, object[] args) where TSubJob : IJob
     {
         var jobId = JobId.From(Guid.NewGuid());
         var jobInstance = _jobInstances[typeof(TSubJob)];
@@ -191,7 +192,7 @@ public class JobManager : IJobManager, IHostedService
         var parentIdx = context.History.Count;
         context.History.Add(entry);
             
-        var childJobActor = new JobActor(_logger, new JobState
+        var childJobActor = new JobActor(_logger, new OrchestrationState
         {
             Job = (AOrchestration)jobInstance,
             Id = jobId,
@@ -220,7 +221,7 @@ public class JobManager : IJobManager, IHostedService
             var state = JsonSerializer.Deserialize<AJobState>(job.Value, _serializerOptions)!;
             state.Manager = this;
             
-            if (state is JobState js)
+            if (state is OrchestrationState js)
             {
                 var actor = new JobActor(_logger, js);
                 _jobs[state.Id] = actor;
@@ -240,5 +241,10 @@ public class JobManager : IJobManager, IHostedService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    public void SetProgress(JobId jobId, Percent? percent, double? ratePerSecond)
+    {
+        
     }
 }
