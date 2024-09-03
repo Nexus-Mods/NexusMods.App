@@ -16,6 +16,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using R3;
@@ -154,38 +155,35 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     /// </summary>
     private static Optional<LoadoutItemGroup.ReadOnly> GetViewModFilesLoadoutItemGroup(IReadOnlyCollection<LoadoutItemId> loadoutItemIds, IConnection connection)
     {
+        var db = connection.Db;
         // Only allow when selecting a single item, or an item with a single child
         if (loadoutItemIds.Count != 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+        var currentGroupId = loadoutItemIds.First();
+        
+        var groupDatoms = db.Datoms(LoadoutItemGroup.Group, Null.Instance);
 
-        var loadoutItem = LoadoutItem.Load(connection.Db, loadoutItemIds.First());
-
-        if (!loadoutItem.TryGetAsLoadoutItemGroup(out var currentGroup)) return Optional<LoadoutItemGroup.ReadOnly>.None;
-
-        // Allow groups of files, or hierarchy of single child groups that end with a group of files
         while (true)
         {
-            var children = LoadoutItem.FindByParent(connection.Db, currentGroup.Id);
+            var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
+            var childGroups = groupDatoms.MergeByEntityId(childDatoms);
 
-            switch (children.Count)
+            // We have no child groups, check if children are files
+            if (childGroups.Count == 0)
             {
-                case 0:
-                    return Optional<LoadoutItemGroup.ReadOnly>.None;
-                case 1:
-                {
-                    var firstChild = children.First();
-
-                    if (!firstChild.TryGetAsLoadoutItemGroup(out var nextGroup))
-                    {
-                        return firstChild.IsLoadoutItemWithTargetPath() ? currentGroup : Optional<LoadoutItemGroup.ReadOnly>.None;
-                    }
-
-                    // check if the single child group is valid
-                    currentGroup = nextGroup;
-                    continue;
-                }
-                default:
-                    return children.First().IsLoadoutItemWithTargetPath() ? currentGroup : Optional<LoadoutItemGroup.ReadOnly>.None;
+                return LoadoutItemWithTargetPath.TryGet(db, currentGroupId, out _) 
+                    ? LoadoutItemGroup.Load(db, currentGroupId)
+                    : Optional<LoadoutItemGroup.ReadOnly>.None;
             }
+            
+            // Single child group, check if that group is valid
+            if (childGroups.Count == 1)
+            {
+                currentGroupId = childGroups.First();
+                continue;
+            }
+        
+            // We have multiple child groups, return None
+            if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
         }
     }
 }
