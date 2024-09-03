@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Windows;
@@ -138,7 +139,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         static (model, connection) =>
                         {
                             if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                            return GetViewModFilesLoadoutItemGroup(model.GetLoadoutItemIds(), connection);
+                            return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(model.GetLoadoutItemIds(), connection);
                         }
                     )
                     .ObserveOnUIThreadDispatcher()
@@ -146,45 +147,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .AddTo(disposables);
             }
         );
-    }
-
-
-    /// <summary>
-    /// Returns the appropriate LoadoutItemGroup of files if the selection contains a LoadoutItemGroup containing files,
-    /// if the selection contains multiple LoadoutItemGroups of files, returns None.
-    /// </summary>
-    private static Optional<LoadoutItemGroup.ReadOnly> GetViewModFilesLoadoutItemGroup(IReadOnlyCollection<LoadoutItemId> loadoutItemIds, IConnection connection)
-    {
-        var db = connection.Db;
-        // Only allow when selecting a single item, or an item with a single child
-        if (loadoutItemIds.Count != 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
-        var currentGroupId = loadoutItemIds.First();
-        
-        var groupDatoms = db.Datoms(LoadoutItemGroup.Group, Null.Instance);
-
-        while (true)
-        {
-            var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
-            var childGroups = groupDatoms.MergeByEntityId(childDatoms);
-
-            // We have no child groups, check if children are files
-            if (childGroups.Count == 0)
-            {
-                return LoadoutItemWithTargetPath.TryGet(db, currentGroupId, out _) 
-                    ? LoadoutItemGroup.Load(db, currentGroupId)
-                    : Optional<LoadoutItemGroup.ReadOnly>.None;
-            }
-            
-            // Single child group, check if that group is valid
-            if (childGroups.Count == 1)
-            {
-                currentGroupId = childGroups.First();
-                continue;
-            }
-        
-            // We have multiple child groups, return None
-            if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
-        }
     }
 }
 

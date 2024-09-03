@@ -4,12 +4,16 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.Kernel;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.Trees;
@@ -106,6 +110,46 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
         {
             string.Format(Language.ModFileTreeViewModel_StatusBar_Files__0__1, totalNumFiles, ByteSize.FromBytes(totalSize.Value).ToString()),
         }));
+    }
+    
+    /// <summary>
+    /// Returns the appropriate LoadoutItemGroup of files if the selection contains a LoadoutItemGroup containing files,
+    /// if the selection contains multiple LoadoutItemGroups of files, returns None.
+    /// </summary>
+    internal static Optional<LoadoutItemGroup.ReadOnly> GetViewModFilesLoadoutItemGroup(
+        IReadOnlyCollection<LoadoutItemId> loadoutItemIds, 
+        IConnection connection)
+    {
+        var db = connection.Db;
+        // Only allow when selecting a single item, or an item with a single child
+        if (loadoutItemIds.Count != 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+        var currentGroupId = loadoutItemIds.First();
+        
+        var groupDatoms = db.Datoms(LoadoutItemGroup.Group, Null.Instance);
+
+        while (true)
+        {
+            var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
+            var childGroups = groupDatoms.MergeByEntityId(childDatoms);
+
+            // We have no child groups, check if children are files
+            if (childGroups.Count == 0)
+            {
+                return LoadoutItemWithTargetPath.TryGet(db, currentGroupId, out _) 
+                    ? LoadoutItemGroup.Load(db, currentGroupId)
+                    : Optional<LoadoutItemGroup.ReadOnly>.None;
+            }
+            
+            // Single child group, check if that group is valid
+            if (childGroups.Count == 1)
+            {
+                currentGroupId = childGroups.First();
+                continue;
+            }
+        
+            // We have multiple child groups, return None
+            if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+        }
     }
 
     private static FileTreeNodeViewModel CreateFolderNode(DirectoryData directory)
