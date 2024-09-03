@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.DurableJobs;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Trees;
@@ -974,88 +975,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        var initialJob = new CreateLoadoutJob(monitor: _serviceProvider.GetService<IJobMonitor>())
-        {
-            Installation = installation,
-        };
-
-        var worker = JobWorker.CreateWithData(initialJob, async (job, jobWorker, cancellationToken) =>
-        {
-            // Get the initial state of the game folder
-            var initialState = await GetOrCreateInitialDiskState(job.Installation);
-
-            var existingLoadoutNames = Loadout.All(Connection.Db)
-                .Where(l => l.IsVisible()
-                            && l.InstallationInstance.LocationsRegister[LocationId.Game]
-                            == job.Installation.LocationsRegister[LocationId.Game]
-                )
-                .Select(l => l.ShortName)
-                .ToArray();
-
-            var isOnlyLoadout = existingLoadoutNames.Length == 0;
-
-            var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
-
-            using var tx = Connection.BeginTransaction();
-
-            var loadout = new Loadout.New(tx)
-            {
-                Name = suggestedName ?? "Loadout " + shortName,
-                ShortName = shortName,
-                InstallationId = job.Installation.GameMetadataId,
-                Revision = 0,
-                LoadoutKind = LoadoutKind.Default,
-            };
-
-            var gameFiles = CreateLoadoutGameFilesGroup(loadout, job.Installation, tx);
-
-            // Backup the files
-            var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-
-            foreach (var file in initialState)
-            {
-                GamePath path = file.Path;
-
-                if (!IsIgnoredBackupPath(path))
-                    filesToBackup.Add((path, file.Hash, file.Size));
-
-                _ = new LoadoutFile.New(tx, out var loadoutFileId)
-                {
-                    Hash = file.Hash,
-                    Size = file.Size,
-                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                    {
-                        TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                        LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                        {
-                            Name = path.FileName,
-                            LoadoutId = loadout,
-                            ParentId = gameFiles.Id,
-                        },
-                    },
-                };
-            }
-
-            await BackupNewFiles(job.Installation, filesToBackup);
-
-            // Commit the transaction as of this point the loadout is live
-            var result = await tx.Commit();
-
-            // Remap the ids
-            var remappedLoadout = result.Remap(loadout);
-
-            // If this is the only loadout, activate it
-            if (isOnlyLoadout)
-            {
-                await ActivateLoadout(remappedLoadout.Id);
-            }
-
-            return remappedLoadout;
-        });
-
-        await initialJob.StartAsync();
-        var result = await initialJob.WaitToFinishAsync();
-        return result.RequireData<Loadout.ReadOnly>();
+        var manager = _serviceProvider.GetRequiredService<IJobManager>();
+        var loadoutId = await CreateLoadoutJob.RunNew(manager, installation, suggestedName);
+        return Loadout.Load(Connection.Db, loadoutId);
     }
 
     /// <inheritdoc />
@@ -1111,32 +1033,25 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true)
     {
-        var initialJob = new UnmanageGameJob(monitor: _serviceProvider.GetService<IJobMonitor>())
+        var manager = _serviceProvider.GetRequiredService<IJobManager>();
+        await UnmanageGameJob.RunNew(manager, installation, runGc);
+    }
+    
+    internal async Task UnManageInternal(GameInstallation installation, bool runGc, CancellationToken token)
+    {
+        var metadata = installation.GetMetadata(Connection);
+
+        if (GetCurrentlyActiveLoadout(installation).HasValue)
+            await DeactivateCurrentLoadout(installation);
+
+        foreach (var loadout in metadata.Loadouts)
         {
-            Installation = installation,
-        };
+            _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+            await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
+        }
 
-        var worker = JobWorker.Create(initialJob, async (job, jobWorker, cancellationToken) =>
-        {
-            var metadata = job.Installation.GetMetadata(Connection);
-
-            if (GetCurrentlyActiveLoadout(job.Installation).HasValue)
-                await DeactivateCurrentLoadout(job.Installation);
-
-            foreach (var loadout in metadata.Loadouts)
-            {
-                _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-                await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
-            }
-
-            if (runGc)
-                _garbageCollectorRunner.Run();
-
-            return JobResult.CreateCompleted(true);
-        });
-
-        await initialJob.StartAsync();
-        await initialJob.WaitToFinishAsync();
+        if (runGc)
+            _garbageCollectorRunner.Run();
     }
 
     /// <inheritdoc />
@@ -1338,6 +1253,80 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var groups = ProcessSyncTree(syncTree);
 
         await RunGroupings(syncTree, groups, installation);
+    }
+
+    internal async Task<LoadoutId> CreateLoadoutInternal(GameInstallation gameInstallation, string? s, CancellationToken token)
+    {
+        // Get the initial state of the game folder
+        var initialState = await GetOrCreateInitialDiskState(gameInstallation);
+
+        var existingLoadoutNames = Loadout.All(Connection.Db)
+            .Where(l => l.IsVisible()
+                        && l.InstallationInstance.LocationsRegister[LocationId.Game]
+                        == gameInstallation.LocationsRegister[LocationId.Game]
+            )
+            .Select(l => l.ShortName)
+            .ToArray();
+
+        var isOnlyLoadout = existingLoadoutNames.Length == 0;
+
+        var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
+
+        using var tx = Connection.BeginTransaction();
+
+        var loadout = new Loadout.New(tx)
+        {
+            Name = s ?? "Loadout " + shortName,
+            ShortName = shortName,
+            InstallationId = gameInstallation.GameMetadataId,
+            Revision = 0,
+            LoadoutKind = LoadoutKind.Default,
+        };
+
+        var gameFiles = CreateLoadoutGameFilesGroup(loadout, gameInstallation, tx);
+
+        // Backup the files
+        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
+
+        foreach (var file in initialState)
+        {
+            GamePath path = file.Path;
+
+            if (!IsIgnoredBackupPath(path))
+                filesToBackup.Add((path, file.Hash, file.Size));
+
+            _ = new LoadoutFile.New(tx, out var loadoutFileId)
+            {
+                Hash = file.Hash,
+                Size = file.Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
+                {
+                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
+                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
+                    {
+                        Name = path.FileName,
+                        LoadoutId = loadout,
+                        ParentId = gameFiles.Id,
+                    },
+                },
+            };
+        }
+
+        await BackupNewFiles(gameInstallation, filesToBackup);
+
+        // Commit the transaction as of this point the loadout is live
+        var result = await tx.Commit();
+
+        // Remap the ids
+        var remappedLoadout = result.Remap(loadout);
+
+        // If this is the only loadout, activate it
+        if (isOnlyLoadout)
+        {
+            await ActivateLoadout(remappedLoadout.Id);
+        }
+
+        return remappedLoadout;
     }
 }
 

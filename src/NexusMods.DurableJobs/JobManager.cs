@@ -35,26 +35,44 @@ public class JobManager : IJobManager, IHostedService
     
     /// <inheritdoc />
     public Task<object> RunNew<TJob>(params object[] args)
-        where TJob : AOrchestration
+        where TJob : IJob
     {
         var jobInstance = _jobInstances[typeof(TJob)];
         var newJobId = JobId.From(Guid.NewGuid());
         
         var tcs = new TaskCompletionSource<object>();
-
-        var initialState = new OrchestrationState
-        {
-            Job = (AOrchestration)jobInstance,
-            Id = newJobId,
-            Manager = this,
-            Arguments = args,
-            Continuation = Continuation,
-        };
+        IActor<IJobMessage> actor;
         
-        var actor = new JobActor(_logger, initialState);
+        if (typeof(TJob).IsAssignableTo(typeof(AOrchestration))) {
+            var initialState = new OrchestrationState
+            {
+                Job = (AOrchestration)jobInstance,
+                Id = newJobId,
+                Manager = this,
+                Arguments = args,
+                Continuation = Continuation,
+            };
+
+            actor = new JobActor(_logger, initialState);
+        }
+        else
+        {
+            var initialState = new UnitOfWorkState
+            {
+                Job = (AUnitOfWork)jobInstance,
+                Id = newJobId,
+                Manager = this,
+                Arguments = args,
+                CancellationTokenSource = new CancellationTokenSource(),
+                Continuation = Continuation,
+            };
+
+            actor = new UnitOfWorkActor(_logger, initialState);
+        }
+        
         actor.Post(RunMessage.Instance);
         _jobs[newJobId] = actor;
-        
+
         return tcs.Task;
         
 
@@ -93,8 +111,7 @@ public class JobManager : IJobManager, IHostedService
         memoryStream.Position = 0;
         var newState = JsonSerializer.Deserialize<AJobState>(memoryStream, _serializerOptions)!;
         newState.Manager = state.Manager;
-        if (state is OrchestrationState js)
-            js.Continuation = ((OrchestrationState)newState).Continuation;
+        newState.Continuation = state.Continuation;
         return newState;
 #else
         return state;
@@ -104,8 +121,7 @@ public class JobManager : IJobManager, IHostedService
 
     internal void FinalizeJob(AJobState state, object result, bool isFailure)
     {
-        if (state is OrchestrationState js)
-            js.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
+        state.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
         
         if (state.ParentJobId == JobId.Empty)
             return;
@@ -144,6 +160,18 @@ public class JobManager : IJobManager, IHostedService
             };
         }
         throw new InvalidOperationException("Replay index is out of bounds");
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<JobReport> GetJobReports()
+    {
+        foreach (var job in _jobs)
+        {
+            if (job.Value is JobActor jobActor)
+                yield return jobActor.GetJobReport();
+            else if (job.Value is UnitOfWorkActor uowActor)
+                yield return uowActor.GetJobReport();
+        }
     }
 
     private void CreateUnitOfWorkActor<TSubJob>(OrchestrationContext context, object[] args) where TSubJob : IJob

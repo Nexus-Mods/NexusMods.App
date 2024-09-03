@@ -16,3 +16,9 @@ public interface IJob
     /// </summary>
     public Type[] ArgumentTypes { get; }
 }
+
+
+public interface IJob<TResult, TArg1, TArg2>
+{
+    
+}

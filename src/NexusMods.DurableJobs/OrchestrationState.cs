@@ -14,10 +14,4 @@ public class OrchestrationState : AJobState
     /// The history of the job, each entry represents a child job that was run by this job.
     /// </summary>
     public List<HistoryEntry> History { get; set; } = new();
-    
-    /// <summary>
-    /// If provided, this will be called when the job is completed.
-    /// </summary>
-    [JsonIgnore]
-    public Action<object, Exception?>? Continuation { get; set; }
 }

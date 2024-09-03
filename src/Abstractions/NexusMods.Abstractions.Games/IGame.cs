@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Games;
 /// Interface for a specific game recognized by the app. A single game can have
 /// multiple installations.
 /// </summary>
-public interface IGame : ILocatableGame
+public interface IGame : IGameWithSynchronizer
 {
     /// <summary>
     /// Stream factory for the game's icon, must be square but need not be small.
@@ -33,11 +33,6 @@ public interface IGame : ILocatableGame
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
-    
-    /// <summary>
-    /// The synchronizer for this game.
-    /// </summary>
-    public ILoadoutSynchronizer Synchronizer { get; }
     
     /// <summary>
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,

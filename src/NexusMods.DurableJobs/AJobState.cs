@@ -37,6 +37,12 @@ public abstract class AJobState
     /// The arguments that were passed to the job.
     /// </summary>
     public required object[] Arguments { get; init; } = [];
+    
+    /// <summary>
+    /// If provided, this will be called when the job is completed.
+    /// </summary>
+    [JsonIgnore]
+    public Action<object, Exception?>? Continuation { get; set; }
 }
 
 

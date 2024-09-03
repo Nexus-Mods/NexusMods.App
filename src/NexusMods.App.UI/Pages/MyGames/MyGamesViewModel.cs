@@ -7,9 +7,9 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.DurableJobs;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -29,7 +29,7 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private readonly IWindowManager _windowManager;
-    private readonly IJobMonitor _jobMonitor;
+    private readonly IJobManager _jobManager;
 
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames = new([]);
@@ -45,7 +45,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         ISynchronizerService syncService,
         IGameRegistry gameRegistry) : base(windowManager)
     {
-        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _jobManager = serviceProvider.GetRequiredService<IJobManager>();
 
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.Game;
@@ -116,17 +116,25 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         });
     }
 
-    private OneOf<None, CreateLoadoutJob, UnmanageGameJob> GetJobRunningForGameInstallation(GameInstallation installation)
+    private OneOf<None, JobId, JobId> GetJobRunningForGameInstallation(GameInstallation installation)
     {
-        foreach (var job in _jobMonitor.Jobs)
+        foreach (var job in CreateLoadoutJob.AllRunning(_jobManager))
         {
-            if (job.Status != JobStatus.Running) continue;
-
-            if (job is CreateLoadoutJob createLoadoutJob && createLoadoutJob.Installation.Equals(installation)) return createLoadoutJob;
-            if (job is UnmanageGameJob unmanageGameJob && unmanageGameJob.Installation.Equals(installation)) return unmanageGameJob;
+            if (job.Arg1.Equals(installation))
+            {
+                return OneOf<None, JobId, JobId>.FromT1(job.Id);
+            }
         }
-
-        return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
+        
+        foreach (var job in UnmanageGameJob.AllRunning(_jobManager))
+        {
+            if (job.Arg1.Equals(installation))
+            {
+                return OneOf<None, JobId, JobId>.FromT2(job.Id);
+            }
+        }
+        
+        return OneOf<None, JobId, JobId>.FromT0(new None());
     }
 
     private async Task RemoveAllLoadouts(GameInstallation installation)

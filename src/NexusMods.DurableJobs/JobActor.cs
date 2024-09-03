@@ -11,8 +11,12 @@ public class JobActor : Actor<OrchestrationState, IJobMessage>
     public JobActor(ILogger logger, OrchestrationState initialState) : base(logger, initialState)
     {
     }
-
-
+    
+    internal JobReport GetJobReport()
+    {
+        return new JobReport(State.Id, State.Job.GetType(), State.Arguments);
+    }
+    
     public override async ValueTask<(OrchestrationState, bool)> Handle(OrchestrationState state, IJobMessage message)
     {
         var shouldContinue = true;

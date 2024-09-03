@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.DurableJobs;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -13,6 +14,8 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddLoadoutsSynchronizers(this IServiceCollection services)
     {
+        services.AddUnitOfWorkJob<CreateLoadoutJob>();
+        services.AddUnitOfWorkJob<UnmanageGameJob>();
         return services;
     }
 }

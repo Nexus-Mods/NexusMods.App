@@ -4,12 +4,14 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
+using NexusMods.DurableJobs;
 using NexusMods.FileExtractor;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -58,6 +60,9 @@ public class Startup
                 .AddLoadoutAbstractions()
                 .AddFileStoreAbstractions()
                 .AddSerializationAbstractions()
+                .AddDurableJobs()
+                .AddInMemoryJobStore()
+                .AddLoadoutsSynchronizers()
                 .AddGames()
                 .AddCrossPlatform()
                 .AddSettings<LoggingSettings>()

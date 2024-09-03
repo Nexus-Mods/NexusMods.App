@@ -1,11 +1,18 @@
+using NexusMods.Abstractions.DurableJobs;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-public class UnmanageGameJob : AJob
+/// <summary>
+/// A job that unmanages a game
+/// </summary>
+public class UnmanageGameJob : AUnitOfWork<UnmanageGameJob, GameInstallation, GameInstallation, bool>
 {
-    public UnmanageGameJob(IJobMonitor? monitor) : base(new MutableProgress(new IndeterminateProgress()), group: null, worker: null, monitor) { }
-
-    public required GameInstallation Installation { get; init; }
+    protected override async Task<GameInstallation> Start(GameInstallation install, bool runGC, CancellationToken token)
+    {
+        var synchronizer = (ALoadoutSynchronizer)((IGameWithSynchronizer)install.Game).Synchronizer;
+        
+        await synchronizer.UnManageInternal(install, runGC, token);
+        return install;
+    }
 }

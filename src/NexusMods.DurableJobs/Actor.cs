@@ -27,6 +27,11 @@ public abstract class Actor<TState, TMessage> : IActor<TMessage>
     private TState _state;
     
     /// <summary>
+    /// This is pretty dangerous to expose, but it's used for several reporting purposes.
+    /// </summary>
+    internal TState State => _state;
+    
+    /// <summary>
     /// Pending messages to be processed.
     /// </summary>
     private readonly ConcurrentQueue<TMessage> _messages = new();

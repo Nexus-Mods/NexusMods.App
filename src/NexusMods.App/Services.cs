@@ -4,6 +4,7 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
@@ -13,6 +14,7 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
+using NexusMods.DurableJobs;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
@@ -60,7 +62,13 @@ public static class Services
                 .AddLibrary()
                 .AddLibraryModels()
                 .AddJobMonitor()
-
+                
+                // Durable jobs
+                .AddDurableJobs()
+                .AddInMemoryJobStore()
+                
+                .AddLoadoutsSynchronizers()
+                
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()

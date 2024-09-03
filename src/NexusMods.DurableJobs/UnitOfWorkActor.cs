@@ -9,6 +9,11 @@ internal class UnitOfWorkActor : Actor<UnitOfWorkState, IJobMessage>
     {
     }
     
+    internal JobReport GetJobReport()
+    {
+        return new JobReport(State.Id, State.Job.GetType(), State.Arguments);
+    }
+
     public override ValueTask<(UnitOfWorkState, bool)> Handle(UnitOfWorkState state, IJobMessage message)
     {
         switch (message)

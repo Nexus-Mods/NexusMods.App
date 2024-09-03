@@ -24,7 +24,6 @@ public class Startup
             .AddRedEngineGames()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
             .AddFileStoreAbstractions()
             .Validate();

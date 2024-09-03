@@ -6,10 +6,12 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
+using NexusMods.DurableJobs;
 using NexusMods.FileExtractor;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -67,7 +69,10 @@ public static class DependencyInjectionHelper
             .AddLibrary()
             .AddLibraryModels()
             .AddJobMonitor()
+            .AddDurableJobs()
+            .AddInMemoryJobStore()
             .AddLoadoutsSynchronizers()
+            .AddSerializationAbstractions()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

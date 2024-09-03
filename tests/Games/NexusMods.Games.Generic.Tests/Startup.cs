@@ -16,7 +16,6 @@ public class Startup
             .AddGenericGameSupport()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddSerializationAbstractions()
             .Validate();
     }
 }

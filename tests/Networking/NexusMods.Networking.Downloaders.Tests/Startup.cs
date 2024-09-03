@@ -27,7 +27,6 @@ public class Startup
             .AddStubbedGameLocators()
             .AddGenericGameSupport()
             .AddRedEngineGames()
-            .AddSerializationAbstractions()
             .AddFomod()
             .AddDownloaders()
             .OverrideSettingsForTests<DownloadSettings>(settings => settings with

@@ -1,11 +1,18 @@
+using NexusMods.Abstractions.DurableJobs;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-public class CreateLoadoutJob : AJob
+/// <summary>
+/// A job that creates a new loadout, possibly indexing and archiving files in the process
+/// </summary>
+public class CreateLoadoutJob : AUnitOfWork<CreateLoadoutJob, LoadoutId, GameInstallation, string?> 
 {
-    public CreateLoadoutJob(IJobMonitor? monitor) : base(new MutableProgress(new IndeterminateProgress()), group: null, worker: null, monitor) { }
-
-    public required GameInstallation Installation { get; init; }
+    /// <inheritdoc />
+    protected override async Task<LoadoutId> Start(GameInstallation arg1, string? arg2, CancellationToken token)
+    {
+        var synchronizer = (ALoadoutSynchronizer)((IGameWithSynchronizer)arg1.Game).Synchronizer;
+        
+        return await synchronizer.CreateLoadoutInternal(arg1, arg2, token);
+    }
 }
