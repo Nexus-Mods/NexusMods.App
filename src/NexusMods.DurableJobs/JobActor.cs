@@ -27,7 +27,7 @@ public class JobActor : Actor<JobState, IJobMessage>
                 };
                 try
                 {
-                    var result = await state.Job.Run(context, state.Arguments);
+                    var result = await ((AJob)state.Job).Run(context, state.Arguments);
                     state.Manager!.FinalizeJob(state, result, false);
                 }
                 catch (WaitException)
@@ -50,7 +50,7 @@ public class JobActor : Actor<JobState, IJobMessage>
             default:
                 throw new InvalidOperationException("Unknown message type " + message.GetType());
         }
-        state = state.Manager!.SaveState(state);
+        state = (JobState)state.Manager!.SaveState(state);
         return (state, shouldContinue);
     }
 }

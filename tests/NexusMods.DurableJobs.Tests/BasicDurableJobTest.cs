@@ -26,7 +26,8 @@ public class BasicDurableJobTest
                 .AddJob<CatchErrorJob>()
                 .AddJob<ThrowOn5Job>()
                 .AddJob<AsyncLinqJob>()
-                    .AddJob<WaitFor10>()
+                .AddJob<WaitFor10>()
+                .AddUnitOfWorkJob<LongRunningUnitOfWork>()
             ).Build();
         _host = host;
         _serviceProvider = host.Services;

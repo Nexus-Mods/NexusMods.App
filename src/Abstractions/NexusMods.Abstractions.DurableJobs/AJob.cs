@@ -13,14 +13,10 @@ public abstract class AJob : IJob
     /// </summary>
     internal abstract Task<object> Run(Context context, params object[] args);
 
-    /// <summary>
-    /// The result type of this job.
-    /// </summary>
+    /// <inheritdoc />
     public abstract Type ResultType { get; }
     
-    /// <summary>
-    /// The argument types of this job.
-    /// </summary>
+    /// <inheritdoc />
     public abstract Type[] ArgumentTypes { get; }
 }
 

@@ -15,7 +15,16 @@ public static class Services
         where TJob : AJob
     {
         services.AddSingleton<AJob, TJob>();
-        services.AddSingleton<JsonConverter, JobSerializer>();
+        return services;
+    }
+    
+    /// <summary>
+    /// Adds the given unit of work job to the service collection.
+    /// </summary>
+    public static IServiceCollection AddUnitOfWorkJob<TJob>(this IServiceCollection services)
+        where TJob : AUnitOfWork
+    {
+        services.AddSingleton<AUnitOfWork, TJob>();
         return services;
     }
     

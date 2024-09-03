@@ -9,6 +9,12 @@ public abstract class AUnitOfWork : IJob
     /// Start the unit of work.
     /// </summary>
     public abstract Task<object> Start(object[] args, CancellationToken token);
+
+    /// <inheritdoc />
+    public abstract Type ResultType { get; }
+    
+    /// <inheritdoc />
+    public abstract Type[] ArgumentTypes { get; }
 }
 
 
@@ -22,6 +28,12 @@ public abstract class AUnitOfWork<TParent, TResult, TArg1> : AUnitOfWork
     /// The main entry point for the unit of work.
     /// </summary>
     protected abstract Task<TResult> Start(TArg1 arg1, CancellationToken token);
+    
+    /// <inheritdoc />
+    public override Type ResultType => typeof(TResult);
+    
+    /// <inheritdoc />
+    public override Type[] ArgumentTypes => [typeof(TArg1)];
 
     /// <summary>
     /// Start the unit of work.

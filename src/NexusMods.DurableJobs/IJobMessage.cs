@@ -36,3 +36,8 @@ public record CancelMessage : IJobMessage
     /// </summary>
     public static CancelMessage Instance { get; } = new();
 }
+
+/// <summary>
+/// Used to tell a UnitOfWork actor that it's either faulted or completed
+/// </summary>
+public record SelfFinished(object Result, bool IsFailure) : IJobMessage;

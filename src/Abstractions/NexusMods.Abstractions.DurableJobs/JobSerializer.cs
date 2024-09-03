@@ -3,16 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace NexusMods.Abstractions.DurableJobs;
 
-public class JobSerializer : JsonConverter<AJob>
+public class JobSerializer : JsonConverter<IJob>
 {
-    private readonly Dictionary<string, AJob> _jobs;
+    private readonly Dictionary<string, IJob> _jobs;
 
-    public JobSerializer(IEnumerable<AJob> jobs)
+    public JobSerializer(IEnumerable<AJob> jobs, IEnumerable<AUnitOfWork> unitsOfWork)
     {
-        _jobs = jobs.ToDictionary(j => j.GetType().FullName!);
+        _jobs = jobs.OfType<IJob>().Concat(unitsOfWork).ToDictionary(j => j.GetType().FullName!);
     }
 
-    public override AJob? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IJob? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var name = reader.GetString();
         if (name is null)
@@ -20,7 +20,7 @@ public class JobSerializer : JsonConverter<AJob>
         return _jobs[name];
     }
 
-    public override void Write(Utf8JsonWriter writer, AJob value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IJob value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value.GetType().FullName);
     }
