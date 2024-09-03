@@ -228,11 +228,18 @@ its resources with the name, icon, publisher of the final target application.
 This in turn searches for a corresponding `dll` file matching the name of the exe.
 
 Simply seeing `.runtimeconfig.json` and `.deps.json` will guarantee a matching
-.NET Core application built with apphost, however they are technically optional
-(most devs don't delete them from output however).
+.NET Core application built with apphost. They are *technically optional*
+but most devs are unaware, and thus won't delete them.
 
-For a more reliable way, look at the PE header of the `DLL` file and look for
-the CLR header, as per [Detecting .NET Framework](#detecting-net-framework) section.
+!!! note "An alternative way"
+
+    For a more reliable way that accounts for the deleted files, look at the
+    PE header of the `DLL` file and look for the CLR header, as per
+    [Detecting .NET Framework](#detecting-net-framework) section.
+
+To detect if .NET Core is installed on the system, use [NetCoreInstallChecker],
+for support for checking a `WINEPREFIX`, library will need a small PR for setting
+alternative root (`C:`) folder.
 
 ##### Single File Deployment
 
@@ -402,3 +409,4 @@ Warn the user in a modal if it is not.
 [PyInstaller]: https://www.pyinstaller.org/
 [IMAGE_DATA_DIRECTORY]: https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_data_directory#remarks
 [optimized pattern scanner]: https://github.com/Reloaded-Project/Reloaded.Memory.SigScan
+[NetCoreInstallChecker]: https://github.com/Sewer56/NetCoreInstallChecker
