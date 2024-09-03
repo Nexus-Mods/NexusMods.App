@@ -1,13 +1,17 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DurableJobs;
 
 namespace NexusMods.DurableJobs;
 using JobActor = Actor<JobState, IJobMessage>;
 
-public class JobManager : IJobManager
+/// <summary>
+/// Implementation of the job manager.
+/// </summary>
+public class JobManager : IJobManager, IHostedService
 {
     private readonly ConcurrentDictionary<JobId, JobActor> _jobs = new();
     private readonly ILogger<JobManager> _logger;
@@ -15,6 +19,9 @@ public class JobManager : IJobManager
     private readonly Dictionary<Type,AJob> _jobInstances;
     private readonly IJobStateStore _jobStore;
 
+    /// <summary>
+    /// DI constructor.
+    /// </summary>
     public JobManager(IServiceProvider serviceProvider)
     {
         _jobStore = serviceProvider.GetRequiredService<IJobStateStore>();
@@ -22,6 +29,8 @@ public class JobManager : IJobManager
         _logger = serviceProvider.GetRequiredService<ILogger<JobManager>>();
         _serializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
     }
+    
+    
     
     /// <inheritdoc />
     public Task<object> RunNew<TJob>(params object[] args)
@@ -176,5 +185,26 @@ public class JobManager : IJobManager
         }
         throw new InvalidOperationException("Replay index is out of bounds");
     }
-    
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        LoadJobs();
+        RestartJobs();
+    }
+
+    private void LoadJobs()
+    {
+        foreach (var job in _jobStore.All())
+        {
+            var state = JsonSerializer.Deserialize<JobState>(job.Value, _serializerOptions)!;
+            state.Manager = this;
+            var actor = new JobActor(_logger, state, ProcessActorMessage);
+            _jobs[state.Id] = actor;
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

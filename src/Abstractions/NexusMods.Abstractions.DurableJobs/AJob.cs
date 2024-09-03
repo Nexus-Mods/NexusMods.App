@@ -39,7 +39,7 @@ public abstract class AJob<TParent, TResult, TArg1> : AJob
     {
         if (args.Length != 1)
         {
-            throw new ArgumentException("Expected 2 arguments", nameof(args));
+            throw new ArgumentException("Expected 1 argument", nameof(args));
         }
 
         return (await Run(context, (TArg1)args[0]))!;

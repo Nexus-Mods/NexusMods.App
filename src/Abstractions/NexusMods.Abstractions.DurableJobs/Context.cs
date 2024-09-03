@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace NexusMods.Abstractions.DurableJobs;
 
+/// <summary>
+/// A replay history item
+/// </summary>
 [JsonConverter(typeof(HistoryEntrySerializer))]
 public record HistoryEntry
 {
@@ -13,8 +16,8 @@ public record HistoryEntry
     public JobId ChildJobId { get; init; }
     
     /// <summary>
-    /// The current state of the child job, if it's not completed yet it will be <see cref="JobState.Running"/> otherise it will be <see cref="JobState.Completed"/>
-    /// or <see cref="JobState.Failed"/>.
+    /// The current state of the child job, if it's not completed yet it will be <see cref="JobStatus.Running"/> otherise it will be <see cref="JobState.Completed"/>
+    /// or <see cref="JobStatus.Failed"/>.
     /// </summary>
     public JobStatus Status { get; set; }
     
@@ -69,12 +72,28 @@ internal class HistoryEntrySerializer : JsonConverter<HistoryEntry>
     }
 }
 
+/// <summary>
+/// Context for a job.
+/// </summary>
 public class Context
 {
+    /// <summary>
+    /// The JobManager that owns this job.
+    /// </summary>
     public required IJobManager JobManager { get; init; }
 
+    /// <summary>
+    /// The history of this job.
+    /// </summary>
     public required List<HistoryEntry> History { get; init; }
-    public required JobId JobId { get; init; }
-    public int ReplayIndex { get; set; } = 0;
     
+    /// <summary>
+    /// The id of this job.
+    /// </summary>
+    public required JobId JobId { get; init; }
+    
+    /// <summary>
+    /// When replaying the job, this is the index of the next history entry to replay.
+    /// </summary>
+    public int ReplayIndex { get; set; } = 0;
 }
