@@ -59,6 +59,14 @@ etc.
 protontricks -c 'echo $WINEPREFIX' 2990 2>/dev/null
 ```
 
+If the operation succeeds, we get just the WINEPREFIX.
+If it fails, we get the following stdout:
+
+```
+Steam app with the given app ID could not be found. Is it installed, Proton compatible and have you launched it at least once? You can search for the app ID using the following command:
+$ protontricks -s <GAME NAME>
+```
+
 ### Launching a Proton Powered Game
 
 !!! info "To launch via Steam, use `protontricks-launch`"
@@ -132,6 +140,13 @@ might involve some shenanigans with `LD_PRELOAD` and `LD_LIBRARY_PATH`.
     That is non-game binaries.
 
 ### Missing WINEPREFIX for a given Steam ID
+
+!!! tip "This doesn't seem to apply to newer versions of the Steam Client"
+
+    Newer versions of Steam client appear to automatically create the
+    relevant `pfx` folder on game install.
+
+    We might not need to worry about this.
 
 !!! info "If the user has not yet run a game from Steam, we may not have a WINEPREFIX we can use."
 
@@ -341,6 +356,41 @@ to
 if __name__ == "__main__":
     main(None)
 ```
+
+## Planned Steps
+
+Support will be added on a game-by-game basis.
+
+We will add functionality to the App as it's needed.
+
+We don't plan to [Statically Compile Dependencies](#static-compilation-of-dependencies) unless
+it proves to be absolutely needed with no alternative way.
+
+### Phase One
+
+!!! info "This gets us basic support for Steam Games, which is what is required"
+
+Detect if [protontricks] is installed.
+
+Warn the user in a modal if it is not.
+
+!!! tip "This is driven by requirement to run `redmod` with Cyberpunk 2077"
+
+### Undetermined
+
+!!! info "Will be done as/when required for each new supported use case"
+
+1. Warn the user pre-deployment if a WINEPREFIX for a given game does not exist.
+    - See the [Getting a WINEPREFIX for a given Steam ID](#getting-a-wineprefix-for-a-given-steam-id) section.
+
+2. Auto-detect missing runtimes for tools for a given WINEPREFIX; emitting a warning or diagnostic.
+
+3. Support WINEPREFIX(ES) managed/created by `bottles`, `heroic`, `playnite`, etc.
+    - Needs further research and/or input from @erri120
+
+4. Auto-detect various types of tools (.NET Core, .NET Framework, etc.) and offer to install them into WINEPREFIX
+
+5. Handle possible error of missing WINEPREFIX for a given Steam ID.
 
 [steam-api]: https://partner.steamgames.com/doc/api/steam_api
 [steam-fix-reboot]: https://reloaded-project.github.io/Reloaded-III/Loader/Copy-Protection/Windows-Steam.html#avoid-forced-reboot
