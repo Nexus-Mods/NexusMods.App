@@ -55,14 +55,13 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-        var model = new LibraryItemModel
+        var model = new LibraryItemModel(nexusModsLibraryFile.Id)
         {
             CreatedAt = nexusModsLibraryFile.GetCreatedAt(),
             Name = nexusModsLibraryFile.FileMetadata.Name,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.LibraryItemId.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
         model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size;
         model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
 
@@ -99,7 +98,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-        var libraryFilesObservable = nexusModsLibraryFileObservable.Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e));
+        var libraryFilesObservable = nexusModsLibraryFileObservable
+            .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsDownloadedFile().AsLibraryFile().AsLibraryItem());
 
         var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable(
             (_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).QueryWhenChanged(query => query.Count > 0).Prepend(false)
@@ -112,9 +112,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
-            LibraryFilesObservable = libraryFilesObservable,
             NumInstalledObservable = numInstalledObservable,
-            NumLibraryItemsObservable = nexusModsLibraryFileObservable.Count(),
+            LibraryItemsObservable = libraryFilesObservable,
         };
     }
 

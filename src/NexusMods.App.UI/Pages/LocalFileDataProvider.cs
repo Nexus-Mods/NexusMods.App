@@ -47,14 +47,13 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(_connection.Db, entityId));
 
-        var model = new LibraryItemModel
+        var model = new LibraryItemModel(libraryFile.Id)
         {
             Name = libraryFile.AsLibraryItem().Name,
             CreatedAt = libraryFile.GetCreatedAt(),
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
         model.ItemSize.Value = libraryFile.Size;
         return model;
     }
@@ -86,7 +85,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .Count();
 
-                var model = new FakeParentLibraryItemModel
+                var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
                     Name = libraryFile.AsLibraryItem().Name,
                     CreatedAt = libraryFile.GetCreatedAt(),
@@ -94,10 +93,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
                     NumInstalledObservable = numInstalledObservable,
-                    NumLibraryItemsObservable = Observable.Return(1),
+                    LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
-                model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
                 model.ItemSize.Value = libraryFile.Size;
                 return (LibraryItemModel)model;
             });

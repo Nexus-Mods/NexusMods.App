@@ -17,8 +17,6 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId>
 {
-    public ReactiveProperty<DynamicData.Kernel.Optional<LibraryItemId>> LibraryItemId { get; } = new();
-
     public required string Name { get; init; }
     public required DateTime CreatedAt { get; init; }
     public BindableReactiveProperty<Size> ItemSize { get; } = new(Size.Zero);
@@ -36,19 +34,18 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public BindableReactiveProperty<string> InstallText { get; } = new("Install");
     public BindableReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
 
-    public ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
+    public ReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>> InstallCommand { get; }
+
+    private readonly LibraryItemId[] _fixedId;
+    public virtual IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
-    public LibraryItemModel()
+    public LibraryItemModel(LibraryItemId libraryItemId)
     {
-        var canInstall = IsInstalledInLoadout
-            .Select(static isInstalled => isInstalled)
-            .CombineLatest(
-                source2: LibraryItemId.Select(static libraryItemId => libraryItemId.HasValue),
-                resultSelector: static (isInstalled, hasLibraryItem) => !isInstalled && hasLibraryItem
-            );
+        _fixedId = [libraryItemId];
 
-        InstallCommand = canInstall.ToReactiveCommand<Unit, LibraryItemId>(_ => LibraryItemId.Value.Value, initialCanExecute: false);
+        var canInstall = IsInstalledInLoadout.Select(static b => !b);
+        InstallCommand = canInstall.ToReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>>(_ => GetLoadoutItemIds(), initialCanExecute: false);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -105,9 +102,9 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                     FormattedCreatedAtDate,
                     FormattedInstalledDate,
                     ItemSize,
-                    LibraryItemId,
                     IsInstalledInLoadout,
-                    InstalledDate
+                    InstalledDate,
+                    InstallText
                 );
             }
 

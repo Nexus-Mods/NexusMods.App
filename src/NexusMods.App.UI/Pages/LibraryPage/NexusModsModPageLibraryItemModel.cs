@@ -1,9 +1,6 @@
-using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.App.UI.Extensions;
 using NexusMods.Extensions.BCL;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ObservableCollections;
 using R3;
@@ -12,36 +9,28 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
 {
-    public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly, EntityId>> LibraryFilesObservable { get; init; }
-    private ObservableList<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
-
     private readonly IDisposable _modelActivationDisposable;
-    public NexusModsModPageLibraryItemModel()
+    public NexusModsModPageLibraryItemModel() : base(default(LibraryItemId))
     {
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.LibraryFiles
+            model.LibraryItems
                 .ObserveCountChanged()
                 .Subscribe(model, static (_, model) =>
                 {
                     // TODO: different selection, need to check with design
-                    if (model.LibraryFiles.TryGetFirst(out var primaryFile))
+                    if (model.LibraryItems.TryGetFirst(static x => x.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().IsValid(), out var librayItem))
                     {
-                        model.ItemSize.Value = primaryFile.AsDownloadedFile().AsLibraryFile().Size;
-                        model.Version.Value = primaryFile.FileMetadata.Version;
-                        model.LibraryItemId.Value = primaryFile.AsDownloadedFile().AsLibraryFile().AsLibraryItem().LibraryItemId;
+                        model.ItemSize.Value = librayItem.ToLibraryFile().Size;
+                        model.Version.Value = librayItem.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().FileMetadata.Version;
                     }
                     else
                     {
                         model.ItemSize.Value = Size.Zero;
                         model.Version.Value = "-";
-                        model.LibraryItemId.Value = DynamicData.Kernel.Optional<LibraryItemId>.None;
                     }
                 })
                 .AddTo(disposables);
-
-            model.LibraryFilesObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryFiles.ApplyChanges(changeSet)).AddTo(disposables);
-            Disposable.Create(model.LibraryFiles, static libraryFiles => libraryFiles.Clear()).AddTo(disposables);
         });
     }
 
@@ -55,7 +44,6 @@ public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
                 _modelActivationDisposable.Dispose();
             }
 
-            LibraryFiles = null!;
             _isDisposed = true;
         }
 

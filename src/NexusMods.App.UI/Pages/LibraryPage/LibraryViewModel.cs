@@ -128,37 +128,43 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            // TODO:
-            Adapter.MessageSubject
-                .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id.Id))
-                .Where(static item => item.IsValid())
-                .SubscribeAwait(
-                    onNextAsync: (libraryItem, cancellationToken) => InstallLibraryItem(libraryItem, _loadout, cancellationToken),
-                    awaitOperation: AwaitOperation.Parallel,
-                    configureAwait: false
-                ).AddTo(disposables);
+            Adapter.MessageSubject.SubscribeAwait(
+                onNextAsync: async (message, cancellationToken) =>
+                {
+                    foreach (var id in message.Ids)
+                    {
+                        var libraryItem = LibraryItem.Load(_connection.Db, id);
+                        if (!libraryItem.IsValid()) continue;
+                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                    }
+                },
+                awaitOperation: AwaitOperation.Parallel,
+                configureAwait: false
+            ).AddTo(disposables);
         });
     }
 
-    private async ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    private async ValueTask InstallItems(IEnumerable<LibraryItemId> ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        // TODO:
-        // // TODO: get correct IDs
-        // var db = _connection.Db;
-        // var items = Adapter.SelectedModels
-        //     .Select(model => model.LibraryItemId.Value)
-        //     .Where(x => x.HasValue)
-        //     .Select(x => x.Value)
-        //     .Distinct()
-        //     .Select(id => LibraryItem.Load(db, id))
-        //     .ToArray();
-        //
-        // await Parallel.ForAsync(
-        //     fromInclusive: 0,
-        //     toExclusive: items.Length,
-        //     body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
-        //     cancellationToken: cancellationToken
-        // );
+        var db = _connection.Db;
+        var items = ids
+            .Distinct()
+            .Select(id => LibraryItem.Load(db, id))
+            .Where(x => x.IsValid())
+            .ToArray();
+
+        await Parallel.ForAsync(
+            fromInclusive: 0,
+            toExclusive: items.Length,
+            body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    {
+        var ids = Adapter.SelectedModels.SelectMany(model => model.GetLoadoutItemIds());
+        return InstallItems(ids, useAdvancedInstaller, cancellationToken);
     }
 
     private async ValueTask InstallLibraryItem(
@@ -209,7 +215,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 }
 
-public readonly record struct InstallMessage(LibraryItemId Id);
+public readonly record struct InstallMessage(IReadOnlyCollection<LibraryItemId> Ids);
 
 public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<InstallMessage>
@@ -245,9 +251,9 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
     {
         model.Ticker = _ticker;
 
-        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (libraryItemId, subject) =>
+        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (ids, subject) =>
         {
-            subject.OnNext(new InstallMessage(libraryItemId));
+            subject.OnNext(new InstallMessage(ids));
         });
 
         var didAdd = _commandDisposables.TryAdd(model, disposable);
