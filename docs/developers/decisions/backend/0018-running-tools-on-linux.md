@@ -156,6 +156,10 @@ Example:
 WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
 ```
 
+!!! tip "It might be a good idea to detect runtimes during the download analysis stage"
+
+    This way we can easily cache the results.
+
 #### Detecting .NET Framework
 
 !!! info "Sometimes .NET Framework powered tools are still used for some games"
@@ -166,6 +170,72 @@ WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks d
 To detect if an application requires .NET Framework, look at the [IMAGE_DATA_DIRECTORY]
 structure of the PE header. If the `The CLR header address and size` field is present
 and not 0; then the application requires .NET Framework.
+
+!!! info "To detect if .NET Framework is installed on the system, check the following directory."
+
+    `"C:\Windows\Microsoft.NET\Framework"`
+
+    There should be a folder for each version. However, 4.X are backwards compatible,
+    and thus only 4.8.2 (or latest) is required.
+
+!!! note "We're unlikely to run into this scenario in the immediate future"
+
+    Therefore no plan of action is currently to be done.
+
+#### Detecting .NET Core
+
+!!! warning "This can be a bit tricky."
+
+There are multiple ways to package a .NET Application:
+
+- Self Contained Deployment
+- Single File Deployment (non NativeAOT)
+- Framework Dependent Deployment
+
+For the purposes of our use case, self-contained and framework dependent work
+the same, however self-contained single file deployment differs slightly.
+
+##### Framework Dependent Deployment
+
+Consider a typical application:
+
+```
+- `apphost.exe`
+- `apphost.runtimeconfig.json`
+- `apphost.deps.json`
+```
+
+Replace `apphost` with name of EXE.
+
+When a .NET Core application is built, the SDK copies `apphost.exe` and amends
+its resources with the name, icon, publisher of the final target application.
+
+This in turn searches for a corresponding `dll` file matching the name of the exe.
+
+Simply seeing `.runtimeconfig.json` and `.deps.json` will guarantee a matching
+.NET Core application built with apphost, however they are technically optional
+(most devs don't delete them from output however).
+
+For a more reliable way, look at the PE header of the `DLL` file and look for
+the CLR header, as per [Detecting .NET Framework](#detecting-net-framework) section.
+
+##### Single File Deployment
+
+!!! info "The easiest way is to search the binary for the pattern below"
+
+```csharp
+0x8b, 0x12, 0x02, 0xb9, 0x6a, 0x61, 0x20, 0x38,
+0x72, 0x7b, 0x93, 0x02, 0x14, 0xd7, 0xa0, 0x32,
+0x13, 0xf5, 0xb9, 0xe6, 0xef, 0xae, 0x33, 0x18,
+0xee, 0x3b, 0x2d, 0xce, 0x24, 0xb3, 0x6a, 0xae
+```
+
+This set of bytes is SHA-256 hash for the string `".net core bundle"`.
+
+This can be done at around 60GB/s on a single thread of a 5900X with an [optimized pattern scanner].
+
+Unfortunately this alone does not determine if the Single File deployment is self-contained or not.
+To determine if it's self-contained, check the PE header for an export named `DotNetRuntimeInfo`.
 
 ## Static Compilation of Dependencies
 
@@ -193,7 +263,7 @@ Install [PyInstaller] with:
 pip install pyinstaller
 ```
 
-Then clone a the project:
+Then clone the project:
 
 ```bash
 git clone https://github.com/Matoking/protontricks.git
@@ -281,3 +351,4 @@ if __name__ == "__main__":
 [umu]: https://github.com/Open-Wine-Components/umu-launcher
 [PyInstaller]: https://www.pyinstaller.org/
 [IMAGE_DATA_DIRECTORY]: https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_data_directory#remarks
+[optimized pattern scanner]: https://github.com/Reloaded-Project/Reloaded.Memory.SigScan
