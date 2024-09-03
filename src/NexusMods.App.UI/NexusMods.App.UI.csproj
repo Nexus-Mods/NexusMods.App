@@ -583,7 +583,7 @@
         <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
           <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Trees\LoadoutGroupFileTreeViewModel.cs">
+        <Compile Update="Controls\Trees\LoadoutItemGroupFileTreeViewModel.cs">
           <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
@@ -621,6 +621,12 @@
         </Compile>
         <Compile Update="Pages\NexusModsDataProvider.cs">
           <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeViewModel.cs">
+          <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
+          <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
     </ItemGroup>
 

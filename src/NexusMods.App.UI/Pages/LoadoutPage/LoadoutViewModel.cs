@@ -1,15 +1,23 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Binding;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using R3;
@@ -23,7 +31,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
 
-    public ReactiveCommand<Unit> ViewFilesCommand { get; }
+    public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
@@ -37,66 +45,108 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
-        SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
-        {
-            Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
-        });
+        SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
 
-        ViewFilesCommand = hasSelection.ToReactiveCommand<Unit>(_ =>
-        {
-            // TODO:
-        });
+        var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
+
+        ViewFilesCommand = viewModFilesArgumentsSubject
+            .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
+            .ToReactiveCommand<NavigationInformation>( info =>
+                {
+                    var group = viewModFilesArgumentsSubject.Value;
+                    if (!group.HasValue) return;
+
+                    var pageData = new PageData
+                    {
+                        FactoryId = ItemContentsFileTreePageFactory.StaticId,
+                        Context = new ItemContentsFileTreePageContext
+                        {
+                            GroupId = group.Value.Id,
+                        },
+                    };
+                    var workspaceController = GetWorkspaceController();
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                },
+                false
+            );
 
         RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
-        {
-            var ids = Adapter.SelectedModels
-                .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
-                .ToHashSet();
-
-            using var tx = _connection.BeginTransaction();
-
-            foreach (var id in ids)
             {
-                tx.Delete(id, recursive: true);
-            }
+                var ids = Adapter.SelectedModels
+                    .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
+                    .ToHashSet();
 
-            await tx.Commit();
-        }, awaitOperation: AwaitOperation.Sequential, initialCanExecute: false, configureAwait: false);
+                using var tx = _connection.BeginTransaction();
+
+                foreach (var id in ids)
+                {
+                    tx.Delete(id, recursive: true);
+                }
+
+                await tx.Commit();
+            },
+            awaitOperation: AwaitOperation.Sequential,
+            initialCanExecute: false,
+            configureAwait: false
+        );
 
         this.WhenActivated(disposables =>
-        {
-            Adapter.Activate();
-            Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            {
+                Adapter.Activate();
+                Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            // TODO: can be optimized with chunking or debounce
-            Adapter.MessageSubject
-                .SubscribeAwait(async (message, cancellationToken) =>
-                {
-                    using var tx = _connection.BeginTransaction();
-
-                    foreach (var id in message.Ids)
-                    {
-                        tx.Add(id, static (tx, db, loadoutItemId) =>
+                // TODO: can be optimized with chunking or debounce
+                Adapter.MessageSubject
+                    .SubscribeAwait(async (message, cancellationToken) =>
                         {
-                            var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
-                            if (loadoutItem.IsDisabled)
-                            {
-                                tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                            } else
-                            {
-                                tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                            }
-                        });
-                    }
+                            using var tx = _connection.BeginTransaction();
 
-                    await tx.Commit();
-                }, awaitOperation: AwaitOperation.Parallel, configureAwait: false)
-                .AddTo(disposables);
-        });
+                            foreach (var id in message.Ids)
+                            {
+                                tx.Add(id,
+                                    static (tx, db, loadoutItemId) =>
+                                    {
+                                        var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
+                                        if (loadoutItem.IsDisabled)
+                                        {
+                                            tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                                        }
+                                        else
+                                        {
+                                            tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                                        }
+                                    }
+                                );
+                            }
+
+                            await tx.Commit();
+                        },
+                        awaitOperation: AwaitOperation.Parallel,
+                        configureAwait: false
+                    )
+                    .AddTo(disposables);
+                
+                // Compute the target group for the ViewFilesCommand
+                Adapter.SelectedModels.ObserveCountChanged()
+                    .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels[0] : null)
+                    .ObserveOnThreadPool()
+                    .Select(_connection,
+                        static (model, connection) =>
+                        {
+                            if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
+                            return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(model.GetLoadoutItemIds(), connection);
+                        }
+                    )
+                    .ObserveOnUIThreadDispatcher()
+                    .Subscribe(viewModFilesArgumentsSubject.OnNext)
+                    .AddTo(disposables);
+            }
+        );
     }
 }
 
@@ -112,32 +162,34 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     private readonly Dictionary<LoadoutItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;
+
     public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider)
     {
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
-        {
-            Disposable.Create(adapter._commandDisposables, static commandDisposables =>
             {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
+                Disposable.Create(adapter._commandDisposables,
+                        static commandDisposables =>
+                        {
+                            foreach (var kv in commandDisposables)
+                            {
+                                var (_, disposable) = kv;
+                                disposable.Dispose();
+                            }
 
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
+                            commandDisposables.Clear();
+                        }
+                    )
+                    .AddTo(disposables);
+            }
+        );
     }
 
     protected override void BeforeModelActivationHook(LoadoutItemModel model)
     {
-        var disposable = model.ToggleEnableStateCommand.Subscribe(MessageSubject, static (ids, subject) =>
-        {
-            subject.OnNext(new ToggleEnableState(ids));
-        });
+        var disposable = model.ToggleEnableStateCommand.Subscribe(MessageSubject, static (ids, subject) => { subject.OnNext(new ToggleEnableState(ids)); });
 
         var didAdd = _commandDisposables.TryAdd(model, disposable);
         Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
@@ -185,6 +237,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     }
 
     private bool _isDisposed;
+
     protected override void Dispose(bool disposing)
     {
         if (!_isDisposed)

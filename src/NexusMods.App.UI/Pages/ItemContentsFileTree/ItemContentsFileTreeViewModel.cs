@@ -16,19 +16,19 @@ using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Pages.LoadoutGroupFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 
 [UsedImplicitly]
-public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewModel>, ILoadoutGroupFilesViewModel
+public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTreeViewModel>, IItemContentsFileTreeViewModel
 {
-    [Reactive] public LoadoutGroupFilesPageContext? Context { get; set; }
+    [Reactive] public ItemContentsFileTreePageContext? Context { get; set; }
     [Reactive] public IFileTreeViewModel? FileTreeViewModel { get; [UsedImplicitly] private set; }
     [Reactive] public FileTreeNodeViewModel? SelectedItem { get; [UsedImplicitly] private set; }
 
     public ReactiveCommand<NavigationInformation, Unit> OpenEditorCommand { get; }
 
-    public LoadoutGroupFilesViewModel(
-        ILogger<LoadoutGroupFilesViewModel> logger,
+    public ItemContentsFileTreeViewModel(
+        ILogger<ItemContentsFileTreeViewModel> logger,
         IWindowManager windowManager,
         IConnection connection) : base(windowManager)
     {
@@ -71,7 +71,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
                 .WhereNotNull()
                 .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
                 .Where(group => group.IsValid())
-                .Select(group => new LoadoutGroupFileTreeViewModel(group))
+                .Select(group => new LoadoutItemGroupFileTreeViewModel(group))
                 .BindToVM(this, vm => vm.FileTreeViewModel)
                 .DisposeWith(disposables);
 

@@ -4,11 +4,11 @@ using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadoutGroupFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 
-public interface ILoadoutGroupFilesViewModel : IPageViewModelInterface
+public interface IItemContentsFileTreeViewModel : IPageViewModelInterface
 {
-    LoadoutGroupFilesPageContext? Context { get; set; }
+    ItemContentsFileTreePageContext? Context { get; set; }
 
     IFileTreeViewModel? FileTreeViewModel { get; }
 

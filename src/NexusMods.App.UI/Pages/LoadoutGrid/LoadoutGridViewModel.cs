@@ -11,10 +11,10 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -107,8 +107,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
             var pageData = new PageData
             {
-                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                Context = new LoadoutGroupFilesPageContext
+                FactoryId = ItemContentsFileTreePageFactory.StaticId,
+                Context = new ItemContentsFileTreePageContext
                 {
                     GroupId = groupId,
                 },
