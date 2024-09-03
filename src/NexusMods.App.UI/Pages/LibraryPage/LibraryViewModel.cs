@@ -54,7 +54,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         LoadoutId loadoutId) : base(windowManager)
     {
         var ticker = Observable
-            .Interval(period: TimeSpan.FromSeconds(10), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);

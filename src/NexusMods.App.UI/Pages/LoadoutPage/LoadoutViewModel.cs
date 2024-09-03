@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Binding;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
@@ -17,7 +14,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using R3;
@@ -38,7 +34,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
-        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider);
+        var ticker = Observable
+            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .ObserveOnUIThreadDispatcher()
+            .Select(_ => DateTime.Now)
+            .Publish(initialValue: DateTime.Now);
+
+        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker);
 
         TabTitle = "My Mods (new)";
         TabIcon = IconValues.Collections;
@@ -46,6 +48,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
+        ticker.Connect();
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
@@ -101,36 +104,32 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
                 // TODO: can be optimized with chunking or debounce
-                Adapter.MessageSubject
-                    .SubscribeAwait(async (message, cancellationToken) =>
+                Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
+                {
+                    using var tx = _connection.BeginTransaction();
+
+                    foreach (var tuple in message.Ids)
+                    {
+                        tx.Add(tuple, static (tx, db, tuple) =>
                         {
-                            using var tx = _connection.BeginTransaction();
+                            var (loadoutItemId, shouldEnable) = tuple;
 
-                            foreach (var id in message.Ids)
+                            var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
+                            if (shouldEnable)
                             {
-                                tx.Add(id,
-                                    static (tx, db, loadoutItemId) =>
-                                    {
-                                        var loadoutItem = LoadoutItem.Load(db, loadoutItemId);
-                                        if (loadoutItem.IsDisabled)
-                                        {
-                                            tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                                        }
-                                        else
-                                        {
-                                            tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-                                        }
-                                    }
-                                );
+                                tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                            } else
+                            {
+                                tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
                             }
+                        });
+                    }
 
-                            await tx.Commit();
-                        },
-                        awaitOperation: AwaitOperation.Parallel,
-                        configureAwait: false
-                    )
-                    .AddTo(disposables);
-                
+                    await tx.Commit();
+                },
+                awaitOperation: AwaitOperation.Parallel,
+                configureAwait: false).AddTo(disposables);
+
                 // Compute the target group for the ViewFilesCommand
                 Adapter.SelectedModels.ObserveCountChanged()
                     .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels[0] : null)
@@ -150,21 +149,23 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     }
 }
 
-public readonly record struct ToggleEnableState(IReadOnlyCollection<LoadoutItemId> Ids);
+public readonly record struct ToggleEnableState(IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)> Ids);
 
 public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<ToggleEnableState>
 {
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
+    private readonly ConnectableObservable<DateTime> _ticker;
     private readonly IConnection _connection;
 
     public Subject<ToggleEnableState> MessageSubject { get; } = new();
     private readonly Dictionary<LoadoutItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;
-
-    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider)
+    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
     {
+        _ticker = ticker;
+
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
@@ -190,6 +191,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     protected override void BeforeModelActivationHook(LoadoutItemModel model)
     {
         var disposable = model.ToggleEnableStateCommand.Subscribe(MessageSubject, static (ids, subject) => { subject.OnNext(new ToggleEnableState(ids)); });
+        model.Ticker = _ticker;
 
         var didAdd = _commandDisposables.TryAdd(model, disposable);
         Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
@@ -199,6 +201,8 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
 
     protected override void BeforeModelDeactivationHook(LoadoutItemModel model)
     {
+        model.Ticker = null;
+
         var didRemove = _commandDisposables.Remove(model, out var disposable);
         Debug.Assert(didRemove, "subscription for the model should exist");
         disposable?.Dispose();

@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -138,10 +139,25 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
-                var isEnabledObservable = observable.TrueForAll(
-                    observableSelector: item => LoadoutItem.Observe(_connection, item.Id).Select(static item => !item.IsDisabled),
-                    equalityCondition: static isEnabled => isEnabled
-                );
+                var isEnabledObservable = observable
+                    .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
+                    .QueryWhenChanged(query =>
+                    {
+                        var isEnabled = Optional<bool>.None;
+                        foreach (var isItemEnabled in query.Items)
+                        {
+                            if (!isEnabled.HasValue)
+                            {
+                                isEnabled = isItemEnabled;
+                            }
+                            else
+                            {
+                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
+                            }
+                        }
+
+                        return isEnabled.HasValue ? isEnabled.Value : null;
+                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {

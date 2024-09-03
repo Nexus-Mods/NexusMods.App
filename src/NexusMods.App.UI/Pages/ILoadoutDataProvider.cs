@@ -4,8 +4,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -59,17 +57,18 @@ public static class LoadoutDataProviderHelper
             .AutoConnect();
 
         var nameObservable = observable.Select(static item => item.AsLoadoutItem().Name);
-        var isEnabledObservable = observable.Select(static item => !item.AsLoadoutItem().IsDisabled);
+        var isEnabledObservable = observable.Select<LoadoutItemGroup.ReadOnly, bool?>(static item => !item.AsLoadoutItem().IsDisabled);
 
         // TODO: version (need to ask the game extension)
         // TODO: size (probably with RevisionsWithChildUpdates)
 
-        return new LoadoutItemModel(loadoutItemGroup.Id)
+        var model = new LoadoutItemModel(loadoutItemGroup.Id)
         {
-            InstalledAt = loadoutItemGroup.GetCreatedAt(),
-
             NameObservable = nameObservable,
             IsEnabledObservable = isEnabledObservable,
         };
+
+        model.InstalledAt.Value = loadoutItemGroup.GetCreatedAt();
+        return model;
     }
 }
