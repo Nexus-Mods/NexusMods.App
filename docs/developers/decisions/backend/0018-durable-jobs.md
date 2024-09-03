@@ -3,7 +3,7 @@
 ## Context and Problem Statement
 
 Over the course of development of the Nexus Mods app, the need for a job system has arisen. This job system needs to handle 
-the various background tasks and long running "jobs" that the app will need to perform. These jobs include but are not limited to:
+the various background tasks and long-running "jobs" that the app will need to perform. These jobs include but are not limited to:
 
 * Downloading files
 * Hashing files
@@ -74,9 +74,14 @@ A custom option was chosen as it allows us the maximum flexibility in implementa
 
 As it turns out, the basics of a Durable Task Framework are fairly easy to implement.
 
-Logic is divided into two groups: Orchestrations and UnitsOfWork. A unit of work is a non-checkpointing job that is run and if
-the app crashes, it will be re-run from the beginning. It is assumed that these jobs will contain their own restart logic or
-be idempotent. Orchestrations are collectioons of units of work and other sub jobs that may be run, and restarted many times. 
+Logic is divided into two groups: Orchestrations and UnitsOfWork. 
+
+* A unit of work is a non-checkpointing job, something like an C# async Task. The inputs to this unit of work are recorded when it is created, and if the application crashes, the unit of work is restarted with the same inputs.
+Thus, it is important that the code in a unit of work be idempotent.
+* An Orchestration is a job that can be paused and resumed. It is composed of a series of UnitsOfWork and other Orchestrations. When the application
+recovers from a crash, the Orchestration is replayed from the beginning, and the results of previously completed UnitsOfWork are fed into the orchestration code.
+
+Here is an example from the unit tests
 
 ```csharp
 
@@ -124,8 +129,10 @@ be idempotent. Orchestrations are collectioons of units of work and other sub jo
 ```
 
 As can be seen, we can now write jobs as normal C# code. By default, each time an orchestration is "snapshotted" and goes into 
-a "waiting" state, it is persisted via the `IJobStorage` interface. When the application restarts any saved jobs are reloaded and restarted. This system closely 
-follows the design of the Durable Task Framework, but with all the distributed and fault tolerance parts removed. Since this 
+a "waiting" state, it is persisted via the `IJobStorage` interface. When the application restarts, any saved jobs are reloaded from disk. Then the
+UnitsOfWork are restarted, and as they complete their results are fed back into the orchestration code.
+
+This follows the design of the Durable Task Framework, but with all the distributed and fault tolerance parts removed. Since this 
 code is pure C# code and not a DSL or source generator, we can easily debug and understand the code. In addition, the code
 can use all the normal C# features like `async` and `await` and `foreach` loops:
 
@@ -217,3 +224,15 @@ With all of these constraints in mind, the assumption is made that jobs in gener
 outside of these auto-restarting jobs. It is assumed that most of the jobs in our system will have less than a dozen steps and mostly
 pass around integers and other primitives. Even MnemonicDB ReadOnly models boil down to essentially 2 ulongs: the TxId and he EntityId.
 
+## Points of Clarification
+
+* Q: If the code is run and re-run multiple times, how can we reduce the amount of work that is wasted during a restart?
+  * A: By memoizing the results of jobs that are run multiple times. For example breaking out a `NewGuid` call into a UnitOfWork means that the `NewGuid` call will only be run once, 
+and the result will be passed to the parent orchestration when it is needed.
+* Q: If the code is rerun multiple times, how do we interface with code that doesn't fit into this model like an HttpDownloader?
+  * A: It is assumed that this code will be in a `UnitOfWork` and save its state to disk periodically in some other format. When the job is restarted,
+the UnitOfWork should look at its inputs and what is on disk, and restart where it left off. This is a bit more complex, but it is assumed that
+these sorts of systems are rare and so a bit more effort on the part of the developer is acceptable.
+* Q: How much data can I pass between jobs? 
+  * A: The data is serialized to JSON, so the size of the data should be kept to a minimum. It is assumed that most data will be stored in MnemoicDB or another
+database and then passed between jobs as keys. 
