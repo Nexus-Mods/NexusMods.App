@@ -8,7 +8,7 @@ public abstract class AUnitOfWork : IJob
     /// <summary>
     /// Start the unit of work.
     /// </summary>
-    public abstract Task<object> Start(OrchestrationContext context, object[] args, CancellationToken token);
+    public abstract Task<object> Start(object[] args, CancellationToken token);
 
     /// <inheritdoc />
     public abstract Type ResultType { get; }
@@ -38,7 +38,7 @@ public abstract class AUnitOfWork<TParent, TResult, TArg1> : AUnitOfWork
     /// <summary>
     /// Start the unit of work.
     /// </summary>
-    public override async Task<object> Start(OrchestrationContext context, object[] args, CancellationToken token)
+    public override async Task<object> Start(object[] args, CancellationToken token)
     {
         if (args.Length != 1)
         {
