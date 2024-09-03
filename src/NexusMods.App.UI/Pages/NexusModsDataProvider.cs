@@ -101,7 +101,11 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
         var libraryFilesObservable = nexusModsLibraryFileObservable.Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e));
 
-        return new NexusModsModPageItemModel
+        var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable(
+            (_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).QueryWhenChanged(query => query.Count > 0).Prepend(false)
+        ).QueryWhenChanged(static query => query.Items.Count(static b => b));
+
+        return new NexusModsModPageLibraryItemModel
         {
             Name = modPageMetadata.Name,
             CreatedAt = modPageMetadata.GetCreatedAt(),
@@ -109,6 +113,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             ChildrenObservable = childrenObservable,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             LibraryFilesObservable = libraryFilesObservable,
+            NumInstalledObservable = numInstalledObservable,
+            NumLibraryItemsObservable = nexusModsLibraryFileObservable.Count(),
         };
     }
 

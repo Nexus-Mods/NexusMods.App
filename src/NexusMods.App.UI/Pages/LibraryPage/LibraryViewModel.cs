@@ -128,6 +128,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
+            // TODO:
             Adapter.MessageSubject
                 .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id.Id))
                 .Where(static item => item.IsValid())
@@ -141,22 +142,23 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     private async ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        // TODO: get correct IDs
-        var db = _connection.Db;
-        var items = Adapter.SelectedModels
-            .Select(model => model.LibraryItemId.Value)
-            .Where(x => x.HasValue)
-            .Select(x => x.Value)
-            .Distinct()
-            .Select(id => LibraryItem.Load(db, id))
-            .ToArray();
-
-        await Parallel.ForAsync(
-            fromInclusive: 0,
-            toExclusive: items.Length,
-            body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
-            cancellationToken: cancellationToken
-        );
+        // TODO:
+        // // TODO: get correct IDs
+        // var db = _connection.Db;
+        // var items = Adapter.SelectedModels
+        //     .Select(model => model.LibraryItemId.Value)
+        //     .Where(x => x.HasValue)
+        //     .Select(x => x.Value)
+        //     .Distinct()
+        //     .Select(id => LibraryItem.Load(db, id))
+        //     .ToArray();
+        //
+        // await Parallel.ForAsync(
+        //     fromInclusive: 0,
+        //     toExclusive: items.Length,
+        //     body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
+        //     cancellationToken: cancellationToken
+        // );
     }
 
     private async ValueTask InstallLibraryItem(

@@ -1,27 +1,28 @@
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.App.UI.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using ObservableCollections;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
-public class NexusModsModPageItemModel : LibraryItemModel
+public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
 {
     public required IObservable<IChangeSet<NexusModsLibraryFile.ReadOnly, EntityId>> LibraryFilesObservable { get; init; }
-    private ObservableCollectionExtended<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
+    private ObservableList<NexusModsLibraryFile.ReadOnly> LibraryFiles { get; set; } = [];
 
     private readonly IDisposable _modelActivationDisposable;
-    public NexusModsModPageItemModel()
+    public NexusModsModPageLibraryItemModel()
     {
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.LibraryFiles
-                .ObserveCollectionChanges()
-                .SubscribeWithErrorLogging(_ =>
+                .ObserveCountChanged()
+                .Subscribe(model, static (_, model) =>
                 {
                     // TODO: different selection, need to check with design
                     if (model.LibraryFiles.TryGetFirst(out var primaryFile))
@@ -39,7 +40,7 @@ public class NexusModsModPageItemModel : LibraryItemModel
                 })
                 .AddTo(disposables);
 
-            model.LibraryFilesObservable.OnUI().Bind(model.LibraryFiles).SubscribeWithErrorLogging().AddTo(disposables);
+            model.LibraryFilesObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryFiles.ApplyChanges(changeSet)).AddTo(disposables);
             Disposable.Create(model.LibraryFiles, static libraryFiles => libraryFiles.Clear()).AddTo(disposables);
         });
     }

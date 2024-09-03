@@ -27,12 +27,14 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
     private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
-    public ReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
     public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
 
     public Observable<DateTime>? Ticker { get; set; }
     public BindableReactiveProperty<string> FormattedCreatedAtDate { get; } = new("-");
     public BindableReactiveProperty<string> FormattedInstalledDate { get; } = new("-");
+
+    public BindableReactiveProperty<string> InstallText { get; } = new("Install");
+    public BindableReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
 
     public ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
 
@@ -66,12 +68,14 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 {
                     if (count > 0)
                     {
+                        model.InstallText.Value = "Installed";
                         model.IsInstalledInLoadout.Value = true;
                         model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
                         model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
                     }
                     else
                     {
+                        model.InstallText.Value = "Install";
                         model.IsInstalledInLoadout.Value = false;
                         model.InstalledDate.Value = DateTime.UnixEpoch;
                     }

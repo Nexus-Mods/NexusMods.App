@@ -78,22 +78,28 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 });
 
                 var linkedLoadoutItemsObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .AsEntityIds()
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-                var model = new LibraryItemModel
+                var numInstalledObservable = _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
+                    .Count();
+
+                var model = new FakeParentLibraryItemModel
                 {
                     Name = libraryFile.AsLibraryItem().Name,
                     CreatedAt = libraryFile.GetCreatedAt(),
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
+                    NumInstalledObservable = numInstalledObservable,
+                    NumLibraryItemsObservable = Observable.Return(1),
                 };
 
                 model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
                 model.ItemSize.Value = libraryFile.Size;
-                return model;
+                return (LibraryItemModel)model;
             });
     }
 
