@@ -3,8 +3,7 @@ using NexusMods.Abstractions.DurableJobs;
 
 namespace NexusMods.DurableJobs;
 
-
-internal class InMemoryJobStore : IJobStateStore
+public class InMemoryJobStore : IJobStateStore
 {
     private ConcurrentDictionary<JobId, byte[]> _store = new();
     

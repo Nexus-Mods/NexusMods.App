@@ -3,7 +3,7 @@ using NexusMods.Abstractions.DurableJobs;
 
 namespace NexusMods.DurableJobs;
 
-public class UnitOfWorkActor : Actor<UnitOfWorkState, IJobMessage>
+internal class UnitOfWorkActor : Actor<UnitOfWorkState, IJobMessage>
 {
     public UnitOfWorkActor(ILogger logger, UnitOfWorkState initialState) : base(logger, initialState)
     {

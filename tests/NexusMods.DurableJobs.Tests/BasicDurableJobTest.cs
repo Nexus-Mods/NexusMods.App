@@ -9,25 +9,42 @@ namespace NexusMods.DurableJobs.Tests;
 
 public class BasicDurableJobTest
 {
-    private readonly IHost _host;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IJobManager _jobManager;
+    private IHost _host;
+    private IServiceProvider _serviceProvider;
+    private IJobManager _jobManager;
+    private readonly InMemoryJobStore _store;
 
     public BasicDurableJobTest()
+    {
+        _store = new InMemoryJobStore();
+        StartHost();
+    }
+
+    private void RestartHost()
+    {
+        _host.StopAsync();
+        _host.Dispose();
+        
+        StartHost();
+    }
+
+    private void StartHost()
     {
         var host = new HostBuilder()
             .ConfigureServices(s => 
                 s.AddSerializationAbstractions()
                     .AddDurableJobs()
-                    .AddInMemoryJobStore()
-                .AddJob<SquareJob>()
-                .AddJob<SumJob>()
-                .AddJob<WaitMany>()
-                .AddJob<CatchErrorJob>()
-                .AddJob<ThrowOn5Job>()
-                .AddJob<AsyncLinqJob>()
-                .AddJob<WaitFor10>()
-                .AddUnitOfWorkJob<LongRunningUnitOfWork>()
+                    .AddSingleton<IJobStateStore>(s => _store)
+                    .AddJob<SquareJob>()
+                    .AddJob<SumJob>()
+                    .AddJob<WaitMany>()
+                    .AddJob<CatchErrorJob>()
+                    .AddJob<ThrowOn5Job>()
+                    .AddJob<AsyncLinqJob>()
+                    .AddJob<WaitFor10>()
+                    .AddJob<ManuallyFinishedJob>()
+                    .AddUnitOfWorkJob<ManuallyFinishedUnitOfWork>()
+                    .AddUnitOfWorkJob<LongRunningUnitOfWork>()
             ).Build();
         _host = host;
         _serviceProvider = host.Services;
@@ -79,6 +96,25 @@ public class BasicDurableJobTest
         var result = (int)await _jobManager.RunNew<WaitFor10>(100);
         
         result.Should().BeGreaterOrEqualTo(1000);
+    }
+
+    [Fact]
+    public async Task JobsRestart()
+    {
+        // Create a job that will never finish
+        _ = _jobManager.RunNew<ManuallyFinishedJob>(1);
+        await Task.Delay(200);
+        
+        // Restart the host
+        RestartHost();
+        
+        // Finish the unit of work
+        ManuallyFinishedUnitOfWork.Tcs.SetResult(42);
+        
+        await Task.Delay(200);
+        
+        // Check that the job finished
+        ManuallyFinishedJob.LastResult.Should().Be(43);
     }
     
 }
@@ -186,5 +222,30 @@ public class LongRunningUnitOfWork : AUnitOfWork<LongRunningUnitOfWork, int, int
         var start = DateTime.Now;
         await Task.Delay(maxTime, token);
         return (DateTime.Now - start).Milliseconds;
+    }
+}
+
+/// <summary>
+/// A job that sets the static result when it's done.
+/// </summary>
+public class ManuallyFinishedJob : AJob<ManuallyFinishedJob, int, int>
+{
+    public static int LastResult { get; private set; }
+    protected override async Task<int> Run(Context context, int arg1)
+    {
+        LastResult = await ManuallyFinishedUnitOfWork.RunUnitOfWork(context, arg1);
+        return LastResult;
+    }
+}
+
+/// <summary>
+/// A test unit of work that finishes when a task completion source is set.
+/// </summary>
+public class ManuallyFinishedUnitOfWork : AUnitOfWork<ManuallyFinishedUnitOfWork, int, int>
+{
+    public static readonly TaskCompletionSource<int> Tcs = new();
+    protected override async Task<int> Start(int input, CancellationToken token)
+    {
+        return await Tcs.Task + input;
     }
 }

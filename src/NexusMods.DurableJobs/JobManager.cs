@@ -214,28 +214,31 @@ public class JobManager : IJobManager, IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        LoadJobs();
-        RestartJobs();
-    }
-
-    private void RestartJobs()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void LoadJobs()
-    {
+        var jobsToStart = new List<JobId>();
         foreach (var job in _jobStore.All())
         {
-            var state = JsonSerializer.Deserialize<JobState>(job.Value, _serializerOptions)!;
+            var state = JsonSerializer.Deserialize<AJobState>(job.Value, _serializerOptions)!;
             state.Manager = this;
-            var actor = new JobActor(_logger, state);
-            _jobs[state.Id] = actor;
+            
+            if (state is JobState js)
+            {
+                var actor = new JobActor(_logger, js);
+                _jobs[state.Id] = actor;
+            }
+            else if (state is UnitOfWorkState uow)
+            {
+                var actor = new UnitOfWorkActor(_logger, uow);
+                _jobs[state.Id] = actor;
+            }
+        }
+        foreach (var toStart in jobsToStart)
+        {
+            _jobs[toStart].Post(RunMessage.Instance);
         }
     }
-
+    
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
