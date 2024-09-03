@@ -41,12 +41,17 @@ public static class Services
 
         if (OSInformation.Shared.IsLinux)
         {
+            // General Components
             services.AddSingleton<XDGOpenDependency>();
             services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();
             services.AddSingleton<XDGSettingsDependency>();
             services.AddSingleton<IRuntimeDependency, XDGSettingsDependency>();
             services.AddSingleton<UpdateDesktopDatabaseDependency>();
             services.AddSingleton<IRuntimeDependency, UpdateDesktopDatabaseDependency>();
+
+            // Running Games/Tools
+            services.AddSingleton<ProtontricksDependency>();
+            services.AddSingleton<IRuntimeDependency, ProtontricksDependency>();
         }
 
         return services.AddHostedService<RuntimeDependencyChecker>();
