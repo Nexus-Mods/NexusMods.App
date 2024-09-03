@@ -93,7 +93,6 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
-
             .AddTransient<MainWindow>()
 
             // Services

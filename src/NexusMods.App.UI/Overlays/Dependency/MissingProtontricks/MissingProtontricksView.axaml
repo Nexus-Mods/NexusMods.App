@@ -1,0 +1,68 @@
+<reactiveUi:ReactiveUserControl
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Overlays.Dependency.MissingProtontricks.MissingProtontricksView"
+    x:TypeArguments="mrd:IMissingProtontricksViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:mrd="clr-namespace:NexusMods.App.UI.Overlays.Dependency.MissingProtontricks">
+
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="24">
+
+                <!-- Title -->
+                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" Text="{x:Static resources:Language.MessageBox_Title_MissingProtonTricks}"  />
+
+                    <!-- 'Cross' button. -->
+                    <Button
+                        x:Name="CloseButton"
+                        DockPanel.Dock="Right"
+                        Classes="BareIcon WindowClose"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+
+                </DockPanel>
+
+                <!-- `protontricks` is required to launch tools but is not installed. -->
+                <TextBlock TextWrapping="WrapWithOverflow">
+                    <Run Text="{x:Static resources:Language.MessageBox_Description_MissingProtonTricksRuntimeDependency_0_Bold}" FontWeight="Bold" FontStyle="Italic"/>
+                    <Run Text="{x:Static resources:Language.MessageBox_Description_MissingProtonTricksRuntimeDependency_1}"/>
+                </TextBlock>
+                
+                <!-- Protontricks Installation Guide -->
+                <HyperlinkButton NavigateUri="https://github.com/Matoking/protontricks?tab=readme-ov-file#installation"
+                                 Content="{x:Static resources:Language.MessageBox_Description_MissingProtonTricksRuntimeDependency_2}"
+                                 HorizontalAlignment="Center"/>
+                
+                <!-- You can dismiss this message to continue, but some games may not work. -->
+                <TextBlock TextWrapping="WrapWithOverflow">
+                    <Run Text="{x:Static resources:Language.MessageBox_Description_MissingProtonTricksRuntimeDependency_3}"/>
+                    <Run Text="{x:Static resources:Language.MessageBox_Description_MissingProtonTricksRuntimeDependency_4_italic}" FontStyle="Italic"/>
+                </TextBlock>
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
+
+                <Button x:Name="OkButton"
+                        Classes="Standard Primary"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Ok}" />
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactiveUi:ReactiveUserControl>

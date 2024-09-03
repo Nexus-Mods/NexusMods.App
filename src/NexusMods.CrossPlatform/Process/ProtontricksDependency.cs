@@ -3,6 +3,12 @@ using CliWrap;
 namespace NexusMods.CrossPlatform.Process;
 
 /// <inheritdoc />
+/// <remarks>
+/// There is an implicit assumption made here that if `protontricks` is installed,
+/// then `protontricks-launch` is also available. Should it not be available, then
+/// it means that `protontricks` was incorrectly packaged by the package maintainer
+/// for a specific repo.
+/// </remarks>
 public class ProtontricksDependency : ExecutableRuntimeDependency
 {
     /// <inheritdoc />

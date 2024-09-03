@@ -78,6 +78,9 @@
     <data name="MessageBox_Button_No" xml:space="preserve">
         <value>No</value>
     </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>Ok</value>
+    </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
     </data>
@@ -671,5 +674,23 @@
     </data>
     <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
         <value>Delete Loadout</value>
+    </data>
+    <data name="MessageBox_Title_MissingProtonTricks" xml:space="preserve">
+        <value>Missing Protontricks</value>
+    </data>
+    <data name="MessageBox_Description_MissingProtonTricksRuntimeDependency_0_Bold" xml:space="preserve">
+        <value>protontricks</value>
+    </data>
+    <data name="MessageBox_Description_MissingProtonTricksRuntimeDependency_1" xml:space="preserve">
+        <value>is required to launch mod tools but is not installed.</value>
+    </data>
+    <data name="MessageBox_Description_MissingProtonTricksRuntimeDependency_2" xml:space="preserve">
+        <value>Protontricks Installation Guide</value>
+    </data>
+    <data name="MessageBox_Description_MissingProtonTricksRuntimeDependency_3" xml:space="preserve">
+        <value>You can dismiss this message to continue,</value>
+    </data>
+    <data name="MessageBox_Description_MissingProtonTricksRuntimeDependency_4_italic" xml:space="preserve">
+        <value>but some games may not work.</value>
     </data>
 </root>

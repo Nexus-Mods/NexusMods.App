@@ -622,6 +622,24 @@
         <Compile Update="Pages\NexusModsDataProvider.cs">
           <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkCancelView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkViewModel.cs">
+          <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Dependency\MissingRuntimeDependency\MissingRuntimeDependencyView.axaml.cs">
+          <DependentUpon>MessageBoxOkView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Dependency\MissingProtontricks\MissingProtontricksViewModel.cs">
+          <DependentUpon>IMissingProtontricksViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
