@@ -1,5 +1,6 @@
 using System.Text;
 using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 
 namespace NexusMods.App.UI.Controls;
@@ -17,12 +18,16 @@ public class CustomElementFactory : TreeDataGridElementFactory
     {
         var element = base.CreateElement(data);
 
-        if (data is not ICustomCell customCell) return element;
-        
-        element.Classes.Add(customCell.Id);
-        if (customCell.IsRoot)
+        switch (data)
         {
-            element.Classes.Add(RootRowClass);
+            // Add RootRowClass to root rows
+            case IIndentedRow { Indent: 0 }:
+                element.Classes.Add(RootRowClass);
+                break;
+            // Add Id to custom cells
+            case ICustomCell customCell:
+                element.Classes.Add(customCell.Id);
+                break;
         }
 
         return element;
@@ -34,16 +39,20 @@ public class CustomElementFactory : TreeDataGridElementFactory
         // To fix this, we restrict the recycling to only reuse cells with matching Id and RootRowClass.
         // This is done by appending the Id and RootRowClass to the base key.
         
-        if (data is ICustomCell customCell)
+        switch (data)
         {
-            // NOTE(Al12rs): the keys generated here should match the ones in GetElementRecycleKey, ensure order and format is the same
-            var key = customCell.IsRoot
-                ? $"{base.GetDataRecycleKey(data)}|{customCell.Id}|{RootRowClass}"
-                : $"{base.GetDataRecycleKey(data)}|{customCell.Id}";
-            return string.Intern(key);
+            case IIndentedRow:
+                var rowKey = $"{base.GetDataRecycleKey(data)}|{RootRowClass}";
+                return string.Intern(rowKey);
+            case ICustomCell customCell:
+            {
+                // NOTE(Al12rs): the keys generated here should match the ones in GetElementRecycleKey, ensure order and format is the same
+                var cellKey = $"{base.GetDataRecycleKey(data)}|{customCell.Id}";
+                return string.Intern(cellKey);
+            }
+            default:
+                return base.GetDataRecycleKey(data);
         }
-
-        return base.GetDataRecycleKey(data);
     }
 
     protected override string GetElementRecycleKey(Control element)
@@ -53,6 +62,9 @@ public class CustomElementFactory : TreeDataGridElementFactory
         // This is done by appending the Id and RootRowClass to the base key.
         
         var sb = new StringBuilder(value: base.GetElementRecycleKey(element));
+        
+        if (element is not TreeDataGridCell or TreeDataGridRow)
+            return string.Intern(sb.ToString());
         
         // NOTE(Al12rs): Order here should match the insertion order in CreateElement, first the id, then the RootRowClass
         foreach (var className in element.Classes)
