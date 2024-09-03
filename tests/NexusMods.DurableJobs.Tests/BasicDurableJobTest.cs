@@ -26,6 +26,7 @@ public class BasicDurableJobTest
                 .AddJob<CatchErrorJob>()
                 .AddJob<ThrowOn5Job>()
                 .AddJob<AsyncLinqJob>()
+                    .AddJob<WaitFor10>()
             ).Build();
         _host = host;
         _serviceProvider = host.Services;
@@ -69,6 +70,14 @@ public class BasicDurableJobTest
         var values = new[] { 1, 4, 3, 7, 42 };
         var result = await _jobManager.RunNew<AsyncLinqJob>(values);
         result.Should().Be(values.Select(x => x * x).Sum());
+    }
+
+    [Fact]
+    public async Task CanRunUnitOfWork()
+    {
+        var result = (int)await _jobManager.RunNew<WaitFor10>(100);
+        
+        result.Should().BeGreaterOrEqualTo(1000);
     }
     
 }
@@ -149,5 +158,32 @@ public class SumJob : AJob<SumJob, int, int[]>
         }
         
         return acc;
+    }
+}
+
+
+public class WaitFor10 : AJob<WaitFor10, int, int>
+{
+    protected override async Task<int> Run(Context context, int arg1)
+    {
+        var totalTook = 0;
+        for (var i = 0; i < 10; i++)
+        {
+            totalTook += await LongRunningUnitOfWork.RunUnitOfWork(context, 100);
+        }
+        return totalTook;
+    }
+}
+
+/// <summary>
+/// A unit of work that delays for the given number of ms, then returns the number of ms it took.
+/// </summary>
+public class LongRunningUnitOfWork : AUnitOfWork<LongRunningUnitOfWork, int, int>
+{
+    protected override async Task<int> Start(int maxTime, CancellationToken token)
+    {
+        var start = DateTime.Now;
+        await Task.Delay(maxTime, token);
+        return (DateTime.Now - start).Milliseconds;
     }
 }

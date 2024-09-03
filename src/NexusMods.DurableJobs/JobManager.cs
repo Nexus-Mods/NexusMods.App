@@ -4,16 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DurableJobs;
-
 namespace NexusMods.DurableJobs;
-using JobActor = Actor<JobState, IJobMessage>;
 
 /// <summary>
 /// Implementation of the job manager.
 /// </summary>
 public class JobManager : IJobManager, IHostedService
 {
-    private readonly ConcurrentDictionary<JobId, JobActor> _jobs = new();
+    private readonly ConcurrentDictionary<JobId, IActor<IJobMessage>> _jobs = new();
     private readonly ILogger<JobManager> _logger;
     private readonly JsonSerializerOptions _serializerOptions;
     private readonly Dictionary<Type,AJob> _jobInstances;
@@ -50,7 +48,7 @@ public class JobManager : IJobManager, IHostedService
             Continuation = Continuation,
         };
         
-        var actor = new JobActor(_logger, initialState, ProcessActorMessage);
+        var actor = new JobActor(_logger, initialState);
         actor.Post(RunMessage.Instance);
         _jobs[newJobId] = actor;
         
@@ -70,45 +68,17 @@ public class JobManager : IJobManager, IHostedService
         }
     }
     
-    private static async ValueTask<JobState> ProcessActorMessage(JobActor actor, JobState state, IJobMessage message)
+    /// <summary>
+    /// Cancel the given job, this will trigger a cancel message to be sent to all of its children and parents.
+    /// </summary>
+    internal void CancelJob(JobId stateParentJobId)
     {
-        switch (message)
-        {
-            case RunMessage:
-                var context = new Context
-                {
-                    JobManager = state.Manager!,
-                    JobId = state.Id,
-                    History = state.History,
-                };
-                try
-                {
-                    var result = await state.Job.Run(context, state.Arguments);
-                    state.Manager!.FinalizeJob(state, result, false);
-                }
-                catch (WaitException)
-                {
-                    return state;
-                }
-                catch (Exception ex)
-                {
-                    state.Manager!.FinalizeJob(state, ex.Message, true);
-                }
-                break;
-            case JobResultMessage rm:
-                var entry = state.History[rm.Offset];
-                entry.Result = rm.Result;
-                entry.Status = rm.IsFailure ? JobStatus.Failed : JobStatus.Completed;
-                actor.Post(RunMessage.Instance);
-                break;
-                
-        }
-
-        state = state.Manager!.SaveState(state);
-        return state;
+        if (!_jobs.TryGetValue(stateParentJobId, out var parentJob))
+            return;
+        parentJob.Post(CancelMessage.Instance);
     }
 
-    private JobState SaveState(JobState state)
+    internal JobState SaveState(JobState state)
     {
         var memoryStream = new MemoryStream();
         var writer = new Utf8JsonWriter(memoryStream);
@@ -123,12 +93,12 @@ public class JobManager : IJobManager, IHostedService
         newState.Continuation = state.Continuation;
         return newState;
 #else
-        return state
+        return state;
 #endif
-        
-}
 
-    private void FinalizeJob(JobState state, object result, bool isFailure)
+    }
+
+    internal void FinalizeJob(JobState state, object result, bool isFailure)
     {
         state.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
         
@@ -139,10 +109,11 @@ public class JobManager : IJobManager, IHostedService
             return;
         
         parentJob.Post(new JobResultMessage(result, state.ParentHistoryIndex, isFailure));
-
+        _jobs.TryRemove(state.Id, out _);
+        _jobStore.Delete(state.Id);
     }
 
-    public Task<object> RunSubJob<TSubJob>(Context context, object[] args) where TSubJob : AJob
+    public Task<object> RunSubJob<TSubJob>(Context context, object[] args) where TSubJob : IJob
     {
         // If we are replaying and our index is at the end of the history, we need to add a new entry and create a new job.
         if (context.ReplayIndex == context.History.Count)
@@ -165,9 +136,17 @@ public class JobManager : IJobManager, IHostedService
                 Arguments = args,
                 ParentJobId = context.JobId,
                 ParentHistoryIndex = parentIdx,
-            }, ProcessActorMessage);
+            });
             _jobs[jobId] = childJobActor;
             childJobActor.Post(RunMessage.Instance);
+            
+            // Delete the job when it's done.
+            childJobActor.StatusObservable.Subscribe(status =>
+            {
+                if (status != ActorStatus.Stopped) return;
+                _jobs.TryRemove(jobId, out _);
+                _jobStore.Delete(jobId);
+            });
 
             context.ReplayIndex++;
             return Task.FromException<object>(new WaitException());
@@ -185,11 +164,22 @@ public class JobManager : IJobManager, IHostedService
         }
         throw new InvalidOperationException("Replay index is out of bounds");
     }
+    
+    /// <inheritdoc />
+    public Task<object> RunUnitOfWork<TUnitOfWork>(Context parent, object[] args) where TUnitOfWork : AUnitOfWork
+    {
+        throw new NotImplementedException();
+    }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         LoadJobs();
         RestartJobs();
+    }
+
+    private void RestartJobs()
+    {
+        throw new NotImplementedException();
     }
 
     private void LoadJobs()
@@ -198,7 +188,7 @@ public class JobManager : IJobManager, IHostedService
         {
             var state = JsonSerializer.Deserialize<JobState>(job.Value, _serializerOptions)!;
             state.Manager = this;
-            var actor = new JobActor(_logger, state, ProcessActorMessage);
+            var actor = new JobActor(_logger, state);
             _jobs[state.Id] = actor;
         }
     }

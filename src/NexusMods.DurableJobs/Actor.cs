@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 
 namespace NexusMods.DurableJobs;
@@ -16,15 +17,14 @@ public enum ActorStatus : int
 /// <summary>
 /// An actor that processes messages sequentially.
 /// </summary>
-public class Actor<TState, TMessage>
+public abstract class Actor<TState, TMessage> : IActor<TMessage>
     where TMessage : notnull
 {
-    private TState _state;
+    public IObservable<ActorStatus> StatusObservable => _statusSubject; 
     
-    /// <summary>
-    /// The update function that processes messages.
-    /// </summary>
-    private readonly Func<Actor<TState, TMessage>, TState, TMessage, ValueTask<TState>> _update;
+    private Subject<ActorStatus> _statusSubject = new();
+    
+    private TState _state;
     
     /// <summary>
     /// Pending messages to be processed.
@@ -33,6 +33,11 @@ public class Actor<TState, TMessage>
     
     // Stored as int to allow for Interlocked operations
     private int _actorStatus = (int)ActorStatus.Idle;
+
+    private void SendStatusUpdate()
+    {
+        _statusSubject.OnNext((ActorStatus)_actorStatus);
+    }
     
     /// <summary>
     /// Debugger display for the actor status.
@@ -42,12 +47,18 @@ public class Actor<TState, TMessage>
     /// <summary>
     /// Constructs a new actor with the given initial state and update function.
     /// </summary>
-    public Actor(ILogger logger, TState initialState, Func<Actor<TState, TMessage>, TState, TMessage, ValueTask<TState>> update)
+    public Actor(ILogger logger, TState initialState)
     {
         _logger = logger;
         _state = initialState;
-        _update = update;
     }
+
+    /// <summary>
+    /// Process the message and return the new state, and whether the actor should continue processing messages (if it's dead, for example).
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public abstract ValueTask<(TState, bool)> Handle(TState state, TMessage message);
     
     /// <summary>
     /// Send a message to the actor
@@ -73,9 +84,14 @@ public class Actor<TState, TMessage>
         
         var status = await DoIterations(maxMessages);
         if (status == ActorStatus.Stopped)
+        {
+            _actorStatus = (int)ActorStatus.Stopped;
+            SendStatusUpdate();
             return;
+        }
 
         Interlocked.Exchange(ref _actorStatus, (int)ActorStatus.Idle);
+        SendStatusUpdate();
         
         if (!_messages.IsEmpty) 
             Schedule();
@@ -83,6 +99,7 @@ public class Actor<TState, TMessage>
 
     private async Task<ActorStatus> DoIterations(int iterations)
     {
+        bool shouldContinue = true;
         while (true)
         {
             if (Volatile.Read(ref _actorStatus) == (int)ActorStatus.Stopped)
@@ -94,7 +111,9 @@ public class Actor<TState, TMessage>
                 {
                     try
                     {
-                        _state = await _update(this, _state, message);
+                        (_state, shouldContinue) = await Handle(_state, message);
+                        if (!shouldContinue)
+                            return ActorStatus.Stopped;
                     }
                     catch (Exception e)
                     {
@@ -118,6 +137,7 @@ public class Actor<TState, TMessage>
     {
         if (Interlocked.CompareExchange(ref _actorStatus, (int)ActorStatus.Occupied, (int)ActorStatus.Idle) == (int)ActorStatus.Idle)
         {
+            SendStatusUpdate();
             Task.Run(Execute);
         }
     }

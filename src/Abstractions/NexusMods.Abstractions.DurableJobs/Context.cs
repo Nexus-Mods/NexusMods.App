@@ -96,4 +96,9 @@ public class Context
     /// When replaying the job, this is the index of the next history entry to replay.
     /// </summary>
     public int ReplayIndex { get; set; } = 0;
+    
+    /// <summary>
+    /// The cancellation token for this job run.
+    /// </summary>
+    public CancellationToken Token { get; set; }
 }

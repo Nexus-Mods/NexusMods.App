@@ -5,7 +5,7 @@ namespace NexusMods.Abstractions.DurableJobs;
 /// <summary>
 /// A durable job that can be paused, resumed, and restarted.
 /// </summary>
-public abstract class AJob
+public abstract class AJob : IJob
 { 
     /// <summary>
     /// Runs the job. Calls in this method to <see cref="RunSubJob"/> may pause the job, and the job may restart

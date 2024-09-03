@@ -1,5 +1,8 @@
 namespace NexusMods.Abstractions.DurableJobs;
 
+/// <summary>
+/// Public interface for the job manager.
+/// </summary>
 public interface IJobManager
 {
     /// <summary>
@@ -10,5 +13,5 @@ public interface IJobManager
     /// <summary>
     /// Runs a sub job from the parent job.
     /// </summary>
-    Task<object> RunSubJob<TSubJob>(Context parent, object[] args) where TSubJob : AJob;
+    Task<object> RunSubJob<TSubJob>(Context parent, object[] args) where TSubJob : IJob;
 }
