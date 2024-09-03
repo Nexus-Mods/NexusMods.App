@@ -104,6 +104,8 @@
         <Style Selector="^ TreeDataGridRow">
             <Setter Property="Height" Value="52" />
 
+
+
             <!-- Generic column cell padding -->
             <Style Selector="^ :is(TreeDataGridCell)">
                 <Setter Property="Padding" Value="8,2" />
@@ -119,17 +121,8 @@
                 <Setter Property="Padding" Value="8,2,24,2" />
             </Style>
             
-            <!-- Root rows styling -->
-            <Style Selector="^ :is(TreeDataGridCell).RootRow">
-                <!-- `RootRow` is a special class that was manually added using `NexusMods.App.UI.Controls.CustomElementFactory` -->
-                <!-- This only works for custom Text and Template columns, expander columns need special handling. -->
-                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            </Style>
-
-            <!-- Child rows styling -->
-            <Style Selector="^ :is(TreeDataGridCell):not(.RootRow)">
-                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
-            </Style>
+            
+            
 
             <!-- Expander Column styling -->
             <Style Selector="^ TreeDataGridExpanderCell">
@@ -141,13 +134,6 @@
                     <!-- This goes from after the expander to the end of the cell, but parent cell padding is also applied. -->
                     <Setter Property="Padding" Value="4,0,0,0" />
                     
-                    <!-- Override the background color for the nested cells, to avoid translucent colors stacking. -->
-                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                </Style>
-                
-                <!-- Root rows styling -->
-                <Style Selector="^[Indent=0]">
-                    <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
                 </Style>
 
                 <!-- Update the padding converter on the Border inside the TreeDataGridExpanderCell template -->
@@ -230,21 +216,27 @@
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
 
+            <!-- Root Rows styling -->
+            <!-- "RootRow" is a class that was manually added to the TreeDataGridRow that have indent level 0. -->
+            <!-- See `NexusMods.App.UI.Controls.CustomElementFactory.cs` for more information. -->
+            <Style Selector="^.RootRow /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            </Style>
+            
+            <!-- Child rows styling -->
+            <Style Selector="^:not(.RootRow) /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
+            </Style>
+            
             <!-- Row hover styling -->
-            <Style Selector="^:pointerover :is(TreeDataGridCell)">
+            <Style Selector="^:pointerover /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             </Style>
             
-            <!-- Row remove default selection styling, as we want to style the cells instead of rows -->
-            <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-            </Style>
-            
             <!-- Row selection styling -->
-            <Style Selector="^:selected :is(TreeDataGridCell)">
+            <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
-            
         </Style>
     </Style>
 
