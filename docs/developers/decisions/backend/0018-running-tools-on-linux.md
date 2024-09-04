@@ -126,7 +126,7 @@ if you already use Steam.
 
 !!! info "Some tools may require installing additional external runtimes."
 
-We can use [winetricks] to install these runtimes in many cases:
+[winetricks] can be used to install these runtimes in many cases:
 
 - `dotnet48`: .NET Framework
 - `dotnet6`/`dotnet7`/etc. for .NET Core
