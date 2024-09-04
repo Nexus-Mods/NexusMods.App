@@ -23,15 +23,27 @@ For examples:
 
 etc.
 
-## Affected Categories of Tools
+## Why We Need to Support Windows Tools
 
 !!! info "Which tools do we need to run with a compatibility layer?"
 
-- Built on Windows only Toolkits e.g. WPF
-    - Often native ports are not feasible here.
-- Some tools are Proprietary
-    - *For example REDMod*.
-    - These cannot be ported. Sometimes for legal reasons, sometimes for technical reasons.
+Supporting Windows tools is crucial for our mod manager due to two main
+categories of software:
+
+***Windows-Specific Development Frameworks***
+
+Some modding tools are built using Windows-only like WPF (Windows Presentation Foundation)
+for the UI.
+
+Porting these tools can sometimes be expensive/unfeasible in terms of risk/reward.
+
+***Proprietary Software***
+
+Some modding tools, like REDMod for Cyberpunk 2077, are proprietary and only
+available for Windows.
+
+These tools cannot be ported to other platforms due to legal restrictions or
+technical limitations imposed by their closed-source nature.
 
 ## Terminology
 
