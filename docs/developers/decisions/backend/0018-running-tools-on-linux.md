@@ -131,8 +131,8 @@ if you already use Steam.
 - `dotnet48`: .NET Framework
 - `dotnet6`/`dotnet7`/etc. for .NET Core
 - `vcrun2022`: Visual C++ 2022 Redistributable (use for MSVC >= 2015 builds)
-    - Normally you wouldn't need this with `Proton` installed games.
-    - Because it'll get installed by Steam with the game.
+    - Many games require this, and thus Steam installs this as a post-download step.
+    - Manual installation is required in rare case you have a MSVC `< 2015` game requiring a `>= 2015` tool.
 
 Example:
 
