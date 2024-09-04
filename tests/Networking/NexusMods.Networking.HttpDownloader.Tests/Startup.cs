@@ -21,7 +21,6 @@ public class Startup
 
         container
             .AddDefaultServicesForTesting(prefix)
-            .AddSingleton<SimpleHttpDownloader>()
             .AddSingleton<LocalHttpServer>()
             .AddLogging(builder => builder.AddXUnit())
             .Validate();

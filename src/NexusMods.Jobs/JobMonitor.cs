@@ -45,4 +45,9 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     {
         throw new NotImplementedException();
     }
+
+    public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job) where TJobType : IJobDefinitionWithStart<TJobType, TResultType>
+    {
+        throw new NotImplementedException();
+    }
 }
