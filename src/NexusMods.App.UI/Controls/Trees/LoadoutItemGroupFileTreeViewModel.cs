@@ -130,6 +130,8 @@ public class LoadoutItemGroupFileTreeViewModel : AViewModel<IFileTreeViewModel>,
         while (true)
         {
             var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
+            if (childDatoms.Count == 0) return Optional<LoadoutItemGroup.ReadOnly>.None;
+
             var childGroups = groupDatoms.MergeByEntityId(childDatoms);
 
             // We have no child groups, check if children are files
