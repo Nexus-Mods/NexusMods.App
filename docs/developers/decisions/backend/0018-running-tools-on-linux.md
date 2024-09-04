@@ -98,51 +98,9 @@ if you already use Steam.
 
 ## Risks (Running Games)
 
-!!! info "These are the user facing risks involved when running games."
+!!! info "These are the user facing risks involved when *manually running games*."
 
-### Steam DRM
-
-!!! info "Some Steam games may not allow us to run without via Steam binary/client."
-
-Specifically, the Valve developer documents [recommend game developers to restart][steam-api]
-their game if it cannot establish a connection with the Steam client.
-
-While this can be bypassed with some [hooking magic][steam-fix-reboot], we're not
-a code injection framework, rather a glorified file manager.
-
-!!! warning "Before starting certain games we should ensure Steam is running."
-
-!!! note "I (Sewer) have had difficulties running Steam API games outside of Proton."
-
-    Here are the exact situations:
-
-    - Running with WINE: game reboots, (presumably) trying to restart via Steam. Nothing happens.
-        - e.g. `wine "sonic2app.exe"`
-    - Running with WINE (using Proton Prefix): fails with missing steam DLLs
-        - e.g. `WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx wine "sonic2app.exe"`
-        - `0024:err:module:import_dll Library tier0_s.dll`
-        - `0024:err:module:import_dll Library vstdlib_s.dll`
-        - Is Steam adding additional DLL directories to WINE?
-    - Running with Proton (protontricks)
-        - e.g. `protontricks-launch --appid 213610 "sonic2app.exe"`
-        - Works fine if Steam client is running.
-        - If Steam not running `Application load error P:0000065432` (Steam not running)
-            - `[S_API] SteamAPI_Init(): SteamAPI_IsSteamRunning() did not locate a running instance of Steam.`
-    - Running with `umu` (formerly ULWGL)
-        - `WINEPREFIX="/mnt/SharedGames/SteamLibrary/steamapps/compatdata/213610/pfx" GAMEID=0 PROTONPATH="/home/sewer/.local/share/Steam/steamapps/common/Proton 9.0 (Beta)" umu-run sonic2app.exe`
-        - Works fine if Steam client is running.
-
-    Note: I (Sewer) used `Sonic Adventure 2` as an example, but this applies to
-    all games that use the Steam API.
-
-### Missing GameOverlayRenderer (Steam Overlay)
-
-!!! warning "Launching outside of Steam will lead to `gameoverlayrenderer64.so` not being injected."
-
-    That's the `Steam Overlay`, for reference.
-
-I'm not sure if there are any ways other than starting via Steam. Loading it manually
-might involve some shenanigans with `LD_PRELOAD` and `LD_LIBRARY_PATH`.
+[Further Reading/Research Moved to Separate Gist](https://gist.github.com/Sewer56/3b31857fe85f20fe87d4f2efd988eacf).
 
 ## Risks (Running General Tools)
 
