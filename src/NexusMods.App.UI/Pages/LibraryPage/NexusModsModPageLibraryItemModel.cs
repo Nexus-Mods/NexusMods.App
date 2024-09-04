@@ -16,17 +16,18 @@ public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
         {
             model.LibraryItems
                 .ObserveCountChanged(notifyCurrentCount: true)
-                .Subscribe(model, static (_, model) =>
+                .Subscribe(model, static (count, model) =>
                 {
-                    // TODO: different selection, need to check with design
-                    if (model.LibraryItems.TryGetFirst(static x => x.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().IsValid(), out var libraryItem))
+                    if (count == 0)
                     {
-                        model.ItemSize.Value = libraryItem.ToLibraryFile().Size.ToString();
-                        model.Version.Value = libraryItem.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().FileMetadata.Version;
+                        model.ItemSize.Value = Size.Zero.ToString();
+                        model.Version.Value = "-";
                     }
                     else
                     {
-                        model.ItemSize.Value = Size.Zero.ToString();
+                        model.ItemSize.Value = model.LibraryItems.Sum(x => x.ToLibraryFile().Size).ToString();
+
+                        // TODO: "mod page"-version, whatever that means
                         model.Version.Value = "-";
                     }
                 })
