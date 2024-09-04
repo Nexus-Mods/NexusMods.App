@@ -35,23 +35,41 @@ public class JobManager : IJobManager, IHostedService
     
     /// <inheritdoc />
     public Task<object> RunNew<TJob>(params object[] args)
-        where TJob : AOrchestration
+        where TJob : IJob
     {
         var jobInstance = _jobInstances[typeof(TJob)];
         var newJobId = JobId.From(Guid.NewGuid());
         
         var tcs = new TaskCompletionSource<object>();
 
-        var initialState = new OrchestrationState
+        IActor<IJobMessage> actor;
+        if (typeof(TJob).IsAssignableTo(typeof(AOrchestration)))
         {
-            Job = (AOrchestration)jobInstance,
-            Id = newJobId,
-            Manager = this,
-            Arguments = args,
-            Continuation = Continuation,
-        };
-        
-        var actor = new JobActor(_logger, initialState);
+            var initialState = new OrchestrationState
+            {
+                Job = jobInstance,
+                Id = newJobId,
+                Manager = this,
+                Arguments = args,
+                Continuation = Continuation,
+            };
+
+            actor = new JobActor(_logger, initialState);
+        }
+        else
+        {
+            var initialState = new UnitOfWorkState
+            {
+                Job = jobInstance,
+                Id = newJobId,
+                Manager = this,
+                Arguments = args,
+                Continuation = Continuation,
+                CancellationTokenSource = new CancellationTokenSource(),
+            };
+
+            actor = new UnitOfWorkActor(_logger, initialState);
+        }
         actor.Post(RunMessage.Instance);
         _jobs[newJobId] = actor;
         
@@ -93,8 +111,7 @@ public class JobManager : IJobManager, IHostedService
         memoryStream.Position = 0;
         var newState = JsonSerializer.Deserialize<AJobState>(memoryStream, _serializerOptions)!;
         newState.Manager = state.Manager;
-        if (state is OrchestrationState js)
-            js.Continuation = ((OrchestrationState)newState).Continuation;
+        newState.Continuation = state.Continuation;
         return newState;
 #else
         return state;
@@ -104,10 +121,9 @@ public class JobManager : IJobManager, IHostedService
 
     internal void FinalizeJob(AJobState state, object result, bool isFailure)
     {
-        if (state is OrchestrationState js)
-            js.Continuation?.Invoke(result, isFailure ? new SubJobError((string)result) : null);
+        state.Continuation?.Invoke(result, isFailure ? new SubJobError(result.ToString()!) : null);
         
-        if (state.ParentJobId == JobId.Empty)
+        if (state.ParentJobId == JobId.DefaultValue)
             return;
         
         if (!_jobs.TryGetValue(state.ParentJobId, out var parentJob))

@@ -53,4 +53,12 @@ public abstract class AOrchestration<TParent, TResult, TArg1> : AOrchestration
     {
         return (TResult)await parentOrchestrationContext.JobManager.RunSubJob<TParent>(parentOrchestrationContext, [arg1!]);
     }
+    
+    /// <summary>
+    /// Run this job as a new job, do not use this method to start a sub job.
+    /// </summary>
+    public static async Task<TResult> RunNew(IJobManager jobManager, TArg1 arg1)
+    {
+        return (TResult)await jobManager.RunNew<TParent>([arg1!]);
+    }
 }

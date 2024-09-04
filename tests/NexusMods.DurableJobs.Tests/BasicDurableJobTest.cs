@@ -57,7 +57,7 @@ public class BasicDurableJobTest
     {
         var values = new[] { 1, 4, 3, 7, 42 };
 
-        var result = await _jobManager.RunNew<SumJob>(values);
+        var result = await SumJob.RunNew(_jobManager, values);
 
         result.Should().Be(values.Select(x => x * x).Sum());
     }
@@ -67,7 +67,7 @@ public class BasicDurableJobTest
     {
         var values = new [] { 1, 2, 3, 4, 5 };
         
-        var result = await _jobManager.RunNew<WaitMany>(values);
+        var result = await WaitMany.RunNew(_jobManager, values);
         
         result.Should().Be(values.Select(x => x * x).Sum());
     }
@@ -77,7 +77,7 @@ public class BasicDurableJobTest
     {
         var values = 10;
         
-        Func<Task> act = async () => await _jobManager.RunNew<CatchErrorJob>(values);
+        Func<Task> act = async () => await CatchErrorJob.RunNew(_jobManager, values);
         
         await act.Should().ThrowAsync<SubJobError>().WithMessage("I don't like 5");
     }
@@ -86,14 +86,14 @@ public class BasicDurableJobTest
     public async Task AsyncLinqWorks()
     {
         var values = new[] { 1, 4, 3, 7, 42 };
-        var result = await _jobManager.RunNew<AsyncLinqJob>(values);
+        var result = await AsyncLinqJob.RunNew(_jobManager, values);
         result.Should().Be(values.Select(x => x * x).Sum());
     }
 
     [Fact]
     public async Task CanRunUnitOfWork()
     {
-        var result = (int)await _jobManager.RunNew<WaitFor10>(100);
+        var result = await WaitFor10.RunNew(_jobManager, 100);
         
         // Time based tests are flaky, but this should be a good enough test.
         result.Should().BeGreaterOrEqualTo(800);

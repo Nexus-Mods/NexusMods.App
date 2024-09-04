@@ -10,7 +10,7 @@ public interface IJobManager
     /// <summary>
     /// The main entry point for the job manager, don't run this inside of any job context. 
     /// </summary>
-    public Task<object> RunNew<TJob>(params object[] args) where TJob : AOrchestration;
+    public Task<object> RunNew<TJob>(params object[] args) where TJob : IJob;
 
     /// <summary>
     /// Runs a sub job from the parent job.
