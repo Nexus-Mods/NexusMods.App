@@ -1,53 +1,128 @@
-using DynamicData.Kernel;
+using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Extensions.Hashing;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddLibraryFileJob : 
+internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, LibraryFile.ReadOnly>, IAsyncDisposable
 {
-    public AddLibraryFileJob(IJobGroup? group = null, IJobWorker? worker = null, IJobMonitor? monitor = null)
-        : base(null!, group, worker, monitor) { }
-
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
-    public required bool DoCommit { get; init; }
-    public required bool DoBackup { get; init; }
-
-    public Optional<EntityId> EntityId { get; set; }
-    public Optional<bool> IsArchive { get; set; }
-    public Optional<bool> HasBackup { get; set; }
-    public Optional<JobResult> HashJobResult { get; set; }
-    public Optional<LibraryFile.New> LibraryFile { get; set; }
-    public Optional<LibraryArchive.New> LibraryArchive { get; set; }
-    public Optional<TemporaryPath> ExtractionDirectory { get; set; }
-    public Optional<IFileEntry[]> ExtractedFiles { get; set; }
-    public Optional<ValueTuple<JobResult, IFileEntry>[]> AddExtractedFileJobResults { get; set; }
-
-    protected override void Dispose(bool disposing)
+    private ConcurrentBag<TemporaryPath> ExtractionDirectories { get; } = [];
+    private ConcurrentBag<ArchivedFileEntry> ToArchive { get; } = [];
+    
+    public static JobTask<AddLibraryFileJob, LibraryFile.ReadOnly> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath, bool doCommit, bool doBackup)
     {
-        if (disposing)
+        var monitor = provider.GetRequiredService<IJobMonitor>();
+        var job = new AddLibraryFileJob
         {
-            if (ExtractionDirectory.HasValue)
-            {
-                ExtractionDirectory.Value.Dispose();
-                ExtractionDirectory = Optional<TemporaryPath>.None;
-            }
-        }
-
-        base.Dispose(disposing);
+            Transaction = transaction,
+            FilePath = filePath,
+            FileExtractor = provider.GetRequiredService<IFileExtractor>(),
+            Connection = provider.GetRequiredService<IConnection>(),
+            TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>(),
+            FileStore = provider.GetRequiredService<IFileStore>(),
+        };
+        return monitor.Begin<AddLibraryFileJob, LibraryFile.ReadOnly>(job);
     }
 
-    protected override async ValueTask DisposeAsyncCore()
+    internal required IFileStore FileStore { get; set; }
+    internal required TemporaryFileManager TemporaryFileManager { get; init; }
+    internal required IFileExtractor FileExtractor { get; init; }
+    public required IConnection Connection { get; set; }
+    
+    public async ValueTask<LibraryFile.ReadOnly> StartAsync(IJobContext<AddLibraryFileJob> context)
     {
-        if (ExtractionDirectory.HasValue)
+        if (!FilePath.FileExists)
+            throw new Exception($"File '{FilePath}' does not exist.");
+        
+        var topFile = await AnalyzeOne(context, FilePath);
+        
+        await FileStore.BackupFiles(ToArchive, context.CancellationToken);
+        var results = await Transaction.Commit();
+        return results.Remap(topFile);
+    }
+
+    private async Task<LibraryFile.New> AnalyzeOne(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath)
+    {
+        var isArchive = await CheckIfArchiveAsync(filePath);
+        var hash = await filePath.XxHash64Async();
+        
+        var libraryFile = CreateLibraryFile(Transaction, filePath, hash);
+
+        if (isArchive)
         {
-            await ExtractionDirectory.Value.DisposeAsync();
-            ExtractionDirectory = Optional<TemporaryPath>.None;
+            var libraryArchive = new LibraryArchive.New(Transaction, libraryFile.Id)
+            {
+                LibraryFile = libraryFile,
+            };
+            
+            var extractionFolder = TemporaryFileManager.CreateFolder();
+            // Add the temp folder for later
+            ExtractionDirectories.Add(extractionFolder);
+            await FileExtractor.ExtractAllAsync(filePath, extractionFolder);
+
+            var extractedFiles = extractionFolder.Path.EnumerateFiles();
+
+            foreach (var extracted in extractedFiles)
+            {
+                var subFile = await AnalyzeOne(context, extracted);
+                var path = extracted.RelativeTo(extractionFolder.Path);
+                _ = new LibraryArchiveFileEntry.New(Transaction, subFile.Id)
+                {
+                    Path = path,
+                    LibraryFile = subFile,
+                    ParentId = libraryArchive.Id,
+                };
+            }
+        }
+        else
+        {
+            var size = filePath.FileInfo.Size;
+            ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
         }
 
-        await base.DisposeAsyncCore();
+        return libraryFile;
+    }
+
+
+    private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
+    {
+        await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+        var canExtract = await FileExtractor.CanExtract(stream);
+        return canExtract;
+    }
+    
+    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash)
+    {
+        var libraryFile = new LibraryFile.New(tx, out var id)
+        {
+            FileName = filePath.FileName,
+            Hash = hash,
+            Size = filePath.FileInfo.Size,
+            LibraryItem = new LibraryItem.New(tx, id)
+            {
+                Name = filePath.FileName,
+            },
+        };
+
+        return libraryFile;
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        foreach (var directory in ExtractionDirectories)
+        {
+            await directory.DisposeAsync();
+        }
+        ExtractionDirectories.Clear();
     }
 }
