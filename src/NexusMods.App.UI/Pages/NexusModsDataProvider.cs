@@ -62,7 +62,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size;
+        model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size.ToString();
         model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
 
         return model;

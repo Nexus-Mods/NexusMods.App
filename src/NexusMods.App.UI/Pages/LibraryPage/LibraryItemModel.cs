@@ -19,7 +19,10 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 {
     public required string Name { get; init; }
     public required DateTime CreatedAt { get; init; }
-    public BindableReactiveProperty<Size> ItemSize { get; } = new(Size.Zero);
+
+    // TODO: turn this back into a `Size`
+    // NOTE(erri120): requires https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/pull/304
+    public BindableReactiveProperty<string> ItemSize { get; } = new(Size.Zero.ToString());
     public BindableReactiveProperty<string> Version { get; set; } = new("-");
 
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
@@ -158,13 +161,13 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
     public static IColumn<LibraryItemModel> CreateSizeColumn()
     {
-        return new CustomTextColumn<LibraryItemModel, Size>(
+        return new CustomTextColumn<LibraryItemModel, string>(
             header: "SIZE",
             getter: model => model.ItemSize.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? Size.Zero),
-                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? Size.Zero),
+                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? "0 B"),
+                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? "0 B"),
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,

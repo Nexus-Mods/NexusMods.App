@@ -21,12 +21,12 @@ public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
                     // TODO: different selection, need to check with design
                     if (model.LibraryItems.TryGetFirst(static x => x.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().IsValid(), out var libraryItem))
                     {
-                        model.ItemSize.Value = libraryItem.ToLibraryFile().Size;
+                        model.ItemSize.Value = libraryItem.ToLibraryFile().Size.ToString();
                         model.Version.Value = libraryItem.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().FileMetadata.Version;
                     }
                     else
                     {
-                        model.ItemSize.Value = Size.Zero;
+                        model.ItemSize.Value = Size.Zero.ToString();
                         model.Version.Value = "-";
                     }
                 })

@@ -54,7 +54,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.ItemSize.Value = libraryFile.Size;
+        model.ItemSize.Value = libraryFile.Size.ToString();
         return model;
     }
 
@@ -96,7 +96,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
-                model.ItemSize.Value = libraryFile.Size;
+                model.ItemSize.Value = libraryFile.Size.ToString();
                 return (LibraryItemModel)model;
             });
     }
