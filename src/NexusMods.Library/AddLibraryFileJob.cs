@@ -12,14 +12,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, LibraryFile.ReadOnly>, IAsyncDisposable
+internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, LibraryFile.New>, IAsyncDisposable
 {
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
     private ConcurrentBag<TemporaryPath> ExtractionDirectories { get; } = [];
     private ConcurrentBag<ArchivedFileEntry> ToArchive { get; } = [];
     
-    public static JobTask<AddLibraryFileJob, LibraryFile.ReadOnly> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath, bool doCommit, bool doBackup)
+    public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath, bool doCommit, bool doBackup)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new AddLibraryFileJob
@@ -31,7 +31,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
             TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>(),
             FileStore = provider.GetRequiredService<IFileStore>(),
         };
-        return monitor.Begin<AddLibraryFileJob, LibraryFile.ReadOnly>(job);
+        return monitor.Begin<AddLibraryFileJob, LibraryFile.New>(job);
     }
 
     internal required IFileStore FileStore { get; set; }
@@ -39,7 +39,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     internal required IFileExtractor FileExtractor { get; init; }
     public required IConnection Connection { get; set; }
     
-    public async ValueTask<LibraryFile.ReadOnly> StartAsync(IJobContext<AddLibraryFileJob> context)
+    public async ValueTask<LibraryFile.New> StartAsync(IJobContext<AddLibraryFileJob> context)
     {
         if (!FilePath.FileExists)
             throw new Exception($"File '{FilePath}' does not exist.");
@@ -47,8 +47,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         var topFile = await AnalyzeOne(context, FilePath);
         
         await FileStore.BackupFiles(ToArchive, context.CancellationToken);
-        var results = await Transaction.Commit();
-        return results.Remap(topFile);
+        return topFile;
     }
 
     private async Task<LibraryFile.New> AnalyzeOne(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath)

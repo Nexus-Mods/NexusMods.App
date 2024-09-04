@@ -975,7 +975,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual JobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
+    public virtual IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
             {

@@ -75,7 +75,7 @@ public interface ILoadoutSynchronizer
     /// <remarks>
     ///     This was formerly called 'Manage'.
     /// </remarks>
-    JobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
+    IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
 
     /// <summary>
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.

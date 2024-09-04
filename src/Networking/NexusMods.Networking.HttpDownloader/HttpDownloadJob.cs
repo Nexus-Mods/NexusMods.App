@@ -53,7 +53,7 @@ public record HttpDownload : IJobDefinitionWithStart<HttpDownload, AbsolutePath>
     /// <summary>
     /// Constructor for the job
     /// </summary>
-    public static JobTask<HttpDownload, AbsolutePath> Create(IServiceProvider provider, Uri uri, Uri downloadPage, AbsolutePath destination)
+    public static IJobTask<HttpDownload, AbsolutePath> Create(IServiceProvider provider, Uri uri, Uri downloadPage, AbsolutePath destination)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new HttpDownload

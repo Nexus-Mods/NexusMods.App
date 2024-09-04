@@ -2,19 +2,20 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryFile.ReadOnly>
+internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryFile.ReadOnly>, IAddDownloadJob
 { 
-    public required JobTask<IDownloadJob, Unit> DownloadJob { get; init; }
+    public required IJobTask<IDownloadJob, AbsolutePath> DownloadJob { get; init; }
     internal required IConnection Connection { get; set; }
     internal required IServiceProvider ServiceProvider { get; set; }
     
-    public static JobTask<AddDownloadJob, LibraryFile.ReadOnly> Create(IServiceProvider provider, JobTask<IDownloadJob, Unit> downloadJob)
+    public static IJobTask<AddDownloadJob, LibraryFile.ReadOnly> Create(IServiceProvider provider, IJobTask<IDownloadJob, AbsolutePath> downloadJob)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new AddDownloadJob

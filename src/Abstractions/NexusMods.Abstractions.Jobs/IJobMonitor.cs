@@ -8,13 +8,13 @@ public interface IJobMonitor
     /// <summary>
     /// Starts a job given the job definition and the code to run as part of the job.
     /// </summary>
-    JobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job, Func<IJobContext<TJobType>, ValueTask<TResultType>> task)
+    IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job, Func<IJobContext<TJobType>, ValueTask<TResultType>> task)
         where TJobType : IJobDefinition<TResultType>;
     
     
     /// <summary>
     /// Starts a job given the job definition.
     /// </summary>
-    JobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job)
+    IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job)
         where TJobType : IJobDefinitionWithStart<TJobType, TResultType>;
 }
