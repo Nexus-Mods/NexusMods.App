@@ -15,14 +15,14 @@ public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.LibraryItems
-                .ObserveCountChanged()
+                .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(model, static (_, model) =>
                 {
                     // TODO: different selection, need to check with design
-                    if (model.LibraryItems.TryGetFirst(static x => x.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().IsValid(), out var librayItem))
+                    if (model.LibraryItems.TryGetFirst(static x => x.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().IsValid(), out var libraryItem))
                     {
-                        model.ItemSize.Value = librayItem.ToLibraryFile().Size;
-                        model.Version.Value = librayItem.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().FileMetadata.Version;
+                        model.ItemSize.Value = libraryItem.ToLibraryFile().Size;
+                        model.Version.Value = libraryItem.ToLibraryFile().ToDownloadedFile().ToNexusModsLibraryFile().FileMetadata.Version;
                     }
                     else
                     {
