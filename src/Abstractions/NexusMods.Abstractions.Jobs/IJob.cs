@@ -1,92 +1,61 @@
-using JetBrains.Annotations;
+using DynamicData.Kernel;
+using R3;
 
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
-/// Represents a piece of work.
+/// An untyped job interface, this is the reporting end of a job. The writable side is the <see cref="IJobContext{TJobType}"/>
 /// </summary>
-[PublicAPI]
-public interface IJob : IDisposable, IAsyncDisposable
+public interface IJob
 {
     /// <summary>
-    /// Gets the ID of the job.
+    /// The unique identifier of the job
     /// </summary>
-    JobId Id { get; }
-
+    public JobId Id { get; }
+    
     /// <summary>
-    /// Gets the parent job group.
+    /// The status of the job
     /// </summary>
-    IJobGroup? Group { get; }
-
+    public JobStatus Status { get; }
+    
     /// <summary>
-    /// Gets the worker of this job.
+    /// The observable status of the job
     /// </summary>
-    /// <remarks>
-    /// This value may not be unavailable if the job isn't ready to be run yet,
-    /// or if the job finished.
-    /// </remarks>
-    IJobWorker? Worker { get; }
-
+    public Observable<JobStatus> ObservableStatus { get; }
+    
     /// <summary>
-    /// Gets the status of the job.
+    /// If the job has determinate progress, the percentage of the job that has been completed
     /// </summary>
-    JobStatus Status { get; }
-
+    public Optional<Percent> Progress { get; }
+    
     /// <summary>
-    /// Gets the progress of the job.
+    /// If the job reports progress, the rate of progress in units per second
     /// </summary>
-    Progress Progress { get; }
-
+    public Optional<double> RateOfProgress { get; }
+    
     /// <summary>
-    /// Gets the result of the job.
+    /// The job group that the job belongs to, all jobs have a group, even if they are the only member
     /// </summary>
-    /// <remarks>
-    /// This value is only available when the job has finished.
-    /// </remarks>
-    JobResult? Result { get; }
-
+    public IJobGroup Group { get; }
+    
     /// <summary>
-    /// Gets the observable stream for changes to <see cref="Status"/>.
+    /// Wait for the job to complete or throw an exception if the job fails
     /// </summary>
-    IObservable<JobStatus> ObservableStatus { get; }
+    public Task WaitAsync(CancellationToken cancellationToken = default);
+}
 
+/// <summary>
+/// A job that returns a given type
+/// </summary>
+public interface IJobWithResult<TResult> : IJob
+{
     /// <summary>
-    /// Gets the observable stream that will contain a single value when
-    /// the job finishes.
+    /// The result of the job
     /// </summary>
-    IObservable<JobResult> ObservableResult { get; }
-
+    public TResult Result { get; }
+    
     /// <summary>
-    /// Returns a proxy task that completes when the job is finished.
+    /// Wait for the job to complete and return the result or throw an exception if the job fails
     /// </summary>
-    /// <param name="cancellationToken">
-    /// Optional cancellation token to stop the waiting. Note that this only
-    /// cancels the proxy task, it does not cancel the job.
-    /// </param>
-    Task<JobResult> WaitToFinishAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Starts the job.
-    /// </summary>
-    /// <returns>
-    /// A task that completes when the job has been started, not when the job
-    /// has completed.
-    /// </returns>
-    ValueTask StartAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Pauses the job.
-    /// </summary>
-    /// <remarks>
-    /// A task that completes when the job has been paused.
-    /// </remarks>
-    ValueTask PauseAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Cancels the job.
-    /// </summary>
-    /// <returns>
-    /// A task that completes when the job has been cancelled.
-    /// </returns>
-    ValueTask CancelAsync(CancellationToken cancellationToken = default);
+    public Task<TResult> WaitForResult(CancellationToken cancellationToken = default);
 }

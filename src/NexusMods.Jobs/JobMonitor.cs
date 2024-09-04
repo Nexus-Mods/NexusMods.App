@@ -40,4 +40,9 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         _compositeDisposable.Dispose();
         _jobSourceCache.Dispose();
     }
+
+    public JobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job, Func<IJobContext<TJobType>, ValueTask<TResultType>> task) where TJobType : IJobDefinition<TResultType>
+    {
+        throw new NotImplementedException();
+    }
 }

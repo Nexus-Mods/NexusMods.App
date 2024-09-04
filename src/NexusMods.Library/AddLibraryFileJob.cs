@@ -6,7 +6,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Library;
 
-internal class AddLibraryFileJob : AJob
+internal class AddLibraryFileJob : 
 {
     public AddLibraryFileJob(IJobGroup? group = null, IJobWorker? worker = null, IJobMonitor? monitor = null)
         : base(null!, group, worker, monitor) { }

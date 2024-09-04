@@ -5,6 +5,7 @@
     <ItemGroup>
         <PackageReference Include="DynamicData" />
         <PackageReference Include="OneOf" />
+        <PackageReference Include="R3" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
@@ -12,66 +13,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Update="IDeterminateProgress.cs">
-        <DependentUpon>IProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IIndeterminateProgress.cs">
-        <DependentUpon>IProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IProgressRateFormatter.cs">
-        <DependentUpon>ProgressRate.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IPersistedJob.cs">
-        <DependentUpon>IJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobStatusExtensions.cs">
-        <DependentUpon>JobStatus.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobResultType.cs">
-        <DependentUpon>JobResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobResultCancelled.cs">
-        <DependentUpon>JobResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobResultCompleted.cs">
-        <DependentUpon>JobResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobResultFailed.cs">
-        <DependentUpon>JobResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IProgress.cs">
-        <DependentUpon>Progress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="MutableProgress.cs">
-        <DependentUpon>Progress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="AJobWorker.cs">
-        <DependentUpon>IJobWorker.cs</DependentUpon>
-      </Compile>
-      <Compile Update="AJob.cs">
-        <DependentUpon>IJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="DeterminateProgress.cs">
-        <DependentUpon>AProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="IndeterminateProgress.cs">
-        <DependentUpon>AProgress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="AProgress.cs">
-        <DependentUpon>Progress.cs</DependentUpon>
-      </Compile>
-      <Compile Update="JobWorker.cs">
-        <DependentUpon>IJobWorker.cs</DependentUpon>
-      </Compile>
-      <Compile Update="APersistedJob.cs">
-        <DependentUpon>IJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="APersistedJobWorker.cs">
-        <DependentUpon>IJobWorker.cs</DependentUpon>
-      </Compile>
     </ItemGroup>
 
 </Project>

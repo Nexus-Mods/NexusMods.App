@@ -1,27 +1,20 @@
-using System.Collections.ObjectModel;
-using DynamicData;
-using JetBrains.Annotations;
-
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
-/// Represents a monitor for jobs.
+/// A monitor for jobs
 /// </summary>
-[PublicAPI]
 public interface IJobMonitor
 {
     /// <summary>
-    /// Gets an observable collection containing every job the monitor knows about.
+    /// Starts a job given the job definition and the code to run as part of the job.
     /// </summary>
-    ReadOnlyObservableCollection<IJob> Jobs { get; }
-
+    JobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job, Func<IJobContext<TJobType>, ValueTask<TResultType>> task)
+        where TJobType : IJobDefinition<TResultType>;
+    
+    
     /// <summary>
-    /// Gets an observable with changeset for jobs of type <typeparamref name="TJob"/>.
+    /// Starts a job given the job definition.
     /// </summary>
-    IObservable<IChangeSet<TJob, JobId>> GetObservableChangeSet<TJob>() where TJob : IJob;
-
-    /// <summary>
-    /// Registers a job with the monitor.
-    /// </summary>
-    void RegisterJob(IJob job);
+    JobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job)
+        where TJobType : IJobDefinitionWithStart<TJobType, TResultType>;
 }

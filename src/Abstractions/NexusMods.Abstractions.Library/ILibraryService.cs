@@ -23,7 +23,7 @@ public interface ILibraryService
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    [MustDisposeResource] IJob AddLocalFile(AbsolutePath absolutePath);
+    Task<LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath);
 
     /// <summary>
     /// Installs a library item into a target loadout.
