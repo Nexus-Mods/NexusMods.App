@@ -43,6 +43,8 @@ public class BasicDurableJobTest
                     .AddJob<AsyncLinqJob>()
                     .AddJob<WaitFor10>()
                     .AddJob<ManuallyFinishedJob>()
+                    .AddJob<InstantFailureJob>()
+                    .AddJob<InstantSuccessJob>()
                     .AddUnitOfWorkJob<ManuallyFinishedUnitOfWork>()
                     .AddUnitOfWorkJob<LongRunningUnitOfWork>()
             ).Build();
@@ -118,6 +120,39 @@ public class BasicDurableJobTest
         ManuallyFinishedJob.LastResult.Should().Be(43);
     }
     
+    [Fact]
+    public async Task? CanRunJobThatFailsInstantly()
+    {
+        Func<Task> act = async () => await InstantFailureJob.RunNew(_jobManager, 1);
+        
+        await act.Should().ThrowAsync<Exception>().WithMessage("I failed");
+    }
+
+    [Fact]
+    public async Task CanRunJobThatSucceedsInstantly()
+    {
+        var result = await InstantSuccessJob.RunNew(_jobManager, 1);
+
+        result.Should().Be(1);
+    }
+
+}
+
+
+public class InstantFailureJob : AOrchestration<InstantFailureJob, int, int>
+{
+    protected override Task<int> Run(OrchestrationContext context, int arg1)
+    {
+        throw new Exception("I failed");
+    }
+}
+
+public class InstantSuccessJob : AOrchestration<InstantSuccessJob, int, int>
+{
+    protected override Task<int> Run(OrchestrationContext context, int arg1)
+    {
+        return Task.FromResult(arg1);
+    }
 }
 
 
