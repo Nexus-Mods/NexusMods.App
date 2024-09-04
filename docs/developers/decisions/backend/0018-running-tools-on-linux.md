@@ -47,16 +47,15 @@ technical limitations imposed by their closed-source nature.
 
 ## Terminology
 
-- **WINE**: A compatibility layer that allows us to run Windows applications on Linux (& other Unix-like OSes).
-- **WINEPREFIX**: A directory that contains a WINE environment.
-    - A WINEPREFIX can be thought of as a 'bottle' that contains a minimal Windows environment.
-    - That is stuff like `Windows Registry`, `Windows DLLs`, `C:\`, `App Installations` etc.
+- **WINE**: A compatibility layer for running Windows applications on Linux.
+- **WINEPREFIX**: A directory that contains a minimal Windows-like Environment.
+    - This is a 'virtual' `C:\`, which naturally contains the Registry, Installed Programs etc.
 - **Proton**: Valve and CodeWeavers' fork of WINE that is used by Steam to run Windows games on Linux.
-    - Proton is Wine with  components like [FAudio] and [DXVK] baked in.
+    - Proton is Wine with components like [FAudio] and [DXVK] baked in.
     - Used with `Steam Linux Runtime` that provides a stable, known set of native Linux libraries to target.
     - When used in Steam, it automatically creates a **WINEPREFIX** for each game (if not present) on first boot.
-- [winetricks]: A Python script to help with the installation of libraries and tools needed to run some Windows applications.
-- [`protontricks`][protontricks]: A wrapper for [winetricks] that allows us to use [winetricks] with Steam's Proton installations.
+- [winetricks]: A Python script to help with the installation of common libraries and tools needed to run some Windows applications like VC Redist, .NET, or extra Windows libraries.
+- [`protontricks`][protontricks]: A wrapper for [winetricks] that works with Steam's Proton installations.
 - [umu] (a.k.a. ULWGL): A tool to use the `Steam Linux Runtime` + `Proton` without Steam.
 
 ## Tricks
