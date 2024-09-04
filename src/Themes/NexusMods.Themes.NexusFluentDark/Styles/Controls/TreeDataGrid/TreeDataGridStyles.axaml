@@ -7,35 +7,40 @@
 
     <!-- Default Header Style for TreeDataGrid, for when the header exists -->
     <Style Selector="TreeDataGrid">
+
+        <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
+
         <!-- Header styling -->
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
             <Setter Property="BorderThickness" Value="0,1,0,1" />
             <Setter Property="Height" Value="38" />
+
+            <!-- Column Header/Text Style -->
+            <Style Selector="^ TreeDataGridColumnHeader">
+
+                <!-- Text Inside Column Header -->
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+                </Style>
+            </Style>
         </Style>
 
         <!-- Catch all text styling -->
         <!-- TODO: remove this and use more specific selectors to fix all existing trees using this -->
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
-            <Setter Property="Foreground"
-                    Value="{StaticResource NeutralSubdued}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         </Style>
+        
     </Style>
-
-
-    <!-- Column Header/Text Style -->
-    <Style Selector="TreeDataGridColumnHeader">
-        <!-- Text Inside Column Header -->
-        <Style Selector="^ TextBlock">
-            <Setter Property="Foreground"
-                    Value="{StaticResource NeutralSubdued}" />
-            <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
-        </Style>
-    </Style>
-
 
     <!-- Modlist and Library TreeDataGrid Styles -->
+
     <Style Selector="TreeDataGrid.MainListsStyling">
+        
         <Style.Resources>
             <!-- TreeDataGrid Sort Icon replacements -->
             <StreamGeometry x:Key="TreeDataGridSortIconDescendingPath">M7 14L12 9L17 14H7Z</StreamGeometry>
@@ -64,10 +69,6 @@
             <!-- Padding gets inherited by the ContentPresenter, which means that the sorting icon is ignoring this. -->
             <!-- To properly pad the sorting icon, we need to override the template and rearrange the content. -->
             <Setter Property="Padding" Value="8,0" />
-
-            <Style Selector="^ TextBlock">
-                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-            </Style>
 
             <!-- Sort Icon replacements -->
             <Style Selector="^[SortDirection=Ascending] /template/ Path#SortIcon">
@@ -103,8 +104,7 @@
         <!-- Row Style -->
         <Style Selector="^ TreeDataGridRow">
             <Setter Property="Height" Value="52" />
-
-
+            <Setter Property="ClipToBounds" Value="False" />
 
             <!-- Generic column cell padding -->
             <Style Selector="^ :is(TreeDataGridCell)">
@@ -120,9 +120,6 @@
             <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
                 <Setter Property="Padding" Value="8,2,24,2" />
             </Style>
-            
-            
-            
 
             <!-- Expander Column styling -->
             <Style Selector="^ TreeDataGridExpanderCell">
@@ -133,7 +130,7 @@
                 <Style Selector="^ Border#CellBorder :is(TreeDataGridCell)">
                     <!-- This goes from after the expander to the end of the cell, but parent cell padding is also applied. -->
                     <Setter Property="Padding" Value="4,0,0,0" />
-                    
+
                 </Style>
 
                 <!-- Update the padding converter on the Border inside the TreeDataGridExpanderCell template -->
@@ -205,38 +202,58 @@
                 </Style>
             </Style>
 
-            <!-- Subdued for text in all columns -->
-            <Style Selector="^ TreeDataGridTextCell /template/ Border#CellBorder > TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-            </Style>
 
             <!-- Except for first column -->
             <Style Selector="^ :is(TreeDataGridCell):nth-child(1) Border#CellBorder > TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
 
+            <!-- NOTE(insomnious): as per design request, the background of the rows stay as they are with the
+             :pointerover and :selected styles applied to the child 'PART_CellsPresenter' element. This is to allow
+             for layering translucent colours. -->
+
             <!-- Root Rows styling -->
             <!-- "RootRow" is a class that was manually added to the TreeDataGridRow that have indent level 0. -->
             <!-- See `NexusMods.App.UI.Controls.CustomElementFactory.cs` for more information. -->
-            <Style Selector="^.RootRow /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+            <Style Selector="^.RootRow">
+                <Setter Property="ZIndex" Value="100" />
                 <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+
+                <Style Selector="^ Border#RowBorder">
+                    <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+                </Style>
+
+                <!-- <Style Selector="^ /template/ TreeDataGridCellsPresenter#PART_CellsPresenter"> -->
+                <!--     <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" /> -->
+                <!-- </Style> -->
             </Style>
-            
+
+
             <!-- Child rows styling -->
-            <Style Selector="^:not(.RootRow) /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
+            <Style Selector="^:not(.RootRow)">
+                <Setter Property="ZIndex" Value="50" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+
+                <!-- <Style Selector="^ /template/ TreeDataGridCellsPresenter#PART_CellsPresenter"> -->
+                <!--     <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" /> -->
+                <!-- </Style> -->
             </Style>
-            
-            <!-- Row hover styling -->
+
+
+            <!-- All rows hover styling -->
+
             <Style Selector="^:pointerover /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
             </Style>
-            
-            <!-- Row selection styling -->
+
+
+            <!-- All rows selection styling -->
+
             <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
             </Style>
+
+
         </Style>
     </Style>
 
