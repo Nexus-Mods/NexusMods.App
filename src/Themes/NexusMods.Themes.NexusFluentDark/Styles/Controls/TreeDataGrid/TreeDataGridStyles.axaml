@@ -1,45 +1,93 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters">
-
-
+    
+    <Styles.Resources>
+        <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="{StaticResource SurfaceTranslucentMid}" Opacity="1" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="White" Opacity="0.1" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="White" Opacity="0.6" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="White" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
+        <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
+    </Styles.Resources>
+    
     <!-- Style Definitions -->
-
-    <!-- Default Header Style for TreeDataGrid, for when the header exists -->
-    <Style Selector="TreeDataGrid">
-
-        <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
-
-        <!-- Header styling -->
-        <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
-            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
-            <Setter Property="BorderThickness" Value="0,1,0,1" />
-            <Setter Property="Height" Value="38" />
-
-            <!-- Column Header/Text Style -->
-            <Style Selector="^ TreeDataGridColumnHeader">
-
-                <!-- Text Inside Column Header -->
-                <Style Selector="^ TextBlock">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-                </Style>
-            </Style>
-        </Style>
-
-        <!-- Catch all text styling -->
-        <!-- TODO: remove this and use more specific selectors to fix all existing trees using this -->
-        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
+    
+    <Style Selector="TreeDataGridColumnHeader">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinHeight" Value="25" />
+        <Setter Property="Padding" Value="8,0,0,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Name="DataGridBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
+              <DockPanel VerticalAlignment="Stretch">
+                <Panel DockPanel.Dock="Right"
+                       TabIndex="2">
+                  <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
+                             HorizontalAlignment="Center"
+                             Width="1"
+                             Height="24"/>
+                  <Thumb Name="PART_Resizer"
+                         DockPanel.Dock="Right"
+                         Background="Transparent"
+                         Cursor="SizeWestEast"
+                         IsVisible="{TemplateBinding CanUserResize}"
+                         Width="5">
+                    <Thumb.Template>
+                      <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                VerticalAlignment="Stretch" />
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Panel>
+                
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Header}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      TabIndex="0">
+                        <ContentPresenter.DataTemplates>
+                            <DataTemplate DataType="x:String">
+                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </ContentPresenter.DataTemplates>
+                    </ContentPresenter>
+                    <Border
+                        Padding="0,3,0,0"
+                        Background="Transparent"
+                        Height="20"
+                        Width="20">
+                        <Path Name="SortIcon"
+                              DockPanel.Dock="Right"
+                              Fill="{TemplateBinding Foreground}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Stretch="Uniform"
+                              Height="12"
+                              TabIndex="1" />
+                    </Border>
+                </StackPanel>
+                
+              </DockPanel>
+            </Border>
+          </ControlTemplate>
+        </Setter>
         
     </Style>
 
-    <!-- Modlist and Library TreeDataGrid Styles -->
-
-    <Style Selector="TreeDataGrid.MainListsStyling">
+    <!-- Default Header Style for TreeDataGrid, for when the header exists -->
+    <Style Selector="TreeDataGrid">
         
         <Style.Resources>
             <!-- TreeDataGrid Sort Icon replacements -->
@@ -49,44 +97,74 @@
             <!-- TreeDataGrid Expander Icon replacements -->
             <StreamGeometry x:Key="TreeDataGridItemCollapsedChevronPathData">M7.15833 13.825L10.975 10L7.15833 6.175L8.33333 5L13.3333 10L8.33333 15L7.15833 13.825Z</StreamGeometry>
             <StreamGeometry x:Key="TreeDataGridItemExpandedChevronPathData">M6.175 7.15833L10 10.975L13.825 7.15833L15 8.33333L10 13.3333L5 8.33333L6.175 7.15833Z</StreamGeometry>
+            
+            <!-- TreeDataGrid Sort Icon replacements -->
+            <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="{StaticResource SurfaceTranslucentMid}" />
         </Style.Resources>
 
+        <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
         <Setter Property="BorderThickness" Value="0" />
+        
+        <!-- Catch all text styling -->
 
-        <!-- Header area styling -->
+        <!-- TODO: remove this and use more specific selectors to fix all existing trees using this -->
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>
+
+        <!-- Header styling -->
+
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
-            <Setter Property="Height" Value="52" />
+
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Height" Value="36" />
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="BorderThickness" Value="0 0 0 1" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-        </Style>
 
-        <!-- Column Header Style -->
-        <Style Selector="^ TreeDataGridColumnHeader">
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="BorderThickness" Value="0,0,0,0" />
+            <!-- Column Header/Text Style -->
+            <Style Selector="^ TreeDataGridColumnHeader">
 
-            <!-- Padding gets inherited by the ContentPresenter, which means that the sorting icon is ignoring this. -->
-            <!-- To properly pad the sorting icon, we need to override the template and rearrange the content. -->
-            <Setter Property="Padding" Value="8,0" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="BorderThickness" Value="0,0,1,0" />
 
-            <!-- Sort Icon replacements -->
-            <Style Selector="^[SortDirection=Ascending] /template/ Path#SortIcon">
-                <Setter Property="IsVisible" Value="True" />
-                <Setter Property="Data" Value="{DynamicResource TreeDataGridSortIconAscendingPath}" />
-                <Setter Property="Height" Value="12" />
-                <Setter Property="Width" Value="12" />
+                <!-- Text Inside Column Header -->
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+                </Style>
+
+                <!-- Padding gets inherited by the ContentPresenter, which means that the sorting icon is ignoring this. -->
+                <!-- To properly pad the sorting icon, we need to override the template and rearrange the content. -->
+                <!-- <Setter Property="Padding" Value="8,0" /> -->
+                
+                <!-- Sort Icon replacements -->
+                <Style Selector="^[SortDirection=Ascending] /template/ Path#SortIcon">
+                    <Setter Property="IsVisible" Value="True" />
+                    <Setter Property="Data" Value="{DynamicResource TreeDataGridSortIconAscendingPath}" />
+                    <Setter Property="Height" Value="12" />
+                    <Setter Property="Width" Value="12" />
+                </Style>
+
+                <Style Selector="^[SortDirection=Descending] /template/ Path#SortIcon">
+                    <Setter Property="IsVisible" Value="True" />
+                    <Setter Property="Data" Value="{DynamicResource TreeDataGridSortIconDescendingPath}" />
+                    <Setter Property="Height" Value="12" />
+                    <Setter Property="Width" Value="12" />
+                </Style>
+                
+                <!-- resizer -->
+                
+                
+                
+                <!-- <Style Selector="^ /template/ Thumb#PART_Resizer"> -->
+                <!--     <Setter Property="Width" Value="5" /> -->
+                <!--     <Setter Property="Background" Value="Transparent" /> -->
+                <!-- </Style> -->
+                
             </Style>
-
-            <Style Selector="^[SortDirection=Descending] /template/ Path#SortIcon">
-                <Setter Property="IsVisible" Value="True" />
-                <Setter Property="Data" Value="{DynamicResource TreeDataGridSortIconDescendingPath}" />
-                <Setter Property="Height" Value="12" />
-                <Setter Property="Width" Value="12" />
-            </Style>
-
         </Style>
-
 
         <!-- First column header padding -->
         <Style Selector="^ TreeDataGridColumnHeader:nth-child(1)">
@@ -94,15 +172,17 @@
         </Style>
 
         <!-- Last column header padding -->
-        <Style Selector="^ TreeDataGridColumnHeader:nth-last-child(1)">
-            <Setter Property="Padding" Value="0,0,24,0" />
-            <Style Selector="^ TextBlock">
-                <Setter Property="TextAlignment" Value="Center" />
-            </Style>
-        </Style>
+        <!-- <Style Selector="^ TreeDataGridColumnHeader:nth-last-child(1)"> -->
+        <!--     <Setter Property="Padding" Value="0,0,24,0" /> -->
+        <!--     <Style Selector="^ TextBlock"> -->
+        <!--         <Setter Property="TextAlignment" Value="Center" /> -->
+        <!--     </Style> -->
+        <!-- </Style> -->
+
 
         <!-- Row Style -->
         <Style Selector="^ TreeDataGridRow">
+
             <Setter Property="Height" Value="52" />
             <Setter Property="ClipToBounds" Value="False" />
 
@@ -123,6 +203,7 @@
 
             <!-- Expander Column styling -->
             <Style Selector="^ TreeDataGridExpanderCell">
+                
                 <!-- Override padding since this is a wrapper cell -->
                 <Setter Property="Padding" Value="0,0,0,0" />
 
@@ -161,8 +242,8 @@
                                     <Border DockPanel.Dock="Left"
                                             Margin="4 0"
                                             Width="12" Height="12">
-                                        <ToggleButton x:Name="TreeDataGridExpandCollapseChevron"
-                                                      Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
+                                        <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
+                                                      x:Name="SimonToggle"
                                                       Focusable="False"
                                                       IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
                                                       IsVisible="{TemplateBinding ShowExpander}" />
@@ -173,9 +254,10 @@
                         </Border>
                     </ControlTemplate>
                 </Setter>
-
+                
                 <!-- Expander ToggleButton styling -->
-                <Style Selector="^ ToggleButton#TreeDataGridExpandCollapseChevron">
+                <Style Selector="^ ToggleButton#SimonToggle">
+
                     <Setter Property="Width" Value="20" />
                     <Setter Property="Height" Value="20" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
@@ -185,23 +267,26 @@
                     </Style>
 
                     <!-- Icon size is smaller than the actual clickable area -->
-                    <Style Selector="^ /template/ Border">
+                    <Style Selector="^:checked Border,^:unchecked Border">
                         <Setter Property="Width" Value="12" />
                         <Setter Property="Height" Value="12" />
                         <Setter Property="Margin" Value="0" />
                     </Style>
 
-                    <!-- Allow the ChevronPath to be replaced by using DynamicResource -->
-                    <Style Selector="^ Path#ChevronPath">
-                        <Setter Property="Data" Value="{DynamicResource TreeDataGridItemCollapsedChevronPathData}" />
+                    <Style Selector="^:unchecked">
+                        <Style Selector="^ Path#ChevronPath">
+                            <Setter Property="Data" Value="{DynamicResource TreeDataGridItemCollapsedChevronPathData}" />
+                        </Style>
                     </Style>
-
-                    <Style Selector="^:checked /template/ Path#ChevronPath">
-                        <Setter Property="Data" Value="{DynamicResource TreeDataGridItemExpandedChevronPathData}" />
+                    
+                    <Style Selector="^:checked">
+                        <Style Selector="^ Path#ChevronPath">
+                            <Setter Property="Data" Value="{DynamicResource TreeDataGridItemExpandedChevronPathData}" />
+                        </Style>
                     </Style>
+                    
                 </Style>
             </Style>
-
 
             <!-- Except for first column -->
             <Style Selector="^ :is(TreeDataGridCell):nth-child(1) Border#CellBorder > TextBlock">
@@ -253,23 +338,25 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
             </Style>
 
-
         </Style>
     </Style>
 
+    
+    
+    
 
     <!-- White caret styling -->
-    <Style Selector="TreeDataGrid.TreeWhiteCaret">
-        <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton">
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Height" Value="16" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-
-            <Style Selector="^:pointerover">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-        </Style>
-    </Style>
+    <!-- <Style Selector="TreeDataGrid.TreeWhiteCaret"> -->
+    <!--     <Style Selector="^ TreeDataGridExpanderCell > Border > DockPanel > Border > ToggleButton"> -->
+    <!--         <Setter Property="Width" Value="16" /> -->
+    <!--         <Setter Property="Height" Value="16" /> -->
+    <!--         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" /> -->
+    <!-- -->
+    <!--         <Style Selector="^:pointerover"> -->
+    <!--             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" /> -->
+    <!--         </Style> -->
+    <!--     </Style> -->
+    <!-- </Style> -->
 
 
 </Styles>
