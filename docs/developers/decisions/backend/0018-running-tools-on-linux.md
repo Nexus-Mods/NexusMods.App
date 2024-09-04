@@ -155,105 +155,10 @@ runtimes in precompiled binaries so stuff can 'just work'.
 !!! info "Not all the dependencies may be available on all distros."
 
 For example [umu] would be considered universal, but is still not easily acquirable
-from environments like Ubuntu Linux.
+from environments like Ubuntu Linux. We don't currently plan to static compile
+dependencies, therefore the relevant docs were moved to a gist.
 
-### Python
-
-!!! info "This applies to [umu], [protontricks] and [winetricks]."
-
-Static bundling of Python executables can be done with [PyInstaller].
-
-Set up a virtual environment and enable it:
-
-```
-python -m venv protontricks
-source protontricks/bin/activate
-```
-
-Install [PyInstaller] with:
-
-```bash
-pip install pyinstaller
-```
-
-Then clone the project:
-
-```bash
-git clone https://github.com/Matoking/protontricks.git
-cd protontricks
-```
-
-Install the project from disk:
-
-```bash
-# This gets you the dependencies, and lets you test a local build
-# before bundling.
-pip install --editable .
-```
-
-Locate the `def main()` function, and build with [PyInstaller]:
-
-```bash
-# The `add-data` flag allows us to bundle additional files with the executable,
-# in this case we want the `data` folder, which will be output to the `data`
-# folder when bundled. For protontricks, this folder contains useful bash scripts.
-pyinstaller --onefile src/protontricks/cli/main.py --name protontricks --add-data "src/protontricks/data:protontricks/data"
-```
-
-This should have output the binary in the `dist` folder, we can run it like this:
-
-```bash
-./dist/protontricks --help
-```
-
-#### Troubleshooting
-
-!!! info "The above sequence of commands usually works, but sometimes, like in the case above it doesn't."
-
-For `protontricks` specifically, we get the following error:
-
-```
-Traceback (most recent call last):
-  File "protontricks/cli/main.py", line 15, in <module>
-ImportError: attempted relative import with no known parent package
-[PYI-654761:ERROR] Failed to execute script 'main' due to unhandled exception!
-```
-
-This is because `protontricks` uses relative imports from parent directories, and
-[PyInstaller] is unable to resolve these dependencies. To workaround this limitation,
-you can create a simple script outside of the package (i.e. `src/entry.py`) that
-imports and calls the `cli` function to serve as an entrypoint:
-
-```python
-from protontricks.cli.main import cli
-
-if __name__ == "__main__":
-    cli()
-```
-
-The path to this script can then be passed to [PyInstaller] to build the binary:
-
-```bash
-pyinstaller --onefile src/entry.py --name protontricks --add-data "src/protontricks/data:protontricks/data"
-```
-
-##### Running Module Locally
-
-!!! info "I ran into issues running the module locally with `python -m protontricks.cli.main`"
-
-In my case I needed to make a patch from:
-
-```python
-if __name__ == "__main__":
-    main()
-```
-
-to
-
-```python
-if __name__ == "__main__":
-    main(None)
-```
+[Static Compilation notes for non-.NET Projects Available in the following gist](https://gist.github.com/Sewer56/8a821b07e12e09f53b9ddb5b99c5d22e)
 
 ## Planned Steps
 
