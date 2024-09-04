@@ -30,17 +30,15 @@ etc.
 Supporting Windows tools is crucial for our mod manager due to two main
 categories of software:
 
-***Windows-Specific Development Frameworks***
+### Windows-Specific Development Frameworks
 
-Some modding tools are built using Windows-only like WPF (Windows Presentation Foundation)
-for the UI.
+!!! info "Some modding tools are built using Windows-only like WPF for the UI."
 
 Porting these tools can sometimes be expensive/unfeasible in terms of risk/reward.
 
-***Proprietary Software***
+### Proprietary Software
 
-Some modding tools, like REDMod for Cyberpunk 2077, are proprietary and only
-available for Windows.
+!!! info "Some modding tools, like REDMod for Cyberpunk 2077, are proprietary and only available for use on Windows."
 
 These tools cannot be ported to other platforms due to legal restrictions or
 technical limitations imposed by their closed-source nature.
@@ -140,93 +138,17 @@ Example:
 WINEPREFIX=/home/sewer/.steam/steam/steamapps/compatdata/213610/pfx winetricks dotnet48
 ```
 
-!!! tip "It might be a good idea to detect runtimes during the download analysis stage"
+#### Auto Detecting Runtime Requirements for Binaries
 
-    This way we can easily cache the results.
+!!! info "Information on how to detect runtime requirements for certain types of tools."
 
-#### Detecting .NET Framework
+At some point, we may offer the ability for users to run arbitrary modding
+tools installed from the Nexus site.
 
-!!! info "Sometimes .NET Framework powered tools are still used for some games"
+This will require some additional work, of automatically detecting required missing
+runtimes in precompiled binaries so stuff can 'just work'.
 
-    Although old, some older tools still rely on this technology, so we must try
-    to detect if the user has it installed.
-
-To detect if an application requires .NET Framework, look at the [IMAGE_DATA_DIRECTORY]
-structure of the PE header. If the `The CLR header address and size` field is present
-and not 0; then the application requires .NET Framework.
-
-!!! info "To detect if .NET Framework is installed on the system, check the following directory."
-
-    `"C:\Windows\Microsoft.NET\Framework"`
-
-    There should be a folder for each version. However, 4.X are backwards compatible,
-    and thus only 4.8.2 (or latest) is required.
-
-!!! note "We're unlikely to run into this scenario in the immediate future"
-
-    Therefore no plan of action is currently to be done.
-
-#### Detecting .NET Core
-
-!!! warning "This can be a bit tricky."
-
-There are multiple ways to package a .NET Application:
-
-- Self Contained Deployment
-- Single File Deployment (non NativeAOT)
-- Framework Dependent Deployment
-
-For the purposes of our use case, self-contained and framework dependent work
-the same, however self-contained single file deployment differs slightly.
-
-##### Framework Dependent Deployment
-
-Consider a typical application:
-
-```
-- `apphost.exe`
-- `apphost.runtimeconfig.json`
-- `apphost.deps.json`
-```
-
-Replace `apphost` with name of EXE.
-
-When a .NET Core application is built, the SDK copies `apphost.exe` and amends
-its resources with the name, icon, publisher of the final target application.
-
-This in turn searches for a corresponding `dll` file matching the name of the exe.
-
-Simply seeing `.runtimeconfig.json` and `.deps.json` will guarantee a matching
-.NET Core application built with apphost. They are *technically optional*
-but most devs are unaware, and thus won't delete them.
-
-!!! note "An alternative way"
-
-    For a more reliable way that accounts for the deleted files, look at the
-    PE header of the `DLL` file and look for the CLR header, as per
-    [Detecting .NET Framework](#detecting-net-framework) section.
-
-To detect if .NET Core is installed on the system, use [NetCoreInstallChecker],
-for support for checking a `WINEPREFIX`, library will need a small PR for setting
-alternative root (`C:`) folder.
-
-##### Single File Deployment
-
-!!! info "The easiest way is to search the binary for the pattern below"
-
-```csharp
-0x8b, 0x12, 0x02, 0xb9, 0x6a, 0x61, 0x20, 0x38,
-0x72, 0x7b, 0x93, 0x02, 0x14, 0xd7, 0xa0, 0x32,
-0x13, 0xf5, 0xb9, 0xe6, 0xef, 0xae, 0x33, 0x18,
-0xee, 0x3b, 0x2d, 0xce, 0x24, 0xb3, 0x6a, 0xae
-```
-
-This set of bytes is SHA-256 hash for the string `".net core bundle"`.
-
-This can be done at around 60GB/s on a single thread of a 5900X with an [optimized pattern scanner].
-
-Unfortunately this alone does not determine if the Single File deployment is self-contained or not.
-To determine if it's self-contained, check the PE header for an export named `DotNetRuntimeInfo`.
+[Further Reading/Research Moved to Separate Gist](https://gist.github.com/Sewer56/1b62dc318c643b65e1f2a2a272e374d5).
 
 ## Static Compilation of Dependencies
 
