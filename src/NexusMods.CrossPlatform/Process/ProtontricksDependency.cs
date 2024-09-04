@@ -65,4 +65,16 @@ public class ProtontricksDependency : ExecutableRuntimeDependency
 
         return true;
     }
+
+    /// <summary>
+    /// Transforms an existing command into a command which invoked `protontricks-launch` with the original command
+    /// as the target.
+    /// </summary>
+    public Command MakeLaunchCommand(Command command, long appId)
+    {
+        var args = $"--appid {appId} \"{command.TargetFilePath}\" {command.Arguments}";
+        return new Command("protontricks-launch", args, 
+            command.WorkingDirPath, command.Credentials, command.EnvironmentVariables, 
+            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe);
+    }
 }

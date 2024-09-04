@@ -9,7 +9,7 @@ namespace NexusMods.CrossPlatform.Process;
 /// <summary>
 /// concrete implementation of <see cref="IProcessFactory"/> using actual os processes
 /// </summary>
-internal class ProcessFactory : IProcessFactory
+public class ProcessFactory : IProcessFactory
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;

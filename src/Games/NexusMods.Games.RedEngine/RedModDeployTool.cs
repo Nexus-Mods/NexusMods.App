@@ -1,25 +1,24 @@
-using System.Text;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic;
 
 namespace NexusMods.Games.RedEngine;
 
 public class RedModDeployTool : ITool
 {
-    private static readonly GamePath RedModPath = new(LocationId.Game, "tools/redmod/bin/redmod.exe");
+    private static readonly GamePath RedModPath = new(LocationId.Game, "tools/redmod/bin/redMod.exe");
     private static readonly GamePath RedModDeployFolder = new(LocationId.Game, "r6/cache/modded");
 
     private readonly ILogger<RedModDeployTool> _logger;
-    private readonly IProcessFactory _processFactory;
+    private readonly GameToolRunner _toolRunner;
 
-    public RedModDeployTool(ILogger<RedModDeployTool> logger, IProcessFactory processFactory)
+    public RedModDeployTool(ILogger<RedModDeployTool> logger, GameToolRunner toolRunner)
     {
         _logger = logger;
-        _processFactory = processFactory;
+        _toolRunner = toolRunner;
     }
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
@@ -34,9 +33,10 @@ public class RedModDeployTool : ITool
         if (!deployFolder.DirectoryExists())
             deployFolder.CreateDirectory();
 
-        await _processFactory.ExecuteAsync(Cli.Wrap(exe.ToString())
+        var command = Cli.Wrap(exe.ToString())
             .WithArguments("deploy")
-            .WithWorkingDirectory(exe.Parent.ToString()), cancellationToken: cancellationToken);
+            .WithWorkingDirectory(exe.Parent.ToString());
+        await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
     }
 
     public string Name => "RedMod Deploy";
