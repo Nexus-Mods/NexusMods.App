@@ -158,42 +158,14 @@ For example [umu] would be considered universal, but is still not easily acquira
 from environments like Ubuntu Linux. We don't currently plan to static compile
 dependencies, therefore the relevant docs were moved to a gist.
 
-[Static Compilation notes for non-.NET Projects Available in the following gist](https://gist.github.com/Sewer56/8a821b07e12e09f53b9ddb5b99c5d22e)
+[Static Compilation notes for non-.NET Projects Available in the following gist](https://gist.github.com/Sewer56/8a821b07e12e09f53b9ddb5b99c5d22e).
 
-## Planned Steps
+## Deployment Strategy
 
-Support will be added on a game-by-game basis.
+Support will be added on a game-by-game basis, with functionality being added 
+'Just in Time' as it's needed. In other words, driven by current needs of the App.
 
-We will add functionality to the App as it's needed.
-
-We don't plan to [Statically Compile Dependencies](#static-compilation-of-dependencies) unless
-it proves to be absolutely needed with no alternative way.
-
-### Phase One
-
-!!! info "This gets us basic support for Steam Games, which is what is required"
-
-Detect if [protontricks] is installed.
-
-Warn the user in a modal if it is not.
-
-!!! tip "This is driven by requirement to run `redmod` with Cyberpunk 2077"
-
-### Undetermined
-
-!!! info "Will be done as/when required for each new supported use case"
-
-1. Warn the user pre-deployment if a WINEPREFIX for a given game does not exist.
-    - See the [Getting a WINEPREFIX for a given Steam ID](#getting-a-wineprefix-for-a-given-steam-id) section.
-
-2. Auto-detect missing runtimes for tools for a given WINEPREFIX; emitting a warning or diagnostic.
-
-3. Support WINEPREFIX(ES) managed/created by `bottles`, `heroic`, `playnite`, etc.
-    - Needs further research and/or input from @erri120
-
-4. Auto-detect various types of tools (.NET Core, .NET Framework, etc.) and offer to install them into WINEPREFIX
-
-5. Handle possible error of missing WINEPREFIX for a given Steam ID.
+Progress is tracked in [Issue 308](https://github.com/Nexus-Mods/NexusMods.App/issues/308).
 
 [steam-api]: https://partner.steamgames.com/doc/api/steam_api
 [steam-fix-reboot]: https://reloaded-project.github.io/Reloaded-III/Loader/Copy-Protection/Windows-Steam.html#avoid-forced-reboot
