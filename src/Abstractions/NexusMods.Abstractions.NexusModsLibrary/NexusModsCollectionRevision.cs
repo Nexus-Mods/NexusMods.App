@@ -12,11 +12,6 @@ public partial class NexusModsCollectionRevision : IModelDefinition
     private const string Namespace = "NexusMods.Library.NexusModsCollectionRevision";
     
     /// <summary>
-    /// The slug of the collection.
-    /// </summary>
-    public static readonly CollectionsSlugAttribute Slug = new(Namespace, nameof(Slug)) { IsIndexed = true };
-    
-    /// <summary>
     /// The globally unique id identifying a specific revision of a collection.
     /// </summary>
     public static readonly RevisionIdAttribute RevisionId = new(Namespace, nameof(RevisionId)) { IsIndexed = true };

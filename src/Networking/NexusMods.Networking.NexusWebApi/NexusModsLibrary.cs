@@ -20,7 +20,8 @@ public class NexusModsLibrary
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
-
+    private readonly NexusGraphQLClient _gqlClient;
+    
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -29,6 +30,7 @@ public class NexusModsLibrary
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
+        _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -63,6 +65,63 @@ public class NexusModsLibrary
 
         var txResults = await tx.Commit();
         return txResults.Remap(newModPage);
+    }
+
+    /// <summary>
+    /// Get or add a collection metadata
+    /// </summary>
+    public async Task<NexusModsCollectionMetadata.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, CancellationToken token)
+    {
+        var collections = NexusModsCollectionMetadata.FindBySlug(_connection.Db, slug);
+        if (collections.TryGetFirst(x => x.Slug == slug, out var collection)) 
+            return collection;
+
+        var info = await _gqlClient.CollectionInfo.ExecuteAsync(slug.Value, true, token);
+        
+        using var tx = _connection.BeginTransaction();
+        var newCollection = new NexusModsCollectionMetadata.New(tx)
+        {
+            Slug = slug,
+            Name = info.Data!.Collection.Name,
+        };
+
+        foreach (var revision in info.Data!.Collection.Revisions)
+        {
+            _ = new NexusModsCollectionRevision.New(tx)
+            {
+                CollectionId = newCollection,
+                RevisionId = RevisionId.From((ulong)revision.Id),
+                RevisionNumber = RevisionNumber.From((ulong)revision.RevisionNumber),
+            };
+        }
+        
+        var txResults = await tx.Commit();
+
+        return txResults.Remap(newCollection);
+    }
+    
+    /// <summary>
+    /// Get or add a collection metadata
+    /// </summary>
+    public async Task<NexusModsCollectionRevision.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
+    {
+        var collections = await GetOrAddCollectionMetadata(slug, token);
+        if (collections.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
+            return revision;
+        
+        var revisionInfo = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(slug.Value, (int)revisionNumber.Value, true, token);
+        
+        using var tx = _connection.BeginTransaction();
+        var newRevision = new NexusModsCollectionRevision.New(tx)
+        {
+            CollectionId = collections,
+            RevisionNumber = revisionNumber,
+            RevisionId = RevisionId.From((ulong)revisionInfo.Data!.CollectionRevision.Id),
+        };
+        
+        var txResults = await tx.Commit();
+        
+        return txResults.Remap(newRevision);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -146,5 +205,22 @@ public class NexusModsLibrary
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;
+    }
+    
+    /// <summary>
+    /// Create a job that downloads a collection
+    /// </summary>
+    /// <param name="destination">Download location</param>
+    /// <param name="slug">The collection slug</param>
+    /// <param name="revision">The revision of the collection download</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public IJobTask<NexusModsCollectionDownloadJob, AbsolutePath> CreateCollectionDownloadJob(
+        AbsolutePath destination,
+        CollectionSlug slug,
+        RevisionNumber revision,
+        CancellationToken cancellationToken)
+    {
+        return NexusModsCollectionDownloadJob.Create(_serviceProvider, slug, revision, destination);
     }
 }

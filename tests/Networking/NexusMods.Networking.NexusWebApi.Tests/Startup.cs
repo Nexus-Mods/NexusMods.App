@@ -7,6 +7,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
+using NexusMods.Jobs;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
@@ -31,6 +32,7 @@ public class Startup
             .AddCrossPlatform()
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
+            .AddJobMonitor()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
