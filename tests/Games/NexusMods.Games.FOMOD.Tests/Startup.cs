@@ -24,7 +24,6 @@ public class Startup
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.659.0"))
-            .AddGenericGameSupport()
             .AddFileStoreAbstractions()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()

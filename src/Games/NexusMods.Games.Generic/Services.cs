@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Games.Generic.FileAnalyzers;
 
 namespace NexusMods.Games.Generic;

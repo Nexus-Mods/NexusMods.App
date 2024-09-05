@@ -24,9 +24,9 @@ public class GameToolRunner
     private readonly ProtontricksDependency? _protontricks;
 
     /// <summary/>
-    public GameToolRunner(IProcessFactory processFactory, IServiceProvider provider)
+    public GameToolRunner(IServiceProvider provider)
     {
-        _processFactory = processFactory;
+        _processFactory = provider.GetRequiredService<IProcessFactory>();
         _protontricks = provider.GetService<ProtontricksDependency>();
     }
 

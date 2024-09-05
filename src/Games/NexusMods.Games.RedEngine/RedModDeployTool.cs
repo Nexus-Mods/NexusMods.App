@@ -18,7 +18,6 @@ public class RedModDeployTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        
         var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
         var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
         
