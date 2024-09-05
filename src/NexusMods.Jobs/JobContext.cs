@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Jobs;
 
-public class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> 
+public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> 
     where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
 {
     private readonly Subject<JobStatus> _status;
