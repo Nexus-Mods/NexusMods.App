@@ -50,7 +50,7 @@ public class Startup
         // finalize our OpenTelemetry configuration.
         provider.GetService<MeterProvider>();
         provider.GetService<TracerProvider>();
-        
+
         try
         {
             builder.StartWithClassicDesktopLifetime(args);
