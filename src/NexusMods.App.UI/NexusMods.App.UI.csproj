@@ -637,9 +637,6 @@
           <DependentUpon>MessageBoxOkView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Overlays\Dependency\MissingProtontricks\MissingProtontricksViewModel.cs">
-          <DependentUpon>IMissingProtontricksViewModel.cs</DependentUpon>
-        </Compile>
     </ItemGroup>
 
     <ItemGroup>
