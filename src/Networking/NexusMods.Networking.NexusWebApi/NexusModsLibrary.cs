@@ -50,6 +50,17 @@ public class NexusModsLibrary
             GameDomain = gameDomain,
         };
 
+        if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
+        {
+            newModPage.FullSizedPictureUri = fullSizedPictureUri;
+
+            var thumbnailUrl = modInfo.Data.PictureUrl.Replace("/images/", "/images/thumbnails/", StringComparison.OrdinalIgnoreCase);
+            if (Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
+            {
+                newModPage.ThumbnailUri = thumbnailUri;
+            }
+        }
+
         var txResults = await tx.Commit();
         return txResults.Remap(newModPage);
     }
@@ -120,7 +131,7 @@ public class NexusModsLibrary
         return links.Data.First().Uri;
     }
 
-    public async Task<NexusModsDownloadJob> CreateDownloadJob(
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NXMModUrl url,
         CancellationToken cancellationToken)
@@ -130,38 +141,10 @@ public class NexusModsLibrary
 
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
-
-        var worker = _serviceProvider.GetRequiredService<NexusModsDownloadJobWorker>();
-
-        using var tx = _connection.BeginTransaction();
-        var newState = new NexusModsDownloadJobPersistedState.New(tx, out var id)
-        {
-            FileMetadataId = file,
-            HttpDownloadJobPersistedState = new HttpDownloadJobPersistedState.New(tx, id)
-            {
-                Destination = destination,
-                Uri = uri,
-                DownloadPageUri = modPage.GetUri(),
-                PersistedJobState = new PersistedJobState.New(tx, id)
-                {
-                    Status = JobStatus.None,
-                    Worker = worker,
-                },
-            },
-        };
-
-        var txResult = await tx.Commit();
-        var state = txResult.Remap(newState);
         
-        var monitor = _serviceProvider.GetRequiredService<IJobMonitor>();
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
-        var job = new NexusModsDownloadJob(_connection, state, worker: worker, monitor: monitor)
-        {
-            HttpDownloadJob = new HttpDownloadJob(_connection, state.AsHttpDownloadJobPersistedState(), 
-                worker: _serviceProvider.GetRequiredService<HttpDownloadJobWorker>(),
-                monitor: monitor),
-        };
-
-        return job;
+        return nexusJob;
     }
 }

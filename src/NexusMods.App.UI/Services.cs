@@ -46,12 +46,12 @@ using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.Pages.LoadoutGroupFiles;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
@@ -215,8 +215,8 @@ public static class Services
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
 
-            .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
-            .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
+            .AddView<ItemContentsFileTreeView, IItemContentsFileTreeViewModel>()
+            .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
 
             .AddView<LibraryView, ILibraryViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
@@ -252,7 +252,7 @@ public static class Services
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
-            .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
+            .AddSingleton<IPageFactory, ItemContentsFileTreePageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
 

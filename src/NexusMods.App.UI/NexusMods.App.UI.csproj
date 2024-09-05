@@ -583,7 +583,7 @@
         <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
           <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Trees\LoadoutGroupFileTreeViewModel.cs">
+        <Compile Update="Controls\Trees\LoadoutItemGroupFileTreeViewModel.cs">
           <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
@@ -610,8 +610,14 @@
         <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
           <DependentUpon>ILibraryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\NexusModsModPageItemModel.cs">
+        <Compile Update="Pages\LibraryPage\FakeParentLibraryItemModel.cs">
             <DependentUpon>LibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\NexusModsModPageLibraryItemModel.cs">
+            <DependentUpon>LibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutPage\FakeParentLoadoutItemModel.cs">
+            <DependentUpon>LoadoutItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
@@ -621,6 +627,12 @@
         </Compile>
         <Compile Update="Pages\NexusModsDataProvider.cs">
           <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeViewModel.cs">
+          <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
+          <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>

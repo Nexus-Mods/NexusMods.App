@@ -21,13 +21,4 @@
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Update="NexusModsDownloadJobPersistedState.cs">
-        <DependentUpon>NexusModsDownloadJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="NexusModsDownloadJobWorker.cs">
-        <DependentUpon>NexusModsDownloadJob.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
 </Project>

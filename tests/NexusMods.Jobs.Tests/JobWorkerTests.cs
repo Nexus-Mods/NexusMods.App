@@ -9,36 +9,29 @@ public class JobWorkerTests
     [Fact]
     public async Task TestCreateSync()
     {
+        var monitor = new JobMonitor();
         var job = new MyJob();
-        var worker = JobWorker.CreateWithData<MyJob, string>(new MyJob(), (_, _, _) => Task.FromResult<string>("hello world"));
+        var worker = monitor.Begin<MyJob, string>(job, async _ => "hello world");
 
-        await worker.StartAsync(job);
-        var jobResult = await job.WaitToFinishAsync();
-        jobResult.TryGetCompleted(out var completed).Should().BeTrue();
-        completed!.TryGetData<string>(out var data).Should().BeTrue();
-        data.Should().Be("hello world");
+        var jobResult = await worker;
+        jobResult.Should().Be("hello world");
     }
 
     [Fact]
     public async Task TestCreateAsync()
     {
+        var monitor = new JobMonitor();
         var job = new MyJob();
-        var worker = JobWorker.CreateWithData<MyJob, string>(new MyJob(), async (_, _, _) =>
-        {
-            await Task.Yield();
-            return "hello world";
-        });
-
-        await worker.StartAsync(job);
-        var jobResult = await job.WaitToFinishAsync();
-        jobResult.TryGetCompleted(out var completed).Should().BeTrue();
-        completed!.TryGetData<string>(out var data).Should().BeTrue();
-        data.Should().Be("hello world");
+        var worker = monitor.Begin(job, async _ =>
+            {
+                await Task.Delay(100);
+                return "hello world";
+            }
+        );
+        
+        var jobResult = await worker;
+        jobResult.Should().Be("hello world");
     }
 
-    private class MyJob : AJob
-    {
-        public MyJob(IJobGroup? group = default, IJobWorker? worker = default, IJobMonitor? monitor = default)
-            : base(null!, group, worker, monitor) { }
-    }
+    private class MyJob : IJobDefinition<string>;
 }

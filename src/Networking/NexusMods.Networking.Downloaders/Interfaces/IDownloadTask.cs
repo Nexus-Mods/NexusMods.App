@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.Activities;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -11,10 +10,6 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 [Obsolete(message: "To be replaced with Jobs")]
 public interface IDownloadTask
 {
-    /// <summary>
-    /// The DownloaderState of the task.
-    /// </summary>
-    DownloaderState.ReadOnly PersistentState { get; }
     
     /// <summary>
     /// Path of the ongoing download file

@@ -2,6 +2,7 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -74,7 +75,7 @@ public interface ILoadoutSynchronizer
     /// <remarks>
     ///     This was formerly called 'Manage'.
     /// </remarks>
-    Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
+    IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
 
     /// <summary>
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.

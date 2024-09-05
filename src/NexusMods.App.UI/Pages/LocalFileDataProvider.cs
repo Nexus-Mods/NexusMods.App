@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -46,15 +47,14 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(_connection.Db, entityId));
 
-        var model = new LibraryItemModel
+        var model = new LibraryItemModel(libraryFile.Id)
         {
             Name = libraryFile.AsLibraryItem().Name,
             CreatedAt = libraryFile.GetCreatedAt(),
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
-        model.ItemSize.Value = libraryFile.Size;
+        model.ItemSize.Value = libraryFile.Size.ToString();
         return model;
     }
 
@@ -77,22 +77,27 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 });
 
                 var linkedLoadoutItemsObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .AsEntityIds()
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-                var model = new LibraryItemModel
+                var numInstalledObservable = _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
+                    .Count();
+
+                var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
                     Name = libraryFile.AsLibraryItem().Name,
                     CreatedAt = libraryFile.GetCreatedAt(),
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
+                    NumInstalledObservable = numInstalledObservable,
+                    LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
-                model.LibraryItemId.Value = libraryFile.AsLibraryItem().LibraryItemId;
-                model.ItemSize.Value = libraryFile.Size;
-                return model;
+                model.ItemSize.Value = libraryFile.Size.ToString();
+                return (LibraryItemModel)model;
             });
     }
 
@@ -138,10 +143,25 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
-                var isEnabledObservable = observable.TrueForAll(
-                    observableSelector: item => LoadoutItem.Observe(_connection, item.Id).Select(static item => !item.IsDisabled),
-                    equalityCondition: static isEnabled => isEnabled
-                );
+                var isEnabledObservable = observable
+                    .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
+                    .QueryWhenChanged(query =>
+                    {
+                        var isEnabled = Optional<bool>.None;
+                        foreach (var isItemEnabled in query.Items)
+                        {
+                            if (!isEnabled.HasValue)
+                            {
+                                isEnabled = isItemEnabled;
+                            }
+                            else
+                            {
+                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
+                            }
+                        }
+
+                        return isEnabled.HasValue ? isEnabled.Value : null;
+                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {

@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;

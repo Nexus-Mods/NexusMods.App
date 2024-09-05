@@ -3,9 +3,7 @@ using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-public class UnmanageGameJob : AJob
-{
-    public UnmanageGameJob(IJobMonitor? monitor) : base(new MutableProgress(new IndeterminateProgress()), group: null, worker: null, monitor) { }
-
-    public required GameInstallation Installation { get; init; }
-}
+/// <summary>
+/// The specified game installation is being unmanaged and the files are being reset to their original state
+/// </summary>
+public record UnmanageGameJob(GameInstallation Installation) : IJobDefinition<GameInstallation>;

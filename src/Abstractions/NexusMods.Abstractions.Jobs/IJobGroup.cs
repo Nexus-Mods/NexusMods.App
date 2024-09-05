@@ -1,16 +1,9 @@
-using System.Collections.ObjectModel;
-using JetBrains.Annotations;
-
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
-/// Represents a job of <see cref="IJob"/>.
+/// A group of jobs
 /// </summary>
-[PublicAPI]
-public interface IJobGroup : IJob, IReadOnlyList<IJob>
+public interface IJobGroup : IReadOnlyCollection<IJob>
 {
-    /// <summary>
-    /// Gets the read-only observable collection for the underlying jobs list.
-    /// </summary>
-    ReadOnlyObservableCollection<IJob> ObservableCollection { get; }
+    public CancellationToken CancellationToken { get; }
 }

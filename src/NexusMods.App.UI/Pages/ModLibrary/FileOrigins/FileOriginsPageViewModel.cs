@@ -192,9 +192,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
         _ = Task.Run(async () =>
         {
-            await using var job = _libraryService.AddLocalFile(file);
-            await job.StartAsync();
-            await job.WaitToFinishAsync();
+            await _libraryService.AddLocalFile(file);
         });
 
         return Task.CompletedTask;
@@ -215,9 +213,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private async Task AddUsingInstallerToLoadout(LibraryItem.ReadOnly libraryItem, ILibraryItemInstaller? installer, CancellationToken token)
     {
         var loadout = Loadout.Load(_conn.Db, LoadoutId);
-        await using var job = _libraryService.InstallItem(libraryItem, loadout, installer);
-        await job.StartAsync(token);
-        await job.WaitToFinishAsync(token);
+        var job = _libraryService.InstallItem(libraryItem, LoadoutId, installer);
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)

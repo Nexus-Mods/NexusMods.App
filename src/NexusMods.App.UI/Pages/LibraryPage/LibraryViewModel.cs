@@ -54,7 +54,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         LoadoutId loadoutId) : base(windowManager)
     {
         var ticker = Observable
-            .Interval(period: TimeSpan.FromSeconds(10), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
@@ -128,27 +128,29 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            Adapter.MessageSubject
-                .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id.Id))
-                .Where(static item => item.IsValid())
-                .SubscribeAwait(
-                    onNextAsync: (libraryItem, cancellationToken) => InstallLibraryItem(libraryItem, _loadout, cancellationToken),
-                    awaitOperation: AwaitOperation.Parallel,
-                    configureAwait: false
-                ).AddTo(disposables);
+            Adapter.MessageSubject.SubscribeAwait(
+                onNextAsync: async (message, cancellationToken) =>
+                {
+                    foreach (var id in message.Ids)
+                    {
+                        var libraryItem = LibraryItem.Load(_connection.Db, id);
+                        if (!libraryItem.IsValid()) continue;
+                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                    }
+                },
+                awaitOperation: AwaitOperation.Parallel,
+                configureAwait: false
+            ).AddTo(disposables);
         });
     }
 
-    private async ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    private async ValueTask InstallItems(IEnumerable<LibraryItemId> ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        // TODO: get correct IDs
         var db = _connection.Db;
-        var items = Adapter.SelectedModels
-            .Select(model => model.LibraryItemId.Value)
-            .Where(x => x.HasValue)
-            .Select(x => x.Value)
+        var items = ids
             .Distinct()
             .Select(id => LibraryItem.Load(db, id))
+            .Where(x => x.IsValid())
             .ToArray();
 
         await Parallel.ForAsync(
@@ -159,15 +161,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
     }
 
+    private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    {
+        var ids = Adapter.SelectedModels.SelectMany(model => model.GetLoadoutItemIds());
+        return InstallItems(ids, useAdvancedInstaller, cancellationToken);
+    }
+
     private async ValueTask InstallLibraryItem(
         LibraryItem.ReadOnly libraryItem,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await using var job = _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
-        await job.StartAsync(cancellationToken: cancellationToken);
-        await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+        await _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
@@ -198,16 +204,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             toExclusive: paths.Length,
             body: async (i, innerCancellationToken) =>
             {
-                await using var job = _libraryService.AddLocalFile(paths[i]);
-                await job.StartAsync(cancellationToken: innerCancellationToken);
-                await job.WaitToFinishAsync(cancellationToken: innerCancellationToken);
+                var path = paths[i];
+                await _libraryService.AddLocalFile(path);
             },
             cancellationToken: cancellationToken
         );
     }
 }
 
-public readonly record struct InstallMessage(LibraryItemId Id);
+public readonly record struct InstallMessage(IReadOnlyCollection<LibraryItemId> Ids);
 
 public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<InstallMessage>
@@ -243,9 +248,9 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
     {
         model.Ticker = _ticker;
 
-        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (libraryItemId, subject) =>
+        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (ids, subject) =>
         {
-            subject.OnNext(new InstallMessage(libraryItemId));
+            subject.OnNext(new InstallMessage(ids));
         });
 
         var didAdd = _commandDisposables.TryAdd(model, disposable);

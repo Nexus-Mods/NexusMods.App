@@ -1,48 +1,75 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Humanizer;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using ReactiveUI.Fody.Helpers;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
-    [Reactive] public DateTime InstalledAt { get; set; } = DateTime.UnixEpoch;
+    public ReactiveProperty<DateTime> InstalledAt { get; } = new(DateTime.UnixEpoch);
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
-    [Reactive] public string Name { get; set; } = "-";
+    public BindableReactiveProperty<string> Name { get; } = new("-");
 
     public IObservable<string> VersionObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
-    [Reactive] public string Version { get; set; } = "-";
+    public BindableReactiveProperty<string> Version { get; } = new("-");
 
     public IObservable<Size> SizeObservable { get; init; } = System.Reactive.Linq.Observable.Return(Size.Zero);
-    [Reactive] public Size Size { get; set; } = Size.Zero;
+    public BindableReactiveProperty<Size> ItemSize { get; } = new(Size.Zero);
 
-    public IObservable<bool> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return(false);
-    public BindableReactiveProperty<bool> IsEnabled { get; } = new(value: false);
+    public IObservable<bool?> IsEnabledObservable { get; init; } = System.Reactive.Linq.Observable.Return<bool?>(false);
+    public BindableReactiveProperty<bool?> IsEnabled { get; } = new(value: false);
 
-    public ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>> ToggleEnableStateCommand { get; }
+    public ReactiveCommand<Unit, IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)>> ToggleEnableStateCommand { get; }
 
     private readonly LoadoutItemId[] _fixedId;
     public virtual IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => _fixedId;
+
+    public Observable<DateTime>? Ticker { get; set; }
+    public BindableReactiveProperty<string> FormattedInstalledAt { get; } = new("-");
 
     private readonly IDisposable _modelActivationDisposable;
     public LoadoutItemModel(LoadoutItemId loadoutItemId)
     {
         _fixedId = [loadoutItemId];
-        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<LoadoutItemId>>(_ => GetLoadoutItemIds());
+        ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)>>(_ =>
+        {
+            var ids = GetLoadoutItemIds();
+            var isEnabled = IsEnabled.Value;
+            var shouldEnable = !isEnabled ?? false;
+
+            return ids.Select(id => (Id: id, ShouldEnable: shouldEnable)).ToArray();
+        });
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.NameObservable.OnUI().Subscribe(name => model.Name = name).AddTo(disposables);
-            model.VersionObservable.OnUI().Subscribe(version => model.Version = version).AddTo(disposables);
-            model.SizeObservable.OnUI().Subscribe(size => model.Size = size).AddTo(disposables);
+            model.FormattedInstalledAt.Value = FormatDate(DateTime.Now, model.InstalledAt.Value);
+
+            Debug.Assert(model.Ticker is not null, "should've been set before activation");
+            model.Ticker.Subscribe(model, static (now, model) =>
+            {
+                model.FormattedInstalledAt.Value = FormatDate(now, model.InstalledAt.Value);
+            }).AddTo(disposables);
+
+            model.NameObservable.OnUI().Subscribe(name => model.Name.Value = name).AddTo(disposables);
+            model.VersionObservable.OnUI().Subscribe(version => model.Version.Value = version).AddTo(disposables);
+            model.SizeObservable.OnUI().Subscribe(size => model.ItemSize.Value = size).AddTo(disposables);
             model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled.Value = isEnabled).AddTo(disposables);
+
+            model.InstalledAt.Subscribe(model, static (date, model) => model.FormattedInstalledAt.Value = FormatDate(DateTime.Now, date)).AddTo(disposables);
         });
+    }
+
+    private static string FormatDate(DateTime now, DateTime date)
+    {
+        if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
+        return date.Humanize(dateToCompareAgainst: now);
     }
 
     private bool _isDisposed;
@@ -52,7 +79,16 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
         {
             if (disposing)
             {
-                Disposable.Dispose(_modelActivationDisposable, ToggleEnableStateCommand);
+                Disposable.Dispose(
+                    _modelActivationDisposable,
+                    ToggleEnableStateCommand,
+                    InstalledAt,
+                    FormattedInstalledAt,
+                    Name,
+                    Version,
+                    ItemSize,
+                    IsEnabled
+                );
             }
 
             _isDisposed = true;
@@ -61,17 +97,17 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
         base.Dispose(disposing);
     }
 
-    public override string ToString() => Name;
+    public override string ToString() => Name.Value;
 
     public static IColumn<LoadoutItemModel> CreateNameColumn()
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
             header: "NAME",
-            getter: model => model.Name,
+            getter: model => model.Name.Value,
             options: new TextColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => string.Compare(a?.Name, b?.Name, StringComparison.OrdinalIgnoreCase),
-                CompareDescending = static (a, b) => string.Compare(b?.Name, a?.Name, StringComparison.OrdinalIgnoreCase),
+                CompareAscending = static (a, b) => string.Compare(a?.Name.Value, b?.Name.Value, StringComparison.OrdinalIgnoreCase),
+                CompareDescending = static (a, b) => string.Compare(b?.Name.Value, a?.Name.Value, StringComparison.OrdinalIgnoreCase),
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -87,11 +123,11 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     {
         return new CustomTextColumn<LoadoutItemModel, string>(
             header: "VERSION",
-            getter: model => model.Version,
+            getter: model => model.Version.Value,
             options: new TextColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => string.Compare(a?.Version, b?.Version, StringComparison.OrdinalIgnoreCase),
-                CompareDescending = static (a, b) => string.Compare(b?.Version, a?.Version, StringComparison.OrdinalIgnoreCase),
+                CompareAscending = static (a, b) => string.Compare(a?.Version.Value, b?.Version.Value, StringComparison.OrdinalIgnoreCase),
+                CompareDescending = static (a, b) => string.Compare(b?.Version.Value, a?.Version.Value, StringComparison.OrdinalIgnoreCase),
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -106,11 +142,11 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     {
         return new CustomTextColumn<LoadoutItemModel, Size>(
             header: "SIZE",
-            getter: model => model.Size,
+            getter: model => model.ItemSize.Value,
             options: new TextColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a is null ? -1 : a.Size.CompareTo(b?.Size ?? Size.Zero),
-                CompareDescending = static (a, b) => b is null ? -1 : b.Size.CompareTo(a?.Size ?? Size.Zero),
+                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? Size.Zero),
+                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? Size.Zero),
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -123,14 +159,13 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     public static IColumn<LoadoutItemModel> CreateInstalledAtColumn()
     {
-        return new CustomTextColumn<LoadoutItemModel, DateTime>(
+        return new CustomTextColumn<LoadoutItemModel, string>(
             header: "INSTALLED",
-            // TODO: use formatted date
-            getter: model => model.InstalledAt,
+            getter: model => model.FormattedInstalledAt.Value,
             options: new TextColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a?.InstalledAt.CompareTo(b?.InstalledAt ?? DateTime.UnixEpoch) ?? 1,
-                CompareDescending = static (a, b) => b?.InstalledAt.CompareTo(a?.InstalledAt ?? DateTime.UnixEpoch) ?? 1,
+                CompareAscending = static (a, b) => a?.InstalledAt.Value.CompareTo(b?.InstalledAt.Value ?? DateTime.UnixEpoch) ?? 1,
+                CompareDescending = static (a, b) => b?.InstalledAt.Value.CompareTo(a?.InstalledAt.Value ?? DateTime.UnixEpoch) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
@@ -148,15 +183,15 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             cellTemplateResourceKey: "ToggleEnableColumnTemplate",
             options: new TemplateColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a?.IsEnabled.Value.CompareTo(b?.IsEnabled.Value ?? false) ?? 1,
-                CompareDescending = static (a, b) => b?.IsEnabled.Value.CompareTo(a?.IsEnabled.Value ?? false) ?? 1,
+                CompareAscending = static (a, b) => a?.IsEnabled.Value?.CompareTo(b?.IsEnabled.Value ?? false) ?? 1,
+                CompareDescending = static (a, b) => b?.IsEnabled.Value?.CompareTo(a?.IsEnabled.Value ?? false) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
             }
         )
         {
-            Id = "Toggle"
+            Id = "Toggle",
         };
     }
 }
