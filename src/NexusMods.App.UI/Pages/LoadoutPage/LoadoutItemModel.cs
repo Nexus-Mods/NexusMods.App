@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
@@ -75,7 +76,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            }
+            },
+            width: new GridLength(1, GridUnitType.Auto)
         )
         {
             SortDirection = ListSortDirection.Ascending,
