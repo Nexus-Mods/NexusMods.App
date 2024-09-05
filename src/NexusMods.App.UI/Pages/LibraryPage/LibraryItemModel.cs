@@ -17,36 +17,38 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId>
 {
-    public ReactiveProperty<DynamicData.Kernel.Optional<LibraryItemId>> LibraryItemId { get; } = new();
-
     public required string Name { get; init; }
     public required DateTime CreatedAt { get; init; }
-    public BindableReactiveProperty<Size> ItemSize { get; } = new(Size.Zero);
+
+    // TODO: turn this back into a `Size`
+    // NOTE(erri120): requires https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/pull/304
+    public BindableReactiveProperty<string> ItemSize { get; } = new(Size.Zero.ToString());
     public BindableReactiveProperty<string> Version { get; set; } = new("-");
 
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
     private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
-    public ReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
     public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
 
     public Observable<DateTime>? Ticker { get; set; }
     public BindableReactiveProperty<string> FormattedCreatedAtDate { get; } = new("-");
     public BindableReactiveProperty<string> FormattedInstalledDate { get; } = new("-");
 
-    public ReactiveCommand<Unit, LibraryItemId> InstallCommand { get; }
+    public BindableReactiveProperty<string> InstallText { get; } = new("Install");
+    public BindableReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
+
+    public ReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>> InstallCommand { get; }
+
+    private readonly LibraryItemId[] _fixedId;
+    public virtual IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
-    public LibraryItemModel()
+    public LibraryItemModel(LibraryItemId libraryItemId)
     {
-        var canInstall = IsInstalledInLoadout
-            .Select(static isInstalled => isInstalled)
-            .CombineLatest(
-                source2: LibraryItemId.Select(static libraryItemId => libraryItemId.HasValue),
-                resultSelector: static (isInstalled, hasLibraryItem) => !isInstalled && hasLibraryItem
-            );
+        _fixedId = [libraryItemId];
 
-        InstallCommand = canInstall.ToReactiveCommand<Unit, LibraryItemId>(_ => LibraryItemId.Value.Value, initialCanExecute: false);
+        var canInstall = IsInstalledInLoadout.Select(static b => !b);
+        InstallCommand = canInstall.ToReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>>(_ => GetLoadoutItemIds(), initialCanExecute: false);
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -66,12 +68,14 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 {
                     if (count > 0)
                     {
+                        model.InstallText.Value = "Installed";
                         model.IsInstalledInLoadout.Value = true;
                         model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
                         model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
                     }
                     else
                     {
+                        model.InstallText.Value = "Install";
                         model.IsInstalledInLoadout.Value = false;
                         model.InstalledDate.Value = DateTime.UnixEpoch;
                     }
@@ -101,9 +105,9 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                     FormattedCreatedAtDate,
                     FormattedInstalledDate,
                     ItemSize,
-                    LibraryItemId,
                     IsInstalledInLoadout,
-                    InstalledDate
+                    InstalledDate,
+                    InstallText
                 );
             }
 
@@ -157,13 +161,13 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
     public static IColumn<LibraryItemModel> CreateSizeColumn()
     {
-        return new CustomTextColumn<LibraryItemModel, Size>(
+        return new CustomTextColumn<LibraryItemModel, string>(
             header: "SIZE",
             getter: model => model.ItemSize.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? Size.Zero),
-                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? Size.Zero),
+                CompareAscending = static (a, b) => a is null ? -1 : a.ItemSize.Value.CompareTo(b?.ItemSize.Value ?? "0 B"),
+                CompareDescending = static (a, b) => b is null ? -1 : b.ItemSize.Value.CompareTo(a?.ItemSize.Value ?? "0 B"),
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
