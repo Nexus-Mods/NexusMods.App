@@ -61,6 +61,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         {
             var libraryArchive = new LibraryArchive.New(Transaction, libraryFile.Id)
             {
+                IsArchive = true,
                 LibraryFile = libraryFile,
             };
             

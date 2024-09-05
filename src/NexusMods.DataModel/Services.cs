@@ -120,8 +120,7 @@ public static class Services
         
         // Verbs
         coll.AddLoadoutManagementVerbs()
-            .AddToolVerbs()
-            .AddArchiveVerbs();
+            .AddToolVerbs();
 
         return coll;
     }

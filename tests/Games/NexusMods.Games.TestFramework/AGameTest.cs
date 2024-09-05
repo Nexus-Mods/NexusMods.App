@@ -42,7 +42,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IConnection Connection;
 
     protected readonly NexusApiClient NexusNexusApiClient;
-    protected readonly IHttpDownloader HttpDownloader;
     
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
@@ -74,7 +73,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
         DiagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
 
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
-        HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
 
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
         if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
