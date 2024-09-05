@@ -139,6 +139,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
 
+            Adapter.Filter.OnNext(new LibraryFilter
+            {
+                Loadout = loadoutId,
+            });
+
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
@@ -250,6 +255,8 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
     public Subject<InstallMessage> MessageSubject { get; } = new();
     private readonly Dictionary<LibraryItemModel, IDisposable> _commandDisposables = new();
 
+    public BehaviorSubject<LibraryFilter> Filter { get; } = new(new LibraryFilter());
+
     private readonly IDisposable _activationDisposable;
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
     {
@@ -299,9 +306,11 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
 
     protected override IObservable<IChangeSet<LibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
+        var filterObservable = Filter.AsSystemObservable();
+
         var observables = viewHierarchical
             ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems())
-            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems());
+            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems(filterObservable));
 
         return observables.MergeChangeSets();
     }
@@ -328,7 +337,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
         {
             if (disposing)
             {
-                _activationDisposable.Dispose();
+                Disposable.Dispose(_activationDisposable, Filter, MessageSubject);
             }
 
             _isDisposed = true;

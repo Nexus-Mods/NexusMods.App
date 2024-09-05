@@ -1,15 +1,22 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
 public interface ILoadoutDataProvider
 {
     IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems();
+}
+
+public record LoadoutFilter
+{
+    public Optional<LoadoutId> Loadout { get; init; }
 }
 
 public static class LoadoutDataProviderHelper

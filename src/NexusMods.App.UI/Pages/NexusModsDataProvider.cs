@@ -26,7 +26,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(IObservable<LibraryFilter> filterObservable)
     {
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryFile
