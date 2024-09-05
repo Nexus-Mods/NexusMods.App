@@ -55,8 +55,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _inProgressTasksObservable = new([]);
     
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _completedTasksObservable = new([]);
-    
-    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; }
+
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; } 
     private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> CompletedTaskChangeSet { get; }
     
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> InProgressTasks => _inProgressTasksObservable;
@@ -133,8 +133,14 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         Series = new ReadOnlyObservableCollection<ISeries>([_lineSeries]);
         
-
-
+        InProgressTaskChangeSet = new SourceCache<IDownloadTaskViewModel, EntityId>(x => EntityId.From(0))
+            .Connect()
+            .OnUI();
+        
+        CompletedTaskChangeSet = new SourceCache<IDownloadTaskViewModel, EntityId>(x => EntityId.From(0))
+            .Connect()
+            .OnUI();
+        
         YAxes =
         [
             new Axis
@@ -147,83 +153,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
-
-        var tasksChangeSet = _downloadService.Downloads
-            .ToObservableChangeSet(x => x.PersistentState.Id);
-        
-        InProgressTaskChangeSet = tasksChangeSet
-            .Transform(x =>
-                {
-                    var vm = new DownloadTaskViewModel(x);
-                    vm.Activator.Activate();
-                    return (IDownloadTaskViewModel)vm;
-                }
-            )
-            .FilterOnObservable((item, key) =>
-                {
-                    return item.WhenAnyValue(v => v.Status)
-                        .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed);
-                }
-            )
-            .AutoRefreshOnObservable(task =>
-                {
-                    return task.WhenAnyValue(x => x.Status);
-                }
-            )
-            .DisposeMany()
-            .OnUI();
-            
-
-        CompletedTaskChangeSet = tasksChangeSet
-            .Transform(x =>
-                {
-                    var vm = new DownloadTaskViewModel(x);
-                    vm.HideCommand = ReactiveCommand.CreateFromTask(async () => await HideTasks(true, [vm]));
-                    vm.ViewInLibraryCommand = ReactiveCommand.Create<NavigationInformation>((navInfo) =>
-                    {
-                        var controller = GetWorkspaceController();
-                        var workspaces = controller
-                            .AllWorkspaces
-                            .Where(w =>
-                                {
-                                    if (w.Context is not LoadoutContext loadoutContext)
-                                    {
-                                        return false;
-                                    }
-                                    var loadout = Loadout.Load(conn.Db, loadoutContext.LoadoutId.Value);
-                                    return loadout.IsVisible() && loadout.InstallationInstance.Game.Domain.Equals(vm.Game);
-                                }
-                            )
-                            .Select(w => (w.Id, Context: (LoadoutContext)w.Context)).ToArray();
-                        
-                        if (workspaces.Length == 0)
-                            return;
-                        
-                        var workspace = workspaces[0];
-
-                        var pageData = new PageData
-                        {
-                            FactoryId = FileOriginsPageFactory.StaticId,
-                            Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
-                        };
-                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo);
-                        
-                        controller.OpenPage(workspace.Id, pageData, behavior);
-                        controller.ChangeActiveWorkspace(workspace.Id);
-                    });
-                    vm.Activator.Activate();
-                    return (IDownloadTaskViewModel)vm;
-                }
-            )
-            .FilterOnObservable((item, key) =>
-                {
-                    return item.WhenAnyValue(v => v.Status)
-                        .CombineLatest(item.WhenAnyValue(v => v.IsHidden))
-                        .Select(_ => item is { Status: DownloadTaskStatus.Completed, IsHidden: false });
-                }
-            )
-            .DisposeMany()
-            .OnUI();
         
         SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect()
             .AutoRefreshOnObservable(item =>

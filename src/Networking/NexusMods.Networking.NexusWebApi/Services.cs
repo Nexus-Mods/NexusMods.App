@@ -48,8 +48,6 @@ public static class Services
         return collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
-            .AddWorker<NexusModsDownloadJobWorker>()
-            .AddNexusModsDownloadJobPersistedStateModel()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
             .AddHostedService<HandlerRegistration>()

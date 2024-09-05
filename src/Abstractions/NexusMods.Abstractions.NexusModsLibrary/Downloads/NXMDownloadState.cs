@@ -9,7 +9,6 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 /// Represents a NXM download.
 /// </summary>
 [PublicAPI]
-[Include<PersistedDownloadState>]
 public partial class NXMDownloadState : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NXMDownloadState";

@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
@@ -18,12 +19,12 @@ public interface ILibraryService
     /// <summary>
     /// Adds a download to the library.
     /// </summary>
-    [MustDisposeResource] IJob AddDownload(IDownloadJob downloadJob);
+    IJobTask<IAddDownloadJob, LibraryFile.ReadOnly> AddDownload(IJobTask<IDownloadJob, AbsolutePath> downloadJob);
 
     /// <summary>
     /// Adds a local file to the library.
     /// </summary>
-    [MustDisposeResource] IJob AddLocalFile(AbsolutePath absolutePath);
+    IJobTask<IAddLocalFile, LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath);
 
     /// <summary>
     /// Installs a library item into a target loadout.
@@ -31,7 +32,7 @@ public interface ILibraryService
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
-    IJob InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? installer = null);
+    IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? installer = null);
 
     /// <summary>
     /// Removes a number of items from the library.

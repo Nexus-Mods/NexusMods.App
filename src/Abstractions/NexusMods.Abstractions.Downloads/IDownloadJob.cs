@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.Downloads;
 /// Represents the work associated with downloading a single file.
 /// </summary>
 [PublicAPI]
-public interface IDownloadJob : IPersistedJob
+public interface IDownloadJob : IJobDefinition<AbsolutePath>
 {
     /// <summary>
     /// Gets the destination path for the downloaded file.

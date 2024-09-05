@@ -93,20 +93,8 @@ public static class LoadoutManagementVerbs
     {
         return await renderer.WithProgress(token, async () =>
         {
-            
-            await using var job = libraryService.AddLocalFile(file);
-            await job.StartAsync(token);
-            await job.WaitToFinishAsync(token);
-            
-            if (!job.Result!.TryGetCompleted(out var completed))
-                throw new Exception("Failed to store the file");
-            
-            if (!completed.TryGetData<LocalFile.ReadOnly>(out var localFile))
-                throw new Exception("Failed to store the file");
-
-            await using var installJob = libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
-            await installJob.StartAsync(token);
-            await installJob.WaitToFinishAsync(token);
+            var localFile = await libraryService.AddLocalFile(file); 
+            await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
     }

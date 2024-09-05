@@ -69,10 +69,8 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                     await using var destination = temporaryFileManager.CreateFile();
                     var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
 
-                    await using var libraryJob = library.AddDownload(downloadJob);
-                    await libraryJob.StartAsync(cancellationToken: cancel);
-                    var res = await libraryJob.WaitToFinishAsync(cancellationToken: cancel);
-                    _logger.LogInformation("{Result}", res);
+                    var libraryJob = await library.AddDownload(downloadJob);
+                    _logger.LogInformation("{Result}", libraryJob);
 
                     // var task = await _downloadService.AddTask(modUrl);
                     // _ = task.StartAsync();

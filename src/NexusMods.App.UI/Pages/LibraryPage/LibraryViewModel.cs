@@ -173,9 +173,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await using var job = _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
-        await job.StartAsync(cancellationToken: cancellationToken);
-        await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+        await _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
@@ -206,9 +204,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             toExclusive: paths.Length,
             body: async (i, innerCancellationToken) =>
             {
-                await using var job = _libraryService.AddLocalFile(paths[i]);
-                await job.StartAsync(cancellationToken: innerCancellationToken);
-                await job.WaitToFinishAsync(cancellationToken: innerCancellationToken);
+                var path = paths[i];
+                await _libraryService.AddLocalFile(path);
             },
             cancellationToken: cancellationToken
         );

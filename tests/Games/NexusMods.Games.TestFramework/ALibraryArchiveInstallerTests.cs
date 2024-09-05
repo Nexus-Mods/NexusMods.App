@@ -46,21 +46,10 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
 
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
     {
-        var archiveHash = await file.XxHash64Async();
-        
-        await using var job = LibraryService.AddLocalFile(file);
-        await job.StartAsync();
-        var result = await job.WaitToFinishAsync();
-        
-        if (!result.TryGetCompleted(out var completed))
-            throw new InvalidOperationException("The job should have completed successfully.");
-        
-        if (!completed.TryGetData<LocalFile.ReadOnly>(out var item))
-            throw new InvalidOperationException("The job should have returned a local file.");
-        
-        item.AsLibraryFile().Hash.Should().Be(archiveHash, "The hash of the library file should match the hash of the archive.");
-
-        return LibraryFile.FindByHash(Connection.Db, archiveHash).OfTypeLibraryArchive().First();
+        var libraryFile = await LibraryService.AddLocalFile(file);
+        if (!libraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The library file should be an archive.");
+        return archive;
     }
 
     protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)

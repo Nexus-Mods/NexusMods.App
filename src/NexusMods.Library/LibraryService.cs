@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
@@ -34,39 +35,20 @@ public sealed class LibraryService : ILibraryService
         _gcRunner = serviceProvider.GetRequiredService<IGarbageCollectorRunner>();
     }
 
-    public IJob AddDownload(IDownloadJob downloadJob)
+    public IJobTask<IAddDownloadJob, LibraryFile.ReadOnly> AddDownload(IJobTask<IDownloadJob, AbsolutePath> downloadJob)
     {
-        var job = new AddDownloadJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<AddDownloadJobWorker>())
-        {
-            DownloadJob = downloadJob,
-        };
-
-        return job;
+        return AddDownloadJob.Create(_serviceProvider, downloadJob);
     }
 
-    public IJob AddLocalFile(AbsolutePath absolutePath)
+    public IJobTask<IAddLocalFile, LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath)
     {
-        var group = new AddLocalFileJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<AddLocalFileJobWorker>())
-        {
-            Transaction = _connection.BeginTransaction(),
-            FilePath = absolutePath,
-        };
-
-        return group;
+        return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? itemInstaller = null)
+    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? itemInstaller = null)
     {
         var loadout = Loadout.Load(_connection.Db, targetLoadout);
-        var job = new InstallLoadoutItemJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
-        {
-            Connection = _connection,
-            LibraryItem = libraryItem,
-            Loadout = loadout,
-            Installer = itemInstaller,
-        };
-
-        return job;
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, loadout, itemInstaller);
     }
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {

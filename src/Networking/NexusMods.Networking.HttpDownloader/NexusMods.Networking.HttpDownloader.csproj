@@ -24,13 +24,4 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Networking.HttpDownloader.Tests" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Update="HttpDownloadJobPersistedState.cs">
-        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="HttpDownloadJobWorker.cs">
-        <DependentUpon>HttpDownloadJob.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
 </Project>

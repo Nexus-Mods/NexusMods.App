@@ -14,7 +14,6 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddDownloadModels(this IServiceCollection serviceCollection)
     {
-        return serviceCollection
-            .AddPersistedDownloadStateModel();
+        return serviceCollection;
     }
 }
