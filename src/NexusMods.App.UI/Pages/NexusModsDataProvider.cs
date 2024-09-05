@@ -26,15 +26,15 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(IObservable<LibraryFilter> filterObservable)
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryFile
             .ObserveAll(_connection)
-            .Transform(ToLibraryItemModel);
+            .Transform((file, _) => ToLibraryItemModel(file, libraryFilter));
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the nested library view, the parents are "fake" library
         // models that represent the Nexus Mods mod page, with each child being a
@@ -45,15 +45,12 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, e)
                 .IsNotEmpty()
             )
-            .Transform(ToLibraryItemModel);
+            .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
     }
 
-    private LibraryItemModel ToLibraryItemModel(NexusModsLibraryFile.ReadOnly nexusModsLibraryFile)
+    private LibraryItemModel ToLibraryItemModel(NexusModsLibraryFile.ReadOnly nexusModsLibraryFile, LibraryFilter libraryFilter)
     {
-        var linkedLoadoutItemsObservable = _connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, nexusModsLibraryFile.Id)
-            .AsEntityIds()
-            .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryFile.Id, libraryFilter);
 
         var model = new LibraryItemModel(nexusModsLibraryFile.Id)
         {
@@ -68,7 +65,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         return model;
     }
 
-    private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata)
+    private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata, LibraryFilter libraryFilter)
     {
         var nexusModsLibraryFileObservable = _connection
             .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id)
@@ -90,19 +87,24 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var childrenObservable = nexusModsLibraryFileObservable.Transform((_, e) =>
         {
             var libraryFile = NexusModsLibraryFile.Load(_connection.Db, e);
-            return ToLibraryItemModel(libraryFile);
+            return ToLibraryItemModel(libraryFile, libraryFilter);
         });
 
         var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
             // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
+            .FilterInLoadout(_connection, libraryFilter)
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = nexusModsLibraryFileObservable
             .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsDownloadedFile().AsLibraryFile().AsLibraryItem());
 
-        var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable(
-            (_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).QueryWhenChanged(query => query.Count > 0).Prepend(false)
+        var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable((_, e) => _connection
+            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+            .AsEntityIds()
+            .FilterInLoadout(_connection, libraryFilter)
+            .QueryWhenChanged(query => query.Count > 0)
+            .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
         return new NexusModsModPageLibraryItemModel

@@ -27,7 +27,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(IObservable<LibraryFilter> filterObservable)
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we just get all LocalFiles
         return _connection
@@ -36,16 +36,13 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((_, entityId) =>
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
-                return ToLibraryItemModel(libraryFile);
+                return ToLibraryItemModel(libraryFile, libraryFilter);
             });
     }
 
-    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile)
+    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile, LibraryFilter libraryFilter)
     {
-        var linkedLoadoutItemsObservable = _connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-            .AsEntityIds()
-            .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(_connection.Db, entityId));
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
 
         var model = new LibraryItemModel(libraryFile.Id)
         {
@@ -58,7 +55,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         return model;
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the nested library view, design wanted to have a
         // parent for the LocalFile, we create a parent with one child that will
@@ -71,15 +68,15 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
 
                 var hasChildrenObservable = Observable.Return(true);
-                var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
-                {
-                    return new ChangeSet<LibraryItemModel, EntityId>([new Change<LibraryItemModel, EntityId>(ChangeReason.Add, entityId, ToLibraryItemModel(libraryFile))]);
-                });
+                var childrenObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItemModel, EntityId>([
+                    new Change<LibraryItemModel, EntityId>(
+                        reason: ChangeReason.Add,
+                        key: entityId,
+                        current: ToLibraryItemModel(libraryFile, libraryFilter)
+                    ),
+                ]));
 
-                var linkedLoadoutItemsObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .AsEntityIds()
-                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
+                var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
                 var numInstalledObservable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)

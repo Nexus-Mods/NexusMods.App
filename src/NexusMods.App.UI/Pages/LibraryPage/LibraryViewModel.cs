@@ -2,11 +2,13 @@ using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
@@ -53,6 +55,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public LibraryTreeDataGridAdapter Adapter { get; }
 
+    private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
+
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -66,7 +70,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
 
-        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker);
+        var libraryFilter = new LibraryFilter(
+            loadoutObservable: LoadoutSubject
+                .Where(static id => id.HasValue)
+                .Select(static id => id.Value)
+                .AsSystemObservable()
+        );
+
+        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
+        LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
@@ -127,7 +139,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var gameUri = new Uri($"https://www.nexusmods.com/{gameDomain}");
+        var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
 
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken),
@@ -138,11 +150,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         this.WhenActivated(disposables =>
         {
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
-
-            Adapter.Filter.OnNext(new LibraryFilter
-            {
-                Loadout = loadoutId,
-            });
 
             Adapter.Activate();
             Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
@@ -251,17 +258,20 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly ConnectableObservable<DateTime> _ticker;
+    private readonly LibraryFilter _libraryFilter;
 
     public Subject<InstallMessage> MessageSubject { get; } = new();
     private readonly Dictionary<LibraryItemModel, IDisposable> _commandDisposables = new();
 
-    public BehaviorSubject<LibraryFilter> Filter { get; } = new(new LibraryFilter());
-
     private readonly IDisposable _activationDisposable;
-    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
+    public LibraryTreeDataGridAdapter(
+        IServiceProvider serviceProvider,
+        ConnectableObservable<DateTime> ticker,
+        LibraryFilter libraryFilter)
     {
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
         _ticker = ticker;
+        _libraryFilter = libraryFilter;
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
         {
@@ -306,11 +316,9 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
 
     protected override IObservable<IChangeSet<LibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        var filterObservable = Filter.AsSystemObservable();
-
         var observables = viewHierarchical
-            ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems())
-            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems(filterObservable));
+            ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems(_libraryFilter))
+            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems(_libraryFilter));
 
         return observables.MergeChangeSets();
     }
@@ -337,7 +345,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
         {
             if (disposing)
             {
-                Disposable.Dispose(_activationDisposable, Filter, MessageSubject);
+                Disposable.Dispose(_activationDisposable, MessageSubject);
             }
 
             _isDisposed = true;
