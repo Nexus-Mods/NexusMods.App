@@ -27,8 +27,8 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         CancellationToken = default;
         Monitor = monitor;
         _status = new Subject<JobStatus>();
-        _progress = new ();
-        _rateOfProgress = new ();
+        _progress = new Subject<Optional<Percent>>();
+        _rateOfProgress = new Subject<Optional<double>>();
         
         Progress = Optional<Percent>.None;
         RateOfProgress = Optional<double>.None;
