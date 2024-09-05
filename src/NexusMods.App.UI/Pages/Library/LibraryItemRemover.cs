@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -17,13 +18,18 @@ namespace NexusMods.App.UI.Pages.Library;
 /// </remarks>
 public static class LibraryItemRemover
 {
-    public static async Task RemoveAsync(IConnection conn, IOverlayController overlayController, ILibraryService libraryService, LibraryItem.ReadOnly[] toRemove)
+    public static async Task RemoveAsync(
+        IConnection conn,
+        IOverlayController overlayController,
+        ILibraryService libraryService,
+        LibraryItem.ReadOnly[] toRemove,
+        CancellationToken cancellationToken = default)
     {
         var warnings = LibraryItemDeleteWarningDetector.Process(conn, toRemove);
         var alphaWarningViewModel = LibraryItemDeleteConfirmationViewModel.FromWarningDetector(warnings);
-        var controller = overlayController;
-        alphaWarningViewModel.Controller = controller;
-        var result = await controller.EnqueueAndWait(alphaWarningViewModel);
+        alphaWarningViewModel.Controller = overlayController;
+        var result = await overlayController.EnqueueAndWait(alphaWarningViewModel);
+        if (!result) return;
 
         if (result)
         {

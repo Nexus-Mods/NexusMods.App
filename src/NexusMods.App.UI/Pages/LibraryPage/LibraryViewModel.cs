@@ -9,6 +9,8 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -37,12 +39,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
 
+    public ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
+
     public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
 
     public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
 
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILibraryItemInstaller _advancedInstaller;
     private readonly Loadout.ReadOnly _loadout;
 
@@ -53,6 +58,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
+        _serviceProvider = serviceProvider;
+
         var ticker = Observable
             .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
@@ -95,6 +102,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
+
+        RemoveSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => RemoveSelectedItems(cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
             configureAwait: false
@@ -144,11 +158,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask InstallItems(IEnumerable<LibraryItemId> ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
+    private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
         var db = _connection.Db;
         var items = ids
-            .Distinct()
             .Select(id => LibraryItem.Load(db, id))
             .Where(x => x.IsValid())
             .ToArray();
@@ -161,10 +174,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
     }
 
+    private LibraryItemId[] GetSelectedIds()
+    {
+        return Adapter.SelectedModels
+            .SelectMany(model => model.GetLoadoutItemIds())
+            .Distinct()
+            .ToArray();
+    }
+
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        var ids = Adapter.SelectedModels.SelectMany(model => model.GetLoadoutItemIds());
-        return InstallItems(ids, useAdvancedInstaller, cancellationToken);
+        return InstallItems(GetSelectedIds(), useAdvancedInstaller, cancellationToken);
     }
 
     private async ValueTask InstallLibraryItem(
@@ -174,6 +194,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         bool useAdvancedInstaller = false)
     {
         await _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
+    }
+
+    private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        var toRemove = GetSelectedIds().Select(id => LibraryItem.Load(db, id)).ToArray();
+        await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove, cancellationToken);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
