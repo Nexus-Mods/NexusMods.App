@@ -305,6 +305,7 @@
 
         <!-- COMPACT class overrides -->
         <Style Selector="^.Compact">
+            <Setter Property="Width" Value="40" />
             <Style Selector="^ /template/ Border#OuterBorder, ^ /template/ Border#SwitchKnobBounds">
                 <Setter Property="Height" Value="20" />
                 <Setter Property="Width" Value="40" />

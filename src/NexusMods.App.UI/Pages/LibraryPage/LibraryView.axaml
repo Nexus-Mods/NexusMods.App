@@ -88,8 +88,12 @@
                               HorizontalAlignment="Stretch">
                     <TreeDataGrid.Resources>
                         <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
-                            <Button Command="{CompiledBinding InstallCommand}"
-                                    HorizontalAlignment="Center">
+                            <Button Command="{CompiledBinding InstallCommand}" 
+                                    Classes="Standard"
+                                    HorizontalAlignment="Center"
+                                    Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
+                                    Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
+                                    >
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Done}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
                                     <TextBlock Text="{CompiledBinding InstallText.Value}" />

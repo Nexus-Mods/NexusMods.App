@@ -225,21 +225,15 @@
         <Setter Property="ClipToBounds" Value="False" />
 
         <!-- If text is at top level -->
-        <Style Selector="^ > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Margin" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
 
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
-        </Style>
-
-        <Style Selector="^ > StackPanel > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
         </Style>
 
         <Style Selector="^ > StackPanel > icons|UnifiedIcon">
@@ -262,8 +256,11 @@
     <Style Selector="Button.Standard.Primary">
         <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-
-
+        
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+        
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />

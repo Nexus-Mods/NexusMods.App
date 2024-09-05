@@ -2,23 +2,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
-    
+
     <Styles.Resources>
         <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="{StaticResource SurfaceTranslucentMid}" Opacity="1" />
-        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="{StaticResource SurfaceTranslucentLow}" Opacity="1" />
-        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="{StaticResource BrandTranslucentDark300}" Opacity="1" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush"
+                         Color="{StaticResource SurfaceTranslucentLow}" Opacity="1" />
+        <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush"
+                         Color="{StaticResource BrandTranslucentDark300}" Opacity="1" />
         <SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
         <SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
-        
+
         <!-- if we have this control theme here, we can override styles properly -->
         <!-- we've swapped Path for UnifiedIcon -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Width" Value="20" />
             <Setter Property="Height" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Background="Transparent"
@@ -26,9 +29,9 @@
                             Height="{TemplateBinding Height}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
-                        <icons:UnifiedIcon x:Name="ChevronIcon" 
+                        <icons:UnifiedIcon x:Name="ChevronIcon"
                                            Value="{x:Static icons:IconValues.ChevronRight}"
-                                           Foreground="{TemplateBinding Foreground}"/>
+                                           Foreground="{TemplateBinding Foreground}" />
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -37,34 +40,31 @@
             </Style>
         </ControlTheme>
     </Styles.Resources>
-    
-    
-    
-    
+
+
     <!-- TreeDataGrid -->
-    
+
     <Style Selector="TreeDataGrid">
         <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
         <Setter Property="BorderThickness" Value="0" />
-        
+
         <!-- Catch all text styling -->
 
         <Style Selector="^ TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         </Style>
-        
+
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             <Setter Property="Height" Value="36" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
     </Style>
-    
-    
-    
+
+
     <!-- TreeDataGridColumnHeader -->
-    
+
     <Style Selector="TreeDataGridColumnHeader">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="MinHeight" Value="25" />
@@ -73,76 +73,77 @@
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
         <Setter Property="Template">
-          <ControlTemplate>
-            <Border Name="DataGridBorder"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="{TemplateBinding CornerRadius}">
-              <DockPanel VerticalAlignment="Stretch">
-                <Panel DockPanel.Dock="Right"
-                       TabIndex="2">
-                  <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
-                             HorizontalAlignment="Center"
-                             Width="1"
-                             Height="24"
-                             Margin="0,0,-6,0"/>
-                  <!-- negative margin to bump the vertical line to the right -->
-                  <Thumb Name="PART_Resizer"
-                         DockPanel.Dock="Right"
-                         Background="Transparent"
-                         Cursor="SizeWestEast"
-                         IsVisible="{TemplateBinding CanUserResize}"
-                         Width="5">
-                    <Thumb.Template>
-                      <ControlTemplate>
-                        <Border Background="{TemplateBinding Background}"
-                                VerticalAlignment="Stretch" />
-                      </ControlTemplate>
-                    </Thumb.Template>
-                  </Thumb>
-                </Panel>
-                
-                <StackPanel Orientation="Horizontal">
-                    <ContentPresenter Name="PART_ContentPresenter"
-                                      Content="{TemplateBinding Header}"
-                                      ContentTemplate="{TemplateBinding ContentTemplate}"
-                                      Padding="{TemplateBinding Padding}"
-                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                      TabIndex="0">
-                        <ContentPresenter.DataTemplates>
-                            <DataTemplate DataType="x:String">
-                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
-                            </DataTemplate>
-                        </ContentPresenter.DataTemplates>
-                    </ContentPresenter>
-                    <Border
-                        Padding="0,0,0,0"
-                        Background="Transparent"
-                        Height="20"
-                        Width="20"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        TabIndex="1">
-                        <!-- we've swapped Path for UnifiedIcon -->
-                        <icons:UnifiedIcon Name="SortIcon"
-                                           Value="{x:Null}"
-                                           Foreground="{TemplateBinding Foreground}"/>
-                    </Border>
-                </StackPanel>
-                
-              </DockPanel>
-            </Border>
-          </ControlTemplate>
+            <ControlTemplate>
+                <Border Name="DataGridBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <DockPanel Name="DataGridDockPanel" VerticalAlignment="Stretch">
+                        <Panel DockPanel.Dock="Right"
+                               TabIndex="2">
+                            <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
+                                       HorizontalAlignment="Center"
+                                       Width="1"
+                                       Height="24"
+                                       Margin="0,0,-6,0" />
+                            <!-- negative margin to bump the vertical line to the right -->
+                            <Thumb Name="PART_Resizer"
+                                   DockPanel.Dock="Right"
+                                   Background="Transparent"
+                                   Cursor="SizeWestEast"
+                                   IsVisible="{TemplateBinding CanUserResize}"
+                                   Width="5">
+                                <Thumb.Template>
+                                    <ControlTemplate>
+                                        <Border Background="{TemplateBinding Background}"
+                                                VerticalAlignment="Stretch" />
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </Panel>
+                        <!-- added this border so we can use padding on the below stack -->
+                        <Border Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Content="{TemplateBinding Header}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  TabIndex="0">
+                                    <ContentPresenter.DataTemplates>
+                                        <DataTemplate DataType="x:String">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ContentPresenter.DataTemplates>
+                                </ContentPresenter>
+                                <Border
+                                    Padding="0,0,0,0"
+                                    Background="Transparent"
+                                    Height="20"
+                                    Width="20"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TabIndex="1">
+                                    <!-- we've swapped Path for UnifiedIcon -->
+                                    <icons:UnifiedIcon Name="SortIcon"
+                                                       Value="{x:Null}"
+                                                       Foreground="{TemplateBinding Foreground}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
         </Setter>
-        
-        <!-- Text Inside Column Header -->
+
         <Style Selector="^ TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
         </Style>
-        
+
         <!-- Sort Icon replacements -->
         <Style Selector="^[SortDirection=Ascending] /template/ icons|UnifiedIcon#SortIcon">
             <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropDown}" />
@@ -151,23 +152,29 @@
         <Style Selector="^[SortDirection=Descending] /template/ icons|UnifiedIcon#SortIcon">
             <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropUp}" />
         </Style>
-        
-        <!-- First column header padding -->
+
+        <!-- First column header -->
         <Style Selector="^:nth-child(1)">
+            <!-- increased left padding to fit with main tree items -->
             <Setter Property="Padding" Value="24,0,0,0" />
         </Style>
+
+        <!-- last column header -->
+        <Style Selector="^:nth-last-child(1)">
+            <Style Selector="^ /template/ DockPanel#DataGridDockPanel">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+            </Style>
+        </Style>
     </Style>
-    
-    
-    
-    
+
+
     <!-- TreeDataGridRow -->
-    
+
     <Style Selector="TreeDataGridRow">
 
         <Setter Property="Height" Value="52" />
         <Setter Property="ClipToBounds" Value="False" />
-        
+
         <Setter Property="Template">
             <ControlTemplate>
                 <Border x:Name="RowBorder"
@@ -195,25 +202,41 @@
         <!-- First column cell padding -->
         <Style Selector="^ :is(TreeDataGridCell):nth-child(1)">
             <Setter Property="Padding" Value="12,0,0,0" />
+            
+            <!-- Except for first column -->
+            <Style Selector="^ Border#CellBorder > TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
         </Style>
 
         <!-- Last column cell padding -->
         <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
-            <Setter Property="Padding" Value="8,0,24,0" />
+            <Setter Property="Padding" Value="8,0,26,0" />
+            <Style Selector="^ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                
+                <Style Selector="^ Button">
+                    <Setter Property="Height" Value="28"/>
+                
+                    <Style Selector="^.Standard.Tertiary">
+                        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                            <Setter Property="Opacity" Value="1" />
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
         </Style>
-        
 
-        <!-- Except for first column -->
-        <Style Selector="^ :is(TreeDataGridCell):nth-child(1) Border#CellBorder > TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-        </Style>
+
+        
 
         <!-- NOTE(insomnious): as per design request, the background of the rows stay as they are with the
          :pointerover and :selected styles applied to the child 'PART_CellsPresenter' element. This is to allow
          for layering translucent colours. -->
 
         <!-- Root rows styling -->
-        
+
         <!-- "RootRow" is a class that was manually added to the TreeDataGridRow that have indent level 0. -->
         <!-- See `NexusMods.App.UI.Controls.CustomElementFactory.cs` for more information. -->
         <Style Selector="^.RootRow">
@@ -230,7 +253,7 @@
         </Style>
 
         <!-- Child rows styling -->
-        
+
         <Style Selector="^:not(.RootRow)">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
@@ -255,12 +278,11 @@
 
     </Style>
 
-    
-    
+
     <!-- TreeDataGridExpanderCell -->
 
     <Style Selector="TreeDataGridExpanderCell">
-                
+
         <!-- Override padding since this is a wrapper cell -->
         <Setter Property="Padding" Value="0,0,0,0" />
 
@@ -296,7 +318,7 @@
                                               Focusable="False"
                                               IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
                                               IsVisible="{TemplateBinding ShowExpander}" />
-                                
+
                             </Border>
                             <Decorator Name="PART_Content" />
                         </DockPanel>
@@ -304,14 +326,13 @@
                 </Border>
             </ControlTemplate>
         </Setter>
-        
+
         <!-- Nested cell padding -->
         <Style Selector="^ Border#CellBorder :is(TreeDataGridCell)">
             <!-- This goes from after the expander to the end of the cell, but parent cell padding is also applied. -->
             <Setter Property="Padding" Value="4,0,0,0" />
         </Style>
     </Style>
-    
-    
+
 
 </Styles>

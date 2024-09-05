@@ -111,8 +111,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
                 IsTextSearchEnabled = true,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,
-            },
-            width: new GridLength(1, GridUnitType.Auto)
+            }
         )
         {
             SortDirection = ListSortDirection.Ascending,
