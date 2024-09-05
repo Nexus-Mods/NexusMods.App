@@ -52,5 +52,5 @@ public interface IJobContext<TJobDefinition> : IJobContext
     /// <summary>
     /// The job definition passed to the job monitor when the job was created
     /// </summary>
-    public TJobDefinition Job { get; }
+    public TJobDefinition Definition { get; }
 }

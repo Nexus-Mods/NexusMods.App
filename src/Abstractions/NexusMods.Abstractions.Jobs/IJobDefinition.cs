@@ -8,7 +8,8 @@ public interface IJobDefinition
 /// <summary>
 /// A typed job definition that returns a result
 /// </summary>
-public interface IJobDefinition<TResultType> : IJobDefinition;
+public interface IJobDefinition<TResultType> : IJobDefinition
+    where TResultType : notnull;
 
 
 /// <summary>
@@ -17,7 +18,7 @@ public interface IJobDefinition<TResultType> : IJobDefinition;
 /// <typeparam name="TParent"></typeparam>
 /// <typeparam name="TResultType"></typeparam>
 public interface IJobDefinitionWithStart<TParent, TResultType> : IJobDefinition<TResultType> 
-    where TParent : IJobDefinition<TResultType>
+    where TParent : IJobDefinition<TResultType> where TResultType : notnull
 {
     /// <summary>
     /// Starts the job
