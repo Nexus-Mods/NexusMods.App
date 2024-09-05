@@ -93,7 +93,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
             // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
-            .FilterInLoadout(_connection, libraryFilter)
+            .FilterInObservableLoadout(_connection, libraryFilter)
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = nexusModsLibraryFileObservable
@@ -102,7 +102,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable((_, e) => _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
             .AsEntityIds()
-            .FilterInLoadout(_connection, libraryFilter)
+            .FilterInObservableLoadout(_connection, libraryFilter)
             .QueryWhenChanged(query => query.Count > 0)
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
@@ -119,7 +119,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         };
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems()
+    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
     {
         // NOTE(erri120): For the nested loadout view, we create "fake" models for
         // the mod pages as parents. Each child will be a LibraryLinkedLoadoutItem
@@ -130,6 +130,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageEntityId)
                 .FilterOnObservable((d, _) => _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E)
+                    .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
                     .IsNotEmpty())
                 .IsNotEmpty()
             )
@@ -140,6 +142,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
                     // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
                     .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
                     .PublishWithFunc(() =>
                     {
                         var changeSet = new ChangeSet<Datom, EntityId>();
@@ -150,6 +153,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                             var libraryLinkedLoadoutItemDatoms = _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, entityIdDatom.E);
                             foreach (var datom in libraryLinkedLoadoutItemDatoms)
                             {
+                                if (!LoadoutItem.Load(_connection.Db, datom.E).LoadoutId.Equals(loadoutFilter.LoadoutId)) continue;
                                 changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
                             }
                         }

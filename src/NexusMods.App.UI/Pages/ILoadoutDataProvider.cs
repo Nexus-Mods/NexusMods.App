@@ -1,26 +1,33 @@
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
-using R3;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 
 namespace NexusMods.App.UI.Pages;
 
 public interface ILoadoutDataProvider
 {
-    IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems();
+    IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter);
 }
 
-public record LoadoutFilter
+public class LoadoutFilter
 {
-    public Optional<LoadoutId> Loadout { get; init; }
+    public required LoadoutId LoadoutId { get; init; }
 }
 
 public static class LoadoutDataProviderHelper
 {
+    public static IObservable<IChangeSet<Datom, EntityId>> FilterInStaticLoadout(
+        this IObservable<IChangeSet<Datom, EntityId>> source,
+        IConnection connection,
+        LoadoutFilter loadoutFilter)
+    {
+        return source.Filter(datom => LoadoutItem.Load(connection.Db, datom.E).LoadoutId.Equals(loadoutFilter.LoadoutId));
+    }
+
     public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem)
     {
         // NOTE(erri120): We'll only show the library linked loadout item group for now.

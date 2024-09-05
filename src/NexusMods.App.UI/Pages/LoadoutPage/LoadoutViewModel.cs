@@ -40,7 +40,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
 
-        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker);
+        var loadoutFilter = new LoadoutFilter
+        {
+            LoadoutId = loadoutId,
+        };
+
+        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
 
         TabTitle = "My Mods (new)";
         TabIcon = IconValues.Collections;
@@ -151,35 +156,33 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly ConnectableObservable<DateTime> _ticker;
     private readonly IConnection _connection;
+    private readonly LoadoutFilter _loadoutFilter;
 
     public Subject<ToggleEnableState> MessageSubject { get; } = new();
     private readonly Dictionary<LoadoutItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;
-    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
+    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker, LoadoutFilter loadoutFilter)
     {
+        _loadoutFilter = loadoutFilter;
         _ticker = ticker;
 
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
+        {
+            Disposable.Create(adapter._commandDisposables,static commandDisposables =>
             {
-                Disposable.Create(adapter._commandDisposables,
-                        static commandDisposables =>
-                        {
-                            foreach (var kv in commandDisposables)
-                            {
-                                var (_, disposable) = kv;
-                                disposable.Dispose();
-                            }
+                foreach (var kv in commandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
 
-                            commandDisposables.Clear();
-                        }
-                    )
-                    .AddTo(disposables);
-            }
-        );
+                commandDisposables.Clear();
+            }).AddTo(disposables);
+        });
     }
 
     protected override void BeforeModelActivationHook(LoadoutItemModel model)
@@ -207,7 +210,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     protected override IObservable<IChangeSet<LoadoutItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         var observable = viewHierarchical
-            ? _loadoutDataProviders.Select(provider => provider.ObserveNestedLoadoutItems()).MergeChangeSets()
+            ? _loadoutDataProviders.Select(provider => provider.ObserveNestedLoadoutItems(_loadoutFilter)).MergeChangeSets()
             : ObserveFlatLoadoutItems();
 
         return observable;
@@ -217,6 +220,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     {
         return LibraryLinkedLoadoutItem
             .ObserveAll(_connection)
+            .Filter(item => LoadoutItem.LoadoutId.Get(item).Equals(_loadoutFilter.LoadoutId))
             .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
     }
 
@@ -242,7 +246,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
         {
             if (disposing)
             {
-                _activationDisposable.Dispose();
+                Disposable.Dispose(_activationDisposable, MessageSubject);
             }
 
             _isDisposed = true;

@@ -78,9 +78,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
-                var numInstalledObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .Count();
+                // NOTE(erri120): LocalFiles have only one child, this can only be 0 or 1.
+                var numInstalledObservable = linkedLoadoutItemsObservable.IsEmpty().Select(isEmpty => isEmpty ? 0 : 1);
 
                 var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
@@ -98,7 +97,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             });
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems()
+    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
     {
         // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
         // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
@@ -108,6 +107,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .FilterOnObservable((_, e) => _connection
                 .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+                .AsEntityIds()
+                .FilterInStaticLoadout(_connection, loadoutFilter)
                 .IsNotEmpty()
             )
             .Transform((_, entityId) =>
@@ -117,6 +118,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var observable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
                     .PublishWithFunc(() =>
                     {
@@ -125,6 +127,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                         foreach (var entity in entities)
                         {
+                            if (!entity.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId.Equals(loadoutFilter.LoadoutId)) continue;
                             changeSet.Add(new Change<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entity.Id, entity));
                         }
 

@@ -1,13 +1,11 @@
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Kernel;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using R3;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -34,11 +32,13 @@ public static class QueryHelper
     /// Filters the source of <see cref="LibraryLinkedLoadoutItem"/> to only contain items
     /// that are installed in the loadout using <see cref="LibraryFilter.LoadoutObservable"/>.
     /// </summary>
-    public static IObservable<IChangeSet<Datom, EntityId>> FilterInLoadout(this IObservable<IChangeSet<Datom, EntityId>> source, IConnection connection, LibraryFilter libraryFilter)
+    public static IObservable<IChangeSet<Datom, EntityId>> FilterInObservableLoadout(
+        this IObservable<IChangeSet<Datom, EntityId>> source,
+        IConnection connection,
+        LibraryFilter libraryFilter)
     {
-        return source.FilterOnObservable((_, e) => libraryFilter.LoadoutObservable.Select(loadoutId => LoadoutItem.LoadoutId
-            .Get(LibraryLinkedLoadoutItem.Load(connection.Db, e))
-            .Equals(loadoutId))
+        return source.FilterOnObservable((_, e) => libraryFilter.LoadoutObservable.Select(loadoutId =>
+            LoadoutItem.Load(connection.Db, e).LoadoutId.Equals(loadoutId))
         );
     }
 
@@ -50,7 +50,7 @@ public static class QueryHelper
         return connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId)
             .AsEntityIds()
-            .FilterInLoadout(connection, libraryFilter)
+            .FilterInObservableLoadout(connection, libraryFilter)
             .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(connection.Db, entityId));
     }
 }
