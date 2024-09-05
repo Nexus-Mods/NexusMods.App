@@ -1316,41 +1316,5 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
             }
         }
-        
-        public static string MessageBox_Title_MissingProtonTricks {
-            get {
-                return ResourceManager.GetString("MessageBox_Title_MissingProtonTricks", resourceCulture);
-            }
-        }
-        
-        public static string MessageBox_Description_MissingProtonTricksRuntimeDependency_0_Bold {
-            get {
-                return ResourceManager.GetString("MessageBox_Description_MissingProtonTricksRuntimeDependency_0_Bold", resourceCulture);
-            }
-        }
-        
-        public static string MessageBox_Description_MissingProtonTricksRuntimeDependency_1 {
-            get {
-                return ResourceManager.GetString("MessageBox_Description_MissingProtonTricksRuntimeDependency_1", resourceCulture);
-            }
-        }
-        
-        public static string MessageBox_Description_MissingProtonTricksRuntimeDependency_2 {
-            get {
-                return ResourceManager.GetString("MessageBox_Description_MissingProtonTricksRuntimeDependency_2", resourceCulture);
-            }
-        }
-        
-        public static string MessageBox_Description_MissingProtonTricksRuntimeDependency_3 {
-            get {
-                return ResourceManager.GetString("MessageBox_Description_MissingProtonTricksRuntimeDependency_3", resourceCulture);
-            }
-        }
-        
-        public static string MessageBox_Description_MissingProtonTricksRuntimeDependency_4_italic {
-            get {
-                return ResourceManager.GetString("MessageBox_Description_MissingProtonTricksRuntimeDependency_4_italic", resourceCulture);
-            }
-        }
     }
 }
