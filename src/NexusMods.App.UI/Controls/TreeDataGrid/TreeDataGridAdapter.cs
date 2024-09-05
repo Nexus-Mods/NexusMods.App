@@ -21,7 +21,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
 
-    public ObservableList<TModel> SelectedModels { get; private set; } = [];
+    public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
 
     private ObservableList<TModel> Roots { get; set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
@@ -47,6 +47,17 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                         model.Activate();
                     } else
                     {
+                        // NOTE(erri120): TreeDataGrid doesn't update the selection when a parent gets collapsed
+                        // but a child was selected. That behavior breaks out internal collection.
+                        // TODO: remove this temporary fix, requires fix in TreeDataGrid
+                        self.SelectedModels.Remove(model);
+
+                        // if (self.Source.Value.Selection is TreeDataGridRowSelectionModel<TModel> selection)
+                        // {
+                        //     if (!selection.SelectedItems.Contains(model))
+                        //         self.SelectedModels.Remove(model);
+                        // }
+
                         self.BeforeModelDeactivationHook(model);
                         model.Deactivate();
                     }
@@ -81,7 +92,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 {
                     self._selectionModelsSerialDisposable.Disposable = tuple.selectionObservable.Subscribe(self, static (eventArgs, self) =>
                     {
-                        self.SelectedModels.Remove(eventArgs.DeselectedItems.NotNull());
+                        self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
                         self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
                     });
 

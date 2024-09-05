@@ -131,7 +131,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                 // Compute the target group for the ViewFilesCommand
                 Adapter.SelectedModels.ObserveCountChanged()
-                    .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels[0] : null)
+                    .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
                     .ObserveOnThreadPool()
                     .Select(_connection,
                         static (model, connection) =>
