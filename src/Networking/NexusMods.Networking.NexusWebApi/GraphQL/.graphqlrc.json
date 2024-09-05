@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "NexusGraphQLClient": {
-        "url": "https://api.nexusmods.com/v2/graphql",
+        "url": "https://api.nexusmods.com/v2/graphql"
       }
     },
     "strawberryShake": {

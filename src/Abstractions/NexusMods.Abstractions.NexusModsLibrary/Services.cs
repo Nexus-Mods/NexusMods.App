@@ -17,7 +17,6 @@ public static class Services
         return serviceCollection
             .AddNexusModsFileMetadataModel()
             .AddNexusModsModPageMetadataModel()
-            .AddNexusModsLibraryFileModel()
-            .AddNXMDownloadStateModel();
+            .AddNexusModsLibraryFileModel();
     }
 }
