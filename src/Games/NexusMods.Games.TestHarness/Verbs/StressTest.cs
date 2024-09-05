@@ -85,9 +85,9 @@ public class StressTest
                             Size.FromLong(file.SizeInBytes ?? 0));
 
                         var list = await game.Synchronizer.CreateLoadout(install);
-                        
-                        var localFile = await libraryService.AddLocalFileAndWait(tmpPath, token);
-                        await libraryService.InstallItemAndWait(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId, token: token);
+
+                        var localFile = await libraryService.AddLocalFile(tmpPath);
+                        await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId);
                         
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, file.FileId,

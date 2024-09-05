@@ -131,7 +131,7 @@ public class NexusModsLibrary
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
         
-        var httpJob = HttpDownload.Create(_serviceProvider, uri, modPage.GetUri(), destination);
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;

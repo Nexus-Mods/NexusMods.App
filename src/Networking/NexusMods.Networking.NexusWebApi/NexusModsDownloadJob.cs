@@ -11,13 +11,13 @@ namespace NexusMods.Networking.NexusWebApi;
 
 public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusModsDownloadJob, AbsolutePath>
 {
-    public required IJobTask<HttpDownload, AbsolutePath> HttpDownloadJob { get; init; }
+    public required IJobTask<HttpDownloadJob, AbsolutePath> HttpDownloadJob { get; init; }
     public required NexusModsFileMetadata.ReadOnly FileMetadata { get; init; }
 
     /// <inheritdoc/>
     public AbsolutePath Destination => HttpDownloadJob.Job.Destination;
     
-    public static IJobTask<NexusModsDownloadJob, AbsolutePath> Create(IServiceProvider provider, IJobTask<HttpDownload, AbsolutePath> httpDownloadJob, NexusModsFileMetadata.ReadOnly fileMetadata)
+    public static IJobTask<NexusModsDownloadJob, AbsolutePath> Create(IServiceProvider provider, IJobTask<HttpDownloadJob, AbsolutePath> httpDownloadJob, NexusModsFileMetadata.ReadOnly fileMetadata)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new NexusModsDownloadJob

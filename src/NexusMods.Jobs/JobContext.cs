@@ -1,7 +1,7 @@
 using System.Numerics;
+using System.Reactive.Subjects;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
-using R3;
 
 namespace NexusMods.Jobs;
 
@@ -9,8 +9,8 @@ public class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>
     where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
 {
     private readonly Subject<JobStatus> _status;
-    private readonly Subject<Percent> _progress;
-    private readonly Subject<double> _rateOfProgress;
+    private readonly Subject<Optional<Percent>> _progress;
+    private readonly Subject<Optional<double>> _rateOfProgress;
     private readonly TJobDefinition _definition;
     private Optional<TJobResult> _result = Optional<TJobResult>.None;
     private readonly Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> _action;
@@ -27,8 +27,8 @@ public class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>
         CancellationToken = default;
         Monitor = monitor;
         _status = new Subject<JobStatus>();
-        _progress = new Subject<Percent>();
-        _rateOfProgress = new Subject<double>();
+        _progress = new ();
+        _rateOfProgress = new ();
         
         Progress = Optional<Percent>.None;
         RateOfProgress = Optional<double>.None;
@@ -60,9 +60,11 @@ public class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>
     public JobId Id { get; }
     public JobStatus Status { get; set; }
 
-    public Observable<JobStatus> ObservableStatus => _status;
+    public IObservable<JobStatus> ObservableStatus => _status;
     public Optional<Percent> Progress { get; private set; }
+    public IObservable<Optional<Percent>> ObservableProgress => _progress;
     public Optional<double> RateOfProgress { get; private set; }
+    public IObservable<Optional<double>> ObservableRateOfProgress => _rateOfProgress;
 
     public Task YieldAsync()
     {

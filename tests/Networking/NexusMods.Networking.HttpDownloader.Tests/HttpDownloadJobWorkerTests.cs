@@ -26,7 +26,7 @@ public class HttpDownloadJobWorkerTests
         const string url = "https://paris.nexus-cdn.com/100M";
 
         await using var outputPath = _temporaryFileManager.CreateFile();
-        _ = await HttpDownload.Create(_serviceProvider, new Uri(url), new Uri(url), outputPath.Path);;
+        _ = await HttpDownloadJob.Create(_serviceProvider, new Uri(url), new Uri(url), outputPath.Path);;
 
         outputPath.Path.FileExists.Should().BeTrue();
         outputPath.Path.FileInfo.Size.Should().Be(Size.MB * 100);

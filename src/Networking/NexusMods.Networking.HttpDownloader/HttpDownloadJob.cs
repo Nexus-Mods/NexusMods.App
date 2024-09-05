@@ -15,7 +15,7 @@ using Polly;
 namespace NexusMods.Networking.HttpDownloader;
 
 [PublicAPI]
-public record HttpDownload : IJobDefinitionWithStart<HttpDownload, AbsolutePath>, IDownloadJob
+public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IDownloadJob
 {
 #pragma warning disable EXTEXP0001
     private static readonly HttpClient Client = BuildClient();
@@ -53,22 +53,22 @@ public record HttpDownload : IJobDefinitionWithStart<HttpDownload, AbsolutePath>
     /// <summary>
     /// Constructor for the job
     /// </summary>
-    public static IJobTask<HttpDownload, AbsolutePath> Create(IServiceProvider provider, Uri uri, Uri downloadPage, AbsolutePath destination)
+    public static IJobTask<HttpDownloadJob, AbsolutePath> Create(IServiceProvider provider, Uri uri, Uri downloadPage, AbsolutePath destination)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
-        var job = new HttpDownload
+        var job = new HttpDownloadJob
         {
             Uri = uri,
             DownloadPageUri = downloadPage,
             Destination = destination,
         };
-        return monitor.Begin<HttpDownload, AbsolutePath>(job);
+        return monitor.Begin<HttpDownloadJob, AbsolutePath>(job);
     }
 
     /// <summary>
     /// Execute the job
     /// </summary>
-    public async ValueTask<AbsolutePath> StartAsync(IJobContext<HttpDownload> context)
+    public async ValueTask<AbsolutePath> StartAsync(IJobContext<HttpDownloadJob> context)
     {
         await context.YieldAsync();
         await FetchMetadata(context);
@@ -76,7 +76,7 @@ public record HttpDownload : IJobDefinitionWithStart<HttpDownload, AbsolutePath>
         await context.YieldAsync();
         await using var fileStream = Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 
-        await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownload>>(fileStream, context,  (state, tuple) =>
+        await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownloadJob>>(fileStream, context,  (state, tuple) =>
         {
             var (bytesWritten, speed) = tuple;
 

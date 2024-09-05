@@ -1,6 +1,4 @@
 using DynamicData.Kernel;
-using R3;
-
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
@@ -21,7 +19,7 @@ public interface IJob
     /// <summary>
     /// The observable status of the job
     /// </summary>
-    public Observable<JobStatus> ObservableStatus { get; }
+    public IObservable<JobStatus> ObservableStatus { get; }
     
     /// <summary>
     /// If the job has determinate progress, the percentage of the job that has been completed
@@ -29,9 +27,19 @@ public interface IJob
     public Optional<Percent> Progress { get; }
     
     /// <summary>
+    /// The observable progress of the job
+    /// </summary>
+    public IObservable<Optional<Percent>> ObservableProgress { get; }
+    
+    /// <summary>
     /// If the job reports progress, the rate of progress in units per second
     /// </summary>
     public Optional<double> RateOfProgress { get; }
+    
+    /// <summary>
+    /// The observable rate of progress of the job
+    /// </summary>
+    public IObservable<Optional<double>> ObservableRateOfProgress { get; }
     
     /// <summary>
     /// The job group that the job belongs to, all jobs have a group, even if they are the only member
@@ -42,6 +50,11 @@ public interface IJob
     /// Wait for the job to complete or throw an exception if the job fails
     /// </summary>
     public Task WaitAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Get the definition of the job
+    /// </summary>
+    public IJobDefinition Definition { get; }
 }
 
 /// <summary>

@@ -12,16 +12,4 @@
         <PackageReference Include="NexusMods.MnemonicDB" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="SynchronousTests.CompletedJob.cs">
-        <DependentUpon>SynchronousTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="TestHelpers\SlowResumableJobWorker.cs">
-        <DependentUpon>SlowResumableJob.cs</DependentUpon>
-      </Compile>
-      <Compile Update="TestHelpers\SlowResumableJobPersistedState.cs">
-        <DependentUpon>SlowResumableJob.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
 </Project>

@@ -27,9 +27,10 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         _compositeDisposable.Add(disposable);
     }
 
-    public IObservable<IChangeSet<TJob, JobId>> GetObservableChangeSet<TJob>() where TJob : IJob
+    public IObservable<IChangeSet<IJob, JobId>> GetObservableChangeSet<TJobDefinition>() where TJobDefinition : IJobDefinition
     {
-        return _allJobs.Connect().OfType<IJob, JobId, TJob>();
+        return _allJobs.Connect()
+            .Filter(j => j.Definition is TJobDefinition);
     }
 
     public void RegisterJob(IJob job)
