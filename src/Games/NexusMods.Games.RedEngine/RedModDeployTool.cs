@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic;
+using NexusMods.Paths;
 using static NexusMods.Games.RedEngine.Constants;
 
 namespace NexusMods.Games.RedEngine;
@@ -17,6 +18,7 @@ public class RedModDeployTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+        
         var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
         var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
         
@@ -25,10 +27,19 @@ public class RedModDeployTool : ITool
         if (!deployFolder.DirectoryExists())
             deployFolder.CreateDirectory();
 
-        var command = Cli.Wrap(exe.ToString())
-            .WithArguments("deploy")
-            .WithWorkingDirectory(exe.Parent.ToString());
-        await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
+        var fs = FileSystem.Shared;
+        if (fs.OS.IsWindows)
+        {
+            var command = Cli.Wrap(exe.ToString())
+                .WithArguments("deploy")
+                .WithWorkingDirectory(exe.Parent.ToString());
+            await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
+        }
+        else
+        {
+            var batchPath = fs.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/Cyberpunk2077/deploy_redmod.bat");
+            await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+        }
     }
 
     public string Name => "RedMod Deploy";

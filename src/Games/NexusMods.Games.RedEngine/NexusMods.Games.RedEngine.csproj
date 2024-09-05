@@ -19,6 +19,9 @@
         <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
         <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
         <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
+        <None Update="Resources\Cyberpunk2077\deploy_redmod.bat">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
