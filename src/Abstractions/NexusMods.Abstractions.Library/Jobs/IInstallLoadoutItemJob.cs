@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -7,7 +8,7 @@ namespace NexusMods.Abstractions.Library.Jobs;
 /// <summary>
 /// A job that installs a library item to a loadout
 /// </summary>
-public interface IInstallLoadoutItemJob
+public interface IInstallLoadoutItemJob : IJobDefinition<LoadoutItemGroup.ReadOnly>
 {
     /// <summary>
     /// The library item to install
