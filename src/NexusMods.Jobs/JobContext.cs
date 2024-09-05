@@ -108,6 +108,14 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     public async ValueTask DisposeAsync()
     {
         if (_definition is IAsyncDisposable asyncDisposable)
-            await asyncDisposable.DisposeAsync();
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+    }
+
+    public void Dispose()
+    {
+        if (_definition is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 }
