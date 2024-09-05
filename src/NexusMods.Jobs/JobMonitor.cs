@@ -47,7 +47,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType definition, Func<IJobContext<TJobType>, ValueTask<TResultType>> task) where TJobType : IJobDefinition<TResultType> 
         where TResultType : notnull
     {
-        var ctx = new JobContext<TJobType, TResultType>(definition, this, null!, task);
+        using var creator = JobGroupCreator.Push(this);
+        var ctx = new JobContext<TJobType, TResultType>(definition, this, creator.Group, task);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(ctx.Start);
         return new JobTask<TJobType, TResultType>(ctx);
@@ -56,7 +57,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job) where TJobType : IJobDefinitionWithStart<TJobType, TResultType> 
         where TResultType : notnull
     {
-        var ctx = new JobContext<TJobType, TResultType>(job, this, null!, job.StartAsync);
+        using var creator = JobGroupCreator.Push(this);
+        var ctx = new JobContext<TJobType, TResultType>(job, this, creator.Group, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(ctx.Start);
         return new JobTask<TJobType, TResultType>(ctx);

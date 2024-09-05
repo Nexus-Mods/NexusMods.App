@@ -24,7 +24,6 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         _tcs = new TaskCompletionSource<TJobResult>();
         _action = action;
         _definition = definition;
-        CancellationToken = default;
         Monitor = monitor;
         _status = new Subject<JobStatus>();
         _progress = new Subject<Optional<Percent>>();
@@ -71,7 +70,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         return Task.CompletedTask;
     }
 
-    public CancellationToken CancellationToken { get; }
+    public CancellationToken CancellationToken => Group.CancellationToken;
     
     public IJobMonitor Monitor { get; }
     public IJobGroup Group { get; }

@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Jobs;
 /// <summary>
 /// A job context, this is what jobs use internally to communicate with the job monitor
 /// </summary>
-public interface IJobContext : IAsyncDisposable
+public interface IJobContext : IAsyncDisposable, IDisposable
 {
     /// <summary>
     /// Call this whenever the job needs to check if the execution should cancel or pause
@@ -46,11 +46,15 @@ public interface IJobContext : IAsyncDisposable
     void SetProgressRate(double rate);
 }
 
-public interface IJobContext<TJobDefinition> : IJobContext 
+/// <summary>
+/// A typed job context
+/// </summary>
+/// <typeparam name="TJobDefinition">The type of definition that the job uses</typeparam>
+public interface IJobContext<out TJobDefinition> : IJobContext 
     where TJobDefinition: IJobDefinition
 {
     /// <summary>
     /// The job definition passed to the job monitor when the job was created
     /// </summary>
-    public TJobDefinition Definition { get; }
+    public new TJobDefinition Definition { get; }
 }
