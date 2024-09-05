@@ -90,7 +90,10 @@
                         <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
                             <Button Command="{CompiledBinding InstallCommand}"
                                     HorizontalAlignment="Center">
-                                <TextBlock Text="Install" />
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Done}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
+                                    <TextBlock Text="{CompiledBinding InstallText.Value}" />
+                                </StackPanel>
                             </Button>
                         </DataTemplate>
                     </TreeDataGrid.Resources>

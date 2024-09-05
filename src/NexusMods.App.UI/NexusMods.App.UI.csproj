@@ -610,8 +610,14 @@
         <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
           <DependentUpon>ILibraryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\NexusModsModPageItemModel.cs">
+        <Compile Update="Pages\LibraryPage\FakeParentLibraryItemModel.cs">
             <DependentUpon>LibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\NexusModsModPageLibraryItemModel.cs">
+            <DependentUpon>LibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutPage\FakeParentLoadoutItemModel.cs">
+            <DependentUpon>LoadoutItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>

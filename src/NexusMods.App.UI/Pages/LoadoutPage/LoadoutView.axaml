@@ -57,7 +57,7 @@
                           Classes="MainListsStyling">
                 <TreeDataGrid.Resources>
                     <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
-                        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled.Value}">
+                        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}">
                             <ToggleSwitch.OnContent>
                                 <ContentControl />
                             </ToggleSwitch.OnContent>
