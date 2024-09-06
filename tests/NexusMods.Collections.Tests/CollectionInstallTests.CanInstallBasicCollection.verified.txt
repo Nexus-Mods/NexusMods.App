@@ -1,0 +1,23 @@
+﻿[
+  Breathing System ver. for CET,
+  Game Files,
+  Im/mersive,
+  Immersive Bartenders,
+  Immersive Bartenders - Dogtown,
+  Immersive Driving Plus Walking - Standalone,
+  Immersive First Person,
+  Immersive Fixers,
+  Immersive Food Vendors,
+  Immersive Food Vendors - Dogtown,
+  Immersive Glasses 1.1,
+  Immersive NCPD Hotline 3.1.3,
+  Immersive Rippers,
+  Immersive Rippers - Dogtown,
+  Immersive Sunglasses Extended - Equipment-EX,
+  Immersive Timeskip,
+  Immersive Vik,
+  ImmersiveStaminaFX,
+  PlayerBreathingActiveWhileSprintingOnly.zip,
+  Staged Reload,
+  Street Vendors v1.2.7
+]

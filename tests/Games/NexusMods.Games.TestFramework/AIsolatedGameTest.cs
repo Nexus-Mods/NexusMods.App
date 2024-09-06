@@ -49,6 +49,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly ILibraryService LibraryService;
     protected readonly IFileStore FileStore;
     protected readonly IGameRegistry GameRegistry;
+    protected readonly NexusModsLibrary NexusModsLibrary;
+
 
     protected readonly IConnection Connection;
 
@@ -95,7 +97,9 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         NexusNexusApiClient = ServiceProvider.GetRequiredService<NexusApiClient>();
         Logger = ServiceProvider.GetRequiredService<ILogger<TTest>>();
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+        NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
+
 
     public record ConfigOptionsRecord
     {

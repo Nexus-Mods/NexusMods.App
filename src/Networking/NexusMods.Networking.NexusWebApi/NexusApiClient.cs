@@ -91,9 +91,7 @@ public class NexusApiClient : INexusApiClient
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
 
-        using var response = await _httpClient.SendAsync(msg, token);
-
-        return null!;
+        return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
     /// <summary>

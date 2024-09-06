@@ -207,6 +207,25 @@ public class NexusModsLibrary
         return nexusJob;
     }
     
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
+        AbsolutePath destination,
+        GameDomain gameDomain,
+        ModId modId,
+        FileId fileId,
+        CancellationToken cancellationToken)
+    {
+        var modPage = await GetOrAddModPage(modId, gameDomain, cancellationToken);
+        var file = await GetOrAddFile(fileId, modPage, gameDomain, cancellationToken);
+
+        var nxmData = Optional.None<(NXMKey, DateTime)>();
+        var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
+        
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
+
+        return nexusJob;
+    }
+    
     /// <summary>
     /// Create a job that downloads a collection
     /// </summary>
