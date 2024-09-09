@@ -56,7 +56,7 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.1.3" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.1.3" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.1.0" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.1.0.1" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
     <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
     <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
