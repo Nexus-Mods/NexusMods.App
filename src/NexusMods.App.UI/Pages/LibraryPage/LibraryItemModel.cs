@@ -78,6 +78,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                         model.InstallText.Value = "Install";
                         model.IsInstalledInLoadout.Value = false;
                         model.InstalledDate.Value = DateTime.UnixEpoch;
+                        model.FormattedInstalledDate.Value = "-";
                     }
                 }).AddTo(disposables);
 
