@@ -22,4 +22,10 @@ public class Mod
     
     [JsonPropertyName("source")]
     public required ModSource Source { get; init; }
+
+    [JsonPropertyName("hashes")] 
+    public PathAndHash[] Hashes { get; init; } = [];
+    
+    [JsonPropertyName("choices")]
+    public Choices? Choices { get; init; }
 }

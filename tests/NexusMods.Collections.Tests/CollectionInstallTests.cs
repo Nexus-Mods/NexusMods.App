@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -15,7 +16,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     public async Task CanInstallBasicCollection()
     {
         await using var destination = TemporaryFileManager.CreateFile();
-        var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("aexcgn"), RevisionNumber.From(4),
+        var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("jjctqn"), RevisionNumber.From(1),
             CancellationToken.None
         );
         
@@ -33,6 +34,16 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
             .OrderBy(r => r.Name)
             .Select(r => r.Name)
             .ToArray();
-        await Verify(mods);
+        
+        var files = loadout.Items
+            .OfTypeLoadoutItemWithTargetPath()
+            .Select(f => ((GamePath)f.TargetPath).ToString())
+            .Order()
+            .ToArray();
+
+        await Verify(new {
+            mods,
+            files
+        });
     }
 }
