@@ -59,11 +59,11 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
         var model = new LibraryItemModel(nexusModsLibraryFile.Id)
         {
-            CreatedAt = nexusModsLibraryFile.GetCreatedAt(),
             Name = nexusModsLibraryFile.FileMetadata.Name,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
+        model.CreatedAtDate.Value = nexusModsLibraryFile.GetCreatedAt();
         model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size.ToString();
         model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
 
@@ -115,7 +115,6 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         return new NexusModsModPageLibraryItemModel
         {
             Name = modPageMetadata.Name,
-            CreatedAt = modPageMetadata.GetCreatedAt(),
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,

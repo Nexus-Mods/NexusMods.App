@@ -18,7 +18,6 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId>
 {
     public required string Name { get; init; }
-    public required DateTime CreatedAt { get; init; }
 
     // TODO: turn this back into a `Size`
     // NOTE(erri120): requires https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/pull/304
@@ -29,6 +28,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
     public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
+    public ReactiveProperty<DateTime> CreatedAtDate { get; } = new(DateTime.UnixEpoch);
 
     public Observable<DateTime>? Ticker { get; set; }
     public BindableReactiveProperty<string> FormattedCreatedAtDate { get; } = new("-");
@@ -52,13 +52,13 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAt);
+            model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
             model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
 
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
-                model.FormattedCreatedAtDate.Value = FormatDate(now, model.CreatedAt);
+                model.FormattedCreatedAtDate.Value = FormatDate(now, model.CreatedAtDate.Value);
                 model.FormattedInstalledDate.Value = FormatDate(now, model.InstalledDate.Value);
             }).AddTo(disposables);
 
@@ -87,7 +87,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
         });
     }
 
-    private static string FormatDate(DateTime now, DateTime date)
+    protected static string FormatDate(DateTime now, DateTime date)
     {
         if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
         return date.Humanize(dateToCompareAgainst: now);
@@ -186,8 +186,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             getter: model => model.FormattedCreatedAtDate.Value,
             options: new TextColumnOptions<LibraryItemModel>
             {
-                CompareAscending = static (a, b) => a?.CreatedAt.CompareTo(b?.CreatedAt ?? DateTime.UnixEpoch) ?? 1,
-                CompareDescending = static (a, b) => b?.CreatedAt.CompareTo(a?.CreatedAt ?? DateTime.UnixEpoch) ?? 1,
+                CompareAscending = static (a, b) => a?.CreatedAtDate.Value.CompareTo(b?.CreatedAtDate.Value ?? DateTime.UnixEpoch) ?? 1,
+                CompareDescending = static (a, b) => b?.CreatedAtDate.Value.CompareTo(a?.CreatedAtDate.Value ?? DateTime.UnixEpoch) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,

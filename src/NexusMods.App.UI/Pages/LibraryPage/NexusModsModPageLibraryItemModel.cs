@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Extensions.BCL;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Paths;
 using ObservableCollections;
 using R3;
@@ -20,16 +19,20 @@ public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
                 {
                     if (count == 0)
                     {
+                        model.CreatedAtDate.Value = DateTime.UnixEpoch;
                         model.ItemSize.Value = Size.Zero.ToString();
                         model.Version.Value = "-";
                     }
                     else
                     {
+                        model.CreatedAtDate.Value = model.LibraryItems.Max(x => x.GetCreatedAt());
                         model.ItemSize.Value = model.LibraryItems.Sum(x => x.ToLibraryFile().Size).ToString();
 
                         // TODO: "mod page"-version, whatever that means
                         model.Version.Value = "-";
                     }
+
+                    model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
                 })
                 .AddTo(disposables);
         });

@@ -47,10 +47,10 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var model = new LibraryItemModel(libraryFile.Id)
         {
             Name = libraryFile.AsLibraryItem().Name,
-            CreatedAt = libraryFile.GetCreatedAt(),
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
+        model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
         model.ItemSize.Value = libraryFile.Size.ToString();
         return model;
     }
@@ -84,7 +84,6 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
                     Name = libraryFile.AsLibraryItem().Name,
-                    CreatedAt = libraryFile.GetCreatedAt(),
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
@@ -92,6 +91,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
+                model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
                 model.ItemSize.Value = libraryFile.Size.ToString();
                 return (LibraryItemModel)model;
             });
