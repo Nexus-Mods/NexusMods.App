@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -20,9 +21,12 @@ public class LibraryFilter
 {
     public IObservable<LoadoutId> LoadoutObservable { get; }
 
-    public LibraryFilter(IObservable<LoadoutId> loadoutObservable)
+    public IObservable<ILocatableGame> GameObservable { get; }
+
+    public LibraryFilter(IObservable<LoadoutId> loadoutObservable, IObservable<ILocatableGame> gameObservable)
     {
         LoadoutObservable = loadoutObservable;
+        GameObservable = gameObservable;
     }
 }
 

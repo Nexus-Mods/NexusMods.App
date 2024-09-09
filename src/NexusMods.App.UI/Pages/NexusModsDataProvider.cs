@@ -31,6 +31,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryFile
             .ObserveAll(_connection)
+            // only show library files for the currently selected game
+            .FilterOnObservable((file, _) => libraryFilter.GameObservable.Select(game => file.ModPageMetadata.GameDomain.Equals(game.Domain)))
             .Transform((file, _) => ToLibraryItemModel(file, libraryFilter));
     }
 
@@ -41,6 +43,9 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         // NexusModsLibraryFile that links to the mod page.
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
+            // only show mod pages for the currently selected game
+            .FilterOnObservable((modPage, _) => libraryFilter.GameObservable.Select(game => modPage.GameDomain.Equals(game.Domain)))
+            // only show mod pages that have library files
             .FilterOnObservable((_, e) => _connection
                 .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, e)
                 .IsNotEmpty()

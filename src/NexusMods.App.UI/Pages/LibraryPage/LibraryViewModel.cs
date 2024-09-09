@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -24,7 +25,6 @@ using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -63,18 +63,28 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
 
-        var ticker = Observable
+        var ticker = R3.Observable
             .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
 
+        var loadoutObservable = LoadoutSubject
+            .Where(static id => id.HasValue)
+            .Select(static id => id.Value)
+            .AsSystemObservable()
+            .Replay(bufferSize: 1);
+
+        var gameObservable = loadoutObservable
+            .Select(id => Loadout.Load(_connection.Db, id).InstallationInstance.Game)
+            .Replay(bufferSize: 1);
+
         var libraryFilter = new LibraryFilter(
-            loadoutObservable: LoadoutSubject
-                .Where(static id => id.HasValue)
-                .Select(static id => id.Value)
-                .AsSystemObservable()
+            loadoutObservable: loadoutObservable,
+            gameObservable: gameObservable
         );
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
@@ -84,9 +94,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         TabTitle = "Library (new)";
         TabIcon = IconValues.ModLibrary;
-
-        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         ticker.Connect();
 
@@ -149,6 +156,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
+            disposables.Add(loadoutObservable.Connect());
+            disposables.Add(gameObservable.Connect());
+
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
 
             Adapter.Activate();
