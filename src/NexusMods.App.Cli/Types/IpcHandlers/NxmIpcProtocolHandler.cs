@@ -103,7 +103,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                     var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
                     await using var destination = temporaryFileManager.CreateFile();
 
-                    var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("aexcgn"), RevisionNumber.From(4),
+                    var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision,
                         CancellationToken.None
                     );
         
