@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
 
@@ -47,16 +48,17 @@ public static class IJobMonitorExtensions
     /// <summary>
     /// Gets an observable of the sum of the progress rate of all given jobs.
     /// </summary>
-    public static IObservable<double> SumProgressRate<TJobType>(this IObservable<IChangeSet<TJobType, JobId>> jobs) 
+    public static IObservable<double> SumRateOfProgress<TJobType>(this IObservable<IChangeSet<TJobType, JobId>> jobs) 
         where TJobType : IJob
     {
         return jobs.TransformOnObservable(job => job.ObservableRateOfProgress)
-            .Filter(p => p.HasValue)
+            //.Filter(p => p.HasValue)
             .QueryWhenChanged(coll =>
                 {
                     if (coll.Count == 0)
                         return 0.0d;
-                    return coll.Items.Select(r => r.Value).Sum();
+                    return coll.Items.Where(f => f.HasValue)
+                        .Select(r => r.Value).Sum();
                 }
             );
     }
