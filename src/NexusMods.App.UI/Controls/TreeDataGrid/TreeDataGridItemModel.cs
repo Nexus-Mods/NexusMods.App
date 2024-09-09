@@ -1,9 +1,9 @@
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
+using ObservableCollections;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 
@@ -27,12 +27,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
 
-    private SourceCache<TModel, TKey> _children = new(static _ => throw new NotImplementedException());
-    private readonly ReadOnlyObservableCollection<TModel> _childrenView;
-
-    // TODO: use ObservableCollections, requires fix on their end
-    // private ObservableDictionary<TKey, TModel> _children = [];
-    // private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
+    private ObservableList<TModel> _children = [];
+    private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
@@ -64,8 +60,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     protected TreeDataGridItemModel()
     {
-        // _childrenView = _children.ToNotifyCollectionChanged(static kv => kv.Value);
-        _children.Connect().Bind(out _childrenView).Subscribe();
+        _childrenView = _children.ToNotifyCollectionChanged();
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -97,93 +92,30 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
                     .DistinctUntilChanged()
                     .Subscribe(model, onNext: static (isInitializing, model) =>
                     {
-                        // NOTE(erri120): We always need to reset when the observable triggers.
-                        // Note that the observable we're currently in with the `DistinctUntilChanged`
-                        // gets disposed when the model is deactivated. This is important to
-                        // understand for the model and child activation/deactivation relationships.
-                        model._childrenObservableSerialDisposable.Disposable = null;
-
-                        if (isInitializing)
+                        // NOTE(erri120): Lazy-init the subscription. Previously, we'd re-subscribe to the children observable
+                        // and clear all previous values. This broke the TreeDataGrid selection code. Instead, we'll have a lazy
+                        // observable. When the parent gets expanded for the first time, we'll set up this subscription and keep
+                        // it alive for the entire lifetime of the parent.
+                        if (isInitializing && model._childrenObservableSerialDisposable.Disposable is null)
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
-                                .SubscribeWithErrorLogging(changeSet =>
-                                {
-                                    UpdateChildren(model._children, changeSet);
-                                });
+                                .DisposeMany()
+                                .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }
         });
     }
 
-    private static void UpdateChildren(SourceCache<TModel, TKey> cache, IChangeSet<TModel, TKey> changeSet)
+    private static void CleanupChildren(ObservableList<TModel> children)
     {
-        // NOTE(erri120): Manual update method. Couldn't use `DisposeMany` because that disposes all
-        // children onComplete. Instead, we only want to dispose children when the parent gets disposed,
-        // or the child gets updated or remove.
-        cache.Edit(updater =>
+        foreach (var child in children)
         {
-            foreach (var change in changeSet)
-            {
-                switch (change.Reason)
-                {
-                    case ChangeReason.Add:
-                    {
-                        var previous = updater.Lookup(change.Key);
-                        if (!previous.HasValue)
-                        {
-                            // NOTE(erri120): The source subscription will provide
-                            // adds that shouldn't update existing values, breaking
-                            // selection.
-                            updater.AddOrUpdate(change.Current, change.Key);
-                        }
+            child.Dispose();
+        }
 
-                        break;
-                    }
-                    case ChangeReason.Update:
-                    {
-                        var previous = updater.Lookup(change.Key);
-                        updater.AddOrUpdate(change.Current, change.Key);
-
-                        if (previous.HasValue)
-                        {
-                            previous.Value.Dispose();
-                        }
-
-                        break;
-                    }
-                    case ChangeReason.Remove:
-                    {
-                        var previous = updater.Lookup(change.Key);
-                        if (previous.HasValue)
-                        {
-                            updater.Remove(change.Key);
-                            previous.Value.Dispose();
-                        }
-
-                        break;
-                    }
-                    case ChangeReason.Refresh:
-                    case ChangeReason.Moved:
-                    default:
-                        break;
-                }
-            }
-        });
-    }
-
-    private static void CleanupChildren(SourceCache<TModel, TKey> children)
-    {
-        children.Edit(updater =>
-        {
-            foreach (var child in updater.Items)
-            {
-                child.Dispose();
-            }
-
-            updater.Clear();
-        });
+        children.Clear();
     }
 
     private bool _isDisposed;
