@@ -25,7 +25,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
     private ObservableList<TModel> Roots { get; set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
-    private INotifyCollectionChangedSynchronizedView<TModel> RootsCollectionChangedView { get; }
+    private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
@@ -47,17 +47,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                         model.Activate();
                     } else
                     {
-                        // NOTE(erri120): TreeDataGrid doesn't update the selection when a parent gets collapsed
-                        // but a child was selected. That behavior breaks out internal collection.
-                        // TODO: remove this temporary fix, requires fix in TreeDataGrid
-                        self.SelectedModels.Remove(model);
-
-                        // if (self.Source.Value.Selection is TreeDataGridRowSelectionModel<TModel> selection)
-                        // {
-                        //     if (!selection.SelectedItems.Contains(model))
-                        //         self.SelectedModels.Remove(model);
-                        // }
-
                         self.BeforeModelDeactivationHook(model);
                         model.Deactivate();
                     }

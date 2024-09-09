@@ -1,9 +1,9 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
-using ObservableCollections;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 
@@ -26,8 +26,13 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
     public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
     public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
-    private ObservableList<TModel> _children = [];
-    private readonly INotifyCollectionChangedSynchronizedView<TModel> _childrenView;
+
+    private SourceCache<TModel, TKey> _children = new(static _ => throw new NotImplementedException());
+    private readonly ReadOnlyObservableCollection<TModel> _childrenView;
+
+    // TODO: use ObservableCollections, requires fix on their end
+    // private ObservableDictionary<TKey, TModel> _children = [];
+    // private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
@@ -59,7 +64,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     protected TreeDataGridItemModel()
     {
-        _childrenView = _children.CreateView(static model => model).ToNotifyCollectionChanged();
+        // _childrenView = _children.ToNotifyCollectionChanged(static kv => kv.Value);
+        _children.Connect().Bind(out _childrenView).Subscribe();
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -96,23 +102,88 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
                         // gets disposed when the model is deactivated. This is important to
                         // understand for the model and child activation/deactivation relationships.
                         model._childrenObservableSerialDisposable.Disposable = null;
-                        CleanupChildren(model._children);
 
                         if (isInitializing)
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
-                                .DisposeMany()
-                                .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
+                                .SubscribeWithErrorLogging(changeSet =>
+                                {
+                                    UpdateChildren(model._children, changeSet);
+                                });
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }
         });
     }
 
-    private static void CleanupChildren(ObservableList<TModel> children)
+    private static void UpdateChildren(SourceCache<TModel, TKey> cache, IChangeSet<TModel, TKey> changeSet)
     {
-        children.Clear();
+        // NOTE(erri120): Manual update method. Couldn't use `DisposeMany` because that disposes all
+        // children onComplete. Instead, we only want to dispose children when the parent gets disposed,
+        // or the child gets updated or remove.
+        cache.Edit(updater =>
+        {
+            foreach (var change in changeSet)
+            {
+                switch (change.Reason)
+                {
+                    case ChangeReason.Add:
+                    {
+                        var previous = updater.Lookup(change.Key);
+                        if (!previous.HasValue)
+                        {
+                            // NOTE(erri120): The source subscription will provide
+                            // adds that shouldn't update existing values, breaking
+                            // selection.
+                            updater.AddOrUpdate(change.Current, change.Key);
+                        }
+
+                        break;
+                    }
+                    case ChangeReason.Update:
+                    {
+                        var previous = updater.Lookup(change.Key);
+                        updater.AddOrUpdate(change.Current, change.Key);
+
+                        if (previous.HasValue)
+                        {
+                            previous.Value.Dispose();
+                        }
+
+                        break;
+                    }
+                    case ChangeReason.Remove:
+                    {
+                        var previous = updater.Lookup(change.Key);
+                        if (previous.HasValue)
+                        {
+                            updater.Remove(change.Key);
+                            previous.Value.Dispose();
+                        }
+
+                        break;
+                    }
+                    case ChangeReason.Refresh:
+                    case ChangeReason.Moved:
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    private static void CleanupChildren(SourceCache<TModel, TKey> children)
+    {
+        children.Edit(updater =>
+        {
+            foreach (var child in updater.Items)
+            {
+                child.Dispose();
+            }
+
+            updater.Clear();
+        });
     }
 
     private bool _isDisposed;
