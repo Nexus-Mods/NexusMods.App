@@ -1,9 +1,15 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Collections;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
@@ -52,6 +58,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     {
         var parsed = NXMUrl.Parse(url);
         _logger.LogDebug("Received NXM URL: {Url}", parsed);
+        var userInfo = await _loginManager.GetUserInfoAsync(cancel);
         switch (parsed)
         {
             case NXMOAuthUrl oauthUrl:
@@ -59,7 +66,6 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in
-                var userInfo = await _loginManager.GetUserInfoAsync(cancel);
                 if (userInfo is not null)
                 {
                     var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
@@ -74,6 +80,39 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
                     // var task = await _downloadService.AddTask(modUrl);
                     // _ = task.StartAsync();
+                }
+                else
+                {
+                    _logger.LogWarning("Download failed: User is not logged in");
+                }
+                break;
+            case NXMCollectionUrl collectionUrl:
+                if (userInfo is not null)
+                {
+                    var domain = GameDomain.From(collectionUrl.Game);
+                    var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
+                    var library = _serviceProvider.GetRequiredService<ILibraryService>();
+                    var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
+                    if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.Domain == domain, out var game))
+                        return;
+                    
+                    var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
+                    if (!syncService.TryGetLastAppliedLoadout(game, out var loadout))
+                        return;
+                    
+                    var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+                    await using var destination = temporaryFileManager.CreateFile();
+
+                    var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("aexcgn"), RevisionNumber.From(4),
+                        CancellationToken.None
+                    );
+        
+                    var libraryFile = await library.AddDownload(downloadJob);
+        
+                    if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
+                        throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+
+                    var installJob = await InstallCollectionJob.Create(_serviceProvider, loadout, collectionFile);
                 }
                 else
                 {

@@ -31,12 +31,12 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     
     public required TemporaryFileManager TemporaryFileManager { get; set; }
     
-    public required Loadout.ReadOnly TargetLoadout { get; set; }
+    public required LoadoutId TargetLoadout { get; set; }
 
 
 
 
-    public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(IServiceProvider provider, Loadout.ReadOnly target, NexusModsCollectionLibraryFile.ReadOnly source)
+    public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(IServiceProvider provider, LoadoutId target, NexusModsCollectionLibraryFile.ReadOnly source)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new InstallCollectionJob
@@ -100,9 +100,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return groupResult.Remap(group);
     }
     
-    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(Loadout.ReadOnly loadout, LibraryFile.ReadOnly file)
+    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(LoadoutId loadoutId, LibraryFile.ReadOnly file)
     {
-        return await LibraryService.InstallItem(file.AsLibraryItem(), loadout.Id);
+        return await LibraryService.InstallItem(file.AsLibraryItem(), loadoutId);
     }
 
     private async Task<LibraryFile.ReadOnly> EnsureDownloaded(Mod mod)
