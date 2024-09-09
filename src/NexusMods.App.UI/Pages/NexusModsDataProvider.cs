@@ -171,7 +171,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var installedAtObservable = observable
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e).GetCreatedAt())
-                    .QueryWhenChanged(query => query.Items.FirstOrDefault());
+                    .QueryWhenChanged(query => query.Items.Max());
 
                 var loadoutItemIdsObservable = observable.Transform((_, e) => (LoadoutItemId) e);
 

@@ -139,7 +139,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var installedAtObservable = observable
                     .Transform(item => item.GetCreatedAt())
-                    .QueryWhenChanged(query => query.Items.FirstOrDefault());
+                    .QueryWhenChanged(query => query.Items.Max());
 
                 var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
