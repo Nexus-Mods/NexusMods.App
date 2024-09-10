@@ -52,7 +52,7 @@ public static class IJobMonitorExtensions
         where TJobType : IJob
     {
         return jobs.TransformOnObservable(job => job.ObservableRateOfProgress)
-            //.Filter(p => p.HasValue)
+            .Filter(p => p.HasValue)
             .QueryWhenChanged(coll =>
                 {
                     if (coll.Count == 0)
