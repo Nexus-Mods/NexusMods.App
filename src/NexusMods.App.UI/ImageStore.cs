@@ -36,8 +36,6 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
     private ConcurrentDictionary<EntityId, ImageMetadata> _metadataTable;
     private ConcurrentLfu<EntityId, Bitmap> _bitmapCache;
 
-    private byte[] _headerData = [];
-
     private readonly SemaphoreSlim _streamSemaphore = new(initialCount: 1, maxCount: 1);
 
     private readonly object _dataStartLock = new();
@@ -50,15 +48,15 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
         _metadataStream = new FileStream(directory.Combine("image-store-metadata.bin").ToNativeSeparators(OSInformation.Shared), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         _dataStream = new FileStream(directory.Combine("image-store-data.bin").ToNativeSeparators(OSInformation.Shared), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 
-        var init = InitMetadataTable(_metadataStream);
+        var init = ReadInitMetadataTable(_metadataStream);
         if (init is not null)
         {
             _metadataTable = init;
         }
         else
         {
-            _metadataStream.Position = 0;
-            _metadataStream.SetLength(0);
+            WriteInitMetadataTable(_metadataStream);
+
             _dataStream.Position = 0;
             _dataStream.SetLength(0);
 
@@ -88,7 +86,7 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
             _dataStream.Position = (long)metadata.DataStart;
             await _dataStream.WriteAsync(bytes.AsMemory(start: 0, length: (int)metadata.DataLength));
 
-            metadata.Write(bytes);
+            metadata.Write(bytes.AsSpan(start: 0, length: MetadataSize));
             await _metadataStream.WriteAsync(bytes.AsMemory(start: 0, length: MetadataSize));
 
             await UpdateMetadataCount(newCount: (uint)numEntries);
@@ -177,9 +175,21 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
         }
     }
 
-    private ConcurrentDictionary<EntityId, ImageMetadata>? InitMetadataTable(Stream stream)
+    private static void WriteInitMetadataTable(Stream stream)
     {
-        if (stream.Length < HeaderSize) return null;
+        stream.Position = 0;
+        stream.SetLength(0);
+
+        stream.WriteByte(BinaryRevision);
+        Span<byte> filler = stackalloc byte[HeaderSize - 1];
+        filler.Clear();
+        stream.Write(filler);
+    }
+
+    private static ConcurrentDictionary<EntityId, ImageMetadata>? ReadInitMetadataTable(Stream stream)
+    {
+        if (stream.Length == 0) return null;
+        Debug.Assert(stream.Length > HeaderSize);
 
         // Format:
         // byte - BinaryRevision
@@ -187,15 +197,15 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
         // 15 bytes padding
         // entries
 
-        _headerData = new byte[HeaderSize];
-        _ = stream.Read(_headerData);
+        Span<byte> headerBuffer = stackalloc byte[HeaderSize];
+        _ = stream.Read(headerBuffer);
 
-        if (_headerData[0] != BinaryRevision) return null;
+        if (headerBuffer[0] != BinaryRevision) return null;
 
         Span<byte> entryBuffer = stackalloc byte[MetadataSize];
-        var numEntries = BinaryPrimitives.ReadUInt32LittleEndian(_headerData.AsSpan()[1..sizeof(uint)]);
+        var numEntries = BinaryPrimitives.ReadUInt32LittleEndian(headerBuffer.Slice(start: 1, length: sizeof(uint)));
 
-        if (stream.Length != MetadataSize * numEntries) return null;
+        Debug.Assert(stream.Length == HeaderSize + MetadataSize * numEntries);
 
         var entries = GC.AllocateUninitializedArray<KeyValuePair<EntityId, ImageMetadata>>(length: (int)numEntries);
 
@@ -267,9 +277,9 @@ public sealed class ImageStore : IImageStore, IDisposable, IAsyncDisposable
 
         public PixelSize PixelSize => new((int)ImageWidth, (int)ImageHeight);
         public PixelFormat PixelFormat => SkColorType.ToPixelFormat();
-        public int Stride => (int)ImageWidth * PixelFormat.BitsPerPixel;
 
         // NOTE(erri120): Going from bits to bytes requires dividing by 8, aka bit shift by 3
+        public int Stride => ((int)ImageWidth * PixelFormat.BitsPerPixel) >> 3;
         public ulong DataLength => (ImageWidth * ImageHeight * (uint)PixelFormat.BitsPerPixel) >> 3;
 
         public ImageMetadata(EntityId id, uint imageWidth, uint imageHeight, SKColorType skColorType, ulong dataStart)
