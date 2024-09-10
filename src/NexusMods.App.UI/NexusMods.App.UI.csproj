@@ -653,8 +653,4 @@
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\LoadoutGrid\" />
-    </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
-using NexusMods.MnemonicDB.Abstractions;
+using OneOf;
 
 namespace NexusMods.App.UI;
 
@@ -10,7 +10,7 @@ namespace NexusMods.App.UI;
 [PublicAPI]
 public interface IImageStore
 {
-    ValueTask Store(EntityId id, Bitmap bitmap);
+    ValueTask<StoredImage.ReadOnly> PutAsync(Bitmap bitmap);
 
-    ValueTask<Bitmap?> Retrieve(EntityId id);
+    Bitmap? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input);
 }

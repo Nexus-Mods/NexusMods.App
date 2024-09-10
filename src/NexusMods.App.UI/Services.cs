@@ -87,6 +87,8 @@ public static class Services
 
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
+            .AddSingleton<IImageStore, ImageStore>()
+            .AddStoredImageModel()
             .AddTransient<IImageCache, ImageCache>()
 
             // View Models
