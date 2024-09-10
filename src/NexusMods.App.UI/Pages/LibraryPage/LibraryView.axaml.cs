@@ -31,6 +31,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .AddTo(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.RemoveSelectedItemsCommand, view => view.RemoveModButton)
+                .AddTo(disposables);
+
             this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.AddModButton)
                 .AddTo(disposables);
 

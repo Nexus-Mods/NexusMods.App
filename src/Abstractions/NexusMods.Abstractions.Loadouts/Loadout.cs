@@ -79,7 +79,7 @@ public partial class Loadout : IModelDefinition
     /// All items in the Loadout.
     /// </summary>
     public static readonly BackReferenceAttribute<LoadoutItem> Items = new(LoadoutItem.Loadout);
-    
+
     public partial struct ReadOnly
     {
         /// <summary>

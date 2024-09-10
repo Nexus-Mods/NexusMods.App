@@ -16,10 +16,19 @@
         <!-- Toolbar -->
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel Orientation="Horizontal">
-                <!-- Add Buttons Section -->
                 <Button x:Name="SwitchView">
                     <StackPanel>
                         <TextBlock>Switch View</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="RemoveModButton">
+                    <ToolTip.Tip>
+                        <TextBlock Text="{x:Static resources:Language.FileOriginPage_RemoveMod_ToolTip}" />
+                    </ToolTip.Tip>
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="DeleteOutline" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Delete_Mod}"/>
                     </StackPanel>
                 </Button>
 

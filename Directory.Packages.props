@@ -24,7 +24,7 @@
     <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="ObservableCollections" Version="2.2.0" />
-    <PackageVersion Include="ObservableCollections.R3" Version="2.2.0" />
+    <PackageVersion Include="ObservableCollections.R3" Version="3.0.1" />
     <PackageVersion Include="Polly" Version="8.4.1" />
     <PackageVersion Include="R3" Version="1.2.8" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.8" />
