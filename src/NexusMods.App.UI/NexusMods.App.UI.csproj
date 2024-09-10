@@ -507,12 +507,6 @@
         <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
           <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginsPageViewModel.cs">
-          <DependentUpon>IFileOriginsPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginEntry\FileOriginEntryViewModel.cs">
-          <DependentUpon>IFileOriginEntryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\ComboBox\SettingComboBoxViewModel.cs">
           <DependentUpon>ISettingComboBoxViewModel.cs</DependentUpon>
         </Compile>
@@ -530,9 +524,6 @@
         </Compile>
         <Compile Update="ImageCache.cs">
           <DependentUpon>IImageCache.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LoadoutGrid\LoadoutGridViewModel.cs">
-          <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\TextEdit\TextEditorPageViewModel.cs">
           <DependentUpon>ITextEditorPageViewModel.cs</DependentUpon>
@@ -588,15 +579,6 @@
         </Compile>
         <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledViewModel.cs">
-          <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LoadoutGrid\Columns\ModName\ModNameViewModel.cs">
-          <DependentUpon>IModNameViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledViewModel.cs">
-          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="DiagnosticSystem\LoadoutItemGroupFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
@@ -655,11 +637,6 @@
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
       <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
-      <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
       <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 
@@ -668,5 +645,9 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\LoadoutGrid\" />
     </ItemGroup>
 </Project>

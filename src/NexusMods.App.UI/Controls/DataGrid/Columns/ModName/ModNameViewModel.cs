@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.UI.Controls.DataGrid.Columns;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
