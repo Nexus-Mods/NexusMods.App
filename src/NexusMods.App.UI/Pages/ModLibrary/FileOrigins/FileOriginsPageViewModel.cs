@@ -86,7 +86,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
 
-        TabTitle = Language.FileOriginsPageTitle;
+        TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.ModLibrary;
 
         LoadoutId = loadoutId;

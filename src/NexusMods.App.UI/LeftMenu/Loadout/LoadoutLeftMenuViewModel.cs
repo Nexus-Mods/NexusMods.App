@@ -56,7 +56,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var loadoutItem = new IconViewModel
         {
-            Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
+            Name = Language.LoadoutViewPageTitle,
             Icon = IconValues.Collections,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -76,7 +76,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         
         var libraryItem = new IconViewModel
         {
-            Name = Language.FileOriginsPageTitle,
+            Name = Language.LibraryPageTitle,
             Icon = IconValues.ModLibrary,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {

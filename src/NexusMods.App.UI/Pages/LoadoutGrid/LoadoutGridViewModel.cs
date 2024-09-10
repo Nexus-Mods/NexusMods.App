@@ -59,7 +59,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         _connection = conn;
 
         TabIcon = IconValues.Collections;
-        TabTitle = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry;
+        TabTitle = Language.LoadoutViewPageTitle;
 
         var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, LoadoutItemGroupId, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
