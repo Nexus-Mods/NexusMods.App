@@ -36,7 +36,6 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
                 .Subscribe(rate => Number = rate / 1024 / 1024)
                 .DisposeWith(disposables);
             
-
         });
     }
 

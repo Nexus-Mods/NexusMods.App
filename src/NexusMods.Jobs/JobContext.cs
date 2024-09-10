@@ -89,7 +89,6 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
 
     public void SetRateOfProgress(double rate)
     {
-        Debug.Write($"Rate of progress: {rate}");
         RateOfProgress = rate;
         _rateOfProgress.OnNext(rate);
     }
