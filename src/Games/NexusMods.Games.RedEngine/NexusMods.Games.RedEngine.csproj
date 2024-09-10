@@ -19,11 +19,13 @@
         <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
         <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
         <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
-        <None Update="Resources\Cyberpunk2077\deploy_redmod.bat">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <None Update="build\NexusMods.Games.RedEngine.targets">
+          <Pack>true</Pack>
+          <PackagePath>build/NexusMods.FileExtractor.targets</PackagePath>
         </None>
     </ItemGroup>
 
+    <Import Project="build\NexusMods.Games.RedEngine.targets" />
     <ItemGroup>
         <PackageReference Include="CliWrap" />
     </ItemGroup>
