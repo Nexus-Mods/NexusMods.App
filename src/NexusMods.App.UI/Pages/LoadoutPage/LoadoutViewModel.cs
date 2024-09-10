@@ -9,6 +9,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -47,7 +48,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
 
-        TabTitle = "My Mods (new)";
+        TabTitle = Language.LoadoutViewPageTitle;
         TabIcon = IconValues.Collections;
 
         _connection = serviceProvider.GetRequiredService<IConnection>();
