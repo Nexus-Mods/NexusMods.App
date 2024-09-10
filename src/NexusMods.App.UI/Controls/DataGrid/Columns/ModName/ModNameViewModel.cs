@@ -1,9 +1,8 @@
 ﻿using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
+namespace NexusMods.App.UI.Controls.DataGrid.Columns.ModName;
 
 [UsedImplicitly]
 internal class ModNameViewModel(IConnection conn) : AColumnViewModel<IModNameViewModel, string>(conn), IModNameViewModel
