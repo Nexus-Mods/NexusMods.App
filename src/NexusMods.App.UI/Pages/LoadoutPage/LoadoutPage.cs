@@ -36,7 +36,6 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
-        if (!_settingsManager.Get<ExperimentalViewSettings>().ShowNewTreeViews) yield break;
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
         yield return new PageDiscoveryDetails
