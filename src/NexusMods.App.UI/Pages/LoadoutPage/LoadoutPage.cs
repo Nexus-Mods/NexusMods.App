@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -41,7 +42,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = "My Mods (new)",
+            ItemName = Language.LoadoutViewPageTitle,
             Icon = IconValues.Collections,
             PageData = new PageData
             {

@@ -269,7 +269,7 @@
     <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
         <value>Accueil</value>
     </data>
-    <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
         <value>Mes Mods</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
@@ -445,7 +445,7 @@
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
         <value>Vérification de l'état</value>
     </data>
-    <data name="FileOriginsPageTitle" xml:space="preserve">
+    <data name="LibraryPageTitle" xml:space="preserve">
         <value>Bibliothèque</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
