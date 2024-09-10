@@ -48,7 +48,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = Language.FileOriginsPageTitle,
+            ItemName = Language.LibraryPageTitle,
             Icon = IconValues.ModLibrary,
             PageData = new PageData
             {

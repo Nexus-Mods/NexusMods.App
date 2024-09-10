@@ -42,7 +42,7 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
+            ItemName = Language.LoadoutViewPageTitle,
             Icon = IconValues.Collections,
             PageData = new PageData
             {
