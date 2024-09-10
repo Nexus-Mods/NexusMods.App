@@ -68,18 +68,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 // Check if the user is logged in
                 if (userInfo is not null)
                 {
-                    var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
-                    var library = _serviceProvider.GetRequiredService<ILibraryService>();
-                    var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
-
-                    await using var destination = temporaryFileManager.CreateFile();
-                    var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
-
-                    var libraryJob = await library.AddDownload(downloadJob);
-                    _logger.LogInformation("{Result}", libraryJob);
-
-                    // var task = await _downloadService.AddTask(modUrl);
-                    // _ = task.StartAsync();
+                    await HandleModUrl(cancel, modUrl);
                 }
                 else
                 {
@@ -87,32 +76,10 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 }
                 break;
             case NXMCollectionUrl collectionUrl:
+                // Check if the user is logged in
                 if (userInfo is not null)
                 {
-                    var domain = GameDomain.From(collectionUrl.Game);
-                    var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
-                    var library = _serviceProvider.GetRequiredService<ILibraryService>();
-                    var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
-                    if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.Domain == domain, out var game))
-                        return;
-                    
-                    var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
-                    if (!syncService.TryGetLastAppliedLoadout(game, out var loadout))
-                        return;
-                    
-                    var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
-                    await using var destination = temporaryFileManager.CreateFile();
-
-                    var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision,
-                        CancellationToken.None
-                    );
-        
-                    var libraryFile = await library.AddDownload(downloadJob);
-        
-                    if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
-                        throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
-
-                    var installJob = await InstallCollectionJob.Create(_serviceProvider, loadout, collectionFile);
+                    await HandleCollectionUrl(collectionUrl);
                 }
                 else
                 {
@@ -123,6 +90,50 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 _logger.LogWarning("Unknown NXM URL type: {Url}", parsed);
                 break;
         }
+    }
+
+    private async Task HandleCollectionUrl(NXMCollectionUrl collectionUrl)
+    {
+        var domain = GameDomain.From(collectionUrl.Game);
+        var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var library = _serviceProvider.GetRequiredService<ILibraryService>();
+        var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
+        if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.Domain == domain, out var game))
+            return;
+                    
+        var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
+        if (!syncService.TryGetLastAppliedLoadout(game, out var loadout))
+            return;
+                    
+        var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+        await using var destination = temporaryFileManager.CreateFile();
+
+        var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision,
+            CancellationToken.None
+        );
+        
+        var libraryFile = await library.AddDownload(downloadJob);
+        
+        if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
+            throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+
+        var installJob = await InstallCollectionJob.Create(_serviceProvider, loadout, collectionFile);
+    }
+
+    private async Task HandleModUrl(CancellationToken cancel, NXMModUrl modUrl)
+    {
+        var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var library = _serviceProvider.GetRequiredService<ILibraryService>();
+        var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+
+        await using var destination = temporaryFileManager.CreateFile();
+        var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
+
+        var libraryJob = await library.AddDownload(downloadJob);
+        _logger.LogInformation("{Result}", libraryJob);
+
+        // var task = await _downloadService.AddTask(modUrl);
+        // _ = task.StartAsync();
     }
 }
 
