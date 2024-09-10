@@ -616,6 +616,9 @@
         <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
           <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
+        <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
+          <DependentUpon>ModNameView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -632,6 +635,7 @@
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
       <UpToDateCheckInput Remove="Controls\Badge\Badge.axaml" />
+      <UpToDateCheckInput Remove="Controls\DataGrid\Columns\ModInstalled\ModInstalledView.axaml" />
     </ItemGroup>
 
     <ItemGroup>
