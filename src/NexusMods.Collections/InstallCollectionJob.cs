@@ -23,7 +23,6 @@ using ModInstructions = (Mod Mod, LibraryFile.ReadOnly LibraryFile);
 
 public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>
 {
-    private IJobContext<InstallCollectionJob> _context = null!;
     public required NexusModsCollectionLibraryFile.ReadOnly SourceCollection { get; init; }
     
     public required IFileStore FileStore { get; init; }
@@ -61,7 +60,6 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)
     {
-        _context = context;
         if (!SourceCollection.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
             throw new InvalidOperationException("The source collection is not a library archive.");
         
@@ -79,7 +77,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         ConcurrentBag<ModInstructions> toInstall = [];
 
-        await Parallel.ForEachAsync(root.Mods, _context.CancellationToken, async (mod, _) => toInstall.Add(await EnsureDownloaded(mod)));
+        await Parallel.ForEachAsync(root.Mods, context.CancellationToken, async (mod, _) => toInstall.Add(await EnsureDownloaded(mod)));
 
         using var tx = Connection.BeginTransaction();
         
@@ -99,7 +97,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         };
         var groupResult = await tx.Commit();
         
-        await Parallel.ForEachAsync(toInstall, _context.CancellationToken, async (file, _) =>
+        await Parallel.ForEachAsync(toInstall, context.CancellationToken, async (file, _) =>
             {
                 // TODO: Implement FOMOD support
                 if (file.Mod.Choices != null)
