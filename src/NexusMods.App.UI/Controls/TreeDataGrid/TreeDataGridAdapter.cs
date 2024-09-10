@@ -60,13 +60,25 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
             self.ViewHierarchical
                 .AsObservable()
-                .Select(self, static (viewHierarchical, self) =>
+                .Do(self, static (viewHierarchical, self) =>
                 {
                     self.Roots.Clear();
 
                     // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
                     self.SelectedModels.Clear();
 
+                    var (source, selectionObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
+
+                    self._selectionModelsSerialDisposable.Disposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
+                    {
+                        self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
+                        self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
+                    });
+
+                    self.Source.Value = source;
+                })
+                .Select(self, static (viewHierarchical, self) =>
+                {
                     return self
                         .GetRootsObservable(viewHierarchical)
                         .OnUI()
@@ -76,17 +88,8 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
                 })
                 .Switch()
-                .Select(self, static (viewHierarchical, self) => self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical))
-                .Subscribe(self, static (tuple, self) =>
-                {
-                    self._selectionModelsSerialDisposable.Disposable = tuple.selectionObservable.Subscribe(self, static (eventArgs, self) =>
-                    {
-                        self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
-                        self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
-                    });
-
-                    self.Source.Value = tuple.source;
-                }).AddTo(disposables);
+                .Subscribe()
+                .AddTo(disposables);
 
             Disposable.Create(self._selectionModelsSerialDisposable, static serialDisposable => serialDisposable.Disposable = null).AddTo(disposables);
         });
