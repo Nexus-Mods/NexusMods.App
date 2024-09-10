@@ -5,5 +5,6 @@ namespace NexusMods.Abstractions.Collections.Json;
 public class Choices
 {
     [JsonPropertyName("type")]
-    public string Type { get; init; } = string.Empty;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public required ChoicesType Type { get; init; }
 }

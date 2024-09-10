@@ -7,7 +7,8 @@ namespace NexusMods.Abstractions.Collections.Json;
 public class ModSource
 {
     [JsonPropertyName("type")]
-    public string Type { get; init; } = string.Empty;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public required ModSourceType Type { get; init; } 
     
     [JsonPropertyName("modId")]
     public ModId ModId { get; init; }

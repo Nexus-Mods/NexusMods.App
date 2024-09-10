@@ -192,7 +192,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         return mod.Source.Type switch
         {
-            "nexus" => await EnsureNexusModDownloaded(mod),
+            ModSourceType.nexus => await EnsureNexusModDownloaded(mod),
             _ => throw new NotSupportedException($"The mod source type '{mod.Source.Type}' is not supported.")
         };
     }
