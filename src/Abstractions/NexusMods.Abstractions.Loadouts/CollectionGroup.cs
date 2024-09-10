@@ -1,5 +1,7 @@
 using DynamicData.Kernel;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -13,16 +15,9 @@ public partial class CollectionGroup : IModelDefinition
     private const string Namespace = "NexusMods.Abstractions.Loadouts.CollectionGroup";
     
     /// <summary>
-    /// Mostly a marker attribute to find all the collections on a given loadout. Likely faster than searching for all the loadout items
-    /// and filtering them by their attributes
+    /// If the collection is read-only it won't support adding new mods or modifying the existing files. 
     /// </summary>
-    public static readonly ReferenceAttribute<Loadout> Loadout = new(Namespace, nameof(Loadout));
-
-    /// <summary>
-    /// In this UI this is reflected as "My Collection", it's a group of all mods that the user has installed outside of any
-    /// other collection.
-    /// </summary>
-    public static readonly MarkerAttribute UserCollection = new(Namespace, nameof(UserCollection));
+    public static readonly BooleanAttribute IsReadOnly = new(Namespace, nameof(IsReadOnly));
 }
 
 public static partial class CollectionGroupLoaderExtensions
@@ -32,11 +27,12 @@ public static partial class CollectionGroupLoaderExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Optional<CollectionGroup.ReadOnly> FindUserCollection(this Loadout.ReadOnly loadout)
+    public static IEnumerable<CollectionGroup.ReadOnly> MutableCollections(this Loadout.ReadOnly loadout)
     {
-        return loadout.Db
-            .Datoms(CollectionGroup.Loadout, loadout.Id)
-            .Select(d => CollectionGroup.Load(loadout.Db, d.E))
-            .FirstOrOptional(x => x.IsUserCollection);
+        var db = loadout.Db;
+        return db
+            .Datoms((LoadoutItem.LoadoutId, loadout.Id), 
+                (CollectionGroup.IsReadOnly, false))
+            .Select(e => CollectionGroup.Load(db, e));
     }
 }

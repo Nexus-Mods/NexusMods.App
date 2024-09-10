@@ -36,7 +36,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
     public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
         // Default to the user group for now
-        var userGroup = Loadout.Load(_connection.Db, context.LoadoutId).FindUserCollection().Value.AsLoadoutItemGroup();
+        var userGroup = Loadout.Load(_connection.Db, context.LoadoutId).MutableCollections().First().AsLoadoutItemGroup();
         var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, userGroup.LoadoutItemGroupId);
         return vm;
     }

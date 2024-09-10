@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -50,10 +51,9 @@ public sealed class LibraryService : ILibraryService
     {
         if (!parent.HasValue)
         {
-            var userCollection = Loadout.Load(libraryItem.Db, targetLoadout).FindUserCollection();
-            if (!userCollection.HasValue)
+            if (!Loadout.Load(libraryItem.Db, targetLoadout).MutableCollections().TryGetFirst(out var userCollection))
                 throw new InvalidOperationException("Could not find the user collection for the target loadout");
-            parent = userCollection.Value.AsLoadoutItemGroup().LoadoutItemGroupId;
+            parent = userCollection.AsLoadoutItemGroup().LoadoutItemGroupId;
         }
 
         return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller);

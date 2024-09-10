@@ -1038,14 +1038,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 _ = new CollectionGroup.New(tx, out var userCollectionId)
                 {
-                    LoadoutId = loadout,
-                    IsUserCollection = true,
+                    IsReadOnly = false,
                     LoadoutItemGroup = new LoadoutItemGroup.New(tx, userCollectionId)
                     {
                         IsGroup = true,
                         LoadoutItem = new LoadoutItem.New(tx, userCollectionId)
                         {
-                            Name = "My Mods",
+                            Name = "My Collection",
                             LoadoutId = loadout,
                         },
                     },
