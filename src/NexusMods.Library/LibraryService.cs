@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
@@ -45,10 +46,17 @@ public sealed class LibraryService : ILibraryService
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
-    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? itemInstaller = null)
+    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? itemInstaller = null)
     {
-        var loadout = Loadout.Load(_connection.Db, targetLoadout);
-        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, loadout, itemInstaller);
+        if (!parent.HasValue)
+        {
+            var userCollection = Loadout.Load(libraryItem.Db, targetLoadout).FindUserCollection();
+            if (!userCollection.HasValue)
+                throw new InvalidOperationException("Could not find the user collection for the target loadout");
+            parent = userCollection.Value.AsLoadoutItemGroup().LoadoutItemGroupId;
+        }
+
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller);
     }
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {

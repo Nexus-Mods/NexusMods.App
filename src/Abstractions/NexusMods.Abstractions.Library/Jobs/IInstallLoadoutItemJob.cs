@@ -21,6 +21,11 @@ public interface IInstallLoadoutItemJob : IJobDefinition<LoadoutItemGroup.ReadOn
     public LoadoutId LoadoutId { get; }
     
     /// <summary>
+    /// The target parent group id
+    /// </summary>
+    public LoadoutItemGroupId ParentGroupId { get; }
+    
+    /// <summary>
     /// The optional installer to use (if null, the library will choose the best installer)
     /// </summary>
     public ILibraryItemInstaller? Installer { get; }

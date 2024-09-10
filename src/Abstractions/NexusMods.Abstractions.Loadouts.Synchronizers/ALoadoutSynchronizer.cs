@@ -1036,6 +1036,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 await BackupNewFiles(installation, filesToBackup);
 
+                _ = new CollectionGroup.New(tx, out var userCollectionId)
+                {
+                    LoadoutId = loadout,
+                    IsUserCollection = true,
+                    LoadoutItemGroup = new LoadoutItemGroup.New(tx, userCollectionId)
+                    {
+                        IsGroup = true,
+                        LoadoutItem = new LoadoutItem.New(tx, userCollectionId)
+                        {
+                            Name = "My Mods",
+                            LoadoutId = loadout,
+                        },
+                    },
+                };
+
                 // Commit the transaction as of this point the loadout is live
                 var result = await tx.Commit();
 
