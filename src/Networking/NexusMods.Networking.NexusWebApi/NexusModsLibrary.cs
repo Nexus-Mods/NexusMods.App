@@ -190,34 +190,32 @@ public class NexusModsLibrary
         return links.Data.First().Uri;
     }
 
+    /// <summary>
+    /// Parse a NXM URL and create a download job from the data
+    /// </summary>
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NXMModUrl url,
         CancellationToken cancellationToken)
     {
-        var modPage = await GetOrAddModPage(url.ModId, GameDomain.From(url.Game), cancellationToken);
-        var file = await GetOrAddFile(url.FileId, modPage, GameDomain.From(url.Game), cancellationToken);
-
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
-        
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
-        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
-
-        return nexusJob;
+        return await CreateDownloadJob(destination, GameDomain.From(url.Game), url.ModId, url.FileId, nxmData, cancellationToken);
     }
     
+    /// <summary>
+    /// Given a mod ID, file ID, and game domain, create a download job
+    /// </summary>
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         GameDomain gameDomain,
         ModId modId,
         FileId fileId,
-        CancellationToken cancellationToken)
+        Optional<(NXMKey, DateTime)> nxmData = default,
+        CancellationToken cancellationToken = default)
     {
         var modPage = await GetOrAddModPage(modId, gameDomain, cancellationToken);
         var file = await GetOrAddFile(fileId, modPage, gameDomain, cancellationToken);
-
-        var nxmData = Optional.None<(NXMKey, DateTime)>();
+        
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
         
         var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
