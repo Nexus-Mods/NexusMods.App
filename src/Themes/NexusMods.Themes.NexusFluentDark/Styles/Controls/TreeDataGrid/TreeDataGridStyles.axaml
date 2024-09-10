@@ -16,7 +16,6 @@
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
 
         <!-- if we have this control theme here, we can override styles properly -->
-        <!-- we've swapped Path for UnifiedIcon -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Width" Value="20" />
@@ -29,6 +28,7 @@
                             Height="{TemplateBinding Height}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
+                        <!-- swapped out Path so we can use our UnifiedIcon -->
                         <icons:UnifiedIcon x:Name="ChevronIcon"
                                            Value="{x:Static icons:IconValues.ChevronRight}"
                                            Foreground="{TemplateBinding Foreground}" />
@@ -47,8 +47,6 @@
     <Style Selector="TreeDataGrid">
         <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
         <Setter Property="BorderThickness" Value="0" />
-
-        <!-- Catch all text styling -->
 
         <Style Selector="^ TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
@@ -102,7 +100,7 @@
                                 </Thumb.Template>
                             </Thumb>
                         </Panel>
-                        <!-- added this border so we can use padding on the below stack -->
+                        <!-- added this border so we can use padding on the below StackPanel -->
                         <Border Padding="{TemplateBinding Padding}">
                             <StackPanel Orientation="Horizontal">
                                 <ContentPresenter Name="PART_ContentPresenter"
@@ -127,7 +125,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     TabIndex="1">
-                                    <!-- we've swapped Path for UnifiedIcon -->
+                                    <!-- swapped out Path so we can use our UnifiedIcon -->
                                     <icons:UnifiedIcon Name="SortIcon"
                                                        Value="{x:Null}"
                                                        Foreground="{TemplateBinding Foreground}" />
@@ -144,11 +142,10 @@
             <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
         </Style>
 
-        <!-- Sort Icon replacements -->
+        <!-- Sort Icon replacements now that we aren't using Path -->
         <Style Selector="^[SortDirection=Ascending] /template/ icons|UnifiedIcon#SortIcon">
             <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropDown}" />
         </Style>
-
         <Style Selector="^[SortDirection=Descending] /template/ icons|UnifiedIcon#SortIcon">
             <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropUp}" />
         </Style>
@@ -194,12 +191,12 @@
             <Setter Property="Background" Value="{DynamicResource TreeDataGridSelectedCellBackgroundBrush}" />
         </Style>
 
-        <!-- Generic column cell padding -->
+        <!-- all cells -->
         <Style Selector="^ :is(TreeDataGridCell)">
             <Setter Property="Padding" Value="8,0" />
         </Style>
 
-        <!-- First column cell padding -->
+        <!-- first cell  -->
         <Style Selector="^ :is(TreeDataGridCell):nth-child(1)">
             <Setter Property="Padding" Value="12,0,0,0" />
             
@@ -209,11 +206,14 @@
             </Style>
         </Style>
 
-        <!-- Last column cell padding -->
+        <!-- last cell -->
         <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
             <Setter Property="Padding" Value="8,0,26,0" />
             <Style Selector="^ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="HorizontalContentAlignment" Value="Right" />
+                
+                <!-- TODO (insomnious): this will be replaced when we have our button component ready to go -->
+                <!-- for now we're just using overriding the button style so we don't have to change implementation -->
                 
                 <Style Selector="^ Button">
                     <Setter Property="Height" Value="28"/>
@@ -228,8 +228,6 @@
             </Style>
         </Style>
 
-
-        
 
         <!-- NOTE(insomnious): as per design request, the background of the rows stay as they are with the
          :pointerover and :selected styles applied to the child 'PART_CellsPresenter' element. This is to allow
@@ -246,29 +244,19 @@
             <Style Selector="^ Border#RowBorder">
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
             </Style>
-
-            <!-- <Style Selector="^ /template/ TreeDataGridCellsPresenter#PART_CellsPresenter"> -->
-            <!--     <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" /> -->
-            <!-- </Style> -->
         </Style>
 
         <!-- Child rows styling -->
 
         <Style Selector="^:not(.RootRow)">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-
-            <Style Selector="^ /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <!--     <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" /> -->
-            </Style>
         </Style>
-
 
         <!-- All rows hover styling -->
 
         <Style Selector="^:pointerover /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
         </Style>
-
 
         <!-- All rows selection styling -->
 
