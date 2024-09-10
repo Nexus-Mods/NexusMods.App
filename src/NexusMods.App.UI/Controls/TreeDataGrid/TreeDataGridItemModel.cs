@@ -26,8 +26,9 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
     public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
     public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
+
     private ObservableList<TModel> _children = [];
-    private readonly INotifyCollectionChangedSynchronizedView<TModel> _childrenView;
+    private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
@@ -59,7 +60,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     protected TreeDataGridItemModel()
     {
-        _childrenView = _children.CreateView(static model => model).ToNotifyCollectionChanged();
+        _childrenView = _children.ToNotifyCollectionChanged();
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -91,14 +92,11 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
                     .DistinctUntilChanged()
                     .Subscribe(model, onNext: static (isInitializing, model) =>
                     {
-                        // NOTE(erri120): We always need to reset when the observable triggers.
-                        // Note that the observable we're currently in with the `DistinctUntilChanged`
-                        // gets disposed when the model is deactivated. This is important to
-                        // understand for the model and child activation/deactivation relationships.
-                        model._childrenObservableSerialDisposable.Disposable = null;
-                        CleanupChildren(model._children);
-
-                        if (isInitializing)
+                        // NOTE(erri120): Lazy-init the subscription. Previously, we'd re-subscribe to the children observable
+                        // and clear all previous values. This broke the TreeDataGrid selection code. Instead, we'll have a lazy
+                        // observable. When the parent gets expanded for the first time, we'll set up this subscription and keep
+                        // it alive for the entire lifetime of the parent.
+                        if (isInitializing && model._childrenObservableSerialDisposable.Disposable is null)
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
@@ -112,6 +110,11 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
 
     private static void CleanupChildren(ObservableList<TModel> children)
     {
+        foreach (var child in children)
+        {
+            child.Dispose();
+        }
+
         children.Clear();
     }
 

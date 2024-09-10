@@ -27,7 +27,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we just get all LocalFiles
         return _connection
@@ -36,29 +36,26 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((_, entityId) =>
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
-                return ToLibraryItemModel(libraryFile);
+                return ToLibraryItemModel(libraryFile, libraryFilter);
             });
     }
 
-    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile)
+    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile, LibraryFilter libraryFilter)
     {
-        var linkedLoadoutItemsObservable = _connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-            .AsEntityIds()
-            .Transform((_, entityId) => LibraryLinkedLoadoutItem.Load(_connection.Db, entityId));
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
 
         var model = new LibraryItemModel(libraryFile.Id)
         {
             Name = libraryFile.AsLibraryItem().Name,
-            CreatedAt = libraryFile.GetCreatedAt(),
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
+        model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
         model.ItemSize.Value = libraryFile.Size.ToString();
         return model;
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the nested library view, design wanted to have a
         // parent for the LocalFile, we create a parent with one child that will
@@ -71,24 +68,22 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
 
                 var hasChildrenObservable = Observable.Return(true);
-                var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
-                {
-                    return new ChangeSet<LibraryItemModel, EntityId>([new Change<LibraryItemModel, EntityId>(ChangeReason.Add, entityId, ToLibraryItemModel(libraryFile))]);
-                });
+                var childrenObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItemModel, EntityId>([
+                    new Change<LibraryItemModel, EntityId>(
+                        reason: ChangeReason.Add,
+                        key: entityId,
+                        current: ToLibraryItemModel(libraryFile, libraryFilter)
+                    ),
+                ]));
 
-                var linkedLoadoutItemsObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .AsEntityIds()
-                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
+                var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
-                var numInstalledObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .Count();
+                // NOTE(erri120): LocalFiles have only one child, this can only be 0 or 1.
+                var numInstalledObservable = linkedLoadoutItemsObservable.IsEmpty().Select(isEmpty => isEmpty ? 0 : 1);
 
                 var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
                     Name = libraryFile.AsLibraryItem().Name,
-                    CreatedAt = libraryFile.GetCreatedAt(),
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
@@ -96,12 +91,13 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
+                model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
                 model.ItemSize.Value = libraryFile.Size.ToString();
                 return (LibraryItemModel)model;
             });
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems()
+    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
     {
         // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
         // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
@@ -111,6 +107,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .AsEntityIds()
             .FilterOnObservable((_, e) => _connection
                 .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+                .AsEntityIds()
+                .FilterInStaticLoadout(_connection, loadoutFilter)
                 .IsNotEmpty()
             )
             .Transform((_, entityId) =>
@@ -120,6 +118,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 var observable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
                     .PublishWithFunc(() =>
                     {
@@ -128,6 +127,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                         foreach (var entity in entities)
                         {
+                            if (!entity.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId.Equals(loadoutFilter.LoadoutId)) continue;
                             changeSet.Add(new Change<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entity.Id, entity));
                         }
 
@@ -139,7 +139,11 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var installedAtObservable = observable
                     .Transform(item => item.GetCreatedAt())
-                    .QueryWhenChanged(query => query.Items.FirstOrDefault());
+                    .QueryWhenChanged(query =>
+                    {
+                        if (query.Count == 0) return default(DateTime);
+                        return query.Items.Max();
+                    });
 
                 var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
