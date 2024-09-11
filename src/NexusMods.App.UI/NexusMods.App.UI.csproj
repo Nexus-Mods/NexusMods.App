@@ -619,6 +619,7 @@
         <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
           <DependentUpon>ModNameView.axaml</DependentUpon>
         </Compile>
+        <Compile Remove="LeftMenu\Loadout\LeftMenuCollectionView.axaml.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -653,5 +654,9 @@
 
     <ItemGroup>
       <Folder Include="Pages\LoadoutGrid\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="LeftMenu\Loadout\LeftMenuCollectionView.axaml" />
     </ItemGroup>
 </Project>

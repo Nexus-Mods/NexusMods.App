@@ -1,9 +1,8 @@
 ﻿{
   mods: [
-    Appearance Menu Mod,
-    Cyber Engine Tweaks - CET 1.32.2,
     Game Files,
-    Halgari's Helper
+    Halgari's Helper,
+    My Collection
   ],
   files: [
     {Game}/archive/pc/mod/_1_Ves_HanakoFixedBodyNaked.archive,

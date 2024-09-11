@@ -160,9 +160,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     () => new PageData
                     {
                         FactoryId = LoadoutPageFactory.StaticId,
-                        Context = new LoadoutPageContext()
+                        Context = new LoadoutPageContext
                         {
                             LoadoutId = loadoutId,
+                            GroupScope = Optional<LoadoutItemGroupId>.None,
                         },
                     },
                     () => new LoadoutContext

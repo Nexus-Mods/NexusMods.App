@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -109,6 +110,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                         Context = new LoadoutPageContext
                         {
                             LoadoutId = loadoutId,
+                            GroupScope = Optional<LoadoutItemGroupId>.None,
                         },
                     },
                     () => new LoadoutContext
