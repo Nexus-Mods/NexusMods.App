@@ -4,10 +4,15 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Abstractions.Media;
 
-public class BitmapDataAttribute(string ns, string name) : BlobAttribute<byte[]>(ns, name)
+/// <summary>
+/// Binary blob containing image data.
+/// </summary>
+public class ImageDataAttribute(string ns, string name) : BlobAttribute<byte[]>(ns, name)
 {
+    /// <inheritdoc/>
     protected override byte[] FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId) => value.ToArray();
 
+    /// <inheritdoc/>
     protected override void WriteValue<TWriter>(byte[] value, TWriter writer)
     {
         var span = writer.GetSpan(sizeHint: value.Length);

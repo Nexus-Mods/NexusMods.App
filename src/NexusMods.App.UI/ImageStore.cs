@@ -6,6 +6,7 @@ using BitFaster.Caching.Lfu;
 using NexusMods.Abstractions.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
+using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.App.UI;
 
@@ -40,7 +41,7 @@ public sealed class ImageStore : IImageStore, IDisposable
 
         if (!storedImage.IsValid()) return null;
         var metadata = storedImage.Metadata;
-        var bytes = storedImage.BitmapData;
+        var bytes = storedImage.ImageData;
 
         Debug.Assert((ulong)bytes.Length == metadata.DataLength);
         return _bitmapCache.GetOrAdd(id, static (_, tuple) => ToBitmap(tuple.metadata, bytes: tuple.bytes), (metadata, bytes));
@@ -58,7 +59,7 @@ public sealed class ImageStore : IImageStore, IDisposable
         var storedImage = new StoredImage.New(transaction)
         {
             Metadata = metadata,
-            BitmapData = bytes,
+            ImageData = bytes,
         };
 
         return storedImage;
@@ -104,11 +105,16 @@ public sealed class ImageStore : IImageStore, IDisposable
 
     private static ImageMetadata ToMetadata(Bitmap bitmap)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitmap.PixelSize.Width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitmap.PixelSize.Height);
+
         var width = (uint)bitmap.PixelSize.Width;
         var height = (uint)bitmap.PixelSize.Height;
 
         if (!bitmap.Format.HasValue) throw new NotSupportedException("Bitmap doesn't have a PixelFormat");
         var format = bitmap.Format.Value;
+
+        if (format.BitsPerPixel % 8 != 0) throw new NotSupportedException($"Format `{format}` isn't supported");
 
         if (!bitmap.AlphaFormat.HasValue) throw new NotSupportedException("Bitmap doesn't have an AlphaFormat");
         var alphaFormat = bitmap.AlphaFormat.Value;
@@ -130,6 +136,13 @@ public sealed class ImageStore : IImageStore, IDisposable
             alphaFormat: alphaFormat,
             dpi: (uint)x
         );
+
+        // 16MB is enough to store a RAW image of 2000x2000 with 4 bytes per pixel
+        // 8.3MB is enough to store a RAW image of 1920x1080 with 4 bytes per pixel
+        var maxSize = Size.MB * 16;
+
+        if (Size.From(metadata.DataLength) > maxSize)
+            throw new NotSupportedException($"Large images above `{maxSize}` aren't supported!");
 
         return metadata;
     }

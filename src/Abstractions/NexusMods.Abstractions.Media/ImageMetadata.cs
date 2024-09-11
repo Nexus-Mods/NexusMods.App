@@ -9,22 +9,62 @@ using SkiaSharp;
 
 namespace NexusMods.Abstractions.Media;
 
+/// <summary>
+/// Metadata of an image.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ImageMetadata
 {
+    /// <summary>
+    /// Width.
+    /// </summary>
     public readonly uint ImageWidth;
+
+    /// <summary>
+    /// Height.
+    /// </summary>
     public readonly uint ImageHeight;
+
+    /// <summary>
+    /// Color type.
+    /// </summary>
     public readonly SKColorType SkColorType;
+
+    /// <summary>
+    /// Alpha format.
+    /// </summary>
     public readonly AlphaFormat AlphaFormat;
+
+    /// <summary>
+    /// DPI.
+    /// </summary>
     public readonly uint Dpi;
 
+    /// <summary>
+    /// Pixel size.
+    /// </summary>
     public PixelSize PixelSize => new((int)ImageWidth, (int)ImageHeight);
+
+    /// <summary>
+    /// Pixel format.
+    /// </summary>
     public PixelFormat PixelFormat => SkColorType.ToPixelFormat();
 
     // NOTE(erri120): Going from bits to bytes requires dividing by 8, aka bit shift by 3
+
+    /// <summary>
+    /// Stride is the number of bytes from one row pixels in memory to the next row.
+    /// </summary>
     public int Stride => ((int)ImageWidth * PixelFormat.BitsPerPixel) >> 3;
+
+    /// <summary>
+    /// Total length of the raw data.
+    /// </summary>
     public ulong DataLength => (ImageWidth * ImageHeight * (uint)PixelFormat.BitsPerPixel) >> 3;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public ImageMetadata(uint imageWidth, uint imageHeight, SKColorType skColorType, AlphaFormat alphaFormat, uint dpi)
     {
         ImageWidth = imageWidth;
@@ -32,10 +72,11 @@ public readonly struct ImageMetadata
         SkColorType = skColorType;
         AlphaFormat = alphaFormat;
         Dpi = dpi;
-
-        Guard(skColorType);
     }
 
+    /// <summary>
+    /// Reads the binary data as metadata.
+    /// </summary>
     public static ImageMetadata Read(ReadOnlySpan<byte> bytes)
     {
         Debug.Assert(bytes.Length == Marshal.SizeOf<ImageMetadata>());
@@ -49,6 +90,9 @@ public readonly struct ImageMetadata
         }
     }
 
+    /// <summary>
+    /// Writes the metadata as binary data.
+    /// </summary>
     public void Write(Span<byte> bytes)
     {
         Debug.Assert(bytes.Length == Marshal.SizeOf<ImageMetadata>());
@@ -60,19 +104,5 @@ public readonly struct ImageMetadata
                 Unsafe.Write(b, this);
             }
         }
-    }
-
-    private static void Guard(SKColorType skColorType)
-    {
-        // NOTE(erri120): safe-guard, this should never be hit in the real world, only odd formats like greyscale images
-        // would trigger this.
-        if (skColorType.ToPixelFormat().BitsPerPixel % 8 == 0) return;
-        ThrowHelper(skColorType);
-    }
-
-    [DoesNotReturn]
-    private static void ThrowHelper(SKColorType skColorType)
-    {
-        throw new NotSupportedException($"BitsPerPixel of `{skColorType.ToPixelFormat()}` is `{skColorType.ToPixelFormat().BitsPerPixel}` and not divisible by 8!");
     }
 }
