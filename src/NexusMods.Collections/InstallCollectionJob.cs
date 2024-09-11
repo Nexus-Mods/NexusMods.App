@@ -107,6 +107,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 // TODO: Implement FOMOD support
                 if (file.Mod.Choices != null)
                     return;
+                // Bit strange, but Install Mod will want to find the collection group, so we'll have to rebase entity it will get the DB from
+                file = (file.Mod, file.LibraryFile.Rebase());
                 await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup());
             }
         );
