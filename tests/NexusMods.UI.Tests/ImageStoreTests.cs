@@ -2,6 +2,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Media;
 using NexusMods.App.UI;
 
 namespace NexusMods.UI.Tests;

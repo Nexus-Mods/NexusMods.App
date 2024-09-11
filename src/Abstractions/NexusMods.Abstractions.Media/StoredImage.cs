@@ -1,6 +1,6 @@
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.Abstractions.Media;
 
 public partial class StoredImage : IModelDefinition
 {

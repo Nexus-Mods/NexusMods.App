@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Skia;
 using BitFaster.Caching.Lfu;
+using NexusMods.Abstractions.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
 
@@ -19,6 +20,7 @@ public sealed class ImageStore : IImageStore, IDisposable
         _bitmapCache = new ConcurrentLfu<StoredImageId, Bitmap>(capacity: 50);
     }
 
+    /// <inheritdoc/>
     public async ValueTask<StoredImage.ReadOnly> PutAsync(Bitmap bitmap)
     {
         using var tx = _connection.BeginTransaction();
@@ -28,6 +30,7 @@ public sealed class ImageStore : IImageStore, IDisposable
         return result.Remap(storedImage);
     }
 
+    /// <inheritdoc/>
     public Bitmap? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input)
     {
         if (input.TryPickT0(out var id, out var storedImage))
@@ -42,6 +45,9 @@ public sealed class ImageStore : IImageStore, IDisposable
         Debug.Assert((ulong)bytes.Length == metadata.DataLength);
         return _bitmapCache.GetOrAdd(id, static (_, tuple) => ToBitmap(tuple.metadata, bytes: tuple.bytes), (metadata, bytes));
     }
+
+    /// <inheritdoc/>
+    StoredImage.New IImageStore.CreateStoredImage(ITransaction transaction, Bitmap bitmap) => CreateStoredImage(transaction, bitmap);
 
     public static StoredImage.New CreateStoredImage(ITransaction transaction, Bitmap bitmap)
     {

@@ -2,7 +2,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.Abstractions.Media;
 
 public class BitmapDataAttribute(string ns, string name) : BlobAttribute<byte[]>(ns, name)
 {

@@ -3,7 +3,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.Abstractions.Media;
 
 public class ImageMetadataAttribute(string ns, string name) : BlobAttribute<ImageMetadata>(ns, name)
 {

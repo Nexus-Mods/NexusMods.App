@@ -7,7 +7,7 @@ using Avalonia.Platform;
 using Avalonia.Skia;
 using SkiaSharp;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.Abstractions.Media;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ImageMetadata

@@ -85,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Media\NexusMods.Abstractions.Media.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
@@ -524,9 +525,6 @@
         </Compile>
         <Compile Update="ImageCache.cs">
           <DependentUpon>IImageCache.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ImageStore.cs">
-            <DependentUpon>IImageStore.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\TextEdit\TextEditorPageViewModel.cs">
           <DependentUpon>ITextEditorPageViewModel.cs</DependentUpon>
