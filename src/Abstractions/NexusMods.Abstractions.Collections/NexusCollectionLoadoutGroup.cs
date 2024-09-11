@@ -5,7 +5,10 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Collections;
 
-[Include<LoadoutItemGroup>]
+/// <summary>
+/// A collection loadout group that was sourced from a NexusMods collection library file.
+/// </summary>
+[Include<CollectionGroup>]
 public partial class NexusCollectionLoadoutGroup : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Collections.NexusCollectionLoadoutItem";

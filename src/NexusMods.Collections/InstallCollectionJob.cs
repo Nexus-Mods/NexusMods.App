@@ -83,38 +83,43 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         var group = new NexusCollectionLoadoutGroup.New(tx, out var id)
         {
-            LibraryFileId= SourceCollection,
-            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            LibraryFileId = SourceCollection,
+            CollectionGroup = new CollectionGroup.New(tx, id)
             {
-                IsGroup = true,
-                LoadoutItem = new LoadoutItem.New(tx, id)
+                IsReadOnly = true,
+                LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
                 {
-                    Name = root.Info.Name,
-                    LoadoutId = TargetLoadout,
+                    IsGroup = true,
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        Name = root.Info.Name,
+                        LoadoutId = TargetLoadout,
+                    }
                 }
             }
-            
         };
+        
         var groupResult = await tx.Commit();
+        var groupRemapped = groupResult.Remap(group);
         
         await Parallel.ForEachAsync(toInstall, context.CancellationToken, async (file, _) =>
             {
                 // TODO: Implement FOMOD support
                 if (file.Mod.Choices != null)
                     return;
-                await InstallMod(TargetLoadout, file);
+                await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup());
             }
         );
         
-        return groupResult.Remap(group);
+        return groupRemapped;
     }
     
-    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(LoadoutId loadoutId, ModInstructions file)
+    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly group)
     {
         if (file.Mod.Hashes.Any())
-            return await InstallReplicatedMod(loadoutId, file);
-        
-        return await LibraryService.InstallItem(file.LibraryFile.AsLibraryItem(), loadoutId);
+            return await InstallReplicatedMod(loadoutId, file, group);
+
+        return await LibraryService.InstallItem(file.LibraryFile.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
     }
 
     /// <summary>
@@ -122,7 +127,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// the target locations of the mod files. The MD5 hashes are the hashes of the files. So it's a fromHash->toPath
     /// situation. We don't store the MD5 hashes in the database, so we'll have to calculate them on the fly.
     /// </summary>
-    private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(LoadoutId loadoutId, ModInstructions file)
+    private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly parentGroup)
     {
         ConcurrentDictionary<Md5HashValue, LibraryFile.ReadOnly> hashes = new();
         
@@ -150,6 +155,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             {
                 Name = file.Mod.Name,
                 LoadoutId = loadoutId,
+                ParentId = parentGroup.Id,
             },
         };
         
