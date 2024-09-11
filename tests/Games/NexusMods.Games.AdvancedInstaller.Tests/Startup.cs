@@ -12,7 +12,6 @@ public class Startup
     {
         services
             .AddDefaultServicesForTesting()
-            .AddGenericGameSupport()
             .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }

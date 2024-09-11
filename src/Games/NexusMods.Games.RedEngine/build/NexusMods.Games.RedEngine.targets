@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- 
+     The batch file is only used for running redmod via protontricks (on Linux),
+     due to protontricks limitation.
+     
+     This approach is flawed for cross-compilation scenarios.
+     
+     Ideally, we would want to copy the file based on the target runtime rather
+     than the build machine's OS. This way you can build (not publish) on Linux
+     and use on Windows, and vice versa.
+     
+     However, the properties don't propagate, so when I build `NexusMods.App`, 
+     the RedEngine project does not see things like Runtime Identifier (RID).
+
+     I tried for almost 2 hours, but could not find a decent solution that copies
+     during build based on the required conditions. Likewise, deleting after
+     publish did not work. If you delete after 'Publish' target, as the MSFT gods
+     intended, then the file would be re-copied by the build system after that.
+
+     Known limitations:
+     - The file won't be included when building for Linux on a non-Linux machine.
+     - The file will be included when building for non-Linux platforms on a Linux machine.
+
+     - Sewer
+    -->
+
+    <PropertyGroup>
+        <_IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</_IsLinux>
+
+        <BatFileName>deploy_redmod.bat</BatFileName>
+        <BatFileSourcePath>$(MSBuildThisFileDirectory)..\Resources\Cyberpunk2077\$(BatFileName)</BatFileSourcePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="$(BatFileSourcePath)" Condition="'$(_IsLinux)' == 'true'">
+            <LogicalName>$(BatFileName)</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <Target Name="LogBatFileInfo" BeforeTargets="Build;Publish">
+        <Message Importance="High" Text="===============================================" />
+        <Message Importance="High" Text="Bat File Handling Information" />
+        <Message Importance="High" Text="Project: $(MSBuildProjectName)" />
+        <Message Importance="High" Text="Configuration: $(Configuration)" />
+        <Message Importance="High" Text="IsLinux: $(_IsLinux)" />
+        <Message Importance="High" Text="BatFileSourcePath: $(BatFileSourcePath)" />
+        <Message Importance="High" Text="Will copy bat file: $(_IsLinux)" />
+        <Message Importance="High" Text="===============================================" />
+    </Target>
+</Project>

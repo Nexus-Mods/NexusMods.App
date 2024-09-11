@@ -61,12 +61,6 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         
         if (!hasRedMods) 
             return loadout;
-        
-        if (!OSInformation.Shared.IsWindows)
-        {
-            // TODO: run redmod on non-Windows systems (https://github.com/Nexus-Mods/NexusMods.App/issues/308)
-            return loadout;
-        }
 
         await _redModTool.Execute(loadout, CancellationToken.None);
         return await base.Synchronize(loadout);

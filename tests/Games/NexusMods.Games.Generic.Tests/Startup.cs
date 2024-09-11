@@ -13,7 +13,6 @@ public class Startup
     {
         container
             .AddDefaultServicesForTesting()
-            .AddGenericGameSupport()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
             .AddSerializationAbstractions()

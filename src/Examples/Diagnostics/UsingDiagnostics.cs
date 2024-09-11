@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -8,6 +7,7 @@ using NexusMods.Generators.Diagnostics;
 
 namespace Examples.Diagnostics;
 
+// Needs to be static
 internal static partial class Diagnostics
 {
     [DiagnosticTemplate]

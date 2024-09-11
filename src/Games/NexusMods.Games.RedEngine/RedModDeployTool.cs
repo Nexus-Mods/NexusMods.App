@@ -1,25 +1,23 @@
-using System.Text;
+using System.Reflection;
 using CliWrap;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic;
+using NexusMods.Paths;
+using static NexusMods.Games.RedEngine.Constants;
 
 namespace NexusMods.Games.RedEngine;
 
 public class RedModDeployTool : ITool
 {
-    private static readonly GamePath RedModPath = new(LocationId.Game, "tools/redmod/bin/redmod.exe");
-    private static readonly GamePath RedModDeployFolder = new(LocationId.Game, "r6/cache/modded");
+    private readonly GameToolRunner _toolRunner;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    private readonly ILogger<RedModDeployTool> _logger;
-    private readonly IProcessFactory _processFactory;
-
-    public RedModDeployTool(ILogger<RedModDeployTool> logger, IProcessFactory processFactory)
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager)
     {
-        _logger = logger;
-        _processFactory = processFactory;
+        _toolRunner = toolRunner;
+        _temporaryFileManager = temporaryFileManager;
     }
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
@@ -34,10 +32,35 @@ public class RedModDeployTool : ITool
         if (!deployFolder.DirectoryExists())
             deployFolder.CreateDirectory();
 
-        await _processFactory.ExecuteAsync(Cli.Wrap(exe.ToString())
-            .WithArguments("deploy")
-            .WithWorkingDirectory(exe.Parent.ToString()), cancellationToken: cancellationToken);
+        var fs = FileSystem.Shared;
+        if (fs.OS.IsWindows)
+        {
+            var command = Cli.Wrap(exe.ToString())
+                .WithArguments("deploy")
+                .WithWorkingDirectory(exe.Parent.ToString());
+            await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
+        }
+        else
+        {
+            await using var batchPath = await ExtractTemporaryDeployScript();
+            await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+        }
     }
 
     public string Name => "RedMod Deploy";
+
+    private async Task<TemporaryPath> ExtractTemporaryDeployScript()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceName = "deploy_redmod.bat";
+
+        await using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
+            throw new InvalidOperationException($"Resource {resourceName} not found in assembly.");
+
+        using var reader = new StreamReader(stream);
+        var file = _temporaryFileManager.CreateFile((Extension?)".bat");
+        await file.Path.WriteAllTextAsync(await reader.ReadToEndAsync());
+        return file;
+    }
 }

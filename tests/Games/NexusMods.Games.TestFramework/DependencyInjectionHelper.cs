@@ -11,6 +11,7 @@ using NexusMods.Activities;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.Generic;
 using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
@@ -60,6 +61,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddCrossPlatform()
+            .AddGenericGameSupport()
             .AddActivityMonitor()
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()

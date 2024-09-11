@@ -5,11 +5,16 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.FOMOD;
+using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -22,21 +27,12 @@ public class Startup
     /// <param name="container"></param>
     public void ConfigureServices(IServiceCollection container)
     {
-        /*
         container
-            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
-            .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
-            .AddFomod()
-            .AddRedEngineGames()
-            .AddLogging(builder => builder.AddXUnit())
-            .AddGames()
-            .AddSerializationAbstractions()
-            .AddLoadoutAbstractions()
-            .AddFileStoreAbstractions()
-            .AddInstallerTypes()
-            .Validate();
-            */
+            .AddSettings<LoggingSettings>()
+            .AddSettingsManager()
+            .AddFileSystem()
+            .AddCrossPlatform()
+            .AddGenericGameSupport();
     }
 }
 

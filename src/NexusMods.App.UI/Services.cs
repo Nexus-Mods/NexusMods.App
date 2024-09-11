@@ -83,7 +83,6 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
-
             .AddTransient<MainWindow>()
 
             // Services
@@ -158,7 +157,6 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
-            
             
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()

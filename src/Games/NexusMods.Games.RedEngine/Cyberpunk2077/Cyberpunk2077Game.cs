@@ -68,6 +68,8 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
         new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, _serviceProvider),
+        new MissingProtontricksForRedModEmitter(_serviceProvider),
+        new MissingRedModEmitter(),
     ];
     
     /// <inheritdoc />
