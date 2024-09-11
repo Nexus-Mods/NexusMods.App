@@ -1,6 +1,8 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
@@ -16,6 +18,7 @@ public interface ILoadoutDataProvider
 public class LoadoutFilter
 {
     public required LoadoutId LoadoutId { get; init; }
+    public required Optional<LoadoutItemGroupId> CollectionGroupId { get; init; }
 }
 
 public static class LoadoutDataProviderHelper
@@ -25,7 +28,15 @@ public static class LoadoutDataProviderHelper
         IConnection connection,
         LoadoutFilter loadoutFilter)
     {
-        return source.Filter(datom => LoadoutItem.Load(connection.Db, datom.E).LoadoutId.Equals(loadoutFilter.LoadoutId));
+        var filterByCollection = loadoutFilter.CollectionGroupId.HasValue;
+        return source.Filter(datom =>
+        {
+            var item = LoadoutItem.Load(connection.Db, datom.E);
+            if (!item.LoadoutId.Equals(loadoutFilter.LoadoutId)) return false;
+            if (filterByCollection) 
+                return item.IsChildOf(loadoutFilter.CollectionGroupId.Value);
+            return true;
+        });
     }
 
     public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem)

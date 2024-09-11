@@ -8,6 +8,7 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -21,9 +22,12 @@ public record LoadoutPageContext : IPageFactoryContext
 public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageContext>
 {
     private readonly ISettingsManager _settingsManager;
+    private readonly IConnection _connection;
+
     public LoadoutPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("62fda6ce-e6b7-45d6-936f-a8f325bfc644"));
@@ -31,7 +35,9 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
 
     public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
-        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        // Default to the user group for now
+        var userGroup = Loadout.Load(_connection.Db, context.LoadoutId).MutableCollections().First().AsLoadoutItemGroup();
+        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, userGroup.LoadoutItemGroupId);
         return vm;
     }
 

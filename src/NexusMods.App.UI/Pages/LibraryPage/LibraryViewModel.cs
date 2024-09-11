@@ -215,7 +215,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
+        await _libraryService.InstallItem(libraryItem, loadout, installer: useAdvancedInstaller ? _advancedInstaller : null);
     }
 
     private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)
