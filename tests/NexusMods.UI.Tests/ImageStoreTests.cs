@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Skia;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Media;
@@ -22,5 +23,12 @@ public class ImageStoreTests : AUiTest
         var storedImage = await _imageStore.PutAsync(bitmap);
         using var lifetime = _imageStore.Get(storedImage);
         lifetime.Should().NotBeNull();
+
+        var result = lifetime!.Value;
+        result.PixelSize.Equals(bitmap.PixelSize).Should().BeTrue();
+        result.Dpi.NearlyEquals(bitmap.Dpi).Should().BeTrue();
+        result.AlphaFormat.Should().Be(bitmap.AlphaFormat);
+        result.Format.Should().NotBeNull();
+        result.Format!.Value.ToSkColorType().Should().Be(bitmap.Format!.Value.ToSkColorType());
     }
 }
