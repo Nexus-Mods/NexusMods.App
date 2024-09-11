@@ -14,7 +14,7 @@ public partial class StoredImage : IModelDefinition
     /// <summary>
     /// Image data.
     /// </summary>
-    public static readonly ImageDataAttribute ImageData = new(Namespace, nameof(ImageData));
+    public static readonly ImageDataAttribute ImageData = new(Namespace, nameof(ImageData)) { NoHistory = true };
 
     /// <summary>
     /// Image metadata.
