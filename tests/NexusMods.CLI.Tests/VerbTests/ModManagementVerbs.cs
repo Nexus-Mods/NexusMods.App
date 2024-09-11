@@ -23,7 +23,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log.TableCellsWith(0, listName).Should().NotBeEmpty();
 
         log = await Run("list-mods", "-l", listName);
-        log.LastTable.Rows.Length.Should().Be(1);
+        log.LastTable.Rows.Length.Should().Be(2);
 
         log = await Run("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString(), "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
 

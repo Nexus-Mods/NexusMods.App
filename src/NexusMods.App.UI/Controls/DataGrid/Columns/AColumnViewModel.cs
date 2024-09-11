@@ -1,11 +1,10 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns;
+namespace NexusMods.App.UI.Controls.DataGrid.Columns;
 
 public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBaseInterface>, IComparableColumn<LoadoutItemGroupId>
     where TBaseInterface : class, IViewModelInterface, ICellViewModel<TValue>

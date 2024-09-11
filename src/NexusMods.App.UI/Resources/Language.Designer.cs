@@ -567,9 +567,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string LoadoutLeftMenuViewModel_LoadoutGridEntry {
+        public static string LoadoutViewPageTitle {
             get {
-                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutGridEntry", resourceCulture);
+                return ResourceManager.GetString("LoadoutViewPageTitle", resourceCulture);
             }
         }
         
@@ -903,9 +903,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string FileOriginsPageTitle {
+        public static string LibraryPageTitle {
             get {
-                return ResourceManager.GetString("FileOriginsPageTitle", resourceCulture);
+                return ResourceManager.GetString("LibraryPageTitle", resourceCulture);
             }
         }
         

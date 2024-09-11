@@ -1,19 +1,44 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 
 namespace NexusMods.App.UI.Pages;
 
 public interface ILoadoutDataProvider
 {
-    IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems();
+    IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter);
+}
+
+public class LoadoutFilter
+{
+    public required LoadoutId LoadoutId { get; init; }
+    public required Optional<LoadoutItemGroupId> CollectionGroupId { get; init; }
 }
 
 public static class LoadoutDataProviderHelper
 {
+    public static IObservable<IChangeSet<Datom, EntityId>> FilterInStaticLoadout(
+        this IObservable<IChangeSet<Datom, EntityId>> source,
+        IConnection connection,
+        LoadoutFilter loadoutFilter)
+    {
+        var filterByCollection = loadoutFilter.CollectionGroupId.HasValue;
+        return source.Filter(datom =>
+        {
+            var item = LoadoutItem.Load(connection.Db, datom.E);
+            if (!item.LoadoutId.Equals(loadoutFilter.LoadoutId)) return false;
+            if (filterByCollection) 
+                return item.IsChildOf(loadoutFilter.CollectionGroupId.Value);
+            return true;
+        });
+    }
+
     public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem)
     {
         // NOTE(erri120): We'll only show the library linked loadout item group for now.

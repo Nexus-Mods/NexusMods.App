@@ -114,7 +114,7 @@ A new loadout is created, but it has not been synchronized yet. So again the 'La
 ### Loadout B - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:20000000000000C, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
+| (EId:20000000000000D, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
 
 
 
@@ -141,7 +141,7 @@ loadout are different from the previous loadout due to the new file only being i
 ### Loadout B - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:20000000000000C, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
+| (EId:20000000000000D, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
 
 
 
@@ -169,8 +169,8 @@ A new file has been added to the game folder and B loadout has been synchronized
 ### Loadout B - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:20000000000000C, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
-| (EId:20000000000000C, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
+| (EId:20000000000000D, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
+| (EId:20000000000000D, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
 
 
 
@@ -198,8 +198,8 @@ Now we switch back to the A loadout, and the new file should be removed from the
 ### Loadout B - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:20000000000000C, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
-| (EId:20000000000000C, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
+| (EId:20000000000000D, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
+| (EId:20000000000000D, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
 
 
 
@@ -227,13 +227,13 @@ Loadout A has been copied to Loadout C, and the contents should match.
 ### Loadout B - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:20000000000000C, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
-| (EId:20000000000000C, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
+| (EId:20000000000000D, Game, bin/newFileInGameFolderB.txt) | 0x3E6AD5D9F57F8D4E | 28 B | Tx:100000000000012 |
+| (EId:20000000000000D, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000E |
 ### Loadout C - (2)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000013, Game, bin/newFileInGameFolderA.txt) | 0x2D489D43D46C8849 | 25 B | Tx:100000000000016 |
-| (EId:200000000000013, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000016 |
+| (EId:200000000000015, Game, bin/newFileInGameFolderA.txt) | 0x2D489D43D46C8849 | 25 B | Tx:100000000000016 |
+| (EId:200000000000015, Game, bin/originalGameFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:100000000000016 |
 
 
 

@@ -29,6 +29,21 @@ public static class LoadoutItemExtensions
     }
 
     /// <summary>
+    /// Returns true if the LoadoutItem is a child of the LoadoutItemGroup.
+    /// </summary>
+    public static bool IsChildOf(this LoadoutItem.ReadOnly item, LoadoutItemGroupId groupId)
+    {
+        while (item.Contains(LoadoutItem.Parent))
+        {
+            var group = item.Parent;
+            if (group.LoadoutItemGroupId == groupId)
+                return true;
+            item = group.AsLoadoutItem();
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Returns all the LoadoutFiles in the collection that are enabled.
     /// </summary>
     /// <param name="items"></param>

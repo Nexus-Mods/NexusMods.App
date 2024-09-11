@@ -14,6 +14,7 @@ public interface ILibraryViewModel : IPageViewModelInterface
 
     ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
     ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
+    ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
 
     ReactiveCommand<Unit> OpenFilePickerCommand { get; }
     ReactiveCommand<Unit> OpenNexusModsCommand { get; }
