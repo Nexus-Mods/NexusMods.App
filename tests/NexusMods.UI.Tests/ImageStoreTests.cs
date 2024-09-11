@@ -3,7 +3,6 @@ using Avalonia.Platform;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Media;
-using NexusMods.App.UI;
 
 namespace NexusMods.UI.Tests;
 
@@ -21,7 +20,7 @@ public class ImageStoreTests : AUiTest
     {
         var bitmap = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         var storedImage = await _imageStore.PutAsync(bitmap);
-        var get = _imageStore.Get(storedImage);
-        get.Should().NotBeNull();
+        using var lifetime = _imageStore.Get(storedImage);
+        lifetime.Should().NotBeNull();
     }
 }

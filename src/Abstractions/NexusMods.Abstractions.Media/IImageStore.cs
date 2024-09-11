@@ -1,4 +1,5 @@
 using Avalonia.Media.Imaging;
+using BitFaster.Caching;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
@@ -13,7 +14,7 @@ public interface IImageStore
 {
     ValueTask<StoredImage.ReadOnly> PutAsync(Bitmap bitmap);
 
-    Bitmap? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input);
+    [MustDisposeResource] Lifetime<Bitmap>? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input);
 
     StoredImage.New CreateStoredImage(ITransaction transaction, Bitmap bitmap);
 }

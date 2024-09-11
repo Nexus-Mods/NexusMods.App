@@ -2,7 +2,8 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Skia;
-using BitFaster.Caching.Lfu;
+using BitFaster.Caching;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
@@ -13,12 +14,12 @@ namespace NexusMods.App.UI;
 public sealed class ImageStore : IImageStore, IDisposable
 {
     private readonly IConnection _connection;
-    private ConcurrentLfu<StoredImageId, Bitmap> _bitmapCache;
+    private SingletonCache<StoredImageId, Bitmap> _cache;
 
     public ImageStore(IConnection connection)
     {
         _connection = connection;
-        _bitmapCache = new ConcurrentLfu<StoredImageId, Bitmap>(capacity: 50);
+        _cache = new SingletonCache<StoredImageId, Bitmap>();
     }
 
     /// <inheritdoc/>
@@ -32,7 +33,7 @@ public sealed class ImageStore : IImageStore, IDisposable
     }
 
     /// <inheritdoc/>
-    public Bitmap? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input)
+    [MustDisposeResource] public Lifetime<Bitmap>? Get(OneOf<StoredImageId, StoredImage.ReadOnly> input)
     {
         if (input.TryPickT0(out var id, out var storedImage))
         {
@@ -44,7 +45,8 @@ public sealed class ImageStore : IImageStore, IDisposable
         var bytes = storedImage.ImageData;
 
         Debug.Assert((ulong)bytes.Length == metadata.DataLength);
-        return _bitmapCache.GetOrAdd(id, static (_, tuple) => ToBitmap(tuple.metadata, bytes: tuple.bytes), (metadata, bytes));
+        var lifetime = _cache.Acquire(id, _ => ToBitmap(metadata, bytes));
+        return lifetime;
     }
 
     /// <inheritdoc/>
@@ -151,12 +153,8 @@ public sealed class ImageStore : IImageStore, IDisposable
     public void Dispose()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
-        foreach (var kv in _bitmapCache.ToArray())
-        {
-            kv.Value.Dispose();
-        }
 
-        _bitmapCache = null!;
+        _cache = null!;
         _isDisposed = true;
     }
 }
