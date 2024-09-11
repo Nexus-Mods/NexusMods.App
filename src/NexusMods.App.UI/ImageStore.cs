@@ -42,7 +42,7 @@ public sealed class ImageStore : IImageStore, IDisposable
 
         if (!storedImage.IsValid()) return null;
         var metadata = storedImage.Metadata;
-        var bytes = storedImage.ImageData;
+        var bytes = storedImage.ImageData.Data;
 
         Debug.Assert((ulong)bytes.Length == metadata.DataLength);
         var lifetime = _cache.Acquire(id, _ => ToBitmap(metadata, bytes));
@@ -58,13 +58,21 @@ public sealed class ImageStore : IImageStore, IDisposable
         var bytes = GC.AllocateUninitializedArray<byte>(length: (int)metadata.DataLength);
         GetBitmapBytes(metadata, bitmap, bytes);
 
+        var imageData = CompressData(metadata, bytes);
+
         var storedImage = new StoredImage.New(transaction)
         {
             Metadata = metadata,
-            ImageData = bytes,
+            ImageData = imageData,
         };
 
         return storedImage;
+    }
+
+    private static ImageData CompressData(ImageMetadata metadata, byte[] uncompressedData)
+    {
+        // TODO: optional compression for larger images
+        return new ImageData(ImageDataCompression.None, uncompressedData);
     }
 
     private static void GetBitmapBytes(ImageMetadata metadata, Bitmap bitmap, byte[] bytes)
