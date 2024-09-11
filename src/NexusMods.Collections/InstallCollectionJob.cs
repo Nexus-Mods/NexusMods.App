@@ -22,7 +22,7 @@ using ModInstructions = (Mod Mod, LibraryFile.ReadOnly LibraryFile);
 
 
 public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>
-{
+{ 
     public required NexusModsCollectionLibraryFile.ReadOnly SourceCollection { get; init; }
     
     public required IFileStore FileStore { get; init; }
@@ -75,7 +75,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         if (root is null)
             throw new InvalidOperationException("Failed to deserialize the collection.json file.");
 
-        ConcurrentBag<ModInstructions> toInstall = [];
+        ConcurrentBag<ModInstructions> toInstall = new();
 
         await Parallel.ForEachAsync(root.Mods, context.CancellationToken, async (mod, _) => toInstall.Add(await EnsureDownloaded(mod)));
 
@@ -207,7 +207,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         await using var tempPath = TemporaryFileManager.CreateFile();
 
-        var downloadJob = await NexusModsLibrary.CreateDownloadJob(tempPath, mod.DomainName, mod.Source.ModId, mod.Source.FileId);
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(tempPath, mod.DomainName, mod.Source.ModId,
+            mod.Source.FileId
+        );
         var libraryFile = await LibraryService.AddDownload(downloadJob);
         return (mod, libraryFile);
     }
