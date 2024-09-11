@@ -816,15 +816,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Library.
-        /// </summary>
-        public static string FileOriginsPageTitle {
-            get {
-                return ResourceManager.GetString("FileOriginsPageTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to ACTIONS.
         /// </summary>
         public static string FileOriginsPageView_ActionHeader {
@@ -1275,6 +1266,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        public static string LibraryPageTitle {
+            get {
+                return ResourceManager.GetString("LibraryPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Loadout.
         /// </summary>
         public static string LoadoutCard_DeleteLoadoutToolTip {
@@ -1401,20 +1401,20 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My Mods.
-        /// </summary>
-        public static string LoadoutLeftMenuViewModel_LoadoutGridEntry {
-            get {
-                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutGridEntry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
             get {
                 return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Mods.
+        /// </summary>
+        public static string LoadoutViewPageTitle {
+            get {
+                return ResourceManager.GetString("LoadoutViewPageTitle", resourceCulture);
             }
         }
         

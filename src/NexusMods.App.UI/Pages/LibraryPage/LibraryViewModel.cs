@@ -92,7 +92,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
-        TabTitle = "Library (new)";
+        TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.ModLibrary;
 
         ticker.Connect();
@@ -215,7 +215,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
+        await _libraryService.InstallItem(libraryItem, loadout, installer: useAdvancedInstaller ? _advancedInstaller : null);
     }
 
     private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)

@@ -5,9 +5,7 @@ using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
-using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutPage;
-using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
@@ -26,14 +24,12 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         // factory context
-        typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
         typeof(DiagnosticListPageContext),
         typeof(ApplyDiffPageContext),
         typeof(SettingsPageContext),
         typeof(ChangelogPageContext),
-        typeof(FileOriginsPageContext),
         typeof(TextEditorPageContext),
         typeof(MyLoadoutsPageContext),
         typeof(ItemContentsFileTreePageContext),

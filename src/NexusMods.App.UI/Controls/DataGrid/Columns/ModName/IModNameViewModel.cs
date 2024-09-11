@@ -1,7 +1,6 @@
 ﻿using NexusMods.Abstractions.Loadouts;
-using NexusMods.App.UI.Controls.DataGrid;
 
-namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
+namespace NexusMods.App.UI.Controls.DataGrid.Columns.ModName;
 
 /// <summary>
 /// Displays the name of a mod.

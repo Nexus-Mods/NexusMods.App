@@ -16,7 +16,7 @@ public class LibraryItemUsedLoadoutInfo
     /// <summary>
     /// Names of collections within this loadout contain the mods listed in the delete mod dialog.
     /// </summary>
-    public List<string> CollectionNames { get; } = new() { Language.LoadoutLeftMenuViewModel_LoadoutGridEntry };
+    public List<string> CollectionNames { get; } = new() { Language.LoadoutViewPageTitle };
     
     /// <summary>
     /// This is true if the loadout is not the only loadout that contains the mods listed in the delete mod dialog.

@@ -15,17 +15,20 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 {
     public ILibraryItemInstaller? Installer { get; init; }
     public LibraryItem.ReadOnly LibraryItem { get; init; }
+    public LoadoutItemGroupId ParentGroupId { get; init; }
     public LoadoutId LoadoutId { get; init; }
     internal required IConnection Connection { get; init; }
     internal required IServiceProvider ServiceProvider { get; init; }
     
-    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(IServiceProvider serviceProvider, LibraryItem.ReadOnly libraryItem, LoadoutId loadout, ILibraryItemInstaller? installer = null)
+    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(IServiceProvider serviceProvider, LibraryItem.ReadOnly libraryItem, LoadoutItemGroupId groupId, ILibraryItemInstaller? installer = null)
     {
+        var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
             Installer = installer,
             LibraryItem = libraryItem,
-            LoadoutId = loadout,
+            ParentGroupId = groupId,
+            LoadoutId = group.AsLoadoutItem().LoadoutId,
             Connection = serviceProvider.GetRequiredService<IConnection>(),
             ServiceProvider = serviceProvider,
         };
@@ -92,6 +95,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
                 {
                     Name = LibraryItem.Name,
                     LoadoutId = LoadoutId,
+                    ParentId = ParentGroupId,
                 },
             };
 

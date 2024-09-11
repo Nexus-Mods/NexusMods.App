@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
+namespace NexusMods.App.UI.Controls.DataGrid.Columns.ModName;
 
 public partial class ModNameView : ReactiveUserControl<IModNameViewModel>
 {
