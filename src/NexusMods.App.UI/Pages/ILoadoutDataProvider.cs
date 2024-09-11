@@ -28,16 +28,15 @@ public static class LoadoutDataProviderHelper
         IConnection connection,
         LoadoutFilter loadoutFilter)
     {
-        if (loadoutFilter.CollectionGroupId.HasValue)
+        var filterByCollection = loadoutFilter.CollectionGroupId.HasValue;
+        return source.Filter(datom =>
         {
-            return source.Filter(datom =>
-                {
-                    var item = LoadoutItem.Load(connection.Db, datom.E);
-                    return item.LoadoutId == loadoutFilter.LoadoutId && item.IsChildOf(loadoutFilter.CollectionGroupId.Value);
-                }
-            );
-        }
-        return source.Filter(datom => LoadoutItem.Load(connection.Db, datom.E).LoadoutId.Equals(loadoutFilter.LoadoutId));
+            var item = LoadoutItem.Load(connection.Db, datom.E);
+            if (!item.LoadoutId.Equals(loadoutFilter.LoadoutId)) return false;
+            if (filterByCollection) 
+                return item.IsChildOf(loadoutFilter.CollectionGroupId.Value);
+            return true;
+        });
     }
 
     public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem)
