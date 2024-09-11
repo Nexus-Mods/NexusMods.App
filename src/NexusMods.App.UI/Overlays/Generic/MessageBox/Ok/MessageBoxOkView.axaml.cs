@@ -1,18 +1,20 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Resources;
+using R3;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
+namespace NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 
-public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkCancelViewModel>
+public partial class MessageBoxOkView : ReactiveUserControl<IMessageBoxOkViewModel>
 {
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly StyledProperty<string> TitleProperty =
-        AvaloniaProperty.Register<MessageBoxOkCancelView, string>(nameof(Title), "Something has happened!");
+        AvaloniaProperty.Register<MessageBoxOkView, string>(nameof(Title), Language.CancelDownloadOverlayView_Title);
 
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly StyledProperty<string> DescriptionProperty =
-        AvaloniaProperty.Register<MessageBoxOkCancelView, string>(nameof(Description), "This is some very long text that spans multiple lines!! This text is super cool!!");
+        AvaloniaProperty.Register<MessageBoxOkView, string>(nameof(Description), "This is some very long text that spans multiple lines!! This text is super cool!!");
 
     public string Title
     {
@@ -26,7 +28,7 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
         set => SetValue(DescriptionProperty, value);
     }
 
-    public MessageBoxOkCancelView()
+    public MessageBoxOkView()
     {
         InitializeComponent();
 
@@ -41,17 +43,12 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
         {
             OkButton.Command = ReactiveCommand.Create(() =>
             {
-                ViewModel!.Complete(true);
-            });
-
-            CancelButton.Command = ReactiveCommand.Create(() =>
-            {
-                ViewModel!.Complete(false);
+                ViewModel!.Complete(Unit.Default);
             });
 
             CloseButton.Command = ReactiveCommand.Create(() =>
             {
-                ViewModel!.Complete(false);
+                ViewModel!.Complete(Unit.Default);
             });
         });
     }

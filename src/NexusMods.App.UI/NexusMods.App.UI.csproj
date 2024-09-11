@@ -85,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Media\NexusMods.Abstractions.Media.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
@@ -619,7 +620,21 @@
         <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
           <DependentUpon>ModNameView.axaml</DependentUpon>
         </Compile>
-        <Compile Remove="LeftMenu\Loadout\LeftMenuCollectionView.axaml.cs" />
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkCancelView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkViewModel.cs">
+          <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Dependency\MissingRuntimeDependency\MissingRuntimeDependencyView.axaml.cs">
+          <DependentUpon>MessageBoxOkView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -651,12 +666,7 @@
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
-
     <ItemGroup>
       <Folder Include="Pages\LoadoutGrid\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <AvaloniaXaml Remove="LeftMenu\Loadout\LeftMenuCollectionView.axaml" />
     </ItemGroup>
 </Project>

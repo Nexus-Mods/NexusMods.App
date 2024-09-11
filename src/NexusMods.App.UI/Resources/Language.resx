@@ -78,6 +78,9 @@
     <data name="MessageBox_Button_No" xml:space="preserve">
         <value>No</value>
     </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>Ok</value>
+    </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
     </data>

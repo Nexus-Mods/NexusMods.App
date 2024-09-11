@@ -8,6 +8,7 @@ public static class Services
     public static IServiceCollection AddGenericGameSupport(this IServiceCollection services)
     {
         services.AddSingleton<IniAnalysisData>();
+        services.AddSingleton<GameToolRunner>();
         return services;
     }
 }
