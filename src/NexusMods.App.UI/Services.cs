@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Media;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls.DataGrid;
@@ -87,6 +88,8 @@ public static class Services
 
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
+            .AddSingleton<IImageStore, ImageStore>()
+            .AddMedia()
             .AddTransient<IImageCache, ImageCache>()
 
             // View Models

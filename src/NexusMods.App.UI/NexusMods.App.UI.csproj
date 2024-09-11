@@ -85,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Media\NexusMods.Abstractions.Media.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
@@ -649,9 +650,5 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\LoadoutGrid\" />
     </ItemGroup>
 </Project>
