@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
@@ -7,6 +9,9 @@ using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
+using NexusMods.FileExtractor;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
@@ -31,6 +36,10 @@ public class Startup
             .AddCrossPlatform()
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
+            .AddJobMonitor()
+            .AddLibrary()
+            .AddLibraryModels()
+            .AddFileExtractors()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {

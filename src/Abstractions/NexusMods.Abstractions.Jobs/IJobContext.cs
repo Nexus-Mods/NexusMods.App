@@ -43,7 +43,7 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// <summary>
     /// Set the progress of the job as a rate of units per second
     /// </summary>
-    void SetProgressRate(double rate);
+    void SetRateOfProgress(double rate);
 }
 
 /// <summary>

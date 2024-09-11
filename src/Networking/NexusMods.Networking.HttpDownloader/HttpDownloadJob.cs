@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
@@ -15,7 +16,7 @@ using Polly;
 namespace NexusMods.Networking.HttpDownloader;
 
 [PublicAPI]
-public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IDownloadJob
+public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IHttpDownloadJob
 {
 #pragma warning disable EXTEXP0001
     private static readonly HttpClient Client = BuildClient();
@@ -82,7 +83,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
             TotalBytesDownloaded = bytesWritten;
             context.SetPercent(bytesWritten, ContentLength.Value);
-            context.SetProgressRate(speed);
+            context.SetRateOfProgress(speed);
         });
 
         if (ContentLength.HasValue)

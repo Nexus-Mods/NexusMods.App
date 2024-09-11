@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
@@ -11,6 +12,7 @@ using NexusMods.Activities;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -27,6 +29,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -51,7 +54,6 @@ public static class Services
             // preventing StopAsync of other services from being called. 
             options.ServicesStopConcurrently = true;
         });
-        
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
         {
@@ -60,11 +62,13 @@ public static class Services
                 .AddLibrary()
                 .AddLibraryModels()
                 .AddJobMonitor()
+                .AddNexusModsCollections()
 
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
                 .AddDefaultRenderers()
+                .AddDefaultParsers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())

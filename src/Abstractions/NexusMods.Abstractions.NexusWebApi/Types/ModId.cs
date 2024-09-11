@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 /// i.e. Each game has its own set of IDs and starts with 0.
 /// </summary>
 [ValueObject<ulong>]
-public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>
+public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
 {
     /// <inheritdoc/>
     public static ModId DefaultValue => From(default);

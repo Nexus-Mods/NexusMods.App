@@ -21,6 +21,7 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     {
         this.WhenActivated(disposables =>
         {
+
             jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
                 .AverageProgressPercent()
                 .OnUI()
@@ -28,12 +29,13 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
                 .DisposeWith(disposables);
             
             jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
-                .SumProgressRate()
+                .SumRateOfProgress()
                 .OnUI()
                 // Convert from bytes to MB/s
                 // TODO: use Humanizer
                 .Subscribe(rate => Number = rate / 1024 / 1024)
                 .DisposeWith(disposables);
+            
         });
     }
 

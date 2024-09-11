@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Reactive.Subjects;
 using DynamicData.Kernel;
@@ -16,9 +17,9 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     private readonly Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> _action;
     private readonly TaskCompletionSource<TJobResult> _tcs;
 
-    public JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
+    internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
     {
-        Id = new JobId();
+        Id = JobId.NewId();
         Status = JobStatus.None;
 
         _tcs = new TaskCompletionSource<TJobResult>();
@@ -86,7 +87,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         _progress.OnNext(percent);
     }
 
-    public void SetProgressRate(double rate)
+    public void SetRateOfProgress(double rate)
     {
         RateOfProgress = rate;
         _rateOfProgress.OnNext(rate);

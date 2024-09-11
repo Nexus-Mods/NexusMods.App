@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
@@ -16,6 +17,11 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public record LoadoutPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
+    
+    /// <summary>
+    /// If provided, will limit the scope of items shown to the group with the given ID.
+    /// </summary>
+    public required Optional<LoadoutItemGroupId> GroupScope { get; init; }
 }
 
 [UsedImplicitly]
@@ -35,9 +41,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
 
     public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
-        // Default to the user group for now
-        var userGroup = Loadout.Load(_connection.Db, context.LoadoutId).MutableCollections().First().AsLoadoutItemGroup();
-        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, userGroup.LoadoutItemGroupId);
+        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, context.GroupScope);
         return vm;
     }
 
@@ -56,6 +60,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
+                    GroupScope = Optional<LoadoutItemGroupId>.None,
                 },
             },
         };

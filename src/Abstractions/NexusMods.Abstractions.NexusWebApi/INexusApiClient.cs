@@ -69,6 +69,12 @@ public interface INexusApiClient
     /// </remarks>
     Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default);
 
+
+    /// <summary>
+    /// Get the download links for a collection.
+    /// </summary>
+    Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision,  bool viewAdultContent = false, CancellationToken token = default);
+
     /// <summary>
     /// Retrieves a list of all recently updated mods within a specified time period.
     /// </summary>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Collections\NexusMods.Abstractions.Collections.csproj" />
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
+      <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+    </ItemGroup>
+
+</Project>

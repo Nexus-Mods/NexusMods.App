@@ -75,11 +75,11 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
         new RedModInstaller(_serviceProvider),
         new SimpleOverlayModInstaller(_serviceProvider),
         new AppearancePresetInstaller(_serviceProvider),
         new FolderlessModInstaller(_serviceProvider),
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)

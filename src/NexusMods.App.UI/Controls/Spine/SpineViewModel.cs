@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -240,7 +241,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
         var workspaceController = _windowManager.ActiveWorkspaceController;
-
+        
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
             () => new PageData
@@ -248,7 +249,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 FactoryId = LoadoutPageFactory.StaticId,
                 Context = new LoadoutPageContext
                 {
-                    LoadoutId = loadoutId
+                    LoadoutId = loadoutId,
+                    GroupScope = Optional<LoadoutItemGroupId>.None,
                 }
             },
             () => new LoadoutContext
@@ -265,7 +267,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {
                 FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext()
+                Context = new InProgressPageContext(),
             }
         );
     }

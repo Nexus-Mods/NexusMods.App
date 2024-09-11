@@ -5,6 +5,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
+        <PackageReference Include="StrawberryShake.Server" />
     </ItemGroup>
     
     <ItemGroup>
