@@ -1,3 +1,4 @@
+using System.Reflection;
 using CliWrap;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -11,8 +12,13 @@ namespace NexusMods.Games.RedEngine;
 public class RedModDeployTool : ITool
 {
     private readonly GameToolRunner _toolRunner;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    public RedModDeployTool(GameToolRunner toolRunner) => _toolRunner = toolRunner;
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager)
+    {
+        _toolRunner = toolRunner;
+        _temporaryFileManager = temporaryFileManager;
+    }
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
 
@@ -36,10 +42,25 @@ public class RedModDeployTool : ITool
         }
         else
         {
-            var batchPath = fs.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/Cyberpunk2077/deploy_redmod.bat");
+            await using var batchPath = await ExtractTemporaryDeployScript();
             await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
         }
     }
 
     public string Name => "RedMod Deploy";
+
+    private async Task<TemporaryPath> ExtractTemporaryDeployScript()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceName = "deploy_redmod.bat";
+
+        await using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
+            throw new InvalidOperationException($"Resource {resourceName} not found in assembly.");
+
+        using var reader = new StreamReader(stream);
+        var file = _temporaryFileManager.CreateFile((Extension?)".bat");
+        await file.Path.WriteAllTextAsync(await reader.ReadToEndAsync());
+        return file;
+    }
 }

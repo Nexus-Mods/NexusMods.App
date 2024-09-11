@@ -33,12 +33,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Condition="'$(_IsLinux)' == 'true'" Include="$(BatFileSourcePath)">
-            <Link>Resources\Cyberpunk2077\$(BatFileName)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <Visible>False</Visible>
-        </None>
+        <EmbeddedResource Include="$(BatFileSourcePath)" Condition="'$(_IsLinux)' == 'true'">
+            <LogicalName>$(BatFileName)</LogicalName>
+        </EmbeddedResource>
     </ItemGroup>
 
     <Target Name="LogBatFileInfo" BeforeTargets="Build;Publish">
