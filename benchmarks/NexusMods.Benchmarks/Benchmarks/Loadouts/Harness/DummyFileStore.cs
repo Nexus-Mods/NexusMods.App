@@ -11,7 +11,7 @@ public class DummyFileStore : IFileStore
         return ValueTask.FromResult(false);
     }
 
-    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
+    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }
