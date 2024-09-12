@@ -35,6 +35,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
+                .AddTo(disposables);
         });
     }
 }

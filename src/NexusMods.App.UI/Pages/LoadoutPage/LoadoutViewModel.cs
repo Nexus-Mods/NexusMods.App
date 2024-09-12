@@ -29,6 +29,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
+    public string EmptyStateTitleText { get; }
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
@@ -65,6 +66,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
         
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        EmptyStateTitleText = string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name);
         ViewLibraryCommand = new ReactiveCommand<NavigationInformation>(info =>
             {
                 var pageData = new PageData

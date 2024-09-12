@@ -10,6 +10,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
     
     R3.ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
+    
+    string EmptyStateTitleText { get; }
 
     R3.ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
 
