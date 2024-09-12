@@ -25,7 +25,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private readonly SourceList<ILeftMenuItemViewModel> _items = new();
-    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _finalCollection = new(new ObservableCollection<ILeftMenuItemViewModel>());
+    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _finalCollection = new([]);
+    
+    private readonly SourceList<ILeftMenuItemViewModel> _collectionGroupItems = new();
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items => _finalCollection;
     public WorkspaceId WorkspaceId { get; }
@@ -124,13 +126,14 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         
         this.WhenActivated(disposable =>
         {
+            _collectionGroupItems.Clear();
             CollectionGroup.ObserveAll(conn)
                 .Filter(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
                 .SortBy(itm => itm.IsReadOnly)
                 .Transform(itm => MakeLoadoutItemGroupViewModel(workspaceController, itm, serviceProvider))
                 .Subscribe(s =>
                 {
-                    _items.Edit(x => {
+                    _collectionGroupItems.Edit(x => {
                         foreach (var change in s)
                         {
                             if (change.Reason == ChangeReason.Add)
@@ -148,6 +151,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .DisposeWith(disposable);
 
             _items.Connect()
+                .Merge(_collectionGroupItems.Connect())
                 .Sort(new LeftMenuComparer())
                 .Bind(out _finalCollection)
                 .Subscribe()
