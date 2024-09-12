@@ -1419,7 +1419,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My Mods.
+        ///   Looks up a localized string similar to Installed Mods.
         /// </summary>
         public static string LoadoutViewPageTitle {
             get {

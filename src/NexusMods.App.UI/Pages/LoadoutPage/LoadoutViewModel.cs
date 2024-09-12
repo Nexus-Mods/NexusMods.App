@@ -51,11 +51,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         };
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
-
-        TabTitle = Language.LoadoutViewPageTitle;
-        TabIcon = IconValues.Collections;
-
+        
         _connection = serviceProvider.GetRequiredService<IConnection>();
+
+
+        if (collectionGroupId.HasValue)
+        {
+            var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
+            TabTitle = collectionGroup.Name;
+            TabIcon = IconValues.Collections;
+        }
+        else
+        {
+            TabTitle = Language.LoadoutViewPageTitle;
+            TabIcon = IconValues.Mods;
+        }
+
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
         ticker.Connect();

@@ -280,7 +280,7 @@
         <value>Home</value>
     </data>
     <data name="LoadoutViewPageTitle" xml:space="preserve">
-        <value>My Mods</value>
+        <value>Installed Mods</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
         <value>Downloads</value>
