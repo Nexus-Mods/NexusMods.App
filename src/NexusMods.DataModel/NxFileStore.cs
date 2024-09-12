@@ -67,7 +67,7 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
     {
         var hasAnyFiles = backups.Any();
         if (hasAnyFiles == false)
@@ -79,6 +79,9 @@ public class NxFileStore : IFileStore
         _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         foreach (var backup in distinct)
         {
+            if (await IsDuplicate(deduplicate, backup))
+                continue;
+            
             var stream = await backup.StreamFactory.GetStreamAsync();
             streams.Add(stream);
             builder.AddFile(stream, new AddFileParams
@@ -106,6 +109,24 @@ public class NxFileStore : IFileStore
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
         await UpdateIndexes(unpacker, finalPath);
+    }
+
+    private async Task<bool> IsDuplicate(bool deduplicate, ArchivedFileEntry backup)
+    {
+        // Extra sanity test for debug builds, else take hot path since
+        // this is supposed to be a speedy-ish API.
+        #if DEBUG
+        var haveFile = await HaveFile(backup.Hash);
+        if (!haveFile) 
+            return false;
+
+        if (!deduplicate)
+            throw new Exception("Writing duplicate but deduplicate is disabled. This is a bug.");
+        
+        return true;
+        #else
+        return deduplicate && await HaveFile(backup.Hash);
+        #endif
     }
 
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)

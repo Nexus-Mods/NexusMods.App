@@ -17,12 +17,23 @@ public interface IFileStore
     public ValueTask<bool> HaveFile(Hash hash);
 
     /// <summary>
-    /// Backup the given files. If the size or hash do not match during the
-    /// backup process a exception may be thrown.
+    /// Backup the given set of NEW files.
+    ///
+    /// If the size or hash do not match during the
+    /// backup process an exception may be thrown.
     /// </summary>
-    /// <param name="backups"></param>
+    /// <param name="backups">
+    ///     The files to back up.
+    ///     These should not contain any already stored files unless <paramref name="deduplicate"/>
+    ///     is set to true.
+    /// </param>
+    /// <param name="deduplicate">
+    ///     Ensures no duplicate files are stored.
+    ///     Only set this to false if you are certain there are no duplicates
+    ///     with existing files in the input.
+    /// </param>
     /// <param name="token"></param>
-    Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default);
+    Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
 
     /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
