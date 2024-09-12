@@ -22,6 +22,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
     where TModel : TreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
+    public ReactiveProperty<bool> IsSelected { get; } = new(value: false);
+
     public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
     public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
@@ -130,7 +132,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
                     _modelActivationDisposable,
                     _childrenObservableSerialDisposable,
                     _childrenCollectionInitializationSerialDisposable,
-                    HasChildren
+                    HasChildren,
+                    IsSelected
                 );
             }
 

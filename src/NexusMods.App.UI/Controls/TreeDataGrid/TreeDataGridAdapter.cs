@@ -72,7 +72,18 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                     self._selectionModelsSerialDisposable.Disposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
                     {
                         self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
+                        foreach (var item in eventArgs.DeselectedItems)
+                        {
+                            if (item is null) continue;
+                            item.IsSelected.Value = false;
+                        }
+
                         self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
+                        foreach (var item in eventArgs.SelectedItems)
+                        {
+                            if (item is null) continue;
+                            item.IsSelected.Value = true;
+                        }
                     });
 
                     self.Source.Value = source;
