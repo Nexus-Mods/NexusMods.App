@@ -808,7 +808,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
 
-        await _fileStore.BackupFiles(archivedFiles);
+        // SAFETY: We deduplicate above with the HaveFile call.
+        await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
     }
 
     private async Task<DiskState> GetOrCreateInitialDiskState(GameInstallation installation)
