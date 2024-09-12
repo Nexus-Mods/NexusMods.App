@@ -579,7 +579,7 @@
         <value>button in the toolbar</value>
     </data>
     <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-        <value>Add your downloaded mods from the</value>
+        <value>Install your downloaded mods from the</value>
     </data>
     <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
         <value>No mods added to {0}</value>
