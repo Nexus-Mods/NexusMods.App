@@ -17,14 +17,23 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     public override IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => LoadoutItemIds;
 
     private readonly IDisposable _modelActivationDisposable;
+    private readonly IDisposable _activationSelectionDisposable;
+
     public FakeParentLoadoutItemModel() : base(default(LoadoutItemId))
     {
+        _activationSelectionDisposable = Activation.CombineLatest(IsSelected, (a, b) => (a, b)).Subscribe(this, static (tuple, self) =>
+        {
+            var (isActivating, isSelected) = tuple;
+            if (!isActivating && !isSelected)
+            {
+                self.LoadoutItemIds.Clear();
+            }
+        });
+
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.InstalledAtObservable.OnUI().Subscribe(date => model.InstalledAt.Value = date).AddTo(disposables);
-
             model.LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LoadoutItemIds.ApplyChanges(changeSet)).AddTo(disposables);
-            Disposable.Create(model.LoadoutItemIds, static collection => collection.Clear()).AddTo(disposables);
         });
     }
 
@@ -35,7 +44,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
         {
             if (disposing)
             {
-                _modelActivationDisposable.Dispose();
+                Disposable.Dispose(_modelActivationDisposable, _activationSelectionDisposable);
             }
 
             LoadoutItemIds = null!;
