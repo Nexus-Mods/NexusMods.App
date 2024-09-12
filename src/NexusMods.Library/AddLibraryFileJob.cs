@@ -87,7 +87,8 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         else
         {
             var size = filePath.FileInfo.Size;
-            ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
+            if (!(await FileStore.HaveFile(hash)))
+                ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
         }
 
         return libraryFile;
