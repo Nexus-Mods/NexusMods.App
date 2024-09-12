@@ -17,19 +17,10 @@ public class FakeParentLibraryItemModel : LibraryItemModel
     public override IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => LibraryItems.Select(static item => item.LibraryItemId).ToArray();
 
     private readonly IDisposable _modelActivationDisposable;
-    private readonly IDisposable _activationSelectionDisposable;
+    private readonly SerialDisposable _libraryItemsDisposable = new();
 
     public FakeParentLibraryItemModel(LibraryItemId libraryItemId) : base(libraryItemId)
     {
-        _activationSelectionDisposable = Activation.CombineLatest(IsSelected, (a, b) => (a, b)).Subscribe(this, static (tuple, self) =>
-        {
-            var (isActivating, isSelected) = tuple;
-            if (!isActivating && !isSelected)
-            {
-                self.LibraryItems.Clear();
-            }
-        });
-
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.NumInstalledObservable
@@ -64,7 +55,10 @@ public class FakeParentLibraryItemModel : LibraryItemModel
                 })
                 .AddTo(disposables);
 
-            model.LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryItems.ApplyChanges(changeSet)).AddTo(disposables);
+            if (model._libraryItemsDisposable.Disposable is null)
+            {
+                model._libraryItemsDisposable.Disposable = model.LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryItems.ApplyChanges(changeSet));
+            }
         });
     }
 
@@ -75,7 +69,7 @@ public class FakeParentLibraryItemModel : LibraryItemModel
         {
             if (disposing)
             {
-                Disposable.Dispose(_modelActivationDisposable, _activationSelectionDisposable);
+                Disposable.Dispose(_modelActivationDisposable, _libraryItemsDisposable);
             }
 
             LibraryItems = null!;

@@ -17,23 +17,18 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     public override IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => LoadoutItemIds;
 
     private readonly IDisposable _modelActivationDisposable;
-    private readonly IDisposable _activationSelectionDisposable;
+    private readonly SerialDisposable _loadoutItemIdsDisposable = new();
 
     public FakeParentLoadoutItemModel() : base(default(LoadoutItemId))
     {
-        _activationSelectionDisposable = Activation.CombineLatest(IsSelected, (a, b) => (a, b)).Subscribe(this, static (tuple, self) =>
-        {
-            var (isActivating, isSelected) = tuple;
-            if (!isActivating && !isSelected)
-            {
-                self.LoadoutItemIds.Clear();
-            }
-        });
-
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.InstalledAtObservable.OnUI().Subscribe(date => model.InstalledAt.Value = date).AddTo(disposables);
-            model.LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LoadoutItemIds.ApplyChanges(changeSet)).AddTo(disposables);
+
+            if (model._loadoutItemIdsDisposable.Disposable is null)
+            {
+                model._loadoutItemIdsDisposable.Disposable = model.LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LoadoutItemIds.ApplyChanges(changeSet));
+            }
         });
     }
 
@@ -44,7 +39,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
         {
             if (disposing)
             {
-                Disposable.Dispose(_modelActivationDisposable, _activationSelectionDisposable);
+                Disposable.Dispose(_modelActivationDisposable, _loadoutItemIdsDisposable);
             }
 
             LoadoutItemIds = null!;

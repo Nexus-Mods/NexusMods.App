@@ -43,7 +43,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public virtual IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
-    private readonly IDisposable _activationSelectionDisposable;
+    private readonly SerialDisposable _linkedLoadoutItemsDisposable = new();
 
     public LibraryItemModel(LibraryItemId libraryItemId)
     {
@@ -51,15 +51,6 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
         var canInstall = IsInstalledInLoadout.Select(static b => !b);
         InstallCommand = canInstall.ToReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>>(_ => GetLoadoutItemIds(), initialCanExecute: false);
-
-        _activationSelectionDisposable = Activation.CombineLatest(IsSelected, (a, b) => (a, b)).Subscribe(this, static (tuple, self) =>
-        {
-            var (isActivating, isSelected) = tuple;
-            if (!isActivating && !isSelected)
-            {
-                self.LinkedLoadoutItems.Clear();
-            }
-        });
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -93,7 +84,10 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
             model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
 
-            model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet)).AddTo(disposables);
+            if (model._linkedLoadoutItemsDisposable.Disposable is null)
+            {
+                model._linkedLoadoutItemsDisposable.Disposable = model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet));
+            }
         });
     }
 
@@ -113,7 +107,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 Disposable.Dispose(
                     InstallCommand,
                     _modelActivationDisposable,
-                    _activationSelectionDisposable,
+                    _linkedLoadoutItemsDisposable,
                     FormattedCreatedAtDate,
                     FormattedInstalledDate,
                     ItemSize,
