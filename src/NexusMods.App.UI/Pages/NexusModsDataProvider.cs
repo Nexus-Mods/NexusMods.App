@@ -72,39 +72,31 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata, LibraryFilter libraryFilter)
     {
-        var nexusModsLibraryFileObservable = _connection
+        // TODO: dispose
+        var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
+        var disposable = _connection
             .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id)
             .AsEntityIds()
-            .PublishWithFunc(initialValueFunc: () =>
-            {
-                var changeSet = new ChangeSet<Datom, EntityId>();
-                var datoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id);
-                foreach (var datom in datoms)
-                {
-                    changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
-                }
+            .Adapt(new SourceCacheAdapter<Datom, EntityId>(cache))
+            .SubscribeWithErrorLogging();
 
-                return changeSet;
-            })
-            .AutoConnect();
-
-        var hasChildrenObservable = nexusModsLibraryFileObservable.IsNotEmpty();
-        var childrenObservable = nexusModsLibraryFileObservable.Transform((_, e) =>
+        var hasChildrenObservable = cache.Connect().IsNotEmpty();
+        var childrenObservable = cache.Connect().Transform((_, e) =>
         {
             var libraryFile = NexusModsLibraryFile.Load(_connection.Db, e);
             return ToLibraryItemModel(libraryFile, libraryFilter);
         });
 
-        var linkedLoadoutItemsObservable = nexusModsLibraryFileObservable
+        var linkedLoadoutItemsObservable = cache.Connect()
             // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
             .FilterInObservableLoadout(_connection, libraryFilter)
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
-        var libraryFilesObservable = nexusModsLibraryFileObservable
+        var libraryFilesObservable = cache.Connect()
             .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsDownloadedFile().AsLibraryFile().AsLibraryItem());
 
-        var numInstalledObservable = nexusModsLibraryFileObservable.TransformOnObservable((_, e) => _connection
+        var numInstalledObservable = cache.Connect().TransformOnObservable((_, e) => _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
             .AsEntityIds()
             .FilterInObservableLoadout(_connection, libraryFilter)
@@ -141,39 +133,25 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             )
             .Transform(modPage =>
             {
-                var observable = _connection
+                // TODO: dispose
+                var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
+                var disposable = _connection
                     .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id).AsEntityIds()
                     .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
                     // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
                     .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
                     .FilterInStaticLoadout(_connection, loadoutFilter)
-                    .PublishWithFunc(() =>
-                    {
-                        var changeSet = new ChangeSet<Datom, EntityId>();
+                    .Adapt(new SourceCacheAdapter<Datom, EntityId>(cache))
+                    .SubscribeWithErrorLogging();
 
-                        var libraryFileDatoms = _connection.Db.Datoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id);
-                        foreach (var entityIdDatom in libraryFileDatoms)
-                        {
-                            var libraryLinkedLoadoutItemDatoms = _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, entityIdDatom.E);
-                            foreach (var datom in libraryLinkedLoadoutItemDatoms)
-                            {
-                                if (!LoadoutItem.Load(_connection.Db, datom.E).LoadoutId.Equals(loadoutFilter.LoadoutId)) continue;
-                                changeSet.Add(new Change<Datom, EntityId>(ChangeReason.Add, datom.E, datom));
-                            }
-                        }
-
-                        return changeSet;
-                    })
-                    .AutoConnect();
-
-                var hasChildrenObservable = observable.IsNotEmpty();
-                var childrenObservable = observable.Transform(libraryLinkedLoadoutItemDatom =>
+                var hasChildrenObservable = cache.Connect().IsNotEmpty();
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItemDatom =>
                 {
                     var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
                     return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem);
                 });
 
-                var installedAtObservable = observable
+                var installedAtObservable = cache.Connect()
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e).GetCreatedAt())
                     .QueryWhenChanged(query =>
                     {
@@ -181,9 +159,9 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return query.Items.Max();
                     });
 
-                var loadoutItemIdsObservable = observable.Transform((_, e) => (LoadoutItemId) e);
+                var loadoutItemIdsObservable = cache.Connect().Transform((_, e) => (LoadoutItemId) e);
 
-                var isEnabledObservable = observable
+                var isEnabledObservable = cache.Connect()
                     .TransformOnObservable(datom => LoadoutItem.Observe(_connection, datom.E).Select(item => !item.IsDisabled))
                     .QueryWhenChanged(query =>
                     {

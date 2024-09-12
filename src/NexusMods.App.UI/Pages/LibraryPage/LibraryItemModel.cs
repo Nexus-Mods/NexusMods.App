@@ -25,7 +25,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public BindableReactiveProperty<string> Version { get; set; } = new("-");
 
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
-    private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
+    private ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
     public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
     public ReactiveProperty<DateTime> CreatedAtDate { get; } = new(DateTime.UnixEpoch);
@@ -43,6 +43,8 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public virtual IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
+    private readonly SerialDisposable _linkedLoadoutItemsDisposable = new();
+
     public LibraryItemModel(LibraryItemId libraryItemId)
     {
         _fixedId = [libraryItemId];
@@ -67,7 +69,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                     {
                         model.InstallText.Value = "Installed";
                         model.IsInstalledInLoadout.Value = true;
-                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
+                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static kv => kv.Value.GetCreatedAt()).Max();
                         model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
                     }
                     else
@@ -82,8 +84,10 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
             model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
 
-            model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet)).AddTo(disposables);
-            Disposable.Create(model.LinkedLoadoutItems, static items => items.Clear()).AddTo(disposables);
+            if (model._linkedLoadoutItemsDisposable.Disposable is null)
+            {
+                model._linkedLoadoutItemsDisposable.Disposable = model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet));
+            }
         });
     }
 
@@ -103,6 +107,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 Disposable.Dispose(
                     InstallCommand,
                     _modelActivationDisposable,
+                    _linkedLoadoutItemsDisposable,
                     FormattedCreatedAtDate,
                     FormattedInstalledDate,
                     ItemSize,

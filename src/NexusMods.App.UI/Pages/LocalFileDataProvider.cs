@@ -115,29 +115,19 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             {
                 var libraryFile = LibraryFile.Load(_connection.Db, entityId);
 
-                var observable = _connection
+                // TODO: dispose
+                var cache = new SourceCache<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(static item => item.Id);
+                var disposable = _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                     .AsEntityIds()
                     .FilterInStaticLoadout(_connection, loadoutFilter)
                     .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
-                    .PublishWithFunc(() =>
-                    {
-                        var changeSet = new ChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>();
-                        var entities = LibraryLinkedLoadoutItem.FindByLibraryItem(_connection.Db, libraryFile.Id);
+                    .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
+                    .SubscribeWithErrorLogging();
 
-                        foreach (var entity in entities)
-                        {
-                            if (!entity.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId.Equals(loadoutFilter.LoadoutId)) continue;
-                            changeSet.Add(new Change<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entity.Id, entity));
-                        }
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
 
-                        return changeSet;
-                    })
-                    .AutoConnect();
-
-                var childrenObservable = observable.Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
-
-                var installedAtObservable = observable
+                var installedAtObservable = cache.Connect()
                     .Transform(item => item.GetCreatedAt())
                     .QueryWhenChanged(query =>
                     {
@@ -145,9 +135,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return query.Items.Max();
                     });
 
-                var loadoutItemIdsObservable = observable.Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
+                var loadoutItemIdsObservable = cache.Connect().Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
 
-                var isEnabledObservable = observable
+                var isEnabledObservable = cache.Connect()
                     .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
                     .QueryWhenChanged(query =>
                     {

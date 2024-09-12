@@ -12,11 +12,13 @@ public class FakeParentLibraryItemModel : LibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
     public required IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> LibraryItemsObservable { get; init; }
-    protected ObservableList<LibraryItem.ReadOnly> LibraryItems { get; set; } = [];
+    protected ObservableHashSet<LibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
     public override IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => LibraryItems.Select(static item => item.LibraryItemId).ToArray();
 
     private readonly IDisposable _modelActivationDisposable;
+    private readonly SerialDisposable _libraryItemsDisposable = new();
+
     public FakeParentLibraryItemModel(LibraryItemId libraryItemId) : base(libraryItemId)
     {
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
@@ -53,8 +55,10 @@ public class FakeParentLibraryItemModel : LibraryItemModel
                 })
                 .AddTo(disposables);
 
-            model.LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryItems.ApplyChanges(changeSet)).AddTo(disposables);
-            Disposable.Create(model.LibraryItems, static libraryFiles => libraryFiles.Clear()).AddTo(disposables);
+            if (model._libraryItemsDisposable.Disposable is null)
+            {
+                model._libraryItemsDisposable.Disposable = model.LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryItems.ApplyChanges(changeSet));
+            }
         });
     }
 
@@ -65,7 +69,7 @@ public class FakeParentLibraryItemModel : LibraryItemModel
         {
             if (disposing)
             {
-                _modelActivationDisposable.Dispose();
+                Disposable.Dispose(_modelActivationDisposable, _libraryItemsDisposable);
             }
 
             LibraryItems = null!;
