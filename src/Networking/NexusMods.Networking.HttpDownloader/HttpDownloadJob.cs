@@ -5,7 +5,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
-using NexusMods.Abstractions.Downloads;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
@@ -15,13 +15,21 @@ using Polly;
 
 namespace NexusMods.Networking.HttpDownloader;
 
+/// <summary>
+/// Download job.
+/// </summary>
 [PublicAPI]
 public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IHttpDownloadJob
 {
 #pragma warning disable EXTEXP0001
     private static readonly HttpClient Client = BuildClient();
 #pragma warning restore EXTEXP0001
-    
+
+    /// <summary>
+    /// Logger.
+    /// </summary>
+    public required ILogger Logger { get; init; }
+
     /// <summary>
     /// The uri of the download page.
     /// </summary>
@@ -54,7 +62,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     /// <summary>
     /// Constructor for the job
     /// </summary>
-    public static IJobTask<HttpDownloadJob, AbsolutePath> Create(IServiceProvider provider, Uri uri, Uri downloadPage, AbsolutePath destination)
+    public static IJobTask<HttpDownloadJob, AbsolutePath> Create(
+        IServiceProvider provider,
+        Uri uri,
+        Uri downloadPage,
+        AbsolutePath destination)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new HttpDownloadJob
@@ -62,7 +74,9 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             Uri = uri,
             DownloadPageUri = downloadPage,
             Destination = destination,
+            Logger = provider.GetRequiredService<ILogger<HttpDownloadJob>>(),
         };
+
         return monitor.Begin<HttpDownloadJob, AbsolutePath>(job);
     }
 
@@ -77,13 +91,16 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         await context.YieldAsync();
         await using var fileStream = Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 
-        await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownloadJob>>(fileStream, context,  (state, tuple) =>
+        await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownloadJob>>(
+            fileStream,
+            context,
+            (state, tuple) =>
         {
             var (bytesWritten, speed) = tuple;
 
             TotalBytesDownloaded = bytesWritten;
-            context.SetPercent(bytesWritten, ContentLength.Value);
-            context.SetRateOfProgress(speed);
+            state.SetPercent(bytesWritten, ContentLength.ValueOr(static () => Size.One));
+            state.SetRateOfProgress(speed);
         });
 
         if (ContentLength.HasValue)
@@ -104,36 +121,46 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
         response.EnsureSuccessStatusCode();
 
-        // NOTE(erri120): We might've not gotten the content length in the initial HEAD request.
-        if (!isRangeRequest && !ContentLength.HasValue)
+        if (response.StatusCode == HttpStatusCode.OK)
         {
-            // For full requests only, the response should contain the content length at this point.
-            // For range requests, the content length equals the length of the range, so we can't use that here.
-            var newContentLength = response.Content.Headers.ContentLength;
-            if (newContentLength is not null)
+            // NOTE(erri120): We might've not gotten the content length in the initial HEAD request.
+            if (!ContentLength.HasValue)
             {
-                ContentLength = Size.FromLong(newContentLength.Value);
-                outputStream.SetLength(newContentLength.Value);
+                // For full requests only, the response should contain the content length at this point.
+                // For range requests, the content length equals the length of the range, so we can't use that here.
+                var newContentLength = response.Content.Headers.ContentLength;
+                if (newContentLength is not null)
+                {
+                    ContentLength = Size.FromLong(newContentLength.Value);
+                    outputStream.SetLength(newContentLength.Value);
+                }
             }
-        } else if (isRangeRequest && !ContentLength.HasValue)
+        } else if (response.StatusCode == HttpStatusCode.PartialContent)
         {
-            // Responses to range requests should have this header
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
-            var contentRange = response.Content.Headers.ContentRange;
-            var length = contentRange?.Length;
-            if (length is not null)
+            if (!ContentLength.HasValue)
             {
-                ContentLength = Size.FromLong(length.Value);
-                outputStream.SetLength(length.Value);
+                // Responses to range requests should have this header
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
+                var contentRange = response.Content.Headers.ContentRange;
+                var length = contentRange?.Length;
+                if (length is not null)
+                {
+                    ContentLength = Size.FromLong(length.Value);
+                    outputStream.SetLength(length.Value);
+                }
             }
         }
 
         if (isRangeRequest && response.StatusCode == HttpStatusCode.OK)
         {
-            // TODO: The server accepts ranges but didn't return partial content
-            // NOTE(erri120): we need to reset and download the entire thing again...
-            // This scenario should be rare, and would indicate some serious server bullshit
-            throw new NotSupportedException();
+            // NOTE(erri120): We asked the server whether it supports range requests, the server responded with yes,
+            // then we do a range request, and suddenly the server changed its mind and says no...
+            Logger.LogWarning("Server `{ServerName}` responded with 200 to a valid range request for download from `{PageUri}`. The download will be reset", response.Headers.Server.ToString(), DownloadPageUri);
+
+            // NOTE(erri120): The only thing we can do here is to reset everything and start from scratch.
+            TotalBytesDownloaded = Size.Zero;
+            outputStream.Position = 0;
+            AcceptRanges = false;
         }
 
         try
