@@ -2,7 +2,7 @@
   mods: [
     Game Files,
     Halgari's Helper,
-    My Collection
+    My Mods
   ],
   files: [
     {Game}/archive/pc/mod/_1_Ves_HanakoFixedBodyNaked.archive,
