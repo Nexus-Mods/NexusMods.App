@@ -25,7 +25,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public BindableReactiveProperty<string> Version { get; set; } = new("-");
 
     public IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; } = System.Reactive.Linq.Observable.Empty<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>>();
-    private ObservableList<LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
+    private ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; set; } = [];
 
     public ReactiveProperty<DateTime> InstalledDate { get; } = new(DateTime.UnixEpoch);
     public ReactiveProperty<DateTime> CreatedAtDate { get; } = new(DateTime.UnixEpoch);
@@ -78,7 +78,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                     {
                         model.InstallText.Value = "Installed";
                         model.IsInstalledInLoadout.Value = true;
-                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static item => item.GetCreatedAt()).Max();
+                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static kv => kv.Value.GetCreatedAt()).Max();
                         model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
                     }
                     else

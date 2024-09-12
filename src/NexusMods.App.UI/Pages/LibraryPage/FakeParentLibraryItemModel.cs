@@ -12,7 +12,7 @@ public class FakeParentLibraryItemModel : LibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
     public required IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> LibraryItemsObservable { get; init; }
-    protected ObservableList<LibraryItem.ReadOnly> LibraryItems { get; set; } = [];
+    protected ObservableHashSet<LibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
     public override IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => LibraryItems.Select(static item => item.LibraryItemId).ToArray();
 

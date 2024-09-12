@@ -150,4 +150,29 @@ public static class R3Extensions
             }
         }
     }
+
+    public static void ApplyChanges<TKey, TValue>(this ObservableHashSet<TValue> set, IChangeSet<TValue, TKey> changes)
+        where TValue : notnull
+        where TKey : notnull
+    {
+        foreach (var change in changes)
+        {
+            switch (change.Reason)
+            {
+                case ChangeReason.Add:
+                    set.Add(change.Current);
+                    break;
+                case ChangeReason.Remove:
+                    set.Remove(change.Current);
+                    break;
+                case ChangeReason.Update:
+                    if (set.Remove(change.Previous.Value))
+                    {
+                        set.Add(change.Current);
+                    }
+
+                    break;
+            }
+        }
+    }
 }

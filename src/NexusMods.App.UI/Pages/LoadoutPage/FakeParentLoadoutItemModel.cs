@@ -12,7 +12,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     public required IObservable<DateTime> InstalledAtObservable { get; init; }
 
     public required IObservable<IChangeSet<LoadoutItemId, EntityId>> LoadoutItemIdsObservable { get; init; }
-    public ObservableList<LoadoutItemId> LoadoutItemIds { get; private set; } = [];
+    public ObservableHashSet<LoadoutItemId> LoadoutItemIds { get; private set; } = [];
 
     public override IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => LoadoutItemIds;
 
