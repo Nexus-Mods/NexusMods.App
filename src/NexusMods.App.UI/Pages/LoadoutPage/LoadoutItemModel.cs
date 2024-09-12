@@ -49,8 +49,6 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.FormattedInstalledAt.Value = FormatDate(DateTime.Now, model.InstalledAt.Value);
-
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
@@ -69,7 +67,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     private static string FormatDate(DateTime now, DateTime date)
     {
         if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
-        return date.Humanize(dateToCompareAgainst: now);
+        return date.Humanize(dateToCompareAgainst: now > date ? now : DateTime.Now);
     }
 
     private bool _isDisposed;

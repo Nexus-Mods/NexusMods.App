@@ -52,9 +52,6 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
-            model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
-
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
@@ -82,6 +79,9 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                     }
                 }).AddTo(disposables);
 
+            model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
+            model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
+
             model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet)).AddTo(disposables);
             Disposable.Create(model.LinkedLoadoutItems, static items => items.Clear()).AddTo(disposables);
         });
@@ -90,7 +90,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     protected static string FormatDate(DateTime now, DateTime date)
     {
         if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
-        return date.Humanize(dateToCompareAgainst: now);
+        return date.Humanize(dateToCompareAgainst: now > date ? now : DateTime.Now);
     }
 
     private bool _isDisposed;
