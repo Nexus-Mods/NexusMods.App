@@ -41,9 +41,11 @@ public class CustomElementFactory : TreeDataGridElementFactory
         
         switch (data)
         {
-            case IIndentedRow:
+            case IIndentedRow { Indent: 0 }:
+            {
                 var rowKey = $"{base.GetDataRecycleKey(data)}|{RootRowClass}";
                 return string.Intern(rowKey);
+            }
             case ICustomCell customCell:
             {
                 // NOTE(Al12rs): the keys generated here should match the ones in GetElementRecycleKey, ensure order and format is the same
@@ -63,7 +65,7 @@ public class CustomElementFactory : TreeDataGridElementFactory
         
         var sb = new StringBuilder(value: base.GetElementRecycleKey(element));
         
-        if (element is not TreeDataGridCell or TreeDataGridRow)
+        if (element is not TreeDataGridCell and not TreeDataGridRow)
             return string.Intern(sb.ToString());
         
         // NOTE(Al12rs): Order here should match the insertion order in CreateElement, first the id, then the RootRowClass
