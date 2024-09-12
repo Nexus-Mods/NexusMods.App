@@ -1,14 +1,8 @@
-using System.Reactive.Linq;
-using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 
@@ -31,31 +25,23 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         _conn = conn;
         _auth = auth;
         _logger = logger;
-        
-        _conn.ObserveDatoms(SliceDescriptor.Create(JWTToken.AccessToken, _conn.Registry))
-            .Subscribe(_ => _cachedTokenEntity = null);
     }
 
-    private JWTToken.ReadOnly? _cachedTokenEntity;
     private readonly IConnection _conn;
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {
-        if (!JWTToken.TryFind(_conn.Db, out var token))
-            return null;
-        
-        _cachedTokenEntity = token;
-        if (!token.HasExpired) 
-            return _cachedTokenEntity!.Value.AccessToken;
+        if (!JWTToken.TryFind(_conn.Db, out var token)) return null;
+        if (!token.HasExpired) return token.AccessToken;
 
         _logger.LogDebug("Refreshing expired OAuth token");
 
         var newToken = await _auth.RefreshToken(token.RefreshToken, cancellationToken);
         var db = _conn.Db;
         using var tx = _conn.BeginTransaction();
-        
+
         var newTokenEntity = JWTToken.Create(db, tx, newToken!);
-        if (newTokenEntity is null)
+        if (!newTokenEntity.HasValue)
         {
             _logger.LogError("Invalid new token in OAuth2MessageFactory");
             return null;
@@ -63,8 +49,8 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 
         var result = await tx.Commit();
 
-        _cachedTokenEntity = JWTToken.Load(result.Db, result[newTokenEntity.Value]);
-        return _cachedTokenEntity!.Value.AccessToken;
+        token = JWTToken.Load(result.Db, result[newTokenEntity.Value]);
+        return token.AccessToken;
     }
 
     /// <inheritdoc/>
