@@ -8,6 +8,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     LoadoutTreeDataGridAdapter Adapter { get; }
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
+    
+    R3.ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
 
     R3.ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
 

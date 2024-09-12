@@ -10,6 +10,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -28,8 +29,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
-
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
+    public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
@@ -63,6 +64,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .Select(count => count > 0);
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
+        
+        ViewLibraryCommand = new ReactiveCommand<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext
+                    {
+                        LoadoutId = loadoutId,
+                    },
+                };
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+            }
+        );
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)

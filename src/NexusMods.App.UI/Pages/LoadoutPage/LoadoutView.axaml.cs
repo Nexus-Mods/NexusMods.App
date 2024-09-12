@@ -23,6 +23,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
             this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
                 .AddTo(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.ViewLibraryCommand, view => view.ViewLibraryButton)
+                .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.RemoveItemCommand, view => view.DeleteButton)
                 .AddTo(disposables);
