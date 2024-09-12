@@ -108,19 +108,20 @@
                         VerticalAlignment="Center"/>
                 </DockPanel>
 
-                <StackPanel x:Name="ModalContentsPanel" Classes="CommonPanel">
-                    <!-- 'Deleting these mods removes them from the App' -->
-                    <TextBlock Classes="BodyMDBold" x:Name="QuestionTitle" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_HeaderQuestion}"/>
+                <ScrollViewer MaxHeight="300">
+                    <StackPanel x:Name="ModalContentsPanel" Classes="CommonPanel">
+                        <!-- 'Deleting these mods removes them from the App' -->
+                        <TextBlock Classes="BodyMDBold" x:Name="QuestionTitle" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_HeaderQuestion}"/>
                 
-                    <!-- Items -->
-                    <ItemsControl x:Name="RemovedItemsList" Classes="ModsList"/>
+                        <!-- Items -->
+                        <ItemsControl x:Name="RemovedItemsList" Classes="ModsList"/>
                 
-                    <!-- Loadout List (when added to a number of loadouts -->
-                    <StackPanel x:Name="LoadoutsPanel">
-                        <ItemsControl x:Name="SourceLoadoutsList" Classes="LoadoutsList"/>
+                        <!-- Loadout List (when added to a number of loadouts -->
+                        <StackPanel x:Name="LoadoutsPanel">
+                            <ItemsControl x:Name="SourceLoadoutsList" Classes="LoadoutsList"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-
+                </ScrollViewer>
             </StackPanel>
         </base:MessageBoxBackground.TopContent>
 
