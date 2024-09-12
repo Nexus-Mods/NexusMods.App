@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
@@ -43,10 +44,33 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
         
+        
+        var installedModsItem = new IconViewModel
+        {
+            Name = Language.LoadoutView_Title_Installed_Mods,
+            RelativeOrder = 1,
+            Icon = IconValues.Mods,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                        GroupScope = Optional<LoadoutItemGroupId>.None,
+                    },
+                };
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
+
+        
         var libraryItem = new IconViewModel
         {
             Name = Language.LibraryPageTitle,
-            RelativeOrder = 1,
+            RelativeOrder = 3,
             Icon = IconValues.ModLibrary,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -69,7 +93,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var diagnosticItem = new IconViewModel
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
-            RelativeOrder = 2,
+            RelativeOrder = 4,
             Icon = IconValues.Stethoscope,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -86,10 +110,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
+        
 
 
         var tools = new ILeftMenuItemViewModel[]
         {
+            installedModsItem,
             libraryItem,
             diagnosticItem,
         };
@@ -169,6 +195,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             CollectionGroupId = itm.CollectionGroupId,
             Name = itm.AsLoadoutItemGroup().AsLoadoutItem().Name,
             Icon = IconValues.Collections,
+            RelativeOrder = 2,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData
@@ -203,8 +230,6 @@ file class LeftMenuComparer : IComparer<ILeftMenuItemViewModel>
         return (x, y) switch
         {
             (LeftMenuCollectionViewModel a, LeftMenuCollectionViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            (LeftMenuCollectionViewModel _, IconViewModel _) => -1,
-            (IconViewModel _, LeftMenuCollectionViewModel _) => 1,
             (IconViewModel a, IconViewModel b) => a.RelativeOrder.CompareTo(b.RelativeOrder),
             _ => 0,
         };

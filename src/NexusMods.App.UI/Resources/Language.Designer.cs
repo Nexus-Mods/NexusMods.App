@@ -1410,6 +1410,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installed Mods.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Mods.
         /// </summary>
         public static string LoadoutViewPageTitle {

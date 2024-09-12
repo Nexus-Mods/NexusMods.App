@@ -675,4 +675,7 @@
     <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
         <value>Delete Loadout</value>
     </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Installed Mods</value>
+    </data>
 </root>
