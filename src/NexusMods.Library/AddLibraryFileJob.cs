@@ -17,7 +17,6 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     public required ITransaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
     private ConcurrentBag<TemporaryPath> ExtractionDirectories { get; } = [];
-    private ConcurrentBag<ArchivedFileEntry> ToArchive { get; } = [];
     
     public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath, bool doCommit, bool doBackup)
     {
@@ -43,17 +42,19 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     {
         if (!FilePath.FileExists)
             throw new Exception($"File '{FilePath}' does not exist.");
-        
-        return await AnalyzeOne(context, FilePath);
+
+        var toArchive = new List<ArchivedFileEntry>();
+        var result = await AnalyzeOne(context, FilePath, toArchive);
+        await FileStore.BackupFiles(toArchive, deduplicate: false, context.CancellationToken);
+        return result;
     }
 
-    private async Task<LibraryFile.New> AnalyzeOne(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath)
+    private async Task<LibraryFile.New> AnalyzeOne(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath, List<ArchivedFileEntry> toArchive)
     {
         var isArchive = await CheckIfArchiveAsync(filePath);
         var hash = await filePath.XxHash64Async();
         
         var libraryFile = CreateLibraryFile(Transaction, filePath, hash);
-
         if (isArchive)
         {
             var libraryArchive = new LibraryArchive.New(Transaction, libraryFile.Id)
@@ -71,7 +72,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
 
             foreach (var extracted in extractedFiles)
             {
-                var subFile = await AnalyzeOne(context, extracted);
+                var subFile = await AnalyzeOne(context, extracted, toArchive);
                 var path = extracted.RelativeTo(extractionFolder.Path);
                 _ = new LibraryArchiveFileEntry.New(Transaction, subFile.Id)
                 {
@@ -85,13 +86,11 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         {
             var size = filePath.FileInfo.Size;
             if (!await FileStore.HaveFile(hash))
-                ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
+                toArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
         }
 
-        await FileStore.BackupFiles(ToArchive, deduplicate: false, context.CancellationToken);
         return libraryFile;
     }
-
 
     private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
     {
