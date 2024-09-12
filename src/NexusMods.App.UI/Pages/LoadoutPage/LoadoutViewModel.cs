@@ -10,6 +10,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -28,8 +29,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
 
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
-
+    public string EmptyStateTitleText { get; }
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
+    public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
@@ -49,11 +51,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         };
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
-
-        TabTitle = Language.LoadoutViewPageTitle;
-        TabIcon = IconValues.Collections;
-
+        
         _connection = serviceProvider.GetRequiredService<IConnection>();
+
+
+        if (collectionGroupId.HasValue)
+        {
+            var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
+            TabTitle = collectionGroup.Name;
+            TabIcon = IconValues.Collections;
+        }
+        else
+        {
+            TabTitle = Language.LoadoutViewPageTitle;
+            TabIcon = IconValues.Mods;
+        }
+
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
         ticker.Connect();
@@ -63,6 +76,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .Select(count => count > 0);
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
+        
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        EmptyStateTitleText = string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name);
+        ViewLibraryCommand = new ReactiveCommand<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext
+                    {
+                        LoadoutId = loadoutId,
+                    },
+                };
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+            }
+        );
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
