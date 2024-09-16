@@ -38,6 +38,7 @@
 
 
         <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
+
             <controls:EmptyState.Subtitle>
                 <StackPanel>
                     <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
