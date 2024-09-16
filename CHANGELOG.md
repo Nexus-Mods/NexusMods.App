@@ -1,27 +1,58 @@
 # Changelog
 
-## [next]() - 2024-09-XX
+## [0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-XX
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
-### New Features
 
-The Loadout and Library pages have been completely reworked and will continue to get closer to the design.
+This release adds a very basic implementation of downloading Collections, updates the UI to the new tree view and includes some enhancements when interacting with Windows applications via Linux. 
 
-TODO: comparison screenshots
+### New UI for My Mods and Library
+The My Mods and Library pages have been completely reworked to use the new tree view. Mods are now grouped by the mod page on Nexus Mods, meaning if download several files from the same page they will be grouped together. A "Switch View" option has been added to the toolbar to toggle these groupings on or off. We are continuing to work towards to designs shown in the previous changelog.
 
-Cyberpunk support on Linux has been improved, the app can now run redmod via protontricks ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
+![An image showing mods in the Library nested by mod page (left) or ungrouped (right)](./docs/changelog-assets/TreeView.webp)
 
-### Other Changes
+### EXPERIMENTAL - Collections
+**WARNING: The feature is unfinished and not considered stable. It will not accurately install complex collections and is currently only functional for Premium users.**
 
-- The loadout name is shown in the top bar as a subtitle ([#1953](https://github.com/Nexus-Mods/NexusMods.App/pull/1953)).
-- Set a minimum size of `360x360` for the main window ([#1947](https://github.com/Nexus-Mods/NexusMods.App/pull/1947)).
+We've included a very early implementation of the Collections feature in this release. It's incomplete and will not install collections are the user has set them up in Vortex. Currently, only mods from Nexus Mods can be installed - anything from external websites or bundled with the collection will not install as expected. 
+
+![A collection for Cyberpunk 2077 installed into a loadout.](./docs/changelog-assets/Collection.webp)
+
+Collections will appear as a separate list of mods in the left menu. Users can view all mods in the loadout from the new "Installed Mods" option at the top of the left menu. 
+
+To start out, this will only be available to free users, but we are working on the free user journey separately and that will be available in a future release.
+
+
+### Cyberpunk 2077 Enhancements
+As a further enhancement to support for Cyberpunk 2077, we will now detect if the REDmod DLC is missing and problem the user to install it if required. 
+
+![The diagnostic message for REDmod shown in the Health Check.](./docs/changelog-assets/REDmod.webp)
+
+We've also fixed the issue which prevented REDmod from deploying automatically on Linux. This work also sets up a framework for running Windows apps and tools on a Linux system using [Protontricks](https://github.com/Matoking/protontricks) ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
+
+### Known Issues
+- Deleting mods or removing mods from a loadout intermittently doesn't update the UI correctly. 
+- Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
+- Once a collection is added to the app, it cannot be removed from the left menu.
+- Collections allow users to modify the included mods but do not allow you to reset them to a the original state. 
+- The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
+- The "Switch View" option does not persist.
+
+### Other Features
+- The name of the active loadout will now appear in the top bar ([#1953](https://github.com/Nexus-Mods/NexusMods.App/pull/1953)).
+- The app now has a minimum window size of `360x360` to prevent it being resized to unusable dimensions ([#1947](https://github.com/Nexus-Mods/NexusMods.App/pull/1947)).
+
+### Bugfixes
 - Stardew Valley: Fixed enabled mods showing up as disabled in the diagnostics ([#1923](https://github.com/Nexus-Mods/NexusMods.App/pull/1953)).
 - Linux: Fixed the game not launching when running through Steam ([#1917](https://github.com/Nexus-Mods/NexusMods.App/pull/1917)).
 
-### External Contributors
+### Technical Changes 
+- Added a system for storing and displaying images in the app. 
 
+### External Contributors
 - [@Patriot99](https://github.com/Patriot99): [#1896](https://github.com/Nexus-Mods/NexusMods.App/pull/1896)
-- [LoulouNoLegend](https://github.com/LoulouNoLegend): [#1997](https://github.com/Nexus-Mods/NexusMods.App/pull/1997), [#1998](https://github.com/Nexus-Mods/NexusMods.App/pull/1998), [#1999](https://github.com/Nexus-Mods/NexusMods.App/pull/1999)
+- [@LoulouNoLegend](https://github.com/LoulouNoLegend): [#1997](https://github.com/Nexus-Mods/NexusMods.App/pull/1997), [#1998](https://github.com/Nexus-Mods/NexusMods.App/pull/1998), [#1999](https://github.com/Nexus-Mods/NexusMods.App/pull/1999)
+
 
 ## [v0.6.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.0) - 2024-09-03
 
