@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources\BaldursGate3\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\BaldursGate3\game_image.jpg" />
+      <EmbeddedResource Include="Resources\BaldursGate3\game_image.jpg" />
+      <None Remove="Resources\BaldursGate3\icon.png" />
+      <EmbeddedResource Include="Resources\BaldursGate3\icon.png" />
+    </ItemGroup>
+
+</Project>
