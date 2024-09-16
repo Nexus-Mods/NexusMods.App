@@ -1,8 +1,31 @@
 # Changelog
 
-## [v0.6.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.0) - 2024-08-29
+## [next]() - 2024-09-XX
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
+### New Features
+
+The Loadout and Library pages have been completely reworked and will continue to get closer to the design.
+
+TODO: comparison screenshots
+
+Cyberpunk support on Linux has been improved, the app can now run redmod via protontricks ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
+
+### Other Changes
+
+- The loadout name is shown in the top bar as a subtitle ([#1953](https://github.com/Nexus-Mods/NexusMods.App/pull/1953)).
+- Set a minimum size of `360x360` for the main window ([#1947](https://github.com/Nexus-Mods/NexusMods.App/pull/1947)).
+- Stardew Valley: Fixed enabled mods showing up as disabled in the diagnostics ([#1923](https://github.com/Nexus-Mods/NexusMods.App/pull/1953)).
+- Linux: Fixed the game not launching when running through Steam ([#1917](https://github.com/Nexus-Mods/NexusMods.App/pull/1917)).
+
+### External Contributors
+
+- [@Patriot99](https://github.com/Patriot99): [#1896](https://github.com/Nexus-Mods/NexusMods.App/pull/1896)
+- [LoulouNoLegend](https://github.com/LoulouNoLegend): [#1997](https://github.com/Nexus-Mods/NexusMods.App/pull/1997), [#1998](https://github.com/Nexus-Mods/NexusMods.App/pull/1998), [#1999](https://github.com/Nexus-Mods/NexusMods.App/pull/1999)
+
+## [v0.6.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.0) - 2024-09-03
+
+**Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)**
 
 
 This release enhances support for Cyberpunk 2077, adds multiple Loadouts per game and implements the back-end changes to support our new "Loadout items" data model. 
