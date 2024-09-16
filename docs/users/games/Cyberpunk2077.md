@@ -22,6 +22,12 @@ Diagnostics are shown in the following situations:
     - [ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) - Detected by `.xl` files in the `archives` folder. 
     - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
 
+### Automated deployment for REDmods
+
+!!! warning "This feature currently isn't available on Linux."
+
+When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
+
 ### Selective Game Backup
 When managing Cyberpunk 2077 the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 

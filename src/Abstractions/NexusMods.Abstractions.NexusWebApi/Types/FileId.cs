@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 /// i.e. This ID might be used for another mod if you search for mods for another game.
 /// </summary>
 [ValueObject<ulong>]
-public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>
+public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
 {
     /// <inheritdoc/>
     public static FileId DefaultValue => From(default);

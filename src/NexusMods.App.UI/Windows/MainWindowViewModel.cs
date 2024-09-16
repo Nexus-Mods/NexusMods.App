@@ -14,7 +14,6 @@ using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -65,7 +64,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
             }
-            
+
             loginManager.IsLoggedInObservable
                 .Where(isSignedIn => isSignedIn)
                 .Select(_ => Unit.Default)

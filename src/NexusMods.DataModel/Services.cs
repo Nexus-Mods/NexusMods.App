@@ -110,22 +110,17 @@ public static class Services
         coll.AddAttributeCollection(typeof(DownloadContentEntry));
         coll.AddAttributeCollection(typeof(FilePathMetadata));
         coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
-        coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddSettings<DiagnosticSettings>();
-        
-        // Jobs System
-        coll.AddPersistedJobStateModel();
         
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
         
         // Verbs
         coll.AddLoadoutManagementVerbs()
-            .AddToolVerbs()
-            .AddArchiveVerbs();
+            .AddToolVerbs();
 
         return coll;
     }

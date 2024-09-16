@@ -45,14 +45,16 @@ public static class Services
         // Nexus API Key
         collection.AddAttributeCollection(typeof(ApiKey));
         
-        return collection
+        collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
-            .AddWorker<NexusModsDownloadJobWorker>()
-            .AddNexusModsDownloadJobPersistedStateModel()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
+
+        collection.AddNexusGraphQLClient()
+            .ConfigureHttpClient(http => http.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
+        return collection;
     }
 }

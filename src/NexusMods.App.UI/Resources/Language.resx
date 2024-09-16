@@ -78,6 +78,9 @@
     <data name="MessageBox_Button_No" xml:space="preserve">
         <value>No</value>
     </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>Ok</value>
+    </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
     </data>
@@ -276,8 +279,8 @@
     <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
         <value>Home</value>
     </data>
-    <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
-        <value>My Mods</value>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>Installed Mods</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
         <value>Downloads</value>
@@ -452,7 +455,7 @@
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
         <value>Health Check</value>
     </data>
-    <data name="FileOriginsPageTitle" xml:space="preserve">
+    <data name="LibraryPageTitle" xml:space="preserve">
         <value>Library</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
@@ -576,7 +579,7 @@
         <value>button in the toolbar</value>
     </data>
     <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-        <value>Add your downloaded mods from the</value>
+        <value>Install your downloaded mods from the</value>
     </data>
     <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
         <value>No mods added to {0}</value>
@@ -671,5 +674,8 @@
     </data>
     <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
         <value>Delete Loadout</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Installed Mods</value>
     </data>
 </root>

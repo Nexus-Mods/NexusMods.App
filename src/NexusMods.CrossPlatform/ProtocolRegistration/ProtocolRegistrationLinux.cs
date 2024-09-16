@@ -1,6 +1,5 @@
 using System.Runtime.Versioning;
 using System.Text;
-using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
@@ -12,7 +11,7 @@ namespace NexusMods.CrossPlatform.ProtocolRegistration;
 /// Protocol registration for Linux.
 /// </summary>
 [SupportedOSPlatform("linux")]
-public class ProtocolRegistrationLinux : IProtocolRegistration
+internal class ProtocolRegistrationLinux : IProtocolRegistration
 {
     private const string ApplicationId = "com.nexusmods.app";
     private const string DesktopFile = $"{ApplicationId}.desktop";
@@ -23,6 +22,8 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     private readonly IProcessFactory _processFactory;
     private readonly IFileSystem _fileSystem;
     private readonly IOSInterop _osInterop;
+    private readonly XDGSettingsDependency _xdgSettingsDependency;
+    private readonly UpdateDesktopDatabaseDependency _updateDesktopDatabaseDependency;
 
     /// <summary>
     /// Constructor.
@@ -31,12 +32,16 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         ILogger<ProtocolRegistrationLinux> logger,
         IProcessFactory processFactory,
         IFileSystem fileSystem,
-        IOSInterop osInterop)
+        IOSInterop osInterop,
+        XDGSettingsDependency xdgSettingsDependency,
+        UpdateDesktopDatabaseDependency updateDesktopDatabaseDependency)
     {
         _logger = logger;
         _processFactory = processFactory;
         _fileSystem = fileSystem;
         _osInterop = osInterop;
+        _xdgSettingsDependency = xdgSettingsDependency;
+        _updateDesktopDatabaseDependency = updateDesktopDatabaseDependency;
     }
 
     /// <inheritdoc/>
@@ -112,19 +117,13 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     {
         _logger.LogInformation("Updating MIME cache database");
 
-        var command = Cli
-            .Wrap("update-desktop-database")
-            .WithArguments(EscapeWhitespaceForCli(applicationsDirectory));
-
+        var command = _updateDesktopDatabaseDependency.BuildUpdateCommand(EscapeWhitespaceForCli(applicationsDirectory));
         await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
 
     private async Task SetAsDefaultHandler(string uriScheme, CancellationToken cancellationToken = default)
     {
-        var command = Cli
-            .Wrap("xdg-settings")
-            .WithArguments($"set default-url-scheme-handler {uriScheme} {DesktopFile}");
-
+        var command = _xdgSettingsDependency.CreateSetDefaultUrlSchemeHandlerCommand(uriScheme, DesktopFile);
         await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
 

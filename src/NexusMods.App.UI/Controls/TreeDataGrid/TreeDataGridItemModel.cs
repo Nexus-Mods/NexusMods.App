@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Binding;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
+using ObservableCollections;
 using R3;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;
@@ -19,26 +17,30 @@ public class TreeDataGridItemModel : ReactiveR3Object;
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
 /// </summary>
-/// <typeparam name="TModel"></typeparam>
 [PublicAPI]
-public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
-    where TModel : TreeDataGridItemModel<TModel>
+public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
+    where TModel : TreeDataGridItemModel<TModel, TKey>
+    where TKey : notnull
 {
-    public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
-    [Reactive] public bool HasChildren { get; private set; }
+    public ReactiveProperty<bool> IsSelected { get; } = new(value: false);
 
-    public IObservable<IChangeSet<TModel>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel>>();
-    private ObservableCollectionExtended<TModel> _children = [];
+    public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
+    public BindableReactiveProperty<bool> HasChildren { get; } = new();
+
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
+
+    private ObservableList<TModel> _children = [];
+    private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
     [DebuggerBrowsable(state: DebuggerBrowsableState.Never)]
-    public ObservableCollectionExtended<TModel> Children
+    public IEnumerable<TModel> Children
     {
         get
         {
             _childrenCollectionInitialization.OnNext(true);
-            return _children;
+            return _childrenView;
         }
     }
 
@@ -49,7 +51,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         set
         {
             if (_isExpanded && !value) _childrenCollectionInitialization.OnNext(false);
-            this.RaiseAndSetIfChanged(ref _isExpanded, value);
+            RaiseAndSetIfChanged(ref _isExpanded, value);
         }
     }
 
@@ -60,12 +62,14 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
 
     protected TreeDataGridItemModel()
     {
+        _childrenView = _children.ToNotifyCollectionChanged();
+
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             // NOTE(erri120): TreeDataGrid uses `HasChildren` to show/hide the expander.
             model.HasChildrenObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(hasChildren => model.HasChildren = hasChildren)
+                .SubscribeWithErrorLogging(hasChildren => model.HasChildren.Value = hasChildren)
                 .AddTo(disposables);
 
             // NOTE(erri120): We only do this once. If you have an expanded parent and scroll
@@ -90,26 +94,23 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                     .DistinctUntilChanged()
                     .Subscribe(model, onNext: static (isInitializing, model) =>
                     {
-                        // NOTE(erri120): We always need to reset when the observable triggers.
-                        // Note that the observable we're currently in with the `DistinctUntilChanged`
-                        // gets disposed when the model is deactivated. This is important to
-                        // understand for the model and child activation/deactivation relationships.
-                        model._childrenObservableSerialDisposable.Disposable = null;
-                        CleanupChildren(model._children);
-
-                        if (isInitializing)
+                        // NOTE(erri120): Lazy-init the subscription. Previously, we'd re-subscribe to the children observable
+                        // and clear all previous values. This broke the TreeDataGrid selection code. Instead, we'll have a lazy
+                        // observable. When the parent gets expanded for the first time, we'll set up this subscription and keep
+                        // it alive for the entire lifetime of the parent.
+                        if (isInitializing && model._childrenObservableSerialDisposable.Disposable is null)
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
-                                .Bind(model._children)
-                                .SubscribeWithErrorLogging();
+                                .DisposeMany()
+                                .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }
         });
     }
 
-    private static void CleanupChildren(ObservableCollectionExtended<TModel> children)
+    private static void CleanupChildren(ObservableList<TModel> children)
     {
         foreach (var child in children)
         {
@@ -130,7 +131,9 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
                     _childrenCollectionInitialization,
                     _modelActivationDisposable,
                     _childrenObservableSerialDisposable,
-                    _childrenCollectionInitializationSerialDisposable
+                    _childrenCollectionInitializationSerialDisposable,
+                    HasChildren,
+                    IsSelected
                 );
             }
 
@@ -152,7 +155,7 @@ public class TreeDataGridItemModel<TModel> : TreeDataGridItemModel
         return new HierarchicalExpanderColumn<TModel>(
             inner: innerColumn,
             childSelector: static model => model.Children,
-            hasChildrenSelector: static model => model.HasChildren,
+            hasChildrenSelector: static model => model.HasChildren.Value,
             isExpandedSelector: static model => model.IsExpanded
         )
         {

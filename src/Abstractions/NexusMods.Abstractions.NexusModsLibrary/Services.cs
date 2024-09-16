@@ -18,6 +18,8 @@ public static class Services
             .AddNexusModsFileMetadataModel()
             .AddNexusModsModPageMetadataModel()
             .AddNexusModsLibraryFileModel()
-            .AddNXMDownloadStateModel();
+            .AddNexusModsCollectionMetadataModel()
+            .AddNexusModsCollectionRevisionModel()
+            .AddNexusModsCollectionLibraryFileModel();
     }
 }

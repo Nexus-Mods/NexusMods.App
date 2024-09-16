@@ -1,10 +1,13 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
 
+
 namespace NexusMods.Abstractions.Jobs;
 
+// ReSharper disable once InconsistentNaming
 /// <summary>
-/// Extensions for <see cref="IJobMonitor"/>.
+/// Extensions for <see cref="IJobMonitor"/>
 /// </summary>
 public static class IJobMonitorExtensions
 {
@@ -16,8 +19,8 @@ public static class IJobMonitorExtensions
     /// <param name="jobMonitor"></param>
     /// <typeparam name="TJobType"></typeparam>
     /// <returns></returns>
-    public static IObservable<IChangeSet<TJobType, JobId>> ObserveActiveJobs<TJobType>(this IJobMonitor jobMonitor) 
-        where TJobType : IJob
+    public static IObservable<IChangeSet<IJob, JobId>> ObserveActiveJobs<TJobType>(this IJobMonitor jobMonitor) 
+        where TJobType : IJobDefinition
     {
         return jobMonitor.GetObservableChangeSet<TJobType>()
             .FilterOnObservable(job => job.ObservableStatus
@@ -31,18 +34,13 @@ public static class IJobMonitorExtensions
     public static IObservable<Percent> AverageProgressPercent<TJobType>(this IObservable<IChangeSet<TJobType, JobId>> jobs) 
         where TJobType : IJob
     {
-        return jobs.TransformOnObservable(job =>
-                {
-                    if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
-                        return Observable.Empty<Percent>();
-                    return determinateProgress.ObservablePercent;
-                }
-            )
+        return jobs.TransformOnObservable(job => job.ObservableProgress)
+            .Filter(p => p.HasValue)
             .QueryWhenChanged(coll =>
                 {
                     if (coll.Count == 0)
                         return Percent.Zero;
-                    return Percent.CreateClamped(coll.Items.Aggregate(0.0d, (acc, source) => acc + source.Value) / coll.Count);
+                    return Percent.CreateClamped(coll.Items.Aggregate(0.0d, (acc, source) => acc + source.Value.Value) / coll.Count);
                 }
             );
     }
@@ -50,21 +48,17 @@ public static class IJobMonitorExtensions
     /// <summary>
     /// Gets an observable of the sum of the progress rate of all given jobs.
     /// </summary>
-    public static IObservable<double> SumProgressRate<TJobType>(this IObservable<IChangeSet<TJobType, JobId>> jobs) 
+    public static IObservable<double> SumRateOfProgress<TJobType>(this IObservable<IChangeSet<TJobType, JobId>> jobs) 
         where TJobType : IJob
     {
-        return jobs.TransformOnObservable(job =>
-                {
-                    if (!job.Progress.TryGetDeterminateProgress(out var determinateProgress))
-                        return Observable.Empty<ProgressRate>();
-                    return determinateProgress.ObservableProgressRate;
-                }
-            )
+        return jobs.TransformOnObservable(job => job.ObservableRateOfProgress)
+            .Filter(p => p.HasValue)
             .QueryWhenChanged(coll =>
                 {
                     if (coll.Count == 0)
                         return 0.0d;
-                    return coll.Items.Select(r => r.Value).Sum();
+                    return coll.Items.Where(f => f.HasValue)
+                        .Select(r => r.Value).Sum();
                 }
             );
     }

@@ -1,12 +1,15 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -14,15 +17,23 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public record LoadoutPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
+    
+    /// <summary>
+    /// If provided, will limit the scope of items shown to the group with the given ID.
+    /// </summary>
+    public required Optional<LoadoutItemGroupId> GroupScope { get; init; }
 }
 
 [UsedImplicitly]
 public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageContext>
 {
     private readonly ISettingsManager _settingsManager;
+    private readonly IConnection _connection;
+
     public LoadoutPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("62fda6ce-e6b7-45d6-936f-a8f325bfc644"));
@@ -30,19 +41,18 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
 
     public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
-        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, context.GroupScope);
         return vm;
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
-        if (!_settingsManager.Get<ExperimentalViewSettings>().ShowNewTreeViews) yield break;
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = "My Mods (new)",
+            ItemName = Language.LoadoutViewPageTitle,
             Icon = IconValues.Collections,
             PageData = new PageData
             {
@@ -50,6 +60,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
+                    GroupScope = Optional<LoadoutItemGroupId>.None,
                 },
             },
         };

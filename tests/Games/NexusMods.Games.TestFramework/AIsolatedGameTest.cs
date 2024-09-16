@@ -49,12 +49,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly ILibraryService LibraryService;
     protected readonly IFileStore FileStore;
     protected readonly IGameRegistry GameRegistry;
+    protected readonly NexusModsLibrary NexusModsLibrary;
+
 
     protected readonly IConnection Connection;
 
     protected readonly NexusApiClient NexusNexusApiClient;
-    protected readonly IHttpDownloader HttpDownloader;
-    
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     
     private bool _gameFilesWritten = false;
@@ -95,11 +95,11 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         DiagnosticManager = ServiceProvider.GetRequiredService<IDiagnosticManager>();
 
         NexusNexusApiClient = ServiceProvider.GetRequiredService<NexusApiClient>();
-        HttpDownloader = ServiceProvider.GetRequiredService<IHttpDownloader>();
-
         Logger = ServiceProvider.GetRequiredService<ILogger<TTest>>();
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+        NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
+
 
     public record ConfigOptionsRecord
     {

@@ -1,6 +1,7 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 
@@ -13,7 +14,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
@@ -21,6 +22,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
+                .AddTo(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.ViewLibraryCommand, view => view.ViewLibraryButton)
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.RemoveItemCommand, view => view.DeleteButton)
@@ -30,6 +34,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
+                .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
                 .AddTo(disposables);
         });
     }

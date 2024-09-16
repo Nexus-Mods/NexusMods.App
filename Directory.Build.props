@@ -11,11 +11,13 @@
 
         <!-- 
             Listing of all build flags.
+            i.e. for `dotnet build -p:DefineConstants="FLAGS"`
         
             Functionality:
 
                 NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR: Use system `7z` binary for extraction.
                     - This is intended for Linux package maintainers.
+                    - Alternatively, this is available with `-p:UseSystemExtractor=true`
                 
             Deployment:
                 

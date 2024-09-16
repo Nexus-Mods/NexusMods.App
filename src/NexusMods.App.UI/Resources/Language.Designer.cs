@@ -816,15 +816,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Library.
-        /// </summary>
-        public static string FileOriginsPageTitle {
-            get {
-                return ResourceManager.GetString("FileOriginsPageTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to ACTIONS.
         /// </summary>
         public static string FileOriginsPageView_ActionHeader {
@@ -1275,6 +1266,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        public static string LibraryPageTitle {
+            get {
+                return ResourceManager.GetString("LibraryPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Loadout.
         /// </summary>
         public static string LoadoutCard_DeleteLoadoutToolTip {
@@ -1347,7 +1347,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add your downloaded mods from the.
+        ///   Looks up a localized string similar to Install your downloaded mods from the.
         /// </summary>
         public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
             get {
@@ -1401,20 +1401,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My Mods.
-        /// </summary>
-        public static string LoadoutLeftMenuViewModel_LoadoutGridEntry {
-            get {
-                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutGridEntry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
             get {
                 return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed Mods.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed Mods.
+        /// </summary>
+        public static string LoadoutViewPageTitle {
+            get {
+                return ResourceManager.GetString("LoadoutViewPageTitle", resourceCulture);
             }
         }
         
@@ -1442,6 +1451,15 @@ namespace NexusMods.App.UI.Resources {
         public static string MessageBox_Button_No {
             get {
                 return ResourceManager.GetString("MessageBox_Button_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ok.
+        /// </summary>
+        public static string MessageBox_Button_Ok {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_Ok", resourceCulture);
             }
         }
         

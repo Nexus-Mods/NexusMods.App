@@ -20,7 +20,8 @@ public class NexusModsLibrary
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
-
+    private readonly NexusGraphQLClient _gqlClient;
+    
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -29,6 +30,7 @@ public class NexusModsLibrary
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
+        _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -50,8 +52,76 @@ public class NexusModsLibrary
             GameDomain = gameDomain,
         };
 
+        if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
+        {
+            newModPage.FullSizedPictureUri = fullSizedPictureUri;
+
+            var thumbnailUrl = modInfo.Data.PictureUrl.Replace("/images/", "/images/thumbnails/", StringComparison.OrdinalIgnoreCase);
+            if (Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
+            {
+                newModPage.ThumbnailUri = thumbnailUri;
+            }
+        }
+
         var txResults = await tx.Commit();
         return txResults.Remap(newModPage);
+    }
+
+    /// <summary>
+    /// Get or add a collection metadata
+    /// </summary>
+    public async Task<NexusModsCollectionMetadata.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, CancellationToken token)
+    {
+        var collections = NexusModsCollectionMetadata.FindBySlug(_connection.Db, slug);
+        if (collections.TryGetFirst(x => x.Slug == slug, out var collection)) 
+            return collection;
+
+        var info = await _gqlClient.CollectionInfo.ExecuteAsync(slug.Value, true, token);
+        
+        using var tx = _connection.BeginTransaction();
+        var newCollection = new NexusModsCollectionMetadata.New(tx)
+        {
+            Slug = slug,
+            Name = info.Data!.Collection.Name,
+        };
+
+        foreach (var revision in info.Data!.Collection.Revisions)
+        {
+            _ = new NexusModsCollectionRevision.New(tx)
+            {
+                CollectionId = newCollection,
+                RevisionId = RevisionId.From((ulong)revision.Id),
+                RevisionNumber = RevisionNumber.From((ulong)revision.RevisionNumber),
+            };
+        }
+        
+        var txResults = await tx.Commit();
+
+        return txResults.Remap(newCollection);
+    }
+    
+    /// <summary>
+    /// Get or add a collection metadata
+    /// </summary>
+    public async Task<NexusModsCollectionRevision.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
+    {
+        var collections = await GetOrAddCollectionMetadata(slug, token);
+        if (collections.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
+            return revision;
+        
+        var revisionInfo = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(slug.Value, (int)revisionNumber.Value, true, token);
+        
+        using var tx = _connection.BeginTransaction();
+        var newRevision = new NexusModsCollectionRevision.New(tx)
+        {
+            CollectionId = collections,
+            RevisionNumber = revisionNumber,
+            RevisionId = RevisionId.From((ulong)revisionInfo.Data!.CollectionRevision.Id),
+        };
+        
+        var txResults = await tx.Commit();
+        
+        return txResults.Remap(newRevision);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -120,48 +190,54 @@ public class NexusModsLibrary
         return links.Data.First().Uri;
     }
 
-    public async Task<NexusModsDownloadJob> CreateDownloadJob(
+    /// <summary>
+    /// Parse a NXM URL and create a download job from the data
+    /// </summary>
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NXMModUrl url,
         CancellationToken cancellationToken)
     {
-        var modPage = await GetOrAddModPage(url.ModId, GameDomain.From(url.Game), cancellationToken);
-        var file = await GetOrAddFile(url.FileId, modPage, GameDomain.From(url.Game), cancellationToken);
-
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
-
-        var worker = _serviceProvider.GetRequiredService<NexusModsDownloadJobWorker>();
-
-        using var tx = _connection.BeginTransaction();
-        var newState = new NexusModsDownloadJobPersistedState.New(tx, out var id)
-        {
-            FileMetadataId = file,
-            HttpDownloadJobPersistedState = new HttpDownloadJobPersistedState.New(tx, id)
-            {
-                Destination = destination,
-                Uri = uri,
-                DownloadPageUri = modPage.GetUri(),
-                PersistedJobState = new PersistedJobState.New(tx, id)
-                {
-                    Status = JobStatus.None,
-                    Worker = worker,
-                },
-            },
-        };
-
-        var txResult = await tx.Commit();
-        var state = txResult.Remap(newState);
+        return await CreateDownloadJob(destination, GameDomain.From(url.Game), url.ModId, url.FileId, nxmData, cancellationToken);
+    }
+    
+    /// <summary>
+    /// Given a mod ID, file ID, and game domain, create a download job
+    /// </summary>
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
+        AbsolutePath destination,
+        GameDomain gameDomain,
+        ModId modId,
+        FileId fileId,
+        Optional<(NXMKey, DateTime)> nxmData = default,
+        CancellationToken cancellationToken = default)
+    {
+        var modPage = await GetOrAddModPage(modId, gameDomain, cancellationToken);
+        var file = await GetOrAddFile(fileId, modPage, gameDomain, cancellationToken);
         
-        var monitor = _serviceProvider.GetRequiredService<IJobMonitor>();
+        var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
+        
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
-        var job = new NexusModsDownloadJob(_connection, state, worker: worker, monitor: monitor)
-        {
-            HttpDownloadJob = new HttpDownloadJob(_connection, state.AsHttpDownloadJobPersistedState(), 
-                worker: _serviceProvider.GetRequiredService<HttpDownloadJobWorker>(),
-                monitor: monitor),
-        };
-
-        return job;
+        return nexusJob;
+    }
+    
+    /// <summary>
+    /// Create a job that downloads a collection
+    /// </summary>
+    /// <param name="destination">Download location</param>
+    /// <param name="slug">The collection slug</param>
+    /// <param name="revision">The revision of the collection download</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public IJobTask<NexusModsCollectionDownloadJob, AbsolutePath> CreateCollectionDownloadJob(
+        AbsolutePath destination,
+        CollectionSlug slug,
+        RevisionNumber revision,
+        CancellationToken cancellationToken)
+    {
+        return NexusModsCollectionDownloadJob.Create(_serviceProvider, slug, revision, destination);
     }
 }

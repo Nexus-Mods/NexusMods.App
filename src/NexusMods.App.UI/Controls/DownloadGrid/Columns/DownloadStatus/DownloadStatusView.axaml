@@ -3,7 +3,7 @@
     d:DesignWidth="400"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView"
-    x:TypeArguments="modName:IModNameViewModel"
+    x:TypeArguments="modName1:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,7 +11,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:downloadStatus="clr-namespace:NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus"
-    xmlns:modName="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName">
+    xmlns:modName1="clr-namespace:NexusMods.App.UI.Controls.DataGrid.Columns.ModName">
     <Design.DataContext>
         <downloadStatus:DownloadStatusDesignViewModel />
     </Design.DataContext>

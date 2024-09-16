@@ -16,4 +16,6 @@ public class IconViewModel : AViewModel<IIconViewModel>, IIconViewModel
     [Reactive] public string[] Badges { get; set; } = [];
 
     [Reactive] public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; set; } = ReactiveCommand.Create<NavigationInformation>(_ => { }, Observable.Return(true));
+    
+    [Reactive] public int RelativeOrder { get; set; } = 0;
 }

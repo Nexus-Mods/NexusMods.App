@@ -136,4 +136,40 @@ the following usecase of {DependencyName}
             .AddValue<int>("LineNumber")
         )
         .Finish();
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingProtontricksForRedMod = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 3))
+        .WithTitle("Missing 'Protontricks' dependency")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("Protontricks is required to install REDmods but is not present.")
+        .WithDetails("""
+Protontricks is required to install REDmods but is not present.
+
+Refer to the {ProtontricksUri} for installation instructions.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("ProtontricksUri")
+        )
+        .Finish();
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingRedModDependency = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 4))
+        .WithTitle("Missing 'REDmod' DLC")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("REDmod DLC is required to install REDmods but is not present.")
+        .WithDetails("""
+The {RedmodLink} is required to install REDmods but is not present in your game folder.
+
+Please install the {RedmodLink} and start the game at least once.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("RedmodLink")
+        )
+        .Finish();
 }

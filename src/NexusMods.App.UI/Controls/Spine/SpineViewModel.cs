@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Pages.Downloads;
-using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -240,15 +241,16 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
         var workspaceController = _windowManager.ActiveWorkspaceController;
-
+        
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
             () => new PageData
             {
-                FactoryId = LoadoutGridPageFactory.StaticId,
-                Context = new LoadoutGridContext
+                FactoryId = LoadoutPageFactory.StaticId,
+                Context = new LoadoutPageContext
                 {
-                    LoadoutId = loadoutId
+                    LoadoutId = loadoutId,
+                    GroupScope = Optional<LoadoutItemGroupId>.None,
                 }
             },
             () => new LoadoutContext
@@ -265,7 +267,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {
                 FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext()
+                Context = new InProgressPageContext(),
             }
         );
     }

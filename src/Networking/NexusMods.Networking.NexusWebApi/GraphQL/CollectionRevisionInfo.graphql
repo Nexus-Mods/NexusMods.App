@@ -1,0 +1,12 @@
+# Gets information about a collection revision.
+query CollectionRevisionInfo($slug: String!, $revision: Int!, $viewAdultContent: Boolean!)
+{
+    collectionRevision(slug: $slug, revision: $revision, viewAdultContent: $viewAdultContent)
+    {
+        id
+        assetsSizeBytes
+        revisionNumber
+        adultContent
+        totalSize
+    }
+}

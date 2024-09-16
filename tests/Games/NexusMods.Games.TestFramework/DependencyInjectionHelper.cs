@@ -8,9 +8,11 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.Generic;
 using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
@@ -59,7 +61,9 @@ public static class DependencyInjectionHelper
             .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
+            .AddNexusModsCollections()
             .AddCrossPlatform()
+            .AddGenericGameSupport()
             .AddActivityMonitor()
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()

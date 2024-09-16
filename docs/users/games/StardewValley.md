@@ -25,6 +25,9 @@ Diagnostics are shown in the following situations:
 - A mod is marked as obsolete or broken (according to SMAPI).
 - A mod is overwriting the game files (XNB mod).
 
+### Loadout-specific Config Files
+Settings files for mods (e.g. `config.json`) are saved as part of a Loadout. This allows for different combinations of settings to be used in each loadout. Copying a loadout will duplicate all existing settings whereas creating a new loadout will start with the defaults. See [Loadouts](../features/Loadouts.md). 
+
 ### Edit Config Files
 Easily edit mod config files in your loadout(s). When new config files are created after starting the game, the app will automatically assign them to mod they correspond to. To edit these settings select the mod in the "My Mods" view and click "View Mod Files" on the toolbar. Locate the config file (e.g. config.json) and click "Edit File" from the toolbar. Click save when finished editing, then apply the changes to your game. 
 

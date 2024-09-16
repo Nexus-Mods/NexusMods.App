@@ -276,7 +276,7 @@
 	<data name="ViewModInfoPage_Title" xml:space="preserve">
 		<value>Informacje moda</value>
 	</data>
-	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
+	<data name="LoadoutViewPageTitle" xml:space="preserve">
 		<value>Moje mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
@@ -443,7 +443,7 @@
 	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
 		<value>Kontrola kondycji</value>
 	</data>
-	<data name="FileOriginsPageTitle" xml:space="preserve">
+	<data name="LibraryPageTitle" xml:space="preserve">
 		<value>Biblioteka</value>
 	</data>
 	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">

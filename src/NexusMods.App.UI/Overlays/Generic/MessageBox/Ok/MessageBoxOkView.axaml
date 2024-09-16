@@ -1,0 +1,55 @@
+<reactiveUi:ReactiveUserControl
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Overlays.Generic.MessageBox.Ok.MessageBoxOkView"
+    x:TypeArguments="ok:IMessageBoxOkViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ok="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Ok"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="24">
+
+                <!-- Title -->
+                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
+
+                    <!-- 'Cross' button. -->
+                    <Button
+                        x:Name="CloseButton"
+                        DockPanel.Dock="Right"
+                        Classes="BareIcon WindowClose"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+
+                </DockPanel>
+
+                <!-- Message -->
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" />
+
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
+
+                <Button x:Name="OkButton"
+                        Classes="Standard Primary"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Ok}" />
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactiveUi:ReactiveUserControl>

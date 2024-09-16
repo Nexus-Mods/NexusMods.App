@@ -16,11 +16,6 @@ public static class Services
     public static IServiceCollection AddLibrary(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddSingleton<ILibraryService, LibraryService>()
-            .AddSingleton<AddLibraryFileJobWorker>()
-            .AddSingleton<AddLocalFileJobWorker>()
-            .AddSingleton<ExtractArchiveJobWorker>()
-            .AddSingleton<InstallLoadoutItemJobWorker>()
-            .AddSingleton<AddDownloadJobWorker>();
+            .AddSingleton<ILibraryService, LibraryService>();
     }
 }

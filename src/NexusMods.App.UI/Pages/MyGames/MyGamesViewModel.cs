@@ -13,7 +13,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -122,8 +122,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         {
             if (job.Status != JobStatus.Running) continue;
 
-            if (job is CreateLoadoutJob createLoadoutJob && createLoadoutJob.Installation.Equals(installation)) return createLoadoutJob;
-            if (job is UnmanageGameJob unmanageGameJob && unmanageGameJob.Installation.Equals(installation)) return unmanageGameJob;
+            if (job.Definition is CreateLoadoutJob createLoadoutJob && createLoadoutJob.Installation.Equals(installation)) return createLoadoutJob;
+            if (job.Definition is UnmanageGameJob unmanageGameJob && unmanageGameJob.Installation.Equals(installation)) return unmanageGameJob;
         }
 
         return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
@@ -159,10 +159,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     context => context.LoadoutId == loadoutId,
                     () => new PageData
                     {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext
+                        FactoryId = LoadoutPageFactory.StaticId,
+                        Context = new LoadoutPageContext
                         {
                             LoadoutId = loadoutId,
+                            GroupScope = Optional<LoadoutItemGroupId>.None,
                         },
                     },
                     () => new LoadoutContext

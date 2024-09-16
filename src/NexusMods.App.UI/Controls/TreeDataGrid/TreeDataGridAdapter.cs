@@ -11,8 +11,9 @@ namespace NexusMods.App.UI.Controls;
 /// <summary>
 /// Adapter class for working with <see cref="TreeDataGrid"/>.
 /// </summary>
-public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
-    where TModel : TreeDataGridItemModel<TModel>
+public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
+    where TModel : TreeDataGridItemModel<TModel, TKey>
+    where TKey : notnull
 {
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();
 
@@ -20,17 +21,17 @@ public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
 
-    public ObservableList<TModel> SelectedModels { get; private set; } = [];
+    public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
 
     private ObservableList<TModel> Roots { get; set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
-    private INotifyCollectionChangedSynchronizedView<TModel> RootsCollectionChangedView { get; }
+    private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
     protected TreeDataGridAdapter()
     {
-        RootsView = Roots.CreateView(static model => model);
+        RootsView = Roots.CreateView(static kv => kv);
         RootsCollectionChangedView = RootsView.ToNotifyCollectionChanged();
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
@@ -59,30 +60,47 @@ public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
 
             self.ViewHierarchical
                 .AsObservable()
-                .Select(self, static (viewHierarchical, self) =>
+                .Do(self, static (viewHierarchical, self) =>
                 {
                     self.Roots.Clear();
 
+                    // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
+                    self.SelectedModels.Clear();
+
+                    var (source, selectionObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
+
+                    self._selectionModelsSerialDisposable.Disposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
+                    {
+                        self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
+                        foreach (var item in eventArgs.DeselectedItems)
+                        {
+                            if (item is null) continue;
+                            item.IsSelected.Value = false;
+                        }
+
+                        self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
+                        foreach (var item in eventArgs.SelectedItems)
+                        {
+                            if (item is null) continue;
+                            item.IsSelected.Value = true;
+                        }
+                    });
+
+                    self.Source.Value = source;
+                })
+                .Select(self, static (viewHierarchical, self) =>
+                {
                     return self
                         .GetRootsObservable(viewHierarchical)
+                        .OnUI()
                         .DisposeMany()
                         .ToObservable()
-                        .ObserveOnUIThreadDispatcher()
-                        .Do(self, static (changeSet, self) => self.Roots.Clone(changeSet))
+                        .Do(self, static (changeSet, self) => self.Roots.ApplyChanges(changeSet))
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
                 })
                 .Switch()
-                .Select(self, static (viewHierarchical, self) => self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical))
-                .Subscribe(self, static (tuple, self) =>
-                {
-                    self._selectionModelsSerialDisposable.Disposable = tuple.selectionObservable.Subscribe(self, static (eventArgs, self) =>
-                    {
-                        self.SelectedModels.Remove(eventArgs.DeselectedItems.NotNull());
-                        self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
-                    });
-
-                    self.Source.Value = tuple.source;
-                }).AddTo(disposables);
+                .Subscribe()
+                .AddTo(disposables);
 
             Disposable.Create(self._selectionModelsSerialDisposable, static serialDisposable => serialDisposable.Disposable = null).AddTo(disposables);
         });
@@ -128,7 +146,7 @@ public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
     protected virtual void BeforeModelActivationHook(TModel model) {}
     protected virtual void BeforeModelDeactivationHook(TModel model) {}
 
-    protected abstract IObservable<IChangeSet<TModel>> GetRootsObservable(bool viewHierarchical);
+    protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);
 
     private bool _isDisposed;
@@ -138,7 +156,7 @@ public abstract class TreeDataGridAdapter<TModel> : ReactiveR3Object
         {
             if (disposing)
             {
-                Disposable.Dispose(_activationDisposable, RootsView, RootsCollectionChangedView, _selectionModelsSerialDisposable);
+                Disposable.Dispose(_activationDisposable, RootsView, RootsCollectionChangedView, _selectionModelsSerialDisposable, ModelActivationSubject);
             }
 
             Roots = null!;

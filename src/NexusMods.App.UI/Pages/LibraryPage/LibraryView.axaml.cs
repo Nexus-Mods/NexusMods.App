@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 
@@ -14,7 +15,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, LibraryItemModel>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, LibraryItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
@@ -28,6 +29,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             }
 
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.RemoveSelectedItemsCommand, view => view.RemoveModButton)
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.AddModButton)

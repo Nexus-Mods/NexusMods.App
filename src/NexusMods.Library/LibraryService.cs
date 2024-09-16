@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
@@ -5,8 +6,10 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -34,39 +37,26 @@ public sealed class LibraryService : ILibraryService
         _gcRunner = serviceProvider.GetRequiredService<IGarbageCollectorRunner>();
     }
 
-    public IJob AddDownload(IDownloadJob downloadJob)
+    public IJobTask<IAddDownloadJob, LibraryFile.ReadOnly> AddDownload(IJobTask<IDownloadJob, AbsolutePath> downloadJob)
     {
-        var job = new AddDownloadJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<AddDownloadJobWorker>())
-        {
-            DownloadJob = downloadJob,
-        };
-
-        return job;
+        return AddDownloadJob.Create(_serviceProvider, downloadJob);
     }
 
-    public IJob AddLocalFile(AbsolutePath absolutePath)
+    public IJobTask<IAddLocalFile, LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath)
     {
-        var group = new AddLocalFileJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<AddLocalFileJobWorker>())
-        {
-            Transaction = _connection.BeginTransaction(),
-            FilePath = absolutePath,
-        };
-
-        return group;
+        return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, ILibraryItemInstaller? itemInstaller = null)
+    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? itemInstaller = null)
     {
-        var loadout = Loadout.Load(_connection.Db, targetLoadout);
-        var job = new InstallLoadoutItemJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
+        if (!parent.HasValue)
         {
-            Connection = _connection,
-            LibraryItem = libraryItem,
-            Loadout = loadout,
-            Installer = itemInstaller,
-        };
+            if (!Loadout.Load(libraryItem.Db, targetLoadout).MutableCollections().TryGetFirst(out var userCollection))
+                throw new InvalidOperationException("Could not find the user collection for the target loadout");
+            parent = userCollection.AsLoadoutItemGroup().LoadoutItemGroupId;
+        }
 
-        return job;
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller);
     }
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {

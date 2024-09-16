@@ -4,12 +4,13 @@ using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.LoadoutCard;
-using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -105,10 +106,11 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                     context => context.LoadoutId == loadoutId,
                     () => new PageData
                     {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext
+                        FactoryId = LoadoutPageFactory.StaticId,
+                        Context = new LoadoutPageContext
                         {
                             LoadoutId = loadoutId,
+                            GroupScope = Optional<LoadoutItemGroupId>.None,
                         },
                     },
                     () => new LoadoutContext

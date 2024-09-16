@@ -9,8 +9,11 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
+
+    <!-- TODO: anymore work on this and it should be moved to a separate style file -->
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="OutlineWeak" BorderThickness="0 0 0 1" Padding="24 10">
@@ -21,18 +24,18 @@
                 </Style>
             </Border.Styles>
 
-            <StackPanel Orientation="Horizontal" Classes="Spacing-2">
+            <StackPanel Orientation="Horizontal" Classes="Spacing-2" MaxWidth="1000">
                 <Button Classes="Rounded Primary" x:Name="AllDiagnosticsButton">
-                    <TextBlock x:Name="AllDiagnosticsButtonText"/>
+                    <TextBlock x:Name="AllDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="CriticalDiagnosticsButton">
-                    <TextBlock x:Name="CriticalDiagnosticsButtonText"/>
+                    <TextBlock x:Name="CriticalDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="WarningDiagnosticsButton">
-                    <TextBlock x:Name="WarningDiagnosticsButtonText"/>
+                    <TextBlock x:Name="WarningDiagnosticsButtonText" />
                 </Button>
                 <Button Classes="Rounded Primary" x:Name="SuggestionDiagnosticsButton">
-                    <TextBlock x:Name="SuggestionDiagnosticsButtonText"/>
+                    <TextBlock x:Name="SuggestionDiagnosticsButtonText" />
                 </Button>
             </StackPanel>
         </Border>
@@ -45,22 +48,31 @@
 
             <controls:EmptyState.Styles>
                 <Style Selector="icons|UnifiedIcon#Icon">
-                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}"/>
+                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}" />
                 </Style>
             </controls:EmptyState.Styles>
 
-            <Border Padding="24">
-                <ItemsControl x:Name="ItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="{StaticResource Spacing-1}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </Border>
+            <ScrollViewer>
+                <Border Padding="24">
+                    <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" MaxWidth="1000" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <!-- Do not replace with ReactiveUI, the generated component and kills shadows
+                         due to enforced ClipToBounds that can't be overwritten by styles -->
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                </Border>
+            </ScrollViewer>
         </controls:EmptyState>
 
     </Grid>
 
 </reactive:ReactiveUserControl>
-

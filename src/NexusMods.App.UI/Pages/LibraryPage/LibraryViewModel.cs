@@ -1,14 +1,19 @@
 using System.Diagnostics;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -20,7 +25,6 @@ using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -31,14 +35,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public string EmptyLibrarySubtitleText { get; }
 
-    private Dictionary<LibraryItemModel, IDisposable> InstallCommandDisposables { get; set; } = new();
-    private Subject<LibraryItemId> InstallLibraryItemSubject { get; } = new();
-
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
 
     public ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
 
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
+
+    public ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
 
     public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
 
@@ -46,30 +49,51 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILibraryItemInstaller _advancedInstaller;
     private readonly Loadout.ReadOnly _loadout;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
+
+    private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
 
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         LoadoutId loadoutId) : base(windowManager)
     {
-        var ticker = Observable
-            .Interval(period: TimeSpan.FromSeconds(10), timeProvider: ObservableSystem.DefaultTimeProvider)
+        _serviceProvider = serviceProvider;
+        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var ticker = R3.Observable
+            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
+            .ObserveOnUIThreadDispatcher()
             .Select(_ => DateTime.Now)
             .Publish(initialValue: DateTime.Now);
 
-        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker);
+        var loadoutObservable = LoadoutSubject
+            .Where(static id => id.HasValue)
+            .Select(static id => id.Value)
+            .AsSystemObservable()
+            .Replay(bufferSize: 1);
+
+        var gameObservable = loadoutObservable
+            .Select(id => Loadout.Load(_connection.Db, id).InstallationInstance.Game)
+            .Replay(bufferSize: 1);
+
+        var libraryFilter = new LibraryFilter(
+            loadoutObservable: loadoutObservable,
+            gameObservable: gameObservable
+        );
+
+        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
+        LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
-        TabTitle = "Library (new)";
+        TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.ModLibrary;
-
-        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         ticker.Connect();
 
@@ -102,6 +126,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             configureAwait: false
         );
 
+        RemoveSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => RemoveSelectedItems(cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
+
         var canUseFilePicker = this.WhenAnyValue(vm => vm.StorageProvider)
             .ToObservable()
             .WhereNotNull()
@@ -115,7 +146,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var gameUri = new Uri($"https://www.nexusmods.com/{gameDomain}");
+        var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
 
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken),
@@ -125,63 +156,36 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
-            Adapter.Activate();
-            Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            disposables.Add(loadoutObservable.Connect());
+            disposables.Add(gameObservable.Connect());
 
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
 
-            Disposable.Create(this, static vm =>
-            {
-                foreach (var kv in vm.InstallCommandDisposables)
+            Adapter.Activate();
+            Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+
+            Adapter.MessageSubject.SubscribeAwait(
+                onNextAsync: async (message, cancellationToken) =>
                 {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                vm.InstallCommandDisposables.Clear();
-            }).AddTo(disposables);
-
-            Adapter.ModelActivationSubject
-                .Subscribe(this, static (tuple, vm) =>
-                {
-                    var (model, isActivated) = tuple;
-
-                    if (isActivated)
+                    foreach (var id in message.Ids)
                     {
-                        var disposable = model.InstallCommand.Subscribe(vm, static (libraryItemId, vm) => vm.InstallLibraryItemSubject.OnNext(libraryItemId));
-                        var didAdd = vm.InstallCommandDisposables.TryAdd(model, disposable);
-                        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+                        var libraryItem = LibraryItem.Load(_connection.Db, id);
+                        if (!libraryItem.IsValid()) continue;
+                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
                     }
-                    else
-                    {
-                        var didRemove = vm.InstallCommandDisposables.Remove(model, out var disposable);
-                        Debug.Assert(didRemove, "subscription for the model should exist");
-                        disposable?.Dispose();
-                    }
-                })
-                .AddTo(disposables);
-
-            InstallLibraryItemSubject
-                .Select(this, static (id, vm) => LibraryItem.Load(vm._connection.Db, id))
-                .Where(static item => item.IsValid())
-                .SubscribeAwait(
-                    onNextAsync: (libraryItem, cancellationToken) => InstallLibraryItem(libraryItem, _loadout, cancellationToken),
-                    awaitOperation: AwaitOperation.Parallel,
-                    configureAwait: false
-                ).AddTo(disposables);
+                },
+                awaitOperation: AwaitOperation.Parallel,
+                configureAwait: false
+            ).AddTo(disposables);
         });
     }
 
-    private async ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        // TODO: get correct IDs
         var db = _connection.Db;
-        var items = Adapter.SelectedModels
-            .Select(model => model.LibraryItemId)
-            .Where(x => x.HasValue)
-            .Select(x => x.Value)
-            .Distinct()
+        var items = ids
             .Select(id => LibraryItem.Load(db, id))
+            .Where(x => x.IsValid())
             .ToArray();
 
         await Parallel.ForAsync(
@@ -192,15 +196,33 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
     }
 
+    private LibraryItemId[] GetSelectedIds()
+    {
+        return Adapter.SelectedModels
+            .SelectMany(model => model.GetLoadoutItemIds())
+            .Distinct()
+            .ToArray();
+    }
+
+    private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
+    {
+        return InstallItems(GetSelectedIds(), useAdvancedInstaller, cancellationToken);
+    }
+
     private async ValueTask InstallLibraryItem(
         LibraryItem.ReadOnly libraryItem,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await using var job = _libraryService.InstallItem(libraryItem, loadout, useAdvancedInstaller ? _advancedInstaller : null);
-        await job.StartAsync(cancellationToken: cancellationToken);
-        await job.WaitToFinishAsync(cancellationToken: cancellationToken);
+        await _libraryService.InstallItem(libraryItem, loadout, installer: useAdvancedInstaller ? _advancedInstaller : null);
+    }
+
+    private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        var toRemove = GetSelectedIds().Select(id => LibraryItem.Load(db, id)).ToArray();
+        await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove, cancellationToken);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
@@ -231,43 +253,82 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             toExclusive: paths.Length,
             body: async (i, innerCancellationToken) =>
             {
-                await using var job = _libraryService.AddLocalFile(paths[i]);
-                await job.StartAsync(cancellationToken: innerCancellationToken);
-                await job.WaitToFinishAsync(cancellationToken: innerCancellationToken);
+                var path = paths[i];
+                await _libraryService.AddLocalFile(path);
             },
             cancellationToken: cancellationToken
         );
     }
 }
 
-public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>
+public readonly record struct InstallMessage(IReadOnlyCollection<LibraryItemId> Ids);
+
+public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, EntityId>,
+    ITreeDataGirdMessageAdapter<InstallMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly ConnectableObservable<DateTime> _ticker;
+    private readonly LibraryFilter _libraryFilter;
 
-    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker)
+    public Subject<InstallMessage> MessageSubject { get; } = new();
+    private readonly Dictionary<LibraryItemModel, IDisposable> _commandDisposables = new();
+
+    private readonly IDisposable _activationDisposable;
+    public LibraryTreeDataGridAdapter(
+        IServiceProvider serviceProvider,
+        ConnectableObservable<DateTime> ticker,
+        LibraryFilter libraryFilter)
     {
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
         _ticker = ticker;
+        _libraryFilter = libraryFilter;
+
+        _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
+        {
+            Disposable.Create(adapter._commandDisposables, static commandDisposables =>
+            {
+                foreach (var kv in commandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
+
+                commandDisposables.Clear();
+            }).AddTo(disposables);
+        });
     }
 
     protected override void BeforeModelActivationHook(LibraryItemModel model)
     {
         model.Ticker = _ticker;
+
+        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (ids, subject) =>
+        {
+            subject.OnNext(new InstallMessage(ids));
+        });
+
+        var didAdd = _commandDisposables.TryAdd(model, disposable);
+        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+
         base.BeforeModelActivationHook(model);
     }
 
     protected override void BeforeModelDeactivationHook(LibraryItemModel model)
     {
         model.Ticker = null;
+
+        var didRemove = _commandDisposables.Remove(model, out var disposable);
+        Debug.Assert(didRemove, "subscription for the model should exist");
+        disposable?.Dispose();
+
         base.BeforeModelDeactivationHook(model);
     }
 
-    protected override IObservable<IChangeSet<LibraryItemModel>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<LibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         var observables = viewHierarchical
-            ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems())
-            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems());
+            ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems(_libraryFilter))
+            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems(_libraryFilter));
 
         return observables.MergeChangeSets();
     }
@@ -285,5 +346,21 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel>
             LibraryItemModel.CreateInstalledAtColumn(),
             LibraryItemModel.CreateInstallColumn(),
         ];
+    }
+
+    private bool _isDisposed;
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                Disposable.Dispose(_activationDisposable, MessageSubject);
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
     }
 }

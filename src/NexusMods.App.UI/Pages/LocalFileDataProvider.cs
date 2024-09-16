@@ -1,5 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -8,7 +10,6 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Observable = System.Reactive.Linq.Observable;
@@ -26,118 +27,135 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel>> ObserveFlatLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we just get all LocalFiles
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .Transform(datom =>
+            .AsEntityIds()
+            .Transform((_, entityId) =>
             {
-                var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
-                return ToLibraryItemModel(libraryFile);
-            })
-            .RemoveKey();
+                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
+                return ToLibraryItemModel(libraryFile, libraryFilter);
+            });
     }
 
-    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile)
+    private LibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile, LibraryFilter libraryFilter)
     {
-        var linkedLoadoutItemsObservable = _connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-            .Transform(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
-            .RemoveKey();
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
 
-        return new LibraryItemModel
+        var model = new LibraryItemModel(libraryFile.Id)
         {
-            LibraryItemId = libraryFile.AsLibraryItem().LibraryItemId,
             Name = libraryFile.AsLibraryItem().Name,
-            CreatedAt = libraryFile.GetCreatedAt(),
-            Size = libraryFile.Size,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
+
+        model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
+        model.ItemSize.Value = libraryFile.Size.ToString();
+        return model;
     }
 
-    public IObservable<IChangeSet<LibraryItemModel>> ObserveNestedLibraryItems()
+    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the nested library view, design wanted to have a
         // parent for the LocalFile, we create a parent with one child that will
         // both be the same.
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .Transform(datom =>
+            .AsEntityIds()
+            .Transform((_, entityId) =>
             {
-                var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
+                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
 
                 var hasChildrenObservable = Observable.Return(true);
-                var childrenObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItemModel>([new Change<LibraryItemModel>(ListChangeReason.Add, ToLibraryItemModel(libraryFile))]));
+                var childrenObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItemModel, EntityId>([
+                    new Change<LibraryItemModel, EntityId>(
+                        reason: ChangeReason.Add,
+                        key: entityId,
+                        current: ToLibraryItemModel(libraryFile, libraryFilter)
+                    ),
+                ]));
 
-                var linkedLoadoutItemsObservable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryFile.Id)
-                    .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
-                    .RemoveKey();
+                var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
-                return new LibraryItemModel
+                // NOTE(erri120): LocalFiles have only one child, this can only be 0 or 1.
+                var numInstalledObservable = linkedLoadoutItemsObservable.IsEmpty().Select(isEmpty => isEmpty ? 0 : 1);
+
+                var model = new FakeParentLibraryItemModel(libraryFile.Id)
                 {
-                    LibraryItemId = libraryFile.AsLibraryItem().LibraryItemId,
                     Name = libraryFile.AsLibraryItem().Name,
-                    CreatedAt = libraryFile.GetCreatedAt(),
-                    Size = libraryFile.Size,
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
+                    NumInstalledObservable = numInstalledObservable,
+                    LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
-            })
-            .RemoveKey();
+
+                model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
+                model.ItemSize.Value = libraryFile.Size.ToString();
+                return (LibraryItemModel)model;
+            });
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel>> ObserveNestedLoadoutItems()
+    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
     {
         // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
         // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
         // back to the LocalFile
         return _connection
             .ObserveDatoms(LocalFile.PrimaryAttribute)
-            // TODO: observable filter
-            .Filter(datom => _connection.Db.Datoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E).Count > 0)
-            .Transform(datom =>
+            .AsEntityIds()
+            .FilterOnObservable((_, e) => _connection
+                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+                .AsEntityIds()
+                .FilterInStaticLoadout(_connection, loadoutFilter)
+                .IsNotEmpty()
+            )
+            .Transform((_, entityId) =>
             {
-                var libraryFile = LibraryFile.Load(_connection.Db, datom.E);
+                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
 
-                var observable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, datom.E)
-                    .Transform(d => LibraryLinkedLoadoutItem.Load(_connection.Db, d.E))
-                    .ChangeKey(static entity => entity.Id)
-                    .PublishWithFunc(() =>
+                // TODO: dispose
+                var cache = new SourceCache<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(static item => item.Id);
+                var disposable = _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
+                    .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
+                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
+                    .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
+                    .SubscribeWithErrorLogging();
+
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
+
+                var installedAtObservable = cache.Connect()
+                    .Transform(item => item.GetCreatedAt())
+                    .QueryWhenChanged(query =>
                     {
-                        var changeSet = new ChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>();
-                        var entities = LibraryLinkedLoadoutItem.FindByLibraryItem(_connection.Db, libraryFile.Id);
+                        if (query.Count == 0) return default(DateTime);
+                        return query.Items.Max();
+                    });
 
-                        foreach (var entity in entities)
+                var loadoutItemIdsObservable = cache.Connect().Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
+
+                var isEnabledObservable = cache.Connect()
+                    .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
+                    .QueryWhenChanged(query =>
+                    {
+                        var isEnabled = Optional<bool>.None;
+                        foreach (var isItemEnabled in query.Items)
                         {
-                            changeSet.Add(new Change<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entity.Id, entity));
+                            if (!isEnabled.HasValue)
+                            {
+                                isEnabled = isItemEnabled;
+                            }
+                            else
+                            {
+                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
+                            }
                         }
 
-                        return changeSet;
-                    })
-                    .AutoConnect();
-
-                var childrenObservable = observable
-                    .Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem))
-                    .RemoveKey();
-
-                var installedAtObservable = observable
-                    .Transform(item => item.GetCreatedAt())
-                    .RemoveKey()
-                    .QueryWhenChanged(collection => collection.FirstOrDefault());
-
-                var loadoutItemIdsObservable = observable
-                    .Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId)
-                    .RemoveKey();
-
-                var isEnabledObservable = observable
-                    .TransformOnObservable(item => LoadoutItem.Observe(_connection, item.Id))
-                    .Transform(item => !item.IsDisabled)
-                    .RemoveKey()
-                    .QueryWhenChanged(collection => collection.All(x => x));
+                        return isEnabled.HasValue ? isEnabled.Value : null;
+                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel
                 {
@@ -151,7 +169,6 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 };
 
                 return model;
-            })
-            .RemoveKey();
+            });
     }
 }

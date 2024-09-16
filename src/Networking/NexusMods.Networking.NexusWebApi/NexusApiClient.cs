@@ -17,6 +17,7 @@ public class NexusApiClient : INexusApiClient
     private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
+    private readonly NexusGraphQLClient _graphQLClient;
 
     /// <summary>
     /// Creates a <see cref="NexusApiClient"/> responsible for providing easy access to the Nexus API.
@@ -27,11 +28,12 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    This class is usually instantiated using the Microsoft DI Container.
     /// </remarks>
-    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient)
+    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient, NexusGraphQLClient graphQLClient)
     {
         _logger = logger;
         _factory = factory;
         _httpClient = httpClient;
+        _graphQLClient = graphQLClient;
     }
 
     /// <summary>
@@ -88,6 +90,7 @@ public class NexusApiClient : INexusApiClient
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
+
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
@@ -116,6 +119,17 @@ public class NexusApiClient : INexusApiClient
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
         return await SendAsyncArray<DownloadLink>(msg, token);
+    }
+
+    /// <summary>
+    /// Get the download links for a collection.
+    /// </summary>
+    public async Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision, bool viewAdultContent = true, CancellationToken token = default)
+    {
+        var linksLocation = await _graphQLClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
+        
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"https://api.nexusmods.com" +linksLocation.Data!.CollectionRevision.DownloadLink));
+        return await SendAsync<CollectionDownloadLinks>(msg, token);
     }
 
     /// <summary>
