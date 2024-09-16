@@ -20,7 +20,7 @@ We've included a very early implementation of the Collections feature in this re
 
 Collections will appear as a separate list of mods in the left menu. Users can view all mods in the loadout from the new "Installed Mods" option at the top of the left menu. 
 
-To start out, this will only be available to free users, but we are working on the free user journey separately and that will be available in a future release.
+To start out, this will only be available to Premium users, but we are working on the free user journey separately and that will be available in a future release.
 
 
 ### Cyberpunk 2077 Enhancements
