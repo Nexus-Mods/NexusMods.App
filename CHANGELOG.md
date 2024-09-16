@@ -14,17 +14,17 @@ The My Mods and Library pages have been completely reworked to use the new tree 
 ### EXPERIMENTAL - Collections
 **WARNING: The feature is unfinished and not considered stable. It will not accurately install complex collections and is currently only functional for Premium users.**
 
-We've included a very early implementation of the Collections feature in this release. It's incomplete and will not install collections are the user has set them up in Vortex. Currently, only mods from Nexus Mods can be installed - anything from external websites or bundled with the collection will not install as expected. 
+We've included a very early implementation of the Collections feature in this release. It's incomplete and will not install collections as the user has set them up in Vortex. Currently, only mods from Nexus Mods can be installed - anything from external websites or bundled with the collection will not install as expected. 
 
 ![A collection for Cyberpunk 2077 installed into a loadout.](./docs/changelog-assets/fd22c03e1b3b444797d997be044c8ec781692afd83f2e53b87a77fd42a370165.webp)
 
 Collections will appear as a separate list of mods in the left menu. Users can view all mods in the loadout from the new "Installed Mods" option at the top of the left menu. 
 
-To start out, this will only be available to Premium users, but we are working on the free user journey separately and that will be available in a future release.
+To start out, this will only be available to Premium users, but we are working on the free user journey separately and this will be available in a future release.
 
 
 ### Cyberpunk 2077 Enhancements
-As a further enhancement to support for Cyberpunk 2077, we will now detect if the REDmod DLC is missing and problem the user to install it if required. 
+As a further enhancement to support for Cyberpunk 2077, we will now detect if the REDmod DLC is missing and prompt the user to install it if required. 
 
 ![The diagnostic message for REDmod shown in the Health Check.](./docs/changelog-assets/2cb64fe333e1b494f89de774378b896e717e6de5329e5b55eb94b12ffcc4ea24.webp)
 
@@ -32,6 +32,7 @@ We've also fixed the issue which prevented REDmod from deploying automatically o
 
 ### Known Issues
 - Deleting mods or removing mods from a loadout intermittently doesn't update the UI correctly. 
+- Trying to install a collection with an unsupported type of mod (e.g. Bundled or External) will fail with no error message. This is not supported in the current build.
 - Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
 - Once a collection is added to the app, it cannot be removed from the left menu.
 - Collections allow users to modify the included mods but do not allow you to reset them to a the original state. 
