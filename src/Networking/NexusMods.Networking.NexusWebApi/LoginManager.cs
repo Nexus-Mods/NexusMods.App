@@ -135,7 +135,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         using var tx = _conn.BeginTransaction();
 
         var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken);
-        if (newTokenEntity is null)
+        if (!newTokenEntity.HasValue)
         {
             _logger.LogError("Invalid new token data");
             return;
