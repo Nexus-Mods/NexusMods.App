@@ -14,18 +14,20 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
-        <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
+        <Style Selector="Border#StatusBarBorder">
+            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight50}"></Setter>
+            
             <Style Selector="^ TextBlock">
-                <Setter Property="Margin" Value="24,0,0,0" />
+                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             </Style>
         </Style>
     </UserControl.Styles>
 
     <!-- Visual Tree -->
-    <Grid HorizontalAlignment="Stretch">
-
-        <TreeDataGrid Classes="TreeWhiteCaret"
+    <Grid HorizontalAlignment="Stretch" RowDefinitions="*, Auto">
+        
+        <TreeDataGrid Classes="Compact"
                       ShowColumnHeaders="True"
                       x:Name="ModFilesTreeDataGrid"
                       HorizontalAlignment="Stretch"
@@ -47,13 +49,14 @@
             </TreeDataGrid.Resources>
         </TreeDataGrid>
 
-        <Border Classes="Mid Rounded-b-lg"
+        <Border Classes="Rounded-b-lg"
                 VerticalAlignment="Bottom"
-                Padding="24, 8, 24, 8"
+                Padding="24, 0, 24, 0"
                 x:Name="StatusBarBorder"
-                Height="36">
+                Height="52"
+                Grid.Row="1">
             <ItemsControl x:Name="StatusBarItemsControl"
-                          VerticalAlignment="Center">
+                          VerticalAlignment="Stretch">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -63,13 +66,12 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="system:String">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" 
-                                       Text="{CompiledBinding}"
+                            <TextBlock Text="{CompiledBinding}"
                                        VerticalAlignment="Center"/>
                             <Border Classes="OutlineWeak" 
                                     BorderThickness="1,0,0,0" 
                                     Width="1"
-                                    Margin="8,0"/>
+                                    Margin="12,8"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
