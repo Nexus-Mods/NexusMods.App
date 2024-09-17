@@ -29,12 +29,11 @@ public static class DataStoreReferenceMarker
         // library item.
         MarkItemsUsedInLoadouts(archiveGc, loadoutFiles, db, isLoadoutValidDict);
 
-        // Loadouts will have items like 'Game Files', these do not have a corresponding
-        // library item.
-        MarkItemsUsedInLibrary(archiveGc, loadoutFiles, db, isLoadoutValidDict);
+        // Library will have all of our mods and other things installed from the outside.
+        MarkItemsUsedInLibrary(archiveGc, db);
     }
 
-    private static void MarkItemsUsedInLibrary<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, Entities<LoadoutFile.ReadOnly> loadoutFiles, IDb db, Dictionary<LoadoutId, bool> isLoadoutValidDict) where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash
+    private static void MarkItemsUsedInLibrary<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, IDb db) where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash
     {
         /*
             Note(sewer)
