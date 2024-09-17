@@ -23,8 +23,12 @@ public static class RunGarbageCollector
         DataStoreReferenceMarker.MarkUsedFiles(connection, gc);
         gc.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archive) =>
         {
-            NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, true, out var newArchivePath);
+            NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, false, out var newArchivePath);
             updater.UpdateNxFileStore(toRemove, archive.FilePath, newArchivePath);
+            // Delete original archive. We do this in a delayed fashion such that
+            // a power loss during the UpdateNxFileStore operation does not lead
+            // to an inconsistent state
+            archive.FilePath.Delete();
         });
     }
 }
