@@ -56,9 +56,8 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     
     // TODO: We are using Icon for both Spine and GameWidget and GameImage is unused. We should use GameImage for the GameWidget, but need to update all the games to have better images.
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.game_image.jpg");
-    
-    public override IStreamFactory GameImage => 
-        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.game_image.jpg");
+        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.icon.png");
 
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.icon.png");
 }
