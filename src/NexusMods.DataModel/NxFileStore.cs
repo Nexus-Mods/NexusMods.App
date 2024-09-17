@@ -78,7 +78,7 @@ public class NxFileStore : IFileStore
         var streams = new List<Stream>();
         foreach (var backup in distinct)
         {
-            if (await IsDuplicate(deduplicate, backup))
+            if (deduplicate && await HaveFile(backup.Hash))
                 continue;
             
             var stream = await backup.StreamFactory.GetStreamAsync();
@@ -109,24 +109,6 @@ public class NxFileStore : IFileStore
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
         await UpdateIndexes(unpacker, finalPath);
-    }
-
-    private async Task<bool> IsDuplicate(bool deduplicate, ArchivedFileEntry backup)
-    {
-        // Extra sanity test for debug builds, else take hot path since
-        // this is supposed to be a speedy-ish API.
-        #if DEBUG
-        var haveFile = await HaveFile(backup.Hash);
-        if (!haveFile) 
-            return false;
-
-        if (!deduplicate)
-            throw new Exception("Writing duplicate but deduplicate is disabled. This is a bug.");
-        
-        return true;
-        #else
-        return deduplicate && await HaveFile(backup.Hash);
-        #endif
     }
 
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
