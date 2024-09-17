@@ -59,7 +59,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
         var newArchivePath = RepackArchive(collector, out var toDelete);
 
         // Act: Update the offsets in the file store.
-        _updater.UpdateNxFileStore(toDelete, default(AbsolutePath), newArchivePath);
+        _updater.UpdateNxFileStore(toDelete, archivePath, newArchivePath);
 
         // Assert
         var streamProvider = new FromAbsolutePathProvider
