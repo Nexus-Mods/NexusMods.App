@@ -218,6 +218,14 @@ If we now delete `dummy-1`; the error should have a 50-50 chance of reproducing;
 depending on order archives are processed. There is a risk retracting the item in the
 DataStore will retract the item in the wrong archive/container.
 
+!!! note "There is some RNG involved."
+
+    Reproduction is non-determinstic, due to nature of data.
+    Bigger archives with duplicates are more likely to yield errors.
+
+    So you can replace `dummy-1` with `SMAPI 4` and `dummy-2` with `SMAPI 3` 
+    for a more reliable reproduction.
+
 ## Core Code Design
 
 !!! abstract "The main modular 'core' of the GC lives as `ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper>`"
