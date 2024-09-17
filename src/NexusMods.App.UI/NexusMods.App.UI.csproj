@@ -635,6 +635,9 @@
           <DependentUpon>MessageBoxOkView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Pages\LibraryPage\Collections\CollectionCardDesignViewModel.cs">
+          <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -3,7 +3,9 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -11,6 +13,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
+using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -70,58 +73,61 @@ public class NexusModsLibrary
     /// <summary>
     /// Get or add a collection metadata
     /// </summary>
-    public async Task<NexusModsCollectionMetadata.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, CancellationToken token)
+    public async Task<Collection.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, bool referesh = false, CancellationToken token = default)
     {
-        var collections = NexusModsCollectionMetadata.FindBySlug(_connection.Db, slug);
-        if (collections.TryGetFirst(x => x.Slug == slug, out var collection)) 
-            return collection;
+        if (!referesh)
+        {
+            var collections = Collection.FindBySlug(_connection.Db, slug);
+            if (collections.TryGetFirst(x => x.Slug == slug, out var collection))
+                return collection;
+        }
 
         var info = await _gqlClient.CollectionInfo.ExecuteAsync(slug.Value, true, token);
+
+        var collectionInfo = info.Data!.Collection;
         
         using var tx = _connection.BeginTransaction();
-        var newCollection = new NexusModsCollectionMetadata.New(tx)
-        {
-            Slug = slug,
-            Name = info.Data!.Collection.Name,
-        };
+        var db = _connection.Db;
+        var collectionResolver = GraphQLResolver.Create(db, tx, Collection.Slug, slug);
+        collectionResolver.Add(Collection.Name, collectionInfo.Name);
+        collectionResolver.Add(Collection.Summary, collectionInfo.Summary);
+        collectionResolver.Add(Collection.Endorsements, (ulong)collectionInfo.Endorsements);
 
-        foreach (var revision in info.Data!.Collection.Revisions)
+        // Remap the user info
+        var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)collectionInfo.User.MemberId);
+        userResolver.Add(User.Name, collectionInfo.User.Name);
+        userResolver.Add(User.Avatar, new Uri(collectionInfo.User.Avatar));
+        
+        collectionResolver.Add(Collection.User, userResolver.Id);
+        
+        foreach (var revision in collectionInfo.Revisions)
         {
-            _ = new NexusModsCollectionRevision.New(tx)
-            {
-                CollectionId = newCollection,
-                RevisionId = RevisionId.From((ulong)revision.Id),
-                RevisionNumber = RevisionNumber.From((ulong)revision.RevisionNumber),
-            };
+            var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevision.RevisionId, RevisionId.From((ulong)revision.Id));
+            revisionResolver.Add(CollectionRevision.RevisionId, RevisionId.From((ulong)revision.Id));
+            revisionResolver.Add(CollectionRevision.RevisionNumber, RevisionNumber.From((ulong)revision.RevisionNumber));
+            revisionResolver.Add(CollectionRevision.CollectionId, collectionResolver.Id);
+            revisionResolver.Add(CollectionRevision.Downloads, (ulong)revision.TotalDownloads);
+            revisionResolver.Add(CollectionRevision.TotalSize, Size.From(ulong.Parse(revision.TotalSize)));
+            revisionResolver.Add(CollectionRevision.OverallRating, float.Parse(revision.OverallRating ?? "0.0"));
+            revisionResolver.Add(CollectionRevision.TotalRatings, (ulong)(revision.OverallRatingCount ?? 0));
         }
         
         var txResults = await tx.Commit();
 
-        return txResults.Remap(newCollection);
+        return Collection.Load(txResults.Db, txResults[collectionResolver.Id]);
     }
     
     /// <summary>
     /// Get or add a collection metadata
     /// </summary>
-    public async Task<NexusModsCollectionRevision.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
+    public async Task<CollectionRevision.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
     {
-        var collections = await GetOrAddCollectionMetadata(slug, token);
-        if (collections.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
+        var collection = await GetOrAddCollectionMetadata(slug, false, token);
+        if (collection.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
             return revision;
         
-        var revisionInfo = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(slug.Value, (int)revisionNumber.Value, true, token);
-        
-        using var tx = _connection.BeginTransaction();
-        var newRevision = new NexusModsCollectionRevision.New(tx)
-        {
-            CollectionId = collections,
-            RevisionNumber = revisionNumber,
-            RevisionId = RevisionId.From((ulong)revisionInfo.Data!.CollectionRevision.Id),
-        };
-        
-        var txResults = await tx.Commit();
-        
-        return txResults.Remap(newRevision);
+        collection = await GetOrAddCollectionMetadata(slug, true, token);
+        return collection.Revisions.First(r => r.RevisionNumber == revisionNumber);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(

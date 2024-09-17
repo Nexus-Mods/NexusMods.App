@@ -1,0 +1,42 @@
+<reactiveUi:ReactiveUserControl 
+    x:TypeArguments="collections:ICollectionCardViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
+    x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
+    <Design.DataContext>
+        <collections:CollectionCardDesignViewModel/>
+    </Design.DataContext>
+    <Border Width="508" Height="288" CornerRadius="4">
+        <panels:FlexPanel x:Name="CardCollection" Direction="Column">
+            <panels:FlexPanel x:Name="Container" Margin="12, 12, 0, 12">
+                <Image x:Name="TileImage" Width="144" Height="180" Margin="12,0"/>
+                <panels:FlexPanel Height="180">
+                    <panels:FlexPanel Direction="Column">
+                        <TextBlock x:Name="TitleText"/>
+                        <TextBlock x:Name="CategoryText"/>
+                        <TextBlock x:Name="SummaryText" />
+                    </panels:FlexPanel>
+                </panels:FlexPanel>
+            </panels:FlexPanel>
+            <panels:FlexPanel x:Name="Stats" Height="44">
+                <TextBlock x:Name="ModCount" />
+                <TextBlock x:Name="Endorsements" />
+                <TextBlock x:Name="Downloads" />
+                <TextBlock x:Name="TotalSize" />
+                <TextBlock x:Name="OverallRating" />
+            </panels:FlexPanel>
+            <panels:FlexPanel x:Name="ActionFooter" Height="52">
+                <panels:FlexPanel>
+                    <Button Content="Download"></Button>
+                </panels:FlexPanel>
+            </panels:FlexPanel>
+        </panels:FlexPanel>
+    </Border>
+</reactiveUi:ReactiveUserControl>
+

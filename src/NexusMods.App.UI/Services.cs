@@ -46,6 +46,7 @@ using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
@@ -96,6 +97,8 @@ public static class Services
             .AddTransient(typeof(DataGridViewModelColumn<,>))
             .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
+            
+            .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
@@ -127,6 +130,7 @@ public static class Services
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
 
             // Views
+            .AddView<CollectionCardView, ICollectionCardViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
