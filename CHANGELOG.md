@@ -9,14 +9,14 @@ This release adds a very basic implementation of downloading Collections, update
 ### New UI for My Mods and Library
 The My Mods and Library pages have been completely reworked to use the new tree view. Mods are now grouped by the mod page on Nexus Mods, meaning if download several files from the same page they will be grouped together. A "Switch View" option has been added to the toolbar to toggle these groupings on or off. We are continuing to work towards to designs shown in the previous changelog.
 
-![An image showing mods in the Library nested by mod page (left) or ungrouped (right)](./docs/changelog-assets/6c19b8d75d09172e1a1913effc472a467939bc35cadb83bad75aad4ab9d37d7f.webp)
+![An image showing mods in the Library nested by mod page (left) or ungrouped (right)](./docs/changelog-assets/823627a8ccb068dc1559d62cd3326ebe.webp)
 
 ### EXPERIMENTAL - Collections
 **WARNING: The feature is unfinished and not considered stable. It will not accurately install complex collections and is currently only functional for Premium users.**
 
 We've included a very early implementation of the Collections feature in this release. It's incomplete and will not install collections as the user has set them up in Vortex. Currently, only mods from Nexus Mods can be installed - anything from external websites or bundled with the collection will not install as expected. 
 
-![A collection for Cyberpunk 2077 installed into a loadout.](./docs/changelog-assets/fd22c03e1b3b444797d997be044c8ec781692afd83f2e53b87a77fd42a370165.webp)
+![A collection for Cyberpunk 2077 installed into a loadout.](./docs/changelog-assets/8a591449d6a8cddc5d2bad7d1fd5c849.webp)
 
 Collections will appear as a separate list of mods in the left menu. Users can view all mods in the loadout from the new "Installed Mods" option at the top of the left menu. 
 
@@ -26,7 +26,7 @@ To start out, this will only be available to Premium users, but we are working o
 ### Cyberpunk 2077 Enhancements
 As a further enhancement to support for Cyberpunk 2077, we will now detect if the REDmod DLC is missing and prompt the user to install it if required. 
 
-![The diagnostic message for REDmod shown in the Health Check.](./docs/changelog-assets/2cb64fe333e1b494f89de774378b896e717e6de5329e5b55eb94b12ffcc4ea24.webp)
+![The diagnostic message for REDmod shown in the Health Check.](./docs/changelog-assets/531dc13e8116620f8ded4a8a98b281da.webp)
 
 We've also fixed the issue which prevented REDmod from deploying automatically on Linux. This work also sets up a framework for running Windows apps and tools on a Linux system using [Protontricks](https://github.com/Matoking/protontricks) ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
 
