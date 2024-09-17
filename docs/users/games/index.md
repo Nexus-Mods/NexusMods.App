@@ -6,7 +6,10 @@ The following games are currently supported. Click on the game icon to learn mor
 <img src="https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Games/NexusMods.Games.StardewValley/Resources/icon.png?raw=true" style="max-width:150px" title="Stardew Valley" alt="Stardew Valley">
 </a>
 <a href="./Cyberpunk2077">
-<img src="https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Games/NexusMods.Games.RedEngine/Resources/Cyberpunk2077/icon.png?raw=true" style="max-width:150px" title="Stardew Valley" alt="Stardew Valley">
+<img src="https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Games/NexusMods.Games.RedEngine/Resources/Cyberpunk2077/icon.png?raw=true" style="max-width:150px" title="Cyberpunk 2077" alt="Cyberpunk 2077">
+</a>
+<a href="./BaldursGate3">
+<img src="../../images/GamePlaceholder.webp" style="max-width:150px" title="Baldur's Gate 3" alt="Baldur's Gate 3">
 </a>
 
 
