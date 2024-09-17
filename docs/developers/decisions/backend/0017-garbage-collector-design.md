@@ -191,7 +191,7 @@ To understand the dangers involved, let's try reproducing the bug.
 
 !!! note "The bug is fixed today."
 
-    Today, the 'bug' is fixed as of commit ( TODO and TODO ) , however prior to it;
+    Today, the 'bug' is fixed as of commit ( `34de799623cf9688e6c3dcabca7fe029426583ed` ) , however prior to it;
     the bug could be reproduced in the way listed below.
 
 We will make an assumption that we have an un-patched GC and faulty code that
