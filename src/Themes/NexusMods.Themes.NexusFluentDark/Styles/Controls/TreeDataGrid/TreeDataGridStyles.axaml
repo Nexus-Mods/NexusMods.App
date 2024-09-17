@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
@@ -18,8 +18,8 @@
         <!-- if we have this control theme here, we can override styles properly -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
             <Setter Property="Margin" Value="0" />
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Template">
                 <ControlTemplate>
@@ -27,7 +27,8 @@
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            CornerRadius="{StaticResource Rounded}">
                         <!-- swapped out Path so we can use our UnifiedIcon -->
                         <icons:UnifiedIcon x:Name="ChevronIcon"
                                            Value="{x:Static icons:IconValues.ChevronRight}"
@@ -38,6 +39,17 @@
             <Style Selector="^:checked /template/ icons|UnifiedIcon#ChevronIcon">
                 <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronDown}" />
             </Style>
+            
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ Border">
+                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                </Style>  
+            
+                <Style Selector="^ /template/ icons|UnifiedIcon#ChevronIcon">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                </Style>    
+            </Style>
+            
         </ControlTheme>
     </Styles.Resources>
 
@@ -49,7 +61,6 @@
         <Setter Property="BorderThickness" Value="0" />
 
         <Style Selector="^ TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         </Style>
 
@@ -58,8 +69,31 @@
             <Setter Property="Height" Value="36" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
+        
+        <!-- NOTE (insomnious): I think it makes sense to go with 'Compact' class at the parent TreeDataGrid level
+        so that we can keep the styles here in a single place to change what we need --> 
+        
+        <Style Selector="^.Compact">
+            <Style Selector="^ TreeDataGridRow">
+                <Setter Property="Height" Value="32"></Setter>
+                <Style Selector="^ ToggleButton">
+                    <Setter Property="Width" Value="20"></Setter>
+                    <Setter Property="Height" Value="20"></Setter>
+                    <Style Selector="^ /template/ icons|UnifiedIcon#ChevronIcon">
+                        <Setter Property="Size" Value="20"></Setter>
+                    </Style>
+                </Style>
+        </Style>
+        </Style>
     </Style>
 
+    <!-- No backgrounds for the advanced installer TreeDataGrid's -->
+
+    <Style Selector="TreeDataGrid#SelectTreeDataGrid, 
+        TreeDataGrid#ModContentTreeDataGrid, 
+        TreeDataGrid#LocationPreviewTreeDataGrid">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
 
     <!-- TreeDataGridColumnHeader -->
 
@@ -194,6 +228,10 @@
         <!-- all cells -->
         <Style Selector="^ :is(TreeDataGridCell)">
             <Setter Property="Padding" Value="8,0" />
+            
+            <Style Selector="^ Border#CellBorder > TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            </Style>
         </Style>
 
         <!-- first cell  -->
@@ -265,6 +303,14 @@
         </Style>
 
     </Style>
+    
+    <!-- TreeDataGridExpanderCell -->
+
+    <Style Selector="TreeDataGridTemplateCell">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter > TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
+    </Style>
 
 
     <!-- TreeDataGridExpanderCell -->
@@ -300,7 +346,7 @@
 
                         <DockPanel>
                             <Border DockPanel.Dock="Left"
-                                    Margin="0"
+                                    Margin="0">
                                     Width="20" Height="20">
                                 <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
                                               Focusable="False"
