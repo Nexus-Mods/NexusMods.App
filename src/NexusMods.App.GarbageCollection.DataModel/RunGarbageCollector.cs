@@ -24,7 +24,7 @@ public static class RunGarbageCollector
         gc.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archive) =>
         {
             NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, true, out var newArchivePath);
-            updater.UpdateNxFileStore(toRemove, newArchivePath);
+            updater.UpdateNxFileStore(toRemove, archive.FilePath, newArchivePath);
         });
     }
 }

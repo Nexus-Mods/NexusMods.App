@@ -174,6 +174,58 @@ However, if [`NxFileStore`][nx-file-store] is actively extracting a file from an
 the GC should not delete the source `.nx` archive, a lock must be placed to prevent
 that edge case from happening.
 
+#### Edge Case: Duplicate Items
+
+!!! danger "Sometimes we may have a duplicate item in two distinct `.nx` archives."
+
+Sometimes developers may make an error while working on the App and not put the correct
+safety procedures (i.e. taking a write lock) to ensure that no duplicates are created
+within the Nx Archives.
+
+This is dangerous, because there are two sources of truth
+for where a given hash is stored, *the archives* and [*the DataStore*](#updating-the-datastore).  
+
+##### Reproduction
+
+To understand the dangers involved, let's try reproducing the bug.
+
+!!! note "The bug is fixed today."
+
+    Today, the 'bug' is fixed as of commit ( `34de799623cf9688e6c3dcabca7fe029426583ed` ) , however prior to it;
+    the bug could be reproduced in the way listed below.
+
+We will make an assumption that we have an un-patched GC and faulty code that
+creates duplicates.
+
+Create 2 archives:
+
+- dummy-1 (zip)
+- dummy-2 (zip)
+
+Inside `dummy-1`, add 1 file.
+Inside `dummy-2`, add the file from `dummy-1`, and an additional file.
+
+Add the `dummy-1` and `dummy-2` archives from disk in the following order:
+
+- dummy-1
+- dummy-2
+
+Adding `dummy-2` creates a duplicate file due to an error by the programmer,
+the `DataStore` entry for the duplicate hash will be re-routed to `dummy-2` when
+it previously pointed to `dummy-1`.
+
+If we now delete `dummy-1`; the error should have a 50-50 chance of reproducing;
+depending on order archives are processed. There is a risk retracting the item in the
+DataStore will retract the item in the wrong archive/container.
+
+!!! note "There is some RNG involved."
+
+    Reproduction is non-determinstic, due to nature of data.
+    Bigger archives with duplicates are more likely to yield errors.
+
+    So you can replace `dummy-1` with `SMAPI 4` and `dummy-2` with `SMAPI 3` 
+    for a more reliable reproduction.
+
 ## Core Code Design
 
 !!! abstract "The main modular 'core' of the GC lives as `ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper>`"
