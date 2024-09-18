@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.GameLocators;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
@@ -13,6 +14,8 @@ namespace NexusMods.Games.Larian.BaldursGate3;
 
 public class BaldursGate3 : AGame, ISteamGame, IGogGame
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IOSInformation _osInformation;
     public override string Name => "Baldur's Gate 3";
     
     public IEnumerable<uint> SteamIds => [1086940u];
@@ -23,7 +26,10 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
+        _serviceProvider = provider;
+        _osInformation = provider.GetRequiredService<IOSInformation>();
     }
+
     public override GamePath GetPrimaryFile(GameStore store)
     {
         if (_osInformation.IsOSX)
