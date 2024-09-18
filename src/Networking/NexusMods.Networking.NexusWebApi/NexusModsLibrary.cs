@@ -24,13 +24,15 @@ public class NexusModsLibrary
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
     private readonly NexusGraphQLClient _gqlClient;
-    
+    private readonly HttpClient _httpClient;
+
     /// <summary>
     /// Constructor.
     /// </summary>
     public NexusModsLibrary(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
         _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
@@ -85,6 +87,8 @@ public class NexusModsLibrary
         var info = await _gqlClient.CollectionInfo.ExecuteAsync(slug.Value, true, token);
 
         var collectionInfo = info.Data!.Collection;
+        var collectionTileImage = _httpClient.GetByteArrayAsync(new Uri(collectionInfo.TileImage!.ThumbnailUrl), token);
+        var avatarImage = _httpClient.GetByteArrayAsync(new Uri(collectionInfo.User.Avatar), token);
         
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
@@ -92,14 +96,17 @@ public class NexusModsLibrary
         collectionResolver.Add(Collection.Name, collectionInfo.Name);
         collectionResolver.Add(Collection.Summary, collectionInfo.Summary);
         collectionResolver.Add(Collection.Endorsements, (ulong)collectionInfo.Endorsements);
+        collectionResolver.Add(Collection.TileImage, await collectionTileImage);
 
         // Remap the user info
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)collectionInfo.User.MemberId);
         userResolver.Add(User.Name, collectionInfo.User.Name);
         userResolver.Add(User.Avatar, new Uri(collectionInfo.User.Avatar));
+        userResolver.Add(User.AvatarImage, await avatarImage);
         
         collectionResolver.Add(Collection.User, userResolver.Id);
         
+        // Remap the revisions
         foreach (var revision in collectionInfo.Revisions)
         {
             var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevision.RevisionId, RevisionId.From((ulong)revision.Id));
@@ -110,6 +117,14 @@ public class NexusModsLibrary
             revisionResolver.Add(CollectionRevision.TotalSize, Size.From(ulong.Parse(revision.TotalSize)));
             revisionResolver.Add(CollectionRevision.OverallRating, float.Parse(revision.OverallRating ?? "0.0"));
             revisionResolver.Add(CollectionRevision.TotalRatings, (ulong)(revision.OverallRatingCount ?? 0));
+            revisionResolver.Add(CollectionRevision.ModCount, (ulong)revision.ModCount);
+        }
+
+        foreach (var tag in collectionInfo.Tags)
+        {
+            var categoryResolver = GraphQLResolver.Create(db, tx, CollectionTag.NexusId, ulong.Parse(tag.Id));
+            categoryResolver.Add(CollectionTag.Name, tag.Name);
+            collectionResolver.Add(Collection.Tags, categoryResolver.Id);
         }
         
         var txResults = await tx.Commit();

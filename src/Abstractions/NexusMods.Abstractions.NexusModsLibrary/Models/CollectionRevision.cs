@@ -46,4 +46,9 @@ public partial class CollectionRevision : IModelDefinition
     /// The total number of ratings this revision has.
     /// </summary>
     public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings));
+    
+    /// <summary>
+    /// The total number of mods in this revision.
+    /// </summary>
+    public static readonly ULongAttribute ModCount = new(Namespace, nameof(ModCount));
 }

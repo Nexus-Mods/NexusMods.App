@@ -7,6 +7,13 @@ query CollectionInfo($slug: String!, $viewAdultContent: Boolean!)
         name
         summary
         endorsements
+        tileImage {
+            thumbnailUrl(size: small)
+        }
+        tags {
+            name
+            id
+        }
         revisions
         {
             id
@@ -17,6 +24,7 @@ query CollectionInfo($slug: String!, $viewAdultContent: Boolean!)
             totalSize
             overallRating
             overallRatingCount
+            modCount
         }
         user {
             name

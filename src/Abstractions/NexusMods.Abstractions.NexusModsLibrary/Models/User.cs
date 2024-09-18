@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -25,4 +26,9 @@ public partial class User : IModelDefinition
     /// The user's avatar URL.
     /// </summary>
     public static readonly UriAttribute Avatar = new(Namespace, nameof(Avatar));
+    
+    /// <summary>
+    /// The user's avatar image.
+    /// </summary>
+    public static readonly MemoryAttribute AvatarImage = new(Namespace, nameof(AvatarImage));
 }

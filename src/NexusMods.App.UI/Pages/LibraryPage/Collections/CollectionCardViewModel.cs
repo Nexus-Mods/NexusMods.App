@@ -1,4 +1,5 @@
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -20,14 +21,14 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     }
 
     public string Name => _collection.Name;
-    public Bitmap Image => throw new NotImplementedException();
+    public Bitmap Image => new(new MemoryStream(_collection.TileImage.ToArray()));
     public string Summary => _collection.Summary;
-    public string Category => "TODO";
-    public int ModCount => -1;
+    public string Category => string.Join(" ", _collection.Tags.Select(t => t.Name));
+    public int ModCount => (int)_revision.ModCount;
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong DownloadCount => _revision.Downloads;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.User.Name;
-    public Bitmap AuthorAvatar => throw new NotImplementedException();
+    public Bitmap AuthorAvatar => new(new MemoryStream(_collection.User.AvatarImage.ToArray()));
 }

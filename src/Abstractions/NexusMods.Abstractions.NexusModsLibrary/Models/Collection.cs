@@ -46,4 +46,9 @@ public partial class Collection : IModelDefinition
     /// The number of endorsements the collection has.
     /// </summary>
     public static readonly ULongAttribute Endorsements = new(Namespace, nameof(Endorsements));
+    
+    /// <summary>
+    /// The collections' image.
+    /// </summary>
+    public static readonly MemoryAttribute TileImage = new(Namespace, nameof(TileImage));
 }
