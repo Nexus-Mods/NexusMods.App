@@ -34,10 +34,11 @@
             <icons:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
-            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"
-                       Text="Example-file.bsa"
-                       x:Name="FileNameTextBlock" />
+            <TextBlock   Theme="{StaticResource BodyMDNormalTheme}"
+                         VerticalAlignment="Center"
+                         TextTrimming="CharacterEllipsis"
+                         Text="Example-file.bsa"
+                         x:Name="FileNameTextBlock" />
         </StackPanel>
 
         <!-- Right Elements -->
