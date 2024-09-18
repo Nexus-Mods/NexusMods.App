@@ -31,6 +31,12 @@
             <Style Selector="TextBlock#FileNameTextBlock">
                 <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
+            
+            <Style Selector="TextBox#CreateFolderNameTextBox">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="4,2" />
+            </Style>
+            
         </Grid.Styles>
 
         <!-- Left Elements -->
@@ -59,12 +65,12 @@
                            x:Name="FileNameTextBlock" />
 
                 <!-- Create Folder Name Input Field -->
-                <TextBox Theme="{StaticResource BodyMDNormalTheme}"
+                <TextBox 
                          VerticalAlignment="Center"
                          Text="" 
                          IsVisible="False"
                          x:Name="CreateFolderNameTextBox"
-                         Height="24"/>
+                         MinHeight="24"/>
             </StackPanel>
         </Grid>
 
