@@ -17,6 +17,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     private const string DesktopFile = $"{ApplicationId}.desktop";
     private const string DesktopFileResourceName = $"NexusMods.CrossPlatform.{DesktopFile}";
     private const string ExecutablePathPlaceholder = "${INSTALL_EXEC}";
+    private const string ExecutableWorkingDirPlaceholder = "${WORKING_DIRECTORY}";
 
     private readonly ILogger _logger;
     private readonly IProcessFactory _processFactory;
@@ -108,7 +109,9 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
 
         var text = await sr.ReadToEndAsync(cancellationToken);
-        text = text.Replace(ExecutablePathPlaceholder, EscapeWhitespaceForCli(_osInterop.GetOwnExe()));
+        var elfPath = _osInterop.GetOwnExe();
+        text = text.Replace(ExecutablePathPlaceholder, EscapeWhitespaceForCli(elfPath));
+        text = text.Replace(ExecutableWorkingDirPlaceholder, EscapeWhitespaceForCli(elfPath.Parent));
 
         await filePath.WriteAllTextAsync(text, cancellationToken);
     }
