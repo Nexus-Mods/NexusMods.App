@@ -206,6 +206,7 @@ public static class Services
             .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
 
             .AddView<LibraryView, ILibraryViewModel>()
+            .AddView<CollectionsView, ICollectionsViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
             // workspace system
@@ -240,6 +241,7 @@ public static class Services
             .AddSingleton<IPageFactory, ItemContentsFileTreePageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
+            .AddSingleton<IPageFactory, CollectionsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
