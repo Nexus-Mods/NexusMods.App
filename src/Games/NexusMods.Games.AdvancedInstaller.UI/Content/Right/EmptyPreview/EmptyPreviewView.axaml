@@ -22,9 +22,10 @@
         </Border.Styles>
 
         <ScrollViewer>
-            <TextBlock Classes="BodyMDNormal ForegroundSubdued"
-                       Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
-                       x:Name="EmptyPreviewTextBlock" />
+            <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                Classes="ForegroundSubdued"
+                Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
+                x:Name="EmptyPreviewTextBlock" />
         </ScrollViewer>
     </Border>
 

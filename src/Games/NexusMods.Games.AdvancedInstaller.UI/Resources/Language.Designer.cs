@@ -69,7 +69,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All folders.
+        ///   Looks up a localized string similar to ALL FOLDERS.
         /// </summary>
         public static string AllFoldersAreaHeaderText_ALL_FOLDERS {
             get {
@@ -186,7 +186,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New.
+        ///   Looks up a localized string similar to NEW.
         /// </summary>
         public static string NewFilePill_NEW {
             get {
@@ -204,7 +204,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dupe folder.
+        ///   Looks up a localized string similar to DUPE FOLDER.
         /// </summary>
         public static string Pill_DUPE_FOLDER {
             get {
@@ -213,7 +213,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Folder merged.
+        ///   Looks up a localized string similar to FOLDER MERGED.
         /// </summary>
         public static string Pill_FOLDER_MERGED {
             get {
@@ -222,7 +222,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install location preview.
+        ///   Looks up a localized string similar to INSTALL LOCATION PREVIEW.
         /// </summary>
         public static string PreviewHeader_INSTALL_LOCATION_PREVIEW {
             get {
@@ -267,7 +267,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select install location.
+        ///   Looks up a localized string similar to SELECT INSTALL LOCATION.
         /// </summary>
         public static string SelectLocationHeaderText_SELECT_INSTALL_LOCATION {
             get {
@@ -303,7 +303,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Suggested.
+        ///   Looks up a localized string similar to SUGGESTED.
         /// </summary>
         public static string SuggestedHeaderText_SUGGESTED {
             get {

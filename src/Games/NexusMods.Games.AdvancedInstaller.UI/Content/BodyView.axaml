@@ -45,11 +45,12 @@
         <Border Grid.Row="0" x:Name="TitleContainerBorder">
             <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Orientation="Vertical">
                 <!-- Mod Name -->
-                <TextBlock Classes="TitleMDSemi" x:Name="ModNameTextBlock" Text="TEMP MOD NAME" />
+                <TextBlock Classes="HeadingSMSemi" x:Name="ModNameTextBlock" Text="TEMP MOD NAME" />
 
                 <!-- Installer Name -->
                 <TextBlock Classes="HeadingMDSemi" x:Name="InstallerNameTextBlock"
-                           Text="{x:Static resources:Language.InstallerNameText}" />
+                           Text="{x:Static resources:Language.InstallerNameText}" 
+                           IsVisible="False"/>
 
                 <!-- 'Please Select Files' -->
                 <TextBlock Classes="BodyLGNormal" x:Name="SubHeadingTextBlock"

@@ -50,7 +50,7 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         if (Headless) return new NotSupported();
 
         var tree = LibraryArchiveTree.Create(libraryArchive);
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(Language.AdvancedInstaller_Manual_Mod, tree, loadout);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(loadoutGroup.GetLoadoutItem(transaction).Name, tree, loadout);
 
         if (!shouldInstall) return new NotSupported();
 

@@ -72,12 +72,13 @@
                     <Border Grid.Row="1">
                         <StackPanel Orientation="Vertical">
 
-                            <TextBlock Classes="TitleMDSemi ModNameTitle" Text="TEMP MOD NAME"
+                            <TextBlock Classes="HeadingMDSemi ModNameTitle" Text="TEMP MOD NAME"
                                        x:Name="ModNameTextBlock" />
 
                             <TextBlock Classes="HeadingMDSemi MessageTitle"
                                        Text="{x:Static resources:Language.UnsupportedTitleTextBlock_This_mod_is_not_supported}"
-                                       x:Name="UnsupportedTitleTextBlock" />
+                                       x:Name="UnsupportedTitleTextBlock" 
+                                       IsVisible="False"/>
 
                             <TextBlock Classes="BodyLGNormal DescriptionText" TextWrapping="Wrap"
                                        Text="{x:Static resources:Language.UnsupportedDescriptionTextBlock_This_mod_is_structured}"

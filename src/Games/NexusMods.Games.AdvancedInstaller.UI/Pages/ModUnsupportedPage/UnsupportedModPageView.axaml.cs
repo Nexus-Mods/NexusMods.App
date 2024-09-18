@@ -15,7 +15,7 @@ public partial class UnsupportedModPageView : ReactiveUserControl<IUnsupportedMo
         {
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
-                .Do(vm => ModNameTextBlock.Text = vm.ModName.ToUpper())
+                .Do(vm => ModNameTextBlock.Text = vm.ModName)
                 .Subscribe()
                 .DisposeWith(d);
 

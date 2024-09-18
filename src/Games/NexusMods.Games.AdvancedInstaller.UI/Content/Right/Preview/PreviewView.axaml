@@ -18,7 +18,7 @@
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
-
+        
             <Style Selector="TextBlock#InstallLocationPreviewSubHeading">
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
@@ -27,17 +27,18 @@
         <Grid RowDefinitions="Auto *">
             <Border Grid.Row="0" Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Classes="TitleSMSemi"
+                    <TextBlock Theme="{StaticResource TitleSMSemiTheme}"
                                Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATION_PREVIEW}" />
 
-                    <TextBlock Classes="BodySMNormal ForegroundSubdued SubHeading"
+                    <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                               Classes="ForegroundSubdued SubHeading"
                                Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
                                x:Name="InstallLocationPreviewSubHeading" />
                 </StackPanel>
             </Border>
 
             <!-- Don't remove this width, it's a hack around https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221 -->
-            <TreeDataGrid Grid.Row="1" Classes="TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid" 
+            <TreeDataGrid Grid.Row="1" Classes="Compact" x:Name="LocationPreviewTreeDataGrid" 
                           ShowColumnHeaders="False" Width="1" />
         </Grid>
     </Border>

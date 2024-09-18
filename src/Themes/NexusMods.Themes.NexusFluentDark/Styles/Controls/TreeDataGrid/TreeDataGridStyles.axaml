@@ -1,7 +1,8 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI">
 
     <Styles.Resources>
         <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="{StaticResource SurfaceTranslucentMid}" Opacity="1" />
@@ -48,7 +49,7 @@
                 <Style Selector="^ /template/ icons|UnifiedIcon#ChevronIcon">
                     <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 </Style>    
-            </Style>
+            </Style>  
             
         </ControlTheme>
     </Styles.Resources>
@@ -83,12 +84,12 @@
                         <Setter Property="Size" Value="20"></Setter>
                     </Style>
                 </Style>
-        </Style>
+            </Style>
         </Style>
     </Style>
 
     <!-- No backgrounds for the advanced installer TreeDataGrid's -->
-
+    
     <Style Selector="TreeDataGrid#SelectTreeDataGrid, 
         TreeDataGrid#ModContentTreeDataGrid, 
         TreeDataGrid#LocationPreviewTreeDataGrid">
@@ -238,15 +239,20 @@
         <Style Selector="^ :is(TreeDataGridCell):nth-child(1)">
             <Setter Property="Padding" Value="12,0,0,0" />
             
-            <!-- Except for first column -->
             <Style Selector="^ Border#CellBorder > TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+            
+            <Style Selector="^ files|FileTreeNodeView /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
         </Style>
 
         <!-- last cell -->
-        <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1)">
+        <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1):not(:nth-child(1))">
+            
             <Setter Property="Padding" Value="8,0,26,0" />
+            
             <Style Selector="^ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="HorizontalContentAlignment" Value="Right" />
                 
@@ -347,7 +353,6 @@
                         <DockPanel>
                             <Border DockPanel.Dock="Left"
                                     Margin="0">
-                                    Width="20" Height="20">
                                 <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
                                               Focusable="False"
                                               IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
@@ -365,6 +370,12 @@
         <Style Selector="^ Border#CellBorder :is(TreeDataGridCell)">
             <!-- This goes from after the expander to the end of the cell, but parent cell padding is also applied. -->
             <Setter Property="Padding" Value="4,0,0,0" />
+        </Style>
+    </Style>
+    
+    <Style Selector="TreeDataGrid#ModFilesTreeDataGrid">
+        <Style Selector="^ icons|UnifiedIcon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
         </Style>
     </Style>
 
