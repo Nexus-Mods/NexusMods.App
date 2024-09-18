@@ -50,7 +50,7 @@ jobs:
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
       RetentionDays: 1
       BuildAppImage: true
-      BuildArchive: false
+      BuildArchive: true
 
   build-windows:
     if: github.event.pull_request.draft == false
