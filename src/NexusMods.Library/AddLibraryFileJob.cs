@@ -45,8 +45,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
             throw new Exception($"File '{FilePath}' does not exist.");
         
         var topFile = await AnalyzeOne(context, FilePath);
-        
-        await FileStore.BackupFiles(ToArchive, context.CancellationToken);
+        await FileStore.BackupFiles(ToArchive, deduplicate: false, context.CancellationToken);
         return topFile;
     }
 
@@ -87,7 +86,8 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         else
         {
             var size = filePath.FileInfo.Size;
-            ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
+            if (!await FileStore.HaveFile(hash))
+                ToArchive.Add(new ArchivedFileEntry(new NativeFileStreamFactory(filePath), hash, size)); 
         }
 
         return libraryFile;
