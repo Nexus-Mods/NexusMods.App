@@ -3,6 +3,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+      <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
     </ItemGroup>
 
     <ItemGroup>

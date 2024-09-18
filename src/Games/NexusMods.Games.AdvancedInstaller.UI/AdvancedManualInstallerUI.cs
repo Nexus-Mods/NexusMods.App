@@ -48,7 +48,6 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         CancellationToken cancellationToken)
     {
         if (Headless) return new NotSupported();
-
         var tree = LibraryArchiveTree.Create(libraryArchive);
         var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(Language.AdvancedInstaller_Manual_Mod, tree, loadout);
 
