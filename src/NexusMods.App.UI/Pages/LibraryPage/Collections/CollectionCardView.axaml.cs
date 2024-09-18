@@ -52,6 +52,14 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                 this.WhenAnyValue(view => view.ViewModel!.OverallRating)
                     .BindTo(this, view => view.OverallRating.Text)
                     .DisposeWith(d);
+
+                this.WhenAnyValue(view => view.ViewModel!.AuthorName)
+                    .BindTo(this, view => view.AuthorName.Text)
+                    .DisposeWith(d);
+
+                this.WhenAnyValue(view => view.ViewModel!.AuthorAvatar)
+                    .BindTo(this, view => view.AuthorAvatarImage.Source)
+                    .DisposeWith(d);
             }
         );
     }
