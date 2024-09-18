@@ -26,7 +26,8 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     }
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        // TODO: Check linux and osx paths, linux should be the same, osx is unknown
+        if (_osInformation.IsOSX)
+            return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
         return new GamePath(LocationId.Game, "bin/bg3.exe");
     }
 
