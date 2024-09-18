@@ -15,7 +15,7 @@
 
     <UserControl.Styles>
         <Style Selector="Border#StatusBarBorder">
-            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight50}"></Setter>
+            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight50}"/>
             
             <Style Selector="^ TextBlock">
                 <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
@@ -40,7 +40,13 @@
                     <files:FileTreeNodeView DataContext="{CompiledBinding}" />
                 </DataTemplate>
                 <DataTemplate x:Key="FileStateColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
-                    <TextBlock Text="{CompiledBinding FormattedChangeState}" VerticalAlignment="Center" >
+                    
+                    <TextBlock x:Name="ModFilesStateTextBlock" 
+                               Text="{CompiledBinding FormattedChangeState}"
+                               VerticalAlignment="Center" 
+                               Classes.ForegroundSuccessStrong="{CompiledBinding IsChangeAdded}"
+                               Classes.ForegroundInfoStrong="{CompiledBinding IsChangeModified}"
+                               Classes.ForegroundDangerStrong="{CompiledBinding IsChangeRemoved}">
                         <ToolTip.Tip>
                             <TextBlock Text="{CompiledBinding FormattedChangeStateToolTip}" />
                         </ToolTip.Tip>
