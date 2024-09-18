@@ -12,11 +12,11 @@
         <preview:PreviewViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg Mid" Padding="16">
+    <Border Classes="Rounded-lg Mid" Padding="16" BorderThickness="2">
         <Border.Styles>
             <Style Selector="Border.HeaderAreaBorder">
-                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
+                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
             </Style>
         
             <Style Selector="TextBlock#InstallLocationPreviewSubHeading">
