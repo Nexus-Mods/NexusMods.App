@@ -34,7 +34,7 @@ public partial class CollectionRevision : IModelDefinition
     public static readonly ULongAttribute Downloads = new(Namespace, nameof(Downloads));
     
     /// <summary>
-    /// Total size of all files in this revision, including the size of the revision's files.
+    /// Total download size of all files in this revision, including the size of the revision's files.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
     
