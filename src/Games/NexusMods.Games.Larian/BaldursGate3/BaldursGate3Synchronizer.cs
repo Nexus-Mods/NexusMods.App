@@ -10,6 +10,7 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
     private readonly BaldursGate3Settings _settings;
     
     private static GamePath GameFolder => new(LocationId.Game, "");
+    private static GamePath DataFolder => new(LocationId.Game, "Data");
     private static GamePath PublicPlayerProfiles => new(LocationId.From("PlayerProfiles"), "");
     
     private static GamePath ModSettingsFile => new(LocationId.From("PlayerProfiles"), "modsettings.lsx");
@@ -24,7 +25,11 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
     public override bool IsIgnoredPath(GamePath path)
     {
         // Always ignore all PlayerProfile files except the modsettings file.
-        return path.InFolder(PublicPlayerProfiles) && path.Path != ModSettingsFile.Path;
+        if (path.InFolder(PublicPlayerProfiles))
+            return path.Path != ModSettingsFile.Path;
+        if (path.InFolder(DataFolder))
+            return true;
+        return false;
     }
     
     public override bool IsIgnoredBackupPath(GamePath path)
