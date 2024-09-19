@@ -258,6 +258,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Medi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian", "src\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj", "{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian.Tests", "tests\Games\NexusMods.Games.Larian.Tests\NexusMods.Games.Larian.Tests.csproj", "{425F7A13-99A2-4231-B0C1-C56EB819C174}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -668,6 +670,10 @@ Global
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425F7A13-99A2-4231-B0C1-C56EB819C174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425F7A13-99A2-4231-B0C1-C56EB819C174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425F7A13-99A2-4231-B0C1-C56EB819C174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425F7A13-99A2-4231-B0C1-C56EB819C174}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -787,6 +793,7 @@ Global
 		{8C817874-7A88-450E-B216-851A1B03684C} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{5CB6D02C-07D0-4C0D-BF5C-4E2E958A0612} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
+		{425F7A13-99A2-4231-B0C1-C56EB819C174} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
