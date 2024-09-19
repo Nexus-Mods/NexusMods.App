@@ -285,9 +285,9 @@
             <Setter Property="ZIndex" Value="100" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
 
-            <Style Selector="^ Border#RowBorder">
-                <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
-            </Style>
+            <!-- <Style Selector="^ Border#RowBorder"> -->
+            <!--     <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" /> -->
+            <!-- </Style> -->
         </Style>
 
         <!-- Child rows styling -->
