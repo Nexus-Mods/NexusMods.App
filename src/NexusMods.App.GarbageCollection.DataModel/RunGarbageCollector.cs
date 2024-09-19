@@ -42,6 +42,10 @@ public static class RunGarbageCollector
         //         prevent this from happening if possible.
         //
         //         This is why we release `store.Lock()` early.
+        
+        // NOTE:   In theory UpdateNxFileStore can call GC back again. This is unlikely to happen
+        //         however for the time being; because we only run GC when deleting a library item
+        //         or loadout. No callback should do that. Long term we want to prevent re-entrancy.
         var updater = new NxFileStoreUpdater(connection);
         foreach (var entry in toUpdateInDataStore)
         {
