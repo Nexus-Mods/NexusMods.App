@@ -89,7 +89,6 @@
                         <StackPanel Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
                             <!-- Header: 'ALL FOLDERS' -->
                             <TextBlock Theme="{StaticResource TitleXSSemiTheme}"
-                                       Classes="TitleXSSemi"
                                        Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}" />
                             <!-- Description: 'Select from full folder structure' -->
                             <TextBlock Theme="{StaticResource BodySMNormalTheme}"
