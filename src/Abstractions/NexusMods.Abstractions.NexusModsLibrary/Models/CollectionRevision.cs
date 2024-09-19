@@ -6,7 +6,8 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
 /// <summary>
-/// Metadata about a collection on Nexus Mods.
+/// Metadata about a collection revision on Nexus Mods. A revision references a collection, but is itself immutable.
+/// Each change to a collection is expressed as a separate revision.
 /// </summary>
 public partial class CollectionRevision : IModelDefinition
 {
@@ -33,7 +34,7 @@ public partial class CollectionRevision : IModelDefinition
     public static readonly ULongAttribute Downloads = new(Namespace, nameof(Downloads));
     
     /// <summary>
-    /// Total size of the revision
+    /// Total size of all files in this revision, including the size of the revision's files.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
     
