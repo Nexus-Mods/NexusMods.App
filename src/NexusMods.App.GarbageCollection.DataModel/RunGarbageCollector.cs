@@ -20,6 +20,7 @@ public static class RunGarbageCollector
     /// <param name="connection">The MneumonicDB <see cref="IConnection"/> to the DataModel.</param>
     public static void Do(Span<ConfigurablePath> archiveLocations, IFileStore store, IConnection connection)
     {
+        // See 'SAFETY' comment below for explanation of 'gcLock'
         using var gcLock = _gcLock.WriteLock();
         var toUpdateInDataStore = new List<ToUpdateInDataStoreEntry>();
 
@@ -35,6 +36,12 @@ public static class RunGarbageCollector
             });
         }
 
+        // SAFETY: Updating the FileStore interacts with external non-GC components,
+        //         such as MnemonicDB. This may cause us to yield to external code
+        //         that could touch the FileStore lock. To avoid deadlocks, we should
+        //         prevent this from happening if possible.
+        //
+        //         This is why we release `store.Lock()` early.
         var updater = new NxFileStoreUpdater(connection);
         foreach (var entry in toUpdateInDataStore)
         {
@@ -44,7 +51,6 @@ public static class RunGarbageCollector
             // to an inconsistent state
             entry.OldFilePath.Delete();
         }
-        
     }
 
     private record struct ToUpdateInDataStoreEntry(List<Hash> ToRemove, AbsolutePath OldFilePath, AbsolutePath NewFilePath);
