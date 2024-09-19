@@ -67,7 +67,7 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
     {
         var hasAnyFiles = backups.Any();
         if (hasAnyFiles == false)
@@ -76,9 +76,11 @@ public class NxFileStore : IFileStore
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
-        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         foreach (var backup in distinct)
         {
+            if (deduplicate && await HaveFile(backup.Hash))
+                continue;
+            
             var stream = await backup.StreamFactory.GetStreamAsync();
             streams.Add(stream);
             builder.AddFile(stream, new AddFileParams
@@ -87,6 +89,7 @@ public class NxFileStore : IFileStore
             });
         }
 
+        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         var guid = Guid.NewGuid();
         var id = guid.ToString();
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);

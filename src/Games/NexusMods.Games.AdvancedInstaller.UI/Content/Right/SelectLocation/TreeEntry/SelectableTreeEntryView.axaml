@@ -31,13 +31,19 @@
             <Style Selector="TextBlock#FileNameTextBlock">
                 <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
+            
+            <Style Selector="TextBox#CreateFolderNameTextBox">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="4,2" />
+            </Style>
+            
         </Grid.Styles>
 
         <!-- Left Elements -->
         <Grid Grid.Column="0" ColumnDefinitions="*">
 
             <!-- Create Folder Button -->
-            <Button Classes="Rounded Primary" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
+            <Button Classes="Standard Tertiary Weak" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="Plus" x:Name="CreateFolderPlusIcon" />
                     <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}" />
@@ -51,17 +57,20 @@
                 <icons:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
 
                 <!-- File Name -->
-                <TextBlock Classes="BodyMDNormal"
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
                            VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"
-                           Text="Example-file.bsa" IsVisible="False"
+                           Text="Example-file.bsa" 
+                           IsVisible="False"
                            x:Name="FileNameTextBlock" />
 
                 <!-- Create Folder Name Input Field -->
-                <TextBox Classes="BodyMDNormal"
+                <TextBox 
                          VerticalAlignment="Center"
-                         Text="" IsVisible="False"
-                         x:Name="CreateFolderNameTextBox" />
+                         Text="" 
+                         IsVisible="False"
+                         x:Name="CreateFolderNameTextBox"
+                         MinHeight="24"/>
             </StackPanel>
         </Grid>
 
@@ -69,8 +78,8 @@
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
 
             <!-- Delete Created Folder Button -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="DeleteCreatedFolderButton">
+            <Button Classes="Standard Tertiary Weak RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="DeleteCreatedFolderButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
                     <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}" />
@@ -78,24 +87,24 @@
             </Button>
 
             <!-- Select Button -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="SelectRoundedButton">
+            <Button Classes="Standard Secondary RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectRoundedButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SelectButton_Select}" />
                 </StackPanel>
             </Button>
 
             <!-- Cancel Create Folder Button -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="CancelCreateFolderButton">
+            <Button Classes="Standard Tertiary Weak RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="CancelCreateFolderButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.CancelCreateFolderButton_Cancel}" />
                 </StackPanel>
             </Button>
 
             <!-- Save Created Folder Button -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="SaveCreatedFolderButton">
+            <Button Classes="Standard Tertiary Weak RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SaveCreatedFolderButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SaveCreatedFolderButton_Save}" />
                 </StackPanel>

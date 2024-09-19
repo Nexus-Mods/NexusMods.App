@@ -47,9 +47,6 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
         {
             EntryIcon.Classes.Add("FolderOutline");
 
-            // Make directory name bold.
-            FileNameTextBlock.Classes.Remove("BodyMDNormal");
-            FileNameTextBlock.Classes.Add("BodyMDBold");
         }
         else
         {

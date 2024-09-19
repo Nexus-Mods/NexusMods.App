@@ -2,12 +2,10 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
-using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
@@ -17,7 +15,6 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -28,7 +25,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private readonly SourceList<ILeftMenuItemViewModel> _items = new();
-    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _finalCollection = new(new ObservableCollection<ILeftMenuItemViewModel>());
+    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _finalCollection = new([]);
+    
+    private readonly SourceList<ILeftMenuItemViewModel> _collectionGroupItems = new();
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items => _finalCollection;
     public WorkspaceId WorkspaceId { get; }
@@ -44,18 +43,36 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
-        var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId);
-        var game = loadout.InstallationInstance.Game;
-
-        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
+        
+        
+        var installedModsItem = new IconViewModel
+        {
+            Name = Language.LoadoutView_Title_Installed_Mods,
+            RelativeOrder = 1,
+            Icon = IconValues.Mods,
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext
+                    {
+                        LoadoutId = loadoutContext.LoadoutId,
+                        GroupScope = Optional<LoadoutItemGroupId>.None,
+                    },
+                };
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }),
+        };
+
         
         var libraryItem = new IconViewModel
         {
             Name = Language.LibraryPageTitle,
-            RelativeOrder = 1,
+            RelativeOrder = 3,
             Icon = IconValues.ModLibrary,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -78,7 +95,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var diagnosticItem = new IconViewModel
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
-            RelativeOrder = 2,
+            RelativeOrder = 4,
             Icon = IconValues.Stethoscope,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
@@ -95,10 +112,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
+        
 
 
         var tools = new ILeftMenuItemViewModel[]
         {
+            installedModsItem,
             libraryItem,
             diagnosticItem,
         };
@@ -107,13 +126,14 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         
         this.WhenActivated(disposable =>
         {
+            _collectionGroupItems.Clear();
             CollectionGroup.ObserveAll(conn)
                 .Filter(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
                 .SortBy(itm => itm.IsReadOnly)
                 .Transform(itm => MakeLoadoutItemGroupViewModel(workspaceController, itm, serviceProvider))
                 .Subscribe(s =>
                 {
-                    _items.Edit(x => {
+                    _collectionGroupItems.Edit(x => {
                         foreach (var change in s)
                         {
                             if (change.Reason == ChangeReason.Add)
@@ -131,6 +151,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .DisposeWith(disposable);
 
             _items.Connect()
+                .Merge(_collectionGroupItems.Connect())
                 .Sort(new LeftMenuComparer())
                 .Bind(out _finalCollection)
                 .Subscribe()
@@ -178,6 +199,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             CollectionGroupId = itm.CollectionGroupId,
             Name = itm.AsLoadoutItemGroup().AsLoadoutItem().Name,
             Icon = IconValues.Collections,
+            RelativeOrder = 2,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData
@@ -212,8 +234,6 @@ file class LeftMenuComparer : IComparer<ILeftMenuItemViewModel>
         return (x, y) switch
         {
             (LeftMenuCollectionViewModel a, LeftMenuCollectionViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            (LeftMenuCollectionViewModel _, IconViewModel _) => -1,
-            (IconViewModel _, LeftMenuCollectionViewModel _) => 1,
             (IconViewModel a, IconViewModel b) => a.RelativeOrder.CompareTo(b.RelativeOrder),
             _ => 0,
         };

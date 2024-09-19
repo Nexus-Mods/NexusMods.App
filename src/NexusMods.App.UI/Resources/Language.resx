@@ -280,7 +280,7 @@
         <value>Home</value>
     </data>
     <data name="LoadoutViewPageTitle" xml:space="preserve">
-        <value>My Mods</value>
+        <value>Installed Mods</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
         <value>Downloads</value>
@@ -579,7 +579,7 @@
         <value>button in the toolbar</value>
     </data>
     <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-        <value>Add your downloaded mods from the</value>
+        <value>Install your downloaded mods from the</value>
     </data>
     <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
         <value>No mods added to {0}</value>
@@ -674,5 +674,8 @@
     </data>
     <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
         <value>Delete Loadout</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Installed Mods</value>
     </data>
 </root>

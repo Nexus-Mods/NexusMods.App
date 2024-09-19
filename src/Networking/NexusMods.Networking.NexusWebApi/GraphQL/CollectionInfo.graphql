@@ -6,16 +6,30 @@ query CollectionInfo($slug: String!, $viewAdultContent: Boolean!)
     {
         name
         summary
+        endorsements
+        tileImage {
+            thumbnailUrl(size: small)
+        }
+        tags {
+            name
+            id
+        }
         revisions
         {
             id
+            totalDownloads
             assetsSizeBytes
             revisionNumber
             adultContent
             totalSize
+            overallRating
+            overallRatingCount
+            modCount
         }
         user {
             name
+            avatar
+            memberId
         }
     }
 }
