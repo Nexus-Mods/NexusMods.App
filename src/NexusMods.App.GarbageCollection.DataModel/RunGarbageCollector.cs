@@ -12,7 +12,7 @@ namespace NexusMods.App.GarbageCollection.DataModel;
 /// </summary>
 public static class RunGarbageCollector
 {
-    private static AsyncFriendlyReaderWriterLock _gcLock = new();
+    private static readonly AsyncFriendlyReaderWriterLock _gcLock = new();
     
     /// <summary/>
     /// <param name="archiveLocations">The archive locations, usually obtained from 'DataModelSettings'.</param>
