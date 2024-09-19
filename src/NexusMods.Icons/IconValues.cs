@@ -51,9 +51,13 @@ namespace NexusMods.Icons;
 
 public static class IconValues
 {
+
 #region Action
     // https://pictogrammers.com/library/mdi/icon/code-tags/
     public static readonly IconValue Code = new ProjektankerIcon("mdi-code-tags");
+    
+    // https://pictogrammers.com/library/mdi/icon/check/
+    public static readonly IconValue Check = new ProjektankerIcon("mdi-check");
 
     // https://pictogrammers.com/library/mdi/icon/check-circle/
     public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
@@ -236,6 +240,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/gamepad-square/
     public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square");
+    
+    // https://pictogrammers.com/library/mdi/icon/database/
+    public static readonly IconValue Disk = new ProjektankerIcon("mdi-database");
 
 #endregion
 

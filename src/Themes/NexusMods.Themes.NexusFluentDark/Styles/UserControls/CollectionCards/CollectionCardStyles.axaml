@@ -1,0 +1,190 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:element="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Classes="Transparent" Width="600" Height="380">
+            <panels:FlexPanel
+                ColumnSpacing="8"
+                Wrap="Wrap"
+                RowSpacing="8"
+                Margin="30">
+                <panels:FlexPanel.Resources>
+                    <collections:CollectionCardDesignViewModel x:Key="LoadoutCardDesignViewModel" />
+                </panels:FlexPanel.Resources>
+                <collections:CollectionCardView DataContext="{StaticResource LoadoutCardDesignViewModel}" />
+            </panels:FlexPanel>
+        </Border>
+
+    </Design.PreviewWith>
+
+    <Style Selector="collections|CollectionCardView">
+        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Width" Value="508" />
+        <Setter Property="Height" Value="288" />
+
+        <!-- top row -->
+        <Style Selector="^ panels|FlexPanel#CardCollection">
+            <Setter Property="Direction" Value="Column" />
+
+            <Style Selector="^ Border#ContainerBorder">
+                <Setter Property="Padding" Value="12, 12, 12, 0" />
+
+                <Style Selector="^ panels|FlexPanel#Container">
+                    <Setter Property="AlignItems" Value="FlexStart" />
+                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                    <Setter Property="Direction" Value="Row" />
+
+                    <!-- left column -->
+                    <Style Selector="^ Border#TileImageBorder">
+                        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                        <Setter Property="ClipToBounds" Value="True" />
+                        <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
+                        <Setter Property="Width" Value="144" />
+                        <Setter Property="Height" Value="180" />
+                        <Style Selector="^ Image#TileImage">
+                            <Setter Property="Width" Value="144" />
+                            <Setter Property="Height" Value="180" />
+                        </Style>
+                    </Style>
+
+                    <!-- right column -->
+                    <Style Selector="^ panels|FlexPanel#TitleContainer">
+                        <!-- <Setter Property="Background" Value="DarkBlue" /> -->
+                        <Setter Property="Direction" Value="Column" />
+                        <Setter Property="AlignItems" Value="Stretch" />
+
+                        <Style Selector="^ TextBlock#TitleText">
+                            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                            <Setter Property="Padding" Value="12, 0, 0, 8" />
+                        </Style>
+
+                        <Style Selector="^ Border#CategoryTextBorder">
+                            <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+                            <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
+                            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                            <Setter Property="Padding" Value="12, 8, 0, 8" />
+
+                            <Style Selector="^ panels|FlexPanel#CategoryTextWrapper">
+                                <!-- <Setter Property="Background" Value="DarkBlue" /> -->
+                                <Setter Property="Direction" Value="Row" />
+                                <Setter Property="ColumnSpacing" Value="6" />
+                                <Setter Property="panels:Flex.AlignSelf" Value="Center" />
+
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                        
+                        <Style Selector="^ TextBlock#SummaryText">
+                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                            <Setter Property="Padding" Value="12, 4, 0, 4" />
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                        </Style>
+                    </Style>
+
+                    
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- middle row -->
+        <Style Selector="^ Border#StatsBorder">
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="12" />
+
+            <Style Selector="^ panels|FlexPanel#Stats">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="ColumnSpacing" Value="12" />
+
+                <Style Selector="^ panels|FlexPanel">
+                    <Setter Property="AlignItems" Value="Center" />
+                    <Setter Property="Direction" Value="Row" />
+                    <Setter Property="ColumnSpacing" Value="4" />
+                </Style>
+
+                <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Width" Value="20" />
+                    <Setter Property="Height" Value="20" />
+                </Style>
+
+                <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
+                    <Style Selector="^ > icons|UnifiedIcon">
+                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                    </Style>
+                    <Style Selector="^ > TextBlock#OverallRating">
+                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+
+
+        <!-- bottom row -->
+        <Style Selector="^ Border#ActionFooterBorder">
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
+
+            <Style Selector="^ panels|FlexPanel#ActionFooter">
+                <Setter Property="AlignItems" Value="Center" />
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="JustifyContent" Value="FlexEnd" />
+                <Setter Property="ColumnSpacing" Value="16" />
+
+                <Style Selector="^ panels|FlexPanel#ActionGroup">
+                    <!-- <Setter Property="Background" Value="Red"/> -->
+                    <Setter Property="AlignItems" Value="Center" />
+                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                    <Setter Property="panels:Flex.Grow" Value="1" />
+                    <Setter Property="panels:Flex.Shrink" Value="0" />
+                    <Setter Property="panels:Flex.Basis" Value="0" />
+                    <Setter Property="ColumnSpacing" Value="8" />
+
+                    <Style Selector="^ > Button">
+                        <Style Selector="^ TextBlock">
+                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                        </Style>
+                    </Style>
+                </Style>
+
+                <Style Selector="^ panels|FlexPanel#FooterLabels">
+                    <Setter Property="panels:Flex.Grow" Value="1" />
+                    <Setter Property="panels:Flex.Shrink" Value="0" />
+                    <Setter Property="panels:Flex.Basis" Value="0" />
+                    <Setter Property="AlignItems" Value="Center" />
+                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                    <Setter Property="JustifyContent" Value="FlexEnd" />
+                    <Setter Property="ColumnSpacing" Value="8" />
+
+                    <Style Selector="^ panels|FlexPanel#UserLabel">
+                        <Setter Property="ColumnSpacing" Value="4" />
+
+                        <Style Selector="^ Border#AvatarImageBorder">
+                            <Setter Property="Clip">
+                                <EllipseGeometry Rect="0, 0, 20, 20" />
+                            </Setter>
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="Height" Value="20" />
+                        </Style>
+
+                        <Style Selector="^ TextBlock#AuthorName">
+                            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                        </Style>
+                    </Style>
+
+                </Style>
+            </Style>
+        </Style>
+    </Style>
+
+</Styles>
