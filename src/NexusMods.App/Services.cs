@@ -21,6 +21,7 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
+using NexusMods.Games.Larian.BaldursGate3;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -125,6 +126,7 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
+            services.AddBaldursGate3();
         }
         
         Games.RedEngine.Services.AddRedEngineGames(services);
