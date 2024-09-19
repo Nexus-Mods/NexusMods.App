@@ -46,6 +46,11 @@ public static class RunGarbageCollector
         // NOTE:   In theory UpdateNxFileStore can call GC back again. This is unlikely to happen
         //         however for the time being; because we only run GC when deleting a library item
         //         or loadout. No callback should do that. Long term we want to prevent re-entrancy.
+        //
+        //         Running arbitrary code in GC in any system is however prone to possible failure,
+        //         so long term we will want to avoid UpdateNxFileStore (MnemonicDB Commit) to avoid
+        //         yielding to external code. We need a non-blocking `Commit`; that
+        //         sends stuff off to another thread or internal queue without blocking.
         var updater = new NxFileStoreUpdater(connection);
         foreach (var entry in toUpdateInDataStore)
         {
