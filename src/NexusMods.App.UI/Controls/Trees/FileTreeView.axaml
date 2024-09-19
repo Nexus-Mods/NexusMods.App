@@ -59,7 +59,7 @@
                 VerticalAlignment="Bottom"
                 Padding="24, 0, 24, 0"
                 x:Name="StatusBarBorder"
-                Height="52"
+                Height="32"
                 Grid.Row="1">
             <ItemsControl x:Name="StatusBarItemsControl"
                           VerticalAlignment="Stretch">
