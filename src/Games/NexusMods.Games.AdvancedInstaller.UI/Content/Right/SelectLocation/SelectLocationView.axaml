@@ -12,45 +12,46 @@
         <selectLocation:SelectLocationDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg Mid OutlineStrong" Padding="16">
+    <Border Classes="Rounded-lg Mid OutlineModerate" Padding="16" BorderThickness="2">
         <Border.Styles>
             <Style Selector="Border#HeaderAreaBorder">
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
-
+        
             <Style Selector="TextBlock#SelectLocationSubHeading">
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
-
+        
             <Style Selector="TextBlock#AllFoldersAreaSubHeaderText">
                 <Setter Property="Margin" Value="0, 0, 0, 8" />
             </Style>
-
+        
             <Style Selector="StackPanel.SuggestedHeaderStackPanel">
                 <Setter Property="Margin" Value="0, 0, 0, 8" />
             </Style>
-
+        
             <Style Selector="Border.SuggestedAreaBorder">
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
-
+        
             <Style Selector="Border.Padding16">
                 <Setter Property="Padding" Value="16" />
             </Style>
         </Border.Styles>
 
         <ScrollViewer>
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Margin="0,0,16,0">
 
                 <!-- 'Select Install Location' -->
                 <Border x:Name="HeaderAreaBorder" Classes="OutlineWeak" BorderThickness="0, 0, 0, 1">
                     <StackPanel Orientation="Vertical">
                         <!-- 'Select Install Location' -->
-                        <TextBlock Classes="TitleSMSemi"
+                        <TextBlock Theme="{StaticResource TitleSMSemiTheme}"
                                    Text="{x:Static resources:Language.SelectLocationHeaderText_SELECT_INSTALL_LOCATION}" />
 
                         <!-- 'Select where to install the mod file/folder' -->
-                        <TextBlock Classes="BodySMNormal ForegroundSubdued"
+                        <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                   Classes="ForegroundSubdued"
                                    Text="{x:Static resources:Language.SelectLocationSubHeadingText_Select_where_to}"
                                    x:Name="SelectLocationSubHeading" />
                     </StackPanel>
@@ -61,10 +62,11 @@
                     <StackPanel Orientation="Vertical">
                         <StackPanel Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
                             <!-- Header: 'SUGGESTED' -->
-                            <TextBlock Classes="TitleXSSemi"
+                            <TextBlock Theme="{StaticResource TitleXSSemiTheme}"
                                        Text="{x:Static resources:Language.SuggestedHeaderText_SUGGESTED}" />
 
-                            <TextBlock Classes="BodySMNormal ForegroundSubdued"
+                            <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                       Classes="ForegroundSubdued"
                                        TextWrapping="Wrap"
                                        Text="TEMP SUBTITLE"
                                        x:Name="SuggestedSubHeaderText" />
@@ -86,14 +88,15 @@
                     <StackPanel Orientation="Vertical">
                         <StackPanel Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
                             <!-- Header: 'ALL FOLDERS' -->
-                            <TextBlock Classes="TitleXSSemi"
+                            <TextBlock Theme="{StaticResource TitleXSSemiTheme}"
                                        Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}" />
                             <!-- Description: 'Select from full folder structure' -->
-                            <TextBlock Classes="BodySMNormal ForegroundSubdued"
+                            <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                       Classes="ForegroundSubdued"
                                        Text="{x:Static resources:Language.AllFoldersAreaSubHeaderText_Select_from_full}" />
                         </StackPanel>
 
-                        <TreeDataGrid Classes="TreeWhiteCaret"
+                        <TreeDataGrid Classes="Compact"
                                       ShowColumnHeaders="False"
                                       x:Name="SelectTreeDataGrid" />
                     </StackPanel>
