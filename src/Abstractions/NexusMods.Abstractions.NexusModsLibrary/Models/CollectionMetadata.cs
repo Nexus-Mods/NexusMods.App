@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// <summary>
 /// Metadata about a collection on Nexus Mods.
 /// </summary>
-public partial class Collection : IModelDefinition
+public partial class CollectionMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NexusModsCollectionMetadata";
     
@@ -30,12 +30,12 @@ public partial class Collection : IModelDefinition
     /// <summary>
     /// The Curating user of the collection.
     /// </summary>
-    public static readonly ReferenceAttribute<User> User = new(Namespace, nameof(User));
+    public static readonly ReferenceAttribute<User> Author = new(Namespace, nameof(Author));
     
     /// <summary>
     /// The revisions of the collection.
     /// </summary>
-    public static readonly BackReferenceAttribute<CollectionRevision> Revisions = new(CollectionRevision.Collection);
+    public static readonly BackReferenceAttribute<CollectionRevisionMetadata> Revisions = new(CollectionRevisionMetadata.Collection);
     
     /// <summary>
     /// The tags on the collection.

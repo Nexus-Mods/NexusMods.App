@@ -26,7 +26,7 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
 
         this.WhenActivated(d =>
             {
-                Collection.ObserveAll(conn)
+                CollectionMetadata.ObserveAll(conn)
                     .Transform(coll => (ICollectionCardViewModel)new CollectionCardViewModel(conn, coll.Revisions.First().RevisionId))
                     .Bind(out _collections)
                     .Subscribe()

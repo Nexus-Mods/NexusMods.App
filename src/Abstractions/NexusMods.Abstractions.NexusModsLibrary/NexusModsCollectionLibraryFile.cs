@@ -17,5 +17,5 @@ public partial class NexusModsCollectionLibraryFile : IModelDefinition
     /// <summary>
     /// The collection revision this file belongs to.
     /// </summary>
-    public static readonly ReferenceAttribute<Models.CollectionRevision> CollectionRevision = new(Namespace, nameof(CollectionRevision));
+    public static readonly ReferenceAttribute<Models.CollectionRevisionMetadata> CollectionRevision = new(Namespace, nameof(CollectionRevision));
 }

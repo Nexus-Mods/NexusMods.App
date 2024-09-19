@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// Metadata about a collection revision on Nexus Mods. A revision references a collection, but is itself immutable.
 /// Each change to a collection is expressed as a separate revision.
 /// </summary>
-public partial class CollectionRevision : IModelDefinition
+public partial class CollectionRevisionMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NexusModsCollectionRevision";
     
@@ -26,7 +26,7 @@ public partial class CollectionRevision : IModelDefinition
     /// <summary>
     /// The collection this revision belongs to.
     /// </summary>
-    public static readonly ReferenceAttribute<Collection> Collection = new(Namespace, nameof(Collection));
+    public static readonly ReferenceAttribute<CollectionMetadata> Collection = new(Namespace, nameof(Collection));
     
     /// <summary>
     /// The number of downloads this revision has.
