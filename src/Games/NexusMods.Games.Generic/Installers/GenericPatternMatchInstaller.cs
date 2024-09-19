@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.Generic.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -156,32 +157,5 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
             Hash = fileNode.Item.LibraryFile.Value.Hash,
             Size = fileNode.Item.LibraryFile.Value.Size,
         };
-    }
-}
-
-internal static class KeyedBoxExtensions
-{
-    public static IEnumerable<KeyedBox<RelativePath, LibraryArchiveTree>> EnumerateFilesBfsWhereBranch(
-        this KeyedBox<RelativePath, LibraryArchiveTree> item,
-        Func<KeyedBox<RelativePath, LibraryArchiveTree>, bool> predicate)
-    {
-        var queue = new Queue<KeyedBox<RelativePath, LibraryArchiveTree>>();
-        foreach (var child in item.Children())
-        {
-            queue.Enqueue(child.Value);
-        }
-
-        while (queue.TryDequeue(out var current))
-        {
-            if (!predicate(current)) continue;
-
-            if (current.IsFile())
-            {
-                yield return current;
-            }
-
-            foreach (var grandChild in current.Item.Children)
-                queue.Enqueue(grandChild.Value);
-        }
     }
 }

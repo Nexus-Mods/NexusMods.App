@@ -10,6 +10,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.Generic.Installers;
+using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
@@ -61,6 +62,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
+        new BG3SEInstaller(_serviceProvider),
         new GenericPatternMatchInstaller(_serviceProvider)
         {
             InstallFolderTargets =
