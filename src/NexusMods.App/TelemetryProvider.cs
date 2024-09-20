@@ -34,7 +34,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
         // download size
         _connection.ObserveDatoms(DownloadAnalysis.Size)
-            .Transform(d => (SizeAttribute.ReadDatom)d.Resolved)
+            .Transform(d => (SizeAttribute.ReadDatom)d.Resolved(_connection))
             .RemoveKey()
             .QueryWhenChanged(datoms => datoms.Sum(d => d.V))
             .SubscribeWithErrorLogging(totalDownloadSize => _downloadSize = Size.From((ulong)totalDownloadSize))

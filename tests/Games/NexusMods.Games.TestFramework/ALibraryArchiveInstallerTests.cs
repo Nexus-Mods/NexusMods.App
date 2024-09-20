@@ -121,7 +121,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         return Verify(ToTable(Connection.Db.Datoms(tx)), sourceFile: sourceFile);
     }
     
-    public static string ToTable(IndexSegment datoms)
+    public string ToTable(IndexSegment datoms)
     {
 
         string TruncateOrPad(string val, int length)
@@ -153,7 +153,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         var dateTimeCount = 0;
 
         var sb = new StringBuilder();
-        foreach (var datom in datoms.Resolved())
+        foreach (var datom in datoms.Resolved(Connection))
         {
             var isRetract = datom.IsRetract;
 
