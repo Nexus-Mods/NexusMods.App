@@ -1223,9 +1223,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
-                throw new NotImplementedException("Need support for this in MnemonicDB");
-                //var attr = registry.GetAttribute(datom.A);
-                //attr.Remap(remapFn, buffer[..datom.ValueSpan.Length].Span);
+                ValueHelpers.Remap(remapFn, datom.Prefix, buffer[..datom.ValueSpan.Length].Span);
                 
                 // Add the new datom
                 tx.Add(newDatom);
