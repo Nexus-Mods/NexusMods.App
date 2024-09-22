@@ -41,6 +41,7 @@
 
                     <!-- left column -->
                     <Style Selector="^ Border#TileImageBorder">
+                        <Setter Property="Background" Value="DarkRed" />
                         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                         <Setter Property="ClipToBounds" Value="True" />
                         <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
@@ -57,6 +58,9 @@
                         <!-- <Setter Property="Background" Value="DarkBlue" /> -->
                         <Setter Property="Direction" Value="Column" />
                         <Setter Property="AlignItems" Value="Stretch" />
+                        <Setter Property="panels:Flex.Grow" Value="1" />
+                        <Setter Property="panels:Flex.Shrink" Value="0" />
+                        <Setter Property="panels:Flex.Basis" Value="0" />
 
                         <Style Selector="^ TextBlock#TitleText">
                             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
@@ -67,7 +71,9 @@
                             <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
                             <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
                             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-                            <Setter Property="Padding" Value="12, 8, 0, 8" />
+                            <Setter Property="Padding" Value="0, 8, 0, 8" />
+                            <!-- Margin needed to left offset top and bottom border -->
+                            <Setter Property="Margin" Value="12, 0, 0, 0" />
 
                             <Style Selector="^ panels|FlexPanel#CategoryTextWrapper">
                                 <!-- <Setter Property="Background" Value="DarkBlue" /> -->

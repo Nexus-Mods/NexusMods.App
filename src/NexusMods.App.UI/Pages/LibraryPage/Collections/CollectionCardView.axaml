@@ -28,7 +28,6 @@
                         <Border x:Name="CategoryTextBorder">
                             <panels:FlexPanel x:Name="CategoryTextWrapper">
                                     <TextBlock x:Name="CategoryText" />
-                                    <TextBlock x:Name="CategoryText2" Text="Something?" />
                             </panels:FlexPanel>
                         </Border>
                         <TextBlock x:Name="SummaryText" />
