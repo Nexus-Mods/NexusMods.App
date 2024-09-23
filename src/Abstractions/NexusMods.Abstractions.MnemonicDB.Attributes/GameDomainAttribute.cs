@@ -17,7 +17,7 @@ public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameD
     }
 
     /// <inheritdoc />
-    protected override GameDomain FromLowLevel(string value, ValueTags tag, RegistryId registryId)
+    protected override GameDomain FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
     {
         return GameDomain.From(value);
     }

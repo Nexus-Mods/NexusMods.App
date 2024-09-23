@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Media;
 public class ImageDataAttribute(string ns, string name) : BlobAttribute<ImageData>(ns, name)
 {
     /// <inheritdoc/>
-    protected override ImageData FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
+    protected override ImageData FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
     {
         Debug.Assert(sizeof(ImageDataCompression) == 1);
         var compression = (ImageDataCompression)value[0];
