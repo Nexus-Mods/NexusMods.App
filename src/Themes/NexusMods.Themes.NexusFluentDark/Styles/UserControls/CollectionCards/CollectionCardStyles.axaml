@@ -6,7 +6,7 @@
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Classes="Transparent" Width="600" Height="380">
+        <Border Classes="Low" Width="600" Height="380">
             <panels:FlexPanel
                 ColumnSpacing="8"
                 Wrap="Wrap"
@@ -23,13 +23,13 @@
 
     <Style Selector="collections|CollectionCardView">
         <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Width" Value="508" />
         <Setter Property="Height" Value="288" />
         <Setter Property="ClipToBounds" Value="False" />
         
         <Style Selector="^ Border#CardCollectionBorder">
             <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         </Style>
 
         <!-- top row -->
