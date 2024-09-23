@@ -17,5 +17,8 @@
     <ItemGroup>
       <InternalsVisibleTo Include="NexusMods.Benchmarks" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="ThreeWayMerger.cs" />
+    </ItemGroup>
 
 </Project>

@@ -153,7 +153,10 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         var dateTimeCount = 0;
 
         var sb = new StringBuilder();
-        foreach (var datom in datoms.Resolved(Connection))
+        var sorted = datoms.Resolved(Connection)
+            .OrderBy(d => d.E)
+            .ThenBy(d => d.A.Id.Name);
+        foreach (var datom in sorted)
         {
             var isRetract = datom.IsRetract;
 
