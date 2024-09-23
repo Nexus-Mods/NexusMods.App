@@ -46,7 +46,7 @@
                         <TextBlock x:Name="ModCount" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="EndorsementsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
                         <TextBlock x:Name="Endorsements" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="DownloadsPanel">
@@ -54,7 +54,7 @@
                         <TextBlock x:Name="Downloads" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="TotalSizePanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Disk}" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
                         <TextBlock x:Name="TotalSize" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="OverallRatingPanel">
