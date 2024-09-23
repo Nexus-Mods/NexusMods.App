@@ -127,7 +127,7 @@ Example payload:
     "mod_version": "4.3.2",
     "description": "Meant for use ONLY with SSE v1.6.1130+."
   }],
-  "file_updates": [
+"file_updates": [
   {
     "old_file_id": 449151,
     "new_file_id": 449719,
