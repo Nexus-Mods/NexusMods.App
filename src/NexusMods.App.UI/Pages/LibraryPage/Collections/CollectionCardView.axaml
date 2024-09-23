@@ -27,10 +27,12 @@
                         <TextBlock x:Name="TitleText" />
                         <Border x:Name="CategoryTextBorder">
                             <panels:FlexPanel x:Name="CategoryTextWrapper">
-                                    <TextBlock x:Name="CategoryText" />
+                                <TextBlock x:Name="CategoryText" />
                             </panels:FlexPanel>
                         </Border>
-                        <TextBlock x:Name="SummaryText" />
+                        <panels:FlexPanel x:Name="SummaryTextFlexPanel">
+                            <TextBlock x:Name="SummaryText" />
+                        </panels:FlexPanel>
                     </panels:FlexPanel>
 
                 </panels:FlexPanel>
@@ -65,7 +67,7 @@
 
             <Border x:Name="ActionFooterBorder">
                 <panels:FlexPanel x:Name="ActionFooter">
-                    
+
                     <panels:FlexPanel x:Name="ActionGroup">
                         <Button x:Name="DownloadButton" Classes="Standard Secondary" Height="28">
                             <panels:FlexPanel>
@@ -75,19 +77,19 @@
                             </panels:FlexPanel>
                         </Button>
                     </panels:FlexPanel>
-                    
+
                     <panels:FlexPanel x:Name="FooterLabels">
                         <panels:FlexPanel x:Name="UserLabel">
                             <Border x:Name="AvatarImageBorder">
                                 <Image x:Name="AuthorAvatarImage" />
                             </Border>
-                            <TextBlock x:Name="AuthorName"/>
+                            <TextBlock x:Name="AuthorName" />
                         </panels:FlexPanel>
                         <panels:FlexPanel x:Name="ListingLabel">
-                            <TextBlock x:Name="ListingLabelText"/>
+                            <TextBlock x:Name="ListingLabelText" />
                         </panels:FlexPanel>
                     </panels:FlexPanel>
-                    
+
                 </panels:FlexPanel>
             </Border>
 
