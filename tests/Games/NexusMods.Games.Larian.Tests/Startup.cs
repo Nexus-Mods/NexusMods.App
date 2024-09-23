@@ -6,9 +6,7 @@ using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
-using NexusMods.Games.FOMOD;
 using NexusMods.Games.Larian.BaldursGate3;
-using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -21,7 +19,7 @@ public class Startup
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<BaldursGate3.BaldursGate3>(new Version("1.61"))
+            .AddUniversalGameLocator<Larian.BaldursGate3.BaldursGate3>(new Version("1.61"))
             .AddBaldursGate3()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
