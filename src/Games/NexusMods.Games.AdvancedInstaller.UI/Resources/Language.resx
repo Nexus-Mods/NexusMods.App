@@ -43,13 +43,13 @@
         <value>Create new folder</value>
     </data>
     <data name="NewFilePill_NEW" xml:space="preserve">
-        <value>New</value>
+        <value>NEW</value>
     </data>
     <data name="Pill_DUPE_FOLDER" xml:space="preserve">
-        <value>Dupe folder</value>
+        <value>DUPE FOLDER</value>
     </data>
     <data name="Pill_FOLDER_MERGED" xml:space="preserve">
-        <value>Folder merged</value>
+        <value>FOLDER MERGED</value>
     </data>
     <data name="SelectLocationButton_Select_location" xml:space="preserve">
         <value>Select location</value>
@@ -70,16 +70,16 @@
         <value>Select which files to install from the mod archive on the left.</value>
     </data>
     <data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
-        <value>Select install location</value>
+        <value>SELECT INSTALL LOCATION</value>
     </data>
     <data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
         <value>Select where to install the mod file/folder.</value>
     </data>
     <data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
-        <value>Suggested</value>
+        <value>SUGGESTED</value>
     </data>
     <data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
-        <value>All folders</value>
+        <value>ALL FOLDERS</value>
     </data>
     <data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
         <value>Select from the full folder structure</value>

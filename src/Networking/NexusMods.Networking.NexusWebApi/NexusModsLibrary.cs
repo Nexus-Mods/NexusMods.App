@@ -75,11 +75,11 @@ public class NexusModsLibrary
     /// <summary>
     /// Get or add a collection metadata
     /// </summary>
-    public async Task<Collection.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, bool referesh = false, CancellationToken token = default)
+    public async Task<CollectionMetadata.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, bool referesh = false, CancellationToken token = default)
     {
         if (!referesh)
         {
-            var collections = Collection.FindBySlug(_connection.Db, slug);
+            var collections = CollectionMetadata.FindBySlug(_connection.Db, slug);
             if (collections.TryGetFirst(x => x.Slug == slug, out var collection))
                 return collection;
         }
@@ -92,11 +92,11 @@ public class NexusModsLibrary
         
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
-        var collectionResolver = GraphQLResolver.Create(db, tx, Collection.Slug, slug);
-        collectionResolver.Add(Collection.Name, collectionInfo.Name);
-        collectionResolver.Add(Collection.Summary, collectionInfo.Summary);
-        collectionResolver.Add(Collection.Endorsements, (ulong)collectionInfo.Endorsements);
-        collectionResolver.Add(Collection.TileImage, await collectionTileImage);
+        var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
+        collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
+        collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
+        collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
+        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
 
         // Remap the user info
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)collectionInfo.User.MemberId);
@@ -104,38 +104,38 @@ public class NexusModsLibrary
         userResolver.Add(User.Avatar, new Uri(collectionInfo.User.Avatar));
         userResolver.Add(User.AvatarImage, await avatarImage);
         
-        collectionResolver.Add(Collection.User, userResolver.Id);
+        collectionResolver.Add(CollectionMetadata.Author, userResolver.Id);
         
         // Remap the revisions
         foreach (var revision in collectionInfo.Revisions)
         {
-            var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevision.RevisionId, RevisionId.From((ulong)revision.Id));
-            revisionResolver.Add(CollectionRevision.RevisionId, RevisionId.From((ulong)revision.Id));
-            revisionResolver.Add(CollectionRevision.RevisionNumber, RevisionNumber.From((ulong)revision.RevisionNumber));
-            revisionResolver.Add(CollectionRevision.CollectionId, collectionResolver.Id);
-            revisionResolver.Add(CollectionRevision.Downloads, (ulong)revision.TotalDownloads);
-            revisionResolver.Add(CollectionRevision.TotalSize, Size.From(ulong.Parse(revision.TotalSize)));
-            revisionResolver.Add(CollectionRevision.OverallRating, float.Parse(revision.OverallRating ?? "0.0"));
-            revisionResolver.Add(CollectionRevision.TotalRatings, (ulong)(revision.OverallRatingCount ?? 0));
-            revisionResolver.Add(CollectionRevision.ModCount, (ulong)revision.ModCount);
+            var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revision.Id));
+            revisionResolver.Add(CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revision.Id));
+            revisionResolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revision.RevisionNumber));
+            revisionResolver.Add(CollectionRevisionMetadata.CollectionId, collectionResolver.Id);
+            revisionResolver.Add(CollectionRevisionMetadata.Downloads, (ulong)revision.TotalDownloads);
+            revisionResolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(ulong.Parse(revision.TotalSize)));
+            revisionResolver.Add(CollectionRevisionMetadata.OverallRating, float.Parse(revision.OverallRating ?? "0.0"));
+            revisionResolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revision.OverallRatingCount ?? 0));
+            revisionResolver.Add(CollectionRevisionMetadata.ModCount, (ulong)revision.ModCount);
         }
 
         foreach (var tag in collectionInfo.Tags)
         {
             var categoryResolver = GraphQLResolver.Create(db, tx, CollectionTag.NexusId, ulong.Parse(tag.Id));
             categoryResolver.Add(CollectionTag.Name, tag.Name);
-            collectionResolver.Add(Collection.Tags, categoryResolver.Id);
+            collectionResolver.Add(CollectionMetadata.Tags, categoryResolver.Id);
         }
         
         var txResults = await tx.Commit();
 
-        return Collection.Load(txResults.Db, txResults[collectionResolver.Id]);
+        return CollectionMetadata.Load(txResults.Db, txResults[collectionResolver.Id]);
     }
     
     /// <summary>
     /// Get or add a collection metadata
     /// </summary>
-    public async Task<CollectionRevision.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
+    public async Task<CollectionRevisionMetadata.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
     {
         var collection = await GetOrAddCollectionMetadata(slug, false, token);
         if (collection.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 

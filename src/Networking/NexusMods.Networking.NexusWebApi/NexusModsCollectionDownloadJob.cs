@@ -25,7 +25,7 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     /// <summary>
     /// The metadata of the collection revision.
     /// </summary>
-    public CollectionRevision.ReadOnly? Metadata { get; set; }
+    public CollectionRevisionMetadata.ReadOnly? Metadata { get; set; }
 
     /// <summary>
     /// The collection slug

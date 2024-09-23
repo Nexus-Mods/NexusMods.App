@@ -16,17 +16,17 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
-public class CollectionsViewModel : AViewModel<ICollectionsViewModel>, ICollectionsViewModel
+public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, ICollectionsViewModel
 {
     private readonly IConnection _conn;
 
-    public CollectionsViewModel(IConnection conn)
+    public CollectionsViewModel(IConnection conn, IWindowManager windowManager) : base(windowManager)
     {
         _conn = conn;
 
         this.WhenActivated(d =>
             {
-                Collection.ObserveAll(conn)
+                CollectionMetadata.ObserveAll(conn)
                     .Transform(coll => (ICollectionCardViewModel)new CollectionCardViewModel(conn, coll.Revisions.First().RevisionId))
                     .Bind(out _collections)
                     .Subscribe()
@@ -34,12 +34,7 @@ public class CollectionsViewModel : AViewModel<ICollectionsViewModel>, ICollecti
             }
         );
     }
-
-    private CollectionRevision.ReadOnly SelectLatest(IGroup<CollectionRevision.ReadOnly, EntityId, CollectionSlug> group)
-    {
-        return group.Cache.Items.MaxBy(r => r.RevisionNumber);
-    }
-
+    
     public IconValue TabIcon { get; } = IconValues.ModLibrary;
     public string TabTitle { get; } = "Collections (WIP)";
     public WindowId WindowId { get; set; }
