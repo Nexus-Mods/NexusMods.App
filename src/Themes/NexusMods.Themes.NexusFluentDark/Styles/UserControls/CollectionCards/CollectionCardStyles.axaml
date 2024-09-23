@@ -68,6 +68,7 @@
                             <Setter Property="Padding" Value="12, 0, 0, 8" />
                             <Setter Property="TextWrapping" Value="NoWrap" />
                             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         </Style>
 
                         <Style Selector="^ Border#CategoryTextBorder">
@@ -97,13 +98,15 @@
                             <Setter Property="panels:Flex.Grow" Value="1" />
                             <Setter Property="panels:Flex.Shrink" Value="0" />
                             <Setter Property="panels:Flex.Basis" Value="0" />
+                            <Setter Property="panels:Flex.AlignSelf" Value="FlexStart" />
+                            <Setter Property="Direction" Value="Row" />
 
                             <Style Selector="^ TextBlock#SummaryText">
                                 <Setter Property="Padding" Value="12, 4, 0, 4" />
                                 <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                                 <Setter Property="TextWrapping" Value="Wrap" />
                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                             </Style>
                         </Style>
 
@@ -130,10 +133,15 @@
                 </Style>
 
                 <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     <Setter Property="Margin" Value="0" />
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="Width" Value="20" />
                     <Setter Property="Height" Value="20" />
+                </Style>
+                
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 </Style>
 
                 <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
