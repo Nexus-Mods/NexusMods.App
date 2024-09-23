@@ -36,11 +36,11 @@ public class BG3InstallerTests(ITestOutputHelper outputHelper) : ALibraryArchive
         ]),
         ("Data Mod", typeof(GenericPatternMatchInstaller), [
             "Recommended/Data/Generated/Public/Shared/Assets/Characters/_Models/Humans/_Female/_Hair/Resources/HAIR_HUM_F_Shadowheart_Spring.gr2",
-            "Recommended/Data/Generated/Public/Shared/Content/Assets/Characters/Character Editor Presets/Origin Presets/[PAK]_Shadowheart/_merged.lsf"
+            "Recommended/Data/Generated/Public/Shared/Content/Assets/Characters/Character Editor Presets/Origin Presets/[PAK]_Shadowheart/_merged.lsf",
         ]),
         ("Data Public Mod with nested Data folder", typeof(GenericPatternMatchInstaller), [
-            "Public/Shared/Stats/Generated/Data/XPData.txt",
-            "Public/SharedDev/Stats/Generated/Data/XPData.txt",
+            "Public/Shared/Stats/Generated/Data/XPData1.txt",
+            "Public/SharedDev/Stats/Generated/Data/XPData2.txt",
         ]),
     ];
 
