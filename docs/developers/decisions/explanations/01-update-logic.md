@@ -372,7 +372,7 @@ graph LR
     style D fill:#793939,stroke:#333
 ```
 
-!!! question "Should we offer the user an update?"
+!!! tip "Should we offer the user an update?"
 
     We may want to offer the user to download `v4.3.2` if they are on
     `v4.3.2 (ARCHIVED)`.
@@ -423,6 +423,21 @@ graph LR
 ```
 
 In this case the `Latest Version` is both `v1.0.3` and `v1.0.3-beta0`.
+
+### Archived in the Middle
+
+!!! info "There is an 'ARCHIVED' version in the middle of the version list."
+
+    In this case, we should use the non-archived version.
+
+```mermaid
+graph LR
+    A[v1.0.0] --> B["v1.0.1 (ARCHIVED)"]
+    B --> C["v1.0.2"]
+    style B fill:#793939,stroke:#333
+```
+
+In this case `v1.0.2` should be the latest version of the mod.
 
 [Mod Organizer 2]: https://github.com/ModOrganizer2/modorganizer
 [Vortex]: https://github.com/Nexus-Mods/Vortex
