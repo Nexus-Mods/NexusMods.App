@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml"/>
@@ -31,7 +31,7 @@
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCards.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
