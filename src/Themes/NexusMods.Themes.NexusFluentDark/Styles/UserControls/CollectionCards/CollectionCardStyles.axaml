@@ -29,7 +29,7 @@
         <Setter Property="ClipToBounds" Value="False" />
         
         <Style Selector="^ Border#CardCollectionBorder">
-            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
         </Style>
 
         <!-- top row -->
