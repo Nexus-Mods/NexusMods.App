@@ -20,9 +20,9 @@
         <Setter Property="Height" Value="52" />
 
         <Style Selector="^ Border#DropShadowBorder">
-            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
             <Style Selector="^:pointerover">
-                <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
+                <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
             </Style>
         </Style>
 
