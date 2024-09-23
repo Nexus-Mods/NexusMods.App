@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
@@ -72,6 +73,11 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
                     // Pak mods
                     DestinationGamePath = new GamePath(LocationId.From("Mods"), ""),
                     KnownValidFileExtensions = [new Extension(".pak")],
+                    FileExtensionsToDiscard =
+                    [
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png, 
+                        KnownExtensions.Json, new Extension(".lnk"),
+                    ],
                 },
                 new InstallFolderTarget
                 {
