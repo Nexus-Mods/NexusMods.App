@@ -26,9 +26,7 @@
                     <panels:FlexPanel x:Name="TitleContainer">
                         <TextBlock x:Name="TitleText" />
                         <Border x:Name="CategoryTextBorder">
-                            <panels:FlexPanel x:Name="CategoryTextWrapper">
-                                <TextBlock x:Name="CategoryText" />
-                            </panels:FlexPanel>
+                            <TextBlock x:Name="CategoryText" />
                         </Border>
                         <panels:FlexPanel x:Name="SummaryTextFlexPanel">
                             <TextBlock x:Name="SummaryText" />
