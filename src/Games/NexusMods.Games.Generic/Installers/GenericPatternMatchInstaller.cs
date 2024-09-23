@@ -15,6 +15,14 @@ namespace NexusMods.Games.Generic.Installers;
 
 using InstallDataTuple = (LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout);
 
+
+/// <summary>
+/// Generic mod installer for mods that only need to have their contents placed to a specific game location
+/// (<see cref="InstallFolderTarget"/>).
+/// Tries to match the mod archive folder structure to <see cref="InstallFolderTarget"/> requirements.
+///
+/// Example: myMod/Textures/myTexture.dds -> Skyrim/Data/Textures/myTexture.dds
+/// </summary>
 public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
 {
     public GenericPatternMatchInstaller(IServiceProvider serviceProvider) :

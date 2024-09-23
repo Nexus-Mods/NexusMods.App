@@ -10,6 +10,11 @@ using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Installers;
 
+/// <summary>
+/// Installer for the Baldur's Gate 3 Script Extender
+/// <see href="https://github.com/Norbyte/bg3se">BG3SE GitHub Repository</see>
+/// <see href="https://www.nexusmods.com/baldursgate3/mods/2172">BG3SE Nexus Mods Page</see>
+/// </summary>
 public class BG3SEInstaller : ALibraryArchiveInstaller
 {
     public BG3SEInstaller(IServiceProvider serviceProvider) :
