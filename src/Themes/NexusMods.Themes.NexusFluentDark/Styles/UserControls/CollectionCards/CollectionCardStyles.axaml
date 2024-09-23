@@ -26,6 +26,11 @@
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Width" Value="508" />
         <Setter Property="Height" Value="288" />
+        <Setter Property="ClipToBounds" Value="False" />
+        
+        <Style Selector="^ Border#CardCollectionBorder">
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+        </Style>
 
         <!-- top row -->
         <Style Selector="^ panels|FlexPanel#CardCollection">

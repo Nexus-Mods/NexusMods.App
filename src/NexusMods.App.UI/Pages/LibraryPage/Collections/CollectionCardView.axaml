@@ -13,7 +13,7 @@
     <Design.DataContext>
         <collections:CollectionCardDesignViewModel />
     </Design.DataContext>
-    <Border>
+    <Border x:Name="CardCollectionBorder">
         <panels:FlexPanel x:Name="CardCollection">
 
             <Border x:Name="ContainerBorder">

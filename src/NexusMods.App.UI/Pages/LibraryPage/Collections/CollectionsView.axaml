@@ -21,7 +21,8 @@
                 <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}"
                                               Margin="12"
                                               Width="508"
-                                              Height="288"/>
+                                              Height="288"
+                                              ClipToBounds="False"/>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>
