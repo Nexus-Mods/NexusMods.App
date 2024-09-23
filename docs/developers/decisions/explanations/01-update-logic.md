@@ -307,6 +307,8 @@ For [2. Querying Mod Files](#2-querying-mod-files), we should use the V1 API tha
 implementation (`/v1/games/{game_domain_name}/mods/{mod_id}/files.json`); as the V2 API
 does not contain the necessary information.
 
+We represent the data as a *Directed Acyclic Graph (DAG)*.
+
 ### Multi-Query Pages
 
 !!! info "The V2 API allows us to query multiple mod pages at once"
@@ -353,6 +355,74 @@ Then we can compare the `updatedAt` timestamps.
 !!! note "There isn't currently a field for last time the files were updated."
 
     We can ask backend about this.
+
+## Edge Cases
+
+The following edge cases should be considered.
+
+### Matching Version Names with one that has been Archived
+
+!!! note "(ARCHIVED) is category name, they were both submitted with same version."
+
+```mermaid
+graph LR
+    A[v1.0.0] --> B[v1.0.1]
+    B --> D["v1.0.2 (ARCHIVED)"]
+    B --> E[v1.0.2]
+    style D fill:#793939,stroke:#333
+```
+
+!!! question "Should we offer the user an update?"
+
+    We may want to offer the user to download `v4.3.2` if they are on
+    `v4.3.2 (ARCHIVED)`.
+
+In this scenario, when the user 'queries' for an update, the archived version should
+be ignored; there should be 1 result.
+
+### Multiple Updates for Single File
+
+!!! info "There are two 'branches' of the same mod, both are valid, and contain non-archived files."
+
+```mermaid
+graph LR
+    A[v1.0.0] --> B[v1.0.1]
+    B --> D[v1.0.2]
+    D --> E[v1.0.3]
+    
+    B --> F[v1.0.2-beta]
+    F --> G[v1.0.3-beta0]
+    G --> H[v1.0.3-beta1]
+```
+
+One of the branches can contain 'beta' versions, while another branch can contain 'stable' versions.
+
+If the user has `v1.0.0` or `v1.0.1` installed, then both `v1.0.3` and `v1.0.3-beta1` are technically
+the 'latest' version of the mod.
+
+In the case of `SemVer`, this is easy to resolve.
+However, Nexus allows arbitrary 'version' values, so the versions could be
+`banana` and `orange`.
+
+API for querying updates should return all the 'latest versions'.
+
+### Multiple Updates for Single File With Archived Branch End
+
+!!! info "There are two 'branches' of the same mod, one contains an archived file at end."
+
+```mermaid
+graph LR
+    A[v1.0.0] --> B[v1.0.1]
+    B --> D[v1.0.2]
+    D --> E[v1.0.3]
+
+    B --> F[v1.0.2-beta]
+    F --> G[v1.0.3-beta0]
+    G --> H["v1.0.3-beta1 (ARCHIVED)"]
+    style H fill:#793939,stroke:#333
+```
+
+In this case the `Latest Version` is both `v1.0.3` and `v1.0.3-beta0`.
 
 [Mod Organizer 2]: https://github.com/ModOrganizer2/modorganizer
 [Vortex]: https://github.com/Nexus-Mods/Vortex
