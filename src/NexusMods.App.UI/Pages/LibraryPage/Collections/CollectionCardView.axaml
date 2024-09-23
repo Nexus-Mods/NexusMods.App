@@ -26,9 +26,7 @@
                     <panels:FlexPanel x:Name="TitleContainer">
                         <TextBlock x:Name="TitleText" />
                         <Border x:Name="CategoryTextBorder">
-                            <panels:FlexPanel x:Name="CategoryTextWrapper">
-                                <TextBlock x:Name="CategoryText" />
-                            </panels:FlexPanel>
+                            <TextBlock x:Name="CategoryText" />
                         </Border>
                         <panels:FlexPanel x:Name="SummaryTextFlexPanel">
                             <TextBlock x:Name="SummaryText" />
@@ -46,7 +44,7 @@
                         <TextBlock x:Name="ModCount" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="EndorsementsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
                         <TextBlock x:Name="Endorsements" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="DownloadsPanel">
@@ -54,7 +52,7 @@
                         <TextBlock x:Name="Downloads" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="TotalSizePanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Disk}" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
                         <TextBlock x:Name="TotalSize" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="OverallRatingPanel">

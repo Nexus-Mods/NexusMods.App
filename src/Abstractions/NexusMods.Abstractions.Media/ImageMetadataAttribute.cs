@@ -13,7 +13,7 @@ public class ImageMetadataAttribute(string ns, string name) : BlobAttribute<Imag
     private static readonly int ImageMetadataSize = Marshal.SizeOf<ImageMetadata>();
 
     /// <inheritdoc/>
-    protected override ImageMetadata FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
+    protected override ImageMetadata FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
     {
         return ImageMetadata.Read(value);
     }

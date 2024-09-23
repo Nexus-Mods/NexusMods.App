@@ -29,5 +29,5 @@ public class FileIdAttribute(string ns, string name) :
     protected override ulong ToLowLevel(FileId value) => value.Value;
 
     /// <inheritdoc />
-    protected override FileId FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => FileId.From(value);
+    protected override FileId FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => FileId.From(value);
 }
