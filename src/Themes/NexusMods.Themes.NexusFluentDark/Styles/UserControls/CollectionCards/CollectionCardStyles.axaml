@@ -205,6 +205,7 @@
                         </Style>
 
                         <Style Selector="^ TextBlock#AuthorName">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                         </Style>
                     </Style>
