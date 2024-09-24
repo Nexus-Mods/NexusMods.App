@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Games.Larian.BaldursGate3.RunGameTools;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
@@ -10,6 +12,7 @@ public static class Services
     {
         services
             .AddGame<BaldursGate3>()
+            .AddSingleton<ITool, BG3RunGameTool>()
             .AddSettings<BaldursGate3Settings>();
 
         return services;

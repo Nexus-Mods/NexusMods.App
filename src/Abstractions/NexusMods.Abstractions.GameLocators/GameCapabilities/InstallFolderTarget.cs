@@ -1,8 +1,6 @@
-﻿using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Paths;
+﻿using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games.GameCapabilities;
+namespace NexusMods.Abstractions.GameLocators.GameCapabilities;
 
 /// <summary>
 /// Represents a target path for installing simple mods archives
@@ -21,32 +19,32 @@ public class InstallFolderTarget : IModInstallDestination
     /// <summary>
     /// List of known recognizable aliases that can be directly mapped to the <see cref="DestinationGamePath"/>.
     /// </summary>
-    public IEnumerable<string> KnownSourceFolderNames { get; init; } = Enumerable.Empty<string>();
+    public IEnumerable<RelativePath> KnownSourceFolderNames { get; init; } = [];
 
     /// <summary>
     /// List of known recognizable first level subfolders of the target <see cref="DestinationGamePath"/>.
     /// NOTE: Only include folders that are only likely to appear at this level of the folder hierarchy.
     /// </summary>
-    public IEnumerable<string> KnownValidSubfolders { get; init; } = Enumerable.Empty<string>();
+    public IEnumerable<RelativePath> Names { get; init; } = [];
 
     /// <summary>
     /// List of known recognizable file extensions for direct children of the target <see cref="DestinationGamePath"/>.
     /// NOTE: Only include file extensions that are only likely to appear at this level of the folder hierarchy.
     /// </summary>
-    public IEnumerable<Extension> KnownValidFileExtensions { get; init; } = Enumerable.Empty<Extension>();
+    public IEnumerable<Extension> KnownValidFileExtensions { get; init; } = [];
 
     /// <summary>
     /// List of subPaths of the target <see cref="DestinationGamePath"/> that should be discarded.
     /// </summary>
-    public IEnumerable<RelativePath> SubPathsToDiscard { get; init; } = Enumerable.Empty<RelativePath>();
+    public IEnumerable<RelativePath> SubPathsToDiscard { get; init; } = [];
 
     /// <summary>
     /// List of file extensions to discard when installing to this target.
     /// </summary>
-    public IEnumerable<Extension> FileExtensionsToDiscard { get; init; } = Enumerable.Empty<Extension>();
+    public IEnumerable<Extension> FileExtensionsToDiscard { get; init; } = [];
 
     /// <summary>
     /// Collection of Targets that are nested paths relative to <see cref="DestinationGamePath"/>.
     /// </summary>
-    public IEnumerable<InstallFolderTarget> SubTargets { get; init; } = Enumerable.Empty<InstallFolderTarget>();
+    public IEnumerable<InstallFolderTarget> SubTargets { get; init; } = [];
 }
