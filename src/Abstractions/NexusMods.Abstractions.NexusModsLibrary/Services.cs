@@ -21,6 +21,7 @@ public static class Services
             .AddNexusModsLibraryFileModel()
             .AddCollectionMetadataModel()
             .AddCollectionRevisionMetadataModel()
+            .AddCollectionRevisionModFileModel()
             .AddCollectionTagModel()
             .AddUserModel()
             .AddNexusModsCollectionLibraryFileModel();
