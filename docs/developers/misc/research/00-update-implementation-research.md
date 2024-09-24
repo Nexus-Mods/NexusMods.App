@@ -1,11 +1,6 @@
-!!! note "This document is the *former* design document on how to handle updates via Nexus Mods."
+!!! info "This is a research document, listing the various caveats, edge cases and existing solutions for generic updates on *Nexus Mods*"
 
-    By request, the approach used was changed from the steps in [Our Approach to Updates](#our-approach-to-updates)
-    to using a [much simpler design][current-adr] during implementation.
-
-    This document remains as a research document.
-
-!!! info "Supporting ***generic*** mod updates on the Nexus today is a tricky subject."
+    Supporting ***generic*** mod updates on the Nexus today is a tricky subject.
 
 ## Problem Statement
 
@@ -415,11 +410,14 @@ graph LR
 
 In this case `v1.0.2` should be the latest version of the mod.
 
-## Our Approach to Updates
+## Our Improved Approach to Updates [Legacy]
 
-!!! note "This was replaced by a [simpler design][current-adr] by request"
+!!! warning "This was replaced by a [simpler design][current-adr] by request"
 
-    This is the original design.
+    This is the original design; which involved the use of the V1 API.
+    Because we are moving away from V1 API, project lead requested to not
+    proceed with this design. But [Multi Query Pages](#multi-query-pages) optimization
+    will be reused.
 
 For [1. Determining Updated Mod Pages](#1-determine-updated-mod-pages), we can improve
 upon the existing implementation with [Multi Query Pages](#multi-query-pages) optimization.
