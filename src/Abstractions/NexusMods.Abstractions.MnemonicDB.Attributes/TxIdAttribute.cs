@@ -16,7 +16,7 @@ public class TxIdAttribute(string ns, string name) : ScalarAttribute<TxId, ulong
     }
 
     /// <inheritdoc />
-    protected override TxId FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
+    protected override TxId FromLowLevel(ulong value, ValueTags tags, RegistryId registryId)
     {
         return TxId.From(value);
     }

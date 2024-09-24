@@ -17,7 +17,7 @@ public class RevisionNumberAttribute(string ns, string name) : ScalarAttribute<R
     }
 
     /// <inheritdoc />
-    protected override RevisionNumber FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
+    protected override RevisionNumber FromLowLevel(ulong value, ValueTags tags, RegistryId registryId)
     {
         return RevisionNumber.From(value);
     }

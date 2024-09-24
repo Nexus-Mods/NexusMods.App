@@ -19,7 +19,7 @@ public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, int>(
     }
 
     /// <inheritdoc />
-    protected override T FromLowLevel(int value, ValueTags tags, AttributeResolver resolver)
+    protected override T FromLowLevel(int value, ValueTags tags, RegistryId registryId)
     {
         // Same as ToLowLevel, the cast to object is removed by the JIT
         return (T)(object)value;
@@ -41,7 +41,7 @@ public class EnumByteAttribute<T>(string ns, string name) : ScalarAttribute<T, i
     }
 
     /// <inheritdoc />
-    protected override T FromLowLevel(byte value, ValueTags tags, AttributeResolver resolver)
+    protected override T FromLowLevel(byte value, ValueTags tags, RegistryId registryId)
     {
         // Same as ToLowLevel, the cast to object is removed by the JIT
         return (T)(object)value;
