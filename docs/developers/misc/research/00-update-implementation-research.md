@@ -1,3 +1,10 @@
+!!! note "This document is the *former* design document on how to handle updates via Nexus Mods."
+
+    By request, the approach used was changed from the steps in [Our Approach to Updates](#our-approach-to-updates)
+    to using a [much simpler design][current-adr] during implementation.
+
+    This document remains as a research document.
+
 !!! info "Supporting ***generic*** mod updates on the Nexus today is a tricky subject."
 
 ## Problem Statement
@@ -45,6 +52,15 @@ However, this system has limitations:
 - The `previous version` -> `next version` is a one-to-many relationship.
     - A user is allowed to set the same `previous version` on many files.
 
+### No Plans for V2 API
+
+!!! info "Plans for V2 API in regard to 'mod updates' are unclear."
+
+More specifically, there are no plans yet in regard to what will happen with the
+`file_updates` field (see below). The V2 API does not contain this field; it is unclear
+whether V2 API will support this field, or whether the whole system of marking mod updates
+will be replaced with a new on-site implementation.
+
 ## Existing Implementations
 
 !!! info "Some existing implementations of ***generic*** mod updates over Nexus exist."
@@ -85,14 +101,32 @@ Example response (truncated):
 ]
 ```
 
-We match the response against our locally installed mods.
+We match the response against our locally installed mods;
+performing the following actions:
 
-If any of our mods is in the response, and the `latest_file_update` timestamp is older
-or equal to our locally saved cached response; we don't query the mod.
+#### Updating our Cached Data
 
-Otherwise, if the mod hasn't been checked in over 1 month (max API limit), or its
-`mod_id` is not present in the response, we will have to
-[query the files for an update](#2-querying-mod-files) individually
+If any of our mods:
+
+- Are in the response and have a `latest_file_update` timestamp than our local cached one.
+- Have not been checked in over 1 month (max API limit)
+
+We [query the mod files for an update](#2-querying-mod-files).
+We then update the locally cached data and set timestamp to current time.
+
+#### Updating Cached Timestamp
+
+For all other mods; including:
+
+- Those sooner than 1 month old but with older or equal `latest_file_update` timestamp.
+- Those sooner than 1 month old but not in the response.
+
+We simply update the 'last checked timestamp' to the current time.
+
+!!! tip "This means that on repeated calls to the `updated.json` API, we will incur a 'local cache hit'."
+
+    Logically, a mod whose update you checked for sooner than 1 month ago, that has not been
+    updated in 1 month could not have changed.
 
 ### 2. Querying Mod Files
 
@@ -298,64 +332,6 @@ present in that array, the entry was 'archived', 'deleted' or otherwise.
 
     This is an optimization over that.
 
-## Our Approach to Updates
-
-For [1. Determining Updated Mod Pages](#1-determine-updated-mod-pages), we can improve
-upon the existing implementation with [Multi Query Pages](#multi-query-pages) optimization.
-
-For [2. Querying Mod Files](#2-querying-mod-files), we should use the V1 API that is used by the existing
-implementation (`/v1/games/{game_domain_name}/mods/{mod_id}/files.json`); as the V2 API
-does not contain the necessary information.
-
-We represent the data as a *Directed Acyclic Graph (DAG)*.
-
-### Multi-Query Pages
-
-!!! info "The V2 API allows us to query multiple mod pages at once"
-
-This is a more efficient way to check if mods were updated.
-
-The V2 API has an `modsByUid` endpoint that can be used to query multiple mods at once.
-
-Example query:
-
-```graphql
-query ModsByUid {
-    modsByUid(uids: ["7318624401981"]) {
-        nodes {
-            updatedAt
-        }
-    }
-}
-```
-
-Example result:
-
-```json
-{
-    "data": {
-        "modsByUid": {
-            "nodes": [
-                {
-                    "updatedAt": "2024-09-18T23:01:09Z"
-                }
-            ]
-        }
-    }
-}
-```
-
-Using the `uids` parameter we can query multiple mods at once.
-Then we can compare the `updatedAt` timestamps.
-
-!!! note "A `uid` is a tuple of `modId` and `gameId` at Nexus."
-
-    First 4 bytes are modId, last 4 bytes are gameId; using little endian.
-
-!!! note "There isn't currently a field for last time the files were updated."
-
-    We can ask backend about this.
-
 ## Edge Cases
 
 The following edge cases should be considered.
@@ -439,7 +415,66 @@ graph LR
 
 In this case `v1.0.2` should be the latest version of the mod.
 
+## Our Approach to Updates
+
+!!! note "This was replaced by a [simpler design][current-adr] by request"
+
+    This is the original design.
+
+For [1. Determining Updated Mod Pages](#1-determine-updated-mod-pages), we can improve
+upon the existing implementation with [Multi Query Pages](#multi-query-pages) optimization.
+
+For [2. Querying Mod Files](#2-querying-mod-files), we should use the V1 API that is used by the existing
+implementation (`/v1/games/{game_domain_name}/mods/{mod_id}/files.json`); as the V2 API
+does not contain the necessary information.
+
+We represent the data as a *Directed Acyclic Graph (DAG)*.
+
+### Multi-Query Pages
+
+!!! info "The V2 API allows us to query multiple mod pages at once"
+
+This is a more efficient way to check if mods were updated.
+
+The V2 API has an `modsByUid` endpoint that can be used to query multiple mods at once.
+
+Example query:
+
+```graphql
+query ModsByUid {
+    modsByUid(uids: ["7318624401981"]) {
+        nodes {
+            updatedAt
+        }
+    }
+}
+```
+
+Example result:
+
+```json
+{
+    "data": {
+        "modsByUid": {
+            "nodes": [
+                {
+                    "updatedAt": "2024-09-18T23:01:09Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+Using the `uids` parameter we can query multiple mods at once.
+Then we can compare the `updatedAt` timestamps.
+
+!!! note "A `uid` is a tuple of `modId` and `gameId` at Nexus."
+
+    First 4 bytes are modId, last 4 bytes are gameId; using little endian.
+
 [Mod Organizer 2]: https://github.com/ModOrganizer2/modorganizer
 [Vortex]: https://github.com/Nexus-Mods/Vortex
 [mo2-update-source]: https://github.com/ModOrganizer2/modorganizer/blob/9c130cbf2fc7225fb2916e46419af50671772aa0/src/modinfo.cpp#L299
 [vortex-update-source]: https://github.com/Nexus-Mods/Vortex/blob/85880b9f54df1cc4c1e29e0008755bda575573b0/src/extensions/nexus_integration/util/checkModsVersion.ts#L125
+[current-adr]: ../../decisions/backend/0019-updating-mods.md
