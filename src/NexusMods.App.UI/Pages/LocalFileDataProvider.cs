@@ -81,14 +81,15 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 // NOTE(erri120): LocalFiles have only one child, this can only be 0 or 1.
                 var numInstalledObservable = linkedLoadoutItemsObservable.IsEmpty().Select(isEmpty => isEmpty ? 0 : 1);
 
-                var model = new FakeParentLibraryItemModel(libraryFile.Id)
+                var model = new FakeParentLibraryItemModel(
+                    libraryFile.Id, 
+                    libraryItemsObservable: UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])))
                 {
                     Name = libraryFile.AsLibraryItem().Name,
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                     LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
                     NumInstalledObservable = numInstalledObservable,
-                    LibraryItemsObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<LibraryItem.ReadOnly, EntityId>([new Change<LibraryItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, LibraryItem.Load(_connection.Db, entityId))])),
                 };
 
                 model.CreatedAtDate.Value = libraryFile.GetCreatedAt();
