@@ -1,13 +1,13 @@
 # Changelog
 
-## [v0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-XX
+## [v0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-24
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
 This release adds a very basic implementation of downloading Collections, updates the UI to the new tree view and includes some enhancements when interacting with Windows applications via Linux. 
 
 ### New UI for My Mods and Library
-The My Mods and Library pages have been completely reworked to use the new tree view. Mods are now grouped by the mod page on Nexus Mods, meaning if download several files from the same page they will be grouped together. A "Switch View" option has been added to the toolbar to toggle these groupings on or off. We are continuing to work towards to designs shown in the previous changelog.
+The My Mods and Library pages have been completely reworked to use the new tree view. Mods are now grouped by the mod page on Nexus Mods, meaning if download several files from the same page they will be grouped together. A "Switch View" option has been added to the toolbar to toggle these groupings on or off. We are continuing to work towards to designs shown in the [previous changelog](./docs/changelog-assets/1b28e2fad5b5a6431a72c286d1bcd3fd.webp).
 
 ![An image showing mods in the Library nested by mod page (left) or ungrouped (right)](./docs/changelog-assets/823627a8ccb068dc1559d62cd3326ebe.webp)
 
@@ -20,7 +20,7 @@ We've included a very early implementation of the Collections feature in this re
 
 Collections will appear as a separate list of mods in the left menu. Users can view all mods in the loadout from the new "Installed Mods" option at the top of the left menu. 
 
-To start out, this will only be available to Premium users, but we are working on the free user journey separately and this will be available in a future release.
+To start out, this will only be available to Premium users, but we are working on the free user journey separately which requires considerably more UI elements to be created. This will be available in a future release.
 
 
 ### Cyberpunk 2077 Enhancements
@@ -31,7 +31,6 @@ As a further enhancement to support for Cyberpunk 2077, we will now detect if th
 We've also fixed the issue which prevented REDmod from deploying automatically on Linux. This work also sets up a framework for running Windows apps and tools on a Linux system using [Protontricks](https://github.com/Matoking/protontricks) ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
 
 ### Known Issues
-- Deleting mods or removing mods from a loadout intermittently doesn't update the UI correctly. 
 - Trying to install a collection with an unsupported type of mod (e.g. Bundled or External) will fail with no error message. This is not supported in the current build.
 - Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
 - Once a collection is added to the app, it cannot be removed from the left menu.
