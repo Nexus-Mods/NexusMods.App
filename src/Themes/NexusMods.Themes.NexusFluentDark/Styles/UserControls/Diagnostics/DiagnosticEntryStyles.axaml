@@ -20,16 +20,16 @@
         <Setter Property="Height" Value="52" />
 
         <Style Selector="^ Border#DropShadowBorder">
-            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
             <Style Selector="^:pointerover">
-                <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
+                <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
             </Style>
         </Style>
 
         <Style Selector="^ Button#EntryButton">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <!-- Right padding different to left so the chevron icon to be larger and still fit -->
