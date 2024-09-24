@@ -77,4 +77,8 @@ public interface ICollectionDownloadViewModel : IViewModelInterface
     /// </summary>
     public Bitmap BackgroundImage { get; }
     
+    /// <summary>
+    /// A text representation of the collection's status, such as "Downloading", "Installing", "Ready to Play", etc.
+    /// </summary>
+    public string CollectionStatusText { get; }
 }
