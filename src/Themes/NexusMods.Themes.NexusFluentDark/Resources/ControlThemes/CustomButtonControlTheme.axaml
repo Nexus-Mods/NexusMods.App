@@ -1,0 +1,464 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+
+    <Design.PreviewWith>
+        <Border Padding="16">
+            
+            <!-- <Grid> -->
+            <!--     <Grid.ColumnDefinitions>Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto</Grid.ColumnDefinitions> -->
+            <!--     <Grid.RowDefinitions>Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto</Grid.RowDefinitions> -->
+            <!--      -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="0" VisibleIcon="Both" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="1" VisibleIcon="Both" Type="Primary" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="2" VisibleIcon="Both" Type="Secondary"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="3" VisibleIcon="Both" Type="Secondary" Fill="Strong"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="4" VisibleIcon="Both" Type="Secondary" Fill="Weak"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="5" VisibleIcon="Both" Type="Tertiary" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="6" VisibleIcon="Both" Type="Tertiary" Fill="Weak" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="7" VisibleIcon="Left" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="8" VisibleIcon="Left"  Type="Primary" /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="9" VisibleIcon="Left"  Type="Secondary"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="10" VisibleIcon="Left" Type="Secondary" Fill="Strong"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="11" VisibleIcon="Left" Type="Secondary" Fill="Weak"  /> -->
+            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="12" VisibleIcon="Left" Type="Tertiary" /> -->
+            <!--      -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="0" Size="Small" VisibleIcon="Both" /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="1" Size="Small" VisibleIcon="Both" Type="Primary"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="2" Size="Small" VisibleIcon="Both" Type="Secondary"   /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="3" Size="Small" VisibleIcon="Both" Type="Secondary" Fill="Strong"   /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="4" Size="Small" VisibleIcon="Both" Type="Secondary" Fill="Weak"   /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="5" Size="Small" VisibleIcon="Both" Type="Tertiary"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="6" Size="Small" VisibleIcon="Both" Type="Tertiary" Fill="Weak"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="7" Size="Small" VisibleIcon="Left" />  -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="8" Size="Small" VisibleIcon="Left" Type="Primary" /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="9" Size="Small" VisibleIcon="Left" Type="Secondary"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="10" Size="Small" VisibleIcon="Left" Type="Secondary" Fill="Strong"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="11" Size="Small" VisibleIcon="Left" Type="Secondary" Fill="Weak"  /> -->
+            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="12" Size="Small" VisibleIcon="Left" Type="Tertiary" / -->
+            <!-- </Grid> -->
+            
+            <StackPanel Orientation="Horizontal" Spacing="36">
+                
+                <StackPanel Spacing="4">
+                    <Button IsEnabled="False">Test</Button>
+                    <controls:CustomButton IsEnabled="False"/>
+                    <controls:CustomButton>
+                        <StackPanel>
+                        <TextBlock>Test 1</TextBlock>
+                            <StackPanel Orientation="Horizontal" Background="Chocolate">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"></icons:UnifiedIcon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"></icons:UnifiedIcon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"></icons:UnifiedIcon>
+                            </StackPanel>
+                            <TextBlock Background="DarkRed">Test 2</TextBlock>
+                        <TextBlock>Test 3</TextBlock>
+                        </StackPanel>
+                    </controls:CustomButton>
+                    <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    <!-- <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
+                    <!-- <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
+                    <controls:CustomButton />
+                </StackPanel>
+                
+                <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Default" Theme="{StaticResource TitleMDSemiTheme}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}"/>
+                    
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                            <controls:CustomButton IsEnabled="True" Text="Enabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Check}"/>
+                            <controls:CustomButton IsEnabled="False" Text="Disabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Close}"/>
+                            <controls:CustomButton VisibleIcon="Both" />
+                            <controls:CustomButton />
+                            <controls:CustomButton VisibleIcon="Left" Text="Something" HorizontalAlignment="Stretch" LeftIcon="{x:Static icons:IconValues.PlayArrow}"/>
+                            <controls:CustomButton VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:CustomButton VisibleIcon="Left" ShowLabel="False"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
+                    
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                            <controls:CustomButton Size="Small" />
+                            <controls:CustomButton Size="Small" VisibleIcon="Left" />
+                            <controls:CustomButton Size="Small"  IsEnabled="False" VisibleIcon="Right" />
+                            <controls:CustomButton Size="Small"  IsEnabled="False" VisibleIcon="Both" />
+                            <controls:CustomButton Size="Small" VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:CustomButton Size="Small" VisibleIcon="Left" ShowLabel="False"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Primary" Theme="{StaticResource TitleMDSemiTheme}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                            <controls:CustomButton Type="Primary" Text="Primary"/>
+                            <controls:CustomButton Type="Primary" Text="Primary" IsEnabled="False" VisibleIcon="Left" />
+                            <controls:CustomButton Type="Primary" VisibleIcon="Right" />
+                            <controls:CustomButton Type="Primary" VisibleIcon="Both" />
+                            <controls:CustomButton Type="Primary"  VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:CustomButton Type="Primary"  VisibleIcon="Left" ShowLabel="False"/>
+                            <controls:CustomButton Type="Primary"  VisibleIcon="Left" ShowLabel="False"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                            <controls:CustomButton Type="Primary" Size="Small" />
+                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Left" />
+                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Right" />
+                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Both" />
+                            <controls:CustomButton Type="Primary"  Size="Small" VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:CustomButton Type="Primary"  Size="Small" VisibleIcon="Left" ShowLabel="False"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto" ShowGridLines="False">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Secondary" Theme="{StaticResource TitleMDSemiTheme}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}"/>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
+                        <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Secondary" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton IsEnabled="True" Type="Secondary" Fill="Weak" />
+                        <controls:CustomButton IsEnabled="False" Type="Secondary" Fill="Weak" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="7" Grid.Column="0"  Spacing="8">
+                        <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Secondary" Fill="Strong" Text="Play" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    </StackPanel>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
+                    
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
+                        <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Secondary"  Size="Small"  />
+                    </StackPanel>
+                    <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Secondary"  Size="Small" Fill="Weak" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="7" Grid.Column="2"  Spacing="8">
+                        <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Secondary" Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:CustomButton Type="Secondary" IsEnabled="False"  Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    </StackPanel>
+                </Grid>
+                
+                <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto" ShowGridLines="False">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Tertiary" Theme="{StaticResource TitleMDSemiTheme}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}"/>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
+                        <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Tertiary" />
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Tertiary"   Fill="Weak" />
+                    </StackPanel>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
+                    
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
+                        <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Tertiary" Size="Small" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}"   />
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton Type="Tertiary" Size="Small" Fill="Weak" VisibleIcon="Left"  LeftIcon="{x:Static icons:IconValues.Nexus}"   />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+        </Border>
+    </Design.PreviewWith>
+    
+
+    <ControlTheme x:Key="{x:Type controls:CustomButton}" TargetType="controls:CustomButton" >
+        
+        <!-- start of default button styles to match avalonia's default
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/Button.xaml-->
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="RenderTransform" Value="none" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:.075" />
+            </Transitions>
+        </Setter>
+        <!-- end default button styles -->
+        
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- this is only shown if Content is set -->
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}"
+                                      RecognizesAccessKey="True"
+                                      HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                    
+                    <!-- this is used when Content isn't set (used for normal buttons) -->
+                    <Border  x:Name="PART_Border"
+                             Background="{TemplateBinding Background}"
+                             BorderBrush="{TemplateBinding BorderBrush}"
+                             BorderThickness="{TemplateBinding BorderThickness}"
+                             CornerRadius="{TemplateBinding CornerRadius}"
+                             Padding="{TemplateBinding Padding}" >
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <icons:UnifiedIcon Name="PART_LeftIcon" />
+                            <TextBlock Name="PART_Label" Text="{TemplateBinding Text}" />
+                            <icons:UnifiedIcon Name="PART_RightIcon" />
+                        </StackPanel>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        
+        
+        <!-- Set the default avalonia button styles 
+        (these are overriden by us as well in NexusMods.Themes.NexusFluentDark) -->
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+          <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
+          <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPressed}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+          <Setter Property="Background" Value="{DynamicResource ButtonBackgroundDisabled}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+          <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+        </Style>
+        <!-- end of default button styles -->
+        
+        
+        
+        <!-- start of our new button styles -->
+        
+        
+        
+        <!-- all button states -->
+        <Style Selector="^">
+            
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="{StaticResource ButtonMediumPadding}" />
+            <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+             
+            <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceTransparentBrush}" />
+            
+            <Style Selector="^ /template/ Border">
+                <Setter Property="Height" Value="36" />
+            </Style>
+            
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
+            </Style>
+        
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Size" Value="20"></Setter>
+            </Style>
+            
+            <Style Selector="^ TextBlock">
+                <!-- needs a little padding to fully match figma -->
+                <Setter Property="Padding" Value="2 0" />
+                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
+            </Style>
+            
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="0.4" />
+            </Style>
+        </Style>
+                        
+        <!-- small variants -->
+        <Style Selector="^:size-small">
+            <Setter Property="Padding" Value="{StaticResource ButtonSmallPadding}" />
+            
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}"></Setter>
+            </Style>
+        
+            <Style Selector="^ /template/ Border">
+                <Setter Property="Height" Value="28" /> 
+                
+                <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Size" Value="16"></Setter>
+                </Style>
+                    
+                <Style Selector="^ TextBlock">
+                    <!-- needs a little horizontal padding to fully match figma -->
+                    <Setter Property="Padding" Value="1 0" />
+                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                </Style>
+            </Style>
+        </Style>
+        
+        <!-- primary button -->
+        <Style Selector="^:type-primary">
+            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+            
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled">
+            </Style>
+        </Style>
+        
+        <!-- secondary button -->
+        <Style Selector="^:type-secondary">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+            
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled">
+            </Style>
+            
+            <!-- fill variants -->
+            
+            <Style Selector="^:fill-strong">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+            
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource NeutralWeakBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                </Style>
+            </Style>
+            
+            <Style Selector="^:fill-weak">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+            
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrongBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                </Style>
+            </Style>
+        </Style>
+        
+        <!-- tertiary button -->
+        <Style Selector="^:type-tertiary">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled">
+            </Style>
+            
+            <!-- fill variants -->
+            
+            <Style Selector="^:fill-weak">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                </Style>
+                
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                </Style>
+            </Style>
+        </Style>
+        
+    </ControlTheme>
+    
+    
+</ResourceDictionary>

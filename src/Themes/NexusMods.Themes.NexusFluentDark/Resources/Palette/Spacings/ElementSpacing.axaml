@@ -37,5 +37,10 @@
     <x:Double x:Key="Spacing-80">320</x:Double>
     <x:Double x:Key="Spacing-96">384</x:Double>
     
+    <!-- button padding sizes but we can't easily use the above values -->
+    
+    <Thickness x:Key="ButtonMediumPadding">8,0</Thickness>
+    <Thickness x:Key="ButtonSmallPadding">6,0</Thickness>
+    
 </ResourceDictionary>
 

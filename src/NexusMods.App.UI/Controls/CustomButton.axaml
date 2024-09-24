@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:NexusMods.App.UI.Controls"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        >
+    
+    <Design.PreviewWith>
+        <Border Padding="8">
+            <StackPanel Spacing="10">
+                <controls:CustomButton Text="Button Text" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    
+    <!-- Control theme is located at src/Themes/NexusMods.Themes.NexusFluentDark/Resources/ControlThemes/CustomButtonControlTheme.axaml
+    Default style is found here as well as the default template -->
+    
+</Styles>
+
