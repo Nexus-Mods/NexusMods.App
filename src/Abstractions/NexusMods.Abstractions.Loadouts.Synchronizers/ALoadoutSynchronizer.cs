@@ -177,7 +177,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return file;
             })
             .Where(f => !f.TryGetAsDeletedFile(out _))
-            .Where(f => !IsIgnoredPath(f.TargetPath))
             .OfTypeLoadoutFile();
         
         return BuildSyncTree(currentState, previousTree, grouped);
