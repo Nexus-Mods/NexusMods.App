@@ -13,6 +13,7 @@ Get information on potential issues in your loadout(s). [Learn more about Health
 
 Diagnostics are shown in the following situations: 
 
+- A mod requires the REDmod DLC ([Steam](https://store.steampowered.com/app/2060310/Cyberpunk_2077_REDmod/)/[GOG](https://www.gog.com/game/cyberpunk_2077_redmod)/[Epic](https://store.epicgames.com/p/cyberpunk-2077)) but it is not installed. 
 - A mod is installed and requires any of the following dependencies by they are not installed or enabled:
     - [Codeware](https://www.nexusmods.com/cyberpunk2077/mods/7780) - Detected by `.reds` files or Lua scripts with the `Codeware` global. 
     - [Virtual Atelier](https://www.nexusmods.com/cyberpunk2077/mods/2987) - Detected by `.reds` files uses hooks for this mod.
@@ -23,8 +24,6 @@ Diagnostics are shown in the following situations:
     - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
 
 ### Automated deployment for REDmods
-
-!!! warning "This feature currently isn't available on Linux."
 
 When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
 

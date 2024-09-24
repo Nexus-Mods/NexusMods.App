@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
@@ -24,7 +25,7 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     /// <summary>
     /// The metadata of the collection revision.
     /// </summary>
-    public NexusModsCollectionRevision.ReadOnly? Metadata { get; set; }
+    public CollectionRevisionMetadata.ReadOnly? Metadata { get; set; }
 
     /// <summary>
     /// The collection slug

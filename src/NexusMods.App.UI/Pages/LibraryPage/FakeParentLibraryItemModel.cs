@@ -11,16 +11,23 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 public class FakeParentLibraryItemModel : LibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
-    public required IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> LibraryItemsObservable { get; init; }
+    public IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> LibraryItemsObservable { get; }
     protected ObservableHashSet<LibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
     public override IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => LibraryItems.Select(static item => item.LibraryItemId).ToArray();
 
     private readonly IDisposable _modelActivationDisposable;
-    private readonly SerialDisposable _libraryItemsDisposable = new();
+    private readonly IDisposable _libraryItemsDisposable;
 
-    public FakeParentLibraryItemModel(LibraryItemId libraryItemId) : base(libraryItemId)
+    public FakeParentLibraryItemModel(LibraryItemId libraryItemId, IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> libraryItemsObservable) : base(libraryItemId)
     {
+        LibraryItemsObservable = libraryItemsObservable;
+        
+        // NOTE(Al12rs): This needs to be set up even if model is never activated,
+        // as it is possible for items to get selected and interacted with without their model being activated
+        // (e.g. by quick scrolling to bottom with scrollbar and shift-selecting all items)
+        _libraryItemsDisposable =  LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LibraryItems.ApplyChanges(changeSet));
+        
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.NumInstalledObservable
@@ -54,11 +61,6 @@ public class FakeParentLibraryItemModel : LibraryItemModel
                     }
                 })
                 .AddTo(disposables);
-
-            if (model._libraryItemsDisposable.Disposable is null)
-            {
-                model._libraryItemsDisposable.Disposable = model.LibraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LibraryItems.ApplyChanges(changeSet));
-            }
         });
     }
 

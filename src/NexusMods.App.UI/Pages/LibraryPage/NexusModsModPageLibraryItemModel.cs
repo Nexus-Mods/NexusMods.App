@@ -1,5 +1,7 @@
+using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ObservableCollections;
 using R3;
@@ -9,7 +11,8 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 public class NexusModsModPageLibraryItemModel : FakeParentLibraryItemModel
 {
     private readonly IDisposable _modelActivationDisposable;
-    public NexusModsModPageLibraryItemModel() : base(default(LibraryItemId))
+    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> libraryItemsObservable) 
+        : base(default(LibraryItemId), libraryItemsObservable)
     {
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
