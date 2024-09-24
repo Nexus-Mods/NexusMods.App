@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -12,6 +13,15 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
         this.WhenActivated(d =>
             {
+                
+                // Uncomment this to enable the background image
+                 /*
+                 this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
+                     .WhereNotNull()
+                     .SubscribeWithErrorLogging(image => Body.Background = new ImageBrush { Source = image })
+                     .DisposeWith(d);
+                     */
+                
                 this.WhenAnyValue(view => view.ViewModel!.TileImage)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(image => Image38.Source = image)
