@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
@@ -15,6 +16,8 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
     
     private static GamePath ModSettingsFile => new(LocationId.From("PlayerProfiles"), "modsettings.lsx");
     
+    private static Extension PakExtension => new Extension(".pak");
+    
 
     public BaldursGate3Synchronizer(IServiceProvider provider) : base(provider)
     {
@@ -27,9 +30,10 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
         // Always ignore all PlayerProfile files except the modsettings file.
         if (path.InFolder(PublicPlayerProfiles))
             return path.Path != ModSettingsFile.Path;
-        if (path.InFolder(DataFolder))
-            return true;
-        return false;
+        
+        if (_settings.DoFullGameBackup) return false;
+
+        return path.InFolder(DataFolder) && path.Extension == PakExtension;
     }
     
     public override bool IsIgnoredBackupPath(GamePath path)
