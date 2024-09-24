@@ -68,27 +68,37 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         {
             InstallFolderTargets =
             [
+                // Pak mods
+                // Examples:
+                // - <see href="https://www.nexusmods.com/baldursgate3/mods/366?tab=description">ImpUI (ImprovedUI) Patch7Ready</see>
+                // - <see href="https://www.nexusmods.com/baldursgate3/mods/11373?tab=description">NPC Visual Overhaul (WIP) - NPC VO</see>
                 new InstallFolderTarget
                 {
-                    // Pak mods
                     DestinationGamePath = new GamePath(LocationId.From("Mods"), ""),
                     KnownValidFileExtensions = [new Extension(".pak")],
                     FileExtensionsToDiscard =
                     [
-                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png, 
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
                         KnownExtensions.Json, new Extension(".lnk"),
                     ],
                 },
+
+                // bin and NativeMods mods
+                // Examples:
+                // - <see href="https://www.nexusmods.com/baldursgate3/mods/944">Native Mod Loader</see>
+                // - <see href="https://www.nexusmods.com/baldursgate3/mods/668?tab=files">Achievement Enabler</see>
                 new InstallFolderTarget
                 {
-                    // bin and NativeMods mods
                     DestinationGamePath = new GamePath(LocationId.Game, "bin"),
                     KnownSourceFolderNames = ["bin"],
                     Names = ["NativeMods"],
                 },
+
+                // loose files Data mods
+                // Examples:
+                // - <see href="https://www.nexusmods.com/baldursgate3/mods/555?tab=description">Fast XP</see>
                 new InstallFolderTarget
                 {
-                    // loose files Data mods
                     DestinationGamePath = new GamePath(LocationId.Game, "Data"),
                     KnownSourceFolderNames = ["Data"],
                     Names = ["Generated", "Public"],
