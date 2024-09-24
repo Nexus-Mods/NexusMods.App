@@ -1,0 +1,41 @@
+<reactiveUi:ReactiveUserControl 
+    x:TypeArguments="collectionDownload:ICollectionDownloadViewModel" 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    mc:Ignorable="d" d:DesignWidth="1620" d:DesignHeight="600"
+    x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
+    <Design.DataContext>
+        <collectionDownload:CollectionDownloadDesignViewModel />
+    </Design.DataContext>
+    
+    <panels:FlexPanel x:Name="Body">
+        <panels:FlexPanel x:Name="Frame758">
+            <panels:FlexPanel x:Name="Frame1452">
+                <panels:FlexPanel x:Name="Container">
+                    <Border x:Name="TileImageBorder">
+                        <Image x:Name="TileImage" />
+                    </Border>
+                    <panels:FlexPanel x:Name="containerInner" IsVisible="False">
+                        <TextBlock Classes="TitleSMSemi">COLLECTION DOWNLOAD</TextBlock>
+                        <TextBlock x:Name="Title" Classes="HeadingSMSemi"/>
+                        <panels:FlexPanel x:Name="TagsPanel">
+                            <TextBlock x:Name="Revision" />
+                            <Border x:Name="AuthorAvatarBorder">
+                                <Image x:Name="AuthorAvatar" />
+                            </Border>
+                        </panels:FlexPanel>
+                        <TextBlock x:Name="AuthorName" />
+                        <TextBlock x:Name="Summary"></TextBlock>
+                    </panels:FlexPanel>
+                </panels:FlexPanel>
+            </panels:FlexPanel>
+        </panels:FlexPanel>
+    </panels:FlexPanel>
+
+</reactiveUi:ReactiveUserControl>
+

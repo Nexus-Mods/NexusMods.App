@@ -1,0 +1,42 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Grid Classes="Low" Width="1400" Height="600">
+            <Grid.Resources>
+                <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
+            </Grid.Resources>
+            <collections:CollectionDownloadView DataContext="{StaticResource CollectionDownloadPageDesignViewModel}" />
+        </Grid>
+    </Design.PreviewWith>
+    
+    <Style Selector="collections|CollectionDownloadView">
+        <Style Selector="^ panels|FlexPanel#Body">
+            <Style Selector="^ panels|FlexPanel#Frame758">
+                <Setter Property="AlignItems" Value="FlexStart" />
+                <Setter Property="Margin" Value="24 24 24 0"></Setter>
+                <Style Selector="^ panels|FlexPanel#Frame1452">
+                    <Setter Property="MaxWidth" Value="806" />
+                    <Style Selector="^ panels|FlexPanel#Container">
+                        <Setter Property="Margin" Value="0 0 0 24" />
+
+                        <Style Selector="^ Border#TileImageBorder">
+                            <Setter Property="CornerRadius" Value="4" />
+                            <Setter Property="ClipToBounds" Value="True" />
+                            <Setter Property="Width" Value="154" />
+                            <Setter Property="Height" Value="190" />
+                            <Style Selector="^ Image">
+                                <Setter Property="Width" Value="154" />
+                                <Setter Property="Height" Value="190" />
+                            </Style>
+                        </Style>
+
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+        
+    </Style>
+</Styles>
+
