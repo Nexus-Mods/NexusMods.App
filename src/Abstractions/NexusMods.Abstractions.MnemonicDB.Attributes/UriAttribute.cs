@@ -16,7 +16,7 @@ public class UriAttribute(string ns, string name) : ScalarAttribute<Uri, string>
     }
 
     /// <inheritdoc />
-    protected override Uri FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override Uri FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
         return new Uri(value);
     }

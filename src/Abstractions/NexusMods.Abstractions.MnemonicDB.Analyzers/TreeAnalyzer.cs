@@ -30,14 +30,13 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
             
             var db = current.IsRetract ? dbOld : dbNew;
             var entity = db.Get(current.E);
-            var resolver = dbNew.Connection.AttributeResolver;
             foreach (var datom in entity)
             {
-                var resolved = resolver.Resolve(datom);
-                if (resolved.A is not ReferenceAttribute reference) 
+                var resolved = dbNew.Registry.GetAttribute(datom.A);
+                if (resolved is not ReferenceAttribute reference) 
                     continue;
-
-                var parent = reference.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, resolver);
+                
+                var parent = reference.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, entity.RegistryId);
                 remaining.Push((parent, current.IsRetract));
             }
         }

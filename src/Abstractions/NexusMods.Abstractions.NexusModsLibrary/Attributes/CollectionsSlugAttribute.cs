@@ -17,7 +17,7 @@ public class CollectionsSlugAttribute(string ns, string name) : ScalarAttribute<
     }
 
     /// <inheritdoc />
-    protected override CollectionSlug FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override CollectionSlug FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
         return CollectionSlug.From(value);
     }

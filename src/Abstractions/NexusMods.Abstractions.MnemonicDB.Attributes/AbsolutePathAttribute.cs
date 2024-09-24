@@ -18,9 +18,8 @@ public class AbsolutePathAttribute(string ns, string name) : ScalarAttribute<Abs
     }
 
     /// <inheritdoc />
-    protected override AbsolutePath FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
-
+    protected override AbsolutePath FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
-        return resolver.ServiceProvider.GetRequiredService<IFileSystem>().FromUnsanitizedFullPath(value);
+        return GetServiceProvider(registryId).GetRequiredService<IFileSystem>().FromUnsanitizedFullPath(value);
     }
 }

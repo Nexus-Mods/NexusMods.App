@@ -17,7 +17,7 @@ public class GameStoreAttribute(string ns, string name) : ScalarAttribute<GameSt
     }
 
     /// <inheritdoc />
-    protected override GameStore FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override GameStore FromLowLevel(string value, ValueTags tag, RegistryId registryId)
     {
         return GameStore.From(value);
     }

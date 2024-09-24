@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 public class MemoryAttribute(string ns, string name) : HashedBlobAttribute<Memory<byte>>(ns, name)
 {
     /// <inheritdoc />
-    protected override Memory<byte> FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
+    protected override Memory<byte> FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
     {
         return new Memory<byte>(value.ToArray());
     }

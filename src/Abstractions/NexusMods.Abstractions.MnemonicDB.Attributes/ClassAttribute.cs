@@ -18,7 +18,7 @@ where TType : IGuidClass
     protected override UInt128 ToLowLevel(UInt128 id) => id;
 
     /// <inheritdoc />
-    protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags, AttributeResolver resolver) => value;
+    protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags, RegistryId registry) => value;
     
     /// <summary>
     /// Gets the instance of the class from the DI container.

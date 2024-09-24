@@ -12,5 +12,5 @@ public class SizeAttribute(string ns, string name) : ScalarAttribute<Size, ulong
 {
     protected override ulong ToLowLevel(Size value) => value.Value;
 
-    protected override Size FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => Size.From(value);
+    protected override Size FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => Size.From(value);
 }

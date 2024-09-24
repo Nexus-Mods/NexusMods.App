@@ -27,5 +27,5 @@ public class ModIdAttribute(string ns, string name)
     protected override ulong ToLowLevel(ModId value) => value.Value;
 
     /// <inheritdoc />
-    protected override ModId FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => ModId.From(value);
+    protected override ModId FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => ModId.From(value);
 } 
