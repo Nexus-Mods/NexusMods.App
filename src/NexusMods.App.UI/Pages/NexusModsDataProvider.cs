@@ -180,11 +180,10 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
                 {
                     NameObservable = Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
-                    LoadoutItemIdsObservable = loadoutItemIdsObservable,
                     IsEnabledObservable = isEnabledObservable,
 
                     HasChildrenObservable = hasChildrenObservable,
