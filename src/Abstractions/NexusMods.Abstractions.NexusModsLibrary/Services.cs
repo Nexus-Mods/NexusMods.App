@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -18,8 +19,10 @@ public static class Services
             .AddNexusModsFileMetadataModel()
             .AddNexusModsModPageMetadataModel()
             .AddNexusModsLibraryFileModel()
-            .AddNexusModsCollectionMetadataModel()
-            .AddNexusModsCollectionRevisionModel()
+            .AddCollectionMetadataModel()
+            .AddCollectionRevisionMetadataModel()
+            .AddCollectionTagModel()
+            .AddUserModel()
             .AddNexusModsCollectionLibraryFileModel();
     }
 }

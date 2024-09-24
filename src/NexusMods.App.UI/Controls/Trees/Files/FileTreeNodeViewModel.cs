@@ -205,7 +205,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
         return new TemplateColumn<IFileTreeNodeViewModel>(
             Language.Helpers_GenerateHeader_State,
             "FileStateColumnTemplate",
-            width: new GridLength(125),
+            width: new GridLength(150),
             options: new TemplateColumnOptions<IFileTreeNodeViewModel>
             {
                 // Compares change state first, then by folder/file, then by name.

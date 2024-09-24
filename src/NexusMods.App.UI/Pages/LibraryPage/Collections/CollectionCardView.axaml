@@ -1,0 +1,97 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="collections:ICollectionCardViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
+    x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
+    <Design.DataContext>
+        <collections:CollectionCardDesignViewModel />
+    </Design.DataContext>
+    <Border x:Name="CardCollectionBorder">
+        <panels:FlexPanel x:Name="CardCollection">
+
+            <Border x:Name="ContainerBorder">
+                <panels:FlexPanel x:Name="Container">
+
+                    <Border x:Name="TileImageBorder">
+                        <Image x:Name="TileImage" />
+                    </Border>
+
+                    <panels:FlexPanel x:Name="TitleContainer">
+                        <TextBlock x:Name="TitleText" />
+                        <Border x:Name="CategoryTextBorder">
+                            <TextBlock x:Name="CategoryText" />
+                        </Border>
+                        <panels:FlexPanel x:Name="SummaryTextFlexPanel">
+                            <TextBlock x:Name="SummaryText" />
+                        </panels:FlexPanel>
+                    </panels:FlexPanel>
+
+                </panels:FlexPanel>
+            </Border>
+
+
+            <Border x:Name="StatsBorder">
+                <panels:FlexPanel x:Name="Stats" IsVisible="True">
+                    <panels:FlexPanel x:Name="ModsPanel">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
+                        <TextBlock x:Name="ModCount" />
+                    </panels:FlexPanel>
+                    <panels:FlexPanel x:Name="EndorsementsPanel">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
+                        <TextBlock x:Name="Endorsements" />
+                    </panels:FlexPanel>
+                    <panels:FlexPanel x:Name="DownloadsPanel">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                        <TextBlock x:Name="Downloads" />
+                    </panels:FlexPanel>
+                    <panels:FlexPanel x:Name="TotalSizePanel">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
+                        <TextBlock x:Name="TotalSize" />
+                    </panels:FlexPanel>
+                    <panels:FlexPanel x:Name="OverallRatingPanel">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}" />
+                        <TextBlock x:Name="OverallRating" />
+                    </panels:FlexPanel>
+                </panels:FlexPanel>
+            </Border>
+
+
+            <Border x:Name="ActionFooterBorder">
+                <panels:FlexPanel x:Name="ActionFooter">
+
+                    <panels:FlexPanel x:Name="ActionGroup">
+                        <Button x:Name="DownloadButton" Classes="Standard Secondary" Height="28">
+                            <panels:FlexPanel>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                <TextBlock Text="Continue Download" />
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronRight}" />
+                            </panels:FlexPanel>
+                        </Button>
+                    </panels:FlexPanel>
+
+                    <panels:FlexPanel x:Name="FooterLabels">
+                        <panels:FlexPanel x:Name="UserLabel">
+                            <Border x:Name="AvatarImageBorder">
+                                <Image x:Name="AuthorAvatarImage" />
+                            </Border>
+                            <TextBlock x:Name="AuthorName" />
+                        </panels:FlexPanel>
+                        <panels:FlexPanel x:Name="ListingLabel">
+                            <TextBlock x:Name="ListingLabelText" />
+                        </panels:FlexPanel>
+                    </panels:FlexPanel>
+
+                </panels:FlexPanel>
+            </Border>
+
+        </panels:FlexPanel>
+
+    </Border>
+</reactiveUi:ReactiveUserControl>

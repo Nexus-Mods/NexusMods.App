@@ -26,6 +26,21 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     bool IsDeletion { get; }
 
     /// <summary>
+    ///     Boolean value for FileChangeType.Added. Used for setting style classes.
+    /// </summary>
+    bool IsChangeAdded => ChangeType == FileChangeType.Added;
+    
+    /// <summary>
+    ///     Boolean value for FileChangeType.Modified. Used for setting style classes.
+    /// </summary>
+    bool IsChangeModified => ChangeType == FileChangeType.Modified;
+    
+    /// <summary>
+    ///     Boolean value for FileChangeType.Removed. Used for setting style classes.
+    /// </summary>
+    bool IsChangeRemoved => ChangeType == FileChangeType.Removed;
+
+    /// <summary>
     ///     Name of the file or folder segment.
     /// </summary>
     string Name { get; }

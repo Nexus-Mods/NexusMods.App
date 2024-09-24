@@ -18,7 +18,7 @@ public partial class BodyView : ReactiveUserControl<IBodyViewModel>
             // Set the mod name if VM is not null.
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
-                .Do(vm => ModNameTextBlock.Text = vm.ModName.ToUpper())
+                .Do(vm => ModNameTextBlock.Text = vm.ModName)
                 .Subscribe()
                 .DisposeWith(disposables);
 

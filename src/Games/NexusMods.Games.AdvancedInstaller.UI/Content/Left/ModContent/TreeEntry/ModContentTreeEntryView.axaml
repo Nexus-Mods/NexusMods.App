@@ -34,10 +34,11 @@
             <icons:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
-            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"
-                       Text="Example-file.bsa"
-                       x:Name="FileNameTextBlock" />
+            <TextBlock   Theme="{StaticResource BodyMDNormalTheme}"
+                         VerticalAlignment="Center"
+                         TextTrimming="CharacterEllipsis"
+                         Text="Example-file.bsa"
+                         x:Name="FileNameTextBlock" />
         </StackPanel>
 
         <!-- Right Elements -->
@@ -45,14 +46,14 @@
                     x:Name="EntryRightElementsStackPanel">
 
             <!-- Install Button (Install / Install all / Install folder) -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="InstallRoundedButton">
+            <Button Classes="Standard Tertiary Weak RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="InstallRoundedButton" Height="24">
                 <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
             </Button>
 
             <!-- X Select location ['Selecting' State] -->
-            <Button Classes="Rounded Primary Active RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="SelectLocationRoundedButton">
+            <Button Classes="Standard Secondary RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectLocationRoundedButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="Close" x:Name="SelectLocationCloseIcon" />
                     <TextBlock Text="{x:Static resources:Language.SelectLocationButton_Select_location}"
@@ -61,8 +62,8 @@
             </Button>
 
             <!-- Remove from Location Button ['IncludedExplicit' State] -->
-            <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="RemoveFromLocationButton">
+            <Button Classes="Standard Secondary RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="RemoveFromLocationButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
                     <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
@@ -70,8 +71,8 @@
             </Button>
 
             <!-- Include Transition Button (Include / Include folder / Include with folder) [`Selecting`,`SelectingViaParent`]-->
-            <Button Classes="Rounded Primary SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="IncludeTransitionButton">
+            <Button Classes="Standard Tertiary Weak SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludeTransitionButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
                     <TextBlock Text="Include temp text" x:Name="IncludeTransitionButtonTextBlock" />
@@ -79,8 +80,8 @@
             </Button>
 
             <!-- Included Remove Button (Included / Included folder / Included with folder) -->
-            <Button Classes="Rounded Accent SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="IncludedRemoveButton">
+            <Button Classes="Standard Tertiary Weak SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludedRemoveButton" Height="24">
                 <StackPanel Orientation="Horizontal">
                     <icons:UnifiedIcon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
                     <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />

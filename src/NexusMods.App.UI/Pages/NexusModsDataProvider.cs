@@ -104,14 +104,13 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        return new NexusModsModPageLibraryItemModel
+        return new NexusModsModPageLibraryItemModel(libraryFilesObservable)
         {
             Name = modPageMetadata.Name,
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             NumInstalledObservable = numInstalledObservable,
-            LibraryItemsObservable = libraryFilesObservable,
         };
     }
 
