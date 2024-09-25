@@ -31,6 +31,7 @@ As a further enhancement to support for Cyberpunk 2077, we will now detect if th
 We've also fixed the issue which prevented REDmod from deploying automatically on Linux. This work also sets up a framework for running Windows apps and tools on a Linux system using [Protontricks](https://github.com/Matoking/protontricks) ([#1989](https://github.com/Nexus-Mods/NexusMods.App/pull/1989)).
 
 ### Known Issues
+- When batch selecting mods in My Mods and using the remove button the app will occasionally fail to remove mods that are not currently visible in the UI due to scrolling. 
 - Trying to install a collection with an unsupported type of mod (e.g. Bundled or External) will fail with no error message. This is not supported in the current build.
 - Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
 - Once a collection is added to the app, it cannot be removed from the left menu.
