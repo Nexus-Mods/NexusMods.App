@@ -51,4 +51,9 @@ public partial class CollectionMetadata : IModelDefinition
     /// The collections' image.
     /// </summary>
     public static readonly MemoryAttribute TileImage = new(Namespace, nameof(TileImage));
+    
+    /// <summary>
+    /// The collections' image.
+    /// </summary>
+    public static readonly MemoryAttribute BackgroundImage = new(Namespace, nameof(BackgroundImage));
 }
