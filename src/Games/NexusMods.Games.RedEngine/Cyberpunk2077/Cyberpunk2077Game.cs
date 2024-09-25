@@ -41,10 +41,12 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            {
-                LocationId.Saves,
-                fileSystem.GetKnownPath(KnownPath.HomeDirectory).Combine("Saved Games/CD Projekt Red/Cyberpunk 2077")
-            },
+            // Skip managing saves for now, to prevent accidental deletion of saves
+            // e.g. when removing loadouts, un-managing the game, or uninstalling the app
+            // {
+            //     LocationId.Saves,
+            //     fileSystem.GetKnownPath(KnownPath.HomeDirectory).Combine("Saved Games/CD Projekt Red/Cyberpunk 2077")
+            // },
             {
                 LocationId.AppData,
                 fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
