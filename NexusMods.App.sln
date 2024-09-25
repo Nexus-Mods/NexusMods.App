@@ -258,6 +258,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Medi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian", "src\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj", "{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.ModUpdates", "src\Networking\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj", "{8B246C04-F372-47F6-9397-F658915429A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.ModUpdates.Tests", "tests\Networking\NexusMods.Networking.ModUpdates.Tests\NexusMods.Networking.ModUpdates.Tests.csproj", "{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -668,6 +672,14 @@ Global
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B246C04-F372-47F6-9397-F658915429A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B246C04-F372-47F6-9397-F658915429A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B246C04-F372-47F6-9397-F658915429A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B246C04-F372-47F6-9397-F658915429A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -787,6 +799,8 @@ Global
 		{8C817874-7A88-450E-B216-851A1B03684C} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{5CB6D02C-07D0-4C0D-BF5C-4E2E958A0612} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
+		{8B246C04-F372-47F6-9397-F658915429A8} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
+		{CDA2C52B-A9A7-446B-9D2F-D7B75C1905EF} = {897C4198-884F-448A-B0B0-C2A6D971EAE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
