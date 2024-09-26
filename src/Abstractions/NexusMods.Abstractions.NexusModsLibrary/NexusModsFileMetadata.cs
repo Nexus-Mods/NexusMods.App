@@ -28,11 +28,6 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// The version of the file.
     /// </summary>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
-    
-    /// <summary>
-    /// The size in bytes of the file.
-    /// </summary>
-    public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
 
     /// <summary>
     /// The size of the file in bytes, this is optional in the NexusMods API for whatever reason.
