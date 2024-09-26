@@ -1,0 +1,130 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    <Design.PreviewWith>
+        <Grid Width="1400" Height="600">
+            <Grid.Resources>
+                <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
+            </Grid.Resources>
+            <collections:CollectionDownloadView DataContext="{StaticResource CollectionDownloadPageDesignViewModel}" />
+        </Grid>
+    </Design.PreviewWith>
+
+    <Style Selector="collections|CollectionDownloadView">
+        <Style Selector="^ panels|FlexPanel#Body">
+            <Setter Property="Background" Value="#101020" />
+            <Setter Property="Direction" Value="Column" />
+            <Setter Property="AlignItems" Value="FlexStart" />
+
+            <Style Selector="^ Border#HeaderBorder">
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="Background" Value="#202030" />
+                <Setter Property="Padding" Value="24,24,24,16" />
+
+                <Style Selector="^ panels|FlexPanel#Header">
+                    <!-- <Setter Property="Background" Value="#252535" /> -->
+                    <Setter Property="Direction" Value="Column" />
+                    <Setter Property="AlignItems" Value="FlexStart" />
+
+                    <Style Selector="^ Border#MainContentBorder">
+                        <Setter Property="Background" Value="DarkRed" />
+                        <Setter Property="MaxWidth" Value="806" />
+                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                        <Setter Property="Padding" Value="0, 0, 0, 24" />
+
+                        <Style Selector="^ panels|FlexPanel#MainContent">
+                            <Setter Property="Direction" Value="Row" />
+
+                            <!-- left column -->
+                            <Style Selector="^ Border#CollectionImageBorder">
+                                <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                                <Setter Property="ClipToBounds" Value="True" />
+
+                                <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
+                                <Setter Property="Width" Value="154" />
+                                <Setter Property="Height" Value="190" />
+                                <Style Selector="^ Image#CollectionImage">
+                                    <Setter Property="Width" Value="154" />
+                                    <Setter Property="Height" Value="190" />
+                                </Style>
+                            </Style>
+
+                            <!-- right column -->
+                            <Style Selector="^ panels|FlexPanel#CollectionDetails">
+                                <Setter Property="Margin" Value="24, 0" />
+                                <!-- <Setter Property="Background" Value="#404050" /> -->
+                                <Setter Property="Direction" Value="Column" />
+                                <Setter Property="RowSpacing" Value="4" />
+                                <Setter Property="panels:Flex.Grow" Value="1" />
+                                <Setter Property="panels:Flex.Shrink" Value="0" />
+                                <Setter Property="panels:Flex.Basis" Value="0" />
+
+                                <Style Selector="^ Border#TagsPanelBorder">
+                                    <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                                </Style>
+
+                                <Style Selector="^ TextBlock#Summary">
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                </Style>
+                            </Style>
+
+                        </Style>
+                    </Style>
+
+                    <Style Selector="^ Border#StatsBorder">
+                        <Setter Property="Padding" Value="0, 8" />
+                        <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
+                        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+
+                        <Style Selector="^ panels|FlexPanel#Stats">
+                            <Setter Property="ColumnSpacing" Value="24" />
+
+                            <Style Selector="^ panels|FlexPanel">
+                                <Setter Property="AlignItems" Value="Center" />
+                                <Setter Property="Direction" Value="Row" />
+                                <Setter Property="ColumnSpacing" Value="4" />
+                            </Style>
+
+                            <Style Selector="^ icons|UnifiedIcon">
+                                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                                <Setter Property="Width" Value="20" />
+                                <Setter Property="Height" Value="20" />
+                            </Style>
+
+                            <Style Selector="^ TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                            </Style>
+
+                            <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
+                                <Style Selector="^ > icons|UnifiedIcon">
+                                    <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                                </Style>
+                                <Style Selector="^ > TextBlock#OverallRating">
+                                    <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ Border#ListHeaderRowBorder">
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+                <Setter Property="Padding" Value="24" />
+
+                <Style Selector="^ panels|FlexPanel#ListHeaderRow">
+                    <Setter Property="JustifyContent" Value="FlexEnd" />
+                    <Setter Property="AlignItems" Value="Center" />
+                    <Setter Property="ColumnSpacing" Value="8" />
+                </Style>
+            </Style>
+        </Style>
+    </Style>
+</Styles>

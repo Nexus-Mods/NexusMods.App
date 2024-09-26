@@ -24,7 +24,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 
                 this.WhenAnyValue(view => view.ViewModel!.TileImage)
                     .WhereNotNull()
-                    .SubscribeWithErrorLogging(image => Image38.Source = image)
+                    .SubscribeWithErrorLogging(image => CollectionImage.Source = image)
                     .DisposeWith(d);
                 
                 this.OneWayBind(ViewModel, vm => vm.Name, view => view.Title.Text)
