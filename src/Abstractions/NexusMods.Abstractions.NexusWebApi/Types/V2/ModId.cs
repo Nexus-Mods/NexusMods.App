@@ -20,7 +20,7 @@ public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>, IAugme
 /// Mod ID attribute, for NexusMods API mod IDs.
 /// </summary>
 public class ModIdAttribute(string ns, string name) 
-    : ScalarAttribute<ModId, uint>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<ModId, uint>(ValueTags.UInt32, ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(ModId value) => value.Value;
