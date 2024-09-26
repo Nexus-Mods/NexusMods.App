@@ -7,7 +7,7 @@ namespace NexusMods.Networking.ModUpdates.Traits;
 /// 
 /// This ID must be truly unique and belong to a specific item of its type.
 /// </summary>
-public interface ICanGetUid
+public interface ICanGetUidForMod
 {
     /// <summary>
     /// Returns a unique identifier for the given item, based on the ID format

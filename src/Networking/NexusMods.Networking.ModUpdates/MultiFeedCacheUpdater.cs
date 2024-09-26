@@ -12,7 +12,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// you to use mods and API responses which are sourced from multiple feeds (games),
 /// as opposed to a single feed.
 /// </summary>
-public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUid
+public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
 {
     private readonly Dictionary<GameId, PerFeedCacheUpdater<TUpdateableItem>> _updaters;
 
@@ -74,9 +74,9 @@ public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICan
     /// is automatically detected.
     ///
     /// Wrap elements in a struct that implements <see cref="ICanGetLastUpdatedTimestamp"/>
-    /// and <see cref="ICanGetUid"/> if necessary. 
+    /// and <see cref="ICanGetUidForMod"/> if necessary. 
     /// </param>
-    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUid
+    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
     {
         foreach (var item in items)
         {

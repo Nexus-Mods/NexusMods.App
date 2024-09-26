@@ -4,7 +4,7 @@ using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
 
 // Helper class to simulate updateable items
-public class TestItem : ICanGetLastUpdatedTimestamp, ICanGetUid
+public class TestItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
 {
     public DateTime LastUpdated { get; set; }
     public UidForMod Uid { get; set; }
