@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 /// Represented a <see cref="DownloadedFile"/> originating from Nexus Mods.
 /// </summary>
 [PublicAPI]
-[Include<DownloadedFile>]
+[Include<LibraryItem>]
 public partial class NexusModsLibraryFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NexusModsLibraryFile";

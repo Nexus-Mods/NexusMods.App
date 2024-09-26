@@ -4,6 +4,7 @@ using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -64,9 +65,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         };
 
         model.CreatedAtDate.Value = nexusModsLibraryFile.GetCreatedAt();
-        model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size.ToString();
         model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
-
+        model.ItemSize.Value = nexusModsLibraryFile.FileMetadata.Size.ToString();
         return model;
     }
 
@@ -94,7 +94,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = cache.Connect()
-            .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsDownloadedFile().AsLibraryFile().AsLibraryItem());
+            .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsLibraryItem());
 
         var numInstalledObservable = cache.Connect().TransformOnObservable((_, e) => _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)

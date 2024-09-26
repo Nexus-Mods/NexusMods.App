@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -27,6 +28,11 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// The version of the file.
     /// </summary>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
+
+    /// <summary>
+    /// The size of the file in bytes, this is optional in the NexusMods API for whatever reason.
+    /// </summary>
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
 
     /// <summary>
     /// Reference to the mod page of the file.

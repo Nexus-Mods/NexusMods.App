@@ -20,19 +20,16 @@ public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, b
         var info = new LibraryItemRemovalInfo();
 
         // Check if it's a file which was downloaded.
-        var isDownloadedFile = toRemove.TryGetAsDownloadedFile(out var downloadedFile);;
-        switch (isDownloadedFile)
+        if (toRemove.TryGetAsNexusModsLibraryFile(out var _))
         {
-            case true:
-                info.IsNexus = downloadedFile.IsNexusModsLibraryFile();
-                info.IsNonPermanent = !info.IsNexus;
-                break;
-            // Check if it's a LocalFile (manually added)
-            case false when toRemove.TryGetAsLocalFile(out _):
-                info.IsManuallyAdded = true;
-                break;
+            info.IsNexus = true;
+            info.IsNonPermanent = !info.IsNexus;
         }
-
+        else if (toRemove.TryGetAsLocalFile(out var _))
+        {
+            info.IsManuallyAdded = true;
+        }
+        
         // Check if it's added to any loadout
         info.Loadouts = loadouts.Where(loadout => loadout.GetLoadoutItemsByLibraryItem(toRemove).Any()).ToArray();
         return info;
