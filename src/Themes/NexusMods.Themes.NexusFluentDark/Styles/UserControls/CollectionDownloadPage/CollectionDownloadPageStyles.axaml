@@ -4,7 +4,7 @@
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Grid Width="1400" Height="600">
+        <Grid Width="1000" Height="600">
             <Grid.Resources>
                 <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
             </Grid.Resources>
@@ -14,63 +14,69 @@
 
     <Style Selector="collections|CollectionDownloadView">
         <Style Selector="^ panels|FlexPanel#Body">
-            <Setter Property="Background" Value="#101020" />
+            <!-- <Setter Property="Background" Value="#101020" /> -->
             <Setter Property="Direction" Value="Column" />
             <Setter Property="AlignItems" Value="FlexStart" />
 
             <Style Selector="^ Border#HeaderBorder">
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <Setter Property="Background" Value="#202030" />
+                <!-- <Setter Property="Background" Value="DarkGreen" /> -->
                 <Setter Property="Padding" Value="24,24,24,16" />
 
                 <Style Selector="^ panels|FlexPanel#Header">
                     <!-- <Setter Property="Background" Value="#252535" /> -->
                     <Setter Property="Direction" Value="Column" />
-                    <Setter Property="AlignItems" Value="FlexStart" />
+                    <Setter Property="AlignItems" Value="Stretch" />
+                    <Setter Property="JustifyContent" Value="FlexStart" />
 
-                    <Style Selector="^ Border#MainContentBorder">
-                        <Setter Property="Background" Value="DarkRed" />
-                        <Setter Property="MaxWidth" Value="806" />
-                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                        <Setter Property="Padding" Value="0, 0, 0, 24" />
 
-                        <Style Selector="^ panels|FlexPanel#MainContent">
-                            <Setter Property="Direction" Value="Row" />
+                    <!-- some weird stuff happening here with max width and backgrounds-->
+                        <Style Selector="^ Border#MainContentBorder">
+                            <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                            <Setter Property="MaxWidth" Value="806" />
+                            <Setter Property="Padding" Value="0, 0, 0, 24" />
+                            <Setter Property="panels:Flex.AlignSelf" Value="FlexStart" />
+                            <!-- <Setter Property="HorizontalAlignment" Value="Left" /> -->
 
-                            <!-- left column -->
-                            <Style Selector="^ Border#CollectionImageBorder">
-                                <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-                                <Setter Property="ClipToBounds" Value="True" />
+                            <Style Selector="^ panels|FlexPanel#MainContent">
+                                <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
+                                <Setter Property="Direction" Value="Row" />
 
-                                <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
-                                <Setter Property="Width" Value="154" />
-                                <Setter Property="Height" Value="190" />
-                                <Style Selector="^ Image#CollectionImage">
+                                <!-- left column -->
+                                <Style Selector="^ Border#CollectionImageBorder">
+                                    <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                                    <Setter Property="ClipToBounds" Value="True" />
+
+                                    <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
                                     <Setter Property="Width" Value="154" />
                                     <Setter Property="Height" Value="190" />
-                                </Style>
-                            </Style>
-
-                            <!-- right column -->
-                            <Style Selector="^ panels|FlexPanel#CollectionDetails">
-                                <Setter Property="Margin" Value="24, 0" />
-                                <!-- <Setter Property="Background" Value="#404050" /> -->
-                                <Setter Property="Direction" Value="Column" />
-                                <Setter Property="RowSpacing" Value="4" />
-                                <Setter Property="panels:Flex.Grow" Value="1" />
-                                <Setter Property="panels:Flex.Shrink" Value="0" />
-                                <Setter Property="panels:Flex.Basis" Value="0" />
-
-                                <Style Selector="^ Border#TagsPanelBorder">
-                                    <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                                    <Style Selector="^ Image#CollectionImage">
+                                        <Setter Property="Width" Value="154" />
+                                        <Setter Property="Height" Value="190" />
+                                    </Style>
                                 </Style>
 
-                                <Style Selector="^ TextBlock#Summary">
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <!-- right column -->
+                                <Style Selector="^ panels|FlexPanel#CollectionDetails">
+                                    <Setter Property="Margin" Value="24, 0" />
+                                    <!-- <Setter Property="Background" Value="#404050" /> -->
+                                    <Setter Property="Direction" Value="Column" />
+                                    <Setter Property="RowSpacing" Value="4" />
+                                    <Setter Property="panels:Flex.Grow" Value="1" />
+                                    <Setter Property="panels:Flex.Shrink" Value="0" />
+                                    <Setter Property="panels:Flex.Basis" Value="0" />
+
+                                    <Style Selector="^ Border#TagsPanelBorder">
+                                        <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
+                                        <Setter Property="BorderBrush"
+                                                Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                                    </Style>
+
+                                    <Style Selector="^ TextBlock#Summary">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                    </Style>
                                 </Style>
-                            </Style>
 
                         </Style>
                     </Style>

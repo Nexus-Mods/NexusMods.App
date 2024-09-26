@@ -52,30 +52,32 @@
         <Border x:Name="HeaderBorder">
             <panels:FlexPanel x:Name="Header">
 
-                <Border x:Name="MainContentBorder">
-                    <panels:FlexPanel x:Name="MainContent">
+               
 
-                        <Border x:Name="CollectionImageBorder">
-                            <Image x:Name="CollectionImage" />
-                        </Border>
+                    <Border x:Name="MainContentBorder">
+                        <panels:FlexPanel x:Name="MainContent">
 
-                        <panels:FlexPanel x:Name="CollectionDetails">
-                            <TextBlock Classes="TitleSMSemi">COLLECTION DOWNLOAD</TextBlock>
-                            <TextBlock x:Name="Title" Classes="HeadingSMSemi" />
-                            <Border x:Name="TagsPanelBorder">
-                                <panels:FlexPanel x:Name="TagsPanel">
-                                    <TextBlock x:Name="Revision" />
-                                    <Border x:Name="AuthorAvatarBorder">
-                                        <Image x:Name="AuthorAvatar" />
-                                    </Border>
-                                </panels:FlexPanel>
+                            <Border x:Name="CollectionImageBorder">
+                                <Image x:Name="CollectionImage" />
                             </Border>
-                            <TextBlock x:Name="AuthorName" />
-                            <TextBlock x:Name="Summary" />
-                        </panels:FlexPanel>
 
-                    </panels:FlexPanel>
-                </Border>
+                            <panels:FlexPanel x:Name="CollectionDetails">
+                                <TextBlock Classes="TitleSMSemi">COLLECTION DOWNLOAD</TextBlock>
+                                <TextBlock x:Name="Title" Classes="HeadingSMSemi" />
+                                <Border x:Name="TagsPanelBorder">
+                                    <panels:FlexPanel x:Name="TagsPanel">
+                                        <TextBlock x:Name="Revision" />
+                                        <Border x:Name="AuthorAvatarBorder">
+                                            <Image x:Name="AuthorAvatar" />
+                                        </Border>
+                                    </panels:FlexPanel>
+                                </Border>
+                                <TextBlock x:Name="AuthorName" />
+                                <TextBlock x:Name="Summary" />
+                            </panels:FlexPanel>
+
+                        </panels:FlexPanel>
+                    </Border>
 
                 <Border x:Name="StatsBorder">
                     <panels:FlexPanel x:Name="Stats" IsVisible="True">
