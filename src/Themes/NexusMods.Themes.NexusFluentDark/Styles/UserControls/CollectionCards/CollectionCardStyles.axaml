@@ -42,14 +42,14 @@
 
                 <Style Selector="^ panels|FlexPanel#Container">
                     <Setter Property="AlignItems" Value="FlexStart" />
-                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
                     <Setter Property="Direction" Value="Row" />
 
                     <!-- left column -->
                     <Style Selector="^ Border#TileImageBorder">
+                        <Setter Property="panels:Flex.Shrink" Value="0" />
                         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                         <Setter Property="ClipToBounds" Value="True" />
-                        <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
+                        <!-- NOTE(insomnious): not sure if we need fixed sizes on both elements, but figma does -->
                         <Setter Property="Width" Value="144" />
                         <Setter Property="Height" Value="180" />
                         <Style Selector="^ Image#TileImage">
@@ -60,13 +60,13 @@
 
                     <!-- right column -->
                     <Style Selector="^ panels|FlexPanel#TitleContainer">
-
                         <!-- <Setter Property="Background" Value="DarkBlue" /> -->
                         <Setter Property="Direction" Value="Column" />
-                        <Setter Property="AlignItems" Value="Stretch" />
-                        <Setter Property="panels:Flex.Grow" Value="1" />
-                        <Setter Property="panels:Flex.Shrink" Value="0" />
-                        <Setter Property="panels:Flex.Basis" Value="0" />
+
+                        <!-- Fixed sizes for child elements -->
+                        <Style Selector="^ > :is(Control)">
+                            <Setter Property="panels:Flex.Shrink" Value="0" />
+                        </Style>
 
                         <Style Selector="^ TextBlock#TitleText">
                             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
@@ -92,17 +92,15 @@
                             </Style>
                         </Style>
 
-                        <!-- NOTE(insomnious): We shouldn't need this FlexPanel wrapper as we should be able to set 
-                        Flex.??? directly on the TextBlock and achieve the desired outcome. @Al12rs will look into it
-                        at a later date but this is working for now -->
-                        <Style Selector="^ panels|FlexPanel#SummaryTextFlexPanel">
+                        <Style Selector="^ Border#SummaryTextFlexPanel">
+                            <!-- <Setter Property="Background" Value="Red" /> -->
                             <Setter Property="panels:Flex.Grow" Value="1" />
-                            <Setter Property="panels:Flex.Shrink" Value="0" />
-                            <Setter Property="panels:Flex.Basis" Value="0" />
-                            <Setter Property="panels:Flex.AlignSelf" Value="FlexStart" />
+                            <Setter Property="panels:Flex.Shrink" Value="1" />
 
                             <Style Selector="^ TextBlock#SummaryText">
                                 <!-- <Setter Property="Background" Value="DarkBlue" /> -->
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
                                 <Setter Property="Padding" Value="12, 4, 0, 0" />
                                 <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                                 <Setter Property="TextWrapping" Value="Wrap" />
@@ -120,6 +118,7 @@
 
         <!-- middle row -->
         <Style Selector="^ Border#StatsBorder">
+            <Setter Property="panels:Flex.Shrink" Value="0" />
             <Setter Property="Height" Value="44" />
             <Setter Property="Padding" Value="12" />
 
@@ -159,23 +158,23 @@
 
         <!-- bottom row -->
         <Style Selector="^ Border#ActionFooterBorder">
+            <Setter Property="panels:Flex.Shrink" Value="0" />
+
             <Setter Property="Padding" Value="12" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
 
             <Style Selector="^ panels|FlexPanel#ActionFooter">
-                <Setter Property="AlignItems" Value="Center" />
-                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="AlignItems" Value="Stretch" />
                 <Setter Property="JustifyContent" Value="FlexEnd" />
                 <Setter Property="ColumnSpacing" Value="16" />
 
                 <Style Selector="^ panels|FlexPanel#ActionGroup">
                     <!-- <Setter Property="Background" Value="Red"/> -->
-                    <Setter Property="AlignItems" Value="Center" />
-                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
                     <Setter Property="panels:Flex.Grow" Value="1" />
                     <Setter Property="panels:Flex.Shrink" Value="0" />
-                    <Setter Property="panels:Flex.Basis" Value="0" />
+                    <Setter Property="panels:Flex.Basis" Value="0%" />
+                    <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="ColumnSpacing" Value="8" />
 
                     <Style Selector="^ > Button">
@@ -188,13 +187,13 @@
                 <Style Selector="^ panels|FlexPanel#FooterLabels">
                     <Setter Property="panels:Flex.Grow" Value="1" />
                     <Setter Property="panels:Flex.Shrink" Value="0" />
-                    <Setter Property="panels:Flex.Basis" Value="0" />
-                    <Setter Property="AlignItems" Value="Center" />
-                    <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                    <Setter Property="panels:Flex.Basis" Value="0%" />
                     <Setter Property="JustifyContent" Value="FlexEnd" />
+                    <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="ColumnSpacing" Value="8" />
 
                     <Style Selector="^ panels|FlexPanel#UserLabel">
+                        <Setter Property="JustifyContent" Value="FlexEnd" />
                         <Setter Property="ColumnSpacing" Value="4" />
 
                         <Style Selector="^ Border#AvatarImageBorder">
@@ -208,7 +207,11 @@
                         <Style Selector="^ TextBlock#AuthorName">
                             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                         </Style>
+                    </Style>
+
+                    <Style Selector="^ panels|FlexPanel#UserLabel">
                     </Style>
 
                 </Style>

@@ -21,12 +21,17 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The locally unique revision number (aka "version") of a collection. Only unique within one collection.
     /// </summary>
-    public static readonly RevisionNumberAttribute RevisionNumber = new(Namespace, nameof(RevisionNumber));
+    public static readonly RevisionNumberAttribute RevisionNumber = new(Namespace, nameof(RevisionNumber)) { IsIndexed = true };
     
     /// <summary>
     /// The collection this revision belongs to.
     /// </summary>
     public static readonly ReferenceAttribute<CollectionMetadata> Collection = new(Namespace, nameof(Collection));
+    
+    /// <summary>
+    /// All the mod files in this revision.
+    /// </summary>
+    public static readonly BackReferenceAttribute<CollectionRevisionModFile> Files = new(CollectionRevisionModFile.CollectionRevision);
     
     /// <summary>
     /// The number of downloads this revision has.
@@ -47,9 +52,4 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// The total number of ratings this revision has.
     /// </summary>
     public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings));
-    
-    /// <summary>
-    /// The total number of mods in this revision.
-    /// </summary>
-    public static readonly ULongAttribute ModCount = new(Namespace, nameof(ModCount));
 }
