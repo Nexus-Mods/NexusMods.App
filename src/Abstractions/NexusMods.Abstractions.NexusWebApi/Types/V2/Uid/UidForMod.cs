@@ -29,6 +29,15 @@ public struct UidForMod
     public GameId GameId;
 
     /// <summary>
+    /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="UidForFile"/>.
+    /// </summary>
+    /// <param name="uid">The 'uid' field of a GraphQL API query. This should be an 8 byte number represented as a string.</param>
+    /// <remarks>
+    /// This throws if <param name="uid"/> is not a valid number.
+    /// </remarks>
+    public static UidForMod FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
+
+    /// <summary>
     /// Reinterprets the current <see cref="UidForMod"/> as a single <see cref="ulong"/>.
     /// </summary>
     public ulong AsUlong => Unsafe.As<UidForMod, ulong>(ref this);
