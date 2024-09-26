@@ -1,5 +1,6 @@
 using FluentAssertions;
-using static NexusMods.Networking.ModUpdates.Tests.TestItem;
+using NexusMods.Networking.ModUpdates.Tests.Helpers;
+using static NexusMods.Networking.ModUpdates.Tests.Helpers.TestItem;
 
 namespace NexusMods.Networking.ModUpdates.Tests;
 

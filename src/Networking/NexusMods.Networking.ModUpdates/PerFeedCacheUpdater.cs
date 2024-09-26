@@ -1,6 +1,6 @@
 using System.Diagnostics;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.ModUpdates.Private;
-using NexusMods.Networking.ModUpdates.Structures;
 using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 

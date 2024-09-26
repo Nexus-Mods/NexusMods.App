@@ -1,4 +1,4 @@
-using NexusMods.Networking.ModUpdates.Structures;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 namespace NexusMods.Networking.ModUpdates.Traits;
 
 /// <summary>
@@ -13,5 +13,5 @@ public interface ICanGetUid
     /// Returns a unique identifier for the given item, based on the ID format
     /// used in the NexusMods V2 API.
     /// </summary>
-    public Uid GetUniqueId();
+    public UidForMod GetUniqueId();
 }

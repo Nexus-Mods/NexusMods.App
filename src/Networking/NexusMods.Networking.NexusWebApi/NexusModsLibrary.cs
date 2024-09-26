@@ -9,6 +9,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -122,7 +123,7 @@ public class NexusModsLibrary
         {
             var fileInfo = file.File!;
             var modInfo = fileInfo.Mod;
-            var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((ulong)fileInfo.ModId));
+            var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((uint)fileInfo.ModId));
             nexusModResolver.Add(NexusModsModPageMetadata.Name, modInfo.Name);
             nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modInfo.Game.DomainName));
             
@@ -133,7 +134,7 @@ public class NexusModsLibrary
                 nexusModResolver.Add(NexusModsModPageMetadata.ThumbnailUri, thumbnailUri);
             
             
-            var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((ulong)fileInfo.FileId)), (NexusModsFileMetadata.ModPageId, nexusModResolver.Id));
+            var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((uint)fileInfo.FileId)), (NexusModsFileMetadata.ModPageId, nexusModResolver.Id));
             nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, nexusModResolver.Id);
             nexusFileResolver.Add(NexusModsFileMetadata.Name, fileInfo.Name);
             nexusFileResolver.Add(NexusModsFileMetadata.Version, fileInfo.Version);

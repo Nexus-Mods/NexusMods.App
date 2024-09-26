@@ -13,4 +13,8 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Networking.ModUpdates.Tests"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
+    </ItemGroup>
 </Project>

@@ -2,7 +2,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using FileId = NexusMods.Abstractions.NexusWebApi.Types.V2.FileId;
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
 #pragma warning disable CS8618
@@ -47,7 +48,7 @@ public class ModFile : IJsonSerializable<ModFile>
     ///    This ID is unique within the context of the game.
     ///    i.e. This ID might be used for another mod if you search for mods for another game.
     /// </remarks>
-    public FileId FileId => FileId.From(_FileId);
+    public FileId FileId => FileId.From((uint)_FileId);
 
     /// <summary>
     /// Name (title) of the mod file as seen on the `Files` section of the mod page.

@@ -1,4 +1,4 @@
-﻿using NexusMods.Networking.ModUpdates.Structures;
+﻿using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 
