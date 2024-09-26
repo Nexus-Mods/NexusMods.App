@@ -5,10 +5,8 @@ using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 /// <summary>
-/// Unique ID for a game file hosted on a mod page.
-///
-/// This ID is unique within the context of the game.
-/// i.e. This ID might be used for another mod if you search for mods for another game.
+/// Unique ID for a mod file associated with a game (<see cref="GameId"/>).
+/// Querying mod pages returns items of this type.
 /// </summary>
 [ValueObject<uint>] // Matches backend. Do not change.
 public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
