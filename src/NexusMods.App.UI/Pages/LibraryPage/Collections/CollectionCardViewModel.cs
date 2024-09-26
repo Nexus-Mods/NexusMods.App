@@ -24,7 +24,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public Bitmap Image => new(new MemoryStream(_collection.TileImage.ToArray()));
     public string Summary => _collection.Summary;
     public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
-    public int ModCount => (int)_revision.ModCount;
+    public int ModCount => _revision.Files.Count;
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong DownloadCount => _revision.Downloads;
     public Size TotalSize => _revision.TotalSize;

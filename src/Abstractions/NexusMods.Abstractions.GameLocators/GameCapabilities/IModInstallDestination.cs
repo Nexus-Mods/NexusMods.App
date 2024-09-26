@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -56,11 +55,6 @@ public static class ModInstallDestinationHelpers
             {
                 // Locations has
                 DestinationGamePath = new GamePath(location.Key, ""),
-                KnownSourceFolderNames = Array.Empty<string>(),
-                KnownValidSubfolders = Array.Empty<string>(),
-                KnownValidFileExtensions = Array.Empty<Extension>(),
-                FileExtensionsToDiscard = Array.Empty<Extension>(),
-                SubPathsToDiscard = Array.Empty<RelativePath>()
             });
         }
     }
