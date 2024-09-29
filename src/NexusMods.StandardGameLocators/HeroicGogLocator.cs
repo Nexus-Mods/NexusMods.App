@@ -44,7 +44,7 @@ public class HeroicGogLocator : IGameLocator
         foreach (var id in tg.GogIds)
         {
             if (!_cachedGames.TryGetValue(GOGGameId.From(id), out var found)) continue;
-            yield return new GameLocatorResult(found.Path, GameStore.GOG, new GOGLocatorResultMetadata
+            yield return new GameLocatorResult(found.Path, GameStore.GOG, new HeroicGOGLocatorResultMetadata
             {
                 Id = id,
             });

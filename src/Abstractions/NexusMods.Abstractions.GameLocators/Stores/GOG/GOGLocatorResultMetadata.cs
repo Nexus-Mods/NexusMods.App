@@ -14,3 +14,6 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required long Id { get; init; }
 }
+
+[PublicAPI]
+public record HeroicGOGLocatorResultMetadata : GOGLocatorResultMetadata;
