@@ -9,6 +9,7 @@ namespace NexusMods.App.UI;
 /// Represents an image cache.
 /// </summary>
 [PublicAPI]
+[Obsolete("To be replaced with resource pipelines")]
 public interface IImageCache : IDisposable
 {
     /// <summary>

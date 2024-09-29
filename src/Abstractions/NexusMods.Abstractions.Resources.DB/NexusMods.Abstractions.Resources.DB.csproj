@@ -4,11 +4,13 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Skia" />
-        <PackageReference Include="OneOf"/>
-        <PackageReference Include="NexusMods.MnemonicDB.Abstractions"/>
-        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <PackageReference Include="BitFaster.Caching"/>
+        <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions"/>
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+    
 </Project>

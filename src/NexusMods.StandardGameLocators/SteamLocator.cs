@@ -23,7 +23,10 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
     protected override IEnumerable<AppId> Ids(ISteamGame game) => game.SteamIds.Select(AppId.From);
 
     /// <inheritdoc />
-    protected override AbsolutePath Path(SteamGame record) => record.Path;
+    protected override AbsolutePath Path(SteamGame game)
+    {
+        return game.Path;
+    }
 
     /// <inheritdoc />
     protected override IFileSystem GetMappedFileSystem(SteamGame game)

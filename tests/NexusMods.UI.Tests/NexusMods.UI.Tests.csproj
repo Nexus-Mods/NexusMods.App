@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Resources.DB\NexusMods.Abstractions.Resources.DB.csproj" />
         <ProjectReference Include="..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.Media\NexusMods.Media.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
 
