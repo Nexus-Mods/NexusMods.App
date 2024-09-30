@@ -30,7 +30,10 @@
                     <Setter Property="JustifyContent" Value="FlexStart" />
 
 
-                    <!-- some weird stuff happening here with max width and backgrounds-->
+                    <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
+                    it's working, as things are aligned correctly, but the background is not being applied correctly. 
+                    After chatting with @Al12rs, we are leaving this for now as we can't fully test this (yet) and we
+                    don't want to add extra layout code for no reason -->
                         <Style Selector="^ Border#MainContentBorder">
                             <!-- <Setter Property="Background" Value="DarkRed" /> -->
                             <Setter Property="MaxWidth" Value="806" />
