@@ -28,9 +28,9 @@
                         <Border x:Name="CategoryTextBorder">
                             <TextBlock x:Name="CategoryText" />
                         </Border>
-                        <panels:FlexPanel x:Name="SummaryTextFlexPanel">
+                        <Border x:Name="SummaryTextFlexPanel">
                             <TextBlock x:Name="SummaryText" />
-                        </panels:FlexPanel>
+                        </Border>
                     </panels:FlexPanel>
 
                 </panels:FlexPanel>
