@@ -1,11 +1,12 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
-public interface ICollectionDownloadViewModel : IViewModelInterface
+public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
     /// <summary>
     /// Name of the collection

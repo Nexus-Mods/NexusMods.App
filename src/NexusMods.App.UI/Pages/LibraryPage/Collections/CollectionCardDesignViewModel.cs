@@ -1,7 +1,10 @@
+using System.Reactive;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
@@ -18,4 +21,6 @@ public class CollectionCardDesignViewModel : AViewModel<ICollectionCardViewModel
     public Percent OverallRating => Percent.CreateClamped(0.84);
     public string AuthorName => "FantasyAuthor";
     public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
+    
+    public ReactiveCommand<NavigationInformation, Unit> ShowDetailsCommand { get; } = ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
 }

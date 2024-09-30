@@ -1,6 +1,8 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
+using System.Reactive;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
@@ -63,4 +65,9 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// The author's avatar.
     /// </summary>
     public Bitmap AuthorAvatar { get; }
+    
+    /// <summary>
+    /// The command executed when the user wants to see the details of the collection.
+    /// </summary>
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ShowDetailsCommand { get; }
 }

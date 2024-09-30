@@ -20,7 +20,6 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                 this.WhenAnyValue(view => view.ViewModel!.Name)
                     .BindTo(this, view => view.TitleText.Text)
                     .DisposeWith(d);
-                    
                 
                 this.WhenAnyValue(view => view.ViewModel!.Image)
                     .BindTo(this, view => view.TileImage.Source)
@@ -59,6 +58,9 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
 
                 this.WhenAnyValue(view => view.ViewModel!.AuthorAvatar)
                     .BindTo(this, view => view.AuthorAvatarImage.Source)
+                    .DisposeWith(d);
+                
+                this.BindCommand(ViewModel, vm => vm.ShowDetailsCommand, view => view.DetailsButton)
                     .DisposeWith(d);
             }
         );

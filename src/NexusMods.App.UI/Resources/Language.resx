@@ -458,6 +458,9 @@
     <data name="LibraryPageTitle" xml:space="preserve">
         <value>Library</value>
     </data>
+    <data name="CollectionDownloadPage" xml:space="preserve">
+        <value>Collection Download</value>
+    </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
         <value>MOD NAME</value>
     </data>

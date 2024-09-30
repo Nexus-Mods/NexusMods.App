@@ -33,7 +33,7 @@ public class CollectionsPageFactory : APageFactory<ICollectionsViewModel, Collec
     public override ICollectionsViewModel CreateViewModel(CollectionsPageContext context)
     {
         var vm = new CollectionsViewModel(ServiceProvider.GetRequiredService<IConnection>(),
-            ServiceProvider.GetRequiredService<IWindowManager>());
+            ServiceProvider.GetRequiredService<IWindowManager>(), context.LoadoutId);
         return vm;
     }
 

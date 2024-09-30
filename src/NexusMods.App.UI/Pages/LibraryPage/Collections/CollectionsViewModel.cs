@@ -11,6 +11,7 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using AvaloniaEdit.Utils;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using ReactiveUI.Fody.Helpers;
 
@@ -20,14 +21,14 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
 {
     private readonly IConnection _conn;
 
-    public CollectionsViewModel(IConnection conn, IWindowManager windowManager) : base(windowManager)
+    public CollectionsViewModel(IConnection conn, IWindowManager windowManager, LoadoutId loadoutId) : base(windowManager)
     {
         _conn = conn;
 
         this.WhenActivated(d =>
             {
                 CollectionMetadata.ObserveAll(conn)
-                    .Transform(coll => (ICollectionCardViewModel)new CollectionCardViewModel(conn, coll.Revisions.First().RevisionId))
+                    .Transform(coll => (ICollectionCardViewModel)new CollectionCardViewModel(windowManager, conn, coll.Revisions.First().RevisionId, loadoutId))
                     .Bind(out _collections)
                     .Subscribe()
                     .DisposeWith(d);

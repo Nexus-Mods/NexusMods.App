@@ -8,6 +8,7 @@
     xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
     <Design.DataContext>
@@ -67,13 +68,13 @@
                 <panels:FlexPanel x:Name="ActionFooter">
 
                     <panels:FlexPanel x:Name="ActionGroup">
-                        <Button x:Name="DownloadButton" Classes="Standard Secondary" Height="28">
+                        <navigation:NavigationControl x:Name="DetailsButton" Classes="Standard Secondary" Height="28">
                             <panels:FlexPanel>
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
                                 <TextBlock Text="Continue Download" />
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronRight}" />
                             </panels:FlexPanel>
-                        </Button>
+                        </navigation:NavigationControl>
                     </panels:FlexPanel>
 
                     <panels:FlexPanel x:Name="FooterLabels">

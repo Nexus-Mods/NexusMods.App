@@ -231,6 +231,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection Download.
+        /// </summary>
+        public static string CollectionDownloadPage {
+            get {
+                return ResourceManager.GetString("CollectionDownloadPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new loadout.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {

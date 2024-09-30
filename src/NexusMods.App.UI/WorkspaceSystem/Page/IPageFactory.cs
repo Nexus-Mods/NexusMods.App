@@ -40,7 +40,7 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     Page IPageFactory.Create(IPageFactoryContext context)
     {
         if (context is not TContext actualContext)
-            throw new ArgumentException($"Unsupported type: {context.GetType()}");
+            throw new ArgumentException($"Unsupported type: {context.GetType()} for {typeof(TViewModel)}");
 
         var vm = CreateViewModel(actualContext);
         return new Page
