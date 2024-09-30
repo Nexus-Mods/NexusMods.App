@@ -9,6 +9,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -41,7 +42,9 @@ public class CollectionDownloadPageFactory : APageFactory<ICollectionDownloadVie
 
     public override ICollectionDownloadViewModel CreateViewModel(CollectionDownloadPageContext context)
     {
-        var vm = new CollectionDownloadDesignViewModel(_serviceProvider.GetRequiredService<IWindowManager>());
+        var vm = new CollectionDownloadViewModel(_serviceProvider.GetRequiredService<IWindowManager>(), 
+            _serviceProvider.GetRequiredService<IConnection>(), 
+            context);
         return vm;
     }
     

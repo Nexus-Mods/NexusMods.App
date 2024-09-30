@@ -647,6 +647,9 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\CollectionDownload\CollectionDownloadViewModel.cs">
+          <DependentUpon>ICollectionDownloadViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
