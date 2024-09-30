@@ -1,3 +1,6 @@
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 
@@ -10,3 +13,16 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
     /// <inheritdoc/>
     public static GameId DefaultValue => From(default(uint));
 }
+
+/// <summary>
+/// Game ID attribute, for game identifiers from the GraphQL (V2) API.
+/// </summary>
+public class GameIdAttribute(string ns, string name) 
+    : ScalarAttribute<GameId, uint>(ValueTags.UInt32, ns, name)
+{
+    /// <inheritdoc />
+    protected override uint ToLowLevel(GameId value) => value.Value;
+
+    /// <inheritdoc />
+    protected override GameId FromLowLevel(uint value, ValueTags tags, RegistryId registryId) => GameId.From(value);
+} 

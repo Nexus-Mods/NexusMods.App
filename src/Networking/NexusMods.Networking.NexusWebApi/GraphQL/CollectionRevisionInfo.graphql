@@ -32,6 +32,7 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
                     }
                     thumbnailUrl
                     pictureUrl
+                    updatedAt
                 }
             }
             updatePolicy,

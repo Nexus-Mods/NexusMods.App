@@ -49,13 +49,15 @@ public class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
+        // TODO: Migrate this to V2 API. This should be a call to 'Mods' API.
         var modInfo = await _apiClient.ModInfoAsync(gameDomain.ToString(), modId, cancellationToken);
-
         var newModPage = new NexusModsModPageMetadata.New(tx)
         {
             Name = modInfo.Data.Name,
             ModId = modId,
             GameDomain = gameDomain,
+            GameId = GameId.From((uint)modInfo.Data.GameId),
+            UpdatedAt = modInfo.Data.UpdatedTime,
         };
 
         if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
@@ -125,7 +127,10 @@ public class NexusModsLibrary
             var modInfo = fileInfo.Mod;
             var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((uint)fileInfo.ModId));
             nexusModResolver.Add(NexusModsModPageMetadata.Name, modInfo.Name);
+            // TODO: Remove this (GameDomain) in V2 migration.
             nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modInfo.Game.DomainName));
+            nexusModResolver.Add(NexusModsModPageMetadata.GameId, GameId.From((uint)file.GameId));
+            nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modInfo.UpdatedAt.UtcDateTime);
             
             if (Uri.TryCreate(modInfo.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
                 nexusModResolver.Add(NexusModsModPageMetadata.FullSizedPictureUri, fullSizedPictureUri);
