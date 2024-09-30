@@ -1,7 +1,6 @@
 using System.Text;
 using DynamicData.Kernel;
 using K4os.Compression.LZ4;
-using Newtonsoft.Json;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
@@ -9,86 +8,12 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 /// Class to parse and extract files and data from a bg3 .pak file.
 /// Credits to @insomnious for reverse engineering the format and implementing the parser. 
 /// </summary>
-public class PakFileLoader
+public static class PakFileParser
 {
-
-#region Public DataTypes
-
-    // /// <summary>
-    // /// Pak file header data
-    // /// </summary>
-    // public struct Header
-    // {
-    //     public uint Version;
-    //     public ulong FileListOffset;
-    //     public uint FileListSize;
-    //     public byte Flags;
-    //     public byte Priority;
-    //     public byte[] Md5;
-    //     public ushort NumParts;
-    // }
-    //
-    // /// <summary>
-    // /// Data of a file entry in the list of files contained in the pak file
-    // /// Version 18
-    // /// </summary>
-    // public struct FileEntry18
-    // {
-    //     public string Name;
-    //     public uint OffsetInFile1;
-    //     public ushort OffsetInFile2;
-    //     public byte ArchivePart;
-    //     public byte Flags;
-    //     public uint SizeOnDisk;
-    //     public uint UncompressedSize;
-    // }
-
-#endregion
 
 #region Public Methods
 
-    public static void LoadFromFile(string filePath)
-    {
-        using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        using (var br = new BinaryReader(fs))
-        {
-            Load(br);
-        }
-    }
-
-    public void LoadFromByteArray(byte[] fileData)
-    {
-        using var ms = new MemoryStream(fileData);
-        using (var br = new BinaryReader(ms))
-        {
-            Load(br);
-        }
-    }
-
-    public void LoadFromStream(Stream stream)
-    {
-        using (var br = new BinaryReader(stream))
-        {
-            Load(br);
-        }
-    }
-    
-    public static Stream ExtractFile(Stream pakFileStream, string fileName)
-    {
-        using var br = new BinaryReader(pakFileStream);
-        var headerData = ParseHeaderInternal(br);
-        var fileList = ParseFileListInternal(br, (int)headerData.FileListOffset, headerData);
-
-        var fileEntryInfo = fileList.FirstOrOptional(f => f.Name == fileName);
-        if (!fileEntryInfo.HasValue)
-        {
-            throw new KeyNotFoundException($"File {fileName} not found in pak archive.");
-        }
-
-        return ReadFileEntryData(br, fileEntryInfo.Value);
-    }
-
-    public static Stream ParsePakMeta(Stream pakFileStream)
+    public static LsxXmlFormat.ModuleShortDesc ParsePakMeta(Stream pakFileStream)
     {
         using var br = new BinaryReader(pakFileStream);
         var headerData = ParseHeaderInternal(br);
@@ -100,7 +25,8 @@ public class PakFileLoader
             throw new KeyNotFoundException($"File meta.lsx not found in pak archive.");
         }
 
-        return ReadFileEntryData(br, fileEntryInfo.Value);
+        var metaStream = ReadFileEntryData(br, fileEntryInfo.Value);
+        return MetaLsxParser.ParseMetaFile(metaStream);
     }
 
 #endregion
@@ -112,8 +38,6 @@ public class PakFileLoader
         var headerData = ParseHeaderInternal(br);
 
         var fileList = ParseFileListInternal(br, (int)headerData.FileListOffset, headerData);
-        
-        
     }
 
     private static LspkPackageFormat.HeaderCommon ParseHeaderInternal(BinaryReader br)
@@ -204,7 +128,6 @@ public class PakFileLoader
         return entries;
     }
 
-
     private static LspkPackageFormat.FileEntryInfoCommon ParseFileEntryInternal(BinaryReader br, int version)
     {
         switch (version)
@@ -257,7 +180,6 @@ public class PakFileLoader
 
         return new MemoryStream(decompressedBytes);
     }
-
 
 
 #endregion

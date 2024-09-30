@@ -1,71 +1,70 @@
-using System;
-using System.IO;
 using System.Xml;
 
-namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
-
-
-
-public class XmlExtractor
+namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
 {
-    public static void ExtractAttributes(Stream xmlStream)
+    public class MetaLsxParser
     {
-        using (var reader = XmlReader.Create(xmlStream))
+        public static LsxXmlFormat.ModuleShortDesc ParseMetaFile(Stream xmlStream)
         {
-            string? folder = null;
-            string? name = null;
-            string? publishHandle = null;
-            string? version64 = null;
-            string? uuid = null;
-            string? md5 = null;
-
+            using var reader = XmlReader.Create(xmlStream);
             while (reader.Read())
             {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "node" && reader.GetAttribute("id") == "ModuleInfo")
+                if (reader is not { NodeType: XmlNodeType.Element, Name: "node" } || 
+                    reader.GetAttribute("id") != "ModuleInfo")
                 {
-                    while (reader.Read())
-                    {
-                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "attribute")
-                        {
-                            var id = reader.GetAttribute("id");
-                            var value = reader.GetAttribute("value");
+                    continue;
+                }
+                
+                var moduleShortDesc = new LsxXmlFormat.ModuleShortDesc();
 
-                            switch (id)
-                            {
-                                case "Folder":
-                                    folder = value;
-                                    break;
-                                case "Name":
-                                    name = value;
-                                    break;
-                                case "PublishHandle":
-                                    publishHandle = value;
-                                    break;
-                                case "Version64":
-                                    version64 = value;
-                                    break;
-                                case "UUID":
-                                    uuid = value;
-                                    break;
-                                case "MD5":
-                                    md5 = value;
-                                    break;
-                            }
-                        }
-                        else if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "node")
+                while (reader.Read())
+                {
+                    if (reader is { NodeType: XmlNodeType.Element, Name: "attribute" })
+                    {
+                        var id = reader.GetAttribute("id");
+                        var value = reader.GetAttribute("value");
+
+                        switch (id)
                         {
-                            break;
+                            case "Folder":
+                                moduleShortDesc.Folder = value ?? string.Empty;
+                                break;
+                            case "Name":
+                                moduleShortDesc.Name = value ?? string.Empty;
+                                break;
+                            case "PublishHandle":
+                                moduleShortDesc.PublishHandle = value ?? string.Empty;
+                                break;
+                            case "Version64":
+                            case "Version":
+                                moduleShortDesc.Version = value ?? string.Empty;
+                                break;
+                            case "UUID":
+                                moduleShortDesc.Uuid = value ?? string.Empty;
+                                break;
+                            case "MD5":
+                                moduleShortDesc.Md5 = value ?? string.Empty;
+                                break;
                         }
                     }
+                    else if (reader is { NodeType: XmlNodeType.EndElement, Name: "node" })
+                    {
+                        break;
+                    }
                 }
+
+                Console.WriteLine($"Folder: {moduleShortDesc.Folder}");
+                Console.WriteLine($"Name: {moduleShortDesc.Name}");
+                Console.WriteLine($"PublishHandle: {moduleShortDesc.PublishHandle}");
+                Console.WriteLine($"Version: {moduleShortDesc.Version}");
+                Console.WriteLine($"UUID: {moduleShortDesc.Uuid}");
+                Console.WriteLine($"MD5: {moduleShortDesc.Md5}");
+                    
+                return moduleShortDesc;
             }
 
-            Console.WriteLine($"Folder: {folder}");
-            Console.WriteLine($"Name: {name}");
-            Console.WriteLine($"PublishHandle: {publishHandle}");
-            Console.WriteLine($"Version64: {version64}");
-            Console.WriteLine($"UUID: {uuid}");
-            Console.WriteLine($"MD5: {md5}");
+            // If we reach here, we didn't find the ModuleInfo node
+            throw new InvalidDataException("Could not find the ModuleInfo node in the LSX file.");
         }
     }
 }
