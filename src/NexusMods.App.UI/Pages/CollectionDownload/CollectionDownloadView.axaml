@@ -123,7 +123,14 @@
                     <TextBlock x:Name="RequiredModsCount" />
                 </panels:FlexPanel>
             </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
+            <!-- TreeDataGrid -->
+            <TreeDataGrid x:Name="RequiredModsTreeDataGrid"
+                          ShowColumnHeaders="True"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          Classes="MainListsStyling"
+                          HorizontalAlignment="Stretch">
+            </TreeDataGrid>
         </Expander>
         <Expander>
             <Expander.Header>
@@ -132,7 +139,13 @@
                     <TextBlock x:Name="OptionalModsCount" />
                 </panels:FlexPanel>
             </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
+            <TreeDataGrid x:Name="OptionalModsTreeDataGrid"
+                          ShowColumnHeaders="True"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          Classes="MainListsStyling"
+                          HorizontalAlignment="Stretch">
+            </TreeDataGrid>
         </Expander>
     </panels:FlexPanel>
 

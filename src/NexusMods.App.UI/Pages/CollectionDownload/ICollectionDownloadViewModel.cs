@@ -1,6 +1,8 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 
@@ -82,4 +84,14 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     /// A text representation of the collection's status, such as "Downloading", "Installing", "Ready to Play", etc.
     /// </summary>
     public string CollectionStatusText { get; }
+    
+    /// <summary>
+    /// The tree data grid adapter for the required mods
+    /// </summary>
+    public LibraryTreeDataGridAdapter RequiredModsAdapter { get; }
+    
+    /// <summary>
+    /// The tree data grid adapter for the optional mods
+    /// </summary>
+    public LibraryTreeDataGridAdapter OptionalModsAdapter { get; }
 }

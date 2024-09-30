@@ -43,7 +43,7 @@ public class CollectionDownloadPageFactory : APageFactory<ICollectionDownloadVie
     public override ICollectionDownloadViewModel CreateViewModel(CollectionDownloadPageContext context)
     {
         var vm = new CollectionDownloadViewModel(_serviceProvider.GetRequiredService<IWindowManager>(), 
-            _serviceProvider.GetRequiredService<IConnection>(), 
+            _serviceProvider,
             context);
         return vm;
     }

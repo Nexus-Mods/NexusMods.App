@@ -1,6 +1,9 @@
 using System.Reactive.Disposables;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -10,6 +13,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
     public CollectionDownloadView()
     {
         InitializeComponent();
+
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, LibraryItemModel, EntityId>(this, RequiredModsTreeDataGrid,
+            vm => vm.RequiredModsAdapter
+        );
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, LibraryItemModel, EntityId>(this, OptionalModsTreeDataGrid,
+            vm => vm.OptionalModsAdapter
+        );
 
         this.WhenActivated(d =>
             {
