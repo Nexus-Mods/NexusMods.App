@@ -25,6 +25,9 @@ Diagnostics are shown in the following situations:
 
 ### Automated deployment for REDmods
 
+??? warning "Heroic (Linux) Limitations"
+    It is not possible for the app to run REDmod deployment automatically for user who have installed Cyberpunk 2077 through Heroic Launcher on Linux. To run REDmod in Heroic, use the "Run EXE on Prefix" option and select the REDmod EXE file located at `Cyberpunk 2077\tools\redmod\bin\redMod.exe`. 
+
 When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
 
 ### Selective Game Backup
