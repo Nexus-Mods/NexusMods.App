@@ -40,8 +40,8 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
         libraryFile.GetLibraryItem(tx).Name = FileMetadata.Name;
 
         // Not using .New here because we can't use the LibraryItem Id and don't have the LibraryItem in this method
-        tx.Add(libraryFile.Id, NexusModsLibraryFile.FileMetadataId, FileMetadata.Id);
-        tx.Add(libraryFile.Id, NexusModsLibraryFile.ModPageMetadataId, FileMetadata.ModPage.Id);
+        tx.Add(libraryFile.Id, NexusModsLibraryItem.FileMetadataId, FileMetadata.Id);
+        tx.Add(libraryFile.Id, NexusModsLibraryItem.ModPageMetadataId, FileMetadata.ModPage.Id);
 
         _ = new DownloadedFile.New(tx, libraryFile.Id)
         {

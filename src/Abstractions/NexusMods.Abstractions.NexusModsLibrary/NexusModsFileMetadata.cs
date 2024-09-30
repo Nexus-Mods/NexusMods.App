@@ -42,5 +42,5 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// Library Files that link to this file.
     /// </summary>
-    public static readonly BackReferenceAttribute<NexusModsLibraryFile> LibraryFiles = new(NexusModsLibraryFile.FileMetadata);
+    public static readonly BackReferenceAttribute<NexusModsLibraryItem> LibraryFiles = new(NexusModsLibraryItem.FileMetadata);
 }
