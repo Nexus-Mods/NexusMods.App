@@ -1,3 +1,4 @@
+#import { UserFragment, ModFragment, ModFileFragment } from './CommonFragments.graphql';
 
 # Pulls all the information we need about a collection revision.
 query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultContent: Boolean!)
@@ -20,18 +21,9 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
             gameId,
             fileId,
             file {
-                name,
-                modId,
-                fileId,
-                version,
-                sizeInBytes,
+                ...ModFileFragment
                 mod {
-                    name
-                    game {
-                        domainName
-                    }
-                    thumbnailUrl
-                    pictureUrl
+                    ...ModFragment
                 }
             }
             updatePolicy,
@@ -53,11 +45,8 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
                 id
             }
             user {
-                name
-                avatar
-                memberId
+                ...UserFragment
             }
-            
         }
     }
 }
