@@ -1,0 +1,12 @@
+#include { ModFragment } from './CommonFragments.graphql'
+
+query ModInfo($gameDomain: String!, $modId: Int!)
+{
+    legacyModsByDomain(ids: [{gameDomain: $gameDomain, modId: $modId}])
+    {
+        nodes 
+        {
+            ...ModFragment
+        }
+    }
+}
