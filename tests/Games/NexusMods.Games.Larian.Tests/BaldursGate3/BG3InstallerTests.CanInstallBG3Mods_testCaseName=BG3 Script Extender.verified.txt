@@ -1,0 +1,12 @@
+﻿[
+  {
+    FromPath: DWrite.dll,
+    Hash: 0x8EF806095E9F8F9B,
+    ToGamePath: {Game}/Bin/DWrite.dll
+  },
+  {
+    FromPath: ScriptExtenderSettings.json,
+    Hash: 0x273ED670FBF4332F,
+    ToGamePath: {Game}/Bin/ScriptExtenderSettings.json
+  }
+]

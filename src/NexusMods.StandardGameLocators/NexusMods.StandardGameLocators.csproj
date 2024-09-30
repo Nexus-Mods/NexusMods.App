@@ -4,6 +4,7 @@
 
     <ItemGroup>
         <PackageReference Include="GameFinder" />
+        <PackageReference Include="GameFinder.Launcher.Heroic" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>

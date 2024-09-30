@@ -1,4 +1,5 @@
 using GameFinder.Common;
+using GameFinder.Launcher.Heroic;
 using GameFinder.StoreHandlers.EADesktop;
 using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
@@ -75,6 +76,8 @@ public static class Services
 
         if (OSInformation.Shared.IsLinux)
         {
+            coll.AddSingleton<HeroicGOGHandler>(s => new HeroicGOGHandler(s.GetRequiredService<IFileSystem>()));
+
             coll.AddSingleton<IWinePrefixManager<WinePrefix>>(s =>
                 new StubbedWinePrefixManager<WinePrefix>(s.GetRequiredService<TemporaryFileManager>(),
                     tfm => new WinePrefix

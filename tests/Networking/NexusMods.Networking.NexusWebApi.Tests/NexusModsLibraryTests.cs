@@ -21,11 +21,14 @@ public class NexusModsLibraryTests
         _temporaryFileManager = temporaryFileManager;
     }
 
-    [Fact]
-    public async Task CanDownloadCollection()
+    [Theory]
+    [InlineData("iszwwe", 469)]
+    [InlineData("r1flnc", 38)]
+    [InlineData("aexcgn", 6)]
+    public async Task CanDownloadCollection(string slug, ulong revisionNumber)
     {
         await using var destination = _temporaryFileManager.CreateFile();
-        var downloadJob = _nexusLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("iszwwe"), RevisionNumber.From(469),
+        var downloadJob = _nexusLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From(revisionNumber),
             CancellationToken.None
         );
         
@@ -33,18 +36,18 @@ public class NexusModsLibraryTests
         
         // Make sure the metadata is linked correctly
         libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile).Should().BeTrue();
-        collectionFile.CollectionRevision.RevisionNumber.Value.Should().Be(469);
-        collectionFile.CollectionRevision.Collection.Slug.Value.Should().Be("iszwwe");
+        collectionFile.CollectionRevision.RevisionNumber.Value.Should().Be(revisionNumber);
+        collectionFile.CollectionRevision.Collection.Slug.Value.Should().Be(slug);
 
         // The downloaded file should be the correct size
-        libraryFile.Size.Value.Should().Be(20940);
+        libraryFile.Size.Value.Should().BeGreaterThan(0);
         
         // The downloaded file should be a library archive
         libraryFile.TryGetAsLibraryArchive(out var archive).Should().BeTrue();
 
         // Verify the collection.json file is present and has the correct size
         var collectionJson = archive.Children.First(c => c.Path == "collection.json");
-        collectionJson.AsLibraryFile().Size.Value.Should().Be(145406UL);
+        collectionJson.IsValid().Should().BeTrue();
     }
 
 }

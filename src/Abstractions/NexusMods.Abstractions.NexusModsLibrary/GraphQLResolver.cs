@@ -1,5 +1,6 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using Splat.ModeDetection;
 
@@ -19,13 +20,34 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// <summary>
     /// Create a new resolver using the given primary key attribute and value.
     /// </summary>
-    public static GraphQLResolver Create<THighLevel, TLowLevel>(IDb referenceDb, ITransaction tx, ScalarAttribute<THighLevel, TLowLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
+    public static GraphQLResolver Create<THighLevel, TLowLevel>(IDb db, ITransaction tx, ScalarAttribute<THighLevel, TLowLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
     {
-        var existing = referenceDb.Datoms(primaryKeyAttribute, primaryKeyValue);
+        var existing = db.Datoms(primaryKeyAttribute, primaryKeyValue);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0].E;
         if (!exists)
             tx.Add(id, primaryKeyAttribute, primaryKeyValue);
+        return new GraphQLResolver(tx, new ReadOnlyModel(db, id));
+    }
+    
+    /// <summary>
+    /// Create a resolver that depends on two primary key attributes and values.
+    /// </summary>
+    public static GraphQLResolver Create<THighLevel1, TLowLevel1, THighLevel2, TLowLevel2>(IDb referenceDb, ITransaction tx, 
+        (ScalarAttribute<THighLevel1, TLowLevel1> A, THighLevel1 V) pair1,
+        (ScalarAttribute<THighLevel2, TLowLevel2> A, THighLevel2 V) pair2) 
+        where THighLevel1 : notnull
+        where THighLevel2 : notnull
+    {
+        var existing = referenceDb.Datoms(pair1, pair2);
+        var exists = existing.Count > 0;
+        var id = existing.Count == 0 ? tx.TempId() : existing[0];
+        if (!exists)
+        {
+            tx.Add(id, pair1.A, pair1.V);
+            tx.Add(id, pair2.A, pair2.V);
+        }
+
         return new GraphQLResolver(tx, new ReadOnlyModel(referenceDb, id));
     }
     
@@ -81,7 +103,7 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
             return;
         }
         
-        if (attribute.Get(Model).Equals(id))
+        if (attribute.TryGet(Model, out var foundId) && foundId.Equals(id))
             return;
         
         // Else add the value

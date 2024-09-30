@@ -32,7 +32,7 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
             })
             .Where(file => ((GamePath)file.AsLoadoutItemWithTargetPath().TargetPath).StartsWith(ContentDirectoryPath))
             .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
-            .ToArray();
+            .DistinctBy(item => item.Id);
 
         foreach (var group in groups)
         {
