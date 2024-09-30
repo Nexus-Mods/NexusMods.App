@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -12,6 +13,22 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
     public static GameId DefaultValue => From(default(uint));
+    
+    /// <summary>
+    /// Maps a given <see cref="GameDomain"/> to a <see cref="GameId"/> using known mappings.
+    /// This is a TEMPORARY API, until full migration to V2 is complete.
+    /// After that it should be REMOVED.
+    /// </summary>
+    public static GameId FromGameDomain(GameDomain domain)
+    {
+        return domain.Value switch
+        {
+            "stardewvalley" => (GameId)1704,
+            "cyberpunk2077" => (GameId)3333,
+            "baldursgate3" => (GameId)3474,
+            _ => throw new ArgumentOutOfRangeException(nameof(domain), domain, null),
+        };
+    }
 }
 
 /// <summary>
@@ -25,4 +42,4 @@ public class GameIdAttribute(string ns, string name)
 
     /// <inheritdoc />
     protected override GameId FromLowLevel(uint value, ValueTags tags, RegistryId registryId) => GameId.From(value);
-} 
+}

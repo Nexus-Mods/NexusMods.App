@@ -1,8 +1,8 @@
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -46,7 +46,12 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx)
     {
-        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((uint)modFragment.ModId));
+        var uid = new UidForMod
+        {
+            GameId = GameId.FromGameDomain(GameDomain.From(modFragment.Game.DomainName)),
+            ModId = ModId.From((uint)modFragment.ModId),
+        };
+        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, uid);
         
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
@@ -65,7 +70,7 @@ public static class FragmentExtensions
     {
         if (uri is null) return [];
         if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri)) return [];
-        
+
         return await client.GetByteArrayAsync(imageUri, token);
     }
     

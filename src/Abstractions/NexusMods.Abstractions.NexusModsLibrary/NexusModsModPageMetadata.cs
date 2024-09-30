@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -19,7 +19,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The ID of the mod page.
     /// </summary>
-    public static readonly ModIdAttribute ModId = new(Namespace, nameof(ModId)) { IsIndexed = true };
+    public static readonly UidForModAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
 
     /// <summary>
     /// The name of the mod page.
@@ -69,6 +69,6 @@ public partial class NexusModsModPageMetadata : IModelDefinition
 
     public partial struct ReadOnly
     {
-        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/{GameDomain}/mods/{ModId}");
+        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}");
     }
 }

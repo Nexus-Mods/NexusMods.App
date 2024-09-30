@@ -16,7 +16,7 @@ public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
     public UidForMod GetUniqueId() => new()
     {
         GameId = _metadata.GameId,
-        ModId = _metadata.ModId, 
+        ModId = _metadata.Uid.ModId, 
     };
 
     /// <inheritodc/>

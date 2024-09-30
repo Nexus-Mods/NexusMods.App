@@ -207,7 +207,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         var db = Connection.Db;
         var file = NexusModsFileMetadata.FindByFileId(db, mod.Source.FileId)
-            .Where(f => f.ModPage.ModId == mod.Source.ModId)
+            .Where(f => f.ModPage.Uid.ModId == mod.Source.ModId)
             .FirstOrOptional(f => f.LibraryFiles.Any());
 
         if (file.HasValue)

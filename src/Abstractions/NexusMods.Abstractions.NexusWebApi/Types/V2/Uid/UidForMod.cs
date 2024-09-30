@@ -1,5 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
 /// <summary>
@@ -47,3 +50,16 @@ public struct UidForMod
     /// </summary>
     public static UidForMod FromUlong(ulong value) => Unsafe.As<ulong, UidForMod>(ref value);
 }
+
+/// <summary>
+/// Mod ID attribute, for NexusMods API mod IDs.
+/// </summary>
+public class UidForModAttribute(string ns, string name) 
+    : ScalarAttribute<UidForMod, ulong>(ValueTags.UInt64, ns, name)
+{
+    /// <inheritdoc />
+    protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;
+
+    /// <inheritdoc />
+    protected override UidForMod FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => UidForMod.FromUlong(value);
+} 

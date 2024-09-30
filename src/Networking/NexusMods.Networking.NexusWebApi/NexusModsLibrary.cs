@@ -10,6 +10,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -45,7 +46,12 @@ public class NexusModsLibrary
         GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
-        var modPageEntities = NexusModsModPageMetadata.FindByModId(_connection.Db, modId);
+        var uid = new UidForMod
+        {
+            GameId = GameId.FromGameDomain(gameDomain),
+            ModId = modId,
+        };
+        var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
         if (modPageEntities.TryGetFirst(x => x.GameDomain == gameDomain, out var modPage)) return modPage;
 
         using var tx = _connection.BeginTransaction();
@@ -137,7 +143,7 @@ public class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
-        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.ModId, cancellationToken);
+        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
         var files = filesResponse.Data.Files;
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
@@ -171,7 +177,7 @@ public class NexusModsLibrary
             var (key, expirationDate) = nxmData.Value;
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
-                file.ModPage.ModId,
+                file.ModPage.Uid.ModId,
                 file.FileId,
                 key: key,
                 expireTime: expirationDate,
@@ -183,7 +189,7 @@ public class NexusModsLibrary
             // NOTE(erri120): premium-only API
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
-                file.ModPage.ModId,
+                file.ModPage.Uid.ModId,
                 file.FileId,
                 token: cancellationToken
             );
