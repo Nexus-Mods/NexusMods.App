@@ -7,7 +7,7 @@ namespace NexusMods.Networking.ModUpdates.Mixins;
 /// <summary>
 /// Implements the (V1) mod update API mixin.
 /// </summary>
-public struct ModUpdateMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
+public readonly struct ModUpdateMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
 {
     private readonly DateTime _lastUpdatedDate;
     private readonly GameId _gameId;
