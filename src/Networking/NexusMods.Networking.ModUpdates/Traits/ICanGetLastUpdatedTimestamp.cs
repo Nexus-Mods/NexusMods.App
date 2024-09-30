@@ -7,6 +7,7 @@ public interface ICanGetLastUpdatedTimestamp
 {
     /// <summary>
     /// Retrieves the time the item was last updated.
+    /// This date is in UTC.
     /// </summary>
     public DateTime GetLastUpdatedDate();
 }
