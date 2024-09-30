@@ -12,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
@@ -48,88 +49,15 @@ public class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
-        var modInfo = await _apiClient.ModInfoAsync(gameDomain.ToString(), modId, cancellationToken);
-
-        var newModPage = new NexusModsModPageMetadata.New(tx)
+        var modInfo = await _gqlClient.ModInfo.ExecuteAsync(gameDomain.ToString(), (int)modId.Value, cancellationToken);
+        EntityId first = default;
+        foreach (var node in modInfo.Data!.LegacyModsByDomain.Nodes)
         {
-            Name = modInfo.Data.Name,
-            ModId = modId,
-            GameDomain = gameDomain,
-        };
-
-        if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
-        {
-            newModPage.FullSizedPictureUri = fullSizedPictureUri;
-
-            var thumbnailUrl = modInfo.Data.PictureUrl.Replace("/images/", "/images/thumbnails/", StringComparison.OrdinalIgnoreCase);
-            if (Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
-            {
-                newModPage.ThumbnailUri = thumbnailUri;
-            }
-        }
-
-        var txResults = await tx.Commit();
-        return txResults.Remap(newModPage);
-    }
-
-    /// <summary>
-    /// Get or add a collection metadata
-    /// </summary>
-    public async Task<CollectionMetadata.ReadOnly> GetOrAddCollectionMetadata(CollectionSlug slug, bool referesh = false, CancellationToken token = default)
-    {
-        if (!referesh)
-        {
-            var collections = CollectionMetadata.FindBySlug(_connection.Db, slug);
-            if (collections.TryGetFirst(x => x.Slug == slug, out var collection))
-                return collection;
-        }
-
-        var info = await _gqlClient.CollectionInfo.ExecuteAsync(slug.Value, true, token);
-
-        var collectionInfo = info.Data!.Collection;
-        var collectionTileImage = _httpClient.GetByteArrayAsync(new Uri(collectionInfo.TileImage!.ThumbnailUrl), token);
-        var avatarImage = _httpClient.GetByteArrayAsync(new Uri(collectionInfo.User.Avatar), token);
-        
-        using var tx = _connection.BeginTransaction();
-        var db = _connection.Db;
-        var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
-        collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
-        collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
-        collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
-
-        // Remap the user info
-        var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)collectionInfo.User.MemberId);
-        userResolver.Add(User.Name, collectionInfo.User.Name);
-        userResolver.Add(User.Avatar, new Uri(collectionInfo.User.Avatar));
-        userResolver.Add(User.AvatarImage, await avatarImage);
-        
-        collectionResolver.Add(CollectionMetadata.Author, userResolver.Id);
-        
-        // Remap the revisions
-        foreach (var revision in collectionInfo.Revisions)
-        {
-            var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revision.Id));
-            revisionResolver.Add(CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revision.Id));
-            revisionResolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revision.RevisionNumber));
-            revisionResolver.Add(CollectionRevisionMetadata.CollectionId, collectionResolver.Id);
-            revisionResolver.Add(CollectionRevisionMetadata.Downloads, (ulong)revision.TotalDownloads);
-            revisionResolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(ulong.Parse(revision.TotalSize)));
-            revisionResolver.Add(CollectionRevisionMetadata.OverallRating, float.Parse(revision.OverallRating ?? "0.0"));
-            revisionResolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revision.OverallRatingCount ?? 0));
-            revisionResolver.Add(CollectionRevisionMetadata.ModCount, (ulong)revision.ModCount);
-        }
-
-        foreach (var tag in collectionInfo.Tags)
-        {
-            var categoryResolver = GraphQLResolver.Create(db, tx, CollectionTag.NexusId, ulong.Parse(tag.Id));
-            categoryResolver.Add(CollectionTag.Name, tag.Name);
-            collectionResolver.Add(CollectionMetadata.Tags, categoryResolver.Id);
+            first = node.Resolve(_connection.Db, tx);
         }
         
         var txResults = await tx.Commit();
-
-        return CollectionMetadata.Load(txResults.Db, txResults[collectionResolver.Id]);
+        return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
     }
     
     /// <summary>
@@ -137,12 +65,64 @@ public class NexusModsLibrary
     /// </summary>
     public async Task<CollectionRevisionMetadata.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
     {
-        var collection = await GetOrAddCollectionMetadata(slug, false, token);
-        if (collection.Revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
+        var revisions = CollectionRevisionMetadata.FindByRevisionNumber(_connection.Db, revisionNumber)
+            .Where(r => r.Collection.Slug == slug);
+        if (revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
             return revision;
         
-        collection = await GetOrAddCollectionMetadata(slug, true, token);
-        return collection.Revisions.First(r => r.RevisionNumber == revisionNumber);
+        var info = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(slug.Value, (int)revisionNumber.Value, true, token);
+        using var tx = _connection.BeginTransaction();
+        
+        var db = _connection.Db;
+        var collectionInfo = info.Data!.CollectionRevision.Collection;
+        var collectionTileImage = DownloadImage(collectionInfo.TileImage?.ThumbnailUrl, token);
+        var collectionBackgroundImage = DownloadImage(collectionInfo.HeaderImage?.Url, token);
+
+        // Remap the collection info
+        var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
+        collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
+        collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
+        collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
+        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
+        collectionResolver.Add(CollectionMetadata.BackgroundImage, await collectionBackgroundImage);
+        
+        var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
+        collectionResolver.Add(CollectionMetadata.Author, user);
+        
+        // Remap the revision info
+        var revisionInfo = info.Data!.CollectionRevision;
+        var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revisionInfo.Id));
+        revisionResolver.Add(CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revisionInfo.Id));
+        revisionResolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
+        revisionResolver.Add(CollectionRevisionMetadata.CollectionId, collectionResolver.Id);
+        revisionResolver.Add(CollectionRevisionMetadata.Downloads, (ulong)revisionInfo.TotalDownloads);
+        revisionResolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(ulong.Parse(revisionInfo.TotalSize)));
+        revisionResolver.Add(CollectionRevisionMetadata.OverallRating, float.Parse(revisionInfo.OverallRating ?? "0.0") / 100);
+        revisionResolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revisionInfo.OverallRatingCount ?? 0));
+
+        foreach (var file in revisionInfo.ModFiles)
+        {
+            var fileInfo = file.File!;
+            
+            var modEId = fileInfo.Mod.Resolve(db, tx);
+            var modfile = fileInfo.Resolve(db, tx, modEId);
+            
+            var revisionFileResolver = GraphQLResolver.Create(db, tx, CollectionRevisionModFile.FileId, ulong.Parse(file.Id));
+            revisionFileResolver.Add(CollectionRevisionModFile.CollectionRevision, revisionResolver.Id);
+            revisionFileResolver.Add(CollectionRevisionModFile.NexusModFile, modfile);
+            revisionFileResolver.Add(CollectionRevisionModFile.IsOptional, file.Optional);
+        }
+        
+        var txResults = await tx.Commit();
+        return CollectionRevisionMetadata.Load(txResults.Db, txResults[revisionResolver.Id]);
+    }
+    
+    private async Task<byte[]> DownloadImage(string? uri, CancellationToken token)
+    {
+        if (uri is null) return [];
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri)) return [];
+        
+        return await _httpClient.GetByteArrayAsync(imageUri, token);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -161,7 +141,7 @@ public class NexusModsLibrary
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
             throw new NotImplementedException();
-
+        
         var newFile = new NexusModsFileMetadata.New(tx)
         {
             Name = fileInfo.Name,
@@ -169,6 +149,9 @@ public class NexusModsLibrary
             FileId = fileId,
             ModPageId = modPage,
         };
+        
+        if (fileInfo.SizeInBytes.HasValue)
+            newFile.Size = Size.FromLong(fileInfo.SizeInBytes!.Value);
 
         var txResults = await tx.Commit();
         return txResults.Remap(newFile);
