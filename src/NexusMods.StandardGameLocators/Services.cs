@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using GameFinder.Common;
+using GameFinder.Launcher.Heroic;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EADesktop;
 using GameFinder.StoreHandlers.EADesktop.Crypto;
@@ -61,6 +62,7 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
+                services.AddSingleton<IGameLocator, HeroicGogLocator>();
 
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
@@ -92,6 +94,7 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<AHandler<SteamGame, AppId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
+                services.AddSingleton<HeroicGOGHandler>(provider => new HeroicGOGHandler(provider.GetRequiredService<IFileSystem>()));
 
                 services.AddSingleton<IWinePrefixManager<WinePrefix>>(provider => new DefaultWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
                 services.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(provider => new BottlesWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
