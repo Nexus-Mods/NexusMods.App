@@ -13,18 +13,26 @@
     </Design.PreviewWith>
 
     <Style Selector="collections|CollectionDownloadView">
+        
+        <Style.Resources>
+            <LinearGradientBrush x:Key="HeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Offset="0" Color="#BF0F0F10" />
+                <GradientStop Offset="1" Color="#F20F0F10" />
+            </LinearGradientBrush>
+        </Style.Resources>
+        
         <Style Selector="^ panels|FlexPanel#Body">
-            <!-- <Setter Property="Background" Value="#101020" /> -->
             <Setter Property="Direction" Value="Column" />
             <Setter Property="AlignItems" Value="FlexStart" />
-
+            
+            
+            
             <Style Selector="^ Border#HeaderBorder">
-                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <!-- <Setter Property="Background" Value="DarkGreen" /> -->
+                <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
                 <Setter Property="Padding" Value="24,24,24,16" />
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
 
                 <Style Selector="^ panels|FlexPanel#Header">
-                    <!-- <Setter Property="Background" Value="#252535" /> -->
                     <Setter Property="Direction" Value="Column" />
                     <Setter Property="AlignItems" Value="Stretch" />
                     <Setter Property="JustifyContent" Value="FlexStart" />
@@ -70,12 +78,31 @@
                                     <Setter Property="panels:Flex.Basis" Value="0" />
 
                                     <Style Selector="^ Border#TagsPanelBorder">
+                                        <Setter Property="Padding" Value="0,5" />
                                         <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
                                         <Setter Property="BorderBrush"
                                                 Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                                        
+                                        <Style Selector="^ TextBlock#AuthorName">
+                                            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        </Style>
+                                    </Style>
+                                    
+                                    <Style Selector="^ TextBlock#Title">
+                                        <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                    </Style>
+                                    
+                                    <Style Selector="^ TextBlock#Heading">
+                                        <Setter Property="Padding" Value="0,0,0,8" />
+                                        <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
 
                                     <Style Selector="^ TextBlock#Summary">
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
@@ -85,7 +112,7 @@
                     </Style>
 
                     <Style Selector="^ Border#StatsBorder">
-                        <Setter Property="Padding" Value="0, 8" />
+                        <Setter Property="Padding" Value="0, 12,0,8" />
                         <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
                         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
                         <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
@@ -100,13 +127,13 @@
                             </Style>
 
                             <Style Selector="^ icons|UnifiedIcon">
-                                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                 <Setter Property="Width" Value="20" />
                                 <Setter Property="Height" Value="20" />
                             </Style>
 
                             <Style Selector="^ TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                 <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                             </Style>
 

@@ -15,19 +15,17 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             {
                 
                 // Uncomment this to enable the background image
-                 /*
                  this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
                      .WhereNotNull()
-                     .SubscribeWithErrorLogging(image => Body.Background = new ImageBrush { Source = image })
+                     .SubscribeWithErrorLogging(image => Body.Background = new ImageBrush { Source = image, Stretch = Stretch.UniformToFill})
                      .DisposeWith(d);
-                     */
                 
                 this.WhenAnyValue(view => view.ViewModel!.TileImage)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(image => CollectionImage.Source = image)
                     .DisposeWith(d);
                 
-                this.OneWayBind(ViewModel, vm => vm.Name, view => view.Title.Text)
+                this.OneWayBind(ViewModel, vm => vm.Name, view => view.Heading.Text)
                     .DisposeWith(d);
                 
                 this.OneWayBind(ViewModel, vm => vm.AuthorName, view => view.AuthorName.Text)
