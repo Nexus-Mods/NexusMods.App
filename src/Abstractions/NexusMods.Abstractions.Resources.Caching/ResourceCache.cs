@@ -7,13 +7,16 @@ namespace NexusMods.Abstractions.Resources.Caching;
 [PublicAPI]
 public class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, TData>
     where TResourceIdentifier : notnull
-    where TData : IDisposable
+    where TData : notnull
     where TKey : notnull
 {
     private readonly Func<TResourceIdentifier, TKey> _keyGenerator;
     private readonly IResourceLoader<TResourceIdentifier, TData> _inner;
     private readonly IAsyncCache<TKey, TData> _cache;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public ResourceCache(
         Func<TResourceIdentifier, TKey> keyGenerator,
         IEqualityComparer<TKey> keyComparer,
@@ -30,6 +33,7 @@ public class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<T
             .Build();
     }
 
+    /// <inheritdoc/>
     public async ValueTask<Resource<TData>> LoadResourceAsync(TResourceIdentifier resourceIdentifier, CancellationToken cancellationToken)
     {
         var key = _keyGenerator(resourceIdentifier);
@@ -59,7 +63,7 @@ public static partial class ExtensionsMethods
         IEqualityComparer<TKey> keyComparer,
         ICapacityPartition capacityPartition)
         where TResourceIdentifier : notnull
-        where TData : IDisposable
+        where TData : notnull
         where TKey : notnull
     {
         return inner.Then(
