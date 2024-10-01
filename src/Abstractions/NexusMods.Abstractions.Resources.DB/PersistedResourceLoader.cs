@@ -25,6 +25,7 @@ public class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoad
     private readonly IdentifierToHash _identifierToHash;
     private readonly IdentifierToEntityId _identifierToEntityId;
     private readonly AttributeId _referenceAttributeId;
+    private readonly Optional<PartitionId> _partitionId;
 
     public PersistedResourceLoader(
         IConnection connection,
@@ -33,6 +34,7 @@ public class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoad
         DataToBytes dataToBytes,
         BytesToData bytesToData,
         IdentifierToEntityId identifierToEntityId,
+        Optional<PartitionId> partitionId,
         IResourceLoader<TResourceIdentifier, TData> innerLoader)
     {
         _connection = connection;
@@ -46,8 +48,10 @@ public class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoad
 
         _referenceAttribute = referenceAttribute;
         _referenceAttributeId = _referenceAttribute.GetDbId(_connection.Registry.Id);
+        _partitionId = partitionId;
     }
 
+    /// <inheritdoc/>
     public ValueTask<Resource<TData>> LoadResourceAsync(TResourceIdentifier resourceIdentifier, CancellationToken cancellationToken)
     {
         var entityId = _identifierToEntityId(resourceIdentifier);
@@ -96,14 +100,16 @@ public class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoad
         var bytes = _dataToBytes(resource.Data);
 
         using var tx = _connection.BeginTransaction();
-        var persisted = new PersistedResource.New(tx)
+        var tmpId = _partitionId.HasValue ? tx.TempId(_partitionId.Value) : tx.TempId();
+
+        var persisted = new PersistedResource.New(tx, tmpId)
         {
             Data = bytes,
             ExpiresAt = resource.ExpiresAt,
             ResourceIdentifierHash = _identifierToHash(resourceIdentifier.Item2),
         };
 
-        _referenceAttribute.Add(tx, resourceIdentifier.Item1, persisted.Id);
+        _referenceAttribute.Add(tx, resourceIdentifier.Item1, persisted);
         await tx.Commit();
 
         return resource;
@@ -121,7 +127,8 @@ public static partial class ExtensionsMethods
         IConnection connection,
         ReferenceAttribute<PersistedResource> referenceAttribute,
         PersistedResourceLoader<TResourceIdentifier, byte[]>.IdentifierToHash identifierToHash,
-        PersistedResourceLoader<TResourceIdentifier, byte[]>.IdentifierToEntityId identifierToEntityId)
+        PersistedResourceLoader<TResourceIdentifier, byte[]>.IdentifierToEntityId identifierToEntityId,
+        Optional<PartitionId> partitionId)
         where TResourceIdentifier : notnull
     {
         return inner.Persist(
@@ -130,7 +137,8 @@ public static partial class ExtensionsMethods
             identifierToHash: identifierToHash,
             identifierToEntityId: identifierToEntityId,
             dataToBytes: static bytes => bytes,
-            bytesToData: static bytes => bytes
+            bytesToData: static bytes => bytes,
+            partitionId: partitionId
         );
     }
 
@@ -141,12 +149,13 @@ public static partial class ExtensionsMethods
         PersistedResourceLoader<TResourceIdentifier, TData>.IdentifierToHash identifierToHash,
         PersistedResourceLoader<TResourceIdentifier, TData>.IdentifierToEntityId identifierToEntityId,
         PersistedResourceLoader<TResourceIdentifier, TData>.DataToBytes dataToBytes,
-        PersistedResourceLoader<TResourceIdentifier, TData>.BytesToData bytesToData)
+        PersistedResourceLoader<TResourceIdentifier, TData>.BytesToData bytesToData,
+        Optional<PartitionId> partitionId)
         where TResourceIdentifier : notnull
         where TData : notnull
     {
         return inner.Then(
-            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, dataToBytes, bytesToData),
+            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, dataToBytes, bytesToData, partitionId),
             factory: static (input, inner) => new PersistedResourceLoader<TResourceIdentifier, TData>(
                 connection: input.connection,
                 referenceAttribute: input.referenceAttribute,
@@ -154,6 +163,7 @@ public static partial class ExtensionsMethods
                 identifierToEntityId: input.identifierToEntityId,
                 dataToBytes: input.dataToBytes,
                 bytesToData: input.bytesToData,
+                partitionId: input.partitionId,
                 innerLoader: inner
             )
         );

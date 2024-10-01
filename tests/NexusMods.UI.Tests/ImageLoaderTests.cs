@@ -50,6 +50,8 @@ public class ImageLoaderTests : AUiTest
 
     private IResourceLoader<EntityId, Lifetime<Bitmap>> CreatePipeline()
     {
+        const byte partitionId = 123;
+
         var pipeline = HttpLoader.CreateDefault()
             .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
             .Decode(decoderType: DecoderType.Skia)
@@ -62,7 +64,8 @@ public class ImageLoaderTests : AUiTest
                 connection: Connection,
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
                 identifierToHash: static tuple => tuple.Item2.ToString().XxHash64AsUtf8(),
-                identifierToEntityId: static tuple => tuple.Item1
+                identifierToEntityId: static tuple => tuple.Item1,
+                partitionId: PartitionId.User(partitionId)
             )
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
