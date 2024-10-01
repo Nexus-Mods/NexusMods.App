@@ -1,0 +1,11 @@
+#include { ModFragment } from './CommonFragments.graphql'
+
+# Retrieves all files for a group of mods with given UIDs
+query ModFilesByUid($uids: [ID!]!) {
+    modFilesByUid(uids: $uids) {
+        nodes {
+            ...ModFileFragment
+        }
+    }
+}
+

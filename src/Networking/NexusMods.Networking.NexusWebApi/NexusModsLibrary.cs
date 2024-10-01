@@ -156,6 +156,7 @@ public class NexusModsLibrary
             Version = fileInfo.Version,
             ModPageId = modPage,
             Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
+            UploadedAt = fileInfo.UploadedTime,
         };
         
         if (fileInfo.SizeInBytes.HasValue)

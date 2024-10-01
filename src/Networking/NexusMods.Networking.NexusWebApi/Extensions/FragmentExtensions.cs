@@ -26,16 +26,23 @@ public static class FragmentExtensions
         userResolver.Add(User.AvatarImage,avatarImage);
         return userResolver.Id;
     }
-    
+
     /// <summary>
-    /// Resolves the IModFragment to an entity in the database, inserting or updating as necessary.
+    /// Resolves the <see cref="IModFragment"/> to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
+    /// <param name="modFileFragment">Fragment obtained from the GraphQL API call.</param>
+    /// <param name="db">Provides DB access.</param>
+    /// <param name="tx">The current transaction for inserting items into database.,</param>
+    /// <param name="modPageEid">ID of the mod page entity. Must be valid unless you can guarantee entity already exists.</param>
+    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId? modPageEid = default)
     {
         var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
-        nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
+        if (modPageEid != null)
+            nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid.Value);
+
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
+        nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);
         if (ulong.TryParse(modFileFragment.SizeInBytes, out var size))
             nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.From(size));
         return nexusFileResolver.Id;
@@ -50,6 +57,7 @@ public static class FragmentExtensions
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
         nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);
+        nexusModResolver.Add(NexusModsModPageMetadata.FilesUpdatedAt, DateTime.MinValue);
 
         if (Uri.TryCreate(modFragment.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
             nexusModResolver.Add(NexusModsModPageMetadata.FullSizedPictureUri, fullSizedPictureUri);

@@ -26,8 +26,8 @@ public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
     /// <summary>
     /// Returns the database entries containing page metadata(s) as a mixin.
     /// </summary>
-    public IEnumerable<PageMetadataMixin> EnumerateDatabaseEntries(IDb db) => NexusModsModPageMetadata.All(db).Select(only => new PageMetadataMixin(only));
-
+    public static IEnumerable<PageMetadataMixin> EnumerateDatabaseEntries(IDb db) => NexusModsModPageMetadata.All(db).Select(only => new PageMetadataMixin(only));
+    
     /// <summary/>
     public static implicit operator NexusModsModPageMetadata.ReadOnly(PageMetadataMixin mixin) => mixin._metadata;
 

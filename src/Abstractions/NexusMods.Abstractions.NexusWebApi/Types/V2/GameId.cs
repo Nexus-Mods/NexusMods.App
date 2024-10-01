@@ -29,6 +29,23 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
             _ => throw new ArgumentOutOfRangeException(nameof(domain), domain, null),
         };
     }
+    
+    /// <summary>
+    /// Maps a given <see cref="GameId"/> to a <see cref="GameDomain"/> using known mappings.
+    /// This is a TEMPORARY API, until full migration to V2 is complete.
+    /// After that it should be REMOVED.
+    /// </summary>
+    public GameDomain ToGameDomain()
+    {
+        var value = Value;
+        return value switch
+        {
+            1704 => GameDomain.From("stardewvalley"),
+            3333 => GameDomain.From("cyberpunk2077"),
+            3474 => GameDomain.From("baldursgate3"),
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
+        };
+    }
 }
 
 /// <summary>

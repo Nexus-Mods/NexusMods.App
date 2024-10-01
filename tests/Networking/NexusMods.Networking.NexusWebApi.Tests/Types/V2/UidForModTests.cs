@@ -69,6 +69,10 @@ public class UidForModTests
         // Assert
         result.GameId.Should().Be((GameId)expectedGameId);
         result.ModId.Should().Be((ModId)expectedModId);
+        
+        // Assert round trip
+        var newString = result.ToV2Api();
+        newString.Should().Be(uidString);
     }
 
     [Fact]

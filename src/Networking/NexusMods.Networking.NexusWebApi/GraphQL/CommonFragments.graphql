@@ -10,6 +10,7 @@ fragment ModFileFragment on ModFile {
     modId,
     version,
     sizeInBytes,
+    date,
     # This contains fileId and gameId
     uid
 }

@@ -39,6 +39,11 @@ public struct UidForMod
     /// This throws if <param name="uid"/> is not a valid number.
     /// </remarks>
     public static UidForMod FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
+    
+    /// <summary>
+    /// Converts the UID to a string accepted by the V2 API.
+    /// </summary>
+    public string ToV2Api() => AsUlong.ToString();
 
     /// <summary>
     /// Reinterprets the current <see cref="UidForMod"/> as a single <see cref="ulong"/>.

@@ -32,6 +32,11 @@ public partial class NexusModsFileMetadata : IModelDefinition
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
     
     /// <summary>
+    /// The date the file was uploaded at.
+    /// </summary>
+    public static readonly DateTimeAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
+    
+    /// <summary>
     /// The size in bytes of the file.
     /// </summary>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
