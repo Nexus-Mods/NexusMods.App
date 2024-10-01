@@ -33,13 +33,11 @@ public static class FragmentExtensions
     /// <param name="modFileFragment">Fragment obtained from the GraphQL API call.</param>
     /// <param name="db">Provides DB access.</param>
     /// <param name="tx">The current transaction for inserting items into database.,</param>
-    /// <param name="modPageEid">ID of the mod page entity. Must be valid unless you can guarantee entity already exists.</param>
-    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId? modPageEid = default)
+    /// <param name="modPageEid">ID of the mod page entity.</param>
+    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
     {
         var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
-        if (modPageEid != null)
-            nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid.Value);
-
+        nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
         nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);

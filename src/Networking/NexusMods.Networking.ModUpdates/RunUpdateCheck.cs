@@ -3,7 +3,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.NexusWebApi;
@@ -14,12 +13,12 @@ namespace NexusMods.Networking.ModUpdates;
 /// <summary>
 /// Utility class that encapsulates the logic for running the actual update check.
 /// </summary>
-public class RunUpdateCheck
+public static class RunUpdateCheck
 {
     /// <summary>
     /// Identifies all mod pages whose information needs refreshed.
     /// </summary>
-    public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckForModPagesWhichNeedUpdating(IDb db, INexusApiClient apiClient)
+    public static async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckForModPagesWhichNeedUpdating(IDb db, INexusApiClient apiClient)
     {
         // Extract all GameDomain(s)
         var modPages = PageMetadataMixin.EnumerateDatabaseEntries(db).ToArray();
@@ -45,56 +44,60 @@ public class RunUpdateCheck
     /// <summary>
     /// Updates the metadata for mod pages returned from the <see cref="CheckForModPagesWhichNeedUpdating"/> API call.
     /// </summary>
-    public async Task UpdateModFilesForPage(IDb db, ITransaction tx, ILogger logger, INexusGraphQLClient gqlClient, PerFeedCacheUpdaterResult<PageMetadataMixin> result, CancellationToken cancellationToken)
+    public static async Task UpdateModFilesForOutdatedPages(IDb db, ITransaction tx, ILogger logger, INexusGraphQLClient gqlClient, PerFeedCacheUpdaterResult<PageMetadataMixin> result, CancellationToken cancellationToken)
     {
-        // Undetermined items may be removed items from the site; these risk
-        // causing errors, so we silently discard them while logging.
-        // If we ever find we missed some edge case, logs will help.
+        // Note(sewer): Undetermined items may be removed items from the site; or
+        // caused by programmer error, so wr should log these whenever possible,
+        // but they should not cause a critical error; in case it's simply the result
+        // of mod removal such as DMCA takedown.
         foreach (var mixin in result.UndeterminedItems)
         {
             try
             {
-                // Fetch the items individually. 
-                var uid = mixin.GetUniqueId().ToV2Api();
-                var filesByUid = await gqlClient.ModFilesByUid.ExecuteAsync([uid], cancellationToken);
-                filesByUid.EnsureNoErrors();
-                
-                // Update the metadata
-                UpdateDatabase(filesByUid);
+                await UpdateModFilesForPage(db, tx, gqlClient, cancellationToken, mixin);
             }
             catch (Exception e)
             {
                 var id = mixin.GetUniqueId();
-                logger.LogError(e, "Failed toi update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
+                logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
             }
         }
 
         // TODO: Move constant to a better location.
         // 50 is max number of items that API allows returned at once.
         // Note(sewer): But I'm not sure where to put this yet, all the GraphQL stuff is source generated.
-        var groupsOfMaxItems = result.OutOfDateItems.Chunk(50);
-        foreach (var itemGroup in groupsOfMaxItems)
+        foreach (var mixin in result.OutOfDateItems)
         {
-            var uids = itemGroup.Select(x => x.GetUniqueId().ToV2Api()).ToList();
-            var filesByUid = await gqlClient.ModFilesByUid.ExecuteAsync(uids, cancellationToken);
-            filesByUid.EnsureNoErrors();
-            
-            // Update the metadata
-            UpdateDatabase(filesByUid);
+            // For the remaining items, failure to obtain result here should be truly exceptional.
+            await UpdateModFilesForPage(db, tx, gqlClient, cancellationToken, mixin);
         }
-        return;
+    }
+    private static async Task UpdateModFilesForPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
+    {
+        var uid = mixin.GetUniqueId();
+        var modIdString = uid.ModId.Value.ToString();
+        var gameIdString = uid.GameId.Value.ToString();
+        var filesByUid = await gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
+        filesByUid.EnsureNoErrors();
 
-        void UpdateDatabase(IOperationResult<IModFilesByUidResult> filesByUid)
-        {
-            foreach (var node in filesByUid.Data!.ModFilesByUid!.Nodes)
-                node.Resolve(db, tx);
-        }
+        var pageEntityId = mixin.GetModPageEntityId();
+        foreach (var node in filesByUid.Data!.ModFiles)
+            node.Resolve(db, tx, pageEntityId);
     }
 
     /// <summary>
     /// Returns all files which have a 'newer' date than the current one.
     /// </summary>
-    public IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(NexusModsFileMetadata.ReadOnly file)
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, UidForFile uid)
+    {
+        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        return GetNewerFilesForExistingFile(metadata);
+    } 
+    
+    /// <summary>
+    /// Returns all files which have a 'newer' date than the current one.
+    /// </summary>
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(NexusModsFileMetadata.ReadOnly file)
     {
         return file.ModPage.Files.Where(x => x.UploadedAt > file.UploadedAt);
     } 

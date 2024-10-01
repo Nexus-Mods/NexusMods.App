@@ -20,6 +20,9 @@ public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
         ModId = _metadata.Uid.ModId, 
     };
 
+    /// <summary/>
+    public EntityId GetModPageEntityId() => _metadata.Id;
+    
     /// <inheritodc/>
     public DateTime GetLastUpdatedDate() => _metadata.UpdatedAt; // <= TODO: Change this with 'last file updated at' when V2 supports this field.
 
