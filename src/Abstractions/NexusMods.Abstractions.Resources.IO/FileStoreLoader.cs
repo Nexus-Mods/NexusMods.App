@@ -1,20 +1,23 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Resources;
 using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.Abstractions.Resources.IO;
 
 [PublicAPI]
 public class FileStoreLoader : IResourceLoader<Hash, byte[]>
 {
     private readonly IFileStore _fileStore;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public FileStoreLoader(IFileStore fileStore)
     {
         _fileStore = fileStore;
     }
 
+    /// <inheritdoc/>
     public async ValueTask<Resource<byte[]>> LoadResourceAsync(Hash resourceIdentifier, CancellationToken cancellationToken)
     {
         await using var stream = await _fileStore.GetFileStream(resourceIdentifier, cancellationToken);

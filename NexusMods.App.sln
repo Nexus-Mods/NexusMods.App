@@ -266,6 +266,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Reso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Resources.Caching", "src\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj", "{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Resources.IO", "src\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj", "{D3BA5B5A-668A-443B-872C-3116CBB0BC0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -692,6 +694,10 @@ Global
 		{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -815,6 +821,7 @@ Global
 		{8744F914-BF51-4276-AFDA-9CBD750B8187} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{856B58BA-8B98-42C5-9129-273A679697D0} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

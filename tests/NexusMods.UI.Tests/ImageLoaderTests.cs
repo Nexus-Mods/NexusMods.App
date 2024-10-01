@@ -8,7 +8,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
-using NexusMods.DataModel;
+using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Media;
@@ -53,7 +53,7 @@ public class ImageLoaderTests : AUiTest
     {
         const byte partitionId = 123;
 
-        var pipeline = HttpLoader.CreateDefault()
+        var pipeline = new HttpLoader(new HttpClient())
             .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
             .Decode(decoderType: DecoderType.Skia)
             .Resize(newSize: new SKSizeI(

@@ -1,10 +1,7 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Http.Resilience;
-using NexusMods.Abstractions.Resources;
-using Polly;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.Abstractions.Resources.IO;
 
 [PublicAPI]
 public class HttpLoader : IResourceLoader<Uri, byte[]>
@@ -18,30 +15,6 @@ public class HttpLoader : IResourceLoader<Uri, byte[]>
     public HttpLoader(HttpClient httpClient)
     {
         _httpClient = httpClient;
-    }
-
-    public static HttpLoader CreateDefault()
-    {
-        var pipeline = new ResiliencePipelineBuilder<HttpResponseMessage>()
-            .AddRetry(new HttpRetryStrategyOptions())
-            .AddTimeout(new HttpTimeoutStrategyOptions())
-            .Build();
-
-#pragma warning disable EXTEXP0001
-        HttpMessageHandler handler = new ResilienceHandler(pipeline)
-#pragma warning restore EXTEXP0001
-        {
-            InnerHandler = new SocketsHttpHandler
-            {
-                ConnectTimeout = TimeSpan.FromSeconds(10),
-                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.WithActiveRequests,
-                KeepAlivePingDelay = TimeSpan.FromSeconds(5),
-                KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
-            },
-        };
-
-        var client = new HttpClient(handler);
-        return new HttpLoader(client);
     }
 
     /// <inheritdoc/>
