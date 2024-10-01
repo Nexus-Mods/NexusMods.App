@@ -21,7 +21,7 @@ public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
     };
 
     /// <inheritodc/>
-    public DateTime GetLastUpdatedDate() => _metadata.UpdatedAt;
+    public DateTime GetLastUpdatedDate() => _metadata.UpdatedAt; // <= TODO: Change this with 'last file updated at' when V2 supports this field.
 
     /// <summary>
     /// Returns the database entries containing page metadata(s) as a mixin.
