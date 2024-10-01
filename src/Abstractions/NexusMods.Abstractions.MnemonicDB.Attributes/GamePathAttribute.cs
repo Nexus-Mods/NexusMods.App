@@ -20,7 +20,7 @@ public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePat
     }
 
     /// <inheritdoc />
-    protected override GamePath FromLowLevel(string value, ValueTags tags, RegistryId registryId)
+    protected override GamePath FromLowLevel(string value, ValueTags tags, AttributeResolver resolver)
     {
         var parts = value.Split('|');
         Debug.Assert(parts.Length == 2);

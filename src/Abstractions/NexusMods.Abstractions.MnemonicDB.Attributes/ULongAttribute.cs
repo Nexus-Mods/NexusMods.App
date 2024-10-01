@@ -11,5 +11,5 @@ public class ULongAttribute(string ns, string name) : ScalarAttribute<ulong, ulo
 {
     protected override ulong ToLowLevel(ulong value) => value;
     
-    protected override ulong FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => value;
+    protected override ulong FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => value;
 }

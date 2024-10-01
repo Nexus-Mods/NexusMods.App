@@ -16,7 +16,7 @@ public class BooleanAttribute(string ns, string name) : ScalarAttribute<bool, by
     }
 
     /// <inheritdoc />
-    protected override bool FromLowLevel(byte value, ValueTags tags, RegistryId registry)
+    protected override bool FromLowLevel(byte value, ValueTags tags, AttributeResolver resolver)
     {
         return value == 1;
     }
