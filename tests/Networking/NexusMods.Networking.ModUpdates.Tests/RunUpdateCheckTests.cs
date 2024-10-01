@@ -23,6 +23,12 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         _nexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
 
+    // TODO: Add more tests in here. - Sewer
+    // We shouldn't be relying on live site data for testing, however, we are still in
+    // the process of getting the remaining V2 APIs in. In order to avoid wasted effort,
+    // we won't be mocking the V1 APIs; so more complex/stable tests involving mocks will
+    // move after full V2 move.
+
     [Fact]
     [Trait("RequiresNetworking", "True")]
     public async Task UpdatingModPageMetadata_ViaWebApi_ShouldWork()
