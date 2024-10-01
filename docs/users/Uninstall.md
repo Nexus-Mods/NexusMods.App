@@ -36,9 +36,24 @@ This part only applies if you are using Linux, have a portable install or have b
 !!! warning "Caution"
     Manual uninstall should only be used as a fallback if the normal installer is not available. You will need to manually remove any mod files from your game folder(s).
 
-If something goes wrong during uninstall, it may be necessary to remove the app manually. The following steps must be performed manually by the user:
+If something goes wrong during uninstall, it may be necessary to remove the app manually.
 
-1. Inside the App, ensure that all mods for your loadouts in all games are disabled and these changes have been applied. This will remove any files added to the game folder and get the game back to a "vanilla" state. (When possible, you should delete your loadouts).</li>
-2. Close the App. 
-3. Delete the contents of `%LOCALAPPDATA%\NexusMods.App` on Windows or `$XDG_STATE_HOME/NexusMods.App/Logs` and `$XDG_DATA_HOME/NexusMods.App` on Linux to remove all downloaded mods and internal databases used by the app.
-4. Delete the App itself (or uninstall it using the Windows system settings if possible). </li>
+Inside the App, ensure that all mods for your loadouts in all games are disabled and these changes have been applied. This will remove any files added to the game folder and get the game back to a "vanilla" state. (When possible, you should delete your loadouts). Close the app before continuing. 
+
+### Manual Uninstall on Windows
+To reset the app on Windows you will need to empty the contents of `%LOCALAPPDATA%\NexusMods.App`. 
+
+1. Press ++win+"R"++ to open the "Run" command box.
+2. Paste `%LOCALAPPDATA%\NexusMods.App\` into the Open field and press OK.
+3. This will open the correct folder in a File Explorer window.
+4. Delete the contents of this folder. 
+5. Delete the app itself (or uninstall it using the Windows system settings if possible). 
+
+### Manual Uninstall on Linux
+To reset the app on Linux you will need to empty the contents of `$XDG_STATE_HOME/NexusMods.App/Logs` and `$XDG_DATA_HOME/NexusMods.App`.
+
+1. Navigate to your Desktop (on Steam Deck you will need to be in Desktop Mode, which can be found in the power menu).
+2. Open a terminal window (e.g. Konsole)
+3. Paste the following command into the terminal and press ++enter++: `rm -Ird ${XDG_STATE_HOME:-$HOME/.local/state}/NexusMods.App`.
+4. Paste the following command into the terminal and press ++enter++: `rm -Ird ${XDG_DATA_HOME:-$HOME/.local/share}/NexusMods.App`.
+5. Delete the appimage file from your PC. 
