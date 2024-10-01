@@ -46,7 +46,7 @@ public class ManuallyAddedLocator : IGameLocator
         var result = await tx.Commit();
         var addedGame = result.Remap(ent);
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
-        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, addedGame, version), this);
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, path.FileSystem, GameStore.ManuallyAdded, addedGame, version), this);
         var newId = result[ent.Id];
         return (newId, install);
     }
@@ -71,7 +71,7 @@ public class ManuallyAddedLocator : IGameLocator
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         var games = ManuallyAddedGame.FindByGameDomain(_conn.Value.Db, game.Domain)
-            .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), 
+            .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,
                 GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
         return games;
     }
