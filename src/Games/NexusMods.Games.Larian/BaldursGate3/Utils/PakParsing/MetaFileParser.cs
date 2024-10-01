@@ -37,6 +37,7 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                     break;
                                 case "Version64":
                                 case "Version":
+                                    // TODO: Actually parse the version into something we can compare, which will require different handling depending on Version vs Version64
                                     moduleShortDesc.Version = value ?? string.Empty;
                                     break;
                                 case "UUID":
@@ -85,6 +86,7 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                             break;
                                         case "Version64":
                                         case "Version":
+                                            // TODO: Actually parse the version into something we can compare, which will require different handling depending on Version vs Version64
                                             dependency.Version = value ?? string.Empty;
                                             break;
                                         case "UUID":
