@@ -71,7 +71,7 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
     {
-        var locations = GetLocations(metadata.Path.FileSystem, metadata);
+        var locations = GetLocations(metadata.GameFileSystem, metadata);
         return new GameInstallation
         {
             Game = this,
