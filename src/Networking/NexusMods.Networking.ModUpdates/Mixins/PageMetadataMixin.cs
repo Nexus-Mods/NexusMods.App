@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates.Mixins;
 
@@ -21,6 +22,11 @@ public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
 
     /// <inheritodc/>
     public DateTime GetLastUpdatedDate() => _metadata.UpdatedAt;
+
+    /// <summary>
+    /// Returns the database entries containing page metadata(s) as a mixin.
+    /// </summary>
+    public IEnumerable<PageMetadataMixin> EnumerateDatabaseEntries(IDb db) => NexusModsModPageMetadata.All(db).Select(only => new PageMetadataMixin(only));
 
     /// <summary/>
     public static implicit operator NexusModsModPageMetadata.ReadOnly(PageMetadataMixin mixin) => mixin._metadata;
