@@ -13,7 +13,7 @@ public static class PakFileParser
 
 #region Public Methods
 
-    public static LsxXmlFormat.ModuleShortDesc ParsePakMeta(Stream pakFileStream)
+    public static LsxXmlFormat.MetaFileData ParsePakMeta(Stream pakFileStream)
     {
         using var br = new BinaryReader(pakFileStream);
         var headerData = ParseHeaderInternal(br);
