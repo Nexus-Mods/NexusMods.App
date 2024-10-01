@@ -26,6 +26,17 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
     protected override AbsolutePath Path(SteamGame record) => record.Path;
 
     /// <inheritdoc />
+    protected override IFileSystem GetMappedFileSystem(SteamGame game)
+    {
+        if (!OSInformation.Shared.IsLinux) return base.GetMappedFileSystem(game);
+
+        var protonPrefix = game.GetProtonPrefix();
+        if (protonPrefix is null) return base.GetMappedFileSystem(game);
+
+        return protonPrefix.CreateOverlayFileSystem(FileSystem.Shared);
+    }
+
+    /// <inheritdoc />
     protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game)
     {
         return new SteamLocatorResultMetadata
