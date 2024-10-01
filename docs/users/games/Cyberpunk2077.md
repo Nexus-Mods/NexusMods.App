@@ -26,7 +26,7 @@ Diagnostics are shown in the following situations:
 ### Automated deployment for REDmods
 
 ??? info "REDmod with Heroic Launcher (Linux)"
-    The app to cannot run REDmod deployment automatically for users who have installed Cyberpunk 2077 through Heroic Launcher on Linux. To run REDmod in Heroic, ensure the "Enable Mods" checkbox is enabled under "Modify Installation". This will mean REDmods are deployed by Heroic Launcher before the game starts.
+    The app cannot run REDmod deployment automatically for users who have installed Cyberpunk 2077 through Heroic Launcher on Linux. To run REDmod in Heroic, ensure the "Enable Mods" checkbox is enabled under "Modify Installation". This will mean REDmods are deployed by Heroic Launcher before the game starts.
     ![The option to "Modify Installation" is under the options menu when viewing a game in Heroic Launcher](../images/0.6.1/REDmodHeroicModifyInstall.webp)
     ![The option to "Enable Mods" is under "REDmod Integration" in Heroic Launcher](../images/0.6.1/REDmodHeroicEnableMods.webp) 
 
