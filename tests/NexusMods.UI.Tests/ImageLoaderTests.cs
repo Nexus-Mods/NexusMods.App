@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
+using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
