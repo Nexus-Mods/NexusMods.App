@@ -4,6 +4,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -67,6 +68,12 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
                 this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.CollectionStatusText.Text)
                     .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.RequiredModsAdapter.Source.Value, view => view.RequiredModsTreeDataGrid.Source)
+                    .AddTo(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.OptionalModsAdapter.Source.Value, view => view.OptionalModsTreeDataGrid.Source)
+                    .AddTo(d);
 
             }
         );

@@ -102,7 +102,7 @@
                                     HorizontalAlignment="Center"
                                     Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
                                     Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
-                                    >
+                            >
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
                                     <TextBlock Text="{CompiledBinding InstallText.Value}" />

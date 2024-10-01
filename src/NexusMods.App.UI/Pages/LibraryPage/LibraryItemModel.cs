@@ -36,6 +36,9 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
     public BindableReactiveProperty<string> InstallText { get; } = new("Install");
     public BindableReactiveProperty<bool> IsInstalledInLoadout { get; } = new(false);
+    
+    public BindableReactiveProperty<string> DownloadText { get; } = new("Download");
+    public BindableReactiveProperty<bool> IsDownloaded { get; } = new(false);
 
     public ReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>> InstallCommand { get; }
 

@@ -8,6 +8,8 @@
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
+    xmlns:libraryPage="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
     mc:Ignorable="d" d:DesignWidth="1620" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
     <Design.DataContext>
@@ -130,6 +132,21 @@
                           CanUserSortColumns="True"
                           Classes="MainListsStyling"
                           HorizontalAlignment="Stretch">
+                <TreeDataGrid.Resources>
+                    <DataTemplate x:Key="InstallColumnTemplate" DataType="libraryPage:LibraryItemModel">
+                        <Button Command="{CompiledBinding InstallCommand}" 
+                                Classes="Standard"
+                                HorizontalAlignment="Center"
+                                Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
+                                Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
+                        >
+                            <StackPanel Orientation="Horizontal">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
+                                <TextBlock Text="{CompiledBinding InstallText.Value}" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </TreeDataGrid.Resources>
             </TreeDataGrid>
         </Expander>
         <Expander>
@@ -145,6 +162,21 @@
                           CanUserSortColumns="True"
                           Classes="MainListsStyling"
                           HorizontalAlignment="Stretch">
+                <TreeDataGrid.Resources>
+                    <DataTemplate x:Key="InstallColumnTemplate" DataType="libraryPage:LibraryItemModel">
+                        <Button Command="{CompiledBinding InstallCommand}" 
+                                Classes="Standard"
+                                HorizontalAlignment="Center"
+                                Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
+                                Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
+                        >
+                            <StackPanel Orientation="Horizontal">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
+                                <TextBlock Text="{CompiledBinding InstallText.Value}" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </TreeDataGrid.Resources>
             </TreeDataGrid>
         </Expander>
     </panels:FlexPanel>
