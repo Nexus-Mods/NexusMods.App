@@ -30,10 +30,10 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IModFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modEId)
+    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
     {
-        var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((uint)modFileFragment.FileId)), (NexusModsFileMetadata.ModPageId,  modEId));
-        nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modEId);
+        var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
+        nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
         if (ulong.TryParse(modFileFragment.SizeInBytes, out var size))
@@ -46,13 +46,7 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx)
     {
-        var uid = new UidForMod
-        {
-            GameId = GameId.FromGameDomain(GameDomain.From(modFragment.Game.DomainName)),
-            ModId = ModId.From((uint)modFragment.ModId),
-        };
-        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, uid);
-        
+        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
         nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);

@@ -138,7 +138,8 @@ public class NexusModsLibrary
         GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
-        var fileEntities = NexusModsFileMetadata.FindByFileId(_connection.Db, fileId);
+        var uid = new UidForFile(fileId, modPage.Uid.GameId);
+        var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
         if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file)) return file;
 
         using var tx = _connection.BeginTransaction();
@@ -153,8 +154,8 @@ public class NexusModsLibrary
         {
             Name = fileInfo.Name,
             Version = fileInfo.Version,
-            FileId = fileId,
             ModPageId = modPage,
+            Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
         };
         
         if (fileInfo.SizeInBytes.HasValue)
@@ -178,7 +179,7 @@ public class NexusModsLibrary
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
                 file.ModPage.Uid.ModId,
-                file.FileId,
+                file.Uid.FileId,
                 key: key,
                 expireTime: expirationDate,
                 token: cancellationToken
@@ -190,7 +191,7 @@ public class NexusModsLibrary
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
                 file.ModPage.Uid.ModId,
-                file.FileId,
+                file.Uid.FileId,
                 token: cancellationToken
             );
         }

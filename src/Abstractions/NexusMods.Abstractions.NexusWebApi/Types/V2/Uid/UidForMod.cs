@@ -52,7 +52,8 @@ public struct UidForMod
 }
 
 /// <summary>
-/// Mod ID attribute, for NexusMods API mod IDs.
+/// Attribute that uniquely identifies a mod on Nexus Mods.
+/// See <see cref="UidForMod"/> for more details.
 /// </summary>
 public class UidForModAttribute(string ns, string name) 
     : ScalarAttribute<UidForMod, ulong>(ValueTags.UInt64, ns, name)
