@@ -44,8 +44,14 @@ public class HeroicGogLocator : IGameLocator
         foreach (var id in tg.GogIds)
         {
             if (!_cachedGames.TryGetValue(GOGGameId.From(id), out var found)) continue;
-            // TODO: use WINE filesystem
-            yield return new GameLocatorResult(found.Path, found.Path.FileSystem, GameStore.GOG, new HeroicGOGLocatorResultMetadata
+            var fs = found.Path.FileSystem;
+
+            if (found is HeroicGOGGame { WinePrefixPath.FileExists: true } heroicGOGGame)
+            {
+                fs = heroicGOGGame.GetWinePrefix().CreateOverlayFileSystem(fs);
+            }
+
+            yield return new GameLocatorResult(found.Path, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
             {
                 Id = id,
             });
