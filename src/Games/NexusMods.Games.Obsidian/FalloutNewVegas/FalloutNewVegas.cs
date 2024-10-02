@@ -28,7 +28,7 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public static string GameName => _name; // used to statically reference the game name elsewhere... in case the name changes? idk.
     public override string Name => _name;
-    public override GameDomain Domain => GameDomain.From("falloutnv");
+    public override GameDomain Domain => GameDomain.From("newvegas");
 
 #region File Information
 
