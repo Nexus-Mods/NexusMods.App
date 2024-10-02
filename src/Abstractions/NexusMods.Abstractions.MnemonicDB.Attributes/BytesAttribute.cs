@@ -10,16 +10,14 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 public class BytesAttribute(string ns, string name) : BlobAttribute<byte[]>(ns, name)
 {
     /// <inheritdoc/>
-    protected override byte[] FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
-    {
-        return value.ToArray();
-    }
+    protected override byte[] FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver) => value.ToArray();
 
     /// <inheritdoc/>
     protected override void WriteValue<TWriter>(byte[] value, TWriter writer)
     {
         var span = writer.GetSpan(sizeHint: value.Length);
+
         value.CopyTo(span);
-        writer.Advance(span.Length);
+        writer.Advance(value.Length);
     }
 }

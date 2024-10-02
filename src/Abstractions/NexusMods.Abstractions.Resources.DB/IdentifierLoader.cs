@@ -27,7 +27,7 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : 
         _innerLoader = innerLoader;
 
         _attribute = attribute;
-        _attributeId = attribute.GetDbId(_connection.Registry.Id);
+        _attributeId = _connection.AttributeCache.GetAttributeId(attribute.Id);
     }
 
     /// <inheritdoc/>
@@ -43,7 +43,7 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : 
         foreach (var datom in indexSegment)
         {
             if (!datom.A.Equals(_attributeId)) continue;
-            var value = _attribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, indexSegment.RegistryId);
+            var value = _attribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver);
             return value;
         }
 

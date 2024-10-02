@@ -47,7 +47,7 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
         _identifierToEntityId = identifierToEntityId;
 
         _referenceAttribute = referenceAttribute;
-        _referenceAttributeId = _referenceAttribute.GetDbId(_connection.Registry.Id);
+        _referenceAttributeId = _connection.AttributeCache.GetAttributeId(_referenceAttribute.Id);
         _partitionId = partitionId;
     }
 
@@ -72,7 +72,7 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
         foreach (var datom in indexSegment)
         {
             if (!datom.A.Equals(_referenceAttributeId)) continue;
-            persistedResourceId = _referenceAttribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, indexSegment.RegistryId);
+            persistedResourceId = _referenceAttribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver);
         }
 
         if (!persistedResourceId.HasValue) return null;
