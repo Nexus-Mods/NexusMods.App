@@ -52,11 +52,6 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
 
-    protected override Version GetVersion(GameLocatorResult installation)
-    {
-        return base.GetVersion(installation);
-    }
-
 #endregion
 
 #region Game IDs
