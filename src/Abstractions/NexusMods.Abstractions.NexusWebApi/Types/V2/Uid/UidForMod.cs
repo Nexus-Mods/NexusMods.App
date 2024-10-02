@@ -67,5 +67,5 @@ public class UidForModAttribute(string ns, string name)
     protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForMod FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => UidForMod.FromUlong(value);
+    protected override UidForMod FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForMod.FromUlong(value);
 } 

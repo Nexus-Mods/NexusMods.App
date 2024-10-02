@@ -66,5 +66,5 @@ public class UidForFileAttribute(string ns, string name)
     protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => UidForFile.FromUlong(value);
+    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForFile.FromUlong(value);
 } 

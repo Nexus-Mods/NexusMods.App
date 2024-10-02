@@ -58,5 +58,5 @@ public class GameIdAttribute(string ns, string name)
     protected override uint ToLowLevel(GameId value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameId FromLowLevel(uint value, ValueTags tags, RegistryId registryId) => GameId.From(value);
+    protected override GameId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => GameId.From(value);
 }

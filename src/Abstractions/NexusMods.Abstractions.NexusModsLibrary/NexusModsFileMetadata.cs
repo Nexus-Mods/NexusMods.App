@@ -30,7 +30,7 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// The version of the file.
     /// </summary>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
-    
+
     /// <summary>
     /// The date the file was uploaded at.
     /// </summary>
@@ -49,5 +49,5 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// Library Files that link to this file.
     /// </summary>
-    public static readonly BackReferenceAttribute<NexusModsLibraryFile> LibraryFiles = new(NexusModsLibraryFile.FileMetadata);
+    public static readonly BackReferenceAttribute<NexusModsLibraryItem> LibraryFiles = new(NexusModsLibraryItem.FileMetadata);
 }

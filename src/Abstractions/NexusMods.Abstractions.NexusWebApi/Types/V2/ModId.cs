@@ -26,5 +26,5 @@ public class ModIdAttribute(string ns, string name)
     protected override uint ToLowLevel(ModId value) => value.Value;
 
     /// <inheritdoc />
-    protected override ModId FromLowLevel(uint value, ValueTags tags, RegistryId registryId) => ModId.From(value);
+    protected override ModId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => ModId.From(value);
 } 

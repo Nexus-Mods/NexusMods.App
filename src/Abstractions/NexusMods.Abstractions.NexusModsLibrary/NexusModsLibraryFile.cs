@@ -6,13 +6,13 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
 /// <summary>
-/// Represented a <see cref="DownloadedFile"/> originating from Nexus Mods.
+/// Represented a <see cref="LibraryItem"/> originating from Nexus Mods.
 /// </summary>
 [PublicAPI]
-[Include<DownloadedFile>]
-public partial class NexusModsLibraryFile : IModelDefinition
+[Include<LibraryItem>]
+public partial class NexusModsLibraryItem : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsLibraryFile";
+    private const string Namespace = "NexusMods.Library.NexusModsLibraryItem";
 
     /// <summary>
     /// Remote metadata of the file on Nexus Mods.

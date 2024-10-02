@@ -149,7 +149,11 @@ public class NexusModsLibrary
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
             throw new NotImplementedException();
-        
+
+        var size = Optional<Size>.None;
+        if (fileInfo.SizeInBytes.HasValue)
+            size = Size.FromLong((long)fileInfo.SizeInBytes!);
+
         var newFile = new NexusModsFileMetadata.New(tx)
         {
             Name = fileInfo.Name,
@@ -157,6 +161,7 @@ public class NexusModsLibrary
             ModPageId = modPage,
             Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
             UploadedAt = fileInfo.UploadedTime,
+            Size = size.HasValue ? size.Value : null,
         };
         
         if (fileInfo.SizeInBytes.HasValue)

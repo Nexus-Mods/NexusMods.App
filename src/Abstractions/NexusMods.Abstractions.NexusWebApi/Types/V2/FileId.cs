@@ -25,5 +25,5 @@ public class FileIdAttribute(string ns, string name) :
     protected override uint ToLowLevel(FileId value) => value.Value;
 
     /// <inheritdoc />
-    protected override FileId FromLowLevel(ulong value, ValueTags tags, RegistryId registryId) => FileId.From((uint)value);
+    protected override FileId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => FileId.From(value);
 }
