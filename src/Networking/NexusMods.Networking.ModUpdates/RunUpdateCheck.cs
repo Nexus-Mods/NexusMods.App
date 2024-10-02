@@ -32,7 +32,7 @@ public static class RunUpdateCheck
 
         foreach (var gameId in gameIds)
         {
-            // Note (sewer): This is messy, we need to update to V2 stat.
+            // Note (sewer): We need to update to V2 stat.
             var modUpdates = await apiClient.ModUpdatesAsync(gameId.ToGameDomain().Value, PastTime.Month);
             var updateResults = ModUpdateMixin.FromUpdateResults(modUpdates.Data, gameId);
             updater.Update(updateResults);
