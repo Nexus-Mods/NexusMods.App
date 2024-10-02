@@ -16,6 +16,9 @@ public readonly struct ModUpdateMixin : ICanGetUidForMod, ICanGetLastUpdatedTime
     /// <summary/>
     public ModUpdateMixin(ModUpdate update, GameId gameId)
     {
+        // Note(sewer): V2 doesn't have 'last file updated' field, so we have to use 'last mod page update' time.
+        // Well, this whole struct is, will be making that ticket to backend, and replace
+        // this when V2 gets relevant API.
         _lastUpdatedDate = update.LatestModActivityUtc;
         _gameId = gameId;
         _modId = update.ModId;
