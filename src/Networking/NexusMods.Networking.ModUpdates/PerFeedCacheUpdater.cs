@@ -67,7 +67,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
         var minCachedDate = utcNow - expiry; 
         for (var x = 0; x < _items.Length; x++)
         {
-            if (_items[x].GetLastUpdatedDate() < minCachedDate)
+            if (_items[x].GetLastUpdatedDateUtc() < minCachedDate)
                 _actions[x] = CacheUpdaterAction.NeedsUpdate;
         }
     }
@@ -98,7 +98,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
         var existingItem = _items[index];
             
         // If the file timestamp is newer than our cached copy, the item needs updating.
-        if (item.GetLastUpdatedDate() > existingItem.GetLastUpdatedDate())
+        if (item.GetLastUpdatedDateUtc() > existingItem.GetLastUpdatedDateUtc())
             _actions[index] = CacheUpdaterAction.NeedsUpdate;
         else
             _actions[index] = CacheUpdaterAction.UpdateLastCheckedTimestamp;

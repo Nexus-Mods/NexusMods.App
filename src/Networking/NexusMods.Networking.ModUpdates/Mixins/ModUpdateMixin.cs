@@ -30,7 +30,7 @@ public readonly struct ModUpdateMixin : ICanGetUidForMod, ICanGetLastUpdatedTime
     public static IEnumerable<ModUpdateMixin> FromUpdateResults(IEnumerable<ModUpdate> updates, GameId gameId) => updates.Select(update => new ModUpdateMixin(update, gameId));
 
     /// <inheritdoc />
-    public DateTime GetLastUpdatedDate() => _lastUpdatedDate;
+    public DateTime GetLastUpdatedDateUtc() => _lastUpdatedDate;
 
     /// <inheritdoc />
     public UidForMod GetUniqueId() => new()
