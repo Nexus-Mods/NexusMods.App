@@ -1,0 +1,71 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
+    <!-- Add Resources Here -->
+    <Design.PreviewWith>
+        <Border Padding="8">
+            <StackPanel Spacing="8">
+                <controls:Pill />
+                <controls:Pill Text="Pill 1" Foreground="Coral" />
+                <controls:Pill Text="Pill 2" Background="DarkGoldenrod" />
+                <controls:Pill Text="A really long pill" ShowIcon="False" />
+                <controls:Pill Text="No Icon" ShowIcon="False" />
+                <controls:Pill Text="Icon Pill" ShowIcon="True" Icon="{x:Static icons:IconValues.Steam}" />
+                <controls:Pill Text="Pill 4" Margin="5" Foreground="Indigo" Padding="10" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Thickness x:Key="PillPadding">6,2</Thickness>
+
+    <ControlTheme x:Key="{x:Type controls:Pill}" TargetType="controls:Pill">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Background="{TemplateBinding Background}"
+                    Margin="{TemplateBinding Margin}"
+                    Padding="{TemplateBinding Padding}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                    <StackPanel>
+                        <icons:UnifiedIcon x:Name="PillIcon" 
+                                           Value="{TemplateBinding Icon}"
+                                           Foreground="{TemplateBinding Foreground}" />
+                        <TextBlock x:Name="PillTextBlock"
+                                   Text="{TemplateBinding Text}"
+                                   Foreground="{TemplateBinding Foreground}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- default styles which will be applied to the control -->
+        <Style Selector="^">
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            <Setter Property="Padding" Value="{StaticResource PillPadding}" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-xl}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+
+            <Style Selector="^ StackPanel">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Spacing" Value="2" />
+                
+                <Style Selector="^ icons|UnifiedIcon#PillIcon">
+                    <Setter Property="Size" Value="12" />
+                </Style>
+
+                <Style Selector="^ TextBlock#PillTextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Style>
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>
