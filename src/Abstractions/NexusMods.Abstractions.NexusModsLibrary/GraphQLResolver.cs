@@ -20,14 +20,14 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// <summary>
     /// Create a new resolver using the given primary key attribute and value.
     /// </summary>
-    public static GraphQLResolver Create<THighLevel, TLowLevel>(IDb referenceDb, ITransaction tx, ScalarAttribute<THighLevel, TLowLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
+    public static GraphQLResolver Create<THighLevel, TLowLevel>(IDb db, ITransaction tx, ScalarAttribute<THighLevel, TLowLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
     {
-        var existing = referenceDb.Datoms(primaryKeyAttribute, primaryKeyValue);
+        var existing = db.Datoms(primaryKeyAttribute, primaryKeyValue);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0].E;
         if (!exists)
             tx.Add(id, primaryKeyAttribute, primaryKeyValue);
-        return new GraphQLResolver(tx, new ReadOnlyModel(referenceDb, id));
+        return new GraphQLResolver(tx, new ReadOnlyModel(db, id));
     }
     
     /// <summary>

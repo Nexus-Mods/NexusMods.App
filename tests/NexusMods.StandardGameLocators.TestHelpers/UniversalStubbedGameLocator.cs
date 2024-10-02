@@ -35,6 +35,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
 
         yield return new GameLocatorResult(
             _path,
+            _path.Path.FileSystem,
             GameStore.Unknown,
             new UnknownLocatorResultMetadata(),
             _version ?? new Version(1, 0, 0, 0));

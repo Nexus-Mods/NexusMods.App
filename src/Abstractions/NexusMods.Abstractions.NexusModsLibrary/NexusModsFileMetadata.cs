@@ -28,9 +28,9 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// The version of the file.
     /// </summary>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
-    
+
     /// <summary>
-    /// The size in bytes of the file.
+    /// The size of the file in bytes, this is optional in the NexusMods API for whatever reason.
     /// </summary>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
 
@@ -42,5 +42,5 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// Library Files that link to this file.
     /// </summary>
-    public static readonly BackReferenceAttribute<NexusModsLibraryFile> LibraryFiles = new(NexusModsLibraryFile.FileMetadata);
+    public static readonly BackReferenceAttribute<NexusModsLibraryItem> LibraryFiles = new(NexusModsLibraryItem.FileMetadata);
 }

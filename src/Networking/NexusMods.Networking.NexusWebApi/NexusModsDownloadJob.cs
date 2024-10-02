@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
@@ -34,19 +35,18 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
     }
 
     /// <inheritdoc/>
-    public ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
+    public ValueTask AddMetadata(ITransaction tx, LibraryFile.New libraryFile)
     {
-        libraryFile.GetLibraryItem(transaction).Name = FileMetadata.Name;
+        libraryFile.GetLibraryItem(tx).Name = FileMetadata.Name;
 
-        _ = new NexusModsLibraryFile.New(transaction, libraryFile.Id)
+        // Not using .New here because we can't use the LibraryItem Id and don't have the LibraryItem in this method
+        tx.Add(libraryFile.Id, NexusModsLibraryItem.FileMetadataId, FileMetadata.Id);
+        tx.Add(libraryFile.Id, NexusModsLibraryItem.ModPageMetadataId, FileMetadata.ModPage.Id);
+
+        _ = new DownloadedFile.New(tx, libraryFile.Id)
         {
-            FileMetadataId = FileMetadata,
-            ModPageMetadataId = FileMetadata.ModPage,
-            DownloadedFile = new DownloadedFile.New(transaction, libraryFile.Id)
-            {
-                DownloadPageUri = HttpDownloadJob.Job.DownloadPageUri,
-                LibraryFile = libraryFile,
-            },
+            DownloadPageUri = HttpDownloadJob.Job.DownloadPageUri,
+            LibraryFile = libraryFile,
         };
 
         return ValueTask.CompletedTask;

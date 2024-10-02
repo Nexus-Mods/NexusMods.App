@@ -12,8 +12,8 @@
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
     <PackageVersion Include="NexusMods.Paths" Version="0.10.0" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.81" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.81" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.86" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.86" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
     <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.5" />
@@ -27,7 +27,7 @@
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="ObservableCollections" Version="2.2.0" />
     <PackageVersion Include="ObservableCollections.R3" Version="3.0.1" />
-    <PackageVersion Include="Polly" Version="8.4.1" />
+    <PackageVersion Include="QoiSharp" Version="1.0.0" />
     <PackageVersion Include="R3" Version="1.2.8" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.8" />
     <PackageVersion Include="ReactiveUI" Version="20.1.1" />
@@ -39,6 +39,8 @@
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+      <PackageVersion Include="Polly.Core" Version="8.4.2" />
+      <PackageVersion Include="Polly" Version="8.4.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MemoryPack.Streaming" Version="1.21.1" />
@@ -75,7 +77,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.8" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
@@ -120,11 +122,11 @@
     <PackageVersion Include="BitFaster.Caching" Version="2.5.0" />
     <PackageVersion Include="CliWrap" Version="3.6.6" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="GameFinder" Version="4.2.4" />
+    <PackageVersion Include="GameFinder" Version="4.3.1" />
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.44.0" />
-    <PackageVersion Include="NexusMods.MnemonicDB.SourceGenerator" Version="0.9.81" />
+    <PackageVersion Include="NexusMods.MnemonicDB.SourceGenerator" Version="0.9.86" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="5.3.11" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="ReactiveUI.Fody" Version="19.5.41" />
