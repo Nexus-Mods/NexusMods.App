@@ -55,7 +55,6 @@ public static class FragmentExtensions
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
         nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);
-        nexusModResolver.Add(NexusModsModPageMetadata.FilesUpdatedAt, DateTime.MinValue);
 
         if (Uri.TryCreate(modFragment.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
             nexusModResolver.Add(NexusModsModPageMetadata.FullSizedPictureUri, fullSizedPictureUri);

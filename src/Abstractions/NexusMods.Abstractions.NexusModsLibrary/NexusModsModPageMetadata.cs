@@ -39,15 +39,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// The last time the mod page was updated (UTC). This is useful for cache invalidation.
     /// </summary>
     public static readonly DateTimeAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
-    
-    /// <summary>
-    /// The last time the files belonging to the mod page were updated (UTC).
-    /// </summary>
-    /// <remarks>
-    ///     Until V2 Update API is done, this field corresponds to.
-    /// </remarks>
-    public static readonly DateTimeAttribute FilesUpdatedAt = new(Namespace, nameof(FilesUpdatedAt));
-    
+
     /// <summary>
     /// Uri for the full sized picture of the mod.
     /// </summary>
