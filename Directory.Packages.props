@@ -4,6 +4,7 @@
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.1.0" />
     <PackageVersion Include="Avalonia.Skia" Version="11.1.0" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
+    <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
@@ -39,8 +40,8 @@
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
-      <PackageVersion Include="Polly.Core" Version="8.4.2" />
-      <PackageVersion Include="Polly" Version="8.4.2" />
+    <PackageVersion Include="Polly.Core" Version="8.4.2" />
+    <PackageVersion Include="Polly" Version="8.4.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MemoryPack.Streaming" Version="1.21.1" />

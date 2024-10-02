@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.IO.Hashing;
+using System.Security.Cryptography;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,12 +9,15 @@ using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Extensions.BCL;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -120,8 +125,15 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         if (file.Mod.Hashes.Any())
             return await InstallReplicatedMod(loadoutId, file, group);
+        if (file.Mod.Choices is { Type: ChoicesType.fomod })
+            return await InstallFomodWithPredefinedChoices(loadoutId, file, group);
 
         return await LibraryService.InstallItem(file.LibraryFile.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
+    }
+
+    private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly group)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -131,21 +143,32 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// </summary>
     private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly parentGroup)
     {
-        ConcurrentDictionary<Md5HashValue, LibraryFile.ReadOnly> hashes = new();
+        ConcurrentDictionary<Md5HashValue, HashMapping> hashes = new();
         
         if (!file.LibraryFile.TryGetAsLibraryArchive(out var archive))
             throw new InvalidOperationException("The library file is not a library archive.");
+        
+        if (!SourceCollection.AsLibraryFile().TryGetAsLibraryArchive(out var collectionArchive))
+            throw new InvalidOperationException("The source collection is not a library archive.");
 
         await Parallel.ForEachAsync(archive.Children, async (child, token) =>
             {
                 await using var stream = await FileStore.GetFileStream(child.AsLibraryFile().Hash, token);
-                using var hasher = System.Security.Cryptography.MD5.Create();
+                using var hasher = MD5.Create();
                 var hash = await hasher.ComputeHashAsync(stream, token);
                 var md5 = Md5HashValue.From(hash);
 
-                hashes[md5] = child.AsLibraryFile();
+                var libraryFile = child.AsLibraryFile();
+                hashes[md5] = new HashMapping()
+                {
+                    Hash = libraryFile.Hash,
+                    Size = libraryFile.Size,
+                };
             }
         );
+        
+        if (file.Mod.Patches.Any()) 
+            await CreatePatches(file.Mod, archive, collectionArchive, hashes);
         
         using var tx = Connection.BeginTransaction();
         
@@ -192,6 +215,67 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         var result = await tx.Commit();
         return result.Remap(group);
+    }
+
+    /// <summary>
+    /// This will go through and generate all the patch files for the given archive based on the mod's patches.
+    /// </summary>
+    private async Task CreatePatches(Mod modInfo, LibraryArchive.ReadOnly modArchive, LibraryArchive.ReadOnly collectionArchive, 
+        ConcurrentDictionary<Md5HashValue, HashMapping> hashes)
+    {
+        var modChildren = IndexChildren(modArchive);
+        var collectionChildren = IndexChildren(collectionArchive);
+        ConcurrentBag<ArchivedFileEntry> patchedFiles = new();
+        
+        await Parallel.ForEachAsync(modInfo.Patches, async (patch, token) =>
+            {
+                var (pathString, srcCrc) = patch;
+                var srcPath = RelativePath.FromUnsanitizedInput(pathString);
+                
+                if (!modChildren.TryGetValue(srcPath, out var file))
+                    throw new InvalidOperationException("The file to patch was not found in the archive.");
+
+                var srcData = (await FileStore.Load(file.Hash, token)).ToArray();
+                var srcCrc32 = Crc32.HashToUInt32(srcData.AsSpan());
+                if (srcCrc32 != srcCrc)
+                    throw new InvalidOperationException("The source file's CRC32 hash does not match the expected hash.");
+                
+                var patchName = RelativePath.FromUnsanitizedInput("patches/" + modInfo.Name + "/" + pathString + ".diff");
+                if (!collectionChildren.TryGetValue(patchName, out var patchFile))
+                    throw new InvalidOperationException("The patch file was not found in the archive.");
+                
+                var patchedFile = new MemoryStream();
+                var patchData = (await FileStore.Load(patchFile.Hash, token)).ToArray();
+                
+                BsDiff.BinaryPatch.Apply(new MemoryStream(srcData), () => new MemoryStream(patchData), patchedFile);
+                
+                var patchedArray = patchedFile.ToArray();
+                
+                using var md5 = MD5.Create();
+                md5.ComputeHash(patchedArray);
+                var md5Hash = Md5HashValue.From(md5.Hash!);
+                var xxHash = patchedArray.XxHash64();
+                
+                patchedFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(srcPath, patchedFile), xxHash, Size.FromLong(patchedFile.Length)));
+                hashes[md5Hash] = new HashMapping
+                {
+                    Hash = xxHash,
+                    Size = Size.FromLong(patchedFile.Length),
+                };
+            }
+        );
+        
+        await FileStore.BackupFiles(patchedFiles, deduplicate: true);
+    }
+    private Dictionary<RelativePath, LibraryFile.ReadOnly> IndexChildren(LibraryArchive.ReadOnly archive)
+    {
+        Dictionary<RelativePath, LibraryFile.ReadOnly> children = new();
+        foreach (var child in archive.Children)
+        {
+            children[RelativePath.FromUnsanitizedInput(child.Path)] = child.AsLibraryFile();
+        }
+
+        return children;
     }
 
     private async Task<ModInstructions> EnsureDownloaded(Mod mod)
