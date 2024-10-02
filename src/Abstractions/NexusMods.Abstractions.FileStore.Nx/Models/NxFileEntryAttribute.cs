@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.FileStore.Nx.Models;
 public class NxFileEntryAttribute(string ns, string name) : BlobAttribute<FileEntry>(ns, name)
 {
     /// <inheritdoc />
-    protected override unsafe FileEntry FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, RegistryId registryId)
+    protected override unsafe FileEntry FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
     {
         fixed (byte* ptr = value)
         {

@@ -142,13 +142,18 @@ public class NexusModsLibrary
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
             throw new NotImplementedException();
-        
+
+        var size = Optional<Size>.None;
+        if (fileInfo.SizeInBytes.HasValue)
+            size = Size.FromLong((long)fileInfo.SizeInBytes!);
+
         var newFile = new NexusModsFileMetadata.New(tx)
         {
             Name = fileInfo.Name,
             Version = fileInfo.Version,
             FileId = fileId,
             ModPageId = modPage,
+            Size = size.HasValue ? size.Value : null,
         };
         
         if (fileInfo.SizeInBytes.HasValue)

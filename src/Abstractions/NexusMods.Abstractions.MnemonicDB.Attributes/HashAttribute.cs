@@ -17,7 +17,7 @@ public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong
     }
     
     /// <inheritdoc />
-    protected override Hash FromLowLevel(ulong value, ValueTags tags, RegistryId registryId)
+    protected override Hash FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
     {
         return Hash.From(value);
     }

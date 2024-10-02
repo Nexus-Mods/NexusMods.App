@@ -16,7 +16,7 @@ public class UrisAttribute(string ns, string name) : CollectionAttribute<Uri, st
     }
 
     /// <inheritdoc />
-    protected override Uri FromLowLevel(string value, ValueTags tag, RegistryId registryId)
+    protected override Uri FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
     {
         return new Uri(value);
     }

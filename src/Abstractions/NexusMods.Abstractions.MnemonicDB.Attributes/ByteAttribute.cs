@@ -14,7 +14,7 @@ public class ByteAttribute(string ns, string name) : ScalarAttribute<byte, byte>
         return value;
     }
 
-    protected override byte FromLowLevel(byte value, ValueTags tags, RegistryId registry)
+    protected override byte FromLowLevel(byte value, ValueTags tags, AttributeResolver resolver)
     {
         return value;
     }
