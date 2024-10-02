@@ -16,10 +16,12 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                     reader.GetAttribute("id") == "ModuleInfo")
                 {
                     var moduleShortDesc = new LsxXmlFormat.ModuleShortDesc();
+                    var moduleInfoDepth = reader.Depth;
 
                     while (reader.Read())
                     {
-                        if (reader is { NodeType: XmlNodeType.Element, Name: "attribute" })
+                        if (reader is { NodeType: XmlNodeType.Element, Name: "attribute" } && 
+                            reader.Depth == moduleInfoDepth + 1)
                         {
                             var id = reader.GetAttribute("id");
                             var value = reader.GetAttribute("value");
@@ -48,7 +50,7 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                     break;
                             }
                         }
-                        else if (reader is { NodeType: XmlNodeType.EndElement, Name: "node" })
+                        else if (reader is { NodeType: XmlNodeType.EndElement, Name: "node" } && reader.Depth == moduleInfoDepth)
                         {
                             break;
                         }
@@ -59,16 +61,23 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                 else if (reader is { NodeType: XmlNodeType.Element, Name: "node" } &&
                          reader.GetAttribute("id") == "Dependencies")
                 {
+                    if (reader.IsEmptyElement)
+                    {
+                        continue;
+                    }
+                    
                     while (reader.Read())
                     {
                         if (reader is { NodeType: XmlNodeType.Element, Name: "node" } &&
                             reader.GetAttribute("id") == "ModuleShortDesc")
                         {
                             var dependency = new LsxXmlFormat.ModuleShortDesc();
+                            var dependencyDepth = reader.Depth;
 
                             while (reader.Read())
                             {
-                                if (reader is { NodeType: XmlNodeType.Element, Name: "attribute" })
+                                if (reader is { NodeType: XmlNodeType.Element, Name: "attribute" } &&
+                                    reader.Depth == dependencyDepth + 1)
                                 {
                                     var id = reader.GetAttribute("id");
                                     var value = reader.GetAttribute("value");
@@ -97,7 +106,7 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                             break;
                                     }
                                 }
-                                else if (reader is { NodeType: XmlNodeType.EndElement, Name: "node" })
+                                else if (reader is { NodeType: XmlNodeType.EndElement, Name: "node" } && reader.Depth == dependencyDepth)
                                 {
                                     break;
                                 }
