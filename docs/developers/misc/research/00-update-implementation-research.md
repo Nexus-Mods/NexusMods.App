@@ -103,7 +103,7 @@ performing the following actions:
 
 If any of our mods:
 
-- Are in the response and have a `latest_file_update` timestamp than our local cached one.
+- Are in the response and have a newer `latest_file_update` timestamp than our local cached one.
 - Have not been checked in over 1 month (max API limit)
 
 We [query the mod files for an update](#2-querying-mod-files).

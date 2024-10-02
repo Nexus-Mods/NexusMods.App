@@ -27,7 +27,7 @@
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="ObservableCollections" Version="2.2.0" />
     <PackageVersion Include="ObservableCollections.R3" Version="3.0.1" />
-    <PackageVersion Include="Polly" Version="8.4.1" />
+    <PackageVersion Include="QoiSharp" Version="1.0.0" />
     <PackageVersion Include="R3" Version="1.2.8" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.8" />
     <PackageVersion Include="ReactiveUI" Version="20.1.1" />
@@ -39,6 +39,8 @@
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+      <PackageVersion Include="Polly.Core" Version="8.4.2" />
+      <PackageVersion Include="Polly" Version="8.4.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MemoryPack.Streaming" Version="1.21.1" />
@@ -75,7 +77,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.8" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />

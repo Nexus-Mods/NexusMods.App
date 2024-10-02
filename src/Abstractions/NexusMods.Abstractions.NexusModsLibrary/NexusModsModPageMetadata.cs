@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -35,6 +36,8 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// Uri for the full sized picture of the mod.
     /// </summary>
     public static readonly UriAttribute FullSizedPictureUri = new(Namespace, nameof(FullSizedPictureUri)) { IsOptional = true };
+
+    public static readonly ReferenceAttribute<PersistedResource> ThumbnailResource = new(Namespace, nameof(ThumbnailResource)) { IsOptional = true };
 
     /// <summary>
     /// Uri for the thumbnail of the full sized picture.
