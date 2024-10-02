@@ -5,7 +5,7 @@ using NexusMods.Hashing.xxHash64;
 namespace NexusMods.Abstractions.Resources.IO;
 
 [PublicAPI]
-public class FileStoreLoader : IResourceLoader<Hash, byte[]>
+public sealed class FileStoreLoader : IResourceLoader<Hash, byte[]>
 {
     private readonly IFileStore _fileStore;
 

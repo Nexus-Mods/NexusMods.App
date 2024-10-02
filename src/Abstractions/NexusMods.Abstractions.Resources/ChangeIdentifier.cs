@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Resources;
 /// Changes the identifier.
 /// </summary>
 [PublicAPI]
-public class ChangeIdentifier<TOldResourceIdentifier, TNewResourceIdentifier, TData> : IResourceLoader<TOldResourceIdentifier, TData>
+public sealed class ChangeIdentifier<TOldResourceIdentifier, TNewResourceIdentifier, TData> : IResourceLoader<TOldResourceIdentifier, TData>
     where TData : notnull
     where TOldResourceIdentifier : notnull
     where TNewResourceIdentifier : notnull

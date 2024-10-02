@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace NexusMods.Media;
 
-public class ImageResizer<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, SKBitmap, SKBitmap>
+public sealed class ImageResizer<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, SKBitmap, SKBitmap>
     where TResourceIdentifier : notnull
 {
     private readonly SKSizeI _newSize;

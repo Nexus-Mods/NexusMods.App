@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Resources.Caching;
 
 [PublicAPI]
-public class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, TData>
+public sealed class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, TData>
     where TResourceIdentifier : notnull
     where TData : notnull
     where TKey : notnull

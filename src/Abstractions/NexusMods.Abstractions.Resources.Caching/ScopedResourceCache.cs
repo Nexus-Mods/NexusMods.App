@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Resources.Caching;
 
 [PublicAPI]
-public class ScopedResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, Lifetime<TData>>
+public sealed class ScopedResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, Lifetime<TData>>
     where TResourceIdentifier : notnull
     where TData : IDisposable
     where TKey : notnull

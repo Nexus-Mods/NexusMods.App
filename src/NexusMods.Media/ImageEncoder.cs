@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace NexusMods.Media;
 
-public class ImageEncoder<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, byte[], SKBitmap>
+public sealed class ImageEncoder<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, byte[], SKBitmap>
     where TResourceIdentifier : notnull
 {
     private readonly EncoderType _encoderType;

@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Resources.IO;
 
 [PublicAPI]
-public class HttpLoader : IResourceLoader<Uri, byte[]>
+public sealed class HttpLoader : IResourceLoader<Uri, byte[]>
 {
     private readonly HttpClient _httpClient;
     private const string SupportedScheme = "https";

@@ -7,7 +7,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 namespace NexusMods.Abstractions.Resources.DB;
 
 [PublicAPI]
-public class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoader<TResourceIdentifier, TData>
+public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoader<TResourceIdentifier, TData>
     where TResourceIdentifier : notnull
     where TData : notnull
 {

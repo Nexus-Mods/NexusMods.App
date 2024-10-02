@@ -4,7 +4,7 @@ using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.Abstractions.Resources.DB;
 
 [PublicAPI]
-public class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : IResourceLoader<EntityId, TData>
+public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : IResourceLoader<EntityId, TData>
     where TResourceIdentifier : notnull
     where TData : notnull
     where TLowerLevel : notnull

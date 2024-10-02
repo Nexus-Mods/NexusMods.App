@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace NexusMods.Media;
 
-public class AvaloniaImageLoader<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, Bitmap, SKBitmap>
+public sealed class AvaloniaImageLoader<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, Bitmap, SKBitmap>
     where TResourceIdentifier : notnull
 {
     public AvaloniaImageLoader(IResourceLoader<TResourceIdentifier, SKBitmap> innerLoader) : base(innerLoader) { }
