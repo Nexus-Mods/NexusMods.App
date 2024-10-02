@@ -75,17 +75,25 @@ public class NexusModsLibrary
         
         var db = _connection.Db;
         var collectionInfo = info.Data!.CollectionRevision.Collection;
-        var collectionTileImage = DownloadImage(collectionInfo.TileImage?.ThumbnailUrl, token);
-        var collectionBackgroundImage = DownloadImage(collectionInfo.HeaderImage?.Url, token);
 
         // Remap the collection info
         var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
         collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
-        collectionResolver.Add(CollectionMetadata.BackgroundImage, await collectionBackgroundImage);
-        
+
+        var thumbnailUrl = collectionInfo.TileImage?.ThumbnailUrl;
+        if (thumbnailUrl is not null && Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
+        {
+            collectionResolver.Add(CollectionMetadata.TileImageUri, thumbnailUri);
+        }
+
+        var headerImageUrl = collectionInfo.HeaderImage?.Url;
+        if (headerImageUrl is not null && Uri.TryCreate(headerImageUrl, UriKind.Absolute, out var headerImageUri))
+        {
+            collectionResolver.Add(CollectionMetadata.BackgroundImageUri, headerImageUri);
+        }
+
         var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
         collectionResolver.Add(CollectionMetadata.Author, user);
         
@@ -115,14 +123,6 @@ public class NexusModsLibrary
         
         var txResults = await tx.Commit();
         return CollectionRevisionMetadata.Load(txResults.Db, txResults[revisionResolver.Id]);
-    }
-    
-    private async Task<byte[]> DownloadImage(string? uri, CancellationToken token)
-    {
-        if (uri is null) return [];
-        if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri)) return [];
-        
-        return await _httpClient.GetByteArrayAsync(imageUri, token);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
