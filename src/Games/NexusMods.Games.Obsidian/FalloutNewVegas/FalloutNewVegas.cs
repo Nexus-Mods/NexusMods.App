@@ -10,7 +10,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Paths;
 
-// The argument could be made that the package should be Bethesda not Obsidian... // todo someone confirm preferred package name
+// The argument could be made that the package should be Bethesda not Obsidian... todo someone confirm preferred package name
 namespace NexusMods.Games.Obsidian.FalloutNewVegas;
 
 public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
@@ -41,18 +41,30 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
         return result;
     }
     
-    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "FalloutNV.exe");
+    public override GamePath GetPrimaryFile(GameStore store)
+    {
+        return store.ToString() switch
+        {
+            "Epic Games Store" => new GamePath(LocationId.Game, "/Fallout New Vegas English/FalloutNV.exe"), // todo going to need this to handle the language... somehow?
+            _ => new GamePath(LocationId.Game, "FalloutNV.exe"),
+        };
+    }
+
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
+
+    protected override Version GetVersion(GameLocatorResult installation)
+    {
+        return base.GetVersion(installation);
+    }
 
 #endregion
 
 #region Game IDs
 
     public IEnumerable<uint> SteamIds => new List<uint> { 22380u };
-    public IEnumerable<long> GogIds => new List<long> { 1207658921 };
-    public IEnumerable<string> XboxIds => new List<string> { "9P4P6BZQ9V6M" };
-    public IEnumerable<string> EpicCatalogItemId => new List<string> { "b3f4b2b5c1b74f3e8b5b9f1b8b9b1b4" };
-
+    public IEnumerable<long> GogIds => new List<long> { 1207658921 }; //todo need correct ID. I don't own this.
+    public IEnumerable<string> XboxIds => new List<string> { "9P4P6BZQ9V6M" }; //todo need correct ID
+    public IEnumerable<string> EpicCatalogItemId => new List<string> { "dabb52e328834da7bbe99691e374cb84" };
 #endregion
     
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<FalloutNewVegas>("NexusMods.Games.Obsidian.Resources.FalloutNewVegas.game_image.jpg");
