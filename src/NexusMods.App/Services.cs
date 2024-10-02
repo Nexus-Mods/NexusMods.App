@@ -52,7 +52,7 @@ public static class Services
             // Sequential execution can lead to long startup times depending on number of hostedServices.
             options.ServicesStartConcurrently = true;
             // If executed sequentially, one service taking a long time can trigger the timeout,
-            // preventing StopAsync of other services from being called. 
+            // preventing StopAsync of other services from being called.
             options.ServicesStopConcurrently = true;
         });
         startupMode ??= new StartupMode();
@@ -114,23 +114,24 @@ public static class Services
                 .AddDefaultRenderers()
                 .AddSettingsManager()
                 .AddSettings<LoggingSettings>();
-            
+
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Client);
         }
 
         return services;
     }
-    
+
     private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
             services.AddBaldursGate3();
         }
-        
+
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
+        Games.Obsidian.Services.AddObsidianGames(services);
         return services;
     }
 }
