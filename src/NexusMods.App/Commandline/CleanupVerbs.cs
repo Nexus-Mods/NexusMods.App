@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -50,7 +51,7 @@ internal static class CleanupVerbs
             try
             {
                 var synchronizer = installation.GetGame().Synchronizer;
-                await synchronizer.UnManage(installation);
+                await synchronizer.UnManage(installation, false);
                 await renderer.Text($"Reverted {installation.Game.Name} to its original state");
             }
             catch (Exception ex)
@@ -91,7 +92,10 @@ internal static class CleanupVerbs
                 JsonStorageBackend.GetConfigsFolderPath(fileSystem),
 
                 // The whole base DataModel folder.
-                DataModelSettings.GetStandardDataModelFolder(fileSystem)
+                DataModelSettings.GetStandardDataModelFolder(fileSystem),
+
+                // The whole base Download folder.
+                DownloadSettings.GetStandardDownloadsFolder(fileSystem),
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
 
             if (fileSystem.OS.IsUnix())
