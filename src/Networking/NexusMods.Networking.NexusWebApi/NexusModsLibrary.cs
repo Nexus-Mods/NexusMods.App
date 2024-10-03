@@ -9,6 +9,8 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -44,14 +46,19 @@ public class NexusModsLibrary
         GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
-        var modPageEntities = NexusModsModPageMetadata.FindByModId(_connection.Db, modId);
+        var uid = new UidForMod
+        {
+            GameId = GameId.FromGameDomain(gameDomain),
+            ModId = modId,
+        };
+        var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
         if (modPageEntities.TryGetFirst(x => x.GameDomain == gameDomain, out var modPage)) return modPage;
 
         using var tx = _connection.BeginTransaction();
 
-        var modInfo = await _gqlClient.ModInfo.ExecuteAsync(gameDomain.ToString(), (int)modId.Value, cancellationToken);
+        var modInfo = await _gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)modId.Value, cancellationToken);
         EntityId first = default;
-        foreach (var node in modInfo.Data!.LegacyModsByDomain.Nodes)
+        foreach (var node in modInfo.Data!.LegacyMods.Nodes)
         {
             first = node.Resolve(_connection.Db, tx);
         }
@@ -75,16 +82,19 @@ public class NexusModsLibrary
         
         var db = _connection.Db;
         var collectionInfo = info.Data!.CollectionRevision.Collection;
-        var collectionTileImage = DownloadImage(collectionInfo.TileImage?.ThumbnailUrl, token);
-        var collectionBackgroundImage = DownloadImage(collectionInfo.HeaderImage?.Url, token);
 
         // Remap the collection info
         var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
         collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
-        collectionResolver.Add(CollectionMetadata.BackgroundImage, await collectionBackgroundImage);
+        
+        if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
+            collectionResolver.Add(CollectionMetadata.TileImageUri, tileImageUri);
+        
+        if (Uri.TryCreate(collectionInfo.HeaderImage?.Url, UriKind.Absolute, out var backgroundImageUri))
+            collectionResolver.Add(CollectionMetadata.BackgroundImageUri, backgroundImageUri);
+        
         
         var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
         collectionResolver.Add(CollectionMetadata.Author, user);
@@ -131,12 +141,13 @@ public class NexusModsLibrary
         GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
-        var fileEntities = NexusModsFileMetadata.FindByFileId(_connection.Db, fileId);
+        var uid = new UidForFile(fileId, modPage.Uid.GameId);
+        var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
         if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file)) return file;
 
         using var tx = _connection.BeginTransaction();
 
-        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.ModId, cancellationToken);
+        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
         var files = filesResponse.Data.Files;
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
@@ -150,8 +161,9 @@ public class NexusModsLibrary
         {
             Name = fileInfo.Name,
             Version = fileInfo.Version,
-            FileId = fileId,
             ModPageId = modPage,
+            Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
+            UploadedAt = fileInfo.UploadedTime,
             Size = size.HasValue ? size.Value : null,
         };
         
@@ -175,8 +187,8 @@ public class NexusModsLibrary
             var (key, expirationDate) = nxmData.Value;
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
-                file.ModPage.ModId,
-                file.FileId,
+                file.ModPage.Uid.ModId,
+                file.Uid.FileId,
                 key: key,
                 expireTime: expirationDate,
                 token: cancellationToken
@@ -187,8 +199,8 @@ public class NexusModsLibrary
             // NOTE(erri120): premium-only API
             links = await _apiClient.DownloadLinksAsync(
                 file.ModPage.GameDomain.ToString(),
-                file.ModPage.ModId,
-                file.FileId,
+                file.ModPage.Uid.ModId,
+                file.Uid.FileId,
                 token: cancellationToken
             );
         }

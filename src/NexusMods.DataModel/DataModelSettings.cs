@@ -11,6 +11,8 @@ namespace NexusMods.DataModel;
 [PublicAPI]
 public record DataModelSettings : ISettings
 {
+    private const string DataModelFolderName = "DataModel";
+    
     /// <summary>
     /// If true, data model will be stored in memory only and the paths will be ignored.
     /// </summary>
@@ -40,18 +42,45 @@ public record DataModelSettings : ISettings
     public static DataModelSettings CreateDefault(IServiceProvider serviceProvider)
     {
         var os = serviceProvider.GetRequiredService<IFileSystem>().OS;
-        var baseKnownPath = GetStandardDataModelPaths(os, out var baseDirectoryName);
+        var baseKnownPath = GetLocalApplicationDataDirectory(os, out var baseDirectoryName);
 
         return new DataModelSettings
         {
-            MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/MnemonicDB.rocksdb"),
+            MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/{DataModelFolderName}/MnemonicDB.rocksdb"),
             ArchiveLocations = [
-                new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),
+                new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/{DataModelFolderName}/Archives"),
             ],
         };
     }
 
-    private static KnownPath GetStandardDataModelPaths(IOSInformation os, out string baseDirectoryName)
+    /// <summary>
+    /// Retrieves the base directory where the App stores its local application data.
+    /// </summary>
+    /// <returns>The absolute path to the local application data directory.</returns>
+    public static AbsolutePath GetLocalApplicationDataDirectory(IFileSystem fs)
+    {
+        var basePath = GetLocalApplicationDataDirectory(fs.OS, out var relativePath);
+        return fs.GetKnownPath(basePath).Combine(relativePath);
+    }
+
+    /// <summary>
+    /// Retrieves the default DataModel folder.
+    /// This folder is reserved for the App and should not store user info.
+    /// </summary>
+    public static AbsolutePath GetStandardDataModelFolder(IFileSystem fs)
+    {
+        var os = fs.OS;
+        var baseKnownPath = GetLocalApplicationDataDirectory(os, out var baseDirectoryName);
+        return fs.GetKnownPath(baseKnownPath).Combine(baseDirectoryName).Combine(DataModelFolderName);
+    }
+
+    /// <summary>
+    /// Retrieves the base directory where the App stores its local application data.
+    /// </summary>
+    /// <param name="os">OS Information.</param>
+    /// <param name="baseDirectoryName">Relative path to the returned <see cref="KnownPath"/>.</param>
+    /// <returns></returns>
+    private static KnownPath GetLocalApplicationDataDirectory(IOSInformation os, out string baseDirectoryName)
     {
         var baseKnownPath = os.MatchPlatform(
             onWindows: () => KnownPath.LocalApplicationDataDirectory,
@@ -60,18 +89,7 @@ public record DataModelSettings : ISettings
         );
 
         // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
-        baseDirectoryName = os.IsOSX ? "NexusMods_App/DataModel" : "NexusMods.App/DataModel";
+        baseDirectoryName = os.IsOSX ? "NexusMods_App" : "NexusMods.App";
         return baseKnownPath;
-    }
-    
-    /// <summary>
-    /// Retrieves the default DataModel folder.
-    /// This folder is reserved for the App and should not store user info.
-    /// </summary>
-    public static AbsolutePath GetStandardDataModelFolder(IFileSystem fs)
-    {
-        var os = fs.OS;
-        var baseKnownPath = GetStandardDataModelPaths(os, out var baseDirectoryName);
-        return fs.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
     }
 }

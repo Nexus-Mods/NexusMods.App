@@ -4,11 +4,13 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Resources;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -16,20 +18,20 @@ namespace NexusMods.Games.StardewValley.Emitters;
 public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     public VersionDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<VersionDiagnosticEmitter> logger,
-        IFileStore fileStore,
         IOSInformation os,
         ISMAPIWebApi smapiWebApi)
     {
         _logger = logger;
-        _fileStore = fileStore;
         _os = os;
         _smapiWebApi = smapiWebApi;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -45,7 +47,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var smapiMods = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
         var apiMods = await _smapiWebApi.GetModDetails(

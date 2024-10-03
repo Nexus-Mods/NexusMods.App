@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Paths;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
@@ -18,6 +19,9 @@ public class Mod
     [JsonPropertyName("optional")]
     public bool Optional { get; init; }
     
+    /// <summary>
+    ///     TODO: Deprecate this with <see cref="GameId"/>
+    /// </summary>
     [JsonPropertyName("domainName")]
     public required GameDomain DomainName { get; init; }
     

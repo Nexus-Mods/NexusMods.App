@@ -17,7 +17,7 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// <summary>
     /// The tile image of the collection.
     /// </summary>
-    public Bitmap Image { get; }
+    public Bitmap? Image { get; }
     
     /// <summary>
     /// Summary of the collection.
