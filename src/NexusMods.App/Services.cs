@@ -126,11 +126,11 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            services.AddBaldursGate3();
         }
         
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
+        Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
         return services;
     }
 }
