@@ -1,5 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
 /// <summary>
@@ -25,6 +28,13 @@ public struct UidForFile
     /// </summary>
     public GameId GameId;
 
+    /// <summary/>
+    public UidForFile(FileId fileId, GameId gameId)
+    {
+        FileId = fileId;
+        GameId = gameId;
+    }
+
     /// <summary>
     /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="UidForFile"/>.
     /// </summary>
@@ -44,3 +54,17 @@ public struct UidForFile
     /// </summary>
     public static UidForFile FromUlong(ulong value) => Unsafe.As<ulong, UidForFile>(ref value);
 }
+
+/// <summary>
+/// Attribute that uniquely identifies a file on Nexus Mods.
+/// See <see cref="UidForFile"/> for more details.
+/// </summary>
+public class UidForFileAttribute(string ns, string name) 
+    : ScalarAttribute<UidForFile, ulong>(ValueTags.UInt64, ns, name)
+{
+    /// <inheritdoc />
+    protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;
+
+    /// <inheritdoc />
+    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForFile.FromUlong(value);
+} 

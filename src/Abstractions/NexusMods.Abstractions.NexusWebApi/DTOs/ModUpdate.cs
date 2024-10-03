@@ -33,7 +33,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <remarks>
     ///    Expressed as a Unix timestamp.
     /// </remarks>
-    [JsonPropertyName("LatestFileUpdated")]
+    [JsonPropertyName("latest_file_update")]
     public long LatestFileUpdated { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <remarks>
     ///    Expressed as a Unix timestamp.
     /// </remarks>
-    [JsonPropertyName("LatestModActivity")]
+    [JsonPropertyName("latest_mod_activity")]
     public long LatestModActivity { get; set; }
 
     /// <summary>

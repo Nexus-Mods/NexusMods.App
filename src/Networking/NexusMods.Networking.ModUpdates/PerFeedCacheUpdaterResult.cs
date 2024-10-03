@@ -1,4 +1,3 @@
-using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 
 /// <summary>
@@ -6,7 +5,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// of feeds.
 /// </summary>
 /// <typeparam name="TUpdateableItem">Wrapper for item supported by the cache updater.</typeparam>
-public class PerFeedCacheUpdaterResult<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+public class PerFeedCacheUpdaterResult<TUpdateableItem> where TUpdateableItem : IModFeedItem
 {
     /// <summary>
     /// This is a list of items that is 'out of date'.
