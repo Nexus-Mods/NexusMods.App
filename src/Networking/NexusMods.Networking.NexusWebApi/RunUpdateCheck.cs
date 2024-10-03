@@ -54,7 +54,7 @@ public static class RunUpdateCheck
         {
             try
             {
-                await UpdateModFilesForPage(db, tx, gqlClient, cancellationToken, mixin);
+                await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
             }
             catch (Exception e)
             {
@@ -63,20 +63,26 @@ public static class RunUpdateCheck
             }
         }
 
-        // TODO: Move constant to a better location.
-        // 50 is max number of items that API allows returned at once.
         // Note(sewer): But I'm not sure where to put this yet, all the GraphQL stuff is source generated.
         foreach (var mixin in result.OutOfDateItems)
         {
             // For the remaining items, failure to obtain result here should be truly exceptional.
-            await UpdateModFilesForPage(db, tx, gqlClient, cancellationToken, mixin);
+            await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
         }
     }
-    private static async Task UpdateModFilesForPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
+
+    private static async Task UpdateModPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
     {
         var uid = mixin.GetUniqueId();
         var modIdString = uid.ModId.Value.ToString();
         var gameIdString = uid.GameId.Value.ToString();
+        
+        // Update Mod
+        var modInfo = await gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)uid.ModId.Value, cancellationToken);
+        foreach (var node in modInfo.Data!.LegacyMods.Nodes)
+            node.Resolve(db, tx);
+        
+        // Update Mod Files
         var filesByUid = await gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
         filesByUid.EnsureNoErrors();
 

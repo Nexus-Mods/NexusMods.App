@@ -56,9 +56,9 @@ public class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
-        var modInfo = await _gqlClient.ModInfo.ExecuteAsync(gameDomain.ToString(), (int)modId.Value, cancellationToken);
+        var modInfo = await _gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)modId.Value, cancellationToken);
         EntityId first = default;
-        foreach (var node in modInfo.Data!.LegacyModsByDomain.Nodes)
+        foreach (var node in modInfo.Data!.LegacyMods.Nodes)
         {
             first = node.Resolve(_connection.Db, tx);
         }
