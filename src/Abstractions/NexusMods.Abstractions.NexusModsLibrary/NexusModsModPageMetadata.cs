@@ -46,7 +46,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// </summary>
     public static readonly UriAttribute FullSizedPictureUri = new(Namespace, nameof(FullSizedPictureUri)) { IsOptional = true };
 
-    public static readonly ReferenceAttribute<PersistedResource> ThumbnailResource = new(Namespace, nameof(ThumbnailResource)) { IsOptional = true };
+    public static readonly ReferenceAttribute<PersistedDbResource> ThumbnailResource = new(Namespace, nameof(ThumbnailResource)) { IsOptional = true };
 
     /// <summary>
     /// Uri for the thumbnail of the full sized picture.

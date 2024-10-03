@@ -82,16 +82,19 @@ public class NexusModsLibrary
         
         var db = _connection.Db;
         var collectionInfo = info.Data!.CollectionRevision.Collection;
-        var collectionTileImage = DownloadImage(collectionInfo.TileImage?.ThumbnailUrl, token);
-        var collectionBackgroundImage = DownloadImage(collectionInfo.HeaderImage?.Url, token);
 
         // Remap the collection info
         var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
         collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-        collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
-        collectionResolver.Add(CollectionMetadata.BackgroundImage, await collectionBackgroundImage);
+        
+        if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
+            collectionResolver.Add(CollectionMetadata.TileImageUri, tileImageUri);
+        
+        if (Uri.TryCreate(collectionInfo.HeaderImage?.Url, UriKind.Absolute, out var backgroundImageUri))
+            collectionResolver.Add(CollectionMetadata.BackgroundImageUri, backgroundImageUri);
+        
         
         var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
         collectionResolver.Add(CollectionMetadata.Author, user);
