@@ -34,26 +34,16 @@ public class PresetGuidedInstaller : IGuidedInstaller
     {
         var step = _steps[_currentStep];
         
-        List<SelectedOption> choices = [];
+        // This looks gross, but it's fairly simple we map through the two trees matching by name
+        var choices = 
+                      from srcGroup in step.groups
+                      from installGroup in installationStep.Groups
+                      where installGroup.Name == srcGroup.name
+                      from srcChoice in srcGroup.choices
+                      from installChoice in installGroup.Options
+                      where installChoice.Name == srcChoice.name
+                      select new SelectedOption(installGroup.Id, installChoice.Id);
         
-        foreach (var (srcGroup, installGroup) in step.groups.Zip(installationStep.Groups))
-        {
-            if (srcGroup.name != installGroup.Name)
-            {
-                throw new InvalidOperationException("Group names do not match.");
-            }
-
-            foreach (var choice in srcGroup.choices)
-            {
-                var installChoice = installGroup.Options[choice.idx];
-                if (installChoice.Name != choice.name)
-                {
-                    throw new InvalidOperationException("Choice names do not match.");
-                }
-                choices.Add(new SelectedOption(installGroup.Id, installChoice.Id));
-            }
-            
-        }
         _currentStep++;
         return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(choices.ToArray())));
     }
