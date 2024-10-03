@@ -4,6 +4,10 @@ using NexusMods.Abstractions.GuidedInstallers;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
+/// <summary>
+/// A IGuidedInstaller implementation that uses a preset list of steps to make the same choices
+/// a user previously made for specific steps.
+/// </summary>
 public class PresetGuidedInstaller : IGuidedInstaller
 {
     private readonly FomodOption[] _steps;

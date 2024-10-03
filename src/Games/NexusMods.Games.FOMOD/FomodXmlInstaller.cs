@@ -96,6 +96,9 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         {
             if (options is not null)
             {
+                // NOTE(halgari) The support for passing in presets to the installer is utterly broken. So we're going to
+                // something different: we will create a new guided installer that will simply emit the user choices based on the
+                // provided options.
                 var installer = new PresetGuidedInstaller(options);
                 installerDelegates.UiDelegates = new UiDelegates(ServiceProvider.GetRequiredService<ILogger<UiDelegates>>(), installer);
             }
