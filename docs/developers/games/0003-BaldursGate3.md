@@ -260,6 +260,9 @@ And:
 - `MD5`
 for populating the `modsettings.lsx` file. 
 
+A pak mod may list vanilla pak files as dependencies, which should be ignored for the purposes of health checks.
+Since there is no evident way to distinguish between vanilla and mod pak files, an exclusion list of vanilla pak files is required.
+
 
 ## Essential Mods & Tools
 - BG3SE

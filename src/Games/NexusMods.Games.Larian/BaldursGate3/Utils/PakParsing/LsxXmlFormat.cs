@@ -4,6 +4,9 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
 public static class LsxXmlFormat
 {
+    /// <summary>
+    /// Pak module short description.
+    /// </summary>
     public struct ModuleShortDesc
     {
         public string Folder;
@@ -14,6 +17,10 @@ public static class LsxXmlFormat
         public string Md5;
     }
     
+    
+    /// <summary>
+    /// Serializes a <see cref="ModuleShortDesc"/> to an LSX `ModuleShortDesc` xml element string.
+    /// </summary>
     public static string SerializeModuleShortDesc(ModuleShortDesc moduleShortDesc)
     {
         using var stringWriter = new StringWriter();
@@ -46,6 +53,9 @@ public static class LsxXmlFormat
 
     
 
+    /// <summary>
+    /// Pak metadata, containing the module short description and its dependencies.
+    /// </summary>
     public struct MetaFileData
     {
         public ModuleShortDesc ModuleShortDesc;
