@@ -62,11 +62,10 @@ public class ImageLoaderTests : AUiTest
                 height: 80
             ))
             .Encode(encoderType: EncoderType.Qoi)
-            .Persist(
+            .PersistInDb(
                 connection: Connection,
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
-                identifierToHash: static tuple => tuple.Item2.ToString().XxHash64AsUtf8(),
-                identifierToEntityId: static tuple => tuple.Item1,
+                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
                 partitionId: PartitionId.User(partitionId)
             )
             .Decode(decoderType: DecoderType.Qoi)

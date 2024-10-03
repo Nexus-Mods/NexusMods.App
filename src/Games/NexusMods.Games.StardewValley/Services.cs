@@ -16,7 +16,7 @@ public static class Services
 {
     public static IServiceCollection AddStardewValley(this IServiceCollection services)
     {
-        services
+        return services
             .AddGame<StardewValley>()
             .AddSingleton<ITool, SmapiRunGameTool>()
 
@@ -46,8 +46,9 @@ public static class Services
 
             // Misc
             .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
-            .AddSettings<StardewValleySettings>();
+            .AddSettings<StardewValleySettings>()
 
-        return services;
+            // Pipelines
+            .AddPipelines();
     }
 }

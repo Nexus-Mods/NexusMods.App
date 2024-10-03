@@ -1,24 +1,15 @@
 using System.Collections.Immutable;
-using System.Reactive;
 using System.Runtime.CompilerServices;
-using System.Text;
-using BitFaster.Caching.Lru;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
-using NexusMods.Abstractions.Resources.Caching;
-using NexusMods.Abstractions.Resources.DB;
-using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
@@ -28,46 +19,21 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly ILogger<DependencyDiagnosticEmitter> _logger;
-    private readonly IFileStore _fileStore;
+    private readonly ILogger _logger;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     public DependencyDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<DependencyDiagnosticEmitter> logger,
-        IFileStore fileStore,
         ISMAPIWebApi smapiWebApi,
         IOSInformation os)
     {
         _logger = logger;
-        _fileStore = fileStore;
         _smapiWebApi = smapiWebApi;
         _os = os;
-    }
-
-    private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreatePipeline(IFileStore fileStore)
-    {
-        var pipeline = new FileStoreLoader(fileStore)
-            .ThenDo(Unit.Default, static (_, _, resource, _) =>
-            {
-                var bytes = resource.Data;
-                var json = Encoding.UTF8.GetString(bytes);
-
-                var manifest = Interop.SMAPIJsonHelper.Deserialize<SMAPIManifest>(json);
-                ArgumentNullException.ThrowIfNull(manifest);
-
-                return ValueTask.FromResult(resource.WithData(manifest));
-            })
-            .UseCache(
-                keyGenerator: static hash => hash,
-                keyComparer: EqualityComparer<Hash>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 100)
-            )
-            .ChangeIdentifier<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
-                static mod => mod.Manifest.AsLoadoutFile().Hash
-            );
-
-        return pipeline;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -82,7 +48,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var loadoutItemIdToManifest = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: false, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: false, cancellationToken)
             .ToDictionaryAsync(tuple => tuple.Item1.SMAPIModLoadoutItemId, tuple => tuple.Item2, cancellationToken);
 
         var uniqueIdToLoadoutItemId = loadoutItemIdToManifest
