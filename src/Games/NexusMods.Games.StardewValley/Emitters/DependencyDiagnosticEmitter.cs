@@ -1,5 +1,8 @@
 using System.Collections.Immutable;
+using System.Reactive;
 using System.Runtime.CompilerServices;
+using System.Text;
+using BitFaster.Caching.Lru;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
@@ -8,8 +11,14 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Resources;
+using NexusMods.Abstractions.Resources.Caching;
+using NexusMods.Abstractions.Resources.DB;
+using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
@@ -34,6 +43,31 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _fileStore = fileStore;
         _smapiWebApi = smapiWebApi;
         _os = os;
+    }
+
+    private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreatePipeline(IFileStore fileStore)
+    {
+        var pipeline = new FileStoreLoader(fileStore)
+            .ThenDo(Unit.Default, static (_, _, resource, _) =>
+            {
+                var bytes = resource.Data;
+                var json = Encoding.UTF8.GetString(bytes);
+
+                var manifest = Interop.SMAPIJsonHelper.Deserialize<SMAPIManifest>(json);
+                ArgumentNullException.ThrowIfNull(manifest);
+
+                return ValueTask.FromResult(resource.WithData(manifest));
+            })
+            .UseCache(
+                keyGenerator: static hash => hash,
+                keyComparer: EqualityComparer<Hash>.Default,
+                capacityPartition: new FavorWarmPartition(totalCapacity: 100)
+            )
+            .ChangeIdentifier<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
+                static mod => mod.Manifest.AsLoadoutFile().Hash
+            );
+
+        return pipeline;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)

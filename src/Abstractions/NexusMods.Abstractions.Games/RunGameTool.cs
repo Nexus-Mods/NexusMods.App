@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.GOG;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CrossPlatform.Process;
@@ -60,10 +61,18 @@ public class RunGameTool<T> : IRunGameTool
         var program = await GetGamePath(loadout);
         var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.Store).CombineChecked(loadout.InstallationInstance);
 
-        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile) && loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
+        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile))
         {
-            await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken);
-            return;
+            var locator = loadout.InstallationInstance.LocatorResultMetadata;
+            switch (locator)
+            {
+                case SteamLocatorResultMetadata steamLocatorResultMetadata:
+                    await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken);
+                    return;
+                case HeroicGOGLocatorResultMetadata heroicGOGLocatorResultMetadata:
+                    await RunThroughHeroic("gog", heroicGOGLocatorResultMetadata.Id, cancellationToken);
+                    return;
+            }
         }
 
         var names = new HashSet<string>
@@ -175,6 +184,14 @@ public class RunGameTool<T> : IRunGameTool
         if (reaper is null) return;
 
         await reaper.WaitForExitAsync(cancellationToken);
+    }
+
+    private async Task RunThroughHeroic(string type, long appId, CancellationToken cancellationToken)
+    {
+        Debug.Assert(OSInformation.Shared.IsLinux);
+
+        // TODO: track process
+        await _osInterop.OpenUrl(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(

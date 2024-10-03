@@ -12,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
@@ -48,28 +49,15 @@ public class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
-        var modInfo = await _apiClient.ModInfoAsync(gameDomain.ToString(), modId, cancellationToken);
-
-        var newModPage = new NexusModsModPageMetadata.New(tx)
+        var modInfo = await _gqlClient.ModInfo.ExecuteAsync(gameDomain.ToString(), (int)modId.Value, cancellationToken);
+        EntityId first = default;
+        foreach (var node in modInfo.Data!.LegacyModsByDomain.Nodes)
         {
-            Name = modInfo.Data.Name,
-            ModId = modId,
-            GameDomain = gameDomain,
-        };
-
-        if (Uri.TryCreate(modInfo.Data.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
-        {
-            newModPage.FullSizedPictureUri = fullSizedPictureUri;
-
-            var thumbnailUrl = modInfo.Data.PictureUrl.Replace("/images/", "/images/thumbnails/", StringComparison.OrdinalIgnoreCase);
-            if (Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var thumbnailUri))
-            {
-                newModPage.ThumbnailUri = thumbnailUri;
-            }
+            first = node.Resolve(_connection.Db, tx);
         }
-
+        
         var txResults = await tx.Commit();
-        return txResults.Remap(newModPage);
+        return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
     }
     
     /// <summary>
@@ -88,7 +76,6 @@ public class NexusModsLibrary
         var db = _connection.Db;
         var collectionInfo = info.Data!.CollectionRevision.Collection;
         var collectionTileImage = DownloadImage(collectionInfo.TileImage?.ThumbnailUrl, token);
-        var avatarImage = DownloadImage(collectionInfo.User.Avatar, token);
         var collectionBackgroundImage = DownloadImage(collectionInfo.HeaderImage?.Url, token);
 
         // Remap the collection info
@@ -99,13 +86,8 @@ public class NexusModsLibrary
         collectionResolver.Add(CollectionMetadata.TileImage, await collectionTileImage);
         collectionResolver.Add(CollectionMetadata.BackgroundImage, await collectionBackgroundImage);
         
-        // Remap the user info
-        var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)collectionInfo.User.MemberId);
-        userResolver.Add(User.Name, collectionInfo.User.Name);
-        userResolver.Add(User.Avatar, new Uri(collectionInfo.User.Avatar));
-        userResolver.Add(User.AvatarImage, await avatarImage);
-        
-        collectionResolver.Add(CollectionMetadata.Author, userResolver.Id);
+        var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
+        collectionResolver.Add(CollectionMetadata.Author, user);
         
         // Remap the revision info
         var revisionInfo = info.Data!.CollectionRevision;
@@ -121,38 +103,21 @@ public class NexusModsLibrary
         foreach (var file in revisionInfo.ModFiles)
         {
             var fileInfo = file.File!;
-            var modInfo = fileInfo.Mod;
-            var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((ulong)fileInfo.ModId));
-            nexusModResolver.Add(NexusModsModPageMetadata.Name, modInfo.Name);
-            nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modInfo.Game.DomainName));
             
-            if (Uri.TryCreate(modInfo.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
-                nexusModResolver.Add(NexusModsModPageMetadata.FullSizedPictureUri, fullSizedPictureUri);
-            
-            if (Uri.TryCreate(modInfo.ThumbnailUrl, UriKind.Absolute, out var thumbnailUri))
-                nexusModResolver.Add(NexusModsModPageMetadata.ThumbnailUri, thumbnailUri);
-            
-            
-            var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((ulong)fileInfo.FileId)), (NexusModsFileMetadata.ModPageId, nexusModResolver.Id));
-            nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, nexusModResolver.Id);
-            nexusFileResolver.Add(NexusModsFileMetadata.Name, fileInfo.Name);
-            nexusFileResolver.Add(NexusModsFileMetadata.Version, fileInfo.Version);
-            nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.FromLong(long.Parse(fileInfo.SizeInBytes!)));
+            var modEId = fileInfo.Mod.Resolve(db, tx);
+            var modfile = fileInfo.Resolve(db, tx, modEId);
             
             var revisionFileResolver = GraphQLResolver.Create(db, tx, CollectionRevisionModFile.FileId, ulong.Parse(file.Id));
             revisionFileResolver.Add(CollectionRevisionModFile.CollectionRevision, revisionResolver.Id);
-            revisionFileResolver.Add(CollectionRevisionModFile.NexusModFile, nexusFileResolver.Id);
+            revisionFileResolver.Add(CollectionRevisionModFile.NexusModFile, modfile);
             revisionFileResolver.Add(CollectionRevisionModFile.IsOptional, file.Optional);
         }
         
         var txResults = await tx.Commit();
         return CollectionRevisionMetadata.Load(txResults.Db, txResults[revisionResolver.Id]);
     }
-
-    /// <summary>
-    /// Load an image from a URI
-    /// </summary>
-    public async Task<byte[]> DownloadImage(string? uri, CancellationToken token)
+    
+    private async Task<byte[]> DownloadImage(string? uri, CancellationToken token)
     {
         if (uri is null) return [];
         if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri)) return [];
@@ -176,13 +141,18 @@ public class NexusModsLibrary
 
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
             throw new NotImplementedException();
-        
+
+        var size = Optional<Size>.None;
+        if (fileInfo.SizeInBytes.HasValue)
+            size = Size.FromLong((long)fileInfo.SizeInBytes!);
+
         var newFile = new NexusModsFileMetadata.New(tx)
         {
             Name = fileInfo.Name,
             Version = fileInfo.Version,
             FileId = fileId,
             ModPageId = modPage,
+            Size = size.HasValue ? size.Value : null,
         };
         
         if (fileInfo.SizeInBytes.HasValue)

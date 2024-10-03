@@ -211,7 +211,10 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             .FirstOrOptional(f => f.LibraryFiles.Any());
 
         if (file.HasValue)
-            return (mod, file.Value.LibraryFiles.First().AsDownloadedFile().AsLibraryFile());
+        {
+            if (!file.Value.LibraryFiles.First().AsLibraryItem().TryGetAsLibraryFile(out var firstLibraryFile)) 
+                return (mod, firstLibraryFile);
+        }
 
         await using var tempPath = TemporaryFileManager.CreateFile();
 

@@ -11,7 +11,7 @@ public class FloatAttribute(string ns, string name) : ScalarAttribute<float, flo
         return value;
     }
 
-    protected override float FromLowLevel(float value, ValueTags tags, RegistryId registryId)
+    protected override float FromLowLevel(float value, ValueTags tags, AttributeResolver resolver)
     {
         return value;
     }

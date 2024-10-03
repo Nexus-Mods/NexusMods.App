@@ -11,5 +11,5 @@ public class StringsAttribute(string ns, string name) : CollectionAttribute<stri
 {
     protected override string ToLowLevel(string value) => value;
 
-    protected override string FromLowLevel(string value, ValueTags tag, RegistryId registryId) => value;
+    protected override string FromLowLevel(string value, ValueTags tags, AttributeResolver resolver) => value;
 }
