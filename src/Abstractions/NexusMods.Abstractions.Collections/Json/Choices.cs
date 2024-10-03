@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using NexusMods.Games.FOMOD;
 
 namespace NexusMods.Abstractions.Collections.Json;
 

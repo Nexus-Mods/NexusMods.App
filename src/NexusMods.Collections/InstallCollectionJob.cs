@@ -12,11 +12,13 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
@@ -40,10 +42,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     public required TemporaryFileManager TemporaryFileManager { get; set; }
     
     public required LoadoutId TargetLoadout { get; set; }
-
-
-
-
+    public required IServiceProvider SerivceProvider { get; set; }
+    
     public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(IServiceProvider provider, LoadoutId target, NexusModsCollectionLibraryFile.ReadOnly source)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
@@ -51,12 +51,14 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         {
             TargetLoadout = target,
             SourceCollection = source,
+            SerivceProvider = provider,
             FileStore = provider.GetRequiredService<IFileStore>(),
             JsonSerializerOptions = provider.GetRequiredService<JsonSerializerOptions>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
             Connection = provider.GetRequiredService<IConnection>(),
             TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>(),
+            
         };
         return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
     }
@@ -109,9 +111,6 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         await Parallel.ForEachAsync(toInstall, context.CancellationToken, async (file, _) =>
             {
-                // TODO: Implement FOMOD support
-                if (file.Mod.Choices != null)
-                    return;
                 // Bit strange, but Install Mod will want to find the collection group, so we'll have to rebase entity it will get the DB from
                 file = (file.Mod, file.LibraryFile.Rebase());
                 await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup());
@@ -131,9 +130,32 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return await LibraryService.InstallItem(file.LibraryFile.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
     }
 
-    private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly group)
+    private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly collectionGroup)
     {
-        throw new NotImplementedException();
+        if (!file.LibraryFile.TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The library file is not a library archive.");
+
+        var fomodInstaller = FomodXmlInstaller.Create(SerivceProvider, new GamePath(LocationId.Game, ""));
+        
+        using var tx = Connection.BeginTransaction();
+        var group = new LoadoutItemGroup.New(tx, out var id)
+        {
+            IsGroup = true,
+            LoadoutItem = new LoadoutItem.New(tx, id)
+            {
+                Name = file.Mod.Name,
+                LoadoutId = loadoutId,
+                ParentId = collectionGroup.Id,
+            },
+        };
+        var loadout = new Loadout.ReadOnly(Connection.Db, loadoutId);
+
+        var options = file.Mod.Choices!.Options;
+        await fomodInstaller.ExecuteAsync(archive, group, tx, loadout, options, CancellationToken.None);
+        
+        var result = await tx.Commit();
+        
+        return result.Remap(group);
     }
 
     /// <summary>
