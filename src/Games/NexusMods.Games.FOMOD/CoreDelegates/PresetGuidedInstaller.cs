@@ -34,7 +34,7 @@ public class PresetGuidedInstaller : IGuidedInstaller
     {
         var step = _steps[_currentStep];
         
-        // This looks gross, but it's fairly simple we map through the two trees matching by name
+        // This looks gross, but it's fairly simple we map through the two trees matching by name, and it's cleaner than 4 nested loops.
         var choices = 
                       from srcGroup in step.groups
                       from installGroup in installationStep.Groups
