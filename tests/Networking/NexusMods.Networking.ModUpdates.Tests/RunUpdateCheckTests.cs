@@ -60,7 +60,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         // can only assert some 'general' knowledge.
         // A single mod page got updated here.
         updates.OutOfDateItems.Should().HaveCount(1);
-        var outOfDateMod = NexusModsModPageMetadata.FindByUid(Connection.Db, updates.OutOfDateItems.First().GetUniqueId()).First();
+        var outOfDateMod = NexusModsModPageMetadata.FindByUid(Connection.Db, updates.OutOfDateItems.First().GetModPageId()).First();
         var outOfDateFileUid = outOfDateMod.Files.First().Uid;
 
         // Fetch updated content for mod pages.

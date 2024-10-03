@@ -4,11 +4,11 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using StrawberryShake;
-namespace NexusMods.Networking.ModUpdates;
+namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
 /// Utility class that encapsulates the logic for running the actual update check.
@@ -22,7 +22,7 @@ public static class RunUpdateCheck
     {
         // Extract all GameDomain(s)
         var modPages = PageMetadataMixin.EnumerateDatabaseEntries(db).ToArray();
-        var gameIds = modPages.Select(x => (x.GetUniqueId().GameId)).Distinct().ToArray();
+        var gameIds = modPages.Select(x => (x.GetModPageId().GameId)).Distinct().ToArray();
         
         // Note: The v1Timespan accounts for 1 month minus 5 minutes
         //  - We use 28 days because February is the shortest month at 28.
@@ -34,7 +34,7 @@ public static class RunUpdateCheck
         {
             // Note (sewer): We need to update to V2 stat.
             var modUpdates = await apiClient.ModUpdatesAsync(gameId.ToGameDomain().Value, PastTime.Month);
-            var updateResults = ModUpdateMixin.FromUpdateResults(modUpdates.Data, gameId);
+            var updateResults = ModFeedItemUpdateMixin.FromUpdateResults(modUpdates.Data, gameId);
             updater.Update(updateResults);
         }
         
@@ -58,7 +58,7 @@ public static class RunUpdateCheck
             }
             catch (Exception e)
             {
-                var id = mixin.GetUniqueId();
+                var id = mixin.GetModPageId();
                 logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
             }
         }
@@ -73,7 +73,7 @@ public static class RunUpdateCheck
 
     private static async Task UpdateModPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
     {
-        var uid = mixin.GetUniqueId();
+        var uid = mixin.GetModPageId();
         var modIdString = uid.ModId.Value.ToString();
         var gameIdString = uid.GameId.Value.ToString();
         

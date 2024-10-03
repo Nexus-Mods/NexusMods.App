@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.ModUpdates.Private;
-using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 
 /// <summary>
@@ -11,8 +10,8 @@ namespace NexusMods.Networking.ModUpdates;
 ///
 /// This API consists of the following:
 ///
-/// 1. Input [Constructor]: A set of items with a 'last update time' (see <see cref="ICanGetLastUpdatedTimestamp"/>)
-///           and a 'unique id' (see <see cref="ICanGetUidForMod"/>) that are relevant to the current 'feed' (game).
+/// 1. Input [Constructor]: A set of items with a 'last update time' and a 'unique id'
+///                         (see <see cref="IModFeedItem"/>) that are relevant to the current 'feed' (game).
 /// 
 /// 2. Update [Method]: Submit results from API endpoint returning 'most recently updated mods for game'.
 ///           This updates the internal state of the <see cref="MultiFeedCacheUpdater{TUpdateableItem}"/>.
@@ -31,7 +30,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// The 'Feed' in the context of the Nexus App is the individual game's 'updated.json' endpoint;
 /// i.e. a 'Game Mod Feed'
 /// </remarks>
-public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFeedItem
 {
     private readonly TUpdateableItem[] _items;
     private readonly Dictionary<ModId, int> _itemToIndex;
@@ -60,7 +59,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
         _actions = new CacheUpdaterAction[items.Length];
         _itemToIndex = new Dictionary<ModId, int>(items.Length);
         for (var x = 0; x < _items.Length; x++)
-            _itemToIndex[_items[x].GetUniqueId().ModId] = x;
+            _itemToIndex[_items[x].GetModPageId().ModId] = x;
 
         // Set the action to refresh cache for any mods which exceed max age.
         var utcNow = DateTime.UtcNow;
@@ -78,21 +77,20 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
     /// </summary>
     /// <param name="items">
     /// The items returned by the 'most recently updated mods for game' endpoint.
-    /// Wrap elements in a struct that implements <see cref="ICanGetLastUpdatedTimestamp"/>
-    /// and <see cref="ICanGetUidForMod"/> if necessary.
+    /// Wrap elements in a struct that implements <see cref="IModFeedItem"/> if necessary.
     /// </param>
-    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+    public void Update<T>(IEnumerable<T> items) where T : IModFeedItem
     {
         foreach (var item in items)
             UpdateSingleItem(item);
     }
     
-    internal void UpdateSingleItem<T>(T item) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+    internal void UpdateSingleItem<T>(T item) where T : IModFeedItem
     {
         // Try to get index of the item.
         // Not all the items from the update feed are locally stored, thus we need to
         // make sure we actually have this item.
-        if (!_itemToIndex.TryGetValue(item.GetUniqueId().ModId, out var index))
+        if (!_itemToIndex.TryGetValue(item.GetModPageId().ModId, out var index))
             return;
             
         var existingItem = _items[index];
@@ -147,8 +145,8 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
     {
         if (_items.Length == 0) return;
         
-        var firstGameId = _items[0].GetUniqueId().GameId;
-        var allSame = _items.All(x => x.GetUniqueId().GameId == firstGameId);
+        var firstGameId = _items[0].GetModPageId().GameId;
+        var allSame = _items.All(x => x.GetModPageId().GameId == firstGameId);
         if (!allSame)
             throw new ArgumentException("All items must have the same game id", nameof(_items));
     }

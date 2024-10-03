@@ -1,20 +1,19 @@
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates.Mixins;
 
 /// <summary>
 /// Implements the MnemonicDB mod page mixin based on V2 API Results.
 /// </summary>
-public struct PageMetadataMixin : ICanGetUidForMod, ICanGetLastUpdatedTimestamp
+public struct PageMetadataMixin : IModFeedItem
 {
     private readonly NexusModsModPageMetadata.ReadOnly _metadata;
 
     private PageMetadataMixin(NexusModsModPageMetadata.ReadOnly metadata) => _metadata = metadata;
     
     /// <inheritodc/>
-    public UidForMod GetUniqueId() => new()
+    public UidForMod GetModPageId() => new()
     {
         GameId = _metadata.Uid.GameId,
         ModId = _metadata.Uid.ModId, 

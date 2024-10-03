@@ -1,5 +1,4 @@
 ﻿using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 
 /// <summary>
@@ -12,7 +11,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// you to use mods and API responses which are sourced from multiple feeds (games),
 /// as opposed to a single feed.
 /// </summary>
-public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFeedItem
 {
     private readonly Dictionary<GameId, PerFeedCacheUpdater<TUpdateableItem>> _updaters;
 
@@ -41,7 +40,7 @@ public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICan
         var groupedList = new List<(GameId, List<TUpdateableItem>)>();
         foreach (var item in items)
         {
-            var gameId = item.GetUniqueId().GameId;
+            var gameId = item.GetModPageId().GameId;
             
             // Get or Update List for this GameId.
             var found = false;
@@ -73,15 +72,15 @@ public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICan
     /// include items corresponding to multiple feeds (games); the feed source
     /// is automatically detected.
     ///
-    /// Wrap elements in a struct that implements <see cref="ICanGetLastUpdatedTimestamp"/>
-    /// and <see cref="ICanGetUidForMod"/> if necessary. 
+    /// Wrap elements in a struct that implements <see cref="IModFeedItem"/>
+    /// and <see cref="IModFeedItem"/> if necessary. 
     /// </param>
-    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
+    public void Update<T>(IEnumerable<T> items) where T : IModFeedItem
     {
         foreach (var item in items)
         {
             // Determine feed
-            var feed = item.GetUniqueId().GameId;
+            var feed = item.GetModPageId().GameId;
             
             // The result may contain items from feeds which we are not tracking.
             // For instance, results for other games. This is not an error, we
