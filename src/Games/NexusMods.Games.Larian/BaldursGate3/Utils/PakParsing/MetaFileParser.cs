@@ -2,8 +2,17 @@ using System.Xml;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
 {
+    /// <summary>
+    /// Class to parse and extract dependencies and metadata from a bg3 `meta.lsx` file.
+    /// </summary>
     public static class MetaLsxParser
     {
+        
+        /// <summary>
+        /// Parses dependencies and metadata from a stream of a bg3 `meta.lsx` file.
+        /// </summary>
+        /// <param name="xmlStream"></param>
+        /// <returns></returns>
         public static LsxXmlFormat.MetaFileData ParseMetaFile(Stream xmlStream)
         {
             using var reader = XmlReader.Create(xmlStream);

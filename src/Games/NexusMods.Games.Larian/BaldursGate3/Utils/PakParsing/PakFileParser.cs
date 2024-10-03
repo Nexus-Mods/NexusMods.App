@@ -13,6 +13,10 @@ public static class PakFileParser
 
 #region Public Methods
 
+    /// <summary>
+    /// Parses a bg3 `.pak` file stream and extracts the metadata from the packed `meta.lsx` file.
+    /// </summary>
+    /// <exception cref="InvalidDataException">In case of errors during parsing</exception>
     public static LsxXmlFormat.MetaFileData ParsePakMeta(Stream pakFileStream)
     {
         using var br = new BinaryReader(pakFileStream);
@@ -22,7 +26,7 @@ public static class PakFileParser
         var fileEntryInfo = fileList.FirstOrOptional(f => f.Name.Contains("meta.lsx"));
         if (!fileEntryInfo.HasValue)
         {
-            throw new KeyNotFoundException($"File meta.lsx not found in pak archive.");
+            throw new InvalidDataException($"File meta.lsx not found in pak archive.");
         }
 
         var metaStream = ReadFileEntryData(br, fileEntryInfo.Value);
@@ -78,7 +82,7 @@ public static class PakFileParser
                     NumParts = br.ReadUInt16(),
                 }.ToCommonHeader();
             default:
-                throw new NotSupportedException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Pak version v{version} not supported.");
         }
     }
 
@@ -161,7 +165,7 @@ public static class PakFileParser
                 }.ToCommonFileEntry();
             }
             default:
-                throw new NotSupportedException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Pak version v{version} not supported.");
         }
     }
     
