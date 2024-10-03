@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -31,7 +32,7 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modEId)
     {
-        var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((ulong)modFileFragment.FileId)), (NexusModsFileMetadata.ModPageId,  modEId));
+        var nexusFileResolver = GraphQLResolver.Create(db, tx, (NexusModsFileMetadata.FileId, FileId.From((uint)modFileFragment.FileId)), (NexusModsFileMetadata.ModPageId,  modEId));
         nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modEId);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
@@ -45,8 +46,7 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx)
     {
-        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId,
-            ModId.From((ulong)modFragment.ModId));
+        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.ModId, ModId.From((uint)modFragment.ModId));
         
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));

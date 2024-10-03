@@ -1,6 +1,6 @@
 using System.Diagnostics;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.ModUpdates.Private;
-using NexusMods.Networking.ModUpdates.Structures;
 using NexusMods.Networking.ModUpdates.Traits;
 namespace NexusMods.Networking.ModUpdates;
 
@@ -12,7 +12,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// This API consists of the following:
 ///
 /// 1. Input [Constructor]: A set of items with a 'last update time' (see <see cref="ICanGetLastUpdatedTimestamp"/>)
-///           and a 'unique id' (see <see cref="ICanGetUid"/>) that are relevant to the current 'feed' (game).
+///           and a 'unique id' (see <see cref="ICanGetUidForMod"/>) that are relevant to the current 'feed' (game).
 /// 
 /// 2. Update [Method]: Submit results from API endpoint returning 'most recently updated mods for game'.
 ///           This updates the internal state of the <see cref="MultiFeedCacheUpdater{TUpdateableItem}"/>.
@@ -31,7 +31,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// The 'Feed' in the context of the Nexus App is the individual game's 'updated.json' endpoint;
 /// i.e. a 'Game Mod Feed'
 /// </remarks>
-public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUid
+public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
 {
     private readonly TUpdateableItem[] _items;
     private readonly Dictionary<ModId, int> _itemToIndex;
@@ -79,15 +79,15 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : ICanGe
     /// <param name="items">
     /// The items returned by the 'most recently updated mods for game' endpoint.
     /// Wrap elements in a struct that implements <see cref="ICanGetLastUpdatedTimestamp"/>
-    /// and <see cref="ICanGetUid"/> if necessary.
+    /// and <see cref="ICanGetUidForMod"/> if necessary.
     /// </param>
-    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUid
+    public void Update<T>(IEnumerable<T> items) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
     {
         foreach (var item in items)
             UpdateSingleItem(item);
     }
     
-    internal void UpdateSingleItem<T>(T item) where T : ICanGetLastUpdatedTimestamp, ICanGetUid
+    internal void UpdateSingleItem<T>(T item) where T : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
     {
         // Try to get index of the item.
         // Not all the items from the update feed are locally stored, thus we need to

@@ -1,22 +1,23 @@
-using NexusMods.Networking.ModUpdates.Structures;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Networking.ModUpdates.Traits;
-namespace NexusMods.Networking.ModUpdates.Tests;
+namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
 
 // Helper class to simulate updateable items
-public class TestItem : ICanGetLastUpdatedTimestamp, ICanGetUid
+public class TestItem : ICanGetLastUpdatedTimestamp, ICanGetUidForMod
 {
     public DateTime LastUpdated { get; set; }
-    public Uid Uid { get; set; }
+    public UidForMod Uid { get; set; }
 
     public DateTime GetLastUpdatedDate() => LastUpdated;
-    public Uid GetUniqueId() => Uid;
+    public UidForMod GetUniqueId() => Uid;
     
     // Helper method to create a test item
     public static TestItem Create(uint gameId, uint modId, DateTime lastUpdated)
     {
         return new TestItem
         {
-            Uid = new Uid { GameId = GameId.From(gameId), ModId = ModId.From(modId) },
+            Uid = new UidForMod { GameId = GameId.From(gameId), ModId = ModId.From(modId) },
             LastUpdated = lastUpdated,
         };
     }
