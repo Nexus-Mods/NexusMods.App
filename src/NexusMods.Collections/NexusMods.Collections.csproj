@@ -11,8 +11,4 @@
       <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" />
-    </ItemGroup>
-
 </Project>
