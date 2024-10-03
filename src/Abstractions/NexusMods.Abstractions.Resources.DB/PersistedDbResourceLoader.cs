@@ -6,42 +6,44 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 
 namespace NexusMods.Abstractions.Resources.DB;
 
+/// <summary>
+/// Loads persisted resources from the database.
+/// </summary>
 [PublicAPI]
-public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResourceLoader<TResourceIdentifier, TData>
+public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLoader<TResourceIdentifier, byte[]>
     where TResourceIdentifier : notnull
-    where TData : notnull
 {
-    public delegate byte[] DataToBytes(TData data);
-    public delegate TData BytesToData(byte[] bytes);
+    /// <summary>
+    /// Converts the identifier to a hash.
+    /// </summary>
     public delegate Hash IdentifierToHash(TResourceIdentifier resourceIdentifier);
 
+    /// <summary>
+    /// Converts the identifier into an entity id.
+    /// </summary>
     public delegate EntityId IdentifierToEntityId(TResourceIdentifier resourceIdentifier);
 
     private readonly IConnection _connection;
-    private readonly IResourceLoader<TResourceIdentifier, TData> _innerLoader;
-    private readonly ReferenceAttribute<PersistedResource> _referenceAttribute;
-    private readonly DataToBytes _dataToBytes;
-    private readonly BytesToData _bytesToData;
+    private readonly IResourceLoader<TResourceIdentifier, byte[]> _innerLoader;
+    private readonly ReferenceAttribute<PersistedDbResource> _referenceAttribute;
     private readonly IdentifierToHash _identifierToHash;
     private readonly IdentifierToEntityId _identifierToEntityId;
     private readonly AttributeId _referenceAttributeId;
     private readonly Optional<PartitionId> _partitionId;
 
-    public PersistedResourceLoader(
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public PersistedDbResourceLoader(
         IConnection connection,
-        ReferenceAttribute<PersistedResource> referenceAttribute,
+        ReferenceAttribute<PersistedDbResource> referenceAttribute,
         IdentifierToHash identifierToHash,
-        DataToBytes dataToBytes,
-        BytesToData bytesToData,
         IdentifierToEntityId identifierToEntityId,
         Optional<PartitionId> partitionId,
-        IResourceLoader<TResourceIdentifier, TData> innerLoader)
+        IResourceLoader<TResourceIdentifier, byte[]> innerLoader)
     {
         _connection = connection;
         _innerLoader = innerLoader;
-
-        _dataToBytes = dataToBytes;
-        _bytesToData = bytesToData;
 
         _identifierToHash = identifierToHash;
         _identifierToEntityId = identifierToEntityId;
@@ -52,7 +54,7 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
     }
 
     /// <inheritdoc/>
-    public ValueTask<Resource<TData>> LoadResourceAsync(TResourceIdentifier resourceIdentifier, CancellationToken cancellationToken)
+    public ValueTask<Resource<byte[]>> LoadResourceAsync(TResourceIdentifier resourceIdentifier, CancellationToken cancellationToken)
     {
         var entityId = _identifierToEntityId(resourceIdentifier);
         var tuple = (entityId, resourceIdentifier);
@@ -62,7 +64,7 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
         return SaveResource(tuple, cancellationToken);
     }
 
-    private Resource<TData>? LoadResource(ValueTuple<EntityId, TResourceIdentifier> resourceIdentifier)
+    private Resource<byte[]>? LoadResource(ValueTuple<EntityId, TResourceIdentifier> resourceIdentifier)
     {
         var db = _connection.Db;
         var (entityId, innerResourceIdentifier) = resourceIdentifier;
@@ -76,7 +78,7 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
         }
 
         if (!persistedResourceId.HasValue) return null;
-        var persistedResource = PersistedResource.Load(db, persistedResourceId.Value);
+        var persistedResource = PersistedDbResource.Load(db, persistedResourceId.Value);
 
         if (!persistedResource.IsValid()) return null;
         if (persistedResource.IsExpired) return null;
@@ -85,26 +87,24 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
         if (!persistedResource.ResourceIdentifierHash.Equals(hash)) return null;
 
         var bytes = persistedResource.Data;
-        var data = _bytesToData(bytes);
 
-        return new Resource<TData>
+        return new Resource<byte[]>
         {
-            Data = data,
+            Data = bytes,
             ExpiresAt = persistedResource.ExpiresAt,
         };
     }
 
-    private async ValueTask<Resource<TData>> SaveResource(ValueTuple<EntityId, TResourceIdentifier> resourceIdentifier, CancellationToken cancellationToken)
+    private async ValueTask<Resource<byte[]>> SaveResource(ValueTuple<EntityId, TResourceIdentifier> resourceIdentifier, CancellationToken cancellationToken)
     {
         var resource = await _innerLoader.LoadResourceAsync(resourceIdentifier.Item2, cancellationToken);
-        var bytes = _dataToBytes(resource.Data);
 
         using var tx = _connection.BeginTransaction();
         var tmpId = _partitionId.HasValue ? tx.TempId(_partitionId.Value) : tx.TempId();
 
-        var persisted = new PersistedResource.New(tx, tmpId)
+        var persisted = new PersistedDbResource.New(tx, tmpId)
         {
-            Data = bytes,
+            Data = resource.Data,
             ExpiresAt = resource.ExpiresAt,
             ResourceIdentifierHash = _identifierToHash(resourceIdentifier.Item2),
         };
@@ -122,47 +122,49 @@ public sealed class PersistedResourceLoader<TResourceIdentifier, TData> : IResou
 [PublicAPI]
 public static partial class ExtensionsMethods
 {
-    public static IResourceLoader<TResourceIdentifier, byte[]> Persist<TResourceIdentifier>(
+    /// <summary>
+    /// Persist the resource in the database.
+    /// </summary>
+    public static IResourceLoader<TResourceIdentifier, byte[]> PersistInDb<TResourceIdentifier>(
         this IResourceLoader<TResourceIdentifier, byte[]> inner,
         IConnection connection,
-        ReferenceAttribute<PersistedResource> referenceAttribute,
-        PersistedResourceLoader<TResourceIdentifier, byte[]>.IdentifierToHash identifierToHash,
-        PersistedResourceLoader<TResourceIdentifier, byte[]>.IdentifierToEntityId identifierToEntityId,
+        ReferenceAttribute<PersistedDbResource> referenceAttribute,
+        PersistedDbResourceLoader<TResourceIdentifier>.IdentifierToHash identifierToHash,
+        PersistedDbResourceLoader<TResourceIdentifier>.IdentifierToEntityId identifierToEntityId,
         Optional<PartitionId> partitionId)
         where TResourceIdentifier : notnull
-    {
-        return inner.Persist(
-            connection: connection,
-            referenceAttribute: referenceAttribute,
-            identifierToHash: identifierToHash,
-            identifierToEntityId: identifierToEntityId,
-            dataToBytes: static bytes => bytes,
-            bytesToData: static bytes => bytes,
-            partitionId: partitionId
-        );
-    }
-
-    public static IResourceLoader<TResourceIdentifier, TData> Persist<TResourceIdentifier, TData>(
-        this IResourceLoader<TResourceIdentifier, TData> inner,
-        IConnection connection,
-        ReferenceAttribute<PersistedResource> referenceAttribute,
-        PersistedResourceLoader<TResourceIdentifier, TData>.IdentifierToHash identifierToHash,
-        PersistedResourceLoader<TResourceIdentifier, TData>.IdentifierToEntityId identifierToEntityId,
-        PersistedResourceLoader<TResourceIdentifier, TData>.DataToBytes dataToBytes,
-        PersistedResourceLoader<TResourceIdentifier, TData>.BytesToData bytesToData,
-        Optional<PartitionId> partitionId)
-        where TResourceIdentifier : notnull
-        where TData : notnull
     {
         return inner.Then(
-            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, dataToBytes, bytesToData, partitionId),
-            factory: static (input, inner) => new PersistedResourceLoader<TResourceIdentifier, TData>(
+            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, partitionId),
+            factory: static (input, inner) => new PersistedDbResourceLoader<TResourceIdentifier>(
                 connection: input.connection,
                 referenceAttribute: input.referenceAttribute,
                 identifierToHash: input.identifierToHash,
                 identifierToEntityId: input.identifierToEntityId,
-                dataToBytes: input.dataToBytes,
-                bytesToData: input.bytesToData,
+                partitionId: input.partitionId,
+                innerLoader: inner
+            )
+        );
+    }
+
+    /// <summary>
+    /// Persist the resource in the database.
+    /// </summary>
+    public static IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, byte[]> PersistInDb<TResourceIdentifier>(
+        this IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, byte[]> inner,
+        IConnection connection,
+        ReferenceAttribute<PersistedDbResource> referenceAttribute,
+        Func<TResourceIdentifier, Hash> identifierToHash,
+        Optional<PartitionId> partitionId)
+        where TResourceIdentifier : notnull
+    {
+        return inner.Then(
+            state: (connection, referenceAttribute, identifierToHash, partitionId),
+            factory: static (input, inner) => new PersistedDbResourceLoader<ValueTuple<EntityId, TResourceIdentifier>>(
+                connection: input.connection,
+                referenceAttribute: input.referenceAttribute,
+                identifierToHash: tuple => input.identifierToHash(tuple.Item2),
+                identifierToEntityId: static tuple => tuple.Item1,
                 partitionId: input.partitionId,
                 innerLoader: inner
             )

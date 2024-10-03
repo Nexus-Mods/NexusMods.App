@@ -48,11 +48,11 @@
                                     <Button x:Name="AddTabButton1"
                                             Margin="12 12 10 12"
                                             Classes="PanelTitlebar AddTab" >
-                                        <ToolTip.Tip>
-                                            <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
-                                        </ToolTip.Tip>
                                     </Button>
                                 </Border>
+                                <ToolTip.Tip>
+                                    <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
+                                </ToolTip.Tip>
                             </Grid>
 
                         </ScrollViewer>
