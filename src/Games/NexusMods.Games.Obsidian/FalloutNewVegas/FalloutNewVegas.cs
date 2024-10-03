@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
@@ -8,7 +9,12 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Games.Generic.Installers;
+using NexusMods.Games.Obsidian.FalloutNewVegas.Emitters;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 // The argument could be made that the package should be Bethesda not Obsidian... todo someone confirm preferred package name
 namespace NexusMods.Games.Obsidian.FalloutNewVegas;
@@ -30,13 +36,17 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
     public override string Name => _name;
     public override GameDomain Domain => GameDomain.From("newvegas");
 
-#region File Information
+    #region File Information
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
+            { LocationId.From("Data"), installation.Path.Combine("Data") },
+            { LocationId.From("Data/textures"), installation.Path.Combine("Data/textures") },
+            { LocationId.From("Data/meshes"), installation.Path.Combine("Data/meshes") },
+            { LocationId.From("Data/NVSE/Plugins"), installation.Path.Combine("Data/NVSE/Plugins") },
         };
         return result;
     }
@@ -52,17 +62,82 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
 
-#endregion
+    #endregion
 
-#region Game IDs
+    #region Game IDs
 
     public IEnumerable<uint> SteamIds => new List<uint> { 22380u };
     public IEnumerable<long> GogIds => new List<long> { 1207658921 }; //todo need correct ID. I don't own this.
     public IEnumerable<string> XboxIds => new List<string> { "9P4P6BZQ9V6M" }; //todo need correct ID
     public IEnumerable<string> EpicCatalogItemId => new List<string> { "dabb52e328834da7bbe99691e374cb84" };
-#endregion
-    
+    #endregion
+
+    #region Images
+
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<FalloutNewVegas>("NexusMods.Games.Obsidian.Resources.FalloutNewVegas.game_image.jpg");
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<FalloutNewVegas>("NexusMods.Games.Obsidian.Resources.FalloutNewVegas.icon.jpg");
 
+    #endregion
+
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        new MissingNVSEEmitter(),
+    ];
+
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
+        new GenericPatternMatchInstaller(_serviceProvider)
+        {
+            InstallFolderTargets =
+            [
+                new InstallFolderTarget
+                {
+                    DestinationGamePath = new GamePath(LocationId.Game, "Data"),
+                    KnownValidFileExtensions = [new Extension(".esp"), new Extension(".esm"), new Extension(".bsa")],
+                    FileExtensionsToDiscard =
+                    [
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
+                        KnownExtensions.Json, new Extension(".lnk"),
+                    ],
+                },
+                // for textures
+                new InstallFolderTarget
+                {
+                    DestinationGamePath = new GamePath(LocationId.Game, "Data/textures"),
+                    KnownValidFileExtensions = [new Extension(".dds"), new Extension(".nif"), new Extension(".tga")],
+                    FileExtensionsToDiscard =
+                    [
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
+                        KnownExtensions.Json, new Extension(".lnk"),
+                    ],
+                },
+                // for meshes
+                new InstallFolderTarget
+                {
+                    DestinationGamePath = new GamePath(LocationId.Game, "Data/meshes"),
+                    KnownValidFileExtensions = [new Extension(".nif")],
+                    FileExtensionsToDiscard =
+                    [
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
+                        KnownExtensions.Json, new Extension(".lnk"),
+                    ],
+                },
+                // for NVSE plugins
+                new InstallFolderTarget
+                {
+                    DestinationGamePath = new GamePath(LocationId.Game, "Data/NVSE/Plugins"),
+                    KnownValidFileExtensions = [new Extension(".dll")],
+                    FileExtensionsToDiscard =
+                    [
+                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
+                        KnownExtensions.Json, new Extension(".lnk"),
+                    ],
+                },
+            ]
+        }
+    ];
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new FalloutNewVegasSynchronizer(provider);
+    }
 }
