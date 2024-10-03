@@ -91,11 +91,14 @@ internal static class CleanupVerbs
                 // switching backends out. At that point you'd add others here too.
                 JsonStorageBackend.GetConfigsFolderPath(fileSystem),
 
-                // The whole base DataModel folder.
+                // The DataModel folder.
                 DataModelSettings.GetStandardDataModelFolder(fileSystem),
 
                 // The whole base Download folder.
                 DownloadSettings.GetStandardDownloadsFolder(fileSystem),
+
+                // Local Application Data (where all app files default to).
+                DataModelSettings.GetLocalApplicationDataDirectory(fileSystem),
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
 
             if (fileSystem.OS.IsUnix())
