@@ -3,6 +3,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Resources;
 using R3;
 using ReactiveUI;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
 
 namespace NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 
