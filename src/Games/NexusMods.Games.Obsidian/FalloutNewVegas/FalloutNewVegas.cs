@@ -11,6 +11,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Obsidian.FalloutNewVegas.Emitters;
 using NexusMods.Paths;
@@ -43,10 +44,6 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            { LocationId.From("Data"), installation.Path.Combine("Data") },
-            { LocationId.From("Data/textures"), installation.Path.Combine("Data/textures") },
-            { LocationId.From("Data/meshes"), installation.Path.Combine("Data/meshes") },
-            { LocationId.From("Data/NVSE/Plugins"), installation.Path.Combine("Data/NVSE/Plugins") },
         };
         return result;
     }
@@ -79,10 +76,6 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     #endregion
 
-    public override IDiagnosticEmitter[] DiagnosticEmitters =>
-    [
-        new MissingNVSEEmitter(),
-    ];
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
@@ -93,49 +86,24 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
                 new InstallFolderTarget
                 {
                     DestinationGamePath = new GamePath(LocationId.Game, "Data"),
-                    KnownValidFileExtensions = [new Extension(".esp"), new Extension(".esm"), new Extension(".bsa")],
+                    KnownSourceFolderNames = ["Data"],
+                    Names = ["meshes", "textures", "sound", "nvse", "music", "video", "menus", "shaders"],
                     FileExtensionsToDiscard =
                     [
                         KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
                         KnownExtensions.Json, new Extension(".lnk"),
                     ],
                 },
-                // for textures
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/textures"),
-                    KnownValidFileExtensions = [new Extension(".dds"), new Extension(".nif"), new Extension(".tga")],
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
-                        KnownExtensions.Json, new Extension(".lnk"),
-                    ],
-                },
-                // for meshes
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/meshes"),
-                    KnownValidFileExtensions = [new Extension(".nif")],
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
-                        KnownExtensions.Json, new Extension(".lnk"),
-                    ],
-                },
-                // for NVSE plugins
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/NVSE/Plugins"),
-                    KnownValidFileExtensions = [new Extension(".dll")],
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
-                        KnownExtensions.Json, new Extension(".lnk"),
-                    ],
-                },
-            ]
-        }
+            ],
+        },
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
     ];
+
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        new MissingNVSEEmitter(),
+    ];
+
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new FalloutNewVegasSynchronizer(provider);
