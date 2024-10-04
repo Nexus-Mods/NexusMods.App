@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Obsidian.FalloutNewVegas.Emitters;
+using NexusMods.Games.Obsidian.FalloutNewVegas.Installers;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
@@ -80,6 +81,7 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
+        new NVSEInstaller(_serviceProvider),
         new GenericPatternMatchInstaller(_serviceProvider)
         {
             InstallFolderTargets =
