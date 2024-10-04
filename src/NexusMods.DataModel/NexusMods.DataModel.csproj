@@ -8,6 +8,8 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.DB\NexusMods.Abstractions.Resources.DB.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
@@ -16,7 +18,6 @@
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
         <ProjectReference Include="..\NexusMods.App.GarbageCollection.DataModel\NexusMods.App.GarbageCollection.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
-        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -34,16 +35,15 @@
         <PackageReference Include="NexusMods.Archives.Nx" />
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.MnemonicDB" />
+        <PackageReference Include="Polly.Core"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
         <InternalsVisibleTo Include="NexusMods.Games.TestFramework"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="DirectoryIndexer.cs" />
     </ItemGroup>
 </Project>

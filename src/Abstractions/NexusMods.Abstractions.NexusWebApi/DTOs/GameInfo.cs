@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
-using GameId = NexusMods.Abstractions.NexusWebApi.Types.GameId;
+using GameId = NexusMods.Abstractions.NexusWebApi.Types.V2.GameId;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable InconsistentNaming
@@ -27,7 +27,7 @@ public class GameInfo : IJsonArraySerializable<GameInfo>
     ///    This field is for deserialization only.
     /// </remarks>
     [JsonPropertyName("id")]
-    public int _Id { get; set; }
+    public uint _Id { get; set; }
 
     /// <summary>
     /// Returns the ID as typed ValueObject <see cref="GameId"/>.

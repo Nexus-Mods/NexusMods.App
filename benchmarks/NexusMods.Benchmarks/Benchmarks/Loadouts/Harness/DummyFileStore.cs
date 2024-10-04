@@ -16,6 +16,11 @@ public class DummyFileStore : IFileStore
         return Task.CompletedTask;
     }
 
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         return Task.CompletedTask;

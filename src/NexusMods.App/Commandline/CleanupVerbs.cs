@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -35,10 +36,6 @@ internal static class CleanupVerbs
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
-        // Prevent a race condition where `IRepository` is not fully done initializing.
-        // https://github.com/Nexus-Mods/NexusMods.App/issues/1396
-        Thread.Sleep(1000);
-        
         // Step 1: Revert the managed games to their original state
         var db = conn.Db;
         var managedInstallations = Loadout.All(db)
@@ -50,7 +47,7 @@ internal static class CleanupVerbs
             try
             {
                 var synchronizer = installation.GetGame().Synchronizer;
-                await synchronizer.UnManage(installation);
+                await synchronizer.UnManage(installation, false);
                 await renderer.Text($"Reverted {installation.Game.Name} to its original state");
             }
             catch (Exception ex)
@@ -90,8 +87,14 @@ internal static class CleanupVerbs
                 // switching backends out. At that point you'd add others here too.
                 JsonStorageBackend.GetConfigsFolderPath(fileSystem),
 
-                // The whole base DataModel folder.
-                DataModelSettings.GetStandardDataModelFolder(fileSystem)
+                // The DataModel folder.
+                DataModelSettings.GetStandardDataModelFolder(fileSystem),
+
+                // The whole base Download folder.
+                DownloadSettings.GetStandardDownloadsFolder(fileSystem),
+
+                // Local Application Data (where all app files default to).
+                DataModelSettings.GetLocalApplicationDataDirectory(fileSystem),
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
 
             if (fileSystem.OS.IsUnix())
@@ -131,8 +134,9 @@ internal static class CleanupVerbs
         var scriptPath = Path.Combine(AppContext.BaseDirectory, "uninstall-helper.ps1");
 
         // Execute the PowerShell script
+        var args = $"-ExecutionPolicy Bypass -Command \"& \'{scriptPath}\' -FilesToDeletePath \'{filesToDeletePath}\' -DirectoriesToDeletePath \'{directoriesToDeletePath}\'\"";
         await Cli.Wrap("powershell")
-            .WithArguments($"-ExecutionPolicy Bypass -Command \"& \"{scriptPath}\" -FilesToDeletePath \"{filesToDeletePath}\" -DirectoriesToDeletePath \"{directoriesToDeletePath}\"\"")
+            .WithArguments(args)
             .ExecuteAsync();
 
         // Clean up the temporary files
