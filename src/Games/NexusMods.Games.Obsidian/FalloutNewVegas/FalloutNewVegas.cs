@@ -65,7 +65,7 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public IEnumerable<uint> SteamIds => new List<uint> { 22380u };
     public IEnumerable<long> GogIds => new List<long> { 1207658921 }; //todo need correct ID. I don't own this.
-    public IEnumerable<string> XboxIds => new List<string> { "9P4P6BZQ9V6M" }; //todo need correct ID
+    public IEnumerable<string> XboxIds => new List<string> { "BethesdaSoftworks.FalloutNewVegas" };
     public IEnumerable<string> EpicCatalogItemId => new List<string> { "dabb52e328834da7bbe99691e374cb84" };
     #endregion
 
