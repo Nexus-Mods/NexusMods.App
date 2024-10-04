@@ -53,6 +53,7 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
         return store.ToString() switch
         {
             "Epic Games Store" => new GamePath(LocationId.Game, "/Fallout New Vegas English/FalloutNV.exe"), // todo going to need this to handle the language... somehow?
+            "Xbox Game Pass" => new GamePath(LocationId.Game, "/Fallout New Vegas English/FalloutNV.exe"), // todo going to need this to handle the language... somehow?
             _ => new GamePath(LocationId.Game, "FalloutNV.exe"),
         };
     }
