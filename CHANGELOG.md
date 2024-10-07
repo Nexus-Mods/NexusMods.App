@@ -22,7 +22,6 @@ In this build we've made further updates to the process of downloading and insta
 ![The new collections tile available from the "Collections WIP" tab of this update.](./docs/changelog-assets/137c2b5645e0cedcf1c31f2ac0e8eb1e.webp)
 
 The changes we've made include:
-- Added a new "Download" page for a collection listing required mods.<!-- Not in this build!?!-->
 - Updated the card design for collections (Above).
 - Added support for FOMOD presets and binary patching during install.
 
