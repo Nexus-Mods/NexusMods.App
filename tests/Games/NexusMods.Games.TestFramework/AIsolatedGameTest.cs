@@ -99,8 +99,15 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
-
-
+    
+    public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
+    {
+        var libraryFile = await LibraryService.AddLocalFile(file);
+        if (!libraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The library file should be an archive.");
+        return archive;
+    }
+    
     public record ConfigOptionsRecord
     {
         public bool RegisterNullGuidedInstaller { get; set; } = true;

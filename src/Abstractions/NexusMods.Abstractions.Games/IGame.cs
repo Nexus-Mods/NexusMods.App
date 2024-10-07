@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -34,6 +35,12 @@ public interface IGame : ILocatableGame
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
     
+    /*
+    /// <summary>
+    /// Get all the sortable item providers for the given loadout.
+    /// </summary>
+    public ISortableItemProvider[] Provider(LoadoutId loadoutId);
+    */
     /// <summary>
     /// The synchronizer for this game.
     /// </summary>

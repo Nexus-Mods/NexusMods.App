@@ -7,6 +7,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -118,6 +119,7 @@ public class RedModInstaller : ALibraryArchiveInstaller
             {
                 LoadoutItemGroup = groupItem,
                 RedModInfoFileId = redModInfoFile.Id,
+                SortIndex = SortableItemsHelper.NextSortIndex(loadout),
             };
         }
 
