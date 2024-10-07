@@ -1,0 +1,35 @@
+using JetBrains.Annotations;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Generators.Diagnostics;
+
+
+namespace NexusMods.Games.Larian.BaldursGate3;
+
+internal static partial class Diagnostics
+{
+    private const string Source = "NexusMods.Games.Larian.BaldursGate3";
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 1))
+        .WithTitle("Missing required dependency")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {PakMod} is missing required dependency '{MissingDependencyModName}'.")
+        .WithDetails("""
+                     '{MissingDependencyModName}' is a required by {PakModuleName} but is not present in the loadout.
+                     
+                     You can try to look the missing mod on {NexusModsLink} or using the in-game mod manager.
+                     """)
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<LoadoutItemGroupReference>("PakMod")
+            .AddValue<string>("MissingDependencyModName")
+            .AddValue<string>("PakModuleName")
+            .AddValue<NamedLink>("NexusModsLink")
+        )
+        .Finish();
+    
+}
