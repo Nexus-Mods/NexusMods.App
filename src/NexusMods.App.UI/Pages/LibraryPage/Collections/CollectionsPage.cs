@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -32,8 +31,11 @@ public class CollectionsPageFactory : APageFactory<ICollectionsViewModel, Collec
 
     public override ICollectionsViewModel CreateViewModel(CollectionsPageContext context)
     {
-        var vm = new CollectionsViewModel(ServiceProvider.GetRequiredService<IConnection>(),
-            ServiceProvider.GetRequiredService<IWindowManager>());
+        var vm = new CollectionsViewModel(
+            ServiceProvider,
+            ServiceProvider.GetRequiredService<IConnection>(),
+            ServiceProvider.GetRequiredService<IWindowManager>()
+        );
         return vm;
     }
 

@@ -86,6 +86,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
@@ -94,6 +97,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
+        <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
     </ItemGroup>
 
     <ItemGroup>

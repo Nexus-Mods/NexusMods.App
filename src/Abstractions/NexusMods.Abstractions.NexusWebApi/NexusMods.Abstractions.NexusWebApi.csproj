@@ -12,4 +12,8 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Types\V2\" />
+    </ItemGroup>
 </Project>

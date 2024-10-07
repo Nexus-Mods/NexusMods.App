@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Collections.Json;

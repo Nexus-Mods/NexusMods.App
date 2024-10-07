@@ -13,6 +13,8 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -206,8 +208,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     private async Task<ModInstructions> EnsureNexusModDownloaded(Mod mod)
     {
         var db = Connection.Db;
-        var file = NexusModsFileMetadata.FindByFileId(db, mod.Source.FileId)
-            .Where(f => f.ModPage.ModId == mod.Source.ModId)
+        var uid = new UidForFile(mod.Source.FileId, GameId.FromGameDomain(mod.DomainName));
+        var file = NexusModsFileMetadata.FindByUid(db, uid)
+            .Where(f => f.ModPage.Uid.ModId == mod.Source.ModId)
             .FirstOrOptional(f => f.LibraryFiles.Any());
 
         if (file.HasValue)
