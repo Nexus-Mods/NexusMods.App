@@ -110,10 +110,13 @@
                             <controls:CustomButton Type="Primary" Text="Primary" IsEnabled="False" VisibleIcon="Left" />
                             <controls:CustomButton Type="Primary" VisibleIcon="Right" />
                             <controls:CustomButton Type="Primary" VisibleIcon="Both" />
-                            <controls:CustomButton Type="Primary"  VisibleIcon="Both" ShowLabel="False"/>
-                            <controls:CustomButton Type="Primary"  VisibleIcon="Left" ShowLabel="False"/>
-                            <controls:CustomButton Type="Primary"  VisibleIcon="Left" ShowLabel="False"/>
                         </StackPanel>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton IsEnabled="True" Type="Primary" Fill="Weak" />
+                        <controls:CustomButton IsEnabled="False" Type="Primary" Fill="Weak" />
                     </StackPanel>
                     
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
@@ -123,9 +126,13 @@
                             <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Left" />
                             <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Right" />
                             <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Both" />
-                            <controls:CustomButton Type="Primary"  Size="Small" VisibleIcon="Both" ShowLabel="False"/>
-                            <controls:CustomButton Type="Primary"  Size="Small" VisibleIcon="Left" ShowLabel="False"/>
-                        </StackPanel>
+                        </StackPanel>  
+                    </StackPanel>
+                                      
+                    <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
+                        <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
+                        <controls:CustomButton IsEnabled="True" Type="Primary"  Size="Small" Fill="Weak" VisibleIcon="Right" />
+                        <controls:CustomButton IsEnabled="False" Type="Primary" Size="Small"  Fill="Weak" VisibleIcon="Right" />
                     </StackPanel>
                 </Grid>
                 
@@ -356,6 +363,25 @@
             </Style>
 
             <Style Selector="^:disabled">
+            </Style>
+            
+            <!-- fill variants -->
+            
+            <Style Selector="^:fill-weak">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource InfoModerateBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+            
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource InfoStrongBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource InfoSubduedBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+                </Style>
             </Style>
         </Style>
         
