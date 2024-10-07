@@ -9,12 +9,11 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
 public class RedModSortableItemProvider : ISortableItemProvider
 {
-    private readonly IConnection _conn;
-
-
-    public RedModSortableItemProvider(IConnection conn)
+    protected readonly IConnection Connection;
+    
+    public RedModSortableItemProvider(IConnection connection)
     {
-        _conn = conn;
+        Connection = connection;
     }
 
     public IEnumerable<ISortableItem> GetItems(Loadout.ReadOnly loadout)
@@ -49,7 +48,7 @@ public class RedModSortableItemProvider : ISortableItemProvider
         groups.RemoveAt((int)currentIndex);
         groups.Insert((int)newIndex, (group.SortIndex, group.Id));
         
-        using var tx = _conn.BeginTransaction();
+        using var tx = Connection.BeginTransaction();
         
         foreach (var (g, idx) in groups.Select((g, idx) => (g, idx)))
         {
