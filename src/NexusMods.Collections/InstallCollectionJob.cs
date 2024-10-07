@@ -214,7 +214,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         // If we have any binary patching to do, then we'll do that now.
         if (file.Mod.Patches.Any()) 
-            await CreatePatches(file.Mod, archive, collectionArchive, hashes);
+            await PatchFiles(file.Mod, archive, collectionArchive, hashes);
         
         using var tx = Connection.BeginTransaction();
         
@@ -269,7 +269,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// <summary>
     /// This will go through and generate all the patch files for the given archive based on the mod's patches.
     /// </summary>
-    private async Task CreatePatches(Mod modInfo, LibraryArchive.ReadOnly modArchive, LibraryArchive.ReadOnly collectionArchive, 
+    private async Task PatchFiles(Mod modInfo, LibraryArchive.ReadOnly modArchive, LibraryArchive.ReadOnly collectionArchive, 
         ConcurrentDictionary<Md5HashValue, HashMapping> hashes)
     {
         // Index all the files in the collection zip file and the mod archive by their paths so we can find them easily.

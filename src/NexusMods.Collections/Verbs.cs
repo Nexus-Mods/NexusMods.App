@@ -20,8 +20,10 @@ internal static class Verbs
 {
     internal static IServiceCollection AddCollectionVerbs(this IServiceCollection collection) =>
         collection
-            .AddVerb(() => InstallCollection)
-            .AddVerb(() => GatherCollectionDefinitions);
+#if DEBUG
+            .AddVerb(() => GatherCollectionDefinitions)
+#endif
+            .AddVerb(() => InstallCollection);
 
 
     [Verb("install-collection", "Installs a collection into the given loadout")]
@@ -49,6 +51,11 @@ internal static class Verbs
         return 0;
     }
     
+    /// <summary>
+    /// This verb is only available in DEBUG builds, and is used to get large numbers of collection.json files. The code exists here incase we need
+    /// this behavior again in the future. Disabled in release builds to prevent people from running it without knowing what it does. 
+    /// </summary>
+    /// <returns></returns>
     [Verb("gather-collection-definitions", "Downloads all the collection definitions for a given game, and extracts them to a folder")]
     private static async Task<int> GatherCollectionDefinitions([Injected] IRenderer renderer,
         [Option("g", "game", "Game to gather collection definitions for")] IGame game,
