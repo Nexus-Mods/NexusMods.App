@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
@@ -61,11 +62,10 @@ public class ImageLoaderTests : AUiTest
                 height: 80
             ))
             .Encode(encoderType: EncoderType.Qoi)
-            .Persist(
+            .PersistInDb(
                 connection: Connection,
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
-                identifierToHash: static tuple => tuple.Item2.ToString().XxHash64AsUtf8(),
-                identifierToEntityId: static tuple => tuple.Item1,
+                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
                 partitionId: PartitionId.User(partitionId)
             )
             .Decode(decoderType: DecoderType.Qoi)

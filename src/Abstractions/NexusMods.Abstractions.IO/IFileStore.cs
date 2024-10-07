@@ -45,6 +45,12 @@ public interface IFileStore
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
 
     /// <summary>
+    /// Similar to <see cref="BackupFiles(System.Collections.Generic.IEnumerable{NexusMods.Abstractions.IO.ArchivedFileEntry},bool,System.Threading.CancellationToken)"/>
+    /// except the same archive is used.
+    /// </summary>
+    Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
     /// the extractor needs more direct access (such as memory mapping).
     /// </summary>

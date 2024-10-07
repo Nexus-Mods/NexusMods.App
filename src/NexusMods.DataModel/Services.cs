@@ -119,7 +119,7 @@ public static class Services
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
 
-        coll.AddPersistedResourceModel();
+        coll.AddPersistedDbResourceModel();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

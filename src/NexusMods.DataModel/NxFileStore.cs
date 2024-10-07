@@ -112,6 +112,13 @@ public class NxFileStore : IFileStore
         await UpdateIndexes(unpacker, finalPath);
     }
 
+    /// <inheritdoc />
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
+    {
+        // TODO: implement with repacking
+        return BackupFiles(files, deduplicate: true, cancellationToken);
+    }
+
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
         using var lck = _lock.ReadLock();

@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
+using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -46,14 +47,24 @@ public partial class CollectionMetadata : IModelDefinition
     /// The number of endorsements the collection has.
     /// </summary>
     public static readonly ULongAttribute Endorsements = new(Namespace, nameof(Endorsements));
-    
+
     /// <summary>
-    /// The collections' image.
+    /// The tile image uri.
     /// </summary>
-    public static readonly MemoryAttribute TileImage = new(Namespace, nameof(TileImage));
-    
+    public static readonly UriAttribute TileImageUri = new(Namespace, nameof(TileImageUri)) { IsOptional = true };
+
     /// <summary>
-    /// The collections' image.
+    /// The background image uri.
     /// </summary>
-    public static readonly MemoryAttribute BackgroundImage = new(Namespace, nameof(BackgroundImage));
+    public static readonly UriAttribute BackgroundImageUri = new(Namespace, nameof(BackgroundImageUri)) { IsOptional = true };
+
+    /// <summary>
+    /// The tile image resource.
+    /// </summary>
+    public static readonly ReferenceAttribute<PersistedDbResource> TileImageResource = new(Namespace, nameof(TileImageResource)) { IsOptional = true };
+
+    /// <summary>
+    /// The background image resource.
+    /// </summary>
+    public static readonly ReferenceAttribute<PersistedDbResource> BackgroundImageResource = new(Namespace, nameof(BackgroundImageResource)) { IsOptional = true };
 }
