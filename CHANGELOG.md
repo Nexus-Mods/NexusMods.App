@@ -1,8 +1,43 @@
 # Changelog
 
-## [v0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-24
+## [v0.6.2](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.2) - 2024-10-XX
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
+
+This release adds initial support for Baldur's Gate 3, add support for Epic and GOG games installed through the Heroic Launcher on Linux and further develops the Collections feature.
+
+**Important: If you are installing the app outside of the default location (Local App Data), the uninstallers for all previous versions may not work correctly. To manually reset your install follow the guide [here](https://nexus-mods.github.io/NexusMods.App/users/Uninstall/#manual-uninstall-fallback).**
+
+### Baldur's Gate 3 
+This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, most common mod types will be installed correctly. Installations of BG3 on Steam and GOG can be detected on both Windows and Linux. 
+
+In future iterations will be will adding diagnostic messages and load order support. 
+
+### Heroic Launcher
+Linux users can now manage GOG games installed or imported using the [Heroic Launcher](https://heroicgameslauncher.com/) ([#2103](https://github.com/Nexus-Mods/NexusMods.App/pull/2103)). Due to technical limitations, we've disabled REDmod deployment for Cyberpunk 2077 using Heroic, but it's possible to have the launcher run this process when starting the game. [More Info.](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/#automated-deployment-for-redmods)
+
+### Collections
+In this build we've made further updates to the process of downloading and installing collections. The feature does not have parity with Vortex yet so cannot be used to install a collection fully. 
+
+![The new collections tile available from the "Collections WIP" tab of this update.](./docs/changelog-assets/137c2b5645e0cedcf1c31f2ac0e8eb1e.webp)
+
+The changes we've made include:
+- Added a new "Download" page for a collection listing required mods.<!-- Not in this build!?!-->
+- Updated the card design for collections (Above).
+- Added support for FOMOD presets and binary patching during install.
+
+### Updating Mods
+We're starting work on showing when a mod has an update in the app. The backend to enable this feature is mostly complete and we will be adding the UI elements to support it in an upcoming release. 
+
+### Bugfixes
+- The app will now uninstall correctly when installed outside of the default directory on Windows. 
+
+### External Contributors
+- [@MistaOmega](https://github.com/MistaOmega): [#2119](https://github.com/Nexus-Mods/NexusMods.App/pull/2119)
+
+## [v0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-24
+
+**Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)**
 
 This release adds a very basic implementation of downloading Collections, updates the UI to the new tree view and includes some enhancements when interacting with Windows applications via Linux. 
 
@@ -101,7 +136,7 @@ Please be aware that these pages are unfinished and are not stable enough to ful
 
 ### Technical Changes
 - Downloading files now uses a new "Jobs" system to make them easier to manage. 
-- We are continuing our backend work to convert from "Mods" to "Loadout items". [More Info](https://forums.nexusmods.com/topic/13495763-nexus-mods-app-1-august-progress-update/)
+- We are continuing our backend work to convert from "Mods" to "Loadout items". [More Info.](https://forums.nexusmods.com/topic/13495763-nexus-mods-app-1-august-progress-update/)
 - The synchronizer for handling loadout states has been reworked to provide much more robust coverage of edge cases.
 - Added generic support for path-based diagnostic checks when checking for missing dependencies. 
 
@@ -248,7 +283,7 @@ One notable change that the new data model brought to the App is reified deletes
 - Logging to the console can be now enabled in the settings, it's disabled by default ([#1351](https://github.com/Nexus-Mods/NexusMods.App/pull/1351)).
 - A console window will no longer appear on Windows when starting the App ([#1410](https://github.com/Nexus-Mods/NexusMods.App/pull/1410)).
 - Package maintainers can choose to disable the bundled 7z binary ([#1308](https://github.com/Nexus-Mods/NexusMods.App/pull/1308)).
-- Loadouts can be removed and games can be unmanaged ([#1259](https://github.com/Nexus-Mods/NexusMods.App/pull/1259), [#1279](https://github.com/Nexus-Mods/NexusMods.App/pull/1279)).
+- Loadouts can be removed and games can be un-managed ([#1259](https://github.com/Nexus-Mods/NexusMods.App/pull/1259), [#1279](https://github.com/Nexus-Mods/NexusMods.App/pull/1279)).
 - Added an uninstaller ([#1383](https://github.com/Nexus-Mods/NexusMods.App/pull/1383)).
 
 ### Fixes
@@ -291,7 +326,7 @@ This also includes our first "suggestion" diagnostic. This diagnostic will only 
 - Fixed icons clipping in the left menu ([#1165](https://github.com/Nexus-Mods/NexusMods.App/issues/1165), [#1169](https://github.com/Nexus-Mods/NexusMods.App/pull/1169)).
 - Windows: Fixed Stardew Valley not launching with a console ([#1135](https://github.com/Nexus-Mods/NexusMods.App/issues/1135), [#1205](https://github.com/Nexus-Mods/NexusMods.App/pull/1205)).
 - Linux: Fixed NXM protocol registration when using an AppImage ([#1149](https://github.com/Nexus-Mods/NexusMods.App/issues/1149), [#1150](https://github.com/Nexus-Mods/NexusMods.App/issues/1150)).
-- Linux: Fixed whitespaces in desktop entry files ([#1150](https://github.com/Nexus-Mods/NexusMods.App/issues/1150), [#1152](https://github.com/Nexus-Mods/NexusMods.App/pull/1152)).
+- Linux: Fixed whitespace in desktop entry files ([#1150](https://github.com/Nexus-Mods/NexusMods.App/issues/1150), [#1152](https://github.com/Nexus-Mods/NexusMods.App/pull/1152)).
 - Linux: Fixed various issues related to launching the game through Steam ([#1206](https://github.com/Nexus-Mods/NexusMods.App/pull/1206), [#1151](https://github.com/Nexus-Mods/NexusMods.App/issues/1151)).
 
 ### External Contributors
