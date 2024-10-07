@@ -75,7 +75,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
                 new InstallFolderTarget
                 {
                     DestinationGamePath = new GamePath(LocationId.From("Mods"), ""),
-                    KnownValidFileExtensions = [new Extension(".pak")],
+                    KnownValidFileExtensions = [Bg3Constants.PakFileExtension],
                     FileExtensionsToDiscard =
                     [
                         KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,

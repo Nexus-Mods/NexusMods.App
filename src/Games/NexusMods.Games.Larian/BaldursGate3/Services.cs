@@ -13,7 +13,8 @@ public static class Services
         services
             .AddGame<BaldursGate3>()
             .AddSingleton<ITool, BG3RunGameTool>()
-            .AddSettings<BaldursGate3Settings>();
+            .AddSettings<BaldursGate3Settings>()
+            .AddPipelines();
 
         return services;
     }

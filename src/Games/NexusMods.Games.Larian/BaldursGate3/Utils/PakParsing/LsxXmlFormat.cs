@@ -4,6 +4,18 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
 public static class LsxXmlFormat
 {
+    
+    
+    /// <summary>
+    /// Pak metadata, containing the module short description and its dependencies.
+    /// </summary>
+    public struct MetaFileData
+    {
+        public ModuleShortDesc ModuleShortDesc;
+        public ModuleShortDesc[] Dependencies;
+    }
+    
+    
     /// <summary>
     /// Pak module short description.
     /// </summary>
@@ -51,18 +63,7 @@ public static class LsxXmlFormat
         }
     }
 
-    
 
-    /// <summary>
-    /// Pak metadata, containing the module short description and its dependencies.
-    /// </summary>
-    public struct MetaFileData
-    {
-        public ModuleShortDesc ModuleShortDesc;
-        public ModuleShortDesc[] Dependencies;
-    }
-  
-    
     /// <summary>
     /// Collection of modules that should be ignored when parsing dependencies.
     /// These are mostly vanilla pak files, so not relevant for dependencies between mods. 
