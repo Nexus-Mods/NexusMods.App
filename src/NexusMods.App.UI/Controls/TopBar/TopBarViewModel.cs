@@ -42,6 +42,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
@@ -136,6 +137,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var uri = new Uri("https://users.nexusmods.com");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = new Uri("https://users.nexusmods.com/account/billing/premium?pk_campaign=NexusModsApp");
             await osInterop.OpenUrl(uri);
         });
 
