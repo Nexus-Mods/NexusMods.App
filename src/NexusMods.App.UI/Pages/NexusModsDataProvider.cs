@@ -29,7 +29,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
-        return NexusModsLibraryFile
+        return NexusModsLibraryItem
             .ObserveAll(_connection)
             // only show library files for the currently selected game
             .FilterOnObservable((file, _) => libraryFilter.GameObservable.Select(game => file.ModPageMetadata.GameDomain.Equals(game.Domain)))
@@ -47,13 +47,13 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .FilterOnObservable((modPage, _) => libraryFilter.GameObservable.Select(game => modPage.GameDomain.Equals(game.Domain)))
             // only show mod pages that have library files
             .FilterOnObservable((_, e) => _connection
-                .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, e)
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, e)
                 .IsNotEmpty()
             )
             .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
     }
 
-    private LibraryItemModel ToLibraryItemModel(NexusModsLibraryFile.ReadOnly nexusModsLibraryFile, LibraryFilter libraryFilter)
+    private LibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryFile, LibraryFilter libraryFilter)
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryFile.Id, libraryFilter);
 
@@ -64,9 +64,8 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         };
 
         model.CreatedAtDate.Value = nexusModsLibraryFile.GetCreatedAt();
-        model.ItemSize.Value = nexusModsLibraryFile.AsDownloadedFile().AsLibraryFile().Size.ToString();
         model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
-
+        model.ItemSize.Value = nexusModsLibraryFile.FileMetadata.Size.ToString();
         return model;
     }
 
@@ -75,7 +74,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         // TODO: dispose
         var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
         var disposable = _connection
-            .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageMetadata.Id)
+            .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPageMetadata.Id)
             .AsEntityIds()
             .Adapt(new SourceCacheAdapter<Datom, EntityId>(cache))
             .SubscribeWithErrorLogging();
@@ -83,7 +82,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var hasChildrenObservable = cache.Connect().IsNotEmpty();
         var childrenObservable = cache.Connect().Transform((_, e) =>
         {
-            var libraryFile = NexusModsLibraryFile.Load(_connection.Db, e);
+            var libraryFile = NexusModsLibraryItem.Load(_connection.Db, e);
             return ToLibraryItemModel(libraryFile, libraryFilter);
         });
 
@@ -94,7 +93,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = cache.Connect()
-            .Transform((_, e) => NexusModsLibraryFile.Load(_connection.Db, e).AsDownloadedFile().AsLibraryFile().AsLibraryItem());
+            .Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e).AsLibraryItem());
 
         var numInstalledObservable = cache.Connect().TransformOnObservable((_, e) => _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
@@ -104,14 +103,13 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        return new NexusModsModPageLibraryItemModel
+        return new NexusModsModPageLibraryItemModel(libraryFilesObservable)
         {
             Name = modPageMetadata.Name,
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             NumInstalledObservable = numInstalledObservable,
-            LibraryItemsObservable = libraryFilesObservable,
         };
     }
 
@@ -123,7 +121,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             .FilterOnObservable((_, modPageEntityId) => _connection
-                .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPageEntityId)
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPageEntityId)
                 .FilterOnObservable((d, _) => _connection
                     .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E)
                     .AsEntityIds()
@@ -136,7 +134,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 // TODO: dispose
                 var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
                 var disposable = _connection
-                    .ObserveDatoms(NexusModsLibraryFile.ModPageMetadataId, modPage.Id).AsEntityIds()
+                    .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id).AsEntityIds()
                     .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
                     // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
                     .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
@@ -181,11 +179,10 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
                 {
                     NameObservable = Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
-                    LoadoutItemIdsObservable = loadoutItemIdsObservable,
                     IsEnabledObservable = isEnabledObservable,
 
                     HasChildrenObservable = hasChildrenObservable,

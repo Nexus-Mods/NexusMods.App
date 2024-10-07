@@ -31,6 +31,7 @@
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml"/>

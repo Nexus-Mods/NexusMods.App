@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
@@ -57,7 +56,7 @@ public class ModInstallDestinationTests
     static readonly InstallFolderTarget GameRootInstallFolderTarget = new()
     {
         DestinationGamePath = new GamePath(LocationId.Game, RelativePath.Empty),
-        KnownValidSubfolders = new[] { "data"  },
-        SubTargets = new[] { DataInstallFolderTarget }
+        Names = [ "data" ],
+        SubTargets = [DataInstallFolderTarget]
     };
 }

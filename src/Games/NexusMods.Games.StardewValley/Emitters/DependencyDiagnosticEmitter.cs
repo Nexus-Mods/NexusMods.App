@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -19,21 +19,21 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly ILogger<DependencyDiagnosticEmitter> _logger;
-    private readonly IFileStore _fileStore;
+    private readonly ILogger _logger;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     public DependencyDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<DependencyDiagnosticEmitter> logger,
-        IFileStore fileStore,
         ISMAPIWebApi smapiWebApi,
         IOSInformation os)
     {
         _logger = logger;
-        _fileStore = fileStore;
         _smapiWebApi = smapiWebApi;
         _os = os;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var loadoutItemIdToManifest = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: false, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: false, cancellationToken)
             .ToDictionaryAsync(tuple => tuple.Item1.SMAPIModLoadoutItemId, tuple => tuple.Item2, cancellationToken);
 
         var uniqueIdToLoadoutItemId = loadoutItemIdToManifest
