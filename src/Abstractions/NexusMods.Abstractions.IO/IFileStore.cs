@@ -77,16 +77,9 @@ public interface IFileStore
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
 
     /// <summary>
-    /// Completely loads the file into memory
+    /// Load the given file into memory, 
     /// </summary>
-    async Task<Memory<byte>> Load(Hash hash, CancellationToken token = default)
-    {
-        await using var stream = await GetFileStream(hash, token);
-        var memory = new Memory<byte>(GC.AllocateUninitializedArray<byte>((int)stream.Length));
-        await stream.ReadExactlyAsync(memory, token);
-        return memory;
-        
-    }
+    Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
     /// <summary>
     /// Retrieves hashes of all files associated with this FileStore.

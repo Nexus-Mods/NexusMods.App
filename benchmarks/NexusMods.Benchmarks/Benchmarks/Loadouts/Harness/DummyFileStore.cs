@@ -36,6 +36,11 @@ public class DummyFileStore : IFileStore
         return null!;
     }
 
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        return Task.FromResult(Array.Empty<byte>());
+    }
+
     public HashSet<ulong> GetFileHashes()
     {
         return [];
