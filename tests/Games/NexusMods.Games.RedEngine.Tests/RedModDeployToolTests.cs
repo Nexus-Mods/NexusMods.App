@@ -8,10 +8,53 @@ using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-public class RedModDeployToolTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<Cyberpunk2077Game>(helper)
+public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Game>
 {
+    private readonly RedModDeployTool _tool;
+
+    public RedModDeployToolTests(ITestOutputHelper helper) : base(helper)
+    {
+        _tool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
+    }
+    
     [Fact]
     public async Task LoadorderFileIsWrittenCorrectly()
+    {
+        var loadout = await SetupLoadout();
+        await Verify(await WriteLoadoutFile(loadout));
+    }
+    
+    [Theory]
+    [InlineData("Driver_Shotguns", 3)]
+    [InlineData("Driver_Shotguns", -3)]
+    [InlineData("Driver_Shotguns", 11)]
+    [InlineData("maestros_of_synth_body_heat_radio", -1)]
+    [InlineData("maestros_of_synth_body_heat_radio", 10)]
+    [InlineData("maestros_of_synth_the_dirge", -11)]
+    public async Task MovingModsRelativelyResultsInCorrectOrdering(string name, int delta)
+    {
+        var loadout = await SetupLoadout();
+        
+        var provider = ServiceProvider.GetRequiredService<RedModSortableItemProvider>();
+        var groups = provider.GetItems(loadout);
+        var specificGroup = groups.OfType<RedModSortableItem>().Single(g => g.Name == name);
+        
+        await specificGroup.SetRelativePosition(delta);
+
+        loadout = loadout.Rebase();
+        await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
+    }
+
+
+    private async Task<string> WriteLoadoutFile(Loadout.ReadOnly loadout)
+    {
+        await using var tempFile = TemporaryFileManager.CreateFile();
+        loadout = loadout.Rebase();
+        await _tool.WriteLoadorderFile(tempFile.Path, loadout);
+        return await tempFile.Path.ReadAllTextAsync();
+    }
+
+    private async Task<Loadout.ReadOnly> SetupLoadout()
     {
         var loadout = await CreateLoadout();
         var files = new[] { "one_mod.7z", "several_red_mods.7z" };
@@ -22,15 +65,10 @@ public class RedModDeployToolTests(ITestOutputHelper helper) : ACyberpunkIsolate
             var libraryArchive = await RegisterLocalArchive(fullPath);
             await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
-
-        await using var tempFile = TemporaryFileManager.CreateFile();
-        var deployTool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
+        
         loadout = loadout.Rebase();
-        await deployTool.WriteLoadorderFile(tempFile.Path, loadout);
-
-
-        await Verify(await tempFile.Path.ReadAllTextAsync());
-
+        return loadout;
     }
-    
+
+
 }

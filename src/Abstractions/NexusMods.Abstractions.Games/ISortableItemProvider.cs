@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -7,5 +8,8 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface ISortableItemProvider
 {
-    public ReadOnlyObservableCollection<ISortableItem> Items { get; }
+    /// <summary>
+    /// Get all the sortable items for the given loadout
+    /// </summary>
+    public IEnumerable<ISortableItem> GetItems(Loadout.ReadOnly loadout);
 }

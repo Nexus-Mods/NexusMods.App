@@ -86,7 +86,7 @@ public class RedModDeployTool : ITool
 
     }
 
-    private static RelativePath RedModFolder(RedModLoadoutGroup.ReadOnly group)
+    internal static RelativePath RedModFolder(RedModLoadoutGroup.ReadOnly group)
     {
         var redModInfoFile = group.RedModInfoFile.AsLoadoutFile().AsLoadoutItemWithTargetPath().TargetPath.Item3;
         return redModInfoFile.Parent;

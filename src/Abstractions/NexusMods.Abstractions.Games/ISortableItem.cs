@@ -27,5 +27,5 @@ public interface ISortableItem
     /// <summary>
     /// Moves the item relative to other items by the sepecified amount
     /// </summary>
-    public void SetRelativePosition(int delta);
+    public Task SetRelativePosition(int delta);
 }

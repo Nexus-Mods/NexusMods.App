@@ -16,6 +16,7 @@ public static class Services
             .AddRedModInfoFileModel()
             .AddSingleton<ITool, RunGameTool<Cyberpunk2077Game>>()
             .AddSingleton<ITool, RedModDeployTool>()
+            .AddSingleton<RedModSortableItemProvider>()
 
             // Diagnostics
             
