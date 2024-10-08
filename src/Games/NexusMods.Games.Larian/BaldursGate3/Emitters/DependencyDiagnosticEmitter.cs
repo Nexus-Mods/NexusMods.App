@@ -25,7 +25,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await Task.Run(()=>  DiagnoseDependenciesAsync(loadout, cancellationToken), cancellationToken);
+        var diagnostics = await DiagnoseDependenciesAsync(loadout, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
