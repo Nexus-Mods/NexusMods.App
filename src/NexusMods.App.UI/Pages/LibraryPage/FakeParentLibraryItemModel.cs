@@ -33,7 +33,7 @@ public class FakeParentLibraryItemModel : LibraryItemModel
             model.NumInstalledObservable
                 .ToObservable()
                 .CombineLatest(
-                    source2: model.LibraryItems.ObserveCountChanged(),
+                    source2: model.LibraryItems.ObserveCountChanged(true),
                     source3: model.WhenAnyValue(static model => model.IsExpanded).ToObservable(),
                     source4: model.IsInstalledInLoadout,
                     static (a,b,c , _) => (a,b,c)
