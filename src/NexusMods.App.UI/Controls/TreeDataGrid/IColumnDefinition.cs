@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
 using JetBrains.Annotations;
 
@@ -48,7 +47,6 @@ public interface IColumnDefinition<TModel, TSelf>
         )
         {
             Id = TSelf.GetColumnId(),
-            SortDirection = ListSortDirection.Ascending,
         };
     }
 }
