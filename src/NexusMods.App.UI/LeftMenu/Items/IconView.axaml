@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="40"
-    d:DesignWidth="184"
+    d:DesignHeight="50"
+    d:DesignWidth="300"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.IconView"
     x:TypeArguments="items:IIconViewModel"
@@ -15,7 +15,7 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <Design.DataContext>
-        <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some long Text" />
+        <items:IconDesignViewModel />
     </Design.DataContext>
 
     <navigation:NavigationControl Classes="LeftMenuItem" 
@@ -40,8 +40,9 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type system:String}">
-                        <Border Width="20" 
-                                Height="20" 
+                        <Border
+                                Padding="6,0"
+                                Height="20"
                                 CornerRadius="{StaticResource Rounded-full}" 
                                 Background="{StaticResource PrimaryModerate}">
                             <TextBlock
@@ -49,7 +50,7 @@
                                 TextAlignment="Center"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Classes="BodySMBold"
+                                Theme="{StaticResource BodySMBoldTheme}"
                                 Foreground="{StaticResource NeutralInverted}"
                                 Text="{CompiledBinding }"/>
                         </Border>

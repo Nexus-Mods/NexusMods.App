@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Library.Installers\NexusMods.Abstractions.Library.Installers.csproj" />

@@ -15,7 +15,7 @@ public static class Services
     public static IServiceCollection AddFomod(this IServiceCollection services)
     {
         services.AddAttributeCollection(typeof(EmptyDirectory));
-        services.AddSingleton<ICoreDelegates, InstallerDelegates>();
+        services.AddTransient<ICoreDelegates, InstallerDelegates>();
         return services;
     }
 }

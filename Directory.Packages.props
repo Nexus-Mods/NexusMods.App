@@ -7,6 +7,7 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.7-beta" />
+    <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.9.1" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
