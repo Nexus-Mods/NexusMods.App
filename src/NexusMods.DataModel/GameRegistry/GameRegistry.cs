@@ -158,7 +158,7 @@ public class GameRegistry : IGameRegistry, IHostedService
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "Exception in loator");
+                        _logger.LogError(e, "Exception in locator");
                         break;
                     }
 
