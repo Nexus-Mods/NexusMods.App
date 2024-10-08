@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <PackageReference Include="K4os.Compression.LZ4" />
-      <PackageReference Include="Newtonsoft.Json" />
       <PackageReference Include="ZstdSharp.Port" />
     </ItemGroup>
 
