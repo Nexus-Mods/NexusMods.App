@@ -36,9 +36,7 @@ public static class Pipelines
             .ThenDo(Unit.Default,
                 static (_, _, resource, _) =>
                 {
-                    using var stream = resource.Data;
-
-                    var metaFileData = PakFileParser.ParsePakMeta(stream);
+                    var metaFileData = PakFileParser.ParsePakMeta(resource.Data);
                     return ValueTask.FromResult(resource.WithData(metaFileData));
                 }
             )
