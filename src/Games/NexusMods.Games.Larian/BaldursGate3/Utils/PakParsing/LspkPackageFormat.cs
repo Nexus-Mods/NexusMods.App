@@ -80,14 +80,9 @@ public static class LspkPackageFormat
         public required byte[] Md5;
     }
 
-    internal interface ILSPKHeader
-    {
-        public HeaderCommon ToCommonHeader();
-    }
-
 #region Internal Header versions
 
-    internal struct LSPKHeader15 : ILSPKHeader
+    internal struct LSPKHeader15
     {
         public UInt32 Version;
         public UInt64 FileListOffset;
@@ -116,7 +111,7 @@ public static class LspkPackageFormat
     /// <summary>
     /// For both v16 and v18
     /// </summary>
-    internal struct LSPKHeader16Or18 : ILSPKHeader
+    internal struct LSPKHeader16Or18
     {
         public UInt32 Version;
         public UInt64 FileListOffset;
