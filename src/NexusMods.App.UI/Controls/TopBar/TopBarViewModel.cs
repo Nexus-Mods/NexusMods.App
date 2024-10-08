@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -130,19 +131,19 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             if (userInfo is null) return;
 
             var userId = userInfo.UserId.Value;
-            var uri = new Uri($"https://nexusmods.com/users/{userId}");
+            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = new Uri("https://users.nexusmods.com");
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = new Uri("https://users.nexusmods.com/account/billing/premium?pk_campaign=NexusModsApp");
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
             await osInterop.OpenUrl(uri);
         });
 
