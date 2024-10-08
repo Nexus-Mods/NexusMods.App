@@ -108,8 +108,16 @@ public record FomodAnalyzerInfo
         async Task DumpItem(string relativePath, byte[] data)
         {
             var finalPath = fomodFolder.Combine(relativePath);
-            fs.CreateDirectory(finalPath.Parent);
-            await fs.WriteAllBytesAsync(finalPath, data);
+            try
+            {
+                fs.CreateDirectory(finalPath.Parent);
+                await fs.WriteAllBytesAsync(finalPath, data);
+            }
+            catch (IOException)
+            {
+                // ignored, this is a pathological case where path is broken 
+            }
+
         }
 
         // Dump Xml
