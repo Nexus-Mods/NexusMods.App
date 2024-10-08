@@ -4,6 +4,7 @@
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.1.0" />
     <PackageVersion Include="Avalonia.Skia" Version="11.1.0" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
+    <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.9.1" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />

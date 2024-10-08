@@ -60,6 +60,17 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
+        return await ExecuteAsync(libraryArchive, loadoutGroup, transaction, loadout, null, cancellationToken);
+    }
+
+    public async ValueTask<InstallerResult> ExecuteAsync(
+        LibraryArchive.ReadOnly libraryArchive,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction transaction,
+        Loadout.ReadOnly loadout,
+        FomodOption[]? options,
+        CancellationToken cancellationToken)
+    {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted FOMODs, this should be good enough
@@ -83,6 +94,14 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         var installerDelegates = _delegates as InstallerDelegates;
         if (installerDelegates is not null)
         {
+            if (options is not null)
+            {
+                // NOTE(halgari) The support for passing in presets to the installer is utterly broken. So we're going to
+                // something different: we will create a new guided installer that will simply emit the user choices based on the
+                // provided options.
+                var installer = new PresetGuidedInstaller(options);
+                installerDelegates.UiDelegates = new UiDelegates(ServiceProvider.GetRequiredService<ILogger<UiDelegates>>(), installer);
+            }
             installerDelegates.UiDelegates.CurrentArchiveFiles = tree;
         }
 
