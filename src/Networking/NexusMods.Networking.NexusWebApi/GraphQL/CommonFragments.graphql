@@ -8,9 +8,11 @@ fragment UserFragment on User {
 fragment ModFileFragment on ModFile {
     name,
     modId,
-    fileId,
     version,
-    sizeInBytes
+    sizeInBytes,
+    date,
+    # This contains fileId and gameId
+    uid
 }
 
 fragment ModFragment on Mod {
@@ -18,7 +20,10 @@ fragment ModFragment on Mod {
     name
     game {
         domainName
+        id
     }
     thumbnailUrl
     pictureUrl
+    updatedAt,
+    uid
 }

@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -15,9 +17,9 @@ public partial class NexusModsFileMetadata : IModelDefinition
     private const string Namespace = "NexusMods.Library.NexusModsFileMetadata";
 
     /// <summary>
-    /// The ID of the file.
+    /// Unique identifier for the file on Nexus Mods.
     /// </summary>
-    public static readonly FileIdAttribute FileId = new(Namespace, nameof(FileId)) { IsIndexed = true };
+    public static readonly UidForFileAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
 
     /// <summary>
     /// The name of the file.
@@ -30,7 +32,12 @@ public partial class NexusModsFileMetadata : IModelDefinition
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
 
     /// <summary>
-    /// The size of the file in bytes, this is optional in the NexusMods API for whatever reason.
+    /// The date the file was uploaded at.
+    /// </summary>
+    public static readonly DateTimeAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
+    
+    /// <summary>
+    /// The size in bytes of the file.
     /// </summary>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
 

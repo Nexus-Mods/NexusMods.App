@@ -1,4 +1,5 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using System.Buffers;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.IO;
@@ -45,6 +46,12 @@ public interface IFileStore
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
 
     /// <summary>
+    /// Similar to <see cref="BackupFiles(System.Collections.Generic.IEnumerable{NexusMods.Abstractions.IO.ArchivedFileEntry},bool,System.Threading.CancellationToken)"/>
+    /// except the same archive is used.
+    /// </summary>
+    Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
     /// the extractor needs more direct access (such as memory mapping).
     /// </summary>
@@ -68,6 +75,11 @@ public interface IFileStore
     /// <param name="token"></param>
     /// <returns></returns>
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
+
+    /// <summary>
+    /// Load the given file into memory, 
+    /// </summary>
+    Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
     /// <summary>
     /// Retrieves hashes of all files associated with this FileStore.

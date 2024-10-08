@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -32,14 +33,16 @@ namespace NexusMods.Games.StardewValley.Emitters;
 /// </summary>
 public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly ILogger<SMAPIModDatabaseCompatibilityDiagnosticEmitter> _logger;
+    private readonly ILogger _logger;
     private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     private static readonly NamedLink DefaultWikiLink = new("SMAPI Wiki", new Uri("https://smapi.io/mods"));
 
     public SMAPIModDatabaseCompatibilityDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<SMAPIModDatabaseCompatibilityDiagnosticEmitter> logger,
         IFileStore fileStore,
         IOSInformation os,
@@ -49,6 +52,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         _fileStore = fileStore;
         _os = os;
         _smapiWebApi = smapiWebApi;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -66,7 +70,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         if (modDatabase is null) yield break;
 
         var smapiMods = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
         var list = new List<(SMAPIModLoadoutItem.ReadOnly smapiMod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();

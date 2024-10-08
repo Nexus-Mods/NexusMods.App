@@ -18,32 +18,24 @@ namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
 public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, ICollectionsViewModel
 {
-    private readonly IConnection _conn;
-
-    public CollectionsViewModel(IConnection conn, IWindowManager windowManager) : base(windowManager)
+    public CollectionsViewModel(
+        IServiceProvider serviceProvider,
+        IConnection conn,
+        IWindowManager windowManager) : base(windowManager)
     {
-        _conn = conn;
+        TabIcon = IconValues.ModLibrary;
+        TabTitle = "Collections (WIP)";
 
         this.WhenActivated(d =>
-            {
-                CollectionMetadata.ObserveAll(conn)
-                    .Transform(coll => (ICollectionCardViewModel)new CollectionCardViewModel(conn, coll.Revisions.First().RevisionId))
-                    .Bind(out _collections)
-                    .Subscribe()
-                    .DisposeWith(d);
-            }
-        );
-    }
-    
-    public IconValue TabIcon { get; } = IconValues.ModLibrary;
-    public string TabTitle { get; } = "Collections (WIP)";
-    public WindowId WindowId { get; set; }
-    public WorkspaceId WorkspaceId { get; set; }
-    public PanelId PanelId { get; set; }
-    public PanelTabId TabId { get; set; }
-    public bool CanClose()
-    {
-        return true;
+        {
+            var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
+
+            CollectionMetadata.ObserveAll(conn)
+                .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(tileImagePipeline, conn, coll.Revisions.First().RevisionId))
+                .Bind(out _collections)
+                .Subscribe()
+                .DisposeWith(d);
+        });
     }
 
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new(new ObservableCollection<ICollectionCardViewModel>());

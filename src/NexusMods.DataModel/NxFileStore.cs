@@ -112,6 +112,13 @@ public class NxFileStore : IFileStore
         await UpdateIndexes(unpacker, finalPath);
     }
 
+    /// <inheritdoc />
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
+    {
+        // TODO: implement with repacking
+        return BackupFiles(files, deduplicate: true, cancellationToken);
+    }
+
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
         using var lck = _lock.ReadLock();
@@ -297,6 +304,31 @@ public class NxFileStore : IFileStore
 
         return Task.FromResult<Stream>(
             new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
+    }
+
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        if (hash == Hash.Zero)
+            throw new ArgumentNullException(nameof(hash));
+        
+        using var lck = _lock.ReadLock();
+        if (!TryGetLocation(_conn.Db, hash, null,
+                out var archivePath, out var entry))
+            throw new Exception($"Missing archive for {hash.ToHex()}");
+        
+        var file = archivePath.Read();
+
+        var provider = new FromStreamProvider(file);
+        var unpacker = new NxUnpacker(provider);
+        
+        var output = new OutputArrayProvider("", entry);
+        
+        unpacker.ExtractFiles([output], new UnpackerSettings()
+        {
+            MaxNumThreads = 1, 
+        });
+        
+        return Task.FromResult(output.Data);
     }
 
     /// <inheritdoc />

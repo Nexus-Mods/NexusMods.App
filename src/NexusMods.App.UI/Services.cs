@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Media;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls.DataGrid;
@@ -56,7 +55,6 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
@@ -88,8 +86,6 @@ public static class Services
 
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
-            .AddSingleton<IImageStore, ImageStore>()
-            .AddMedia()
             .AddTransient<IImageCache, ImageCache>()
 
             // View Models
@@ -211,7 +207,7 @@ public static class Services
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
-            .AddAttributeCollection(typeof(WindowDataAttributes))
+            .AddWindowDataAttributesModel()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
@@ -273,7 +269,8 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
-            .AddFileSystem();
+            .AddFileSystem()
+            .AddImagePipelines();
     }
 
 }
