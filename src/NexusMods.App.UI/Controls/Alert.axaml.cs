@@ -24,6 +24,7 @@ public class Alert : TemplatedControl
     private Button? _closeButton  = null;
     private TextBlock? _titleText  = null;
     private TextBlock? _bodyText  = null;
+    private Border? _bodyTextBorder  = null;
     private Border? _actionsRowBorder  = null;
     
 
@@ -66,19 +67,42 @@ public class Alert : TemplatedControl
         _closeButton = e.NameScope.Find<Button>("CloseButton");
         _titleText = e.NameScope.Find<TextBlock>("TitleText");
         _bodyText = e.NameScope.Find<TextBlock>("BodyText");
+        _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
         _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
         
-        if (_icon == null || _closeButton == null || _titleText == null || _bodyText == null || _actionsRowBorder == null) 
+        if (_icon == null || _closeButton == null || _titleText == null || _bodyText == null || _bodyTextBorder == null || _actionsRowBorder == null) 
             return;
 
         // turn off elements based on properties
         _closeButton.IsVisible = ShowCloseButton;
-        _bodyText.IsVisible = ShowBody;
+        _bodyTextBorder.IsVisible = ShowBody;
         _actionsRowBorder.IsVisible = ShowActions;
         
         // set the text
         _titleText.Text = Title;
         _bodyText.Text = Body;
+        
+        // set icon based on class
+        if (Classes.Contains("Info"))
+        {
+            _icon.Value = IconValues.Info;
+            
+        } else if (Classes.Contains("Success"))
+        {
+            _icon.Value = IconValues.CheckCircleOutline;
+            
+        } else if (Classes.Contains("Warning"))
+        {
+            _icon.Value = IconValues.WarningAmber;
+            
+        } else if (Classes.Contains("Error"))
+        {
+            _icon.Value = IconValues.Warning;
+        }
+        else
+        {
+            _icon.Value = IconValues.Info;
+        }
     }
     
 }

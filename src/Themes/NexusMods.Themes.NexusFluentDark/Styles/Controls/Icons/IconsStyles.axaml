@@ -50,6 +50,8 @@
             <icons:UnifiedIcon Classes="FolderOpenOutline" />
             <icons:UnifiedIcon Classes="File" />
             <icons:UnifiedIcon Classes="Check" />
+            <icons:UnifiedIcon Classes="CheckCircle" />
+            <icons:UnifiedIcon Classes="CheckCircleOutline" />
             <icons:UnifiedIcon Classes="DeleteOutline" />
             <icons:UnifiedIcon Classes="DragHorizontal" />
             <icons:UnifiedIcon Classes="DragVertical" />
@@ -495,5 +497,15 @@
     
     <Style Selector="icons|UnifiedIcon.Info">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Info}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Check">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Check}"/>
+    </Style>
+    <Style Selector="icons|UnifiedIcon.CheckCircle">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CheckCircle}"/>
+    </Style>
+    <Style Selector="icons|UnifiedIcon.CheckCircleOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CheckCircleOutline}"/>
     </Style>
 </Styles>

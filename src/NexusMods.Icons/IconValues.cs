@@ -62,6 +62,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/check-circle/
     public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
     
+    // https://pictogrammers.com/library/mdi/icon/check-circle-outline/
+    public static readonly IconValue CheckCircleOutline = new ProjektankerIcon("mdi-check-circle-outline");
+    
     // https://pictogrammers.com/library/mdi/icon/thumb-up/
     public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
