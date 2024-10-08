@@ -58,13 +58,6 @@ public static class LspkPackageFormat
         Zstd
     };
 
-    public enum LSCompressionLevel
-    {
-        Fast,
-        Default,
-        Max
-    };
-
 #endregion // Enums
 
 #region Header
