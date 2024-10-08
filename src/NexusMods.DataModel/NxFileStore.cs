@@ -323,7 +323,10 @@ public class NxFileStore : IFileStore
         
         var output = new OutputArrayProvider("", entry);
         
-        unpacker.ExtractFiles([output], new UnpackerSettings());
+        unpacker.ExtractFiles([output], new UnpackerSettings()
+        {
+            MaxNumThreads = 1, 
+        });
         
         return Task.FromResult(output.Data);
     }
