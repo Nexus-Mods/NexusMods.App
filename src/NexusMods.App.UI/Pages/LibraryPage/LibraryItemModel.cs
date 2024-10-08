@@ -40,7 +40,6 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
     public ReactiveCommand<Unit, IReadOnlyCollection<LibraryItemId>> InstallCommand { get; }
 
     private readonly LibraryItemId[] _fixedId;
-    private int _activatedCount = 0;
     public virtual IReadOnlyCollection<LibraryItemId> GetLoadoutItemIds() => _fixedId;
 
     private readonly IDisposable _modelActivationDisposable;
@@ -55,14 +54,6 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
-            Interlocked.Increment(ref model._activatedCount);
-            Debug.WriteLine("LibraryItemModel activated with ID: " + model.Name + " (" + model._activatedCount + ")");
-            Disposable.Create(() =>
-                {
-                    Interlocked.Decrement(ref model._activatedCount);
-                    Debug.WriteLine("LibraryItemModel deactivated: " + model.Name + " (" + model._activatedCount + ")");
-                }
-            ).AddTo(disposables);
             
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
@@ -78,7 +69,6 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
                 .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(model, static (count, model) =>
                     {
-                        Debug.WriteLine("Read-side changed with " + count + " changes");
                         if (count > 0)
                         {
                             model.InstallText.Value = "Installed";
@@ -104,12 +94,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             {
                 model._linkedLoadoutItemsDisposable.Disposable = model.LinkedLoadoutItemsObservable
                     .OnUI()
-                    .SubscribeWithErrorLogging(changeSet =>
-                        {
-                            Debug.WriteLine("Write-side changed with " + changeSet.Count + " changes");
-                            model.LinkedLoadoutItems.ApplyChanges(changeSet);
-                        }
-                    );
+                    .SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet));
             }
         });
     }

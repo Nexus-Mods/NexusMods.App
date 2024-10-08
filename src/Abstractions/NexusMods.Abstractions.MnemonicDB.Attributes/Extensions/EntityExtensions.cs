@@ -10,7 +10,6 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 /// </summary>
 public static class EntityExtensions
 {
-    
     /// <summary>
     /// Gets the largest transaction id in the model.
     /// </summary>
@@ -18,7 +17,6 @@ public static class EntityExtensions
     {
         return model.Max(m => m.T);
     }
-
 
     /// <summary>
     /// Gets the timestamp of the transaction that created the model.
@@ -34,7 +32,6 @@ public static class EntityExtensions
         var tx = new Transaction.ReadOnly(model.Db, EntityId.From(model.Min(m => m.T).Value));
         return Transaction.Timestamp.Get(tx);
     }
-    
     
     /// <summary>
     /// Tries to parse an entity id from a hex string.
