@@ -26,6 +26,7 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
             "stardewvalley" => (GameId)1704,
             "cyberpunk2077" => (GameId)3333,
             "baldursgate3" => (GameId)3474,
+            "site" => (GameId)2295,
             _ => throw new ArgumentOutOfRangeException(nameof(domain), domain, null),
         };
     }
@@ -43,6 +44,7 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
             1704 => GameDomain.From("stardewvalley"),
             3333 => GameDomain.From("cyberpunk2077"),
             3474 => GameDomain.From("baldursgate3"),
+            2295 => GameDomain.From("site"),
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
