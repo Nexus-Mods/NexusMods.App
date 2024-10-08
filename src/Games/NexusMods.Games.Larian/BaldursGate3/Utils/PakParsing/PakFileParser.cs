@@ -173,15 +173,22 @@ public static class PakFileParser
     {
         br.BaseStream.Seek((long)fileMeta.OffsetInFile, SeekOrigin.Begin);
 
-        var data = br.ReadBytes((int)fileMeta.SizeOnDisk);
+        var rawData = br.ReadBytes((int)fileMeta.SizeOnDisk);
+
+        if (fileMeta.UncompressedSize == 0)
+        {
+            // No compression
+            return new MemoryStream(rawData);
+        }
+        
         var decompressedBytes = new byte[fileMeta.UncompressedSize];
         
-        var decodedSize = LZ4Codec.Decode(data, 0, data.Length, decompressedBytes, 0, decompressedBytes.Length);
+        var decodedSize = LZ4Codec.Decode(rawData, 0, rawData.Length, decompressedBytes, 0, decompressedBytes.Length);
         if (decodedSize != decompressedBytes.Length)
         {
             throw new InvalidDataException($"Failed to extract {fileMeta.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileMeta.UncompressedSize}.");
         }
-
+            
         return new MemoryStream(decompressedBytes);
     }
 

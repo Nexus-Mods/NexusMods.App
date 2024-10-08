@@ -19,6 +19,7 @@ public class BG3PakParsingTests
     [InlineData("dnd5rbardcollegeofswordshomebr-hu6v.pak")]
     [InlineData("MoreSpellSlotsAndFeats.pak")]
     [InlineData("Waypoint Inside Emerald Grove.pak")]
+    [InlineData("Carry Weight Increased 9000 - X900.pak")]
     public async Task ParsePakMeta_ShouldParseCorrectly(string pakFilePath)
     {
         var fullPath = _fs.GetKnownPath(KnownPath.EntryDirectory).Combine("BaldursGate3/Resources/PakFiles/" + pakFilePath);

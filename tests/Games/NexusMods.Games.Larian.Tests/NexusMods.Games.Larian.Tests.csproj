@@ -20,5 +20,8 @@
     <None Update="BaldursGate3\Resources\PakFiles\malformed.pak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="BaldursGate3\Resources\PakFiles\Carry Weight Increased 9000 - X900.pak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
