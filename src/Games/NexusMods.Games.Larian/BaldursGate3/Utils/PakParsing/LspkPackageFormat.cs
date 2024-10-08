@@ -50,6 +50,21 @@ public static class LspkPackageFormat
         MaxCompress = 0x40,
     };
 
+    public enum CompressionMethod
+    {
+        None,
+        Zlib,
+        LZ4,
+        Zstd
+    };
+
+    public enum LSCompressionLevel
+    {
+        Fast,
+        Default,
+        Max
+    };
+
 #endregion // Enums
 
 #region Header
@@ -226,8 +241,7 @@ public static class LspkPackageFormat
             _ => throw new InvalidOperationException($"Unsupported version {header.Version}"),
         };
     }
-    
-    
+
 #endregion // Internal utility methods
 
 #region Private methods
@@ -244,3 +258,22 @@ public static class LspkPackageFormat
 
 #endregion // Private methods
 }
+
+#region CompressionFlagsExtensions
+
+public static class CompressionFlagExtensions
+{
+    public static LspkPackageFormat.CompressionMethod Method(this LspkPackageFormat.CompressionFlags f)
+    {
+        return (LspkPackageFormat.CompressionFlags)((byte)f & 0x0F) switch
+        {
+            LspkPackageFormat.CompressionFlags.MethodNone => LspkPackageFormat.CompressionMethod.None,
+            LspkPackageFormat.CompressionFlags.MethodZlib => LspkPackageFormat.CompressionMethod.Zlib,
+            LspkPackageFormat.CompressionFlags.MethodLZ4 => LspkPackageFormat.CompressionMethod.LZ4,
+            LspkPackageFormat.CompressionFlags.MethodZstd => LspkPackageFormat.CompressionMethod.Zstd,
+            _ => throw new NotSupportedException($"Unsupported compression method: {(byte)f & 0x0F}")
+        };
+    }
+}
+
+#endregion // CompressionFlagsExtensions
