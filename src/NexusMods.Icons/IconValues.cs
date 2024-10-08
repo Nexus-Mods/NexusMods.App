@@ -126,6 +126,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/bell/
     public static readonly IconValue NotificationImportant = new ProjektankerIcon("mdi-bell");
+    
+    // https://pictogrammers.com/library/mdi/icon/information-outline/
+    public static readonly IconValue Info = new ProjektankerIcon("mdi-information-outline");
 
 #endregion
 
