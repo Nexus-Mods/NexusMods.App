@@ -20,9 +20,9 @@ internal static partial class Diagnostics
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Mod {PakMod} is missing required dependency '{MissingDependencyModName}'.")
         .WithDetails("""
-                     '{MissingDependencyModName}' is a required by {PakModuleName} but is not present in the loadout.
+                     '{MissingDependencyModName}' is a required by '{PakModuleName}' but is not present in the loadout.
                      
-                     You can try to look the missing mod on {NexusModsLink} or using the in-game mod manager.
+                     You can try to search the missing mod on {NexusModsLink} or using the in-game mod manager.
                      """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("PakMod")

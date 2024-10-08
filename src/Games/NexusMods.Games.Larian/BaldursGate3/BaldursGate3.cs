@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -10,6 +11,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.Generic.Installers;
+using NexusMods.Games.Larian.BaldursGate3.Emitters;
 using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -46,7 +48,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            { LocationId.From("Mods"), fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/Mods") },
+            { Bg3Constants.ModsLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/Mods") },
             { LocationId.From("PlayerProfiles"), fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/PlayerProfiles/Public") },
             { LocationId.From("ScriptExtenderConfig"), fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
         };
@@ -74,7 +76,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
                 // - <see href="https://www.nexusmods.com/baldursgate3/mods/11373?tab=description">NPC Visual Overhaul (WIP) - NPC VO</see>
                 new InstallFolderTarget
                 {
-                    DestinationGamePath = new GamePath(LocationId.From("Mods"), ""),
+                    DestinationGamePath = new GamePath(Bg3Constants.ModsLocationId, ""),
                     KnownValidFileExtensions = [Bg3Constants.PakFileExtension],
                     FileExtensionsToDiscard =
                     [
@@ -111,6 +113,11 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     {
         return new BaldursGate3Synchronizer(provider);
     }
+
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
+    ];
 
     // TODO: We are using Icon for both Spine and GameWidget and GameImage is unused. We should use GameImage for the GameWidget, but need to update all the games to have better images.
     public override IStreamFactory Icon =>

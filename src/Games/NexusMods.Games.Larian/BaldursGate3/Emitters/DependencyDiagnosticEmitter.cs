@@ -25,7 +25,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await DiagnoseDependenciesAsync(loadout, cancellationToken);
+        var diagnostics = await Task.Run(()=>  DiagnoseDependenciesAsync(loadout, cancellationToken), cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
@@ -111,7 +111,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             // TODO: Quite inefficient way to find pak files, need to add markers on pak LoadoutFiles and mods containing them
             .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
                 .OfTypeLoadoutFile()
-                .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.Item3.Extension.Equals(Bg3Constants.PakFileExtension))
+                .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.Item2 == Bg3Constants.ModsLocationId &&
+                               file.AsLoadoutItemWithTargetPath().TargetPath.Item3.Extension == Bg3Constants.PakFileExtension
+                )
             )
             .ToArray();
     }
