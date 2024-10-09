@@ -27,8 +27,8 @@ public class StandardButton : Button
     private Border? _border = null;
     
     public static readonly StyledProperty<string?> TextProperty = AvaloniaProperty.Register<StandardButton, string?>(nameof(Text), defaultValue: "Standard Button");
-    public static readonly StyledProperty<IconValue?> LeftIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(LeftIcon), defaultValue: IconValues.ChevronDown);
-    public static readonly StyledProperty<IconValue?> RightIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(RightIcon), defaultValue: IconValues.ChevronUp);
+    public static readonly StyledProperty<IconValue?> LeftIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(LeftIcon), defaultValue: IconValues.Add);
+    public static readonly StyledProperty<IconValue?> RightIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(RightIcon), defaultValue: IconValues.PlayArrow);
     
     public static readonly AttachedProperty<VisibleIcons> VisibleIconProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, VisibleIcons>("VisibleIcon", defaultValue: VisibleIcons.None);
     public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.None);
