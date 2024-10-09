@@ -15,7 +15,7 @@ public class StandardButton : Button
 {
     //protected override Type StyleKeyOverride { get; } = typeof(Button);
 
-    public enum VisibleIcons { None, Left, Right, Both, }
+    public enum ShowIconOptions { None, Left, Right, Both, }
     public enum Sizes { Medium, Small, }
     public enum Types { None, Primary, Secondary, Tertiary, }
     public enum Fills { None, Strong, Weak, }
@@ -30,7 +30,7 @@ public class StandardButton : Button
     public static readonly StyledProperty<IconValue?> LeftIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(LeftIcon), defaultValue: IconValues.Add);
     public static readonly StyledProperty<IconValue?> RightIconProperty = AvaloniaProperty.Register<StandardButton, IconValue?>(nameof(RightIcon), defaultValue: IconValues.PlayArrow);
     
-    public static readonly AttachedProperty<VisibleIcons> VisibleIconProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, VisibleIcons>("VisibleIcon", defaultValue: VisibleIcons.None);
+    public static readonly AttachedProperty<ShowIconOptions> ShowIconProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, ShowIconOptions>("ShowIcon", defaultValue: ShowIconOptions.None);
     public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.None);
     public static readonly AttachedProperty<Sizes> SizeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Sizes>("Size", defaultValue: Sizes.Medium);
     public static readonly AttachedProperty<Fills> FillProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Fills>("Fill", defaultValue: Fills.None);
@@ -42,10 +42,10 @@ public class StandardButton : Button
         set => SetValue(TextProperty, value);
     }
     
-    public VisibleIcons? VisibleIcon
+    public ShowIconOptions? ShowIcon
     {
-        get => GetValue(VisibleIconProperty);
-        set => SetValue(VisibleIconProperty, value);
+        get => GetValue(ShowIconProperty);
+        set => SetValue(ShowIconProperty, value);
     }
     
     public IconValue? LeftIcon
@@ -114,21 +114,21 @@ public class StandardButton : Button
             _border.IsVisible = false;
         }
 
-        switch (VisibleIcon)
+        switch (ShowIcon)
         {
-            case VisibleIcons.None:
+            case ShowIconOptions.None:
                 _leftIcon!.IsVisible = false;
                 _rightIcon!.IsVisible = false;
                 break;
-            case VisibleIcons.Left:
+            case ShowIconOptions.Left:
                 _leftIcon!.IsVisible = true;
                 _rightIcon!.IsVisible = false;
                 break;
-            case VisibleIcons.Right:
+            case ShowIconOptions.Right:
                 _leftIcon!.IsVisible = false;
                 _rightIcon!.IsVisible = true;
                 break;
-            case VisibleIcons.Both:
+            case ShowIconOptions.Both:
                 _leftIcon!.IsVisible = true;
                 _rightIcon!.IsVisible = true;
                 break;

@@ -22,13 +22,13 @@
                             <TextBlock>Test 3</TextBlock>
                         </StackPanel>
                     </controls:StandardButton>
-                    <controls:StandardButton IsEnabled="False" VisibleIcon="Left"
+                    <controls:StandardButton IsEnabled="False" ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                    <controls:StandardButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     <!-- <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
                     <!-- <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
-                    <controls:StandardButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
-                    <controls:StandardButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                    <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                    <controls:StandardButton IsEnabled="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
                 </StackPanel>
 
                 <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
@@ -40,16 +40,16 @@
                     <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton IsEnabled="True" Text="Enabled" VisibleIcon="Left"
+                            <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Check}" />
-                            <controls:StandardButton IsEnabled="False" Text="Disabled" VisibleIcon="Left"
+                            <controls:StandardButton IsEnabled="False" Text="Disabled" ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}" />
-                            <controls:StandardButton VisibleIcon="Both" />
+                            <controls:StandardButton ShowIcon="Both" />
                             <controls:StandardButton />
-                            <controls:StandardButton VisibleIcon="Left" Text="Something" HorizontalAlignment="Stretch"
+                            <controls:StandardButton ShowIcon="Left" Text="Something" HorizontalAlignment="Stretch"
                                                      LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
-                            <controls:StandardButton VisibleIcon="Both" ShowLabel="False" />
-                            <controls:StandardButton VisibleIcon="Left" ShowLabel="False" />
+                            <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
+                            <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
                         </StackPanel>
                     </StackPanel>
 
@@ -59,11 +59,12 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
                             <controls:StandardButton Size="Small" />
-                            <controls:StandardButton Size="Small" VisibleIcon="Left" />
-                            <controls:StandardButton Size="Small" IsEnabled="False" VisibleIcon="Right" />
-                            <controls:StandardButton Size="Small" IsEnabled="False" VisibleIcon="Both" />
-                            <controls:StandardButton Size="Small" VisibleIcon="Both" ShowLabel="False" />
-                            <controls:StandardButton Size="Small" VisibleIcon="Left" ShowLabel="False" />
+                            <controls:StandardButton Size="Small" />
+                            <controls:StandardButton Size="Small" ShowIcon="Both" />
+                            <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Right" />
+                            <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Both" />
+                            <controls:StandardButton Size="Small" ShowIcon="Both" ShowLabel="False" />
+                            <controls:StandardButton Size="Small" ShowIcon="Left" ShowLabel="False" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -79,9 +80,9 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
                             <controls:StandardButton Type="Primary" Text="Primary" />
-                            <controls:StandardButton Type="Primary" Text="Primary" IsEnabled="False" VisibleIcon="Left" />
-                            <controls:StandardButton Type="Primary" VisibleIcon="Right" />
-                            <controls:StandardButton Type="Primary" VisibleIcon="Both" />
+                            <controls:StandardButton Type="Primary" Text="Primary" IsEnabled="False" ShowIcon="Left" />
+                            <controls:StandardButton Type="Primary" ShowIcon="Right" />
+                            <controls:StandardButton Type="Primary" ShowIcon="Both" />
                         </StackPanel>
                     </StackPanel>
 
@@ -95,18 +96,18 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
                             <controls:StandardButton Type="Primary" Size="Small" />
-                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Left" />
-                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Right" />
-                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Both" />
+                            <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Left" />
+                            <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Right" />
+                            <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Both" />
                         </StackPanel>
                     </StackPanel>
 
                     <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
                         <controls:StandardButton IsEnabled="True" Type="Primary" Size="Small" Fill="Weak"
-                                                 VisibleIcon="Right" />
+                                                 ShowIcon="Right" />
                         <controls:StandardButton IsEnabled="False" Type="Primary" Size="Small" Fill="Weak"
-                                                 VisibleIcon="Right" />
+                                                 ShowIcon="Right" />
                     </StackPanel>
                 </Grid>
 
@@ -128,7 +129,7 @@
                     </StackPanel>
                     <StackPanel Grid.Row="7" Grid.Column="0" Spacing="8">
                         <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <controls:StandardButton Type="Secondary" Fill="Strong" Text="Play" VisibleIcon="Left"
+                        <controls:StandardButton Type="Secondary" Fill="Strong" Text="Play" ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
 
@@ -144,10 +145,10 @@
                     </StackPanel>
                     <StackPanel Grid.Row="7" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <controls:StandardButton Type="Secondary" Size="Small" Fill="Strong" VisibleIcon="Left"
+                        <controls:StandardButton Type="Secondary" Size="Small" Fill="Strong" ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Nexus}" />
                         <controls:StandardButton Type="Secondary" IsEnabled="False" Size="Small" Fill="Strong"
-                                                 VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                                                 ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
                 </Grid>
 
@@ -172,13 +173,13 @@
 
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <controls:StandardButton Type="Tertiary" Size="Small" VisibleIcon="Left"
+                        <controls:StandardButton Type="Tertiary" Size="Small" ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <controls:StandardButton Type="Tertiary" Size="Small" Fill="Weak" VisibleIcon="Left"
+                        <controls:StandardButton Type="Tertiary" Size="Small" Fill="Weak" ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
                 </Grid>
