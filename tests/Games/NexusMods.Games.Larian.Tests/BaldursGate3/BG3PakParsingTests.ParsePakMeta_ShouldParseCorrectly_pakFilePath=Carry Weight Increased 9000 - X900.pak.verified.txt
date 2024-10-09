@@ -1,0 +1,9 @@
+﻿ModuleShortDesc:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="Carry Weight Increased 9000" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="Carry Weight Increased 9000" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="92af0ebd-a04c-4e9c-8306-b947aac4c127" />
+  <attribute id="Version64" type="int64" value="1" />
+</node>

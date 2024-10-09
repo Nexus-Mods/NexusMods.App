@@ -1,0 +1,17 @@
+
+query CollectionsForGame($gameDomain: String!, $offset: Int!, $count: Int!) 
+{
+    collections(viewAdultContent: true, filter: {gameDomain: {value: $gameDomain, op: EQUALS}}, offset: $offset, count: $count)
+    {
+        totalCount
+        nodesCount
+        nodes {
+            slug
+            name
+            latestPublishedRevision {
+                id
+                revisionNumber
+            }
+        }
+    }
+}

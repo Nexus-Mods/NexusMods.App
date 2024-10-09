@@ -54,6 +54,7 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
+            
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
@@ -62,31 +63,38 @@ public class LibraryItemModel : TreeDataGridItemModel<LibraryItemModel, EntityId
             }).AddTo(disposables);
 
             model.LinkedLoadoutItems
-                .ObserveCountChanged()
+                // Observe Count Changed defaults to not notifying the current count on a new subscription
+                // Because this chain will be destroyed when the model is deactivated, we want to know the current count
+                // when we reactivate a gain. Rows in a TreeDataGrid are virtualized and so they will be repeatedly activated and deactivated
+                .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(model, static (count, model) =>
-                {
-                    if (count > 0)
                     {
-                        model.InstallText.Value = "Installed";
-                        model.IsInstalledInLoadout.Value = true;
-                        model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static kv => kv.Value.GetCreatedAt()).Max();
-                        model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
+                        if (count > 0)
+                        {
+                            model.InstallText.Value = "Installed";
+                            model.IsInstalledInLoadout.Value = true;
+                            model.InstalledDate.Value = model.LinkedLoadoutItems.Select(static kv => kv.Value.GetCreatedAt()).Max();
+                            model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
+                        }
+                        else
+                        {
+                            model.InstallText.Value = "Install";
+                            model.IsInstalledInLoadout.Value = false;
+                            model.InstalledDate.Value = DateTime.UnixEpoch;
+                            model.FormattedInstalledDate.Value = "-";
+                        }
                     }
-                    else
-                    {
-                        model.InstallText.Value = "Install";
-                        model.IsInstalledInLoadout.Value = false;
-                        model.InstalledDate.Value = DateTime.UnixEpoch;
-                        model.FormattedInstalledDate.Value = "-";
-                    }
-                }).AddTo(disposables);
+                )
+                .AddTo(disposables);
 
             model.FormattedCreatedAtDate.Value = FormatDate(DateTime.Now, model.CreatedAtDate.Value);
             model.FormattedInstalledDate.Value = FormatDate(DateTime.Now, model.InstalledDate.Value);
 
             if (model._linkedLoadoutItemsDisposable.Disposable is null)
             {
-                model._linkedLoadoutItemsDisposable.Disposable = model.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet));
+                model._linkedLoadoutItemsDisposable.Disposable = model.LinkedLoadoutItemsObservable
+                    .OnUI()
+                    .SubscribeWithErrorLogging(changeSet => model.LinkedLoadoutItems.ApplyChanges(changeSet));
             }
         });
     }

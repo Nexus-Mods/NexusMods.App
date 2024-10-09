@@ -16,7 +16,6 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
     
     private static GamePath ModSettingsFile => new(LocationId.From("PlayerProfiles"), "modsettings.lsx");
     
-    private static Extension PakExtension => new Extension(".pak");
     
 
     public BaldursGate3Synchronizer(IServiceProvider provider) : base(provider)
@@ -33,7 +32,7 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
         
         if (_settings.DoFullGameBackup) return false;
 
-        return path.InFolder(DataFolder) && path.Extension == PakExtension;
+        return path.InFolder(DataFolder) && path.Extension == Bg3Constants.PakFileExtension;
     }
     
     public override bool IsIgnoredBackupPath(GamePath path)

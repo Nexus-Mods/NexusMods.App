@@ -27,6 +27,7 @@ public class HeroicGogLocator : IGameLocator
         _handler = provider.GetRequiredService<HeroicGOGHandler>();
     }
 
+    /// <inheritdoc/>
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         if (game is not IGogGame tg) yield break;
@@ -34,7 +35,7 @@ public class HeroicGogLocator : IGameLocator
         if (_cachedGames is null)
         {
             _cachedGames = _handler.FindAllGamesById(out var errors);
-            if (errors.Any())
+            if (errors.Length != 0)
             {
                 foreach (var error in errors)
                     _logger.LogError("While looking for games: {Error}", error);
@@ -46,7 +47,7 @@ public class HeroicGogLocator : IGameLocator
             if (!_cachedGames.TryGetValue(GOGGameId.From(id), out var found)) continue;
             var fs = found.Path.FileSystem;
 
-            if (found is HeroicGOGGame { WinePrefixPath.FileExists: true } heroicGOGGame)
+            if (found is HeroicGOGGame heroicGOGGame && heroicGOGGame.WinePrefixPath.DirectoryExists())
             {
                 fs = heroicGOGGame.GetWinePrefix().CreateOverlayFileSystem(fs);
             }

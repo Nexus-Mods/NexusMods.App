@@ -25,8 +25,8 @@ public class GameRegistry : IGameRegistry, IHostedService
     
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
     private readonly ILogger<GameRegistry> _logger;
-    private readonly IEnumerable<IGame> _games;
-    private readonly IEnumerable<IGameLocator> _locators;
+    private readonly IGame[] _games;
+    private readonly IGameLocator[] _locators;
     private readonly ConcurrentDictionary<EntityId, GameInstallation> _byId = new();
     private Task? _startupTask = null;
 
@@ -42,7 +42,7 @@ public class GameRegistry : IGameRegistry, IHostedService
     public GameRegistry(ILogger<GameRegistry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn)
     {
         _games = games.OfType<IGame>().ToArray();
-        _locators = locators;
+        _locators = locators.ToArray();
         _logger = logger;
         _conn = conn;
         
@@ -66,14 +66,26 @@ public class GameRegistry : IGameRegistry, IHostedService
     
     private async Task Startup(CancellationToken token)
     {
-        var results = await FindInstallations()
-            .Distinct().ToArrayAsync(token);
-        
-        _cache.Edit(x => {
-            x.Clear();
-            foreach (var install in results)
-                _cache.AddOrUpdate(install);
-        });
+        try
+        {
+            var results = await FindInstallations()
+                .Distinct()
+                .ToArrayAsync(token);
+
+            _cache.Edit(x =>
+            {
+                x.Clear();
+
+                foreach (var install in results)
+                {
+                    _cache.AddOrUpdate(install);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception in startup");
+        }
     }
 
     /// <summary>
@@ -133,14 +145,29 @@ public class GameRegistry : IGameRegistry, IHostedService
         {
             foreach (var locator in _locators)
             {
-                foreach (var found in locator.Find(game))
+                using var enumerator = locator.Find(game).GetEnumerator();
+                while (true)
                 {
-                    yield return await Register(game, found, locator);
+                    Task<GameInstallation> value;
+
+                    try
+                    {
+                        if (!enumerator.MoveNext()) break;
+                        var result = enumerator.Current;
+                        value = Register(game, result, locator);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Exception in locator");
+                        break;
+                    }
+
+                    yield return await value;
                 }
             }
         }
     }
-    
+
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
