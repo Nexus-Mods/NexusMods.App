@@ -6,46 +6,11 @@
 
     <Design.PreviewWith>
         <Border Padding="16">
-            
-            <!-- <Grid> -->
-            <!--     <Grid.ColumnDefinitions>Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto</Grid.ColumnDefinitions> -->
-            <!--     <Grid.RowDefinitions>Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto</Grid.RowDefinitions> -->
-            <!--      -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="0" VisibleIcon="Both" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="1" VisibleIcon="Both" Type="Primary" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="2" VisibleIcon="Both" Type="Secondary"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="3" VisibleIcon="Both" Type="Secondary" Fill="Strong"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="4" VisibleIcon="Both" Type="Secondary" Fill="Weak"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="5" VisibleIcon="Both" Type="Tertiary" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="6" VisibleIcon="Both" Type="Tertiary" Fill="Weak" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="7" VisibleIcon="Left" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="8" VisibleIcon="Left"  Type="Primary" /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="9" VisibleIcon="Left"  Type="Secondary"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="10" VisibleIcon="Left" Type="Secondary" Fill="Strong"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="11" VisibleIcon="Left" Type="Secondary" Fill="Weak"  /> -->
-            <!--     <controls:CustomButton Grid.Row="0" Grid.Column="12" VisibleIcon="Left" Type="Tertiary" /> -->
-            <!--      -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="0" Size="Small" VisibleIcon="Both" /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="1" Size="Small" VisibleIcon="Both" Type="Primary"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="2" Size="Small" VisibleIcon="Both" Type="Secondary"   /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="3" Size="Small" VisibleIcon="Both" Type="Secondary" Fill="Strong"   /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="4" Size="Small" VisibleIcon="Both" Type="Secondary" Fill="Weak"   /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="5" Size="Small" VisibleIcon="Both" Type="Tertiary"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="6" Size="Small" VisibleIcon="Both" Type="Tertiary" Fill="Weak"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="7" Size="Small" VisibleIcon="Left" />  -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="8" Size="Small" VisibleIcon="Left" Type="Primary" /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="9" Size="Small" VisibleIcon="Left" Type="Secondary"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="10" Size="Small" VisibleIcon="Left" Type="Secondary" Fill="Strong"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="11" Size="Small" VisibleIcon="Left" Type="Secondary" Fill="Weak"  /> -->
-            <!--     <controls:CustomButton Grid.Row="1" Grid.Column="12" Size="Small" VisibleIcon="Left" Type="Tertiary" / -->
-            <!-- </Grid> -->
-            
             <StackPanel Orientation="Horizontal" Spacing="36">
-                
                 <StackPanel Spacing="4">
                     <Button IsEnabled="False">Test</Button>
-                    <controls:CustomButton IsEnabled="False"/>
-                    <controls:CustomButton>
+                    <controls:StandardButton IsEnabled="False"/>
+                    <controls:StandardButton>
                         <StackPanel>
                         <TextBlock>Test 1</TextBlock>
                             <StackPanel Orientation="Horizontal" Background="Chocolate">
@@ -56,12 +21,12 @@
                             <TextBlock Background="DarkRed">Test 2</TextBlock>
                         <TextBlock>Test 3</TextBlock>
                         </StackPanel>
-                    </controls:CustomButton>
-                    <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                    <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    </controls:StandardButton>
+                    <controls:StandardButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    <controls:StandardButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     <!-- <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
                     <!-- <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
-                    <controls:CustomButton />
+                    <controls:StandardButton />
                 </StackPanel>
                 
                 <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
@@ -72,13 +37,13 @@
                     <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                            <controls:CustomButton IsEnabled="True" Text="Enabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Check}"/>
-                            <controls:CustomButton IsEnabled="False" Text="Disabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Close}"/>
-                            <controls:CustomButton VisibleIcon="Both" />
-                            <controls:CustomButton />
-                            <controls:CustomButton VisibleIcon="Left" Text="Something" HorizontalAlignment="Stretch" LeftIcon="{x:Static icons:IconValues.PlayArrow}"/>
-                            <controls:CustomButton VisibleIcon="Both" ShowLabel="False"/>
-                            <controls:CustomButton VisibleIcon="Left" ShowLabel="False"/>
+                            <controls:StandardButton IsEnabled="True" Text="Enabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Check}"/>
+                            <controls:StandardButton IsEnabled="False" Text="Disabled" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Close}"/>
+                            <controls:StandardButton VisibleIcon="Both" />
+                            <controls:StandardButton />
+                            <controls:StandardButton VisibleIcon="Left" Text="Something" HorizontalAlignment="Stretch" LeftIcon="{x:Static icons:IconValues.PlayArrow}"/>
+                            <controls:StandardButton VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:StandardButton VisibleIcon="Left" ShowLabel="False"/>
                         </StackPanel>
                     </StackPanel>
                     
@@ -87,12 +52,12 @@
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                            <controls:CustomButton Size="Small" />
-                            <controls:CustomButton Size="Small" VisibleIcon="Left" />
-                            <controls:CustomButton Size="Small"  IsEnabled="False" VisibleIcon="Right" />
-                            <controls:CustomButton Size="Small"  IsEnabled="False" VisibleIcon="Both" />
-                            <controls:CustomButton Size="Small" VisibleIcon="Both" ShowLabel="False"/>
-                            <controls:CustomButton Size="Small" VisibleIcon="Left" ShowLabel="False"/>
+                            <controls:StandardButton Size="Small" />
+                            <controls:StandardButton Size="Small" VisibleIcon="Left" />
+                            <controls:StandardButton Size="Small"  IsEnabled="False" VisibleIcon="Right" />
+                            <controls:StandardButton Size="Small"  IsEnabled="False" VisibleIcon="Both" />
+                            <controls:StandardButton Size="Small" VisibleIcon="Both" ShowLabel="False"/>
+                            <controls:StandardButton Size="Small" VisibleIcon="Left" ShowLabel="False"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -106,33 +71,33 @@
                     <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                            <controls:CustomButton Type="Primary" Text="Primary"/>
-                            <controls:CustomButton Type="Primary" Text="Primary" IsEnabled="False" VisibleIcon="Left" />
-                            <controls:CustomButton Type="Primary" VisibleIcon="Right" />
-                            <controls:CustomButton Type="Primary" VisibleIcon="Both" />
+                            <controls:StandardButton Type="Primary" Text="Primary"/>
+                            <controls:StandardButton Type="Primary" Text="Primary" IsEnabled="False" VisibleIcon="Left" />
+                            <controls:StandardButton Type="Primary" VisibleIcon="Right" />
+                            <controls:StandardButton Type="Primary" VisibleIcon="Both" />
                         </StackPanel>
                     </StackPanel>
                     
                     <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton IsEnabled="True" Type="Primary" Fill="Weak" />
-                        <controls:CustomButton IsEnabled="False" Type="Primary" Fill="Weak" />
+                        <controls:StandardButton IsEnabled="True" Type="Primary" Fill="Weak" />
+                        <controls:StandardButton IsEnabled="False" Type="Primary" Fill="Weak" />
                     </StackPanel>
                     
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                            <controls:CustomButton Type="Primary" Size="Small" />
-                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Left" />
-                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Right" />
-                            <controls:CustomButton Type="Primary" Size="Small" VisibleIcon="Both" />
+                            <controls:StandardButton Type="Primary" Size="Small" />
+                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Left" />
+                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Right" />
+                            <controls:StandardButton Type="Primary" Size="Small" VisibleIcon="Both" />
                         </StackPanel>  
                     </StackPanel>
                                       
                     <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton IsEnabled="True" Type="Primary"  Size="Small" Fill="Weak" VisibleIcon="Right" />
-                        <controls:CustomButton IsEnabled="False" Type="Primary" Size="Small"  Fill="Weak" VisibleIcon="Right" />
+                        <controls:StandardButton IsEnabled="True" Type="Primary"  Size="Small" Fill="Weak" VisibleIcon="Right" />
+                        <controls:StandardButton IsEnabled="False" Type="Primary" Size="Small"  Fill="Weak" VisibleIcon="Right" />
                     </StackPanel>
                 </Grid>
                 
@@ -143,32 +108,32 @@
 
                     <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
                         <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Secondary" />
+                        <controls:StandardButton Type="Secondary" />
                     </StackPanel>
                     <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton IsEnabled="True" Type="Secondary" Fill="Weak" />
-                        <controls:CustomButton IsEnabled="False" Type="Secondary" Fill="Weak" />
+                        <controls:StandardButton IsEnabled="True" Type="Secondary" Fill="Weak" />
+                        <controls:StandardButton IsEnabled="False" Type="Secondary" Fill="Weak" />
                     </StackPanel>
                     <StackPanel Grid.Row="7" Grid.Column="0"  Spacing="8">
                         <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Secondary" Fill="Strong" Text="Play" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:StandardButton Type="Secondary" Fill="Strong" Text="Play" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
                     
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
                     
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Secondary"  Size="Small"  />
+                        <controls:StandardButton Type="Secondary"  Size="Small"  />
                     </StackPanel>
                     <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Secondary"  Size="Small" Fill="Weak" />
+                        <controls:StandardButton Type="Secondary"  Size="Small" Fill="Weak" />
                     </StackPanel>
                     <StackPanel Grid.Row="7" Grid.Column="2"  Spacing="8">
                         <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Secondary" Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        <controls:CustomButton Type="Secondary" IsEnabled="False"  Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:StandardButton Type="Secondary" Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:StandardButton Type="Secondary" IsEnabled="False"  Size="Small" Fill="Strong" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     </StackPanel>
                 </Grid>
                 
@@ -179,24 +144,24 @@
 
                     <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
                         <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Tertiary" />
+                        <controls:StandardButton Type="Tertiary" />
                     </StackPanel>
                     
                     <StackPanel Grid.Row="5" Grid.Column="0"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Tertiary"   Fill="Weak" />
+                        <controls:StandardButton Type="Tertiary"   Fill="Weak" />
                     </StackPanel>
                     
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}"/>
                     
                     <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
                         <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Tertiary" Size="Small" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}"   />
+                        <controls:StandardButton Type="Tertiary" Size="Small" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}"   />
                     </StackPanel>
                     
                     <StackPanel Grid.Row="5" Grid.Column="2"  Spacing="8">
                         <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}"  />
-                        <controls:CustomButton Type="Tertiary" Size="Small" Fill="Weak" VisibleIcon="Left"  LeftIcon="{x:Static icons:IconValues.Nexus}"   />
+                        <controls:StandardButton Type="Tertiary" Size="Small" Fill="Weak" VisibleIcon="Left"  LeftIcon="{x:Static icons:IconValues.Nexus}"   />
                     </StackPanel>
                 </Grid>
             </StackPanel>
@@ -204,8 +169,7 @@
         </Border>
     </Design.PreviewWith>
     
-
-    <ControlTheme x:Key="{x:Type controls:CustomButton}" TargetType="controls:CustomButton" >
+    <ControlTheme x:Key="{x:Type controls:StandardButton}" TargetType="controls:StandardButton" >
         
         <!-- start of default button styles to match avalonia's default
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/Button.xaml-->
@@ -327,7 +291,7 @@
         </Style>
                         
         <!-- small variants -->
-        <Style Selector="^:size-small">
+        <Style Selector="^[Size=Small]">
             <Setter Property="Padding" Value="{StaticResource ButtonSmallPadding}" />
             
             <Style Selector="^ StackPanel">
@@ -350,7 +314,7 @@
         </Style>
         
         <!-- primary button -->
-        <Style Selector="^:type-primary">
+        <Style Selector="^[Type=Primary]">
             <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
             
@@ -367,7 +331,7 @@
             
             <!-- fill variants -->
             
-            <Style Selector="^:fill-weak">
+            <Style Selector="^[Fill=Weak]">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="{DynamicResource InfoModerateBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
@@ -386,7 +350,7 @@
         </Style>
         
         <!-- secondary button -->
-        <Style Selector="^:type-secondary">
+        <Style Selector="^[Type=Secondary]">
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
@@ -408,7 +372,7 @@
             
             <!-- fill variants -->
             
-            <Style Selector="^:fill-strong">
+            <Style Selector="^[Fill=Strong]">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
@@ -424,7 +388,7 @@
                 </Style>
             </Style>
             
-            <Style Selector="^:fill-weak">
+            <Style Selector="^[Fill=Weak]">
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
@@ -447,7 +411,7 @@
         </Style>
         
         <!-- tertiary button -->
-        <Style Selector="^:type-tertiary">
+        <Style Selector="^[Type=Tertiary]">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
@@ -466,7 +430,7 @@
             
             <!-- fill variants -->
             
-            <Style Selector="^:fill-weak">
+            <Style Selector="^[Fill=Weak]">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />

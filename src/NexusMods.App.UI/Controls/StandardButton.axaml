@@ -8,7 +8,7 @@
     <Design.PreviewWith>
         <Border Padding="8">
             <StackPanel Spacing="10">
-                <controls:CustomButton Text="Button Text" />
+                <controls:StandardButton />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
