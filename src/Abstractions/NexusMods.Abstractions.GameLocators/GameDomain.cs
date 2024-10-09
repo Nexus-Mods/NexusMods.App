@@ -1,7 +1,5 @@
-using NexusMods.Extensions.Hashing;
 using TransparentValueObjects;
-
-namespace NexusMods.Abstractions.Games.DTO;
+namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>
 /// Machine friendly name for the game, should be devoid of special characters

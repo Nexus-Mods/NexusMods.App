@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 
 namespace NexusMods.Abstractions.Collections.Json;

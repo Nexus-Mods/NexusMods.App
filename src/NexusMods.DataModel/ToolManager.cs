@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;

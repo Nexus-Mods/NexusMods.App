@@ -29,7 +29,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override string Name => "Stardew Valley";
 
-    public static GameDomain GameDomain => GameDomain.From("stardewvalley");
+    public static GameDomain GameDomain => Abstractions.GameLocators.GameDomain.From("stardewvalley");
     public override GameDomain Domain => GameDomain;
 
     public StardewValley(
