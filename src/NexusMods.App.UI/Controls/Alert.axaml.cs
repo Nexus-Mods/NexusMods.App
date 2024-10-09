@@ -6,8 +6,17 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Controls;
 
-public class Alert : TemplatedControl
+public class Alert : ContentControl
 {
+    public enum SeverityOptions
+    {
+        None,
+        Info,
+        Success,
+        Warning,
+        Error
+    }
+    
     public static readonly StyledProperty<string?> TitleProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Title), defaultValue: "Default Title");
     public static readonly StyledProperty<string?> BodyProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Body), defaultValue: "Default Body");
     
@@ -19,6 +28,9 @@ public class Alert : TemplatedControl
     
     public static readonly AttachedProperty<bool> ShowActionsProperty = 
         AvaloniaProperty.RegisterAttached<Alert, TemplatedControl, bool>("ShowActions", defaultValue: true);
+    
+    public static readonly AttachedProperty<SeverityOptions> SeverityProperty = 
+        AvaloniaProperty.RegisterAttached<Alert, TemplatedControl, SeverityOptions>("Severity", defaultValue: SeverityOptions.None);
 
     private UnifiedIcon? _icon  = null;
     private Button? _closeButton  = null;
@@ -58,6 +70,12 @@ public class Alert : TemplatedControl
         set => SetValue(ShowActionsProperty, value);
     }
     
+    public SeverityOptions Severity
+    {
+        get => GetValue(SeverityProperty);
+        set => SetValue(SeverityProperty, value);
+    }
+    
     /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -73,6 +91,17 @@ public class Alert : TemplatedControl
         if (_icon == null || _closeButton == null || _titleText == null || _bodyText == null || _bodyTextBorder == null || _actionsRowBorder == null) 
             return;
 
+        // no content set, so we hide the actions row
+        if (Content == null)
+        {
+            ShowActions = false;
+        }
+        
+        if (string.IsNullOrEmpty(Body))
+        {
+            ShowBody = false;
+        }
+
         // turn off elements based on properties
         _closeButton.IsVisible = ShowCloseButton;
         _bodyTextBorder.IsVisible = ShowBody;
@@ -81,28 +110,27 @@ public class Alert : TemplatedControl
         // set the text
         _titleText.Text = Title;
         _bodyText.Text = Body;
+
+        switch (Severity)
+        {
+            // set icon based on severity
+            case SeverityOptions.Info:
+                _icon.Value = IconValues.Info;
+                break;
+            case SeverityOptions.Success:
+                _icon.Value = IconValues.CheckCircleOutline;
+                break;
+            case SeverityOptions.Warning:
+                _icon.Value = IconValues.WarningAmber;
+                break;
+            case SeverityOptions.Error:
+                _icon.Value = IconValues.Warning;
+                break;
+            default:
+                _icon.Value = IconValues.Info;
+                break;
+        }
         
-        // set icon based on class
-        if (Classes.Contains("Info"))
-        {
-            _icon.Value = IconValues.Info;
-            
-        } else if (Classes.Contains("Success"))
-        {
-            _icon.Value = IconValues.CheckCircleOutline;
-            
-        } else if (Classes.Contains("Warning"))
-        {
-            _icon.Value = IconValues.WarningAmber;
-            
-        } else if (Classes.Contains("Error"))
-        {
-            _icon.Value = IconValues.Warning;
-        }
-        else
-        {
-            _icon.Value = IconValues.Info;
-        }
     }
     
 }

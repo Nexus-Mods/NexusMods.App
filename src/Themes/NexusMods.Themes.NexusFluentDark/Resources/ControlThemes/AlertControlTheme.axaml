@@ -9,12 +9,34 @@
         <Border Padding="8">
             <StackPanel Spacing="24" Orientation="Horizontal">
                 <StackPanel Spacing="8">
-                    <controls:Alert ShowBody="True" Width="400" Body="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." ShowCloseButton="False" />
+                    <controls:Alert ShowBody="True" Width="400"
+                                    Body="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                                    ShowCloseButton="False" />
                     <controls:Alert ShowBody="False" ShowActions="False" Title="Title only" />
-                    <controls:Alert Title="Info Title asdasd asd asd asd asd asd " ShowActions="True" Body="Info Body Text" Classes="Info" />
-                    <controls:Alert Title="Error Title" Body="Error Body Text asd asd " Classes="Error" />
-                    <controls:Alert Title="Warning Title asd asd " Body="Warning Body Text asdasd " ShowBody="False" Classes="Warning" />
-                    <controls:Alert Title="Success Title" Body="Success Body Text asd asd " ShowActions="True" Classes="Success" />
+                    <controls:Alert Title="Info Title asdasd asd asd asd asd asd " ShowActions="True"
+                                    Body="Info Body Text" Severity="Info" />
+                    <controls:Alert Title="Error Title" Body="Error Body Text asd asd " Severity="Error" />
+                    <controls:Alert Title="Warning Title asd asd " Body=""
+                                    ShowBody="True" ShowActions="False" Severity="Warning" />
+                    <controls:Alert Title="Success Title" Body="Success Body Text asd asd " ShowActions="True"
+                                    Severity="Success">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
+                            <Button Content="Action 1" />
+                            <Button Content="Action 2" />
+                            <Button Content="Action 3" />
+                        </StackPanel>
+                    </controls:Alert>
+
+                    <controls:Alert Title="Success Title" Body="Success Body Text asd asd " Severity="Success">
+                        <StackPanel Orientation="Vertical">
+                            <Button Content="Action 1" />
+                            <Calendar></Calendar>
+                            <DropDownButton Content="Action 1" />
+                            <RadioButton Content="Action 2" />
+                            <SplitButton Content="Action 4" />
+                        </StackPanel>
+                    </controls:Alert>
+
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -57,12 +79,12 @@
 
                         <!-- bottom button row -->
                         <Border x:Name="ActionsRowBorder">
-                            <StackPanel x:Name="ActionsRow">
-                                <Button Content="Button 1" />
-                                <Button Content="Button 2" />
-                            </StackPanel>
+                            <ContentPresenter Name="PART_ContentPresenter"
+                                              MaxWidth="{TemplateBinding MaxWidth}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              />
                         </Border>
-
                     </StackPanel>
                 </Border>
             </ControlTemplate>
@@ -96,7 +118,7 @@
                             <Setter Property="AlignItems" Value="Center" />
                             <Setter Property="ColumnSpacing" Value="8" />
                             <Setter Property="Direction" Value="Row" />
-                                        
+
                             <Style Selector="^ icons|UnifiedIcon#Icon">
                                 <Setter Property="Value" Value="{x:Static icons:IconValues.Info}" />
                                 <Setter Property="Size" Value="20" />
@@ -151,31 +173,22 @@
             <Style Selector="^ Border#ActionsRowBorder">
                 <!-- <Setter Property="Background" Value="DarkGreen" /> -->
                 <Setter Property="Padding" Value="12,0, 12, 12" />
-
-                <Style Selector="^ > StackPanel">
-                    <Setter Property="Spacing" Value="8" />
-                    <Setter Property="Orientation" Value="Horizontal" />
-                </Style>
             </Style>
-
-
-
         </Style>
 
-        <!-- set classes -->
-        <Style Selector="^.Info">
+        <Style Selector="^[Severity=Info]">
             <Setter Property="Background" Value="{StaticResource BrandInfo950}" />
             <Setter Property="BorderBrush" Value="{StaticResource InfoWeak}" />
         </Style>
-        <Style Selector="^.Error">
+        <Style Selector="^[Severity=Error]">
             <Setter Property="Background" Value="{StaticResource BrandDanger950}" />
             <Setter Property="BorderBrush" Value="{StaticResource DangerWeak}" />
         </Style>
-        <Style Selector="^.Warning">
+        <Style Selector="^[Severity=Warning]">
             <Setter Property="Background" Value="{StaticResource BrandWarning950}" />
             <Setter Property="BorderBrush" Value="{StaticResource WarningWeak}" />
         </Style>
-        <Style Selector="^.Success">
+        <Style Selector="^[Severity=Success]">
             <Setter Property="Background" Value="{StaticResource BrandSuccess950}" />
             <Setter Property="BorderBrush" Value="{StaticResource SuccessWeak}" />
         </Style>
