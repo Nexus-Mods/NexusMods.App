@@ -21,7 +21,7 @@ public static class ImportExport
     public static IServiceCollection AddImportExportVerbs(this IServiceCollection services) =>
         services.AddVerb(() => Export);
     
-    [Verb("export", "Export the data model to a file")]
+    [Verb("export-datamodel", "Export the data model to a file")]
     private static async Task<int> Export([Injected] IRenderer renderer, 
         [Injected] IConnection connection,
         [Option("o", "output", "Output file, the contents will be compressed with deflate")] AbsolutePath output)

@@ -145,7 +145,6 @@ public class NexusModsLibrary
         var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
         if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file)) return file;
 
-        var uid = UidForFile.FromUlong((ulong)fileId);
         using var tx = _connection.BeginTransaction();
 
         var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
