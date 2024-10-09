@@ -22,9 +22,11 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+
 namespace NexusMods.Collections;
 
-using ModInstructions = (Mod Mod, LibraryFile.ReadOnly LibraryFile);
+using ModInstructions = (Mod Mod, LibraryFile.ReadOnly? LibraryFile);
 
 
 public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>
@@ -120,16 +122,20 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         await Parallel.ForEachAsync(toInstall, context.CancellationToken, async (file, _) =>
             {
                 // Bit strange, but Install Mod will want to find the collection group, so we'll have to rebase entity it will get the DB from
-                file = (file.Mod, file.LibraryFile.Rebase());
-                await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup());
+                if (file.LibraryFile.HasValue) 
+                    file = (file.Mod, file.LibraryFile!.Value.Rebase());
+                await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup(), archive);
             }
         );
         
         return groupRemapped;
     }
     
-    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly group)
+    private async Task<LoadoutItemGroup.ReadOnly> InstallMod(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly group, LibraryArchive.ReadOnly collectionArchive)
     {
+        if (file.LibraryFile is null && file.Mod.Source.Type == ModSourceType.bundle)
+            return await InstallBundledMod(loadoutId, file.Mod, group, collectionArchive);
+        
         // If the mod has a hashes entry, then we'll treat it as a replicated mod, and not use the library service to install it.
         if (file.Mod.Hashes.Any())
             return await InstallReplicatedMod(loadoutId, file, group);
@@ -139,7 +145,56 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             return await InstallFomodWithPredefinedChoices(loadoutId, file, group);
 
         // Otherwise, we'll just use the library service to install it.
-        return await LibraryService.InstallItem(file.LibraryFile.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
+        return await LibraryService.InstallItem(file.LibraryFile!.Value.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
+    }
+
+    private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(LoadoutId loadoutId, Mod fileMod, LoadoutItemGroup.ReadOnly group, LibraryArchive.ReadOnly collectionArchive)
+    {
+        var prefixPath = "bundled".ToRelativePath().Join(fileMod.Source.FileExpression);
+        var prefixFiles = collectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();        
+        
+        using var tx = Connection.BeginTransaction();
+
+        if (!collectionArchive.AsLibraryFile().TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
+            throw new InvalidOperationException("The source collection is not a NexusModsCollectionLibraryFile.");
+        
+        var modGroup = new NexusCollectionBundledLoadoutGroup.New(tx, out var id)
+        {
+            CollectionLibraryFileId = collectionFile,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    Name = fileMod.Name,
+                    LoadoutId = loadoutId,
+                    ParentId = group.Id,
+                },
+            },
+        };
+        
+        foreach (var file in prefixFiles)
+        {
+            var fixedPath = file.Path.RelativeTo(prefixPath);
+            _ = new LoadoutFile.New(tx, out var fileId)
+            {
+                Hash = file.AsLibraryFile().Hash,
+                Size = file.AsLibraryFile().Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
+                {
+                    TargetPath = (fileId, LocationId.Game, fixedPath),
+                    LoadoutItem = new LoadoutItem.New(tx, fileId)
+                    {
+                        Name = file.Path,
+                        LoadoutId = loadoutId,
+                        ParentId = modGroup.Id,
+                    },
+                },
+            };
+        }
+        
+        var result = await tx.Commit();
+        return result.Remap(modGroup).AsLoadoutItemGroup();
     }
 
     /// <summary>
@@ -148,7 +203,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(LoadoutId loadoutId, ModInstructions file, LoadoutItemGroup.ReadOnly collectionGroup)
     {
         // Get the archive from the library file
-        if (!file.LibraryFile.TryGetAsLibraryArchive(out var archive))
+        if (!file.LibraryFile!.Value.TryGetAsLibraryArchive(out var archive))
             throw new InvalidOperationException("The library file is not a library archive.");
 
         // Create the installer
@@ -188,7 +243,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         ConcurrentDictionary<Md5HashValue, HashMapping> hashes = new();
         
         // Get the archive from the library file
-        if (!file.LibraryFile.TryGetAsLibraryArchive(out var archive))
+        if (!file.LibraryFile!.Value.TryGetAsLibraryArchive(out var archive))
             throw new InvalidOperationException("The library file is not a library archive.");
         
         // Get the collection archive
@@ -233,7 +288,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         // Link the group to the loadout
         _ = new LibraryLinkedLoadoutItem.New(tx, id)
         {
-            LibraryItemId = file.LibraryFile.AsLibraryItem(),
+            LibraryItemId = file.LibraryFile!.Value.AsLibraryItem(),
             LoadoutItemGroup = group,
         };
 
@@ -342,6 +397,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return mod.Source.Type switch
         {
             ModSourceType.nexus => await EnsureNexusModDownloaded(mod),
+            // Nothing to downoad for a bundle
+            ModSourceType.bundle => (mod, null),
             _ => throw new NotSupportedException($"The mod source type '{mod.Source.Type}' is not supported.")
         };
     }

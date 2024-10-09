@@ -9,6 +9,7 @@
       <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
       <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>
