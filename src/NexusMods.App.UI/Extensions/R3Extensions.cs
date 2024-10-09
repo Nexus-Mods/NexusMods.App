@@ -15,7 +15,7 @@ public static class R3Extensions
     [MustDisposeResource] public static IDisposable WhenActivated<T>(
         this T obj,
         Action<T, CompositeDisposable> block)
-        where T : ReactiveR3Object
+        where T : IReactiveR3Object
     {
         var d = Disposable.CreateBuilder();
 
