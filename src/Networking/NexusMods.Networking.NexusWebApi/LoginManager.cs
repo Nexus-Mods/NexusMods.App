@@ -150,12 +150,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        using var tx = _conn.BeginTransaction();
-        foreach (var token in JWTToken.All(_conn.Db))
-        {
-            tx.Delete(token.Id, true);
-        }
-        await tx.Commit();
+        await _conn.Excise(JWTToken.All(_conn.Db).Select(e => e.Id).ToArray());
     }
     
     

@@ -10,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Storage;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
+using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.Loadouts.Mods;
 
