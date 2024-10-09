@@ -63,7 +63,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 // add diagnostic
                 diagnostics.Add(Diagnostics.CreateMissingDependency(
                         PakMod: loadoutItemGroup.ToReference(loadout),
-                        MissingDependencyModName: dependency.Name,
+                        MissingDependencyName: dependency.Name,
                         PakModuleName: metaFileData.Item2.ModuleShortDesc.Name,
                         NexusModsLink: NexusModsLink
                     )
