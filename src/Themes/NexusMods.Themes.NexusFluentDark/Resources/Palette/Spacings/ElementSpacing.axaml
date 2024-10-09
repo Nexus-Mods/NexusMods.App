@@ -42,9 +42,9 @@
     the existing resources above -->
     
     <extensions:Thickness x:Key="ButtonPaddingMedium" 
-                          Left="{StaticResource Spacing-20}"
+                          Left="{StaticResource Spacing-2}"
                           Top="0"
-                          Right="{StaticResource Spacing-20}"
+                          Right="{StaticResource Spacing-2}"
                           Bottom="0" />
     
     <extensions:Thickness x:Key="ButtonPaddingSmall" 
