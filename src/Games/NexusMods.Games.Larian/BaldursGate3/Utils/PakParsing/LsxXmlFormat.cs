@@ -45,7 +45,7 @@ public static class LsxXmlFormat
         using var stringWriter = new StringWriter();
         using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
         {
-            ModsettingsFileWriter.WriteModuleShortDesc(xmlWriter, moduleShortDesc);
+            ModsettingsFileFormat.WriteModuleShortDesc(xmlWriter, moduleShortDesc);
         }
 
         return stringWriter.ToString();
