@@ -37,6 +37,11 @@ public static partial class Extensions
         return factory(state, innerLoader);
     }
 
+    
+    
+    /// <summary>
+    /// Define an anonymous loader that executes a function on the result of the inner loader.
+    /// </summary>
     public static IResourceLoader<TResourceIdentifier, TData> ThenDo<TResourceIdentifier, TData, TInnerData, TState>(
         this IResourceLoader<TResourceIdentifier, TInnerData> innerLoader,
         TState state,
@@ -58,4 +63,5 @@ public static partial class Extensions
             return await func(innerState, resourceIdentifier, resource, cancellationToken);
         });
     }
+    
 }

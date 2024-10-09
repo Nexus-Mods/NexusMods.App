@@ -109,6 +109,15 @@
                         Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"/>
                 </MenuItem.Header>
             </MenuItem>
+            <MenuItem Classes="TopBarLabelMenuItem" x:Name="FreeLabel" IsEnabled="False">
+                <MenuItem.Header>
+                    <TextBlock
+                        Classes="TitleMDSemi"
+                        VerticalAlignment="Center"
+                        Margin="0"
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"/>
+                </MenuItem.Header>
+            </MenuItem>
         </Menu>
         
     </Grid>
