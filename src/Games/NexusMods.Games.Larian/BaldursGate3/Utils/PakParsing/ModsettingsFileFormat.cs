@@ -3,6 +3,9 @@ using System.Xml;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
+/// <summary>
+/// Class to parse and write the `modsettings.lsx` xml file format used for the BG3 Load Order.
+/// </summary>
 public static class ModsettingsFileFormat
 {
     public static string SerializeModsettingsLoadOrder(LsxXmlFormat.ModuleShortDesc[] moduleShortDescs)
