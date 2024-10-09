@@ -23,12 +23,6 @@ public interface INexusApiClient
     Task<Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns a list of games supported by Nexus.
-    /// </summary>
-    /// <param name="token">Can be used to cancel this task.</param>
-    Task<Response<GameInfo[]>> Games(CancellationToken token = default);
-
-    /// <summary>
     /// Generates download links for a given game.
     /// [Premium only endpoint, use other overload for free users].
     /// </summary>

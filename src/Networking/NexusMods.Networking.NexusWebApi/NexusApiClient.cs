@@ -59,16 +59,6 @@ public class NexusApiClient : INexusApiClient
     }
 
     /// <summary>
-    /// Returns a list of games supported by Nexus.
-    /// </summary>
-    /// <param name="token">Can be used to cancel this task.</param>
-    public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
-        return await SendAsyncArray<GameInfo>(msg, token);
-    }
-
-    /// <summary>
     /// Generates download links for a given game.
     /// [Premium only endpoint, use other overload for free users].
     /// </summary>
