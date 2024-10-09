@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using StrawberryShake;
 namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
 /// <summary>
@@ -14,17 +15,17 @@ namespace NexusMods.Networking.NexusWebApi.V1Interop;
 public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingCache
 {
     private readonly IConnection _conn;
-    private readonly INexusApiClient _apiClient;
+    private readonly INexusGraphQLClient _gqlClient;
     private readonly ILogger _logger;
 
     /// <summary/>
     public GameDomainToGameIdMappingCache(
         IConnection conn,
-        INexusApiClient apiClient,
+        INexusGraphQLClient gqlClient,
         ILogger<GameDomainToGameIdMappingCache> logger)
     {
         _conn = conn;
-        _apiClient = apiClient;
+        _gqlClient = gqlClient;
         _logger = logger;
     }
 
@@ -63,16 +64,17 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var games = await _apiClient.Games(cancellationToken);
-            var gameInfo = games.Data.FirstOrOptional(x => x.DomainName.Equals(gameDomain.Value, StringComparison.OrdinalIgnoreCase));
-            if (!gameInfo.HasValue)
+            var game = await _gqlClient.GameDomainToId.ExecuteAsync(gameDomain.Value, cancellationToken);
+            game.EnsureNoErrors();
+            if (game.Data?.Game == null)
             {
-                _logger.LogWarning("Unable to find game with domain name {DomainName}", gameDomain.Value);
+                _logger.LogError("Unable to find game with domain name {DomainName}", gameDomain.Value);
                 return GameId.DefaultValue;
             }
 
-            await InsertAsync(gameDomain, gameInfo.Value.Id);
-            return gameInfo.Value.Id;
+            var id = GameId.From((uint)game.Data.Game.Id);
+            await InsertAsync(gameDomain, id);
+            return id;
         }
         catch (Exception e)
         {
@@ -85,17 +87,17 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var games = await _apiClient.Games(cancellationToken);
-            var gameInfo = games.Data.FirstOrOptional(x => x.Id == gameId);
-            if (!gameInfo.HasValue)
+            var game = await _gqlClient.GameIdToDomain.ExecuteAsync(gameId.ToString(), cancellationToken);
+            if (game.Data?.Game == null)
             {
                 // ReSharper disable once InconsistentLogPropertyNaming
-                _logger.LogWarning("Unable to find game with game ID {GameID}", gameId);
+                _logger.LogError("Unable to find game with game ID {GameID}", gameId);
                 return GameDomain.DefaultValue;
             }
 
-            await InsertAsync(GameDomain.From(gameInfo.Value.DomainName), gameId);
-            return GameDomain.From(gameInfo.Value.DomainName);
+            var domain = GameDomain.From(game.Data.Game.DomainName);
+            await InsertAsync(domain, gameId);
+            return domain;
         }
         catch (Exception e)
         {
