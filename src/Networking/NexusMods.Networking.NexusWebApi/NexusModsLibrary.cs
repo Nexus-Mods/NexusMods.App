@@ -17,6 +17,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using StrawberryShake;
+using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -144,32 +146,28 @@ public class NexusModsLibrary
     {
         var uid = new UidForFile(fileId, modPage.Uid.GameId);
         var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
-        if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file)) return file;
+        if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file))
+            return file;
 
         using var tx = _connection.BeginTransaction();
 
-        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
-        var files = filesResponse.Data.Files;
+        var filesResponse = await _gqlClient.ModFilesByUid.ExecuteAsync([uid.ToV2Api()], cancellationToken);
+        filesResponse.EnsureNoErrors();
 
-        if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
-            throw new NotImplementedException();
+        if (filesResponse.Data == null)
+            throw new Exception("Could not find file, despite knowing correct UID. Is our UID correct? Or is backend borked?");
 
-        var size = Optional<Size>.None;
-        if (fileInfo.SizeInBytes.HasValue)
-            size = Size.FromLong((long)fileInfo.SizeInBytes!);
-
+        var fileNode = filesResponse.Data.ModFilesByUid.Nodes.First();
+        var size = Size.FromLong(long.Parse(fileNode.SizeInBytes ?? "0"));
         var newFile = new NexusModsFileMetadata.New(tx)
         {
-            Name = fileInfo.Name,
-            Version = fileInfo.Version,
+            Name = fileNode.Name,
+            Version = fileNode.Version,
             ModPageId = modPage,
-            Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
-            UploadedAt = fileInfo.UploadedTime,
-            Size = size.HasValue ? size.Value : null,
+            Uid = uid,
+            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(fileNode.Date).UtcDateTime,
+            Size = size,
         };
-        
-        if (fileInfo.SizeInBytes.HasValue)
-            newFile.Size = Size.FromLong(fileInfo.SizeInBytes!.Value);
 
         var txResults = await tx.Commit();
         return txResults.Remap(newFile);
@@ -180,7 +178,7 @@ public class NexusModsLibrary
         Optional<(NXMKey, DateTime)> nxmData,
         CancellationToken cancellationToken = default)
     {
-        Response<DownloadLink[]> links;
+        Abstractions.NexusWebApi.DTOs.Response<DownloadLink[]> links;
 
         if (nxmData.HasValue)
         {

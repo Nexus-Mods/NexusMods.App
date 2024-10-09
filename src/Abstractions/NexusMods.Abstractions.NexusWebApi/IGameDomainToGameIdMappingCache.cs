@@ -14,6 +14,7 @@ public interface IGameDomainToGameIdMappingCache
     /// If there is no mapping, the API will be queried to get the mapping.
     /// </summary>
     ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken);
+
     /// <summary>
     /// Tries to get the corresponding <see cref="GameDomain"/>.
     /// If there is no mapping, the API will be queried to get the mapping.

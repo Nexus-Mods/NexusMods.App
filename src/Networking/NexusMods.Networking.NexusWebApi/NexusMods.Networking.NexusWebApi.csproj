@@ -28,5 +28,8 @@
       <GraphQL Update="GraphQL\GameIdToDomain.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
+      <GraphQL Update="GraphQL\ModFilesByUid.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
     </ItemGroup>
 </Project>

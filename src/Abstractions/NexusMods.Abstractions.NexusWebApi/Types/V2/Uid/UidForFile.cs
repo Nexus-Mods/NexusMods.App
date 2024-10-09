@@ -45,6 +45,11 @@ public struct UidForFile
     public static UidForFile FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
 
     /// <summary>
+    /// Converts the UID to a string accepted by the V2 API.
+    /// </summary>
+    public string ToV2Api() => AsUlong.ToString();
+    
+    /// <summary>
     /// Reinterprets the current <see cref="UidForFile"/> as a single <see cref="ulong"/>.
     /// </summary>
     public ulong AsUlong => Unsafe.As<UidForFile, ulong>(ref this);
