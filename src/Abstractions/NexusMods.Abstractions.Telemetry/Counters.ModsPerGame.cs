@@ -1,6 +1,5 @@
 using System.Diagnostics.Metrics;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 
 namespace NexusMods.Abstractions.Telemetry;
 

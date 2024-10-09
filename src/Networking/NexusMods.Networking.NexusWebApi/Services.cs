@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.V1Interop;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -44,6 +45,10 @@ public static class Services
         
         // Nexus API Key
         collection.AddAttributeCollection(typeof(ApiKey));
+
+        // Nexus GameDomain to GameID Mapping
+        collection.AddAttributeCollection(typeof(GameDomainToGameIdMapping));
+        collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         
         collection
             .AddNexusModsLibraryModels()

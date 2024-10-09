@@ -1,5 +1,3 @@
-using NexusMods.Abstractions.Games.DTO;
-
 namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>

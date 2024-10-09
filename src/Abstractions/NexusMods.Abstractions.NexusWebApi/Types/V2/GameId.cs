@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -24,7 +23,7 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
     {
         return domain.Value switch
         {
-            "stardewvalley" => (GameId)1704,
+            "stardewvalley" => (GameId)1303,
             "cyberpunk2077" => (GameId)3333,
             "baldursgate3" => (GameId)3474,
             "site" => (GameId)2295,
@@ -42,7 +41,7 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
         var value = Value;
         return value switch
         {
-            1704 => GameDomain.From("stardewvalley"),
+            1303 => GameDomain.From("stardewvalley"),
             3333 => GameDomain.From("cyberpunk2077"),
             3474 => GameDomain.From("baldursgate3"),
             2295 => GameDomain.From("site"),
