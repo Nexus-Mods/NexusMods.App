@@ -54,7 +54,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .AddTo(disposables);
 
             self.Roots
-                .ObserveCountChanged(true)
+                .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(self, static (count, self) => self.IsSourceEmpty.Value = count == 0)
                 .AddTo(disposables);
 
