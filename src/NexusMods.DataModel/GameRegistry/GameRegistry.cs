@@ -95,7 +95,7 @@ public class GameRegistry : IGameRegistry, IHostedService
     {
         var wasFound = GameInstallMetadata.FindByPath(db, result.Path.ToString())
             .Select(id => GameInstallMetadata.Load(db, id))
-            .TryGetFirst(m => m.Domain == locatableGame.Domain && m.Store == result.Store, out var found);
+            .TryGetFirst(m => m.GameId == locatableGame.GameId && m.Store == result.Store, out var found);
         if (!wasFound)
         {
             id = null;
@@ -123,7 +123,8 @@ public class GameRegistry : IGameRegistry, IHostedService
             // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
             var id = tx.TempId();
             tx.Add(id, GameInstallMetadata.Store, result.Store);
-            tx.Add(id, GameInstallMetadata.Domain, game.Domain);
+            tx.Add(id, GameInstallMetadata.GameId, game.GameId);
+            tx.Add(id, GameInstallMetadata.Name, game.Name);
             tx.Add(id, GameInstallMetadata.Path, result.Path.ToString());
         });
         

@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -13,41 +12,6 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
     public static GameId DefaultValue => From(default(uint));
-    
-    /// <summary>
-    /// Maps a given <see cref="GameDomain"/> to a <see cref="GameId"/> using known mappings.
-    /// This is a TEMPORARY API, until full migration to V2 is complete.
-    /// After that it should be REMOVED.
-    /// </summary>
-    public static GameId FromGameDomain(GameDomain domain)
-    {
-        return domain.Value switch
-        {
-            "stardewvalley" => (GameId)1303,
-            "cyberpunk2077" => (GameId)3333,
-            "baldursgate3" => (GameId)3474,
-            "site" => (GameId)2295,
-            _ => throw new ArgumentOutOfRangeException(nameof(domain), domain, null),
-        };
-    }
-    
-    /// <summary>
-    /// Maps a given <see cref="GameId"/> to a <see cref="GameDomain"/> using known mappings.
-    /// This is a TEMPORARY API, until full migration to V2 is complete.
-    /// After that it should be REMOVED.
-    /// </summary>
-    public GameDomain ToGameDomain()
-    {
-        var value = Value;
-        return value switch
-        {
-            1303 => GameDomain.From("stardewvalley"),
-            3333 => GameDomain.From("cyberpunk2077"),
-            3474 => GameDomain.From("baldursgate3"),
-            2295 => GameDomain.From("site"),
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
-        };
-    }
 }
 
 /// <summary>

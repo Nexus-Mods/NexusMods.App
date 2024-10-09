@@ -43,7 +43,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         // If we don't have a value, query the API for it, and then return the value from the DB
         var gameId = await QueryIdFromDomainAsync(gameDomain, cancellationToken);
         return !gameId.Equals(GameId.DefaultValue) ? gameId : Optional<GameId>.None;
-
     }
 
     /// <summary>

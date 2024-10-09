@@ -46,16 +46,16 @@ public class NexusModsLibrary
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
         ModId modId,
-        GameDomain gameDomain,
+        GameId gameId,
         CancellationToken cancellationToken = default)
     {
         var uid = new UidForMod
         {
-            GameId = GameId.FromGameDomain(gameDomain),
+            GameId = gameId,
             ModId = modId,
         };
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
-        if (modPageEntities.TryGetFirst(x => x.GameDomain == gameDomain, out var modPage)) return modPage;
+        if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
 
         using var tx = _connection.BeginTransaction();
 
@@ -141,7 +141,6 @@ public class NexusModsLibrary
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
         FileId fileId,
         NexusModsModPageMetadata.ReadOnly modPage,
-        GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
         var uid = new UidForFile(fileId, modPage.Uid.GameId);
@@ -216,10 +215,12 @@ public class NexusModsLibrary
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NXMModUrl url,
+        IGameDomainToGameIdMappingCache mappingCache,
         CancellationToken cancellationToken)
     {
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        return await CreateDownloadJob(destination, GameDomain.From(url.Game), url.ModId, url.FileId, nxmData, cancellationToken);
+        var gameId = (await mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        return await CreateDownloadJob(destination, gameId, url.ModId, url.FileId, nxmData, cancellationToken);
     }
     
     /// <summary>
@@ -227,14 +228,14 @@ public class NexusModsLibrary
     /// </summary>
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
-        GameDomain gameDomain,
+        GameId gameId,
         ModId modId,
         FileId fileId,
         Optional<(NXMKey, DateTime)> nxmData = default,
         CancellationToken cancellationToken = default)
     {
-        var modPage = await GetOrAddModPage(modId, gameDomain, cancellationToken);
-        var file = await GetOrAddFile(fileId, modPage, gameDomain, cancellationToken);
+        var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
+        var file = await GetOrAddFile(fileId, modPage, cancellationToken);
         
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
         

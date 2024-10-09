@@ -149,25 +149,6 @@ public class NexusApiClient : INexusApiClient
         return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
 
-    /// <summary>
-    /// Returns all of the downloadable files associated with a mod.
-    /// </summary>
-    /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.
-    /// </param>
-    /// <param name="modId">
-    ///    An individual identifier for the mod. Unique per game.
-    /// </param>
-    /// <param name="token">Token used to cancel the task.</param>
-    /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
-        return await SendAsync<ModFiles>(msg, token);
-    }
-
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>
     {

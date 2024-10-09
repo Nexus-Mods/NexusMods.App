@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
 using static NexusMods.Games.RedEngine.Constants;
@@ -23,8 +24,8 @@ public class RedModDeployTool : ITool
         _toolRunner = toolRunner;
         _temporaryFileManager = temporaryFileManager;
     }
-
-    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
+    
+    public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {

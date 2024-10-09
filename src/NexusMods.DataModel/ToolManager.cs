@@ -2,6 +2,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
@@ -11,7 +12,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class ToolManager : IToolManager
 {
-    private readonly ILookup<GameDomain,ITool> _tools;
+    private readonly ILookup<GameId,ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
     private readonly ISynchronizerService _syncService;
     private readonly IConnection _conn;
@@ -23,8 +24,8 @@ public class ToolManager : IToolManager
     public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, ISynchronizerService syncService, IConnection conn)
     {
         _logger = logger;
-        _tools = tools.SelectMany(tool => tool.Domains.Select(domain => (domain, tool)))
-            .ToLookup(t => t.domain, t => t.tool);
+        _tools = tools.SelectMany(tool => tool.GameIds.Select(gameId => (gameId, tool)))
+            .ToLookup(t => t.gameId, t => t.tool);
         _syncService = syncService;
         _conn = conn;
     }
@@ -32,7 +33,7 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout)
     {
-        return _tools[loadout.InstallationInstance.Game.Domain];
+        return _tools[loadout.InstallationInstance.Game.GameId];
     }
 
     /// <inheritdoc />
@@ -41,7 +42,7 @@ public class ToolManager : IToolManager
         Loadout.ReadOnly loadout, 
         CancellationToken token = default)
     {
-        if (!tool.Domains.Contains(loadout.InstallationInstance.Game.Domain))
+        if (!tool.GameIds.Contains(loadout.InstallationInstance.Game.GameId))
             throw new Exception("Tool does not support this game");
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 

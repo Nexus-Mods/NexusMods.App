@@ -2,14 +2,13 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
 public class ListFilesTool : ITool
 {
-    public IEnumerable<GameDomain> Domains => new[] { GameDomain.From("stubbed-game") };
-
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var listPath = loadout.InstallationInstance.LocationsRegister[LocationId.Game];
@@ -22,6 +21,8 @@ public class ListFilesTool : ITool
 
         await outPath.WriteAllLinesAsync(lines, cancellationToken);
     }
+
+    public IEnumerable<GameId> GameIds => [ GameId.From(uint.MaxValue) ];
 
     public string Name => "List Files";
 

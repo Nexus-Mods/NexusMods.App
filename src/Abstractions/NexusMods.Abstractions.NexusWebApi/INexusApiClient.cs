@@ -82,18 +82,4 @@ public interface INexusApiClient
     /// <param name="token">Token used to cancel the task.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     Task<Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default);
-
-    /// <summary>
-    /// Returns all of the downloadable files associated with a mod.
-    /// </summary>
-    /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.
-    /// </param>
-    /// <param name="modId">
-    ///    An individual identifier for the mod. Unique per game.
-    /// </param>
-    /// <param name="token">Token used to cancel the task.</param>
-    /// <returns></returns>
-    Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default);
 }

@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>
@@ -9,13 +10,23 @@ public interface ILocatableGame
     /// Human readable name of the game.
     /// </summary>
     public string Name { get; }
-
+    
     /// <summary>
-    /// Machine friendly name for the game, should be devoid of special characters
-    /// that may conflict with URLs or file paths.
+    /// Unique identifier for the game.
+    /// This ID can be obtained from the V2 API.
     /// </summary>
     /// <remarks>
-    ///    Usually we match these with NexusMods' URLs.
+    ///     This can be obtained with a V2 call like:
+    ///
+    ///     ```
+    ///     query Game {
+    ///         game(domainName: "site") {
+    ///             id
+    ///         }
+    ///     }
+    ///
+    ///     To https://api.nexusmods.com/v2/graphql
+    ///     ```
     /// </remarks>
-    public GameDomain Domain { get; }
+    public GameId GameId { get; }
 }

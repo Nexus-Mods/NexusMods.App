@@ -62,7 +62,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     {
         return Loadout.All(_connection.Db)
             .Where(x => x.IsVisible())
-            .Select(x => x.Installation.Domain)
+            .Select(x => x.Installation.GameId)
             .Distinct()
             .Count();
     }
@@ -74,7 +74,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .Select(x =>
             {
                 var count = x.Mods.Count(mod => mod.Category == ModCategory.Mod);
-                return new Counters.LoadoutModCount(x.Installation.Domain, count);
+                return new Counters.LoadoutModCount(x.Installation.Name, count);
             })
             .ToArray();
     }
