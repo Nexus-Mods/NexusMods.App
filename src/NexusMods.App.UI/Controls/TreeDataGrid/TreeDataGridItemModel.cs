@@ -9,10 +9,13 @@ using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;
 
+[PublicAPI]
+public interface ITreeDataGridItemModel : IReactiveR3Object;
+
 /// <summary>
 /// Base class for models of <see cref="Avalonia.Controls.TreeDataGrid"/> items.
 /// </summary>
-public class TreeDataGridItemModel : ReactiveR3Object;
+public class TreeDataGridItemModel : ReactiveR3Object, ITreeDataGridItemModel;
 
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
@@ -145,7 +148,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
     }
 
     [MustDisposeResource] protected static IDisposable WhenModelActivated<TItemModel>(TItemModel model, Action<TItemModel, CompositeDisposable> block)
-        where TItemModel : TreeDataGridItemModel
+        where TItemModel : ITreeDataGridItemModel
     {
         return model.WhenActivated(block);
     }

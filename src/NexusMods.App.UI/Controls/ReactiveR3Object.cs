@@ -5,18 +5,26 @@ using R3;
 
 namespace NexusMods.App.UI.Controls;
 
+[PublicAPI]
+public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
+{
+    Observable<bool> Activation { get; }
+    void Activate();
+    void Deactivate();
+}
+
 /// <summary>
 /// Base class using R3 with support for activation/deactivation,
 /// <see cref="INotifyPropertyChanged"/>, and <see cref="INotifyPropertyChanging"/>.
 /// </summary>
 [PublicAPI]
-public class ReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
+public class ReactiveR3Object : IReactiveR3Object
 {
     private readonly BehaviorSubject<bool> _activation = new(initialValue: false);
     public Observable<bool> Activation => _activation;
 
-    internal void Activate() => _activation.OnNext(true);
-    internal void Deactivate()
+    public void Activate() => _activation.OnNext(true);
+    public void Deactivate()
     {
         // NOTE(erri120): no need to deactivate disposed objects, as
         // any subscriptions and WhenActivated-blocks are already disposed
