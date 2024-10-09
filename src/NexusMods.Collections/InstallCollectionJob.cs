@@ -150,7 +150,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
     private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(LoadoutId loadoutId, Mod fileMod, LoadoutItemGroup.ReadOnly group, LibraryArchive.ReadOnly collectionArchive)
     {
+        // Bundled mods are found inside the collection archive, so we'll have to find the files that are prefixed with the mod's source file expression.
         var prefixPath = "bundled".ToRelativePath().Join(fileMod.Source.FileExpression);
+        // These are the files to install
         var prefixFiles = collectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();        
         
         using var tx = Connection.BeginTransaction();
@@ -158,6 +160,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         if (!collectionArchive.AsLibraryFile().TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
             throw new InvalidOperationException("The source collection is not a NexusModsCollectionLibraryFile.");
         
+        // Create the mod group
         var modGroup = new NexusCollectionBundledLoadoutGroup.New(tx, out var id)
         {
             CollectionLibraryFileId = collectionFile,
@@ -175,7 +178,10 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         foreach (var file in prefixFiles)
         {
+            // Remove the prefix path from the file path
             var fixedPath = file.Path.RelativeTo(prefixPath);
+            
+            // Fill out the rest of the file information
             _ = new LoadoutFile.New(tx, out var fileId)
             {
                 Hash = file.AsLibraryFile().Hash,
