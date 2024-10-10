@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -13,11 +15,17 @@ namespace NexusMods.Abstractions.Loadouts;
 public partial class GameInstallMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.GameMetadata";
+
+    /// <summary>
+    /// The game's unique id.
+    /// </summary>
+    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId));
     
     /// <summary>
-    /// The game's domain.
+    /// User friendly name for the game.
+    /// May be referred to from diagnostics, telemetry or otherwise.
     /// </summary>
-    public static readonly GameDomainAttribute Domain = new(Namespace, "Domain");
+    public static readonly StringAttribute Name = new(Namespace, nameof(Name));
     
     /// <summary>
     /// The name of the store the game is from

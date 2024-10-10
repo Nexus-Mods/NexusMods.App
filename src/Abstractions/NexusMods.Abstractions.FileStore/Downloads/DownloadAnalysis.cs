@@ -10,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
+using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.FileStore.Downloads;
 

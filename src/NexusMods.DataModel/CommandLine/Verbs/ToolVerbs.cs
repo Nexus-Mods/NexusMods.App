@@ -19,7 +19,7 @@ internal static class ToolVerbs
         [Injected] CancellationToken token)
     {
         await renderer.Table(new[] { "Name", "Description" },
-            tools.Select(t => new object[] { t.Name, string.Join(", ", t.Domains) }));
+            tools.Select(t => new object[] { t.Name, string.Join(", ", t.GameIds) }));
         return 0;
     }
 

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -60,6 +61,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
+        IGameDomainToGameIdMappingCache gameIdMappingCache,
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
@@ -99,7 +101,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = _loadout.InstallationInstance.Game;
-        var gameDomain = game.Domain;
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
@@ -146,10 +147,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
-
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken),
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = (await gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
+                var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
+                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
+            },
             awaitOperation: AwaitOperation.Parallel,
             configureAwait: false
         );

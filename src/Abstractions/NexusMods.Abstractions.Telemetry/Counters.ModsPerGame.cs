@@ -1,11 +1,11 @@
 using System.Diagnostics.Metrics;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Telemetry;
 
 public static partial class Counters
 {
-    public record struct LoadoutModCount(GameDomain Game, int Count);
+    public record struct LoadoutModCount(string GameName, int Count);
     public delegate LoadoutModCount[] GetModsPerLoadoutDelegate();
 
     /// <summary>
@@ -21,7 +21,7 @@ public static partial class Counters
         );
     }
 
-    private static double AggregateModCount(IGrouping<GameDomain, LoadoutModCount> grouping)
+    private static double AggregateModCount(IGrouping<string, LoadoutModCount> grouping)
     {
         // NOTE(erri120): Using average as the aggregation method to go from
         // multiple loadouts with mod counts to a single mod count.
@@ -32,7 +32,7 @@ public static partial class Counters
     {
         var values = func();
         var measurements = values
-            .GroupBy(x => x.Game)
+            .GroupBy(x => x.GameName)
             .Select(grouping =>
             {
                 var game = grouping.Key;
