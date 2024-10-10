@@ -20,11 +20,33 @@ public class GameDomainToGameIdMappingCacheTests(GameDomainToGameIdMappingCache 
     }
     
     [Theory]
+    [MemberData(nameof(TryGetDomainAsyncTestData))]
+    public void TryGetDomain_WithMissingMapping_ShouldResolveMapping(GameId gameId, GameDomain expectedGameDomain)
+    {
+        // Act
+        var result = cache.TryGetDomain(gameId, CancellationToken.None);
+
+        // Assert
+        result.Value.Should().Be(expectedGameDomain);
+    }
+    
+    [Theory]
     [MemberData(nameof(TryGetIdAsyncTestData))]
     public async Task TryGetIdAsync_WithMissingMapping_ShouldResolveMapping(GameDomain gameDomain, GameId expectedGameId)
     {
         // Act
         var result = await cache.TryGetIdAsync(gameDomain, CancellationToken.None);
+
+        // Assert
+        result.Value.Should().Be(expectedGameId);
+    }
+    
+    [Theory]
+    [MemberData(nameof(TryGetIdAsyncTestData))]
+    public void TryGetId_WithMissingMapping_ShouldResolveMapping(GameDomain gameDomain, GameId expectedGameId)
+    {
+        // Act
+        var result = cache.TryGetId(gameDomain, CancellationToken.None);
 
         // Assert
         result.Value.Should().Be(expectedGameId);
