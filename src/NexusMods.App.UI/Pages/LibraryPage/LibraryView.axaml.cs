@@ -57,6 +57,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.EmptyLibraryLinkButton)
                 .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.OpenLinkBareIconButton)
+                .AddTo(disposables);
         });
     }
 }

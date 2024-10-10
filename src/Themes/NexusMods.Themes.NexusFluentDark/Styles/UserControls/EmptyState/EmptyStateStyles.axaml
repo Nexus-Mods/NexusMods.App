@@ -33,7 +33,7 @@
 
             <Style Selector="^ StackPanel#Panel">
                 <Setter Property="Orientation" Value="Vertical"/>
-                <Setter Property="Margin" Value="128 64 128 0"/>
+                <Setter Property="Margin" Value="16 64 16 0"/>
                 <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
             </Style>
 
