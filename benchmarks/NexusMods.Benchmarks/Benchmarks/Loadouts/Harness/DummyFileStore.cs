@@ -11,7 +11,12 @@ public class DummyFileStore : IFileStore
         return ValueTask.FromResult(false);
     }
 
-    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
@@ -29,6 +34,11 @@ public class DummyFileStore : IFileStore
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         return null!;
+    }
+
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        return Task.FromResult(Array.Empty<byte>());
     }
 
     public HashSet<ulong> GetFileHashes()

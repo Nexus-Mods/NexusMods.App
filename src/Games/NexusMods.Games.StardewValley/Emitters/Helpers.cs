@@ -1,9 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
@@ -14,7 +13,7 @@ namespace NexusMods.Games.StardewValley.Emitters;
 internal static class Helpers
 {
     public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/stardewvalley"));
-    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.GameDomain.Value, "2400"));
+    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, "2400"));
 
     public static bool TryGetSMAPI(Loadout.ReadOnly loadout, out SMAPILoadoutItem.ReadOnly smapi)
     {
@@ -28,8 +27,8 @@ internal static class Helpers
 
     public static async IAsyncEnumerable<ValueTuple<SMAPIModLoadoutItem.ReadOnly, Manifest>> GetAllManifestsAsync(
         ILogger logger,
-        IFileStore fileStore,
         Loadout.ReadOnly loadout,
+        IResourceLoader<SMAPIModLoadoutItem.ReadOnly, Manifest> pipeline,
         bool onlyEnabledMods,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -45,32 +44,20 @@ internal static class Helpers
         while (await enumerator.MoveNextAsync())
         {
             var smapiMod = enumerator.Current;
-            var manifest = await GetManifest(logger, fileStore, smapiMod, cancellationToken);
 
-            if (manifest is null) continue;
-            yield return (smapiMod, manifest);
-        }
-    }
+            Resource<Manifest> resource;
 
-    private static async ValueTask<Manifest?> GetManifest(
-        ILogger logger,
-        IFileStore fileStore,
-        SMAPIModLoadoutItem.ReadOnly smapiMod,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Interop.GetManifest(fileStore, smapiMod, cancellationToken);
-        }
-        catch (TaskCanceledException)
-        {
-            // ignored
-            return null;
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Exception trying to get manifest for mod {Mod}", smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name);
-            return null;
+            try
+            {
+                resource = await pipeline.LoadResourceAsync(smapiMod, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Exception while getting manifest for `{Name}`", smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name);
+                continue;
+            }
+
+            yield return (smapiMod, resource.Data);
         }
     }
 }

@@ -1675,6 +1675,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FREE.
+        /// </summary>
+        public static string Nexus_Premium_Status__Free {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Free", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PREMIUM.
         /// </summary>
         public static string Nexus_Premium_Status__Premium {

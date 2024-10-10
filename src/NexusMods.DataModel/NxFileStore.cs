@@ -16,6 +16,7 @@ using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -67,7 +68,7 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
     {
         var hasAnyFiles = backups.Any();
         if (hasAnyFiles == false)
@@ -76,9 +77,11 @@ public class NxFileStore : IFileStore
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
-        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         foreach (var backup in distinct)
         {
+            if (deduplicate && await HaveFile(backup.Hash))
+                continue;
+            
             var stream = await backup.StreamFactory.GetStreamAsync();
             streams.Add(stream);
             builder.AddFile(stream, new AddFileParams
@@ -87,6 +90,7 @@ public class NxFileStore : IFileStore
             });
         }
 
+        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         var guid = Guid.NewGuid();
         var id = guid.ToString();
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
@@ -106,6 +110,13 @@ public class NxFileStore : IFileStore
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
         await UpdateIndexes(unpacker, finalPath);
+    }
+
+    /// <inheritdoc />
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
+    {
+        // TODO: implement with repacking
+        return BackupFiles(files, deduplicate: true, cancellationToken);
     }
 
     private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
@@ -295,6 +306,31 @@ public class NxFileStore : IFileStore
             new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
     }
 
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        if (hash == Hash.Zero)
+            throw new ArgumentNullException(nameof(hash));
+        
+        using var lck = _lock.ReadLock();
+        if (!TryGetLocation(_conn.Db, hash, null,
+                out var archivePath, out var entry))
+            throw new Exception($"Missing archive for {hash.ToHex()}");
+        
+        var file = archivePath.Read();
+
+        var provider = new FromStreamProvider(file);
+        var unpacker = new NxUnpacker(provider);
+        
+        var output = new OutputArrayProvider("", entry);
+        
+        unpacker.ExtractFiles([output], new UnpackerSettings()
+        {
+            MaxNumThreads = 1, 
+        });
+        
+        return Task.FromResult(output.Data);
+    }
+
     /// <inheritdoc />
     public HashSet<ulong> GetFileHashes()
     {
@@ -304,7 +340,7 @@ public class NxFileStore : IFileStore
         var fileHashes = new HashSet<ulong>();
 
         // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
-        fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved().OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
+        fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved(_conn).OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
 
         return fileHashes;
     }

@@ -1,0 +1,7 @@
+﻿[
+  {
+    FromPath: Mods/myMod.pak,
+    Hash: 0x33C4706972EAAE6E,
+    ToGamePath: {Mods}/myMod.pak
+  }
+]

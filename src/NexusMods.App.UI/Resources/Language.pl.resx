@@ -129,6 +129,9 @@
 	<data name="Nexus_Premium_Status__Premium" xml:space="preserve">
 		<value>PREMIUM</value>
 	</data>
+	<data name="Nexus_Premium_Status__Free" xml:space="preserve">
+		<value>DARMOWE</value>
+	</data>
 	<data name="SearchBox__Search" xml:space="preserve">
 		<value>Wyszukaj</value>
 	</data>
@@ -277,7 +280,7 @@
 		<value>Informacje moda</value>
 	</data>
 	<data name="LoadoutViewPageTitle" xml:space="preserve">
-		<value>Moje mody</value>
+		<value>Zainstalowane mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
 		<value>Pobieranie</value>
@@ -567,7 +570,7 @@
 		<value>przycisku na pasku narzędzi</value>
 	</data>
 	<data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-		<value>Dodaj pobrane mody z</value>
+		<value>Zainstaluj pobrane mody z</value>
 	</data>
 	<data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
 		<value>Brak dodanych modów do {0}</value>
@@ -659,5 +662,8 @@
 	</data>
 	<data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
 		<value>Usuń</value>
+	</data>
+	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+		<value>Zainstalowane mody</value>
 	</data>
 </root>

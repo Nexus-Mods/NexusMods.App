@@ -18,16 +18,6 @@ public static class NxRepacker
     ///     can be used to repack Nx archives. See <see cref="ArchiveGarbageCollector{TParsedHeaderState,TFileEntryWrapper}.RepackDelegate"/>
     ///     type for more info.
     /// </summary>
-    public static void RepackArchive(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<NxParsedHeaderState> archive)
-    {
-        RepackArchive(progress, toArchive, toRemove, archive, true, out _);
-    }
-    
-    /// <summary>
-    ///     The method to pass to the 'CollectGarbage' method that
-    ///     can be used to repack Nx archives. See <see cref="ArchiveGarbageCollector{TParsedHeaderState,TFileEntryWrapper}.RepackDelegate"/>
-    ///     type for more info.
-    /// </summary>
     // ReSharper disable once UnusedParameter.Global
     public static void RepackArchive(IProgress<double> progress, List<Hash> toArchive, List<Hash> toRemove, ArchiveReference<NxParsedHeaderState> archive, bool deleteOriginal, out AbsolutePath newArchivePath)
     {

@@ -1,6 +1,5 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using Humanizer.DateTimeHumanizeStrategy;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -54,6 +53,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
                 .DisposeWith(d);
 
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.FreeLabel)
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                 .DisposeWith(d);
 
@@ -62,10 +64,15 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             
             this.WhenAnyValue(
                     x => x.ViewModel!.IsLoggedIn,
-                    x => x.ViewModel!.IsPremium,
-                    (isLoggedIn, isPremium) => isLoggedIn && isPremium
+                    x => x.ViewModel!.IsPremium
                 )
-                .BindToView (this, view => view.PremiumLabel.IsVisible)
+                .Subscribe(tuple =>
+                {
+                    var (isLoggedIn, isPremium) = tuple;
+                    PremiumLabel.IsVisible = isLoggedIn && isPremium;
+                    FreeLabel.IsVisible = isLoggedIn && !isPremium;
+                    FreeLabel.IsEnabled = isLoggedIn && !isPremium;
+                })
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)
@@ -75,5 +82,4 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .DisposeWith(d);
         });
     }
-
 }

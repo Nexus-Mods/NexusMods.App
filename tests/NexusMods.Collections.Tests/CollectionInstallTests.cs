@@ -12,11 +12,17 @@ namespace NexusMods.Collections.Tests;
 public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<CollectionInstallTests>(helper)
 {
 
-    [Fact]
-    public async Task CanInstallBasicCollection()
+    [Theory]
+    // Includes a basic collection
+    [InlineData("jjctqn", 1)]
+    // FOMOD and binary patching
+    [InlineData("jjctqn", 3)]
+    // Includes bundled mod
+    [InlineData("jjctqn", 4)]
+    public async Task CanInstallCollections(string slug, int revisionNumber)
     {
         await using var destination = TemporaryFileManager.CreateFile();
-        var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From("jjctqn"), RevisionNumber.From(1),
+        var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From((ulong)revisionNumber),
             CancellationToken.None
         );
         
@@ -34,16 +40,18 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
             .OrderBy(r => r.Name)
             .Select(r => r.Name)
             .ToArray();
-        
+
         var files = loadout.Items
             .OfTypeLoadoutItemWithTargetPath()
-            .Select(f => ((GamePath)f.TargetPath).ToString())
-            .Order()
-            .ToArray();
+            .OfTypeLoadoutFile()
+            .Select(f => KeyValuePair.Create(((GamePath)f.AsLoadoutItemWithTargetPath().TargetPath).ToString(), f.Hash.ToString()))
+            .ToDictionary();
 
-        await Verify(new {
-            mods,
-            files
-        });
+        await Verify(new
+            {
+                mods,
+                files
+            }
+        ).UseParameters(slug, revisionNumber);
     }
 }

@@ -14,6 +14,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
+using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
@@ -117,9 +118,12 @@ public static class Services
         
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
-        
+
+        coll.AddPersistedDbResourceModel();
+
         // Verbs
         coll.AddLoadoutManagementVerbs()
+            .AddImportExportVerbs()
             .AddToolVerbs();
 
         return coll;

@@ -71,6 +71,7 @@ nav:
       - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
+      - Baldur's Gate 3: users/games/BaldursGate3.md
     - Frequently Asked Questions: 
       - users/faq/index.md
       - How to find the log files: users/faq/LogFiles.md
@@ -110,6 +111,7 @@ nav:
             - '10: Disk State Storage': developers/decisions/backend/0016-disk-state-storage.md
             - '11: Garbage Collector Design': developers/decisions/backend/0017-garbage-collector-design.md
             - '12: Wine and Proton Detection Design': developers/decisions/backend/0018-running-tools-on-linux.md
+            - '13: Updating Mods': developers/decisions/backend/0019-updating-mods.md
         - Frontend:
             - '01: UI Panel Layout': developers/decisions/frontend/0001-UI-Panel-Layout.md
             - '02: Workspaces': developers/decisions/frontend/0002-Workspaces.md
@@ -139,6 +141,8 @@ nav:
         - About Fomod: developers/misc/AboutFomod.md
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
         - Drawbacks of Nexus App Approach: developers/misc/DrawbacksOfNexusApproach.md
+        - Research:
+            - '00: Update Implementation': developers/misc/research/00-update-implementation-research.md
     - Contributing to Docs: Nexus/Pages/contributing.md
 
 validation: 

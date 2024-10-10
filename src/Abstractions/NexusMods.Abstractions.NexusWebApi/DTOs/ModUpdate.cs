@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
 #pragma warning disable CS8618
@@ -25,7 +25,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <summary>
     /// An individual mod ID that is unique for this game.
     /// </summary>
-    public ModId ModId => ModId.From(_ModId);
+    public ModId ModId => ModId.From((uint)_ModId);
 
     /// <summary>
     /// The last time a file on the mod page was updated.
@@ -33,7 +33,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <remarks>
     ///    Expressed as a Unix timestamp.
     /// </remarks>
-    [JsonPropertyName("LatestFileUpdated")]
+    [JsonPropertyName("latest_file_update")]
     public long LatestFileUpdated { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <remarks>
     ///    Expressed as a Unix timestamp.
     /// </remarks>
-    [JsonPropertyName("LatestModActivity")]
+    [JsonPropertyName("latest_mod_activity")]
     public long LatestModActivity { get; set; }
 
     /// <summary>

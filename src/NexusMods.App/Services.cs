@@ -21,6 +21,7 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
+using NexusMods.Games.Larian.BaldursGate3;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -129,6 +130,7 @@ public static class Services
         
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
+        Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
         return services;
     }
 }

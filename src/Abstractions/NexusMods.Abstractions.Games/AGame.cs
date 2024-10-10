@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -44,9 +45,9 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public abstract string Name { get; }
-
+    
     /// <inheritdoc />
-    public abstract GameDomain Domain { get; }
+    public abstract GameId GameId { get; }
 
     /// <summary>
     /// The path to the main executable file for the game.
@@ -71,7 +72,7 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
     {
-        var locations = GetLocations(metadata.Path.FileSystem, metadata);
+        var locations = GetLocations(metadata.GameFileSystem, metadata);
         return new GameInstallation
         {
             Game = this,

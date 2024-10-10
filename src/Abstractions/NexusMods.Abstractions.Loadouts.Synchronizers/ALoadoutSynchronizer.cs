@@ -177,7 +177,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return file;
             })
             .Where(f => !f.TryGetAsDeletedFile(out _))
-            .Where(f => !IsIgnoredPath(f.TargetPath))
             .OfTypeLoadoutFile();
         
         return BuildSyncTree(currentState, previousTree, grouped);
@@ -808,7 +807,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
 
-        await _fileStore.BackupFiles(archivedFiles);
+        // PERFORMANCE: We deduplicate above with the HaveFile call.
+        await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
     }
 
     private async Task<DiskState> GetOrCreateInitialDiskState(GameInstallation installation)
@@ -1164,9 +1164,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         Memory<byte> buffer = System.GC.AllocateUninitializedArray<byte>(32);
         
         // Cache some attribute ids
-        var registry = baseDb.Registry;
-        var nameId = Loadout.Name.GetDbId(registry.Id);
-        var shortNameId = Loadout.ShortName.GetDbId(registry.Id);
+        var cache = baseDb.AttributeCache;
+        var nameId = cache.GetAttributeId(Loadout.Name.Id);
+        var shortNameId = cache.GetAttributeId(Loadout.ShortName.Id);
         
         // Generate a new name and short name
         var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
@@ -1219,11 +1219,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 
                 // Create the new datom and reference the copied value
                 var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, false, datom.Prefix.ValueTag);
-                var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length], registry);
+                var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
-                var attr = registry.GetAttribute(datom.A);
-                attr.Remap(remapFn, buffer[..datom.ValueSpan.Length].Span);
+                ValueHelpers.Remap(remapFn, datom.Prefix, buffer[..datom.ValueSpan.Length].Span);
                 
                 // Add the new datom
                 tx.Add(newDatom);

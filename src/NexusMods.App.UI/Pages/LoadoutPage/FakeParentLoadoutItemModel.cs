@@ -11,24 +11,22 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
 {
     public required IObservable<DateTime> InstalledAtObservable { get; init; }
 
-    public required IObservable<IChangeSet<LoadoutItemId, EntityId>> LoadoutItemIdsObservable { get; init; }
+    public IObservable<IChangeSet<LoadoutItemId, EntityId>> LoadoutItemIdsObservable { get; }
     public ObservableHashSet<LoadoutItemId> LoadoutItemIds { get; private set; } = [];
 
     public override IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => LoadoutItemIds;
 
     private readonly IDisposable _modelActivationDisposable;
-    private readonly SerialDisposable _loadoutItemIdsDisposable = new();
+    private readonly IDisposable _loadoutItemIdsDisposable;
 
-    public FakeParentLoadoutItemModel() : base(default(LoadoutItemId))
+    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable) : base(default(LoadoutItemId))
     {
+        LoadoutItemIdsObservable = loadoutItemIdsObservable;
+        _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));
+        
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.InstalledAtObservable.OnUI().Subscribe(date => model.InstalledAt.Value = date).AddTo(disposables);
-
-            if (model._loadoutItemIdsDisposable.Disposable is null)
-            {
-                model._loadoutItemIdsDisposable.Disposable = model.LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => model.LoadoutItemIds.ApplyChanges(changeSet));
-            }
         });
     }
 

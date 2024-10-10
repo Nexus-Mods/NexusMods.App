@@ -12,7 +12,7 @@
     <Design.DataContext>
         <ui:AdvancedInstallerPageDesignViewModel />
     </Design.DataContext>
-
+    
     <Grid RowDefinitions="*, Auto">
         <Grid.Styles>
 

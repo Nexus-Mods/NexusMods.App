@@ -1,8 +1,11 @@
 using System.Reflection;
 using CliWrap;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
 using static NexusMods.Games.RedEngine.Constants;
@@ -13,14 +16,16 @@ public class RedModDeployTool : ITool
 {
     private readonly GameToolRunner _toolRunner;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly ILogger _logger;
 
-    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager)
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger)
     {
+        _logger = logger;
         _toolRunner = toolRunner;
         _temporaryFileManager = temporaryFileManager;
     }
-
-    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.Cyberpunk2077Game.StaticDomain };
+    
+    public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
@@ -42,8 +47,15 @@ public class RedModDeployTool : ITool
         }
         else
         {
-            await using var batchPath = await ExtractTemporaryDeployScript();
-            await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+            if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
+            {
+                await using var batchPath = await ExtractTemporaryDeployScript();
+                await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+            }
+            else
+            {
+                _logger.LogWarning("Skip running redmod, it's only supported for Steam on Linux at the moment");
+            }
         }
     }
 

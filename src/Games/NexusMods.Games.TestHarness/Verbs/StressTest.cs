@@ -5,15 +5,17 @@ using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.StandardGameLocators;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
+using StrawberryShake;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
@@ -27,6 +29,8 @@ public class StressTest
         [Option("g", "game", "The game to test")] IGame game,
         [Option("o", "output", "Output path for the resulting report")] AbsolutePath output,
         [Injected] INexusApiClient nexusApiClient,
+        [Injected] INexusGraphQLClient nexusGqlClient,
+        [Injected] IGameDomainToGameIdMappingCache domainToIdCache,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] IHttpDownloader downloader,
         [Injected] ILibraryService libraryService,
@@ -37,8 +41,9 @@ public class StressTest
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
         AdvancedManualInstallerUI.Headless = true;
 
-        var mods = await nexusApiClient.ModUpdatesAsync(game.Domain.Value, PastTime.Day, token);
-        var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
+        var domain = (await domainToIdCache.TryGetDomainAsync(game.GameId, token)).Value.Value;
+        var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
+        var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.V2.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
         var (manualId, install) = await manualLocator.Add(game, new Version(1, 0), gameFolder);
@@ -49,10 +54,11 @@ public class StressTest
             {
                 await renderer.Text("Processing {0}", mod.ModId);
 
-                Response<ModFiles> files;
+                IOperationResult<IModFilesResult> files;
                 try
                 {
-                    files = await nexusApiClient.ModFilesAsync(game.Domain.Value, mod.ModId, token);
+                    files = await nexusGqlClient.ModFiles.ExecuteAsync(mod.ModId.ToString(), game.GameId.ToString(), token);
+                    files.EnsureNoErrors();
                 }
                 catch (HttpRequestException ex)
                 {
@@ -61,17 +67,18 @@ public class StressTest
                 }
 
                 var hash = Hash.Zero;
-                foreach (var file in files.Data.Files.Where(f => Size.FromLong(f.SizeInBytes ?? 0) < MaxFileSize))
+                foreach (var file in files.Data!.ModFiles.Where(f => Size.FromLong(long.Parse(f.SizeInBytes ?? "0")) < MaxFileSize))
                 {
+                    var uid = UidForFile.FromV2Api(file.Uid);
                     try
                     {
-                        if (file.CategoryId != 1) continue;
+                        var size = Size.FromLong(long.Parse(file.SizeInBytes ?? "0"));
                         await renderer.Text("Downloading {0} {1} {2} - {3}", mod.ModId,
-                            file.FileId,
-                            file.FileName,
-                            Size.FromLong(file.SizeInBytes ?? 0));
+                            uid.FileId,
+                            file.Name,
+                            size);
 
-                        var urls = await nexusApiClient.DownloadLinksAsync(game.Domain.Value, mod.ModId, file.FileId, token);
+                        var urls = await nexusApiClient.DownloadLinksAsync(domain, mod.ModId, uid.FileId, token);
                         await using var tmpPath = temporaryFileManager.CreateFile();
 
                         var cts = new CancellationTokenSource();
@@ -80,24 +87,24 @@ public class StressTest
                         hash = await downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
                         await renderer.Text("Installing {0} {1} {2} - {3}", mod.ModId,
-                            file.FileId,
-                            file.FileName,
-                            Size.FromLong(file.SizeInBytes ?? 0));
+                            uid.FileId,
+                            file.Name,
+                            size);
 
                         var list = await game.Synchronizer.CreateLoadout(install);
 
                         var localFile = await libraryService.AddLocalFile(tmpPath);
                         await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId);
                         
-                        results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
-                        await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, file.FileId,
-                            file.FileName, Size.FromLong(file.SizeInBytes ?? 0));
+                        results.Add((file.Name, mod.ModId, uid.FileId, hash, true, null));
+                        await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, uid.FileId,
+                            file.Name, size);
                     }
                     catch (Exception ex)
                     {
-                        await renderer.Error(ex, "Failed to install {0} {1} {2}", mod.ModId, file.FileId,
-                            file.FileName);
-                        results.Add((file.FileName, mod.ModId, file.FileId, hash, false, ex));
+                        await renderer.Error(ex, "Failed to install {0} {1} {2}", mod.ModId, uid.FileId,
+                            file.Name);
+                        results.Add((file.Name, mod.ModId, uid.FileId, hash, false, ex));
                     }
 
                 }
@@ -112,7 +119,7 @@ public class StressTest
 
             var lines = new List<string>
             {
-                $"# {game.Domain} Test Results - {results.Count} files",
+                $"# {domain} Test Results - {results.Count} files",
                 "",
                 "| Status | Name | ModId | FileId | Hash | Exception |",
                 "| ---- | ----- | ------ | ---- | ------ | --------- |"
