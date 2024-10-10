@@ -93,7 +93,6 @@
                               ShowColumnHeaders="True"
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
-                              Classes="MainListsStyling"
                               HorizontalAlignment="Stretch">
                     <TreeDataGrid.Resources>
                         <!-- Name column -->
