@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Controls;
 /// Adapter class for working with <see cref="TreeDataGrid"/>.
 /// </summary>
 public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
-    where TModel : TreeDataGridItemModel<TModel, TKey>
+    where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();

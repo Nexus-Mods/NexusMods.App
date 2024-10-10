@@ -62,6 +62,7 @@
         <Setter Property="BorderThickness" Value="0" />
 
         <Style Selector="^ TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         </Style>
 

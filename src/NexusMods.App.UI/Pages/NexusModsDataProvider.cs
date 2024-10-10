@@ -26,7 +26,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
+    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
         return NexusModsLibraryItem
@@ -36,7 +36,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((file, _) => ToLibraryItemModel(file, libraryFilter));
     }
 
-    public IObservable<IChangeSet<LibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
+    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
     {
         // NOTE(erri120): For the nested library view, the parents are "fake" library
         // models that represent the Nexus Mods mod page, with each child being a
@@ -53,23 +53,24 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
     }
 
-    private LibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryFile, LibraryFilter libraryFilter)
+    private ILibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, LibraryFilter libraryFilter)
     {
-        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryFile.Id, libraryFilter);
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new LibraryItemModel(nexusModsLibraryFile.Id)
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem)
         {
-            Name = nexusModsLibraryFile.FileMetadata.Name,
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.CreatedAtDate.Value = nexusModsLibraryFile.GetCreatedAt();
-        model.Version.Value = nexusModsLibraryFile.FileMetadata.Version;
-        model.ItemSize.Value = nexusModsLibraryFile.FileMetadata.Size.ToString();
+        model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
+        model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
+        model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
+        model.ItemSize.Value = nexusModsLibraryItem.FileMetadata.Size;
+
         return model;
     }
 
-    private LibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata, LibraryFilter libraryFilter)
+    private ILibraryItemModel ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPageMetadata, LibraryFilter libraryFilter)
     {
         // TODO: dispose
         var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
@@ -93,7 +94,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
 
         var libraryFilesObservable = cache.Connect()
-            .Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e).AsLibraryItem());
+            .Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e));
 
         var numInstalledObservable = cache.Connect().TransformOnObservable((_, e) => _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
@@ -103,14 +104,17 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        return new NexusModsModPageLibraryItemModel(libraryFilesObservable)
+        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable)
         {
-            Name = modPageMetadata.Name,
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
+
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             NumInstalledObservable = numInstalledObservable,
         };
+
+        model.Name.Value = modPageMetadata.Name;
+        return model;
     }
 
     public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)

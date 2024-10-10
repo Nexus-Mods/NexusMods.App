@@ -268,7 +268,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
 
         return
         [
-            viewHierarchical ? LoadoutItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
+            viewHierarchical ? ITreeDataGridItemModel<LoadoutItemModel, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             // TODO: LoadoutItemModel.CreateVersionColumn(),
             // TODO: LoadoutItemModel.CreateSizeColumn(),
             LoadoutItemModel.CreateInstalledAtColumn(),
