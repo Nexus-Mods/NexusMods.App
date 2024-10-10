@@ -211,21 +211,6 @@
                                 </ContentControl.DataTemplates>
                             </ContentControl>
                         </DataTemplate>
-
-                        <!-- TODO: To be deleted -->
-                        <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
-                            <Button Command="{CompiledBinding InstallCommand}" 
-                                    Classes="Standard"
-                                    HorizontalAlignment="Center"
-                                    Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
-                                    Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
-                                    >
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
-                                    <TextBlock Text="{CompiledBinding InstallText.Value}" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
                     </TreeDataGrid.Resources>
                 </TreeDataGrid>
             </Grid>

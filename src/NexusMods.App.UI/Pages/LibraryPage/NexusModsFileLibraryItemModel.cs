@@ -1,7 +1,6 @@
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -12,19 +11,19 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
-public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
+public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithName,
+    ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,
     IHasLinkedLoadoutItems,
-    IIsParentLibraryItemModel
+    IIsChildLibraryItemModel
 {
-    public required IObservable<int> NumInstalledObservable { get; init; }
-    private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
-
-    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
+    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem)
     {
+        LibraryItemId = nexusModsLibraryItem.Id;
+
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
@@ -33,10 +32,6 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
 
-        // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
-        // until the entire model gets disposed. Without this, selection would break for off-screen items.
-        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LibraryItems.ApplyChanges(changeSet));
-
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
         // ReSharper disable once NotDisposedResource
@@ -44,45 +39,14 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         {
             // ReSharper disable once NotDisposedResource
             IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
-
-            self.LibraryItems
-                .ObserveCountChanged(notifyCurrentCount: true)
-                .Subscribe(self, static (count, self) =>
-                {
-                    if (count > 0)
-                    {
-                        self.DownloadedDate.Value = self.LibraryItems.Max(static item => item.GetCreatedAt());
-                        self.ItemSize.Value = self.LibraryItems.Sum(static item => item.AsLibraryItem().TryGetAsLibraryFile(out var libraryFile) ? libraryFile.Size : Size.Zero);
-                    }
-                    else
-                    {
-                        self.DownloadedDate.Value = DateTimeOffset.UnixEpoch;
-                        self.ItemSize.Value = Size.Zero;
-                    }
-                }).AddTo(disposables);
-
-            self.NumInstalledObservable
-                .ToObservable()
-                .CombineLatest(
-                    source2: self.LibraryItems.ObserveCountChanged(notifyCurrentCount: true),
-                    source3: ReactiveUI.WhenAnyMixin.WhenAnyValue(self, static self => self.IsExpanded).ToObservable(),
-                    source4: self.IsInstalled,
-                    static (numInstalled,numTotal,isExpanded , _) => (numInstalled, numTotal, isExpanded)
-                )
-                .ObserveOnUIThreadDispatcher()
-                .Subscribe(self, static (tuple, self) =>
-                {
-                    var (numInstalled, numTotal, isExpanded) = tuple;
-                    self.InstallButtonText.Value = ILibraryItemWithInstallAction.GetButtonText(numInstalled, numTotal, isExpanded);
-                })
-                .AddTo(disposables);
         });
 
         _modelDisposable = Disposable.Combine(
             datesDisposable,
+            linkedLoadoutItemsDisposable,
             modelActivationDisposable,
-            libraryItemsDisposable,
             Name,
+            Version,
             ItemSize,
             FormattedSize,
             DownloadedDate,
@@ -95,7 +59,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         );
     }
 
-    public IReadOnlyList<LibraryItemId> LibraryItemIds => LibraryItems.Select(static x => (LibraryItemId)x.Id).ToArray();
+    public LibraryItemId LibraryItemId { get; }
 
     public Observable<DateTimeOffset>? Ticker { get; set; }
 
@@ -103,6 +67,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+    public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
@@ -115,7 +80,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
     public ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
-    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(numInstalled: 0, numTotal: 1, isExpanded: false));
+    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: "Install");
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
@@ -130,12 +95,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             }
 
             LinkedLoadoutItems = null!;
-            LibraryItems = null!;
             _isDisposed = true;
         }
 
         base.Dispose(disposing);
     }
 
-    public override string ToString() => $"Nexus Mods Mod Page: {Name.Value}";
+    public override string ToString() => $"Nexus Mods File: {Name.Value}";
 }
