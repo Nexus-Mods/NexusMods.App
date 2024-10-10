@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<save>
+  <version major="4" minor="7" revision="1" build="200" />
+  <region id="ModuleSettings">
+    <node id="root">
+      <children>
+        <node id="Mods">
+          <children>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="GustavDev" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="GustavDev" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="AllItems" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="AllItems" />
+              <attribute id="PublishHandle" type="uint64" value="" />
+              <attribute id="UUID" type="guid" value="44c1adf4-9b2e-47e9-b20b-c090d837b98a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MetamagicExtendedQuickened2SP" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MetamagicExtendedQuickened2SP" />
+              <attribute id="PublishHandle" type="uint64" value="" />
+              <attribute id="UUID" type="guid" value="46ad1e3b-34fa-4c89-967f-296b2e7dff80" />
+              <attribute id="Version64" type="int64" value="144115188075855872" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MoreSpellSlotsAndFeats" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MoreSpellSlotsAndFeats" />
+              <attribute id="PublishHandle" type="uint64" value="" />
+              <attribute id="UUID" type="guid" value="82ec86b3-8c32-4adb-b10c-789b68de3245" />
+              <attribute id="Version64" type="int64" value="36028799166447617" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Carry Weight Increased 9000" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Carry Weight Increased 9000" />
+              <attribute id="PublishHandle" type="uint64" value="" />
+              <attribute id="UUID" type="guid" value="92af0ebd-a04c-4e9c-8306-b947aac4c127" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="WaypointInsideEmeraldGrove" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Waypoint Inside Emerald Grove" />
+              <attribute id="PublishHandle" type="uint64" value="" />
+              <attribute id="UUID" type="guid" value="e342ee75-f7c9-4aeb-b6de-403991578337" />
+              <attribute id="Version64" type="int64" value="72057598332895232" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Dnd5rBardCollegeOfSwordsHomebrew_fb035e66-c916-8b33-a4cd-af40b86e4813" />
+              <attribute id="MD5" type="LSString" value="92ae5c2df98777c464300fb9c7a5e6d2" />
+              <attribute id="Name" type="LSString" value="DnD 5R Bard - College of Swords (Homebrew)" />
+              <attribute id="PublishHandle" type="uint64" value="4343434" />
+              <attribute id="UUID" type="guid" value="fb035e66-c916-8b33-a4cd-af40b86e4813" />
+              <attribute id="Version64" type="int64" value="36028797018963969" />
+            </node>
+          </children>
+        </node>
+      </children>
+    </node>
+  </region>
+</save>

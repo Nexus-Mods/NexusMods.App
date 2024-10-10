@@ -1,0 +1,1166 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<save>
+  <version major="4" minor="7" revision="1" build="200" />
+  <region id="ModuleSettings">
+    <node id="root">
+      <children>
+        <node id="Mods">
+          <children>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="GustavDev" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="GustavDev" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ImpUI_26922ba9-6018-5252-075d-7ff2ba6ed879" />
+              <attribute id="MD5" type="LSString" value="0f136f38f83bb9083fedcfb4a7b8510b" />
+              <attribute id="Name" type="LSString" value="ImpUI (ImprovedUI)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="26922ba9-6018-5252-075d-7ff2ba6ed879" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="BG3MCM" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Mod Configuration Menu" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="755a8a72-407f-4f0d-9a33-274ac0f0b53d" />
+              <attribute id="Version64" type="int64" value="38280596832649216" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="CommunityLibrary" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="CommunityLibrary" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="396c5966-09b0-40a1-af3f-93a5e9ce71c0" />
+              <attribute id="Version64" type="int64" value="72339086194507781" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="VFX_Library_SHV" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="VFX_Library_SHV" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="dd19db12-96c0-4bca-9ef6-e8d733801d23" />
+              <attribute id="Version64" type="int64" value="36591749119868928" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="VFX_Vault_SHV" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="VFX_Vault_SHV" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f51ce3e4-fe0d-42e8-a4f1-b7234c9b7e9c" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="THSIconPatch" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Tav's Hairpack - Icon Patch" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="bfad4cdb-0b02-435a-96c7-06c0f6533055" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="DFHairPack" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Tav's Hair Salon - Tav's Hairpack" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="da0b99ca-4406-49c1-bef9-3a08621280a2" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Vessnelle_Hair1" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Vessnelle_Hair1" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="54ebec6c-00ce-48e1-8b75-53b6b72ecc3a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Vessnelle_Hair2" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Vessnelle_Hair2" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="d357aca8-e222-4c09-8b49-54354405502e" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Vessnelle_Hair3" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Vessnelle_Hair3" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="fb9c340a-771a-46e8-bc7c-0d40b80c1885" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Silver_HairPack" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Silver's Hair Pack" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="1fd44eaf-a4d2-4de4-9560-51a0c8a63987" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Silver_HairPack2" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Silver's Hair Pack 2" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c56e4b79-3bf3-446b-b06b-27dc86337663" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Hiji_Heads" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Ellian's Heads" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="dee6dde4-f9f5-456b-b7e3-5ac2eb87f87d" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Aloija_New_Heads" />
+              <attribute id="MD5" type="LSString" value="92ae5c2df98777c464300fb9c7a5e6d2" />
+              <attribute id="Name" type="LSString" value="Faces of Faerun" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="8c611d4b-75d9-40eb-ad61-15f898396e12" />
+              <attribute id="Version64" type="int64" value="72198331526283277" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ASTRLfantasyskintones" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ASTRL Fantasy Skintones" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="78537082-46a0-42c7-a718-d2dc9950cfdd" />
+              <attribute id="Version64" type="int64" value="36451009484029952" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ASTRLglowingeyes" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ASTRL Glowing Eyes" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="d1927184-8763-4d70-ae52-8295f791548a" />
+              <attribute id="Version64" type="int64" value="37999121855938560" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ASTRLdemoneyes" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ASTRL Demon Eyes" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b0c1b53b-0d9b-43b4-803d-1cc62aa9389c" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_Visual_Overhaul_f33e3a68-a146-5021-cad1-bc27c55f00f6" />
+              <attribute id="MD5" type="LSString" value="fbd3509074f11e7b4f99916b499221c7" />
+              <attribute id="Name" type="LSString" value="NPC_Visual_Overhaul" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f33e3a68-a146-5021-cad1-bc27c55f00f6" />
+              <attribute id="Version64" type="int64" value="36028797018963974" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Tav" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul for Tav" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="e7f3e287-3706-4f5e-9be0-28b90ac29186" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Tav_Armor" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul for Tav (Armor)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="17b82464-320c-4da4-8530-7b7c55bca2c1" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Aylin" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Aylin)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f26d9b4f-1de9-4563-a863-76b52f8a6184" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Alfira" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Alfira)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f4ac396f-95a0-42c7-a061-dae86d7c2c0e" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Amek" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Amek)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="46af06bd-dbaa-4cfe-9e8a-3b1c6fefd264" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Apikusis" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Apikusis)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="0bed7021-4523-41a0-a546-2b8b8ae28e5d" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Asharak" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Asharak)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="870e2356-fdf8-4703-a5ba-50da44c3f9c2" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Bex" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Bex)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9f5a1910-95cc-4335-9fab-41b6ed54fe34" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Cal" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Cal)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="383f69d3-e9b3-4b92-af70-90f8eb8cf8f5" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Cazador" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Cazador)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9f54b13d-e9d8-4a76-b5ad-391d82474f87" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Dammon" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Dammon)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="e1ddeb20-6c20-44b2-9688-4d4b843bb7b5" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Danis" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Danis)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="aabf15a6-23d4-4734-9ec1-fb9b0b82264b" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Florrick" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Florrick)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="45a983bf-a1e3-4c67-8f95-1cc952d258cf" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Gortash_Medium_Hair" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Gortash Medium Hair)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="6b00c5a5-73fd-43f3-b645-38e7e086a166" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Irenya" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Irenya)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="0a3c6290-1978-483c-903d-79bf74d2c8df" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Jeorna" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Jeorna)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="859f52c4-dedf-40cc-b735-9e4b9d6194e5" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Ketheric" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Ketheric)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="267e0d33-ec63-45c9-ad75-44b47d553a2b" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Komira" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Komira)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2459bf8d-0806-48ad-b00b-fda704b81e11" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Lia" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Lia)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="64edc102-e75c-4c87-829b-96e74800e95a" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Locke" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Locke)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="4a67e91b-7868-45d3-b329-5e3569f4d546" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Mizora_with_wings" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Mizora with wings)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="d3332148-a0f8-45b7-9447-e4a00462afa5" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Nym_Orlith" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Nym Orlith)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="3529797d-269b-49fc-b844-f6a9b3f8ae10" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Orin_ver1" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Orin ver1 HUM White)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c253e636-addc-4531-978b-5c18da3c71aa" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Rachel" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Rachel)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="8fed9d0e-9695-44de-8e42-5258d0a2fbee" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Rolan" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Rolan)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="5dadf155-9857-4bc8-9375-47304f11a770" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Silfy" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Silfy)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="74533609-a0e6-4480-ab65-93316026ebc2" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Sorn_Orlith" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Sorn Orlith)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="93150af2-0074-4ddc-8f97-33883208847f" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Tilses" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Tilses)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="0a9a8977-2640-485e-b955-7bebd9eea604" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NPC_VO_Umi" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NPC Visual Overhaul (Umi)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="953e7168-524f-480b-a482-a0eb7bc56a55" />
+              <attribute id="Version64" type="int64" value="268435456" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="VolitionCabinet" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="VolitionCabinet" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f97b43be-7398-4ea5-8fe2-be7eb3d4b5ca" />
+              <attribute id="Version64" type="int64" value="37858386515066880" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="AppearanceEditEnhanced" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="AppearanceEditEnhanced" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="7b8366bd-abc1-4f9f-ba9d-585549b4a750" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="KT_New_Heads" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Toarie's New Character Creation Presets WIP" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="405c762d-8f07-4b91-a1ef-d58a9ec2a0a0" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="vemperens_heads" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Vemperen's Other Heads" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="ef0fb0e3-a4e1-4672-84b3-bc63260e12af" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NRx_Jaheira_TAV_Head" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NRx Younger Jaheira TAV" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2d785849-0809-4786-beb9-0e3726b13167" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="xx_HEL_Head" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="xx Head HEL" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="8377a991-ae75-4286-8841-a9be74aada4d" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="YHGSet1" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Yves Hair Gallery" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="adbc4f0e-4e88-4fe4-9030-5021d533823b" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="HairKitchen" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Honey's Hair Kitchen" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2f1c1686-feaf-4ea4-af2c-13085f056ec4" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Covens_TattooMakeupCC" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Covens Tattoo and Makeup Colours" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="e7f5ea44-3e98-4732-b860-06fecb58fb8c" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Loulette_New_Heads" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Loulette Head Mix" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="834e5b15-988a-404e-b6d2-f8fbc0c8097c" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ASTRLhaircolors" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ASTRL Hair Color Supplement" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="525600ac-ca07-4745-a5bc-0a620975e2f3" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="AnotherFaceforLaezel" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Another Face for Laezel" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f1890314-1b79-40ae-9055-3036196645bd" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Carry Weight Increased 9000" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Carry Weight Increased 9000" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="92af0ebd-a04c-4e9c-8306-b947aac4c127" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NoIntro_7fa55404-7280-11ed-4c26-63116a161862" />
+              <attribute id="MD5" type="LSString" value="fc9e238b2e0834f07bf428e304ff91f6" />
+              <attribute id="Name" type="LSString" value="NoIntro" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="7fa55404-7280-11ed-4c26-63116a161862" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="BasketEquipmentNSFW" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="BasketEquipmentNSFW" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="a9e98a1f-7a59-4b70-be39-1f69924c0b80" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="PurchaseClothesAllInOne" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Purchasable Camp Clothes and Underwear - All In One" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9d77a376-98b4-4b8b-8256-4dfdb110859a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SCO" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Scantily Camp Outfit" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="73928ffc-07c0-46ac-8cf4-86a693b0cd92" />
+              <attribute id="Version64" type="int64" value="72057752951717888" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OriginRangedWeapons" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OriginRangedWeapons" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="93964235-8901-4968-824d-e37ad5199b94" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UniversalArmourFixer" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UniversalArmourFixer" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="cabe6d93-e26a-473a-9b04-8717015bd51f" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="All in one Edition" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="All in one Edition" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="88fcf61f-87f6-42c5-a645-622e98bf9ab4" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Collector Edition" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Collector Edition" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="089c94e3-5ef6-4e39-9ba0-dcf7b7bdfe66" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Secret Edition" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Secret Edition" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="ccf89051-3ad5-4894-9d08-ea656c73a88d" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Trap Edition" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Trap Edition" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="f39f5e00-8c06-4b13-9504-73df26d280af" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Game" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Hide looted empty containers" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="e8cf007a-ca1e-4f48-a637-887d2bd84605" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="BagsBagsBags" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="BagsBagsBags" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="3e158fb8-686e-4153-9430-e27f4b9fb7f8" />
+              <attribute id="Version64" type="int64" value="144115188075855912" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NoDirtAndBlood" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="No More Dirt and Blood" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="94399849-6d6c-4582-ad5e-c5bc52fd1408" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Wanderer Edition" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Wanderer Edition" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="7e414597-2bd0-4d2e-ac87-e8d71402234b" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Free_Withers" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Free_Withers" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="51a49ded-3143-44f0-b581-17809b31a95a" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ObjectCharacterSupport" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ObjectCharacterSupport" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="0c50deb2-303c-4e00-9bc7-a60a347d6593" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MoreReactiveCompanions_Configurable" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MoreReactiveCompanions_Configurable" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2b1e81bb-d0aa-4617-b3e9-271c7b02f252" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="CombatAutoSaverOnEnd" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="CombatAutoSaverOnEnd" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9837d6f1-e2e9-442d-bd9e-4d700d9defad" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="DialogueAutoSaverOnEnd" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="DialogueAutoSaverOnEnd" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="eac59f15-c517-4188-bfc8-b1219b5e8739" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NoPressAnyKeyMenuMCM_eb263453-0cc2-4f0c-2375-f4e0f60e8a12" />
+              <attribute id="MD5" type="LSString" value="92ae5c2df98777c464300fb9c7a5e6d2" />
+              <attribute id="Name" type="LSString" value="No Press Any Key Menu MCM" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="eb263453-0cc2-4f0c-2375-f4e0f60e8a12" />
+              <attribute id="Version64" type="int64" value="37013972322353153" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Fallen_Mark_As_Read" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Mark Book As Read" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c72d9f6a-a6e4-48b1-98c0-0ecdc7c31cf7" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Spells Enhanced - Spiritual Weapon - Dash addon" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Spells Enhanced - Spiritual Weapon - Dash addon - C" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b8b5f3c9-f345-4bbf-bebe-25cf51ba75e9" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UAHealing" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UAHealing" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="a2c99856-74a8-4cf1-9487-fd5ccd9686b5" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="5eSpells" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="5eSpells" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="fb5f528d-4d48-4bf2-a668-2274d3cfba96" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SecretScrolls5eSpells" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="SecretScrolls5eSpells" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b093bc44-ccf9-4eec-b5ec-e96a6f2940f9" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="HomebrewSpells" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="HomebrewSpells" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="84958e84-fd62-474f-bd1f-cbabc132c4b3" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Expansion" />
+              <attribute id="MD5" type="LSString" value="b82ffb7fa301d4d5adbc1cca38177ff9" />
+              <attribute id="Name" type="LSString" value="Expansion" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="a2c4b0fc-e745-41df-81b7-fa53950d86a0" />
+              <attribute id="Version64" type="int64" value="36169534507319307" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ExpansionXP" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ExpansionXP" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="3e0ce40c-c129-408c-a2f7-7291152f9d28" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SolomonsCompatibilityLibrary_888868ae-6b21-d328-9479-5cf969e9fdad" />
+              <attribute id="MD5" type="LSString" value="1ef20e4728ab9ba8501f0c1cc05cd221" />
+              <attribute id="Name" type="LSString" value="Solomon's Compatibility Library" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="888868ae-6b21-d328-9479-5cf969e9fdad" />
+              <attribute id="Version64" type="int64" value="36169536654802944" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Dnd5rBardFontOfInspiration_2384b05d-4914-eb26-b943-28ab22df0758" />
+              <attribute id="MD5" type="LSString" value="5372ff7040d4fe84885152b25cf2f10a" />
+              <attribute id="Name" type="LSString" value="DnD 5R Bard - Font of Inspiration" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2384b05d-4914-eb26-b943-28ab22df0758" />
+              <attribute id="Version64" type="int64" value="36169536654802944" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Dnd5rBardCountercharm_96f06ce0-374e-ca39-c429-eb25a124e033" />
+              <attribute id="MD5" type="LSString" value="3bdcbc181fe9d19efcdaaff7ec5e7d33" />
+              <attribute id="Name" type="LSString" value="DnD 5R Bard - Countercharm" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="96f06ce0-374e-ca39-c429-eb25a124e033" />
+              <attribute id="Version64" type="int64" value="36028797018963974" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Dnd5rBardCollegeOfSwordsHomebrew_fb035e66-c916-8b33-a4cd-af40b86e4813" />
+              <attribute id="MD5" type="LSString" value="92ae5c2df98777c464300fb9c7a5e6d2" />
+              <attribute id="Name" type="LSString" value="DnD 5R Bard - College of Swords (Homebrew)" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="fb035e66-c916-8b33-a4cd-af40b86e4813" />
+              <attribute id="Version64" type="int64" value="36028797018963969" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="CollegeofEloquence" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="College of Eloquence" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="933cc682-b732-48bc-9ec0-30c36b5c2f62" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ArcherySwordBard" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="ArcherySwordBard" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b24b3136-3fa8-4271-a993-d47a03158685" />
+              <attribute id="Version64" type="int64" value="144115188075855912" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Clerics" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Clerics" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="eef7b885-1423-4096-abd6-7a5db5f871db" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_Fighter" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD_Fighter" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="562aa89a-6a6a-4278-8cfa-e59f73b2cdac" />
+              <attribute id="Version64" type="int64" value="36028797018963973" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UAInvokeDuplicity" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UAInvokeDuplicity" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="a970f777-0368-4803-a0d3-085b96e2d4fe" />
+              <attribute id="Version64" type="int64" value="36169534507319296" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UA7Sorc" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UA7Sorc" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2cb929af-b6e3-4c8d-a7d8-cada94f299f5" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="AberrantMind" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Aberrant Mind" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="1999672d-97f0-45aa-893c-f4ed5e800485" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ShadowSorcery" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Shadow Sorcery" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="a83a5961-4a09-43dd-b18e-3f79a286d316" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SorcererDivineSoul" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Sorcerer: Divine Soul" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="2033385e-0de5-4a30-9849-c5e436eb4e89" />
+              <attribute id="Version64" type="int64" value="72057594037927936" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ClockworkSoul" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Clockwork Soul" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b4576c0d-bbfe-40f5-afa3-3e3160371389" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="DEchoKnight" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="DEchoKnight" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="ecc0c754-0911-462e-8983-dcffe56c4d8d" />
+              <attribute id="Version64" type="int64" value="36451011631513600" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_WarMagic" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD War Magic and Improved War Magic" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="7429b169-5e11-4d31-9db3-b1285df2d191" />
+              <attribute id="Version64" type="int64" value="72057594037927936" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_PatronSpells_Fiend" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD UA7 Warlock Patron Spells - Fiend" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1dad-0000-0300-c01200000002" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_PatronSpells_GreatOldOne" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD UA7 Warlock Patron Spells - GreatOldOne" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1dad-0000-0400-c01200000002" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UAArchfey" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UAArchfey" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c0f536b1-5a75-43d2-a89a-ebe5ae749d7f" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Hexblade" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Hexblade" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="e1eb6d1a-5922-4964-bfd7-c971e71e351a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_PatronSpells_Hexblade" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD UA7 Warlock Patron Spells - Hexblade" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1dad-0000-0600-c01200000002" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="HexbladeInvocations" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="HexbladeInvocations" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9772bb83-087c-405e-bb64-5ea5c3bf49f2" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="ChronurgyMagic" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Chronurgy Magic" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="646d127d-6e6a-4d09-a2b0-2ec15b572e47" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_MagicalCunning" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD UA7 Warlock Magical Cunning" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1dad-0000-0000-c01200000003" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="OneDnD_PactInvocations" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="OneDnD UA7 Warlock Pact Invocations" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1dad-0000-0000-c01200000004" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="CLCF-Request-WarlockExtraSpellSlots-DeadPan55" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Warlock - Extra Spell Slots" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="c1cfc0d3-1251-0000-0000-dead9a000001" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SecondStoryWork" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="SecondStoryWork" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="8d2a5ef2-19c8-4f1c-a897-8e0e164c2bff" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MetamagicExtended" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MetamagicExtended" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="da5d2ea8-51c2-42ba-8d0f-34b5b198a19e" />
+              <attribute id="Version64" type="int64" value="144115188075855877" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MetamagicAdeptFeat" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MetamagicAdeptFeat" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="223cad28-419a-11ee-be56-0242ac120002" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="featsextra" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="featsextra" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="0c036a05-f3e4-4422-87bd-eadadf96c161" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="FeatsUpgrade" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="FeatsUpgrade" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="71aeff2f-4e89-4eb1-bb36-d12a4b3a9452" />
+              <attribute id="Version64" type="int64" value="9223372036854775807" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Feats Extra Extra" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Feats Extra Extra" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="818c0280-d96d-48fc-ab31-cf00e321180a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="FeatsMisc" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="FeatsMisc" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="d950d558-520f-46cc-a888-69c0efafea8a" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UAWarCaster" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UAWarCaster" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="61a154cf-07a9-42bf-b209-1d562770a520" />
+              <attribute id="Version64" type="int64" value="36732497345642496" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="PartyLimitBegoneUniversal" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Party Limit Begone Universal" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="1d6c4030-67b9-4b0a-b3ab-caf6dd73d1af" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="RitualCasting" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="RitualCasting" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="53a81b8c-206f-42ce-bb3c-d46d3a515bac" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Sorlock_Bug_Workaround" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Warlock Multiclass Bug Fix and Workaround" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="bad404aa-feed-a0ee-8888-feedfeed0001" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UmbralFix" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UmbralFix" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="3438aaec-22c5-4632-ac94-7f7b9629e054" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NoConcentrationHuntersMark" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NoConcentrationHuntersMark" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="b457bdf0-3a34-11ee-be56-0242ac120002" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Spells Enhanced - Hex" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Spells Enhanced - Hex - A" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="01f3782b-1a2c-4af4-9689-aaff4699a019" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Spells Enhanced - Magic Weapon" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Spells Enhanced - Magic Weapon - B" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="5caf1f70-6c8e-4a81-8945-56eb14fa9317" />
+              <attribute id="Version64" type="int64" value="36169534507319299" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Mystra's Blessing Enhanced" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Mystra's Blessing Enhanced" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="675f1d07-7fe7-4e03-9d35-89836ba966bf" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="5esque" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="5esque Lightning Arrow Rework" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9addce41-ec3e-4e16-9062-ebeb831a9f13" />
+              <attribute id="Version64" type="int64" value="36028797018963968" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="Conjure Barrage Enhanced" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Conjure Barrage Enhanced" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="9d7447e8-4702-4fdd-8aaf-78d89cda112f" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="KvCampEvents" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="KvCampEvents" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="1b8d381f-6210-4473-85be-600457267a87" />
+              <attribute id="Version64" type="int64" value="562960690839552" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UACunningStrike" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UACunningStrike" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="248dfe45-70cb-474f-825c-c58a72cff970" />
+              <attribute id="Version64" type="int64" value="36732512378028032" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="UASteadyAim" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="UASteadyAim" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="d5a6a8bb-a319-4b1e-8cf4-847f78818e60" />
+              <attribute id="Version64" type="int64" value="36732512378028032" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MageHandReplaceLite" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MageHandReplaceLite" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="14b6dbfd-0a50-4a6f-8426-7df43a77b1b5" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="DatabaseCleaner" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="DatabaseCleaner" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="08e267cf-bf28-4e29-8711-8282ed017fcb" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="MetamagicExtendedQuickened2SP" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="MetamagicExtendedQuickened2SP" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="46ad1e3b-34fa-4c89-967f-296b2e7dff80" />
+              <attribute id="Version64" type="int64" value="144115188075855872" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="NoRomanceLimit" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="NoRomanceLimit" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="726b130c-6139-11ee-8c99-0242ac120092" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="HomebrewAIO" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="Homebrew Spells Compatibility AIO" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="71c4a919-f376-452a-b0d7-b7be7811d2e4" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SpellListSorter" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="SpellListSorter" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="71f4c896-045d-4bb9-b7ad-55f1332b61d2" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="SubclassCompatibilityFramework" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="CompatibilityFramework" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="67fbbd53-7c7d-4cfa-9409-6d737b4d92a9" />
+              <attribute id="Version64" type="int64" value="1" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSString" value="5eAIO" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="LSString" value="5e Spells Compatibility AIO" />
+              <attribute id="PublishHandle" type="uint64" value="0" />
+              <attribute id="UUID" type="guid" value="681340e0-3c0d-464a-998a-6fec834f3b7a" />
+              <attribute id="Version64" type="int64" value="288230376151711744" />
+            </node>
+          </children>
+        </node>
+      </children>
+    </node>
+  </region>
+</save>

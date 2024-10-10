@@ -26,5 +26,11 @@
     <None Update="BaldursGate3\Resources\PakFiles\MetamagicExtendedQuickenedSP2.pak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="BaldursGate3\Resources\ModsettingsFiles\example-modsettings-Patch7-Hotfix27.lsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="BaldursGate3\BG3ModsettingsFileFormatTests.DeserializeModsettingsLoadOrder_VerifyTest_modsettingsFileName=example-modsettings-Patch7-Hotfix27.lsx.verified.txt">
+      <DependentUpon>BG3ModsettingsFileFormatTests.cs</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>
