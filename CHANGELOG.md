@@ -19,7 +19,7 @@ Linux users can now manage GOG games installed or imported using the [Heroic Lau
 ### Collections
 In this build we've made further updates to the process of downloading and installing collections. The feature does not have parity with Vortex yet so cannot be used to install a collection fully. 
 
-![The new collections tile available from the "Collections WIP" tab of this update.](./docs/changelog-assets/137c2b5645e0cedcf1c31f2ac0e8eb1e.webp)
+![The new collections tile available from the "Collections WIP" tab of this update.](./docs/changelog-assets/8ed9a020e1532940c4d57a2753eae55a.webp)
 
 The changes we've made include:
 - Updated the card design for collections (Above).
