@@ -19,7 +19,7 @@ public partial class GameInstallMetadata : IModelDefinition
     /// <summary>
     /// The game's unique id.
     /// </summary>
-    public static readonly GameIdAttribute GameId = new(Namespace, "GameId");
+    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId));
     
     /// <summary>
     /// User friendly name for the game.
