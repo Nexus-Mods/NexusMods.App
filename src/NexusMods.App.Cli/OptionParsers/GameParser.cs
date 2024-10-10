@@ -11,7 +11,7 @@ internal class GameParser(IGameRegistry gameRegistry) : IOptionParser<IGame>
 {
     public bool TryParse(string toParse, out IGame value, out string error)
     {
-        var install = gameRegistry.Installations.Values.FirstOrDefault(g => g.Game.Domain == toParse) ??
+        var install = gameRegistry.Installations.Values.FirstOrDefault(g => g.Game.GameId.ToString() == toParse) ??
                     gameRegistry.Installations.Values.FirstOrDefault(g => g.Game.Name.Equals(toParse, StringComparison.CurrentCultureIgnoreCase))!;
 
         value = (IGame)install.Game;

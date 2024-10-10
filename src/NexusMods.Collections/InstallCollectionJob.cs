@@ -15,12 +15,14 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -44,6 +46,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     
     public required LoadoutId TargetLoadout { get; set; }
     public required IServiceProvider SerivceProvider { get; set; }
+    public required IGameDomainToGameIdMappingCache DomainMappingCache { get; set; }
     
     public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(IServiceProvider provider, LoadoutId target, NexusModsCollectionLibraryFile.ReadOnly source)
     {
@@ -59,7 +62,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
             Connection = provider.GetRequiredService<IConnection>(),
             TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>(),
-            
+            DomainMappingCache = provider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
         };
         return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
     }
@@ -412,22 +415,21 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     private async Task<ModInstructions> EnsureNexusModDownloaded(Mod mod)
     {
         var db = Connection.Db;
-        var uid = new UidForFile(mod.Source.FileId, GameId.FromGameDomain(mod.DomainName));
+        var gameId = (await DomainMappingCache.TryGetIdAsync(mod.DomainName, default(CancellationToken))).Value;
+        var uid = new UidForFile(mod.Source.FileId, gameId);
         var file = NexusModsFileMetadata.FindByUid(db, uid)
             .Where(f => f.ModPage.Uid.ModId == mod.Source.ModId)
             .FirstOrOptional(f => f.LibraryFiles.Any());
 
         if (file.HasValue)
         {
-            if (!file.Value.LibraryFiles.First().AsLibraryItem().TryGetAsLibraryFile(out var firstLibraryFile)) 
+            if (file.Value.LibraryFiles.First().AsLibraryItem().TryGetAsLibraryFile(out var firstLibraryFile)) 
                 return (mod, firstLibraryFile);
         }
 
         await using var tempPath = TemporaryFileManager.CreateFile();
 
-        var downloadJob = await NexusModsLibrary.CreateDownloadJob(tempPath, mod.DomainName, mod.Source.ModId,
-            mod.Source.FileId
-        );
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(tempPath, gameId, mod.Source.ModId, mod.Source.FileId);
         var libraryFile = await LibraryService.AddDownload(downloadJob);
         return (mod, libraryFile);
     }

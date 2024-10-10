@@ -59,16 +59,6 @@ public class NexusApiClient : INexusApiClient
     }
 
     /// <summary>
-    /// Returns a list of games supported by Nexus.
-    /// </summary>
-    /// <param name="token">Can be used to cancel this task.</param>
-    public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
-        return await SendAsyncArray<GameInfo>(msg, token);
-    }
-
-    /// <summary>
     /// Generates download links for a given game.
     /// [Premium only endpoint, use other overload for free users].
     /// </summary>
@@ -158,38 +148,6 @@ public class NexusApiClient : INexusApiClient
 
         return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
-
-    /// <summary>
-    /// Returns all of the downloadable files associated with a mod.
-    /// </summary>
-    /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.
-    /// </param>
-    /// <param name="modId">
-    ///    An individual identifier for the mod. Unique per game.
-    /// </param>
-    /// <param name="token">Token used to cancel the task.</param>
-    /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
-        return await SendAsync<ModFiles>(msg, token);
-    }
-    
-    
-    /// <summary>
-    /// Returns information about a specific mod.
-    /// </summary>
-    public async Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}.json"));
-        return await SendAsync<ModInfo>(msg, token);
-    }
-    
-    
 
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>

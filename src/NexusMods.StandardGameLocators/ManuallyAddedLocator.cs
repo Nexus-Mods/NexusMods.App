@@ -39,7 +39,7 @@ public class ManuallyAddedLocator : IGameLocator
         using var tx = _conn.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.New(tx)
         {
-            GameDomain = game.Domain,
+            GameId = game.GameId,
             Version = version.ToString(),
             Path = path.ToString(),
         };
@@ -57,7 +57,7 @@ public class ManuallyAddedLocator : IGameLocator
     public async Task Remove(EntityId id)
     {
         var ent = ManuallyAddedGame.Load(_conn.Value.Db, id);
-        if (!ent.Contains(ManuallyAddedGame.GameDomain))
+        if (!ent.Contains(ManuallyAddedGame.GameId))
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
 
         using var tx = _conn.Value.BeginTransaction();
@@ -70,7 +70,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
-        var games = ManuallyAddedGame.FindByGameDomain(_conn.Value.Db, game.Domain)
+        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.GameId)
             .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,
                 GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
         return games;

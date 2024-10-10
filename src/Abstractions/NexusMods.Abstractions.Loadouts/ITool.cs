@@ -1,4 +1,5 @@
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -9,9 +10,9 @@ namespace NexusMods.Abstractions.Loadouts;
 public interface ITool
 {
     /// <summary>
-    /// List of supported game IDs (domains).
+    /// List of supported game IDs.
     /// </summary>
-    public IEnumerable<GameDomain> Domains { get; }
+    public IEnumerable<GameId> GameIds { get; }
 
     /// <summary>
     /// Human friendly name of the tool.
