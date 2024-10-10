@@ -1,19 +1,16 @@
 using System.Reactive.Disposables;
 using DynamicData;
-using DynamicData.Aggregation;
-using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using OneOf;
 
@@ -29,7 +26,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         _connection = serviceProvider.GetRequiredService<IConnection>();
         
         // membership status
-        var loginManager = serviceProvider.GetRequiredService<LoginManager>();
+        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         loginManager.IsPremiumObservable.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
 
         // download size
