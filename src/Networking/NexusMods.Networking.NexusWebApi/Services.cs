@@ -38,13 +38,10 @@ public static class Services
         }
         collection.AddSingleton<OAuth>();
         collection.AddSingleton<IIDGenerator, IDGenerator>();
-        
-        // JWToken
-        collection.AddAttributeCollection(typeof(JWTToken));
-        
-        // Nexus API Key
-        collection.AddAttributeCollection(typeof(ApiKey));
-        
+
+        collection.AddJWTTokenModel();
+        collection.AddApiKeyModel();
+
         collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
