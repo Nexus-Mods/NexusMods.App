@@ -423,7 +423,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         if (file.HasValue)
         {
-            if (!file.Value.LibraryFiles.First().AsLibraryItem().TryGetAsLibraryFile(out var firstLibraryFile)) 
+            if (file.Value.LibraryFiles.First().AsLibraryItem().TryGetAsLibraryFile(out var firstLibraryFile)) 
                 return (mod, firstLibraryFile);
         }
 
