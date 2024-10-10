@@ -39,15 +39,10 @@ public static class Services
         }
         collection.AddSingleton<OAuth>();
         collection.AddSingleton<IIDGenerator, IDGenerator>();
-        
-        // JWToken
-        collection.AddAttributeCollection(typeof(JWTToken));
-        
-        // Nexus API Key
-        collection.AddAttributeCollection(typeof(ApiKey));
 
-        // Nexus GameDomain to GameID Mapping
-        collection.AddAttributeCollection(typeof(GameDomainToGameIdMapping));
+        collection.AddJWTTokenModel();
+        collection.AddApiKeyModel();
+        collection.AddGameDomainToGameIdMappingModel();
         collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         
         collection
