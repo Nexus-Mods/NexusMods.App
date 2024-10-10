@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -42,6 +43,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
@@ -129,13 +131,19 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             if (userInfo is null) return;
 
             var userId = userInfo.UserId.Value;
-            var uri = new Uri($"https://nexusmods.com/users/{userId}");
+            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = new Uri("https://users.nexusmods.com");
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
             await osInterop.OpenUrl(uri);
         });
 
