@@ -25,7 +25,7 @@ public partial class GameInstallMetadata : IModelDefinition
     /// User friendly name for the game.
     /// May be referred to from diagnostics, telemetry or otherwise.
     /// </summary>
-    public static readonly StringAttribute Name = new(Namespace, "Name");
+    public static readonly StringAttribute Name = new(Namespace, nameof(Name));
     
     /// <summary>
     /// The name of the store the game is from
