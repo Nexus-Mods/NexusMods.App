@@ -11,6 +11,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Obsidian.FalloutNewVegas.Emitters;
@@ -36,9 +37,9 @@ public class FalloutNewVegas : AGame, ISteamGame, IGogGame, IXboxGame, IEpicGame
 
     public static string GameName => _name; // used to statically reference the game name elsewhere... in case the name changes? idk.
     public override string Name => _name;
-    public override GameDomain Domain => GameDomain.From("newvegas");
+    public override GameId GameId => GameId.From(130);
 
-    #region File Information
+#region File Information
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
