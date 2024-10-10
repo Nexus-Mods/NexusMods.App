@@ -12,10 +12,4 @@
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="NexusMods.Abstractions.NexusWebApi">
-        <HintPath>..\..\NexusMods.App\bin\Debug\net8.0\NexusMods.Abstractions.NexusWebApi.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
 </Project>
