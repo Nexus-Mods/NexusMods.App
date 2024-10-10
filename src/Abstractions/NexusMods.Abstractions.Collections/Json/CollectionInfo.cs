@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
