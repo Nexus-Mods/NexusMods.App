@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.V1Interop;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -41,7 +42,9 @@ public static class Services
 
         collection.AddJWTTokenModel();
         collection.AddApiKeyModel();
-
+        collection.AddGameDomainToGameIdMappingModel();
+        collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
+        
         collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()

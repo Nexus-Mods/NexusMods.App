@@ -4,10 +4,10 @@ using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.GOG;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 
@@ -48,7 +48,7 @@ public class RunGameTool<T> : IRunGameTool
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameDomain> Domains => new[] { _game.Domain };
+    public IEnumerable<GameId> GameIds => [_game.GameId];
 
     /// <inheritdoc />
     public string Name => $"Run {_game.Name}";
@@ -100,7 +100,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         else
         {
-            var result = await RunCommand(cancellationToken, program);
+            _ = await RunCommand(cancellationToken, program);
         }
 
         // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)

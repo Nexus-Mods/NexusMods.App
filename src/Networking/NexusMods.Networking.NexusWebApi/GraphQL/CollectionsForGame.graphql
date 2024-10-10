@@ -1,8 +1,10 @@
-
-query CollectionsForGame($gameDomain: String!, $offset: Int!, $count: Int!) 
-{
-    collections(viewAdultContent: true, filter: {gameDomain: {value: $gameDomain, op: EQUALS}}, offset: $offset, count: $count)
-    {
+query CollectionsForGame($gameId: String!, $offset: Int!, $count: Int!) {
+    collections(
+        viewAdultContent: true
+        filter: { gameId: { value: $gameId, op: EQUALS } }
+        offset: $offset
+        count: $count
+    ) {
         totalCount
         nodesCount
         nodes {

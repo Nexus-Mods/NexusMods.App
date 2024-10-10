@@ -86,7 +86,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
 
                         if (nexusId is not null)
                         {
-                            var uri = NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.GameDomain.Value, nexusId.Value.ToString());
+                            var uri = NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, nexusId.Value.ToString());
                             nexusModsLink = uri.WithName("Nexus Mods");
                         }
 

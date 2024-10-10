@@ -92,7 +92,7 @@ public partial class Loadout : IModelDefinition
             {
                 var registry = Db.Connection.ServiceProvider.GetRequiredService<IGameRegistry>();
                 if (!registry.Installations.TryGetValue(Loadout.Installation.Get(this), out var gameInstallation))
-                    throw new KeySelectorException($"Game installation of `{Installation.Domain}` at `{Installation.Path}` not found in registry!");
+                    throw new KeySelectorException($"Game installation of `{Installation.GameId}` at `{Installation.Path}` not found in registry!");
                 return gameInstallation;
             }
         }

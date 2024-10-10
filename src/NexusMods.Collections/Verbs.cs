@@ -66,7 +66,7 @@ internal static class Verbs
         [Injected] IFileExtractor fileExtractor,
         [Injected] CancellationToken token)
     {
-        var allCollections = await nexusGraphQLClient.CollectionsForGame.ExecuteAsync(game.Domain.Value, 0, 1000, token);
+        var allCollections = await nexusGraphQLClient.CollectionsForGame.ExecuteAsync(game.GameId.ToString(), 0, 1000, token);
         var collections = allCollections.Data!.Collections.Nodes;
         
         await renderer.Text("Found {0} collections", collections.Count);

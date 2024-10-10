@@ -1,8 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -20,18 +20,18 @@ public record LibraryPageContext : IPageFactoryContext
 [UsedImplicitly]
 public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageContext>
 {
-    private readonly ISettingsManager _settingsManager;
-    public LibraryPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-    }
+    public LibraryPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("547926e3-56ba-4ed1-912d-d0d7e8b7e287"));
     public override PageFactoryId Id => StaticId;
 
     public override ILibraryViewModel CreateViewModel(LibraryPageContext context)
     {
-        var vm = new LibraryViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LibraryViewModel(
+            ServiceProvider.GetRequiredService<IWindowManager>(), 
+            ServiceProvider,
+            ServiceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
+            context.LoadoutId);
         return vm;
     }
 

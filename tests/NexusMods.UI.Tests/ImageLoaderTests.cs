@@ -28,7 +28,7 @@ public class ImageLoaderTests : AUiTest
     public async Task Test()
     {
         var library = Provider.GetRequiredService<NexusModsLibrary>();
-        var modPage = await library.GetOrAddModPage(ModId.From(6072), Cyberpunk2077Game.StaticDomain);
+        var modPage = await library.GetOrAddModPage(ModId.From(6072), GameId.From(3333));
 
         {
             var pipeline = CreatePipeline();

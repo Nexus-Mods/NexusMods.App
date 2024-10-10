@@ -16,17 +16,6 @@ public class NexusApiClientTests
     }
 
     [Fact]
-    public async Task CanGetGames()
-    {
-        var games = await _nexusApiClient.Games();
-
-        games.StatusCode.Should().Be(HttpStatusCode.OK);
-        games.Data.Should().NotBeEmpty();
-        games.Data.Select(g => g.Name).Should().Contain("Skyrim Special Edition");
-        games.Data.Length.Should().BeGreaterThan(2000);
-    }
-
-    [Fact]
     public async Task CanGetCollectionDownloadLinks()
     {
         var links = await _nexusApiClient.CollectionDownloadLinksAsync(CollectionSlug.From("iszwwe"), RevisionNumber.From(469));
