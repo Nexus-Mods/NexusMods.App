@@ -41,7 +41,7 @@
                     Height="44"
                     x:Name="ApplyButton">
                 <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" />
+                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" Foreground="{StaticResource NeutralStrong}" />
                 </ToolTip.Tip>
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"

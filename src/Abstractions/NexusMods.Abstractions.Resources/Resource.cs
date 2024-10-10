@@ -21,8 +21,10 @@ public record Resource<TData> where TData : notnull
     /// <summary>
     /// Creates a new resource.
     /// </summary>
-    public Resource<TOther> WithData<TOther>(TOther data) where TOther : notnull
+    public Resource<TOther> WithData<TOther>(TOther data, bool shouldDispose = true) where TOther : notnull
     {
+        if (shouldDispose && Data is IDisposable disposableData) disposableData.Dispose();
+
         return new Resource<TOther>
         {
             Data = data,

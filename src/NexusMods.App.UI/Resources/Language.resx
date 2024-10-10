@@ -138,6 +138,9 @@
     <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
         <value>PREMIUM</value>
     </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>FREE</value>
+    </data>
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Search</value>
     </data>

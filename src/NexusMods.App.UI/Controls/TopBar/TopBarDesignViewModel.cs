@@ -29,6 +29,7 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand => Initializers.DisabledReactiveCommand;
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand => Initializers.DisabledReactiveCommand;
 
     public IPanelTabViewModel? SelectedTab { get; set; }
