@@ -11,6 +11,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
@@ -21,6 +22,7 @@ namespace NexusMods.Games.StardewValley;
 [UsedImplicitly]
 public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
+    public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
     private readonly IOSInformation _osInformation;
     private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
