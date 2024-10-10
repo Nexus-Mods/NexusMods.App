@@ -114,23 +114,24 @@ public static class Services
                 .AddDefaultRenderers()
                 .AddSettingsManager()
                 .AddSettings<LoggingSettings>();
-            
+
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Client);
         }
 
         return services;
     }
-    
+
     private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
         }
-        
+
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
+        Games.Obsidian.Services.AddObsidianGames(services);
         return services;
     }
 }
