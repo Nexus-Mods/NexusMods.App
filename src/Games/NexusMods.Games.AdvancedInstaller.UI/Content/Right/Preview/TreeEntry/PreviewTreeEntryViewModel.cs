@@ -45,7 +45,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
 
         IsRoot = GamePath.Path == RelativePath.Empty;
         Parent = IsRoot ? IPreviewTreeEntryViewModel.RootParentGamePath : GamePath.Parent;
-        DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.Value : gamePath.FileName;
+        DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.ToString() : gamePath.FileName;
         IsFolderDupe = gamePath.FileName == gamePath.Parent.FileName && gamePath.FileName != RelativePath.Empty;
         IsFolderMerged = false;
         IsRemovable = true;

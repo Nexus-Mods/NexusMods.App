@@ -16,7 +16,7 @@ public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePat
     protected override string ToLowLevel(GamePath value)
     {
         // TODO: make this a reference or something
-        return $"{value.LocationId.Value}|{value.Path}";
+        return $"{value.LocationId}|{value.Path}";
     }
 
     /// <inheritdoc />
