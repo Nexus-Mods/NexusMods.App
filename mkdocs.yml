@@ -61,6 +61,8 @@ nav:
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
     - Adding a Game: users/AddGames.md
+    # - Mod Library: users/Library.md
+    # - Installed Mods: users/InstalledMods.md
     - Features: 
       - Loadouts: users/features/Loadouts.md
       - Health Check: users/features/HealthCheck.md
