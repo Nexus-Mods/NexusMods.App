@@ -21,6 +21,8 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
         base(serviceProvider, serviceProvider.GetRequiredService<ILogger<BG3SEInstaller>>())
     {
     }
+    
+    private const string BG3SEFileName = "DWrite.dll";
 
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
@@ -30,7 +32,7 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
         CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
-        var nodes = tree.FindSubPathsByKeyUpward(["DWrite.dll"]);
+        var nodes = tree.FindSubPathsByKeyUpward([BG3SEFileName]);
         if (nodes.Count == 0)
             return ValueTask.FromResult<InstallerResult>(new NotSupported());
         var dllNode = nodes[0];

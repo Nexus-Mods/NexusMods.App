@@ -19,4 +19,7 @@ public class ModSource
     
     [JsonPropertyName("fileSize")]
     public Size FileSize { get; init; }
+    
+    [JsonPropertyName("fileExpression")]
+    public RelativePath FileExpression { get; init; } = default;
 }

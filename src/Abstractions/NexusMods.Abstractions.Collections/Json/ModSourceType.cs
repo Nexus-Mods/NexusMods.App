@@ -7,4 +7,5 @@ namespace NexusMods.Abstractions.Collections.Json;
 public enum ModSourceType
 {
     nexus, 
+    bundle,
 }
