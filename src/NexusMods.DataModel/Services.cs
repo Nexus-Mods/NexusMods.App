@@ -123,6 +123,7 @@ public static class Services
 
         // Verbs
         coll.AddLoadoutManagementVerbs()
+            .AddImportExportVerbs()
             .AddToolVerbs();
 
         return coll;

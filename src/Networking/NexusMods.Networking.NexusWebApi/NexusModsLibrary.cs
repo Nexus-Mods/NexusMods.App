@@ -149,7 +149,7 @@ public class NexusModsLibrary
 
         var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
         var files = filesResponse.Data.Files;
-
+        
         if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
             throw new NotImplementedException();
 

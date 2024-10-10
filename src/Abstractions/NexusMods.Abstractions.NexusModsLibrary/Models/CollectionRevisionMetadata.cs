@@ -2,6 +2,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
