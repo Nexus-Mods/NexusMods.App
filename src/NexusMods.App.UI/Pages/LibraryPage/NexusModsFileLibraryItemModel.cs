@@ -80,7 +80,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
 
     public ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
-    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: "Install");
+    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;

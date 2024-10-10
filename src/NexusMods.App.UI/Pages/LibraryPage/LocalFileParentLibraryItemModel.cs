@@ -88,7 +88,7 @@ public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryIte
 
     public ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
-    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(numInstalled: 0, numTotal: 1, isExpanded: false));
+    public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
