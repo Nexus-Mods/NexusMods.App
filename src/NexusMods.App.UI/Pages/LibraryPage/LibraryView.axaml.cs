@@ -15,7 +15,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, LibraryItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, ILibraryItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
