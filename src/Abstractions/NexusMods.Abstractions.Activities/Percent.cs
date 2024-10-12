@@ -1,4 +1,5 @@
 namespace NexusMods.Abstractions.Activities;
+using System.Globalization;
 
 /// <summary>
 /// Represents a percentage; used for reporting progress of various operations
