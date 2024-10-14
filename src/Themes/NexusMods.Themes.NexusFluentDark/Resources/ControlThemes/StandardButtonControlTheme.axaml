@@ -24,8 +24,6 @@
                     <controls:StandardButton IsEnabled="False" ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                    <!-- <controls:CustomButton IsEnabled="False" VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
-                    <!-- <controls:CustomButton VisibleIcon="Left" LeftIcon="{x:Static icons:IconValues.Avatar}" /> -->
                     <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
                     <controls:StandardButton IsEnabled="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
                 </StackPanel>
@@ -271,8 +269,6 @@
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="{DynamicResource ButtonPaddingMedium}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="{DynamicResource SurfaceTransparentBrush}" />
 
             <Style Selector="^ /template/ Border">

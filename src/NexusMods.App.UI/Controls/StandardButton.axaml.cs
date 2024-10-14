@@ -246,40 +246,12 @@ public class StandardButton : Button
 
         _label.IsVisible = ShowLabel;
 
-        // so we can use the traditional button as well as our own properties to set the button
-        if (Content is null)
-        {
-            _content.IsVisible = false;
-            _border.IsVisible = true;
-        }
-        else
-        {
-            _content.IsVisible = true;
-            _border.IsVisible = false;
-        }
-
-        switch (ShowIcon)
-        {
-            case ShowIconOptions.None:
-                _leftIcon!.IsVisible = false;
-                _rightIcon!.IsVisible = false;
-                break;
-            case ShowIconOptions.Left:
-                _leftIcon!.IsVisible = true;
-                _rightIcon!.IsVisible = false;
-                break;
-            case ShowIconOptions.Right:
-                _leftIcon!.IsVisible = false;
-                _rightIcon!.IsVisible = true;
-                break;
-            case ShowIconOptions.Both:
-                _leftIcon!.IsVisible = true;
-                _rightIcon!.IsVisible = true;
-                break;
-            default:
-                _leftIcon!.IsVisible = false;
-                _rightIcon!.IsVisible = false;
-                break;
-        }
+        // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
+        // Otherwise, build the button from the set properties
+        _content.IsVisible = Content is not null;
+        _border.IsVisible = Content is null;
+        
+        _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both;
+        _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
 }
