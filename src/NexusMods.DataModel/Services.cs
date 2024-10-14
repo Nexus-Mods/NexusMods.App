@@ -86,7 +86,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-        
+        coll.AddSingleton<JsonConverterFactory, OptionalConverterFactory>();
+        coll.AddSingleton<JsonConverter, OptionalConverterFactory>();
+
         // Game Registry
         coll.AddSingleton<IGameRegistry, GameRegistry>();
         coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
