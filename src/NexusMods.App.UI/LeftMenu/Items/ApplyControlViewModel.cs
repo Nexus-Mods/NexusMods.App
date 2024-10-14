@@ -1,7 +1,8 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
@@ -9,7 +10,6 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -19,6 +19,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 {
     private readonly IConnection _conn;
     private readonly ISynchronizerService _syncService;
+    private readonly IJobMonitor _jobMonitor;
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallMetadataId _gameMetadataId;
@@ -32,11 +33,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
-    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
+    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor)
     {
         _loadoutId = loadoutId;
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         
         _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
