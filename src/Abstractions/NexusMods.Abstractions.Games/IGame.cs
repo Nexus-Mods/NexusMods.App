@@ -44,4 +44,10 @@ public interface IGame : ILocatableGame
     /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
     /// </summary>
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
+    
+    /// <summary>
+    /// Returns the primary (executable) file for the game.
+    /// </summary>
+    /// <param name="store">The store used for the game.</param>
+    public GamePath GetPrimaryFile(GameStore store);
 }
