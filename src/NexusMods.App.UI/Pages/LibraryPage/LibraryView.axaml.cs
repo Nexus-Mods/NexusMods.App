@@ -15,7 +15,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, LibraryItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, ILibraryItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
@@ -56,6 +56,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.EmptyLibraryLinkButton)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.OpenLinkBareIconButton)
                 .AddTo(disposables);
         });
     }
