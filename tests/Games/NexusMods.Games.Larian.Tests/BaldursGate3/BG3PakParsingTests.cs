@@ -27,12 +27,19 @@ public class BG3PakParsingTests
         await using var pakFileStream = File.OpenRead(fullPath.ToString());
         var metaFileData = PakFileParser.ParsePakMeta(pakFileStream);
         var sb = new StringBuilder();
+        
         sb.AppendLine("ModuleShortDesc:");
         sb.Append(LsxXmlFormat.SerializeModuleShortDesc(metaFileData.ModuleShortDesc));
+        sb.AppendLineN();
+        var semanticVersion = metaFileData.ModuleShortDesc.SemanticVersion;
+        sb.AppendLine($"Version: {semanticVersion.Major}.{semanticVersion.Minor}.{semanticVersion.Patch}.{semanticVersion.Build}");
+        
         foreach (var dependency in metaFileData.Dependencies)
         {
             sb.AppendLine("Dependency:");
             sb.Append(LsxXmlFormat.SerializeModuleShortDesc(dependency));
+            sb.AppendLineN();
+            sb.AppendLine($"SemanticVersion: {dependency.SemanticVersion.Major}.{dependency.SemanticVersion.Minor}.{dependency.SemanticVersion.Patch}.{dependency.SemanticVersion.Build}");
         }
         await Verify(sb.ToString()).UseParameters(pakFilePath);
     }
@@ -46,6 +53,7 @@ public class BG3PakParsingTests
             var act = () => PakFileParser.ParsePakMeta(pakFileStream);
             act.Should().Throw<InvalidDataException>();
         }
-        
     }
+    
+    
 }

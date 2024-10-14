@@ -31,6 +31,54 @@ public static class LsxXmlFormat
         public string Version;
         public string Uuid;
         public string Md5;
+        public ModuleVersion SemanticVersion;
+    }
+    
+    
+    public struct ModuleVersion
+    {
+        public ulong Major;
+        public ulong Minor;
+        public ulong Patch;
+        public ulong Build;
+        
+        public static ModuleVersion FromInt64(UInt64 packed)
+        {
+            return new ModuleVersion
+            {
+                Major = packed >> 55,
+                Minor = (packed >> 47) & 0xFF,
+                Patch = (packed >> 31) & 0xFFFF,
+                Build = packed & 0x7FFFFFFFUL,
+            };
+        }
+
+        public static UInt64 ParseVersion(string? str)
+        {
+            // Even though version is marked as Int32, it could actually contain 64-bit values, so we need to parse it as UInt64
+            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var result)) 
+                return 0;
+            
+            if (result == 1 || result == 268435456)
+            {
+                // v1.0.0.0
+                return 36028797018963968;
+            }
+            return result;
+        }
+        
+        public static UInt64 ParseVersion64(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var result)) 
+                return 0;
+            
+            if (result == 1)
+            {
+                // v1.0.0.0
+                return 36028797018963968;
+            }
+            return result;
+        }
     }
     
     
