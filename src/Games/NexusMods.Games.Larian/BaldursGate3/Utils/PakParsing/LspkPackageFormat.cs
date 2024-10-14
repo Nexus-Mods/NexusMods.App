@@ -2,6 +2,9 @@ using System.Text;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
+/// <summary>
+/// Static class containing definitions for the Larian Package (LSPK, `.pak`) format.
+/// </summary>
 public static class LspkPackageFormat
 {
 #region Enums
