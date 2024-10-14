@@ -1,4 +1,5 @@
 namespace NexusMods.Abstractions.Activities;
+using System.Globalization;
 
 /// <summary>
 /// Represents a percentage; used for reporting progress of various operations
@@ -152,7 +153,10 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     /// <returns></returns>
     public static bool TryParse(string str, out Percent p)
     {
-        // TODO: This will not parse a value like 3.33%, as `TryParse` will not accept % suffix. https://github.com/Nexus-Mods/NexusMods.App/issues/209
+        var strSpan = str.AsSpan();
+        if (strSpan[^1] == NumberFormatInfo.CurrentInfo.PercentSymbol[0])
+            strSpan = strSpan[..^1];
+
         if (double.TryParse(str, out var d))
         {
             d /= 100;
