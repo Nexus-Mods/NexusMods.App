@@ -49,11 +49,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
 
         this.WhenActivated(disposables =>
         {
-            Observable
-                .Return(_collection.Id)
-                .ObserveOnThreadPool()
-                .SelectAwait(async (id, cancellationToken) => await tileImagePipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
-                .Select(static resource => resource.Data)
+            ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (bitmap, self) => self.Image = bitmap)
                 .AddTo(disposables);
