@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
+namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing
 {
     /// <summary>
     /// Class to parse and extract dependencies and metadata from a bg3 `meta.lsx` file.

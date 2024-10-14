@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
 
@@ -62,7 +63,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
                 // add diagnostic
                 diagnostics.Add(Diagnostics.CreateMissingDependency(
-                        PakMod: loadoutItemGroup.ToReference(loadout),
+                        ModuleName: loadoutItemGroup.ToReference(loadout),
                         MissingDependencyName: dependency.Name,
                         PakModuleName: metaFileData.Item2.ModuleShortDesc.Name,
                         NexusModsLink: NexusModsLink

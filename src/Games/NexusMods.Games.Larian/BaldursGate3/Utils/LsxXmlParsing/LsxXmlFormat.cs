@@ -1,7 +1,6 @@
-using System.Text;
 using System.Xml;
 
-namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
+namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 
 /// <summary>
 /// Class containing definitions for the Larian Xml (LSX) format.

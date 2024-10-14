@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Paths;
 

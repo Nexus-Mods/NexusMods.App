@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using DynamicData.Kernel;
 using K4os.Compression.LZ4;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using ZstdSharp;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
