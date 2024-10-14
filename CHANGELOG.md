@@ -4,14 +4,16 @@
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
-This release adds initial support for Baldur's Gate 3, add support for Epic and GOG games installed through the Heroic Launcher on Linux and further develops the Collections feature.
+This release adds initial support for Baldur's Gate 3, detects GOG games installed through the Heroic Launcher on Linux and further develops the Collections feature.
 
 **Important: If you are installing the app outside of the default location (Local App Data), the uninstallers for all previous versions may not work correctly. To manually reset your install follow the guide [here](https://nexus-mods.github.io/NexusMods.App/users/Uninstall/#manual-uninstall-fallback).**
 
 ### Baldur's Gate 3 
-This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, most common mod types will be installed correctly. Installations of BG3 on Steam and GOG can be detected on both Windows and Linux. 
+This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, most common mod types will be installed correctly. Installations on Steam and GOG can be detected on Windows or Linux. 
 
-In future iterations will be will adding diagnostic messages and load order support. 
+The app will display a diagnostic message if a PAK file lists a dependency in the meta.lsx file that is not currently installed. We plan to improve the available data shown to the users in future releases. 
+
+The current implementation does not include load order support. You will need to go to "Mod Manager" from the main menu and enable your mods to have the take effect in the game. Load order support is planned for a future release. 
 
 ### Heroic Launcher
 Linux users can now manage GOG games installed or imported using the [Heroic Launcher](https://heroicgameslauncher.com/) ([#2103](https://github.com/Nexus-Mods/NexusMods.App/pull/2103)). Due to technical limitations, we've disabled REDmod deployment for Cyberpunk 2077 using Heroic, but it's possible to have the launcher run this process when starting the game. [More Info.](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/#automated-deployment-for-redmods)
@@ -19,7 +21,7 @@ Linux users can now manage GOG games installed or imported using the [Heroic Lau
 ### Collections
 In this build we've made further updates to the process of downloading and installing collections. The feature does not have parity with Vortex yet so cannot be used to install a collection fully. 
 
-![The new collections tile available from the "Collections WIP" tab of this update.](./docs/changelog-assets/8ed9a020e1532940c4d57a2753eae55a.webp)
+![The new collections tile available from the "Collections WIP" tab.](./docs/changelog-assets/8ed9a020e1532940c4d57a2753eae55a.webp)
 
 The changes we've made include:
 - Updated the card design for collections (Above).
@@ -28,11 +30,28 @@ The changes we've made include:
 ### Updating Mods
 We're starting work on showing when a mod has an update in the app. The backend to enable this feature is mostly complete and we will be adding the UI elements to support it in an upcoming release. 
 
+### Known Issues
+- Most collection installations will not complete successfully. This is due to several features that have not yet been implemented. 
+- The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+- Trying to install a collection with an unsupported type of mod (e.g. non-Nexus Mods files) will fail with no error message. This is not supported in the current build.
+- Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
+- Once a collection is added to the app, it cannot be removed from the left menu.
+- Collections allow users to modify the included mods but do not allow you to reset them to a the original state. 
+- The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
+- The "Switch View" option does not persist in the Library/Installed Mods view.
+
+
 ### Bugfixes
 - The app will now uninstall correctly when installed outside of the default directory on Windows. 
+- The correct WINE prefix will now be used for games on Linux. 
+- When the numerical badges in the left menu show 3 or more digits, the width of the badge will expand correctly.
+- Fixed in issue where batch actions would not work correctly when adding/removing/deleting mods from the Library or Loadout pages. 
+- The app will no longer re-download the user's avatar image every time a request is made to the Nexus Mods API. 
 
 ### External Contributors
-- [@MistaOmega](https://github.com/MistaOmega): [#2119](https://github.com/Nexus-Mods/NexusMods.App/pull/2119)
+- [@MistaOmega](https://github.com/MistaOmega): [#2119](https://github.com/Nexus-Mods/NexusMods.App/pull/2119) [#2128](https://github.com/Nexus-Mods/NexusMods.App/pull/2128) [#2130](https://github.com/Nexus-Mods/NexusMods.App/pull/2130)
+- [@Patriot99](https://github.com/Patriot99): [#2145](https://github.com/Nexus-Mods/NexusMods.App/pull/2145)
+- [@Michael-Kowata](https://github.com/Michael-Kowata): [#2163](https://github.com/Nexus-Mods/NexusMods.App/pull/2163)
 
 ## [v0.6.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.1) - 2024-09-24
 
