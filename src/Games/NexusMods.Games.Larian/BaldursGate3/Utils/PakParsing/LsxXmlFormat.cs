@@ -1,7 +1,11 @@
+using System.Text;
 using System.Xml;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
+/// <summary>
+/// Class containing definitions for the Larian Xml (LSX) format.
+/// </summary>
 public static class LsxXmlFormat
 {
     
@@ -35,32 +39,19 @@ public static class LsxXmlFormat
     /// </summary>
     public static string SerializeModuleShortDesc(ModuleShortDesc moduleShortDesc)
     {
-        using var stringWriter = new StringWriter();
-        using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings { Indent = true, OmitXmlDeclaration = true}))
+        var settings = new XmlWriterSettings
         {
-            xmlWriter.WriteStartElement("node");
-            xmlWriter.WriteAttributeString("id", "ModuleShortDesc");
-
-            WriteAttribute(xmlWriter, "Folder", "LSString", moduleShortDesc.Folder);
-            WriteAttribute(xmlWriter, "MD5", "LSString", moduleShortDesc.Md5);
-            WriteAttribute(xmlWriter, "Name", "LSString", moduleShortDesc.Name);
-            WriteAttribute(xmlWriter, "PublishHandle", "uint64", moduleShortDesc.PublishHandle);
-            WriteAttribute(xmlWriter, "UUID", "guid", moduleShortDesc.Uuid);
-            WriteAttribute(xmlWriter, "Version64", "int64", moduleShortDesc.Version);
-
-            xmlWriter.WriteEndElement();
+            Indent = true,
+            OmitXmlDeclaration = true,
+        };
+        
+        using var stringWriter = new StringWriter();
+        using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+        {
+            ModsettingsFileFormat.WriteModuleShortDesc(xmlWriter, moduleShortDesc);
         }
 
         return stringWriter.ToString();
-        
-        static void WriteAttribute(XmlWriter xmlWriter, string id, string type, string value)
-        {
-            xmlWriter.WriteStartElement("attribute");
-            xmlWriter.WriteAttributeString("id", id);
-            xmlWriter.WriteAttributeString("type", type);
-            xmlWriter.WriteAttributeString("value", value);
-            xmlWriter.WriteEndElement();
-        }
     }
 
 
