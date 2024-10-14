@@ -9,6 +9,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -86,6 +87,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 
             }
         );
+
+        // We should prevent Apply from being available while a file is in use.
+        // A file may be in use because:
+        // - The user launched the game externally (e.g. through Steam).
+        //     - Approximate this by seeing if any EXE in any of the game folders are running.
+        // - They're running a tool from within the App.
+        //     - Check running jobs.
     }
 
     private async Task Apply()
