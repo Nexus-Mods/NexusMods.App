@@ -51,7 +51,7 @@ We're starting work on showing when a mod has an update in the app. The backend 
 - The app will no longer re-download the user's avatar image every time a request is made to the Nexus Mods API. 
 
 ### External Contributors
-- [@MistaOmega](https://github.com/MistaOmega): [#2119](https://github.com/Nexus-Mods/NexusMods.App/pull/2119) [#2128](https://github.com/Nexus-Mods/NexusMods.App/pull/2128) [#2130](https://github.com/Nexus-Mods/NexusMods.App/pull/2130)
+- [@MistaOmega](https://github.com/MistaOmega): [#2118](https://github.com/Nexus-Mods/NexusMods.App/pull/2118), [#2119](https://github.com/Nexus-Mods/NexusMods.App/pull/2119), [#2128](https://github.com/Nexus-Mods/NexusMods.App/pull/2128), [#2130](https://github.com/Nexus-Mods/NexusMods.App/pull/2130)
 - [@Patriot99](https://github.com/Patriot99): [#2145](https://github.com/Nexus-Mods/NexusMods.App/pull/2145)
 - [@Michael-Kowata](https://github.com/Michael-Kowata): [#2163](https://github.com/Nexus-Mods/NexusMods.App/pull/2163)
 
