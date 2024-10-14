@@ -78,6 +78,8 @@ public static class LsxXmlFormat
             }
             return result;
         }
+        
+        public override string ToString() => $"{Major}.{Minor}.{Patch}";
     }
     
     

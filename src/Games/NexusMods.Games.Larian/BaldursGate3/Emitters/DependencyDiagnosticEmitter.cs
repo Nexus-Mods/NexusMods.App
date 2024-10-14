@@ -63,9 +63,11 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
                 // add diagnostic
                 diagnostics.Add(Diagnostics.CreateMissingDependency(
-                        ModuleName: loadoutItemGroup.ToReference(loadout),
-                        MissingDependencyName: dependency.Name,
+                        ModName: loadoutItemGroup.ToReference(loadout),
+                        MissingDepName: dependency.Name,
+                        MissingDepVersion: dependency.SemanticVersion.ToString(),
                         PakModuleName: metaFileData.Item2.ModuleShortDesc.Name,
+                        PakModuleVersion: metaFileData.Item2.ModuleShortDesc.SemanticVersion.ToString(),
                         NexusModsLink: NexusModsLink
                     )
                 );
@@ -119,7 +121,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .ToArray();
     }
 
-    private static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
+    private static readonly NamedLink NexusModsLink = new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
 
 #endregion Helpers
 }
