@@ -1,6 +1,9 @@
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using NexusMods.Icons.SimpleVector;
+using Projektanker.Icons.Avalonia;
 
 namespace NexusMods.Icons;
 
@@ -335,6 +338,8 @@ public static class IconValues
 #endregion
 
 #region Custom Icons
+    
+    
 
     // https://pictogrammers.com/library/mdi/icon/alert-octagon/
     public static readonly IconValue Alert = new ProjektankerIcon("mdi-alert-octagon");
@@ -448,6 +453,7 @@ public static class IconValues
         new Rect(0, 0, 20, 20)
     ));
     
-    
+    public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
+
 #endregion
 }
