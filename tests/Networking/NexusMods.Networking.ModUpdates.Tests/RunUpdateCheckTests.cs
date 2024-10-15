@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi;
@@ -16,10 +17,12 @@ namespace NexusMods.Networking.ModUpdates.Tests;
 
 public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTests>
 {
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
     private readonly NexusModsLibrary _nexusModsLibrary;
 
-    public RunUpdateCheckTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    public RunUpdateCheckTests(ITestOutputHelper outputHelper, IGameDomainToGameIdMappingCache mappingCache) : base(outputHelper)
     {
+        _mappingCache = mappingCache;
         _nexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
 
@@ -43,7 +46,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         await using var tempFile = TemporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameDomain: Cyberpunk2077Game.StaticDomain,
+            Cyberpunk2077Game.GameIdStatic,
             modId: modId,
             fileId: fileId
         );
@@ -53,7 +56,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
         
         // Ensure we're actually doing work
-        var updates = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(Connection.Db, NexusNexusApiClient);
+        var updates = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(Connection.Db, NexusNexusApiClient, _mappingCache);
         
         // We're relying on real data (CET), not a placeholder page.
         // Creating a placeholder is against TOS/Guidelines, so for now we

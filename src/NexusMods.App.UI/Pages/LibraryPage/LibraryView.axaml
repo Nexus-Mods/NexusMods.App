@@ -93,21 +93,122 @@
                               ShowColumnHeaders="True"
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
-                              Classes="MainListsStyling"
                               HorizontalAlignment="Stretch">
                     <TreeDataGrid.Resources>
-                        <DataTemplate x:Key="InstallColumnTemplate" DataType="local:LibraryItemModel">
-                            <Button Command="{CompiledBinding InstallCommand}" 
-                                    Classes="Standard"
-                                    HorizontalAlignment="Center"
-                                    Classes.Primary="{Binding !IsInstalledInLoadout.Value}"
-                                    Classes.Tertiary="{Binding IsInstalledInLoadout.Value}"
-                                    >
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalledInLoadout.Value}" />
-                                    <TextBlock Text="{CompiledBinding InstallText.Value}" />
-                                </StackPanel>
-                            </Button>
+                        <!-- Name column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithName.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- with name -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithName}">
+                                        <TextBlock Text="{CompiledBinding Name.Value}"/>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
+                                        <TextBlock Text="-"/>
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </DataTemplate>
+
+                        <!-- Version column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithVersion.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- with version -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithVersion}">
+                                        <TextBlock Text="{CompiledBinding Version.Value}"/>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
+                                        <TextBlock Text="-"/>
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </DataTemplate>
+
+                        <!-- Size column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithSize.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- with size -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithSize}">
+                                        <TextBlock Text="{CompiledBinding FormattedSize.Value}"/>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
+                                        <TextBlock Text="-"/>
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </DataTemplate>
+
+                        <!-- Downloaded Date column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithDownloadedDate.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- with downloaded date -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadedDate}">
+                                        <TextBlock Text="{CompiledBinding FormattedDownloadedDate.Value}"/>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
+                                        <TextBlock Text="-"/>
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </DataTemplate>
+
+                        <!-- Installed Date column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithInstalledDate.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- with installed date -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithInstalledDate}">
+                                        <TextBlock Text="{CompiledBinding FormattedInstalledDate.Value}"/>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
+                                        <TextBlock Text="-"/>
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </DataTemplate>
+
+                        <!-- Action column -->
+                        <DataTemplate x:Key="{x:Static local:ILibraryItemWithAction.ColumnTemplateResourceKey}" DataType="local:ILibraryItemModel">
+                            <ContentControl Content="{CompiledBinding}">
+                                <ContentControl.DataTemplates>
+                                    <!-- Install action -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithInstallAction}">
+                                        <Button Command="{CompiledBinding InstallItemCommand}"
+                                                Classes="Standard"
+                                                Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                                                Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                                                HorizontalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" IsVisible="{CompiledBinding IsInstalled.Value}" />
+                                                <TextBlock Text="{CompiledBinding InstallButtonText.Value}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+
+                                    <!-- Download action -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadAction}">
+                                        <Button Command="{CompiledBinding DownloadItemCommand}">
+                                            <TextBlock Text="Download"/>
+                                        </Button>
+                                    </DataTemplate>
+
+                                    <!-- fallback -->
+                                    <DataTemplate DataType="{x:Type local:ILibraryItemModel}"/>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
                         </DataTemplate>
                     </TreeDataGrid.Resources>
                 </TreeDataGrid>

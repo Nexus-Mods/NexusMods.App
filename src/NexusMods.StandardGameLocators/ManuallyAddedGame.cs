@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -15,7 +16,7 @@ public partial class ManuallyAddedGame : IModelDefinition
     /// <summary>
     /// The game domain this game install belongs to.
     /// </summary>
-    public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true };
+    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
 
     /// <summary>
     /// The version of the game.

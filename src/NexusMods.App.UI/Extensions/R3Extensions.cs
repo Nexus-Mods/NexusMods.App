@@ -15,16 +15,33 @@ public static class R3Extensions
     [MustDisposeResource] public static IDisposable WhenActivated<T>(
         this T obj,
         Action<T, CompositeDisposable> block)
-        where T : ReactiveR3Object
+        where T : IReactiveR3Object
+    {
+        return WhenActivated(obj, state: block, static (obj, block, disposables) =>
+        {
+            block(obj, disposables);
+        });
+    }
+
+    /// <summary>
+    /// Provides an activation block for <see cref="ReactiveR3Object"/>.
+    /// </summary>
+    [MustDisposeResource]
+    public static IDisposable WhenActivated<T, TState>(
+        this T obj,
+        TState state,
+        Action<T, TState, CompositeDisposable> block)
+        where T : IReactiveR3Object
+        where TState : notnull
     {
         var d = Disposable.CreateBuilder();
 
         var serialDisposable = new SerialDisposable();
         serialDisposable.AddTo(ref d);
 
-        obj.Activation.DistinctUntilChanged().Subscribe((obj, serialDisposable, block), onNext: static (isActivated, state) =>
+        obj.Activation.DistinctUntilChanged().Subscribe(((obj, state), serialDisposable, block), onNext: static (isActivated, state) =>
         {
-            var (model, serialDisposable, block) = state;
+            var (wrapper, serialDisposable, block) = state;
 
             serialDisposable.Disposable = null;
             if (isActivated)
@@ -32,7 +49,7 @@ public static class R3Extensions
                 var compositeDisposable = new CompositeDisposable();
                 serialDisposable.Disposable = compositeDisposable;
 
-                block(model, compositeDisposable);
+                block(wrapper.obj, wrapper.state, compositeDisposable);
             }
         }, onCompleted: static (_, state) =>
         {

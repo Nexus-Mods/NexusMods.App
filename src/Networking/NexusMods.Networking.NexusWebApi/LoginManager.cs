@@ -1,6 +1,5 @@
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
@@ -9,8 +8,10 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -26,25 +27,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
-    /// <summary>
-    /// Allows you to subscribe to notifications of when the user information changes.
-    /// </summary>
-    public IObservable<UserInfo?> UserInfoObservable { get; }
-    
-    /// <summary>
-    /// True if the user is logged in
-    /// </summary>
-    public IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(info => info is not null);
-    
-    /// <summary>
-    /// True if the user is logged in and is a premium member
-    /// </summary>
-    public IObservable<bool> IsPremiumObservable => UserInfoObservable.Select(info => info?.IsPremium ?? false);
+    private readonly BehaviorSubject<UserInfo?> _userInfo = new(initialValue: null);
 
-    /// <summary>
-    /// The user's avatar
-    /// </summary>
-    public IObservable<Uri?> AvatarObservable => UserInfoObservable.Select(info => info?.AvatarUrl);
+    /// <inheritdoc/>
+    public Observable<UserInfo?> UserInfoObservable => _userInfo;
+
+    private readonly IDisposable _observeDatomDisposable;
 
     /// <summary>
     /// Constructor.
@@ -64,16 +52,18 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfoObservable = JWTToken.ObserveAll(_conn)
-            // We only care that it has changed, not the actual value
-            .QueryWhenChanged(values => values.Count > 0)
-            .ObserveOn(TaskPoolScheduler.Default)
-            .SelectMany(async hasValue  =>
-                {
-                    if (!hasValue) return null;
-                    return await Verify(CancellationToken.None);
-                }
-            );
+        _observeDatomDisposable = _conn
+            .ObserveDatoms(JWTToken.PrimaryAttribute)
+            .IsNotEmpty()
+            .ToObservable()
+            .DistinctUntilChanged()
+            .SubscribeAwait(async (hasValue, cancellationToken) =>
+            {
+                _cachedUserInfo.Evict();
+
+                if (!hasValue) _userInfo.OnNext(value: null);
+                else _userInfo.OnNext(await Verify(cancellationToken));
+            }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
@@ -150,12 +140,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        using var tx = _conn.BeginTransaction();
-        foreach (var token in JWTToken.All(_conn.Db))
-        {
-            tx.Delete(token.Id, true);
-        }
-        await tx.Commit();
+        await _conn.Excise(JWTToken.All(_conn.Db).Select(e => e.Id).ToArray());
     }
     
     
@@ -163,6 +148,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public void Dispose()
     {
         _verifySemaphore.Dispose();
+        _observeDatomDisposable.Dispose();
     }
-    
 }

@@ -13,8 +13,12 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
 {
 
     [Theory]
+    // Includes a basic collection
     [InlineData("jjctqn", 1)]
+    // FOMOD and binary patching
     [InlineData("jjctqn", 3)]
+    // Includes bundled mod
+    [InlineData("jjctqn", 4)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
         await using var destination = TemporaryFileManager.CreateFile();

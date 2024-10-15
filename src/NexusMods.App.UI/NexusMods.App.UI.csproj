@@ -596,12 +596,6 @@
         <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
           <DependentUpon>ILibraryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\FakeParentLibraryItemModel.cs">
-            <DependentUpon>LibraryItemModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\NexusModsModPageLibraryItemModel.cs">
-            <DependentUpon>LibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LoadoutPage\FakeParentLoadoutItemModel.cs">
             <DependentUpon>LoadoutItemModel.cs</DependentUpon>
         </Compile>
@@ -649,6 +643,24 @@
         </Compile>
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithName.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithVersion.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithSize.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithDownloadedDate.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithInstalledDate.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithAction.cs">
+            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
