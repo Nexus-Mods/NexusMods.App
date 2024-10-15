@@ -8,15 +8,15 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
-using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
+using OneOf.Types;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IResourceLoader<Hash, LsxXmlFormat.MetaFileData> _metadataPipeline;
+    private readonly IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> _metadataPipeline;
 
     public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
     {
@@ -26,7 +26,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await DiagnoseDependenciesAsync(loadout, cancellationToken);
+        var diagnostics = await DiagnosePakModulesAsync(loadout, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
@@ -35,10 +35,10 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Diagnosers
 
-    private async Task<IEnumerable<Diagnostic>> DiagnoseDependenciesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var pakLoadoutFiles = GetAllPakLoadoutFiles(loadout, onlyEnabledMods: true);
-        var allFileMetadata = await GetAllPakMetadata(pakLoadoutFiles,
+        var metaFileTuples = await GetAllPakMetadata(pakLoadoutFiles,
                 _metadataPipeline,
                 _logger,
                 cancellationToken
@@ -47,16 +47,31 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         var diagnostics = new List<Diagnostic>();
 
-        foreach (var metaFileData in allFileMetadata)
+        foreach (var metaFileTuple in metaFileTuples)
         {
-            var dependencies = metaFileData.Item2.Dependencies;
-            var loadoutItemGroup = metaFileData.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+            var (mod, metadataOrError) = metaFileTuple;
+            var loadoutItemGroup = mod.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+            
+            // error case
+            if (metadataOrError.IsT1)
+            {
+                diagnostics.Add(Diagnostics.CreateInvalidPakFile(
+                    ModName: loadoutItemGroup.ToReference(loadout),
+                    PakFileName: mod.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName
+                    ));
+                continue;
+            }
+            
+            // non error case
+            var metadata = metadataOrError.AsT0;
+            var dependencies = metadata.Dependencies;
+            
 
             foreach (var dependency in dependencies)
             {
                 var dependencyUuid = dependency.Uuid;
 
-                if (dependencyUuid == string.Empty || allFileMetadata.Any(x => x.Item2.ModuleShortDesc.Uuid == dependencyUuid))
+                if (dependencyUuid == string.Empty || metaFileTuples.Any(x => x.Item2.IsT0 && x.Item2.AsT0.ModuleShortDesc.Uuid == dependencyUuid))
                 {
                     continue;
                 }
@@ -66,8 +81,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                         ModName: loadoutItemGroup.ToReference(loadout),
                         MissingDepName: dependency.Name,
                         MissingDepVersion: dependency.SemanticVersion.ToString(),
-                        PakModuleName: metaFileData.Item2.ModuleShortDesc.Name,
-                        PakModuleVersion: metaFileData.Item2.ModuleShortDesc.SemanticVersion.ToString(),
+                        PakModuleName: metadata.ModuleShortDesc.Name,
+                        PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
                         NexusModsLink: NexusModsLink
                     )
                 );
@@ -81,15 +96,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
-    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, LsxXmlFormat.MetaFileData>> GetAllPakMetadata(
+    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
-        IResourceLoader<Hash, LsxXmlFormat.MetaFileData> metadataPipeline,
+        IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> metadataPipeline,
         ILogger logger,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var pakLoadoutFile in pakLoadoutFiles)
         {
-            Resource<LsxXmlFormat.MetaFileData> resource;
+            Resource<OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> resource;
             try
             {
                 resource = await metadataPipeline.LoadResourceAsync(pakLoadoutFile.Hash, cancellationToken);
@@ -99,7 +114,13 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 logger.LogError(e, "Exception while getting metadata for `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
                 continue;
             }
-
+            
+            // Log the InvalidDataException case, but still return the resource
+            if (resource.Data.IsT1)
+            {
+                logger.LogWarning(resource.Data.AsT1.Value, "Detected invalid BG3 Pak file: `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
+            }
+            
             yield return (pakLoadoutFile, resource.Data);
         }
     }

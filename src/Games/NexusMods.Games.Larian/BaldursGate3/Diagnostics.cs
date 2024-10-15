@@ -40,4 +40,27 @@ internal static partial class Diagnostics
         )
         .Finish();
     
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate InvalidPakFileTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 1))
+        .WithTitle("Invalid pak file")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("The file '{PakFileName}' in mod {ModName} was not recognized as a valid Pak file.")
+        .WithDetails("""
+                     The app was unable to recognize the file '{PakFileName}' in mod {ModName} as a valid Pak file.
+                     This file is unlikely to work correctly in the game. 
+                     
+                     
+                     ## Recommended actions
+                     Reinstall the mod or remove the file.
+                     """)
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<LoadoutItemGroupReference>("ModName")
+            .AddValue<string>("PakFileName")
+        )
+        .Finish();
+    
 }
