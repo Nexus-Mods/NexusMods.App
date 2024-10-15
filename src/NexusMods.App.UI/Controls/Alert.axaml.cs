@@ -39,7 +39,6 @@ public class Alert : ContentControl
     private Border? _bodyTextBorder  = null;
     private Border? _actionsRowBorder  = null;
     
-
     public string? Title
     {
         get => GetValue(TitleProperty);
@@ -97,10 +96,7 @@ public class Alert : ContentControl
             ShowActions = false;
         }
         
-        if (string.IsNullOrEmpty(Body))
-        {
-            ShowBody = false;
-        }
+        ShowBody = !string.IsNullOrEmpty(Body);
 
         // turn off elements based on properties
         _closeButton.IsVisible = ShowCloseButton;
@@ -111,26 +107,15 @@ public class Alert : ContentControl
         _titleText.Text = Title;
         _bodyText.Text = Body;
 
-        switch (Severity)
+        _icon.Value = Severity switch
         {
             // set icon based on severity
-            case SeverityOptions.Info:
-                _icon.Value = IconValues.Info;
-                break;
-            case SeverityOptions.Success:
-                _icon.Value = IconValues.CheckCircleOutline;
-                break;
-            case SeverityOptions.Warning:
-                _icon.Value = IconValues.WarningAmber;
-                break;
-            case SeverityOptions.Error:
-                _icon.Value = IconValues.Warning;
-                break;
-            default:
-                _icon.Value = IconValues.Info;
-                break;
-        }
-        
+            SeverityOptions.Info => IconValues.Info,
+            SeverityOptions.Success => IconValues.CheckCircleOutline,
+            SeverityOptions.Warning => IconValues.WarningAmber,
+            SeverityOptions.Error => IconValues.Warning,
+            _ => IconValues.Info,
+        };
     }
     
 }

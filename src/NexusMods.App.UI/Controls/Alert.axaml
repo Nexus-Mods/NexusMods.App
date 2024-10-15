@@ -4,7 +4,7 @@
 >
     
     <Design.PreviewWith>
-        <Border Padding="8">
+        <Border Padding="16" Width="500">
             <StackPanel Spacing="8">
                 <controls:Alert Title="Title" Body="Body" />
             </StackPanel>

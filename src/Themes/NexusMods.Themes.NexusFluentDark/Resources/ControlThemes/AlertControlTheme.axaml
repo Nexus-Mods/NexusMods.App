@@ -9,7 +9,7 @@
         <Border Padding="8">
             <StackPanel Spacing="24" Orientation="Horizontal">
                 <StackPanel Spacing="8">
-                    <controls:Alert ShowBody="True" Width="400"
+                    <controls:Alert ShowBody="True"
                                     Body="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                                     ShowCloseButton="False" />
                     <controls:Alert ShowBody="False" ShowActions="False" Title="Title only" />
@@ -52,7 +52,8 @@
                     Padding="{TemplateBinding Padding}"
                     CornerRadius="{TemplateBinding CornerRadius}"
                     BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    >
 
                     <StackPanel>
 
@@ -98,7 +99,7 @@
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
             <!-- <Setter Property="MinWidth" Value="200" /> -->
 
