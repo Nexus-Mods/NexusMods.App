@@ -23,9 +23,11 @@
                     </controls:StandardButton>
                     <controls:StandardButton IsEnabled="False" ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                    <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                    <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                             ToolTip="Simon" />
                     <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
-                    <controls:StandardButton IsEnabled="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                    <controls:StandardButton IsEnabled="False" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
                 </StackPanel>
 
                 <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
@@ -209,6 +211,10 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
+                        <ToolTip.Tip>
+                            <TextBlock x:Name="PART_ToolTip" Text="{TemplateBinding ToolTip}" />
+                        </ToolTip.Tip>
+                    
                     <!-- this is only shown if Content is set -->
                     <ContentPresenter x:Name="PART_ContentPresenter"
                                       Background="{TemplateBinding Background}"
