@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Pages.Changelog;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
@@ -41,6 +42,7 @@ internal class TypeFinder : ITypeFinder
         typeof(HomeContext),
         typeof(LoadoutContext),
         typeof(DownloadsContext),
+        typeof(CollectionDownloadPageContext),
 
         // other
         typeof(WindowData),
