@@ -46,14 +46,15 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing
                                 case "PublishHandle":
                                     moduleShortDesc.PublishHandle = value ?? string.Empty;
                                     break;
+                                case "Version":
+                                    // From older meta files, it seems that it could contain either 32-bit or 64-bit values even though type is marked as Int32
+                                    // They later changed it to Version64, to clarify the type, but older mods can still have this
+                                    moduleShortDesc.Version = value ?? string.Empty;
+                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt32String(moduleShortDesc.Version);
+                                    break;
                                 case "Version64":
                                     moduleShortDesc.Version = value ?? string.Empty;
-                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64(LsxXmlFormat.ModuleVersion.ParseVersion64(moduleShortDesc.Version));
-                                    break;
-                                case "Version":
-                                    // From older meta files, it seems that it could contain 64-bit values even though type is marked as Int32
-                                    moduleShortDesc.Version = value ?? string.Empty;
-                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64(LsxXmlFormat.ModuleVersion.ParseVersion(moduleShortDesc.Version));
+                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64String(moduleShortDesc.Version);
                                     break;
                                 case "UUID":
                                     moduleShortDesc.Uuid = value ?? string.Empty;
@@ -106,14 +107,15 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing
                                         case "PublishHandle":
                                             dependency.PublishHandle = value ?? string.Empty;
                                             break;
+                                        case "Version":
+                                            // From older meta files, it seems that it could contain either 32-bit or 64-bit values even though type is marked as Int32
+                                            // They later changed it to Version64, to clarify the type, but older mods can still have this
+                                            dependency.Version = value ?? string.Empty;
+                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt32String(dependency.Version);
+                                            break;
                                         case "Version64":
                                             dependency.Version = value ?? string.Empty;
-                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64(LsxXmlFormat.ModuleVersion.ParseVersion64(dependency.Version));
-                                            break;
-                                        case "Version":
-                                            // From older meta files, it seems that it could contain 64-bit values even though type is marked as Int32
-                                            dependency.Version = value ?? string.Empty;
-                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64(LsxXmlFormat.ModuleVersion.ParseVersion(dependency.Version));
+                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64String(dependency.Version);
                                             break;
                                         case "UUID":
                                             dependency.Uuid = value ?? string.Empty;

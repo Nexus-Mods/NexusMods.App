@@ -41,42 +41,77 @@ public static class LsxXmlFormat
         public ulong Patch;
         public ulong Build;
         
-        public static ModuleVersion FromInt64(UInt64 packed)
+        
+        public static ModuleVersion FromInt32String(string? str)
         {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return FromUInt32(0);
+            }
+
+            if (!UInt32.TryParse(str, out var parse32Result))
+            {
+                // Apparently the string can contain 64-bit values even though the type is marked as Int32
+                return FromInt64String(str);
+            }
+            return FromUInt32(parse32Result);
+        }
+        
+        public static ModuleVersion FromInt64String(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var parse64Result))
+            {
+                return FromUInt64(0);
+            }
+            
+            return FromUInt64(parse64Result);
+        }
+        
+        private static ModuleVersion FromUInt64(ulong uIntVal)
+        {
+            if (uIntVal == 1 || uIntVal == 268435456)
+            {
+                // v1.0.0.0
+                return new ModuleVersion
+                {
+                    Major = 1,
+                    Minor = 0,
+                    Patch = 0,
+                    Build = 0,
+                };
+            }
+
             return new ModuleVersion
             {
-                Major = packed >> 55,
-                Minor = (packed >> 47) & 0xFF,
-                Patch = (packed >> 31) & 0xFFFF,
-                Build = packed & 0x7FFFFFFFUL,
+                Major = uIntVal >> 55,
+                Minor = (uIntVal >> 47) & 0xFF,
+                Patch = (uIntVal >> 31) & 0xFFFF,
+                Build = uIntVal & 0x7FFFFFFFUL,
             };
         }
 
-        public static UInt64 ParseVersion(string? str)
-        {
-            // Even though version is marked as Int32, it could actually contain 64-bit values, so we need to parse it as UInt64
-            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var result)) 
-                return 0;
-            
-            if (result == 1 || result == 268435456)
-            {
-                // v1.0.0.0
-                return 36028797018963968;
-            }
-            return result;
-        }
         
-        public static UInt64 ParseVersion64(string? str)
+        private static ModuleVersion FromUInt32(UInt32 uIntVal)
         {
-            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var result)) 
-                return 0;
-            
-            if (result == 1)
+            if (uIntVal == 1) // || uIntVal == 268435456)
             {
                 // v1.0.0.0
-                return 36028797018963968;
+                return new ModuleVersion
+                {
+                    Major = 1,
+                    Minor = 0,
+                    Patch = 0,
+                    Build = 0,
+                };
             }
-            return result;
+            
+            return new ModuleVersion
+            {
+                Major = uIntVal >> 28,
+                Minor = (uIntVal >> 24) & 0x0F,
+                Patch = (uIntVal >> 16) & 0xFF,
+                Build = uIntVal & 0xFFFF,
+            };
         }
         
         public override string ToString() => $"{Major}.{Minor}.{Patch}";
