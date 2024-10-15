@@ -18,12 +18,12 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing required dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The mod {ModName} is missing the required dependency '{MissingDepName}' v{MissingDepVersion}.")
+        .WithSummary("The mod {ModName} is missing the required dependency '{MissingDepName}' v{MissingDepVersion}+.")
         .WithDetails("""
-                     '{MissingDepName}' v{MissingDepVersion} is not installed or enabled in your Loadout. This pak module is required by '{PakModuleName}' v{PakModuleVersion} to run correctly.
+                     '{MissingDepName}' v{MissingDepVersion}+ is not installed or enabled in your Loadout. This pak module is required by '{PakModuleName}' v{PakModuleVersion} to run correctly.
                      
                      
-                     ## Recommended actions
+                     ## Recommended Actions
                      #### Search for and install the missing mod
                      You can search for '{MissingDepName}' on {NexusModsLink} or search the in-game mod manager.
                      #### Or
@@ -40,6 +40,28 @@ internal static partial class Diagnostics
         )
         .Finish();
     
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate OutdatedDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 1))
+        .WithTitle("Required dependency is outdated")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {ModName} requires at least version {MinDepVersion}+ of '{DepName}' but only v{CurrentDepVersion} is installed.")
+        .WithDetails("""
+                     '{PakModuleName}' v{PakModuleVersion} requires at least version {MinDepVersion}+ of '{DepName}' to run correctly. However, you only have version v{CurrentDepVersion} installed in mod {ModName}.
+                     """)
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<LoadoutItemGroupReference>("ModName")
+            .AddValue<string>("PakModuleName")
+            .AddValue<string>("PakModuleVersion")
+            .AddDataReference<LoadoutItemGroupReference>("DepModName")
+            .AddValue<string>("DepName")
+            .AddValue<string>("MinDepVersion")
+            .AddValue<string>("CurrentDepVersion")
+        )
+        .Finish();
+    
     
     [DiagnosticTemplate]
     [UsedImplicitly]
@@ -48,14 +70,14 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Invalid pak file")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The file '{PakFileName}' in mod {ModName} was not recognized as a valid Pak file.")
+        .WithSummary("Invalid .pak File Detected in {ModName}")
         .WithDetails("""
-                     The app was unable to recognize the file '{PakFileName}' in mod {ModName} as a valid Pak file.
-                     This file is unlikely to work correctly in the game. 
+                     The mod contains a .pak file, typically used to store mod data for Baldur's Gate 3. However,
+                     this one appears to be invalid or incompatible: '{PakFileName}'.
                      
                      
-                     ## Recommended actions
-                     Reinstall the mod or remove the file.
+                     ## Recommended Actions
+                     Verify that the file is installed in the intended location and that it wasn't altered or corrupted. You may need to remove or reinstall the mod, consulting the mod's instructions for proper installation.
                      """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("ModName")

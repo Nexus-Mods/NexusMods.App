@@ -34,13 +34,12 @@ public static class LsxXmlFormat
     }
     
     
-    public struct ModuleVersion
+    public struct ModuleVersion : IComparable<ModuleVersion>, IEquatable<ModuleVersion>
     {
         public ulong Major;
         public ulong Minor;
         public ulong Patch;
         public ulong Build;
-        
         
         public static ModuleVersion FromInt32String(string? str)
         {
@@ -71,7 +70,6 @@ public static class LsxXmlFormat
         {
             if (uIntVal == 1 || uIntVal == 268435456)
             {
-                // v1.0.0.0
                 return new ModuleVersion
                 {
                     Major = 1,
@@ -93,9 +91,8 @@ public static class LsxXmlFormat
         
         private static ModuleVersion FromUInt32(UInt32 uIntVal)
         {
-            if (uIntVal == 1) // || uIntVal == 268435456)
+            if (uIntVal == 1)
             {
-                // v1.0.0.0
                 return new ModuleVersion
                 {
                     Major = 1,
@@ -115,6 +112,43 @@ public static class LsxXmlFormat
         }
         
         public override string ToString() => $"{Major}.{Minor}.{Patch}";
+        
+        public int CompareTo(ModuleVersion other)
+        {
+            var majorComparison = Major.CompareTo(other.Major);
+            if (majorComparison != 0) return majorComparison;
+            var minorComparison = Minor.CompareTo(other.Minor);
+            if (minorComparison != 0) return minorComparison;
+            var patchComparison = Patch.CompareTo(other.Patch);
+            if (patchComparison != 0) return patchComparison;
+            return Build.CompareTo(other.Build);
+        }
+
+        public bool Equals(ModuleVersion other)
+        {
+            return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Build == other.Build;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ModuleVersion other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Major,
+                Minor,
+                Patch,
+                Build
+            );
+        }
+        
+        public static bool operator !=(ModuleVersion left, ModuleVersion right) => !left.Equals(right);
+        public static bool operator ==(ModuleVersion left, ModuleVersion right) => left.Equals(right);
+        public static bool operator >(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) > 0;
+        public static bool operator <(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) < 0;
+        public static bool operator >=(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) >= 0;
+        public static bool operator <=(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) <= 0;
     }
     
     

@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
@@ -51,41 +52,73 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         {
             var (mod, metadataOrError) = metaFileTuple;
             var loadoutItemGroup = mod.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
-            
+
             // error case
             if (metadataOrError.IsT1)
             {
                 diagnostics.Add(Diagnostics.CreateInvalidPakFile(
-                    ModName: loadoutItemGroup.ToReference(loadout),
-                    PakFileName: mod.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName
-                    ));
+                        ModName: loadoutItemGroup.ToReference(loadout),
+                        PakFileName: mod.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName
+                    )
+                );
                 continue;
             }
-            
+
             // non error case
             var metadata = metadataOrError.AsT0;
             var dependencies = metadata.Dependencies;
-            
 
             foreach (var dependency in dependencies)
             {
                 var dependencyUuid = dependency.Uuid;
+                if (dependencyUuid == string.Empty)
+                    continue;
 
-                if (dependencyUuid == string.Empty || metaFileTuples.Any(x => x.Item2.IsT0 && x.Item2.AsT0.ModuleShortDesc.Uuid == dependencyUuid))
+                var matchingDeps = metaFileTuples.Where(
+                        x =>
+                            x.Item2.IsT0 &&
+                            x.Item2.AsT0.ModuleShortDesc.Uuid == dependencyUuid
+                    )
+                    .ToArray();
+
+                if (matchingDeps.Length == 0)
                 {
+                    // Missing dependency
+                    diagnostics.Add(Diagnostics.CreateMissingDependency(
+                            ModName: loadoutItemGroup.ToReference(loadout),
+                            MissingDepName: dependency.Name,
+                            MissingDepVersion: dependency.SemanticVersion.ToString(),
+                            PakModuleName: metadata.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            NexusModsLink: NexusModsLink
+                        )
+                    );
                     continue;
                 }
 
-                // add diagnostic
-                diagnostics.Add(Diagnostics.CreateMissingDependency(
-                        ModName: loadoutItemGroup.ToReference(loadout),
-                        MissingDepName: dependency.Name,
-                        MissingDepVersion: dependency.SemanticVersion.ToString(),
-                        PakModuleName: metadata.ModuleShortDesc.Name,
-                        PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
-                        NexusModsLink: NexusModsLink
-                    )
+                if (dependency.SemanticVersion == default(LsxXmlFormat.ModuleVersion))
+                    continue;
+
+                var highestInstalledMatch = matchingDeps.MaxBy(
+                    x => x.Item2.AsT0.ModuleShortDesc.SemanticVersion
                 );
+                var installedMatchModule = highestInstalledMatch.Item2.AsT0.ModuleShortDesc;
+                var matchLoadoutItemGroup = highestInstalledMatch.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+
+                // Check if found dependency is outdated
+                if (installedMatchModule.SemanticVersion < dependency.SemanticVersion)
+                {
+                    diagnostics.Add(Diagnostics.CreateOutdatedDependency(
+                            ModName: loadoutItemGroup.ToReference(loadout),
+                            PakModuleName: metadata.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            DepModName: matchLoadoutItemGroup.ToReference(loadout),
+                            DepName: installedMatchModule.Name,
+                            MinDepVersion: dependency.SemanticVersion.ToString(),
+                            CurrentDepVersion: installedMatchModule.SemanticVersion.ToString()
+                        )
+                    );
+                }
             }
         }
 
@@ -114,13 +147,13 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 logger.LogError(e, "Exception while getting metadata for `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
                 continue;
             }
-            
+
             // Log the InvalidDataException case, but still return the resource
             if (resource.Data.IsT1)
             {
                 logger.LogWarning(resource.Data.AsT1.Value, "Detected invalid BG3 Pak file: `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
             }
-            
+
             yield return (pakLoadoutFile, resource.Data);
         }
     }
