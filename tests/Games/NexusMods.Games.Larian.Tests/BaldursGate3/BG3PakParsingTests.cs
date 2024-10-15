@@ -40,7 +40,8 @@ public class BG3PakParsingTests
             sb.AppendLine("Dependency:");
             sb.Append(LsxXmlFormat.SerializeModuleShortDesc(dependency));
             sb.AppendLineN();
-            sb.AppendLine($"SemanticVersion: {dependency.SemanticVersion.Major}.{dependency.SemanticVersion.Minor}.{dependency.SemanticVersion.Patch}.{dependency.SemanticVersion.Build}");
+            var ver = dependency.SemanticVersion;
+            sb.AppendLine($"SemanticVersion: {ver.Major}.{ver.Minor}.{ver.Patch}.{ver.Build}");
         }
         await Verify(sb.ToString()).UseParameters(pakFilePath);
     }
