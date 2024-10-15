@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.6.2](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.2) - 2024-10-15
+## [v0.6.2](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.2) - 2024-10-16
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
@@ -14,6 +14,9 @@ This version of the app adds Baldur's Gate 3 as the third supported game ([#2122
 The app will display a diagnostic message if a PAK file lists a dependency in the meta.lsx file that is not currently installed. We plan to improve the available data shown to the users in future releases. 
 
 The current implementation does not include load order support. You will need to go to "Mod Manager" from the main menu and enable your mods to have the take effect in the game. Load order support is planned for a future release. 
+
+**Note: The when launching the GOG version of the game, the app will currently default to the Vulkan version. A choice between Vulkan and DX11 will be added in a future release. If you require the DX11 version, please launch from GOG Galaxy (Windows), Heroic Launcher (Linux) or via bg3_dx11.exe.**
+
 
 ### Heroic Launcher
 Linux users can now manage GOG games installed or imported using the [Heroic Launcher](https://heroicgameslauncher.com/) ([#2103](https://github.com/Nexus-Mods/NexusMods.App/pull/2103)). Due to technical limitations, we've disabled REDmod deployment for Cyberpunk 2077 using Heroic, but it's possible to have the launcher run this process when starting the game. [More Info.](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/#automated-deployment-for-redmods)

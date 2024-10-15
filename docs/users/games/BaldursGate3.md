@@ -15,6 +15,9 @@ When managing Baldur's Gate 3 the app will back up only the core game files (def
 
 
 ## Compatibility
+!!! warning "Launch options for the GOG version"
+    In 0.6.2 pressing the play button in the app will always launch the Vulkan version of the game. To play the DX11 version please launch the game through GOG Galaxy (Windows), Heroic Launcher (Linux) or via `bin\bg3_dx11.exe`. 
+
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
 
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
