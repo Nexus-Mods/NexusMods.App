@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.6.2](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.2) - 2024-10-XX
+## [v0.6.2](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.6.2) - 2024-10-15
 
 # Caution: To update the app, you must completely uninstall the old version, including all mods. [Learn More.](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
