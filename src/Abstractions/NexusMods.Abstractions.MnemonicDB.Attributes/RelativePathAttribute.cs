@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 /// Represents a relative path.
 /// </summary>
-public class RelativePathAttribute(string ns, string name) : ScalarAttribute<RelativePath, string>(ValueTags.Utf8Insensitive, ns, name)
+public class RelativePathAttribute(string ns, string name) : ScalarAttribute<RelativePath, string>(ValueTag.Utf8Insensitive, ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(RelativePath value)
@@ -17,7 +17,7 @@ public class RelativePathAttribute(string ns, string name) : ScalarAttribute<Rel
     }
 
     /// <inheritdoc />
-    protected override RelativePath FromLowLevel(string value, ValueTags tags, AttributeResolver resolver)
+    protected override RelativePath FromLowLevel(string value, AttributeResolver resolver)
     {
         return RelativePath.FromUnsanitizedInput(value);
     }

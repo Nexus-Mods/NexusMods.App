@@ -90,7 +90,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
 
         return new Resource<byte[]>
         {
-            Data = bytes,
+            Data = bytes.ToArray(),
             ExpiresAt = persistedResource.ExpiresAt,
         };
     }

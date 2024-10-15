@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Abstractions.MnemonicDB.Analyzers;
 
@@ -30,14 +31,12 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
             
             var db = current.IsRetract ? dbOld : dbNew;
             var entity = db.Get(current.E);
-            var resolver = dbNew.Connection.AttributeResolver;
             foreach (var datom in entity)
             {
-                var resolved = resolver.Resolve(datom);
-                if (resolved.A is not ReferenceAttribute reference) 
+                if (datom.Prefix.ValueTag != ValueTag.Reference)
                     continue;
 
-                var parent = reference.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, resolver);
+                var parent = ValueTag.Reference.Read<EntityId>(datom.ValueSpan);
                 remaining.Push((parent, current.IsRetract));
             }
         }
