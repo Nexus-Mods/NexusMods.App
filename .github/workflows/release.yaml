@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TagVersion: ${{ steps.setOutputs.outputs.tagVersion }}
+      BranchVersion: ${{ steps.setOutputs.outputs.branchVersion }}
       RawVersion: ${{ steps.setOutputs.outputs.rawVersion }}
       ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
 
@@ -53,9 +54,11 @@ jobs:
           InputVersion: ${{ inputs.version }}
         run: |
           $tagVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion : "v" + $env:InputVersion
+          $branchVersion = "release_$tagVersion"
           $rawVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion.Substring(1) : $env:InputVersion
           $validation = [System.Version]::Parse($rawVersion)
           echo "tagVersion=$tagVersion" >> $env:GITHUB_OUTPUT
+          echo "branchVersion=$branchVersion" >> $env:GITHUB_OUTPUT
           echo "rawVersion=$rawVersion" >> $env:GITHUB_OUTPUT
           echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
 
@@ -130,6 +133,7 @@ jobs:
         with:
           name: ${{ needs.transformInputs.outputs.RawVersion }}
           tag_name: ${{ needs.transformInputs.outputs.TagVersion }}
+          target_commitish: ${{ needs.transformInputs.outputs.BranchVersion }}
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
           files: bin/**/*
