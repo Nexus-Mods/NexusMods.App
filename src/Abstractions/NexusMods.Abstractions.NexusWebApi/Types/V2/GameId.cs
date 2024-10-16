@@ -18,11 +18,11 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 /// Game ID attribute, for game identifiers from the GraphQL (V2) API.
 /// </summary>
 public class GameIdAttribute(string ns, string name) 
-    : ScalarAttribute<GameId, uint>(ValueTags.UInt32, ns, name)
+    : ScalarAttribute<GameId, uint>(ValueTag.UInt32, ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(GameId value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => GameId.From(value);
+    protected override GameId FromLowLevel(uint value, AttributeResolver resolver) => GameId.From(value);
 }

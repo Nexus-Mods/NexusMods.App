@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 /// An absolute path, stored as a string (case-sensitive)
 /// </summary>
-public class AbsolutePathAttribute(string ns, string name) : ScalarAttribute<AbsolutePath, string>(ValueTags.Utf8, ns, name)
+public class AbsolutePathAttribute(string ns, string name) : ScalarAttribute<AbsolutePath, string>(ValueTag.Utf8, ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(AbsolutePath value)
@@ -18,7 +18,7 @@ public class AbsolutePathAttribute(string ns, string name) : ScalarAttribute<Abs
     }
 
     /// <inheritdoc />
-    protected override AbsolutePath FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override AbsolutePath FromLowLevel(string value, AttributeResolver resolver)
 
     {
         return resolver.ServiceProvider.GetRequiredService<IFileSystem>().FromUnsanitizedFullPath(value);

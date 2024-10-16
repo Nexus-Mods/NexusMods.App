@@ -8,12 +8,12 @@ namespace NexusMods.Abstractions.FileStore.Nx.Models;
 /// <summary>
 /// Stores a NXArchive file entry as a blob.
 /// </summary>
-public class NxFileEntryAttribute(string ns, string name) : BlobAttribute<FileEntry>(ns, name)
+public class NxFileEntryAttribute(string ns, string name) : ScalarAttribute<FileEntry, Memory<byte>>(ValueTag.Blob, ns, name)
 {
     /// <inheritdoc />
-    protected override unsafe FileEntry FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
+    protected override unsafe FileEntry FromLowLevel(Memory<byte> value, AttributeResolver resolver)
     {
-        fixed (byte* ptr = value)
+        fixed (byte* ptr = value.Span)
         {
             var reader = new LittleEndianReader(ptr);
             FileEntry tmpEntry = default;
@@ -23,14 +23,16 @@ public class NxFileEntryAttribute(string ns, string name) : BlobAttribute<FileEn
     }
 
     /// <inheritdoc />
-    protected override unsafe void WriteValue<TWriter>(FileEntry value, TWriter writer)
+    protected override unsafe Memory<byte> ToLowLevel(FileEntry value)
     {
-        var buffer = writer.GetSpan(sizeof(FileEntry));
+        var buffer = new byte[sizeof(FileEntry)];
         fixed (byte* ptr = buffer)
         {
             var interWriter = new LittleEndianWriter(ptr);
             value.WriteAsV1(ref interWriter);
-            writer.Advance(sizeof(FileEntry));
         }
+        return buffer;
     }
+
+
 }
