@@ -1,7 +1,6 @@
 using System.Reactive;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -23,5 +22,4 @@ public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
     /// </summary>
     public string Label { get; }
     public Percent? Progress { get; }
-
 }

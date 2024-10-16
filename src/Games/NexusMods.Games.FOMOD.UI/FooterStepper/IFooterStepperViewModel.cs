@@ -1,5 +1,5 @@
 using System.Reactive;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI;
 using ReactiveUI;
 

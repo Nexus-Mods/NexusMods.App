@@ -1,24 +1,24 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.Abstractions.Jobs;
 
-public interface IJobDefinition
-{
-    
-}
+[PublicAPI]
+public interface IJobDefinition;
 
 /// <summary>
 /// A typed job definition that returns a result
 /// </summary>
+[PublicAPI]
 public interface IJobDefinition<TResultType> : IJobDefinition
     where TResultType : notnull;
-
 
 /// <summary>
 /// A job definition that can be started with instance method
 /// </summary>
-/// <typeparam name="TParent"></typeparam>
-/// <typeparam name="TResultType"></typeparam>
-public interface IJobDefinitionWithStart<TParent, TResultType> : IJobDefinition<TResultType> 
-    where TParent : IJobDefinition<TResultType> where TResultType : notnull
+[PublicAPI]
+public interface IJobDefinitionWithStart<in TParent, TResultType> : IJobDefinition<TResultType>
+    where TParent : IJobDefinition<TResultType>
+    where TResultType : notnull
 {
     /// <summary>
     /// Starts the job

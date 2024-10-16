@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Activities;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -26,12 +25,7 @@ public interface IDownloadTask
     /// The amount of data downloaded so far.
     /// </summary>
     Size Downloaded { get; }
-    
-    /// <summary>
-    /// The percent completion of the task.
-    /// </summary>
-    Percent Progress { get; }
-    
+
     /// <summary>
     /// Starts executing the task.
     /// </summary>

@@ -15,15 +15,14 @@ public partial class NexusLoginOverlayView : ReactiveUserControl<INexusLoginOver
         {
             CopyButton.Command = ReactiveCommand.CreateFromTask(async () =>
             {
-                await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel!.Uri.ToString());
+                await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.Uri?.ToString());
             });
 
             this.BindCommand<NexusLoginOverlayView, INexusLoginOverlayViewModel, ICommand, Button>(ViewModel, vm => vm.Cancel, v => v.CancelButton)
                 .DisposeWith(d);
-            this.WhenAnyValue(view => view.ViewModel!.Uri)
-                .BindTo<Uri, NexusLoginOverlayView, string>(this, view => view.UrlTextBlock.Text)
-                .DisposeWith(d);
 
+            this.OneWayBind(ViewModel, vm => vm.Uri, view => view.UrlTextBlock.Text)
+                .DisposeWith(d);
         });
     }
 }
