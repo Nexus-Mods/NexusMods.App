@@ -22,6 +22,7 @@ public class OAuthTests
     public OAuthTests(ILogger<OAuth> logger, IJobMonitor jobMonitor)
     {
         _logger = logger;
+        _jobMonitor = jobMonitor;
     }
 
     [Fact]
