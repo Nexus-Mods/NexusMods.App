@@ -9,11 +9,11 @@ This release adds initial support for Baldur's Gate 3, detects GOG games install
 **Important: If you are installing the app outside of the default location (Local App Data), the uninstallers for all previous versions may not work correctly. To manually reset your install follow the guide [here](https://nexus-mods.github.io/NexusMods.App/users/Uninstall/#manual-uninstall-fallback).**
 
 ### Baldur's Gate 3 
-This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, most common mod types will be installed correctly. Installations on Steam and GOG can be detected on Windows or Linux. 
+This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, all common mod types will be installed correctly. Installations on Steam and GOG can be detected on Windows or Linux. 
 
 The app will display a diagnostic message if a PAK file lists a dependency in the meta.lsx file that is not currently installed. We plan to improve the available data shown to the users in future releases. 
 
-The current implementation does not include load order support. You will need to go to "Mod Manager" from the main menu and enable your mods to have the take effect in the game. Load order support is planned for a future release. 
+The current implementation does not include load order support. You will need to go to "Mod Manager" from the main menu and enable your mods to have them take effect in the game. Load order support is planned for a future release. 
 
 **Note: When launching the GOG version of the game, the app will currently default to the Vulkan version. A choice between Vulkan and DX11 will be added in a future release. If you require the DX11 version, please launch from GOG Galaxy (Windows), Heroic Launcher (Linux) or via bg3_dx11.exe.**
 
