@@ -126,7 +126,7 @@ jobs:
 
       - name: Create Release
         id: create-gh-release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{ needs.transformInputs.outputs.RawVersion }}
           tag_name: ${{ needs.transformInputs.outputs.TagVersion }}
