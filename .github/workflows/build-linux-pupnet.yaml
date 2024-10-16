@@ -8,6 +8,10 @@ on:
         required: false
         description: "The version of the application to build"
         default: "1.0.0"
+      Target:
+        description: "The git ref to base the release on (eg: '1957a8e7', default: current head of the branch the workflow is run on)"
+        required: false
+        type: string
       PupNetRepo:
         type: string
         required: false
@@ -62,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.Target || github.sha }}
           submodules: "recursive"
 
       - name: Transform inputs
