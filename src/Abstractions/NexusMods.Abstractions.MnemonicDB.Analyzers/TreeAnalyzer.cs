@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Abstractions.MnemonicDB.Analyzers;
