@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using DynamicData.Kernel;
 using K4os.Compression.LZ4;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using ZstdSharp;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
@@ -28,7 +29,7 @@ public static class PakFileParser
         var fileEntryInfo = fileList.FirstOrOptional(f => f.Name.Contains("meta.lsx"));
         if (!fileEntryInfo.HasValue)
         {
-            throw new InvalidDataException($"File meta.lsx not found in pak archive.");
+            throw new InvalidDataException($"Unable to find `meta.lsx` file in pak archive");
         }
 
         var metaStream = ReadFileEntryData(br, fileEntryInfo.Value);
@@ -53,7 +54,7 @@ public static class PakFileParser
 
         if (signature != LspkPackageFormat.HeaderCommon.SIGNATURE_STRING)
         {
-            throw new InvalidDataException($"Not a valid BG3 PAK. Magic signature {signature} does not match ({LspkPackageFormat.HeaderCommon.SIGNATURE_STRING}).");
+            throw new InvalidDataException($"Not a valid BG3 PAK. Magic signature `{signature}` does not match expected signature `{LspkPackageFormat.HeaderCommon.SIGNATURE_STRING}`");
         }
 
         var version = br.ReadUInt32();
@@ -84,7 +85,7 @@ public static class PakFileParser
                     NumParts = br.ReadUInt16(),
                 }.ToCommonHeader();
             default:
-                throw new InvalidDataException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Unrecognized Pak version: v{version}");
         }
     }
 
@@ -112,7 +113,7 @@ public static class PakFileParser
 
         if (numDecodedBytes != decompressedBytes.Length)
         {
-            throw new InvalidDataException($"Decompression failed: decompressed size {decompressedBytes.Length} does not match expected size {numDecodedBytes}.");
+            throw new InvalidDataException($"Decompression failed: decompressed size {decompressedBytes.Length} does not match expected size {numDecodedBytes}");
         }
 
         // new mem stream from decompress bytes
@@ -167,7 +168,7 @@ public static class PakFileParser
                 }.ToCommonFileEntry();
             }
             default:
-                throw new InvalidDataException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Unrecognized Pak version: v{version}");
         }
     }
     
@@ -183,7 +184,7 @@ public static class PakFileParser
             LspkPackageFormat.CompressionMethod.LZ4 => DecompressLz4(fileMeta, rawData),
             LspkPackageFormat.CompressionMethod.Zlib => DecompressZlib(fileMeta, rawData),
             LspkPackageFormat.CompressionMethod.Zstd => DecompressZstd(fileMeta, rawData),
-            _ => throw new InvalidDataException($"Unsupported compression method {fileMeta.Flags.Method()} for file {fileMeta.Name}.")
+            _ => throw new InvalidDataException($"Unsupported compression method {fileMeta.Flags.Method()} for file {fileMeta.Name}")
         };
 
         Stream DecompressLz4(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
@@ -193,7 +194,7 @@ public static class PakFileParser
             var decodedSize = LZ4Codec.Decode(bytes, 0, bytes.Length, decompressedBytes, 0, decompressedBytes.Length);
             if (decodedSize != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileEntryInfoCommon.UncompressedSize}");
             }
             
             return new MemoryStream(decompressedBytes);
@@ -207,7 +208,7 @@ public static class PakFileParser
             var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
             if (read != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}");
             }
             
             return new MemoryStream(decompressedBytes);
@@ -221,7 +222,7 @@ public static class PakFileParser
             var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
             if (read != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}");
             }
             
             return new MemoryStream(decompressedBytes);

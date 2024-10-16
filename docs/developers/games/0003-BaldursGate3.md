@@ -11,16 +11,37 @@ BG3 was released in Early Access in 2020, and thanks to the similarities with DO
 BG3 has native Windows and MacOS support, but Linux users can play it using Wine.
 
 
-
 ## Game Files and Locations
 ### Windows/Wine: 
-Two executables: `bg3.exe` and `bg3_dx11.exe` in `Baldurs Gate 3/Bin`. One for Vulkan, one for DirectX 11.
+Game launcher in `Baldurs Gate 3\Launcher\LariLauncher.exe`
+Two actual game executables: `bg3.exe` and `bg3_dx11.exe` in `Baldurs Gate 3/Bin`. One for Vulkan, one for DirectX 11.
 Game settings and load order are stored in `%localappdata%\Larian Studios\Baldur's Gate 3`.
 Majority of mods are stored in `%localappdata%\Larian Studios\Baldur's Gate 3\Mods`.
 Load order is stored in `%localappdata%\Larian Studios\Baldur's Gate 3\PlayerProfiles\Public\modsettings.lsx`.
-
 ### MacOS:
-TBD
+Only one executable `Baldur's Gate 3.app/Contents/MacOS/Baldur's Gate 3`
+For more info on game folder: https://steamdb.info/depot/1419660/
+Equivalent for Appdata and Mods folder TBD.
+
+### Vulkan and DirectX11:
+On windows and Wine, the game Launcher allows users to choose between running the Vulkan or DirectX11 version of the game.
+Using one or the other can affect game performance depending on the system. Additionally, some mods such as Texture replacers, may require one or the other.
+
+It is important to allow users know and choose which version of the game they are running, as mods may not work correctly if the wrong version is used.
+Running the Launcher allows users to choose the version of the game to run at the cost of a longer startup time.
+
+The launcher supports the following command line arguments:
+- `--skip-launcher` Skips the launcher and launches the game with whatever was last selected.
+- `--vulkan` Launches the game with Vulkan.
+- `--dx11` Launches the game with DirectX11.
+
+The Launcher stores the last selected version in `AppData\Local\Larian Studios\Launcher\Settings\preferences.json`.
+If `"DefaultRenderingBackend": 0` exists, Vulkan is loaded, if the property is set to anything other than 0, or is missing, DirectX11 is loaded and the property is removed.
+
+On Steam running any of the executables will prompt the game to be launched from Steam instead, which will then in turn run the Launcher.
+
+On GOG, running the executables will launch the game directly, bypassing the Launcher, because there is no Steam-like DRM looping back to the Launcher.
+
 
 ## Mod formats:
 ### BG3 Script Extender (BG3SE)
@@ -267,7 +288,21 @@ Since there is no evident way to distinguish between vanilla and mod pak files, 
 ## Essential Mods & Tools
 - BG3SE
 Requirement for a lot of mods, but not allowed for Modio mods. 
-New scripting capabilities (osiris scripting) added in patch 7 may reduce the need for BG3SE in the future. 
+Requires additional steps to work on Linux(Wine): https://wiki.bg3.community/en/Tutorials/Mod-Use/How-to-install-Script-Extender#h-3-install-script-extender-on-linuxsteam-deck
+
+Pak mods that use the Script Extender will contain a ScriptExtender folder with a `config.json` config file with a format similar to this:
+```json
+{
+    "RequiredVersion": 19,
+    "ModTable": "WaypointInsideEmeraldGrove",
+    "FeatureFlags": [
+        "Lua"
+    ]
+}
+```
+`RequiredVersion` indicates the minimum version of the Script Extender required for the mod to work.
+Details on schema: https://github.com/Norbyte/bg3se/blob/updater-20240329/Docs/API.md
+
 
 For mod authors:
 - BG3 Toolkit: https://store.steampowered.com/app/2956320/Baldurs_Gate_3_Toolkit_Data/

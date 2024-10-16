@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
+namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing
 {
     /// <summary>
     /// Class to parse and extract dependencies and metadata from a bg3 `meta.lsx` file.
@@ -46,10 +46,15 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                 case "PublishHandle":
                                     moduleShortDesc.PublishHandle = value ?? string.Empty;
                                     break;
-                                case "Version64":
                                 case "Version":
-                                    // TODO: Actually parse the version into something we can compare, which will require different handling depending on Version vs Version64
+                                    // From older meta files, it seems that it could contain either 32-bit or 64-bit values even though type is marked as Int32
+                                    // They later changed it to Version64, to clarify the type, but older mods can still have this
                                     moduleShortDesc.Version = value ?? string.Empty;
+                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt32String(moduleShortDesc.Version);
+                                    break;
+                                case "Version64":
+                                    moduleShortDesc.Version = value ?? string.Empty;
+                                    moduleShortDesc.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64String(moduleShortDesc.Version);
                                     break;
                                 case "UUID":
                                     moduleShortDesc.Uuid = value ?? string.Empty;
@@ -102,10 +107,15 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing
                                         case "PublishHandle":
                                             dependency.PublishHandle = value ?? string.Empty;
                                             break;
-                                        case "Version64":
                                         case "Version":
-                                            // TODO: Actually parse the version into something we can compare, which will require different handling depending on Version vs Version64
+                                            // From older meta files, it seems that it could contain either 32-bit or 64-bit values even though type is marked as Int32
+                                            // They later changed it to Version64, to clarify the type, but older mods can still have this
                                             dependency.Version = value ?? string.Empty;
+                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt32String(dependency.Version);
+                                            break;
+                                        case "Version64":
+                                            dependency.Version = value ?? string.Empty;
+                                            dependency.SemanticVersion = LsxXmlFormat.ModuleVersion.FromInt64String(dependency.Version);
                                             break;
                                         case "UUID":
                                             dependency.Uuid = value ?? string.Empty;
