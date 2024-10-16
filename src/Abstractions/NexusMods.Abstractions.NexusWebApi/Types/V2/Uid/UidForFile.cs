@@ -65,11 +65,11 @@ public struct UidForFile
 /// See <see cref="UidForFile"/> for more details.
 /// </summary>
 public class UidForFileAttribute(string ns, string name) 
-    : ScalarAttribute<UidForFile, ulong>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<UidForFile, ulong>(ValueTag.UInt64, ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForFile.FromUlong(value);
+    protected override UidForFile FromLowLevel(ulong value, AttributeResolver resolver) => UidForFile.FromUlong(value);
 } 

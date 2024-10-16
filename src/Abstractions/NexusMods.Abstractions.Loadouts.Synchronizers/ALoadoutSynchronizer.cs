@@ -1222,7 +1222,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
-                ValueHelpers.Remap(remapFn, datom.Prefix, buffer[..datom.ValueSpan.Length].Span);
+                datom.Prefix.ValueTag.Remap(buffer[..datom.ValueSpan.Length].Span, remapFn);
                 
                 // Add the new datom
                 tx.Add(newDatom);

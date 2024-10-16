@@ -17,7 +17,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 // Uncomment this to enable the background image
                  this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
                      .WhereNotNull()
-                     .SubscribeWithErrorLogging(image => Body.Background = new ImageBrush { Source = image, Stretch = Stretch.UniformToFill})
+                     .SubscribeWithErrorLogging(image => HeaderBorderBackground.Background = new ImageBrush { Source = image, Stretch = Stretch.UniformToFill, AlignmentY = AlignmentY.Top})
                      .DisposeWith(d);
                 
                 this.WhenAnyValue(view => view.ViewModel!.TileImage)

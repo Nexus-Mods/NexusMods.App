@@ -61,11 +61,11 @@ public struct UidForMod
 /// See <see cref="UidForMod"/> for more details.
 /// </summary>
 public class UidForModAttribute(string ns, string name) 
-    : ScalarAttribute<UidForMod, ulong>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<UidForMod, ulong>(ValueTag.UInt64, ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForMod FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForMod.FromUlong(value);
+    protected override UidForMod FromLowLevel(ulong value, AttributeResolver resolver) => UidForMod.FromUlong(value);
 } 

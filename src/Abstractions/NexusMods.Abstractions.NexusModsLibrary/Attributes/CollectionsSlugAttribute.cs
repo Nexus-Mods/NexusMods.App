@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 /// <summary>
 /// An attribute that holds a <see cref="CollectionSlug"/> value.
 /// </summary>
-public class CollectionsSlugAttribute(string ns, string name) : ScalarAttribute<CollectionSlug, string>(ValueTags.Ascii, ns, name)
+public class CollectionsSlugAttribute(string ns, string name) : ScalarAttribute<CollectionSlug, string>(ValueTag.Ascii, ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(CollectionSlug value)
@@ -17,7 +17,7 @@ public class CollectionsSlugAttribute(string ns, string name) : ScalarAttribute<
     }
 
     /// <inheritdoc />
-    protected override CollectionSlug FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override CollectionSlug FromLowLevel(string value, AttributeResolver resolver)
     {
         return CollectionSlug.From(value);
     }
