@@ -55,7 +55,7 @@ jobs:
         run: |
           $tagVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion : "v" + $env:InputVersion
           $branchVersion = "release_$tagVersion"
-          $rawVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion.Substring(1) : $env:InputVersion
+          $rawVersion = $tagVersion.Substring(1)
           $validation = [System.Version]::Parse($rawVersion)
           echo "tagVersion=$tagVersion" >> $env:GITHUB_OUTPUT
           echo "branchVersion=$branchVersion" >> $env:GITHUB_OUTPUT
