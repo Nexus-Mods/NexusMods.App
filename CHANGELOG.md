@@ -15,7 +15,7 @@ The app will display a diagnostic message if a PAK file lists a dependency in th
 
 The current implementation does not include load order support. You will need to go to "Mod Manager" from the main menu and enable your mods to have the take effect in the game. Load order support is planned for a future release. 
 
-**Note: The when launching the GOG version of the game, the app will currently default to the Vulkan version. A choice between Vulkan and DX11 will be added in a future release. If you require the DX11 version, please launch from GOG Galaxy (Windows), Heroic Launcher (Linux) or via bg3_dx11.exe.**
+**Note: When launching the GOG version of the game, the app will currently default to the Vulkan version. A choice between Vulkan and DX11 will be added in a future release. If you require the DX11 version, please launch from GOG Galaxy (Windows), Heroic Launcher (Linux) or via bg3_dx11.exe.**
 
 
 ### Heroic Launcher
@@ -24,13 +24,13 @@ Linux users can now manage GOG games installed or imported using the [Heroic Lau
 ### Collections
 **Warning: Collections support is still an experimental feature and may not work as expected. Please check the Known Issues section if you choose to install a collection.**
 
-In this build we've made further updates to the process of downloading and installing collections. The feature does not have parity with Vortex yet so cannot be used to install a collection fully. 
+In this build, we've made further updates to the process of downloading and installing collections. The feature does not have parity with Vortex yet so cannot be used to install a collection fully. 
 
 ![The new collections tile available from the "Collections WIP" tab.](./docs/changelog-assets/8ed9a020e1532940c4d57a2753eae55a.webp)
 
 The changes we've made include:
 - Updated the card design for collections (Above).
-- Added support for FOMOD presets and binary patching during install.
+- Added support for FOMOD presets and binary patching during installation.
 
 ### Updating Mods
 We're starting work on showing when a mod has an update in the app. The backend to enable this feature is mostly complete and we will be adding the UI elements to support it in an upcoming release. 
@@ -41,7 +41,7 @@ We're starting work on showing when a mod has an update in the app. The backend 
 - Trying to install a collection with an unsupported type of mod (e.g. non-Nexus Mods files) will fail with no error message. This is not supported in the current build.
 - Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
 - Once a collection is added to the app, it cannot be removed from the left menu.
-- Collections allow users to modify the included mods but do not allow you to reset them to a the original state. 
+- Collections allow users to modify the included mods but do not allow you to reset them to the original state. 
 - The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
 - The "Switch View" option does not persist in the Library/Installed Mods view.
 
@@ -50,7 +50,7 @@ We're starting work on showing when a mod has an update in the app. The backend 
 - The app will now uninstall correctly when installed outside of the default directory on Windows. 
 - The correct WINE prefix will now be used for games on Linux. 
 - When the numerical badges in the left menu show 3 or more digits, the width of the badge will expand correctly.
-- Fixed in issue where batch actions would not work correctly when adding/removing/deleting mods from the Library or Loadout pages. 
+- Fixed an issue where batch actions would not work correctly when adding/removing/deleting mods from the Library or Loadout pages. 
 - The app will no longer re-download the user's avatar image every time a request is made to the Nexus Mods API. 
 
 ### External Contributors
