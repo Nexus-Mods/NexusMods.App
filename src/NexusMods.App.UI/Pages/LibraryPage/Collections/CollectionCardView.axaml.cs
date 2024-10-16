@@ -15,53 +15,43 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
         InitializeComponent();
 
         this.WhenActivated(d =>
-            {
-                
-                this.WhenAnyValue(view => view.ViewModel!.Name)
-                    .BindTo(this, view => view.TitleText.Text)
-                    .DisposeWith(d);
-                    
-                
-                this.WhenAnyValue(view => view.ViewModel!.Image)
-                    .BindTo(this, view => view.TileImage.Source)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.Category)
-                    .BindTo(this, view => view.CategoryText.Text)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.Summary)
-                    .BindTo(this, view => view.SummaryText.Text)
-                    .DisposeWith(d);
-                this.WhenAnyValue(view => view.ViewModel!.ModCount)
-                    .BindTo(this, view => view.ModCount.Text)
-                    .DisposeWith(d);
+        {
+            this.OneWayBind(ViewModel, vm => vm.Name, view => view.TitleText.Text)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.EndorsementCount)
-                    .BindTo(this, view => view.Endorsements.Text)
-                    .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Image, view => view.TileImage.Source)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.DownloadCount)
-                    .BindTo(this, view => view.Downloads.Text)
-                    .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Category, view => view.CategoryText.Text)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.TotalSize)
-                    .BindTo(this, view => view.TotalSize.Text)
-                    .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Summary, view => view.SummaryText.Text)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.OverallRating)
-                    .BindTo(this, view => view.OverallRating.Text)
-                    .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.ModCount, view => view.ModCount.Text)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.AuthorName)
-                    .BindTo(this, view => view.AuthorName.Text)
-                    .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text)
+                .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.AuthorAvatar)
-                    .BindTo(this, view => view.AuthorAvatarImage.Source)
-                    .DisposeWith(d);
-            }
-        );
+            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.Downloads.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.OverallRating, view => view.OverallRating.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.AuthorName, view => view.AuthorName.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatarImage.Source)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.OpenCollectionDownloadPageCommand, view => view.DownloadButton)
+                .DisposeWith(d);
+        });
     }
 }
 
