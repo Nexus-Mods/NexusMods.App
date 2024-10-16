@@ -7,14 +7,15 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticDetailsView">
 
     <Design.DataContext>
         <diagnostics:DiagnosticDetailsDesignViewModel />
     </Design.DataContext>
     
-    <Border Padding="24">
+    <!-- NOTE(insomnious): if we need any more styling than this, we should move it to a separate style file -->
+    <Border Padding="24" MaxWidth="1000">
         <StackPanel Orientation="Vertical"
                     HorizontalAlignment="Stretch"
                     Classes="Spacing-3">
