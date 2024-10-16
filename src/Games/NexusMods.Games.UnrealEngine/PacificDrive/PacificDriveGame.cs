@@ -12,24 +12,24 @@ using NexusMods.Games.UnrealEngine.Installers;
 using Microsoft.Extensions.DependencyInjection;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Games.UnrealEngine.PacificDrive;
 
 [UsedImplicitly]
 public class PacificDriveGame : AGame, ISteamGame, IEpicGame
 {
-    public static readonly GameDomain StaticDomain = GameDomain.From("pacificdrive");
-    private readonly IFileSystem _fileSystem;
+    public static GameDomain DomainStatic => GameDomain.From("pacificdrive");
     private readonly IServiceProvider _serviceProvider;
 
-    public PacificDriveGame(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(provider)
+    public PacificDriveGame(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(provider)
     {
-        _fileSystem = fileSystem;
         _serviceProvider = provider;
     }
 
     public override string Name => "Pacific Drive";
-    public override GameDomain Domain => StaticDomain;
+    public override GameId GameId => GameId.From(6169);
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "PenDriverPro/Binaries/Win64/PenDriverPro-Win64-Shipping.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
