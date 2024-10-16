@@ -1,14 +1,12 @@
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
+using DynamicData.Kernel;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Extensions.BCL;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 
@@ -23,6 +21,7 @@ public class OAuth
     private const string OAuthRedirectUrl = "nxm://oauth/callback";
     private const string OAuthClientId = "nma";
 
+    private readonly IJobMonitor _jobMonitor;
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
@@ -32,11 +31,14 @@ public class OAuth
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth(ILogger<OAuth> logger,
+    public OAuth(
+        IJobMonitor jobMonitor,
+        ILogger<OAuth> logger,
         HttpClient http,
         IIDGenerator idGenerator,
         IOSInterop os)
     {
+        _jobMonitor = jobMonitor;
         _logger = logger;
         _http = http;
         _os = os;
@@ -47,39 +49,18 @@ public class OAuth
     /// <summary>
     /// Make an authorization request
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns>task with the jwt token once we receive one</returns>
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
-        // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var codeVerifier = _idGenerator.UUIDv4().ToBase64();
+        var job = OAuthJob.Create(
+            jobMonitor: _jobMonitor,
+            idGenerator: _idGenerator,
+            os: _os,
+            httpClient: _http,
+            nxmUrlMessages: _nxmUrlMessages
+        );
 
-        // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
-        var codeChallengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
-        var codeChallenge = StringBase64Extensions.Base64UrlEncode(codeChallengeBytes);
-
-        var state = _idGenerator.UUIDv4();
-
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-        // Start listening first, otherwise we might miss the message
-        var codeTask = _nxmUrlMessages
-            .Where(oauth => oauth.State == state)
-            .Select(url => url.OAuth.Code)
-            .Where(code => code is not null)
-            .Select(code => code!)
-            .ToAsyncEnumerable()
-            .FirstAsync(cts.Token);
-
-        var url = GenerateAuthorizeUrl(codeChallenge, state);
-
-        // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenUrl(url, cancellationToken: cancellationToken);
-
-        cts.CancelAfter(TimeSpan.FromMinutes(3));
-        var code = await codeTask;
-
-        return await AuthorizeToken(codeVerifier, code, cancellationToken);
+        var res = await job;
+        return res.ValueOrDefault();
     }
     
     /// <summary>
@@ -112,7 +93,11 @@ public class OAuth
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    private async Task<JwtTokenReply?> AuthorizeToken(string verifier, string code, CancellationToken cancel)
+    internal static async Task<JwtTokenReply?> AuthorizeToken(
+        string verifier,
+        string code,
+        HttpClient httpClient,
+        CancellationToken cancel)
     {
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },
@@ -124,7 +109,7 @@ public class OAuth
 
         var content = new FormUrlEncodedContent(request);
 
-        var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
+        var response = await httpClient.PostAsync($"{OAuthUrl}/token", content, cancel);
         var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }

@@ -1,26 +1,28 @@
-﻿using System.Windows.Input;
+﻿using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.NexusWebApi;
+using R3;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Login;
 
 public class NexusLoginOverlayViewModel : AOverlayViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel
 {
-    public NexusLoginOverlayViewModel()
+    public NexusLoginOverlayViewModel(IJob job)
     {
-        // TODO:
-        Uri = null!;
-        Cancel = null!;
+        if (job.Definition is IOAuthJob oAuthJob)
+        {
+            oAuthJob.LoginUriSubject
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (uri, self) => self.Uri = uri);
+        }
 
-        // Uri = (Uri)activity.Payload!;
-        // Cancel = ReactiveCommand.Create(() =>
-        //     {
-        //         if (activity is IActivitySource activitySource)
-        //             activitySource.Dispose();
-        //         Close();
-        //     }
-        // );
+        Cancel = new ReactiveCommand(execute: _ =>
+        {
+            // TODO: cancel job
+            Close();
+        });
     }
 
-    public ICommand Cancel { get; }
-
-    public Uri Uri { get; }
+    public ReactiveCommand Cancel { get; }
+    [Reactive] public Uri? Uri { get; private set; }
 }
