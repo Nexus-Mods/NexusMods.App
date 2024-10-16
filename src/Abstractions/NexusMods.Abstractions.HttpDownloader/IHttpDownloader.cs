@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using Size = NexusMods.Paths.Size;
@@ -11,11 +10,6 @@ namespace NexusMods.Abstractions.HttpDownloader;
 [Obsolete(message: "To be replaced with Library Items and Jobs")]
 public interface IHttpDownloader
 {
-    /// <summary>
-    /// The activity group for HTTP downloader activities.
-    /// </summary>
-    public static readonly ActivityGroup Group = ActivityGroup.From("HttpDownloader");
-
     /// <summary>
     /// Download the file specified by the given requests and save it to the
     /// given destination. Returns the hash of the downloaded file.

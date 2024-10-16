@@ -2,8 +2,6 @@ using System.Net;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
@@ -17,14 +15,11 @@ public class OAuthTests
     // ReSharper disable once InconsistentNaming
     private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=nma&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
     private readonly ILogger<OAuth> _logger;
-    private readonly IActivityFactory _activityFactory;
 
     // ReSharper disable once ContextualLoggerProblem
-    public OAuthTests(ILogger<OAuth> logger,
-        IActivityFactory activityFactory)
+    public OAuthTests(ILogger<OAuth> logger)
     {
         _logger = logger;
-        _activityFactory = activityFactory;
     }
 
     [Fact]
@@ -51,7 +46,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os);
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
         oauth.AddUrl(NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code").OAuth);
         var result = await tokenTask;
@@ -89,7 +84,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os);
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
@@ -126,7 +121,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os);
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
         oauth.AddUrl(NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code").OAuth);
@@ -151,7 +146,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os);
         Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
         var task = call.Should().ThrowAsync<OperationCanceledException>();
         cts.Cancel();

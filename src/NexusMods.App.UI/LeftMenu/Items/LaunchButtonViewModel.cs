@@ -1,10 +1,9 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -16,7 +15,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 {
     [Reactive] public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
-    [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.EnabledReactiveCommand;
+    [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
@@ -25,8 +24,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IToolManager _toolManager;
     private readonly IConnection _conn;
 
-    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager,
-        IActivityMonitor manager, IConnection conn)
+    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn)
     {
         _toolManager = toolManager;
         _conn = conn;

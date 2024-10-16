@@ -5,9 +5,6 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
@@ -20,11 +17,6 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 /// </summary>
 public class OAuth
 {
-    /// <summary>
-    /// The activity group for all activities related to OAuth.
-    /// </summary>
-    public static readonly ActivityGroup Group = ActivityGroup.From(Constants.OAuthActivityGroupName);
-
     private const string OAuthUrl = "https://users.nexusmods.com/oauth";
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
     // We can't change these on our own.
@@ -36,7 +28,6 @@ public class OAuth
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGenerator;
     private readonly Subject<NXMOAuthUrl> _nxmUrlMessages;
-    private readonly IActivityFactory _activityFactory;
 
     /// <summary>
     /// constructor
@@ -44,14 +35,12 @@ public class OAuth
     public OAuth(ILogger<OAuth> logger,
         HttpClient http,
         IIDGenerator idGenerator,
-        IOSInterop os,
-        IActivityFactory activityFactory)
+        IOSInterop os)
     {
         _logger = logger;
         _http = http;
         _os = os;
         _idGenerator = idGenerator;
-        _activityFactory = activityFactory;
         _nxmUrlMessages = new Subject<NXMOAuthUrl>();
     }
 
@@ -83,7 +72,6 @@ public class OAuth
             .FirstAsync(cts.Token);
 
         var url = GenerateAuthorizeUrl(codeChallenge, state);
-        using var job = CreateJob(url);
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
         await _os.OpenUrl(url, cancellationToken: cancellationToken);
@@ -100,11 +88,6 @@ public class OAuth
     public void AddUrl(NXMOAuthUrl url)
     {
         _nxmUrlMessages.OnNext(url);
-    }
-
-    private IActivitySource CreateJob(Uri url)
-    {
-        return _activityFactory.CreateWithPayload(Group, url, "Logging into Nexus Mods, redirecting to {Url}", url);
     }
 
     /// <summary>

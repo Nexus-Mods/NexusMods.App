@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
@@ -142,8 +142,10 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
         // Progress is computed as currentIndex + 1 /(all steps before the current step + future visible steps + 1).
         // The +1 are to avoid having the bar at 0% when we're at the first step, and to account for the extra finish screen.
-        var progress = Percent.CreateClamped(currentStepId + 1,
-            currentStepId + 1 + installSteps.Skip(currentStepId + 1).Count(step => step.visible) + 1);
+        var progress = Percent.Create(
+            current: currentStepId + 1,
+            maximum: currentStepId + 1 + installSteps.Skip(currentStepId + 1).Count(step => step.visible) + 1
+        );
 
         _guidedInstaller
             .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)

@@ -4,8 +4,8 @@ using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI;
 using ReactiveUI;
 
@@ -67,7 +67,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
                 addHandler => state._window.Closed += addHandler,
                 removeHandler => state._window.Closed -= removeHandler
             )
-            .SubscribeWithErrorLogging(logger: default, eventPattern =>
+            .SubscribeWithErrorLogging(eventPattern =>
             {
                 if (eventPattern.Sender is not GuidedInstallerWindow window) return;
                 var tcs = window.ViewModel?.ActiveStepViewModel?.TaskCompletionSource;
