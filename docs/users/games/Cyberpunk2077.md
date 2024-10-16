@@ -25,6 +25,11 @@ Diagnostics are shown in the following situations:
 
 ### Automated deployment for REDmods
 
+??? info "REDmod with Heroic Launcher (Linux)"
+    The app cannot run REDmod deployment automatically for users who have installed Cyberpunk 2077 through Heroic Launcher on Linux. To run REDmod in Heroic, ensure the "Enable Mods" checkbox is enabled under "Modify Installation". This will mean REDmods are deployed by Heroic Launcher before the game starts.
+    ![The option to "Modify Installation" is under the options menu when viewing a game in Heroic Launcher](../images/0.6.1/REDmodHeroicModifyInstall.webp)
+    ![The option to "Enable Mods" is under "REDmod Integration" in Heroic Launcher](../images/0.6.1/REDmodHeroicEnableMods.webp) 
+
 When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
 
 ### Selective Game Backup
@@ -36,7 +41,8 @@ This game can be managed via the app on the following operating systems and plat
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
 |---|---|---|---|
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle: | :material-check-circle: | :material-close-thick: |
-| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-close-thick:[^1] | :material-close-thick: |
+| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-check-circle:[^1][^2] | :material-close-thick: |
 | <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/cyberpunk-2077) | :material-check-circle: | :material-close-thick: | :material-close-thick: |
 
 [^1]: Offline backup installs from GOG.com cannot be detected automatically.
+[^2]: [Heroic Launcher](https://heroicgameslauncher.com/) is required. 
