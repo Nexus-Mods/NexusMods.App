@@ -1,10 +1,10 @@
 # v0.6.2 - 2024-10-16
 
-**Important: To update the app, you must completely uninstall the old version, including all mods. [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)**
+**Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
 This release adds initial support for Baldur's Gate 3, detects GOG games installed through the Heroic Launcher on Linux and further develops the Collections feature.
 
-*If you are installing the app outside of the default location (Local App Data), the uninstallers for all previous versions may not work correctly. [How to manually reset your installation](https://nexus-mods.github.io/NexusMods.App/users/Uninstall/#manual-uninstall-fallback).*
+*If you are installing the app outside of the default location (Local App Data), the uninstallers for all previous versions may not work correctly.* [How to manually reset your installation](https://nexus-mods.github.io/NexusMods.App/users/Uninstall/#manual-uninstall-fallback).
 
 ## Baldur's Gate 3 
 This version of the app adds Baldur's Gate 3 as the third supported game ([#2122](https://github.com/Nexus-Mods/NexusMods.App/pull/2122)). Currently, all common mod types will be installed correctly. Installations on Steam and GOG can be detected on Windows or Linux. 
@@ -60,7 +60,7 @@ We're starting work on showing when a mod has an update in the app. The backend 
 
 # v0.6.1 - 2024-09-24
 
-**Important: To update the app, you must completely uninstall the old version, including all mods. [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)**
+**Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
 This release adds a very basic implementation of downloading Collections, updates the UI to the new tree view and includes some enhancements when interacting with Windows applications via Linux. 
 
@@ -116,7 +116,7 @@ We've also fixed the issue which prevented REDmod from deploying automatically o
 
 # v0.6.0 - 2024-09-03
 
-**Important: To update the app, you must completely uninstall the old version, including all mods. [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)**
+**Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
 
 This release enhances support for Cyberpunk 2077, adds multiple Loadouts per game and implements the back-end changes to support our new "Loadout items" data model. 
