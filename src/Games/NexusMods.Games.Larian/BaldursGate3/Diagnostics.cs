@@ -27,7 +27,7 @@ internal static partial class Diagnostics
                      #### Search for and install the missing mod
                      You can search for '{MissingDepName}' on {NexusModsLink} or search the in-game mod manager.
                      #### Or
-                     #### Check the required mods section on {ModName} NexusMods page
+                     #### Check the required mods section on {ModName} Nexus Mods page
                      Mod pages can contain useful installation instructions in the 'Description' tab, this tab will also include requirements the mod needs to work correctly. 
                      """)
         .WithMessageData(messageBuilder => messageBuilder
