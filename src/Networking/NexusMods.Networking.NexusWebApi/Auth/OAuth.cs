@@ -1,4 +1,3 @@
-using System.Reactive.Subjects;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.AspNetCore.WebUtilities;
@@ -7,6 +6,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
+using R3;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 
@@ -26,7 +26,7 @@ public class OAuth
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGenerator;
-    private readonly Subject<NXMOAuthUrl> _nxmUrlMessages;
+    private readonly BehaviorSubject<NXMOAuthUrl?> _nxmUrlMessages = new(initialValue: null);
 
     /// <summary>
     /// constructor
@@ -43,7 +43,6 @@ public class OAuth
         _http = http;
         _os = os;
         _idGenerator = idGenerator;
-        _nxmUrlMessages = new Subject<NXMOAuthUrl>();
     }
 
     /// <summary>
@@ -56,7 +55,7 @@ public class OAuth
             idGenerator: _idGenerator,
             os: _os,
             httpClient: _http,
-            nxmUrlMessages: _nxmUrlMessages
+            nxmUrlMessages: _nxmUrlMessages.WhereNotNull()
         );
 
         var res = await job;

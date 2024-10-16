@@ -1,5 +1,3 @@
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
@@ -10,6 +8,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Extensions.BCL;
 using NexusMods.Networking.NexusWebApi.Auth;
+using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -18,15 +17,15 @@ internal sealed class OAuthJob : IOAuthJob, IJobDefinitionWithStart<OAuthJob, Op
     private readonly IIDGenerator _idGenerator;
     private readonly IOSInterop _os;
     private readonly HttpClient _httpClient;
-    private readonly Subject<NXMOAuthUrl> _nxmUrlMessages;
+    private readonly Observable<NXMOAuthUrl> _nxmUrlMessages;
 
-    public R3.Subject<Uri> LoginUriSubject { get; } = new();
+    public BehaviorSubject<Uri?> LoginUriSubject { get; } = new(initialValue: null);
 
     private OAuthJob(
         IIDGenerator idGenerator,
         IOSInterop os,
         HttpClient httpClient,
-        Subject<NXMOAuthUrl> nxmUrlMessages)
+        Observable<NXMOAuthUrl> nxmUrlMessages)
     {
         _idGenerator = idGenerator;
         _os = os;
@@ -39,7 +38,7 @@ internal sealed class OAuthJob : IOAuthJob, IJobDefinitionWithStart<OAuthJob, Op
         IIDGenerator idGenerator,
         IOSInterop os,
         HttpClient httpClient,
-        Subject<NXMOAuthUrl> nxmUrlMessages)
+        Observable<NXMOAuthUrl> nxmUrlMessages)
     {
         var job = new OAuthJob(idGenerator, os, httpClient, nxmUrlMessages);
         return jobMonitor.Begin<OAuthJob, Optional<JwtTokenReply>>(job);
@@ -62,11 +61,9 @@ internal sealed class OAuthJob : IOAuthJob, IJobDefinitionWithStart<OAuthJob, Op
 
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages
-            .Where(oauth => oauth.State == state)
+            .Where(state, static (oauth, state) => oauth.State == state)
             .Select(url => url.OAuth.Code)
-            .Where(code => code is not null)
-            .Select(code => code!)
-            .ToAsyncEnumerable()
+            .WhereNotNull()
             .FirstAsync(cts.Token);
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3

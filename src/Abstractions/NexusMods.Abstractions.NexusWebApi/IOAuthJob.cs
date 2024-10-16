@@ -7,5 +7,5 @@ namespace NexusMods.Abstractions.NexusWebApi;
 /// </summary>
 public interface IOAuthJob : IJobDefinition, IDisposable
 {
-    R3.Subject<Uri> LoginUriSubject { get; }
+    R3.BehaviorSubject<Uri?> LoginUriSubject { get; }
 }
