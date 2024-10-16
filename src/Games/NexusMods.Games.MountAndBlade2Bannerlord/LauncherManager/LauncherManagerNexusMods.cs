@@ -3,6 +3,7 @@ using Bannerlord.LauncherManager.External;
 using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 
@@ -13,16 +14,20 @@ public sealed partial class LauncherManagerNexusMods : LauncherManagerHandler,
     ILoadOrderStateProvider
 {
     private readonly ILogger _logger;
+    private readonly MountAndBlade2BannerlordSettings _settings;
     private readonly string _installationPath;
-
 
     public string ExecutableParameters { get; private set; } = string.Empty;
 
     public LauncherManagerNexusMods(IServiceProvider serviceProvider, string installationPath, GameStore store)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<LauncherManagerNexusMods>>();
-        _installationPath = installationPath;
+        
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+        _settings = settingsManager.Get<MountAndBlade2BannerlordSettings>();
 
+        _installationPath = installationPath;
+        
         Initialize(this,
             this,
             this,
@@ -38,7 +43,10 @@ public sealed partial class LauncherManagerNexusMods : LauncherManagerHandler,
     string IGameInfoProvider.GetInstallPath() => _installationPath;
 
     public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = string.Join(" ", gameParameters);
-    LauncherOptions ILauncherStateProvider.GetOptions() => null!;
+    LauncherOptions ILauncherStateProvider.GetOptions() => new()
+    {
+        BetaSorting = _settings.BetaSorting
+    };
     LauncherState ILauncherStateProvider.GetState() => null!;
 
 
