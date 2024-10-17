@@ -4,14 +4,14 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 
-public class FloatAttribute(string ns, string name) : ScalarAttribute<float, float>(ValueTags.Float32, ns, name)
+public class FloatAttribute(string ns, string name) : ScalarAttribute<float, float>(ValueTag.Float32, ns, name)
 {
     protected override float ToLowLevel(float value)
     {
         return value;
     }
 
-    protected override float FromLowLevel(float value, ValueTags tags, AttributeResolver resolver)
+    protected override float FromLowLevel(float value, AttributeResolver resolver)
     {
         return value;
     }
