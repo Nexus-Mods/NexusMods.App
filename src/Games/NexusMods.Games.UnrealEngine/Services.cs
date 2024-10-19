@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Games.UnrealEngine.Emitters;
 using NexusMods.Games.UnrealEngine.Installers;
 using NexusMods.Games.UnrealEngine.PacificDrive;
 
@@ -26,6 +27,9 @@ public static class Services
         services
             // Games
             .AddPacificDrive()
+
+            // Diagnostics
+            .AddSingleton<UEAssetConflictDiagnosticEmitter>()
 
             // Installers
             .AddSingleton<SmartUEInstaller>();
