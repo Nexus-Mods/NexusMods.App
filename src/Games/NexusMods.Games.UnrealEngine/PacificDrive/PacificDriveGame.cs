@@ -14,6 +14,8 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Games.UnrealEngine.Emitters;
 
 namespace NexusMods.Games.UnrealEngine.PacificDrive;
 
@@ -65,6 +67,11 @@ public class PacificDriveGame : AGame, ISteamGame, IEpicGame
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         _serviceProvider.GetRequiredService<SmartUEInstaller>(),
+    ];
+
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        _serviceProvider.GetRequiredService<UEAssetConflictDiagnosticEmitter>(),
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
