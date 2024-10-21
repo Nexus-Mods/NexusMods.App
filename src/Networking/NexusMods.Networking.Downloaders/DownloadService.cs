@@ -7,7 +7,6 @@ using NexusMods.Networking.Downloaders.Interfaces;
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Hosting;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
@@ -70,12 +69,6 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     public Size GetThroughput()
     {
         return Size.Zero;
-    }
-
-    /// <inheritdoc />
-    public Optional<Percent> GetTotalProgress()
-    {
-        return Optional<Percent>.None;
     }
 
     /// <inheritdoc />
