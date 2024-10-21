@@ -40,6 +40,9 @@ public static partial class Constants
     public static readonly Extension ConfigExt = new(".ini");
     public static readonly Extension SavedGameExt = new(".sav");
 
+    /// <summary>
+    /// Default UE content files: <see cref="PakExt"/>, <see cref="UcasExt"/>, <see cref="UtocExt"/>, <see cref="SigExt"/>
+    /// </summary>
     public static readonly HashSet<Extension> ContentExts = [PakExt, UcasExt, UtocExt, SigExt];
     public static readonly HashSet<Extension> ArchiveExts = [new(".zip"), new(".rar")];
 
