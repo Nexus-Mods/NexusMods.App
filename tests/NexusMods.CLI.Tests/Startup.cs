@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
@@ -54,7 +53,6 @@ public class Startup
                 .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
                 .AddNexusWebApi(true)
-                .AddActivityMonitor()
                 .AddLoadoutAbstractions()
                 .AddFileStoreAbstractions()
                 .AddSerializationAbstractions()

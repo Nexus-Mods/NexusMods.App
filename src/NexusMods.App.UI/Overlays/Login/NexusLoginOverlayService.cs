@@ -1,52 +1,53 @@
 using System.Reactive.Disposables;
 using DynamicData;
-using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
 
 namespace NexusMods.App.UI.Overlays.Login;
 
-
-/// <summary>
-/// Very simple service that connects the activity monitor to the overlay controller. Looks for OAuth login activities and
-/// displays an overlay for them. We have to do it this way as the overlay controller doesn't know about the login overlays,
-/// and the activity monitory and login manager are way on the backend. So this is a bit of a UI/Backend bridge.
-/// </summary>
 [UsedImplicitly]
-public class NexusLoginOverlayService(IActivityMonitor activityMonitor, IOverlayController overlayController) : IHostedService
+public class NexusLoginOverlayService : IHostedService
 {
-    private readonly CompositeDisposable _compositeDisposable = new();
+    private readonly IOverlayController _overlayController;
+    private readonly IJobMonitor _jobMonitor;
+    private readonly CompositeDisposable _compositeDisposable;
 
     private NexusLoginOverlayViewModel? _overlayViewModel;
-    private IReadOnlyActivity? _currentLoginActivity;
-    
+    private IJob? _currentJob;
+
+    public NexusLoginOverlayService(IOverlayController overlayController, IJobMonitor jobMonitor)
+    {
+        _overlayController = overlayController;
+        _jobMonitor = jobMonitor;
+        _compositeDisposable = new CompositeDisposable();
+    }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        activityMonitor.Activities
-            .ToObservableChangeSet(x => x.Id)
-            .Filter(x => x.Group.Value == Constants.OAuthActivityGroupName)
+        _jobMonitor
+            .ObserveActiveJobs<IOAuthJob>()
             .OnUI()
             .SubscribeWithErrorLogging(changeSet =>
             {
-                if (changeSet.Removes > 0 && _currentLoginActivity is not null)
+                if (changeSet.Removes > 0 && _currentJob is not null)
                 {
-                    if (changeSet.Any(x => x.Reason == ChangeReason.Remove && x.Current == _currentLoginActivity))
+                    if (changeSet.Any(x => x.Reason == ChangeReason.Remove && x.Current == _currentJob))
                     {
-                        _currentLoginActivity = null;
+                        _currentJob = null;
                         _overlayViewModel?.Close();
                     }
                 }
 
                 if (changeSet.Adds > 0)
                 {
-                    if (_currentLoginActivity is not null) return;
+                    if (_currentJob is not null) return;
 
-                    _currentLoginActivity = changeSet.First(x => x.Reason == ChangeReason.Add).Current;
-                    _overlayViewModel = new NexusLoginOverlayViewModel(_currentLoginActivity);
+                    _currentJob = changeSet.First(x => x.Reason == ChangeReason.Add).Current;
+                    _overlayViewModel = new NexusLoginOverlayViewModel(_currentJob);
 
-                    overlayController.Enqueue(_overlayViewModel);
+                    _overlayController.Enqueue(_overlayViewModel);
                 }
             })
             .DisposeWith(_compositeDisposable);
@@ -56,7 +57,7 @@ public class NexusLoginOverlayService(IActivityMonitor activityMonitor, IOverlay
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _currentLoginActivity = null;
+        _currentJob = null;
         _overlayViewModel?.Close();
 
         _compositeDisposable.Dispose();

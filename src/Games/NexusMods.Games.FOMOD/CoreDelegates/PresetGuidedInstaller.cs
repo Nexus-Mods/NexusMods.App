@@ -1,6 +1,5 @@
-using System.Diagnostics;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -13,23 +12,24 @@ public class PresetGuidedInstaller : IGuidedInstaller
     private readonly FomodOption[] _steps;
     private int _currentStep = 0;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public PresetGuidedInstaller(FomodOption[] steps)
     {
         _steps = steps;
     }
-    
-    public void Dispose()
-    {
-    }
 
-    public void SetupInstaller(string name)
-    {
-    }
+    /// <inheritdoc/>
+    public void Dispose() { }
 
-    public void CleanupInstaller()
-    {
-    }
+    /// <inheritdoc/>
+    public void SetupInstaller(string name) { }
 
+    /// <inheritdoc/>
+    public void CleanupInstaller() { }
+
+    /// <inheritdoc/>
     public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep, Percent progress, CancellationToken cancellationToken)
     {
         var step = _steps[_currentStep];
