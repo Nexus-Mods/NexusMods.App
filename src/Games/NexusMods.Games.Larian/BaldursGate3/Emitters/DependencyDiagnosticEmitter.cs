@@ -5,19 +5,18 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash64;
-using OneOf.Types;
+using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> _metadataPipeline;
+    private readonly IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> _metadataPipeline;
 
     public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
     {
@@ -54,7 +53,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             var loadoutItemGroup = mod.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
 
             // error case
-            if (metadataOrError.IsT1)
+            if (metadataOrError.Exception is not null)
             {
                 diagnostics.Add(Diagnostics.CreateInvalidPakFile(
                         ModName: loadoutItemGroup.ToReference(loadout),
@@ -65,7 +64,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             }
 
             // non error case
-            var metadata = metadataOrError.AsT0;
+            var metadata = metadataOrError.Result;
             var dependencies = metadata.Dependencies;
 
             foreach (var dependency in dependencies)
@@ -76,8 +75,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
                 var matchingDeps = metaFileTuples.Where(
                         x =>
-                            x.Item2.IsT0 &&
-                            x.Item2.AsT0.ModuleShortDesc.Uuid == dependencyUuid
+                            x.Item2.Exception is null &&
+                            x.Item2.Result.ModuleShortDesc.Uuid == dependencyUuid
                     )
                     .ToArray();
 
@@ -100,9 +99,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     continue;
 
                 var highestInstalledMatch = matchingDeps.MaxBy(
-                    x => x.Item2.AsT0.ModuleShortDesc.SemanticVersion
+                    x => x.Item2.Result.ModuleShortDesc.SemanticVersion
                 );
-                var installedMatchModule = highestInstalledMatch.Item2.AsT0.ModuleShortDesc;
+                var installedMatchModule = highestInstalledMatch.Item2.Result.ModuleShortDesc;
                 var matchLoadoutItemGroup = highestInstalledMatch.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
 
                 // Check if found dependency is outdated
@@ -129,15 +128,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
-    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>>> GetAllPakMetadata(
+    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LsxXmlFormat.MetaFileData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
-        IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> metadataPipeline,
+        IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> metadataPipeline,
         ILogger logger,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var pakLoadoutFile in pakLoadoutFiles)
         {
-            Resource<OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> resource;
+            Resource<Outcome<LsxXmlFormat.MetaFileData>> resource;
             try
             {
                 resource = await metadataPipeline.LoadResourceAsync(pakLoadoutFile.Hash, cancellationToken);
@@ -149,9 +148,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             }
 
             // Log the InvalidDataException case, but still return the resource
-            if (resource.Data.IsT1)
+            if (resource.Data.Exception is not null)
             {
-                logger.LogWarning(resource.Data.AsT1.Value, "Detected invalid BG3 Pak file: `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
+                logger.LogWarning(resource.Data.Exception, "Detected invalid BG3 Pak file: `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
             }
 
             yield return (pakLoadoutFile, resource.Data);

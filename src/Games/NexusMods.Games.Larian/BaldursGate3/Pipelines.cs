@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
-using OneOf.Types;
+using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
@@ -18,7 +18,7 @@ public static class Pipelines
 
     public static IServiceCollection AddPipelines(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddKeyedSingleton<IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>>>(
+        return serviceCollection.AddKeyedSingleton<IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>>>(
             serviceKey: MetadataPipelineKey,
             implementationFactory: static (serviceProvider, _) => CreateMetadataPipeline(
                 fileStore: serviceProvider.GetRequiredService<IFileStore>()
@@ -26,27 +26,27 @@ public static class Pipelines
         );
     }
 
-    public static IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> GetMetadataPipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> GetMetadataPipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<Hash, 
-            OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>>>(serviceKey: MetadataPipelineKey);
+            Outcome<LsxXmlFormat.MetaFileData>>>(serviceKey: MetadataPipelineKey);
     }
     
-    private static IResourceLoader<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>> CreateMetadataPipeline(IFileStore fileStore)
+    private static IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> CreateMetadataPipeline(IFileStore fileStore)
     {
         // TODO: change pipeline to return C# 9 type unions instead of OneOf
         var pipeline = new FileStoreStreamLoader(fileStore)
-            .ThenDo<Hash, OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>, Stream, Unit>(Unit.Default,
+            .ThenDo(Unit.Default,
                 static (_, _, resource, _) =>
                 {
                     try
                     {
                         var metaFileData = PakFileParser.ParsePakMeta(resource.Data);
-                        return ValueTask.FromResult(resource.WithData(OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>.FromT0(metaFileData)));
+                        return ValueTask.FromResult(resource.WithData(Outcome.FromResult(metaFileData)));
                     }
                     catch (InvalidDataException e)
                     {
-                        return ValueTask.FromResult(resource.WithData(OneOf.OneOf<LsxXmlFormat.MetaFileData, Error<InvalidDataException>>.FromT1(new Error<InvalidDataException>(e))));
+                        return ValueTask.FromResult(resource.WithData(Outcome.FromException<LsxXmlFormat.MetaFileData>(e)));
                     }
                 }
             )
