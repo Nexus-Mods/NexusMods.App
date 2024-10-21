@@ -5,6 +5,7 @@ using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -42,9 +43,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
+        var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         WorkspaceId = workspaceId;
-        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider, monitor);
         
         
         var installedModsItem = new IconViewModel

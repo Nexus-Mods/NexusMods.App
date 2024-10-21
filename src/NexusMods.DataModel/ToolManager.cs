@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
@@ -16,7 +17,6 @@ public class ToolManager : IToolManager
     private readonly ILogger<ToolManager> _logger;
     private readonly ISynchronizerService _syncService;
     private readonly IConnection _conn;
-    
 
     /// <summary>
     /// DI Constructor
@@ -35,11 +35,13 @@ public class ToolManager : IToolManager
     {
         return _tools[loadout.InstallationInstance.Game.GameId];
     }
+    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout, CancellationToken token = default) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> RunTool(
         ITool tool, 
         Loadout.ReadOnly loadout, 
+        IJobMonitor monitor,
         CancellationToken token = default)
     {
         if (!tool.GameIds.Contains(loadout.InstallationInstance.Game.GameId))
@@ -52,7 +54,7 @@ public class ToolManager : IToolManager
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
             tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
-        await tool.Execute(appliedLoadout, token);
+        await tool.StartJob(appliedLoadout, monitor, token);
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
             appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);

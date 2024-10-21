@@ -7,6 +7,7 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Analyzers\NexusMods.Abstractions.MnemonicDB.Analyzers.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />

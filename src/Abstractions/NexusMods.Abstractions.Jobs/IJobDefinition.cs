@@ -11,7 +11,6 @@ public interface IJobDefinition
 public interface IJobDefinition<TResultType> : IJobDefinition
     where TResultType : notnull;
 
-
 /// <summary>
 /// A job definition that can be started with instance method
 /// </summary>

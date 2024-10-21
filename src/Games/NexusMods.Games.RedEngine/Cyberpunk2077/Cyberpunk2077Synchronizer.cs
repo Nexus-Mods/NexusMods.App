@@ -70,7 +70,6 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
 
         await _redModTool.Execute(loadout, CancellationToken.None);
         return await base.Synchronize(loadout);
-
     }
 
 
