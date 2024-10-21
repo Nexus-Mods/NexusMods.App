@@ -33,11 +33,11 @@ internal static class Pipelines
 
     private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore)
     {
-        var pipeline = new FileStoreLoader(fileStore)
+        var pipeline = new FileStoreStreamLoader(fileStore)
             .ThenDo(Unit.Default, static (_, _, resource, _) =>
             {
-                var bytes = resource.Data;
-                var json = Encoding.UTF8.GetString(bytes);
+                using var streamReader = new StreamReader(stream: resource.Data, encoding: Encoding.UTF8);
+                var json = streamReader.ReadToEnd();
 
                 var manifest = Interop.SMAPIJsonHelper.Deserialize<SMAPIManifest>(json);
                 ArgumentNullException.ThrowIfNull(manifest);
