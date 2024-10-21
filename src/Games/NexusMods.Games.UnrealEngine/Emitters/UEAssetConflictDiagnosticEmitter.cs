@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Paths;
 using Diagnostic = NexusMods.Abstractions.Diagnostics.Diagnostic;
+using System.Linq;
 
 namespace NexusMods.Games.UnrealEngine.Emitters;
 
@@ -38,8 +39,11 @@ public class UEAssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .GetEnabledLoadoutFiles()
             .Where(file =>
             {
-                var loadoutItem = file.AsLoadoutItemWithTargetPath().AsLoadoutItem();
+                var targetedItem = file.AsLoadoutItemWithTargetPath();
+                var (_, _, relativePath) = targetedItem.TargetPath;
+                var loadoutItem = targetedItem.AsLoadoutItem();
                 if (loadoutItem.ParentId == default(LoadoutItemGroupId)) return false;
+                if(!Constants.ContentExts.Contains(relativePath.Extension)) return false;
                 return !loadoutItem.Parent.TryGetAsLoadoutGameFilesGroup(out _);
             });
 
