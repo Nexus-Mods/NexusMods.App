@@ -662,7 +662,7 @@
         <Compile Update="Pages\LibraryPage\ILibraryItemWithAction.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Alert.axaml.cs">
+        <Compile Update="Controls\Alerts\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>

@@ -3,9 +3,9 @@ using NexusMods.App.UI.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.Banners;
+namespace NexusMods.App.UI.Controls.Alerts;
 
-public sealed class BannerSettingsWrapper : ReactiveObject
+public sealed class AlertSettings : ReactiveObject
 {
     private readonly ISettingsManager? _settingsManager;
 
@@ -13,27 +13,27 @@ public sealed class BannerSettingsWrapper : ReactiveObject
 
     [Reactive] public bool IsDismissed { get; private set; }
 
-    public BannerSettingsWrapper()
+    public AlertSettings()
     {
         _settingsManager = null;
         Key = string.Empty;
     }
 
-    public BannerSettingsWrapper(ISettingsManager settingsManager, string key)
+    public AlertSettings(ISettingsManager settingsManager, string key)
     {
         _settingsManager = settingsManager;
 
         Key = key;
-        IsDismissed = settingsManager.Get<BannerSettings>().IsDismissed(key);
+        IsDismissed = settingsManager.Get<UI.Settings.AlertSettings>().IsDismissed(key);
     }
 
-    public void DismissBanner()
+    public void DismissAlert()
     {
         IsDismissed = true;
 
-        _settingsManager?.Update<BannerSettings>(bannerSettings => bannerSettings with
+        _settingsManager?.Update<UI.Settings.AlertSettings>(alertSettings => alertSettings with
         {
-            BannerStatus = bannerSettings.BannerStatus.SetItem(Key, true),
+            AlertStatus = alertSettings.AlertStatus.SetItem(Key, true),
         });
     }
 }

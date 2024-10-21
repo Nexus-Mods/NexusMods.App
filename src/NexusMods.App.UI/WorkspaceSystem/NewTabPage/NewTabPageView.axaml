@@ -7,21 +7,29 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:banners="clr-namespace:NexusMods.App.UI.Controls.Banners"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
     <ScrollViewer>
         <StackPanel Margin="24" Orientation="Vertical" Spacing="24">
-            <banners:InfoBanner x:Name="InfoBanner">
-                <StackPanel>
-                    <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText1}" />
-                    <icons:UnifiedIcon x:Name="AddPanelIcon" />
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" Size="16" />
-                    <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText2}" />
-                </StackPanel>
-            </banners:InfoBanner>
+            
+            <alerts:Alert x:Name="InfoBanner" 
+                            Title="View Pages Side by Side" 
+                            Body="Add panels to view 2 or more pages at once by clicking the “add panel” button in the top bar or by right clicking a page and selecting “Open in new panel”"
+                            Severity="Info"
+                            ShowDismiss="True"/>
+            
+            <!-- <banners:InfoBanner x:Name="InfoBanner"> -->
+            <!--     <StackPanel> -->
+            <!--         <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText1}" /> -->
+            <!--         <icons:UnifiedIcon x:Name="AddPanelIcon" /> -->
+            <!--         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" Size="16" /> -->
+            <!--         <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText2}" /> -->
+            <!--     </StackPanel> -->
+            <!-- </banners:InfoBanner> -->
 
             <ItemsControl x:Name="Sections">
                 <ItemsControl.ItemsPanel>

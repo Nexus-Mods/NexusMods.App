@@ -6,7 +6,7 @@ using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.UI.Controls.Banners;
+using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.Icons;
@@ -24,7 +24,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
 
     [Reactive] public IconValue StateIcon { get; [UsedImplicitly] private set; } = new();
 
-    public BannerSettingsWrapper BannerSettingsWrapper { get; }
+    public AlertSettings AlertSettings { get; }
 
     public NewTabPageViewModel(
         ISettingsManager settingsManager,
@@ -34,7 +34,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         TabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
         TabIcon = IconValues.Tab;
 
-        BannerSettingsWrapper = new BannerSettingsWrapper(settingsManager, "add panels using add-panel button");
+        AlertSettings = new AlertSettings(settingsManager, "add panels using add-panel button");
 
         _itemSource.Edit(list =>
         {
@@ -55,17 +55,17 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         {
             var workspace = GetWorkspaceController().ActiveWorkspace;
 
-            if (!BannerSettingsWrapper.IsDismissed)
+            if (!AlertSettings.IsDismissed)
             {
                 // dismiss the banner if the user adds a panel
                 workspace.Panels
                     .ObserveCollectionChanges()
-                    .Where(_ => !BannerSettingsWrapper.IsDismissed)
+                    .Where(_ => !AlertSettings.IsDismissed)
                     .Select(_ => workspace.Panels)
                     .Prepend(workspace.Panels)
                     .Select(x => x.Count)
                     .Where(panelCount => panelCount > 1)
-                    .Subscribe(_ => BannerSettingsWrapper.DismissBanner())
+                    .Subscribe(_ => AlertSettings.DismissAlert())
                     .DisposeWith(disposables);
             }
 

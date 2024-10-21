@@ -21,9 +21,9 @@ public class InfoBanner : TemplatedControl
 
     public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<InfoBanner, object?>(nameof(Content));
 
-    public static readonly StyledProperty<ReactiveCommand<Unit, BannerSettingsWrapper>> DismissCommandProperty = AvaloniaProperty.Register<InfoBanner, ReactiveCommand<Unit, BannerSettingsWrapper>>(nameof(DismissCommand));
+    public static readonly StyledProperty<ReactiveCommand<Unit, AlertSettings>> DismissCommandProperty = AvaloniaProperty.Register<InfoBanner, ReactiveCommand<Unit, AlertSettings>>(nameof(DismissCommand));
 
-    public static readonly StyledProperty<BannerSettingsWrapper?> BannerSettingsWrapperProperty = AvaloniaProperty.Register<InfoBanner, BannerSettingsWrapper?>(nameof(BannerSettingsWrapper));
+    public static readonly StyledProperty<AlertSettings?> BannerSettingsWrapperProperty = AvaloniaProperty.Register<InfoBanner, AlertSettings?>(nameof(BannerSettingsWrapper));
 
     public IconValue Icon
     {
@@ -44,13 +44,13 @@ public class InfoBanner : TemplatedControl
         set => SetValue(ContentProperty, value);
     }
 
-    public ReactiveCommand<Unit, BannerSettingsWrapper> DismissCommand
+    public ReactiveCommand<Unit, AlertSettings> DismissCommand
     {
         get => GetValue(DismissCommandProperty);
         private set => SetValue(DismissCommandProperty, value);
     }
 
-    public BannerSettingsWrapper? BannerSettingsWrapper
+    public AlertSettings? BannerSettingsWrapper
     {
         get => GetValue(BannerSettingsWrapperProperty);
         set => SetValue(BannerSettingsWrapperProperty, value);
@@ -78,7 +78,7 @@ public class InfoBanner : TemplatedControl
         {
             _serialDisposable.Disposable = null;
 
-            if (change.NewValue is BannerSettingsWrapper bannerSettingsWrapper)
+            if (change.NewValue is AlertSettings bannerSettingsWrapper)
             {
                 UpdatePseudoClasses(bannerSettingsWrapper.IsDismissed);
 

@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using NexusMods.App.UI.Controls.Banners;
+using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -10,5 +10,5 @@ public interface INewTabPageViewModel : IPageViewModelInterface
 
     IconValue StateIcon { get; }
 
-    BannerSettingsWrapper BannerSettingsWrapper { get; }
+    AlertSettings AlertSettings { get; }
 }
