@@ -22,9 +22,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
     private readonly ReadOnlyObservableCollection<INewTabPageSectionViewModel> _sections;
     public ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections => _sections;
 
-    [Reactive] public IconValue StateIcon { get; [UsedImplicitly] private set; } = new();
-
-    public AlertSettings AlertSettings { get; }
+    public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
     public NewTabPageViewModel(
         ISettingsManager settingsManager,
@@ -34,7 +32,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         TabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
         TabIcon = IconValues.Tab;
 
-        AlertSettings = new AlertSettings(settingsManager, "add panels using add-panel button");
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "add panels using add-panel button");
 
         _itemSource.Edit(list =>
         {
@@ -55,30 +53,19 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         {
             var workspace = GetWorkspaceController().ActiveWorkspace;
 
-            if (!AlertSettings.IsDismissed)
+            if (!AlertSettingsWrapper.IsDismissed)
             {
                 // dismiss the banner if the user adds a panel
                 workspace.Panels
                     .ObserveCollectionChanges()
-                    .Where(_ => !AlertSettings.IsDismissed)
+                    .Where(_ => !AlertSettingsWrapper.IsDismissed)
                     .Select(_ => workspace.Panels)
                     .Prepend(workspace.Panels)
                     .Select(x => x.Count)
                     .Where(panelCount => panelCount > 1)
-                    .Subscribe(_ => AlertSettings.DismissAlert())
+                    .Subscribe(_ => AlertSettingsWrapper.DismissAlert())
                     .DisposeWith(disposables);
             }
-
-            // Use the same icon in the banner as in the TopBar
-            workspace.AddPanelButtonViewModels
-                .ObserveCollectionChanges()
-                .Select(_ => workspace.AddPanelButtonViewModels)
-                .Prepend(workspace.AddPanelButtonViewModels)
-                .Where(x => x.Count > 0)
-                .Select(x => x.First().ButtonImage)
-                .Select(image => new IconValue(new AvaloniaImage(image)))
-                .BindToVM(this, vm => vm.StateIcon)
-                .DisposeWith(disposables);
 
             _itemSource
                 .Connect()

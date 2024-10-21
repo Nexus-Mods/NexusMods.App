@@ -25,9 +25,9 @@ public class Alert : ContentControl
     public static readonly StyledProperty<string?> TitleProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Title), defaultValue: "Default Title");
     public static readonly StyledProperty<string?> BodyProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Body), defaultValue: "Default Body");
     
-    public static readonly StyledProperty<ReactiveCommand<Unit, AlertSettings>> DismissCommandProperty = AvaloniaProperty.Register<Alert, ReactiveCommand<Unit, AlertSettings>>(nameof(DismissCommand));
+    public static readonly StyledProperty<ReactiveCommand<Unit, AlertSettingsWrapper>> DismissCommandProperty = AvaloniaProperty.Register<Alert, ReactiveCommand<Unit, AlertSettingsWrapper>>(nameof(DismissCommand));
 
-    public static readonly StyledProperty<AlertSettings?> AlertSettingsProperty = AvaloniaProperty.Register<Alert, AlertSettings?>(nameof(AlertSettings));
+    public static readonly StyledProperty<AlertSettingsWrapper?> AlertSettingsProperty = AvaloniaProperty.Register<Alert, AlertSettingsWrapper?>(nameof(AlertSettings));
     
     public static readonly AttachedProperty<bool> ShowDismissProperty = 
         AvaloniaProperty.RegisterAttached<Alert, TemplatedControl, bool>("ShowDismiss", defaultValue: true);
@@ -93,13 +93,13 @@ public class Alert : ContentControl
         set => SetValue(IsDismissedProperty, value);
     }
     
-    public ReactiveCommand<Unit, AlertSettings> DismissCommand
+    public ReactiveCommand<Unit, AlertSettingsWrapper> DismissCommand
     {
         get => GetValue(DismissCommandProperty);
         private set => SetValue(DismissCommandProperty, value);
     }
 
-    public AlertSettings? AlertSettings
+    public AlertSettingsWrapper? AlertSettings
     {
         get => GetValue(AlertSettingsProperty);
         set => SetValue(AlertSettingsProperty, value);
@@ -132,7 +132,7 @@ public class Alert : ContentControl
         {
             _serialDisposable.Disposable = null;
 
-            if (change.NewValue is AlertSettings alertSettings)
+            if (change.NewValue is AlertSettingsWrapper alertSettings)
             {
                 _serialDisposable.Disposable = alertSettings
                     .WhenAnyValue(x => x.IsDismissed)

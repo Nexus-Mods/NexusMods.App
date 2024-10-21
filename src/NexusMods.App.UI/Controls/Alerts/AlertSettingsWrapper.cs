@@ -5,7 +5,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Alerts;
 
-public sealed class AlertSettings : ReactiveObject
+public sealed class AlertSettingsWrapper : ReactiveObject
 {
     private readonly ISettingsManager? _settingsManager;
 
@@ -13,25 +13,25 @@ public sealed class AlertSettings : ReactiveObject
 
     [Reactive] public bool IsDismissed { get; private set; }
 
-    public AlertSettings()
+    public AlertSettingsWrapper()
     {
         _settingsManager = null;
         Key = string.Empty;
     }
 
-    public AlertSettings(ISettingsManager settingsManager, string key)
+    public AlertSettingsWrapper(ISettingsManager settingsManager, string key)
     {
         _settingsManager = settingsManager;
 
         Key = key;
-        IsDismissed = settingsManager.Get<UI.Settings.AlertSettings>().IsDismissed(key);
+        IsDismissed = settingsManager.Get<AlertSettings>().IsDismissed(key);
     }
 
     public void DismissAlert()
     {
         IsDismissed = true;
 
-        _settingsManager?.Update<UI.Settings.AlertSettings>(alertSettings => alertSettings with
+        _settingsManager?.Update<AlertSettings>(alertSettings => alertSettings with
         {
             AlertStatus = alertSettings.AlertStatus.SetItem(Key, true),
         });

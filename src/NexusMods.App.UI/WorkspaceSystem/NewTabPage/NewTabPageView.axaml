@@ -22,15 +22,6 @@
                             Severity="Info"
                             ShowDismiss="True"/>
             
-            <!-- <banners:InfoBanner x:Name="InfoBanner"> -->
-            <!--     <StackPanel> -->
-            <!--         <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText1}" /> -->
-            <!--         <icons:UnifiedIcon x:Name="AddPanelIcon" /> -->
-            <!--         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" Size="16" /> -->
-            <!--         <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText2}" /> -->
-            <!--     </StackPanel> -->
-            <!-- </banners:InfoBanner> -->
-
             <ItemsControl x:Name="Sections">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

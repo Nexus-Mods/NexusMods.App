@@ -8,7 +8,5 @@ public interface INewTabPageViewModel : IPageViewModelInterface
 {
     ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections { get; }
 
-    IconValue StateIcon { get; }
-
-    AlertSettings AlertSettings { get; }
+    AlertSettingsWrapper AlertSettingsWrapper { get; }
 }
