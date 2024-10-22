@@ -18,7 +18,7 @@
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.91" />
     <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.10.0" />
-    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.5.0" />
+    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.1" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
