@@ -16,7 +16,7 @@
     <ScrollViewer>
         <StackPanel Margin="24" Orientation="Vertical" Spacing="24">
             
-            <alerts:Alert x:Name="InfoBanner" 
+            <alerts:Alert x:Name="InfoAlert"
                             Title="View Pages Side by Side" 
                             Body="Add panels to view 2 or more pages at once by clicking the “add panel” button in the top bar or by right clicking a page and selecting “Open in new panel”"
                             Severity="Info"
