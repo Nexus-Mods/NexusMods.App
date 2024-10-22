@@ -114,7 +114,6 @@ public class StandardButton : Button
     private TextBlock? _label = null;
     private ContentPresenter? _content = null;
     private Border? _border = null;
-    private TextBlock? _toolTip = null;
 
     /// <summary>
     /// Defines the Text property of the <see cref="StandardButton"/>.
@@ -252,17 +251,18 @@ public class StandardButton : Button
         _label = e.NameScope.Find<TextBlock>("PART_Label");
         _content = e.NameScope.Find<ContentPresenter>("PART_ContentPresenter");
         _border = e.NameScope.Find<Border>("PART_Border");
-        _toolTip = e.NameScope.Find<TextBlock>("PART_ToolTip");
 
-        if (_leftIcon == null || _rightIcon == null || _label == null || _content == null || _border == null || _toolTip == null) return;
+        if (_leftIcon == null || _rightIcon == null || _label == null || _content == null || _border == null) return;
 
         _leftIcon.Value = LeftIcon;
         _rightIcon.Value = RightIcon;
 
         _label.IsVisible = ShowLabel;
-        
-        _toolTip.IsVisible = !string.IsNullOrWhiteSpace(ToolTip);
 
+        // if ToolTip is empty string, set it to null so that the ToolTip is not displayed
+        // otherwise you get the tooltip pop up with just whitespace
+        ToolTip = string.IsNullOrEmpty(ToolTip) ? null : ToolTip;
+        
         // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
         // Otherwise, build the button from the set properties
         _content.IsVisible = Content is not null;
