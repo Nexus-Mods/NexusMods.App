@@ -225,22 +225,11 @@ public class Alert : ContentControl
         if (_icon == null || _dismissButton == null || _titleText == null || _bodyText == null || _bodyTextBorder == null || _actionsRowBorder == null)
             return;
 
-        // no content set, so we hide the actions row
-        if (Content == null)
-        {
-            ShowActions = false;
-        }
-
-        // hide the body if there is no body text
-        if (ShowBody && string.IsNullOrEmpty(Body))
-        {
-            ShowBody = false;
-        }
 
         // turn off elements based on properties
         _dismissButton.IsVisible = ShowDismiss;
-        _bodyTextBorder.IsVisible = ShowBody;
-        _actionsRowBorder.IsVisible = ShowActions;
+        _bodyTextBorder.IsVisible = ShowBody && string.IsNullOrEmpty(Body);
+        _actionsRowBorder.IsVisible = Content != null && ShowActions;
 
         // set the text
         _titleText.Text = Title;
