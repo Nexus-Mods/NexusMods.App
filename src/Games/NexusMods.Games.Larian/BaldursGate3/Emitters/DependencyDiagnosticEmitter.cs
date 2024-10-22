@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
+using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
 using Polly;
 
@@ -16,7 +17,7 @@ namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> _metadataPipeline;
+    private readonly IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> _metadataPipeline;
 
     public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
     {
@@ -65,7 +66,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
             // non error case
             var metadata = metadataOrError.Result;
-            var dependencies = metadata.Dependencies;
+            var dependencies = metadata.MetaFileData.Dependencies;
 
             foreach (var dependency in dependencies)
             {
@@ -76,7 +77,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var matchingDeps = metaFileTuples.Where(
                         x =>
                             x.Item2.Exception is null &&
-                            x.Item2.Result.ModuleShortDesc.Uuid == dependencyUuid
+                            x.Item2.Result.MetaFileData.ModuleShortDesc.Uuid == dependencyUuid
                     )
                     .ToArray();
 
@@ -87,8 +88,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                             ModName: loadoutItemGroup.ToReference(loadout),
                             MissingDepName: dependency.Name,
                             MissingDepVersion: dependency.SemanticVersion.ToString(),
-                            PakModuleName: metadata.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: metadata.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             NexusModsLink: NexusModsLink
                         )
                     );
@@ -99,9 +100,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     continue;
 
                 var highestInstalledMatch = matchingDeps.MaxBy(
-                    x => x.Item2.Result.ModuleShortDesc.SemanticVersion
+                    x => x.Item2.Result.MetaFileData.ModuleShortDesc.SemanticVersion
                 );
-                var installedMatchModule = highestInstalledMatch.Item2.Result.ModuleShortDesc;
+                var installedMatchModule = highestInstalledMatch.Item2.Result.MetaFileData.ModuleShortDesc;
                 var matchLoadoutItemGroup = highestInstalledMatch.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
 
                 // Check if found dependency is outdated
@@ -109,8 +110,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 {
                     diagnostics.Add(Diagnostics.CreateOutdatedDependency(
                             ModName: loadoutItemGroup.ToReference(loadout),
-                            PakModuleName: metadata.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: metadata.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             DepModName: matchLoadoutItemGroup.ToReference(loadout),
                             DepName: installedMatchModule.Name,
                             MinDepVersion: dependency.SemanticVersion.ToString(),
@@ -128,15 +129,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
-    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LsxXmlFormat.MetaFileData>>> GetAllPakMetadata(
+    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LspkPackageFormat.PakMetaData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
-        IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> metadataPipeline,
+        IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> metadataPipeline,
         ILogger logger,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var pakLoadoutFile in pakLoadoutFiles)
         {
-            Resource<Outcome<LsxXmlFormat.MetaFileData>> resource;
+            Resource<Outcome<LspkPackageFormat.PakMetaData>> resource;
             try
             {
                 resource = await metadataPipeline.LoadResourceAsync(pakLoadoutFile.Hash, cancellationToken);
