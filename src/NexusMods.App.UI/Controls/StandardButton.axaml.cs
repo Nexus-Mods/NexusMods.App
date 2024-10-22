@@ -171,7 +171,7 @@ public class StandardButton : Button
     }
     
     /// <summary>
-    /// Gets or sets the tooltiop text of the <see cref="StandardButton"/>.
+    /// Gets or sets the tooltip text of the <see cref="StandardButton"/>.
     /// </summary>
     public string? ToolTip
     {
