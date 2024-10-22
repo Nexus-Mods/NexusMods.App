@@ -22,6 +22,10 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
+    </ItemGroup>
+
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
             <_Resources Include="Resources\**" />

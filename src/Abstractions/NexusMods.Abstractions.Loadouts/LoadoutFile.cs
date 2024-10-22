@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;

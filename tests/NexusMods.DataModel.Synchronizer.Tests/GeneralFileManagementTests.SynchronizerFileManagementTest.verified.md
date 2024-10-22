@@ -23,15 +23,15 @@ Added a new file to the game and synced it.
 ### Last Synced State - (1) - Tx:10000000000000B
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000B |
+| (EId:200000000000001, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
 ### Current State - (1) - Tx:10000000000000B
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000B |
+| (EId:200000000000001, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
 ### Loadout A - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000003, Game, bin/newFile.txt) | 0xA52B286A3E7F4D91 | 12 B | Tx:10000000000000B |
+| (EId:200000000000003, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
 
 
 
@@ -43,15 +43,15 @@ Updated the new file file and synced it.
 ### Last Synced State - (1) - Tx:10000000000000E
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xCBF180132E60CE25 | 21 B | Tx:10000000000000E |
+| (EId:200000000000001, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
 ### Current State - (1) - Tx:10000000000000E
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xCBF180132E60CE25 | 21 B | Tx:10000000000000E |
+| (EId:200000000000001, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
 ### Loadout A - (1)
 | Path | Hash | Size | TxId |
 | --- | --- | --- | --- |
-| (EId:200000000000003, Game, bin/newFile.txt) | 0xCBF180132E60CE25 | 21 B | Tx:10000000000000E |
+| (EId:200000000000003, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
 
 
 

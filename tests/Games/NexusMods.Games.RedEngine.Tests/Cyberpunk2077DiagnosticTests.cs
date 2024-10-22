@@ -12,7 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 using Xunit.Abstractions;
@@ -68,7 +68,7 @@ public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyb
                 var contentArray = Encoding.UTF8.GetBytes(content);
                 AddFile(tx, loadout, pluginMod, gamePath, content);
                 filesToBackup.Add(new ArchivedFileEntry(new MemoryStreamFactory(gamePath.FileName, new MemoryStream(contentArray)),
-                    contentArray.XxHash64(),
+                    contentArray.xxHash3(),
                     Size.FromLong(contentArray.Length)));
                     
                 AddFile(tx, loadout, pluginMod, gamePath);

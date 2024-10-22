@@ -4,6 +4,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -38,9 +39,9 @@ public class GenericExtractionTests
             .Should()
             .BeEquivalentTo(new[]
             {
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
             });
     }
 
@@ -51,15 +52,15 @@ public class GenericExtractionTests
         await using var tempFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
         (await tempFolder.Path.EnumerateFiles()
-            .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64Async()))
+            .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash3Async()))
             .ToArrayAsync())
             .Should()
-            .BeEquivalentTo(new[]
-            {
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
-            });
+            .BeEquivalentTo([
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
+                ]
+            );
     }
 
     public static IEnumerable<object[]> Archives => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").EnumerateFiles()

@@ -7,7 +7,7 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
