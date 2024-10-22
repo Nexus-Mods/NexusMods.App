@@ -1,7 +1,6 @@
-using System.Text;
 using System.Xml;
 
-namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
+namespace NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 
 /// <summary>
 /// Class containing definitions for the Larian Xml (LSX) format.
@@ -31,6 +30,125 @@ public static class LsxXmlFormat
         public string Version;
         public string Uuid;
         public string Md5;
+        public ModuleVersion SemanticVersion;
+    }
+    
+    
+    public struct ModuleVersion : IComparable<ModuleVersion>, IEquatable<ModuleVersion>
+    {
+        public ulong Major;
+        public ulong Minor;
+        public ulong Patch;
+        public ulong Build;
+        
+        public static ModuleVersion FromInt32String(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return FromUInt32(0);
+            }
+
+            if (!UInt32.TryParse(str, out var parse32Result))
+            {
+                // Apparently the string can contain 64-bit values even though the type is marked as Int32
+                return FromInt64String(str);
+            }
+            return FromUInt32(parse32Result);
+        }
+        
+        public static ModuleVersion FromInt64String(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str) || !UInt64.TryParse(str, out var parse64Result))
+            {
+                return FromUInt64(0);
+            }
+            
+            return FromUInt64(parse64Result);
+        }
+        
+        private static ModuleVersion FromUInt64(ulong uIntVal)
+        {
+            if (uIntVal == 1 || uIntVal == 268435456)
+            {
+                return new ModuleVersion
+                {
+                    Major = 1,
+                    Minor = 0,
+                    Patch = 0,
+                    Build = 0,
+                };
+            }
+
+            return new ModuleVersion
+            {
+                Major = uIntVal >> 55,
+                Minor = (uIntVal >> 47) & 0xFF,
+                Patch = (uIntVal >> 31) & 0xFFFF,
+                Build = uIntVal & 0x7FFFFFFFUL,
+            };
+        }
+
+        
+        private static ModuleVersion FromUInt32(UInt32 uIntVal)
+        {
+            if (uIntVal == 1)
+            {
+                return new ModuleVersion
+                {
+                    Major = 1,
+                    Minor = 0,
+                    Patch = 0,
+                    Build = 0,
+                };
+            }
+            
+            return new ModuleVersion
+            {
+                Major = uIntVal >> 28,
+                Minor = (uIntVal >> 24) & 0x0F,
+                Patch = (uIntVal >> 16) & 0xFF,
+                Build = uIntVal & 0xFFFF,
+            };
+        }
+        
+        public override string ToString() => $"{Major}.{Minor}.{Patch}";
+        
+        public int CompareTo(ModuleVersion other)
+        {
+            var majorComparison = Major.CompareTo(other.Major);
+            if (majorComparison != 0) return majorComparison;
+            var minorComparison = Minor.CompareTo(other.Minor);
+            if (minorComparison != 0) return minorComparison;
+            var patchComparison = Patch.CompareTo(other.Patch);
+            if (patchComparison != 0) return patchComparison;
+            return Build.CompareTo(other.Build);
+        }
+
+        public bool Equals(ModuleVersion other)
+        {
+            return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Build == other.Build;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ModuleVersion other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Major,
+                Minor,
+                Patch,
+                Build
+            );
+        }
+        
+        public static bool operator !=(ModuleVersion left, ModuleVersion right) => !left.Equals(right);
+        public static bool operator ==(ModuleVersion left, ModuleVersion right) => left.Equals(right);
+        public static bool operator >(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) > 0;
+        public static bool operator <(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) < 0;
+        public static bool operator >=(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) >= 0;
+        public static bool operator <=(ModuleVersion left, ModuleVersion right) => left.CompareTo(right) <= 0;
     }
     
     

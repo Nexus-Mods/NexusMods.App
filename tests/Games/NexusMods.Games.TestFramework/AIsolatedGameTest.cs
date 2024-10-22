@@ -117,7 +117,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .AddGames()
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
-            .AddFileStoreAbstractions()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }

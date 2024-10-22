@@ -10,20 +10,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:alert="clr-namespace:NexusMods.App.UI.Controls.Alerts">
     <Design.DataContext>
         <developmentBuildBanner:DevelopmentBuildBannerViewModel />
     </Design.DataContext>
-    <Border Classes="DangerWeak">
-        <StackPanel Orientation="Horizontal">
-            <icons:UnifiedIcon
-                Classes="Alert"
-                Size="20"
-                Margin="30 2 8 2"
-                VerticalAlignment="Center" />
-            <TextBlock Classes="TitleSMSemi"
-                       Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-    </Border>
+    
+    <alert:Alert
+        Title="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
+        Severity="Error"
+        ShowDismiss="False"
+        ShowBody="False"
+        CornerRadius="0"
+        />
+    
 </reactiveUi:ReactiveUserControl>
