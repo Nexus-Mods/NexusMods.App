@@ -151,8 +151,8 @@ public record ParsedChangelog
     {
         var span = changelog.AsSpan();
 
-        const string linePrefix = "## ";
-        const string versionPrefix = "[v";
+        const string linePrefix = "# ";
+        const string versionPrefix = "v";
 
         var sectionIndices = new List<int>();
         var versions = new List<KeyValuePair<Version, int>>();
@@ -179,7 +179,7 @@ public record ParsedChangelog
             if (!slice.StartsWith(versionPrefix) || slice.Length < versionPrefix.Length) continue;
             slice = slice.Slice(start: versionPrefix.Length);
 
-            var index = slice.IndexOf(']');
+            var index = slice.IndexOf(' ');
             if (index == -1) continue;
 
             slice = slice.Slice(start: 0, length: index);
