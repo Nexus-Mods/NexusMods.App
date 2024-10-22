@@ -3,7 +3,6 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-      <PackageReference Include="NexusMods.Hashing.xxHash64" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
 

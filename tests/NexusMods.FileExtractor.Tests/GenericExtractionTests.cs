@@ -3,7 +3,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -29,7 +29,7 @@ public class GenericExtractionTests
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (_, e) =>
         {
             await using var fs = await e.GetStreamAsync();
-            return await fs.XxHash64Async(CancellationToken.None);
+            return await fs.XxHash3Async(CancellationToken.None);
         }, CancellationToken.None);
 
         results.Count.Should().Be(3);

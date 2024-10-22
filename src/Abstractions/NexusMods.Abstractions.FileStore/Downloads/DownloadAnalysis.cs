@@ -1,13 +1,9 @@
 ﻿using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;

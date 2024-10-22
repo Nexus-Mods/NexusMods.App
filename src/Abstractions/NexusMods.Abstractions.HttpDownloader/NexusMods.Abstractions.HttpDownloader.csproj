@@ -5,10 +5,14 @@
         <!-- Todo: We need to get rid of 'optional' to remove this heavy dependency.  -->
         <PackageReference Include="DynamicData" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="NexusMods.Hashing.xxHash3">
+        <HintPath>..\..\..\..\..\Users\tbald\.nuget\packages\nexusmods.hashing.xxhash3\3.0.0\lib\net8.0\NexusMods.Hashing.xxHash3.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

@@ -11,10 +11,10 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
+    <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.0" />
     <PackageVersion Include="NexusMods.Paths" Version="0.10.0" />
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.91" />
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.91" />
-    <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.2" />
     <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.5.0" />

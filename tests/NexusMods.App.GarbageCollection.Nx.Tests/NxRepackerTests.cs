@@ -2,7 +2,7 @@ using FluentAssertions;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Packing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions.Nx.Extensions;
 using NexusMods.Paths.Extensions.Nx.FileProviders;

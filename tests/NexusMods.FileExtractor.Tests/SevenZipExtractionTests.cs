@@ -71,7 +71,7 @@ public class SevenZipExtractionTests
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (_, e) =>
         {
             await using var fs = await e.GetStreamAsync();
-            return await fs.XxHash64Async(CancellationToken.None);
+            return await fs.XxHash3Async(CancellationToken.None);
         }, CancellationToken.None);
 
         results.Count.Should().Be(3);
