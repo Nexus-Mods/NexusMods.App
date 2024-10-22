@@ -25,12 +25,12 @@ public class Alert : ContentControl
     /// <summary>
     /// Defines the Title property of the <see cref="Alert"/>. Defaults to "Default Title".
     /// </summary>
-    public static readonly StyledProperty<string?> TitleProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Title), defaultValue: "Default Title");
+    public static readonly StyledProperty<string?> TitleProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Title), defaultValue: "");
 
     /// <summary>
     /// Defines the Body property of the <see cref="Alert"/>. Defaults to "Default Body".
     /// </summary>
-    public static readonly StyledProperty<string?> BodyProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Body), defaultValue: "Default Body");
+    public static readonly StyledProperty<string?> BodyProperty = AvaloniaProperty.Register<Alert, string?>(nameof(Body), defaultValue: "");
 
 
     /// <summary>
