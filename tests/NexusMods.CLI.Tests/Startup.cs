@@ -54,7 +54,6 @@ public class Startup
                 .AddHttpDownloader()
                 .AddNexusWebApi(true)
                 .AddLoadoutAbstractions()
-                .AddFileStoreAbstractions()
                 .AddSerializationAbstractions()
                 .AddGames()
                 .AddCrossPlatform()
