@@ -8,9 +8,11 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 /// A MneumonicDB attribute for a Size value
 /// </summary>
-public class SizeAttribute(string ns, string name) : ScalarAttribute<Size, ulong>(ValueTags.UInt64, ns, name)
+public class SizeAttribute(string ns, string name) : ScalarAttribute<Size, ulong>(ValueTag.UInt64, ns, name)
 {
+    /// <inheritdoc />
     protected override ulong ToLowLevel(Size value) => value.Value;
 
-    protected override Size FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => Size.From(value);
+    /// <inheritdoc />
+    protected override Size FromLowLevel(ulong value, AttributeResolver resolver) => Size.From(value);
 }
