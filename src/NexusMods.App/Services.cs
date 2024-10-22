@@ -85,7 +85,6 @@ public static class Services
                 .AddCrossPlatform()
                 .AddGames()
                 .AddGenericGameSupport()
-                .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddFomod()
                 .AddNexusWebApi()
