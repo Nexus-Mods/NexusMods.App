@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -10,6 +11,9 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+
 using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
@@ -129,6 +133,12 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
+    private static Optional<LoadoutFile.ReadOnly> GetScriptExtenderLoadoutFile(Loadout.ReadOnly loadout)
+    {
+        var datoms = IndexSegmentExtensions.Datoms(loadout.Db, (LoadoutItem.LoadoutId, loadout.LoadoutId), (LoadoutItemWithTargetPath.TargetPath, (, Bg3Constants.BG3SEGamePath.LocationId, Bg3Constants.BG3SEGamePath.Path) ));
+    }
+    
+    
     private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LspkPackageFormat.PakMetaData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
         IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> metadataPipeline,
