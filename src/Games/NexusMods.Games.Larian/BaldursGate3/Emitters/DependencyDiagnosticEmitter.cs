@@ -6,14 +6,12 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-
 using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
@@ -135,10 +133,17 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private static Optional<LoadoutFile.ReadOnly> GetScriptExtenderLoadoutFile(Loadout.ReadOnly loadout)
     {
-        var datoms = IndexSegmentExtensions.Datoms(loadout.Db, (LoadoutItem.LoadoutId, loadout.LoadoutId), (LoadoutItemWithTargetPath.TargetPath, (, Bg3Constants.BG3SEGamePath.LocationId, Bg3Constants.BG3SEGamePath.Path) ));
+        return loadout.Items.OfTypeLoadoutItemGroup()
+            .Where(g => g.AsLoadoutItem().IsEnabled())
+            .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
+                .OfTypeLoadoutFile()
+                .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.Item2 == Bg3Constants.BG3SEGamePath.LocationId &&
+                               file.AsLoadoutItemWithTargetPath().TargetPath.Item3 == Bg3Constants.BG3SEGamePath.Path
+                )
+            ).FirstOrOptional(_ => true);
     }
-    
-    
+
+
     private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LspkPackageFormat.PakMetaData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
         IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> metadataPipeline,
