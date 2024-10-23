@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class FakeParentLoadoutItemModel : LoadoutItemModel
 {
-    public required IObservable<DateTime> InstalledAtObservable { get; init; }
+    public required IObservable<DateTimeOffset> InstalledAtObservable { get; init; }
 
     public IObservable<IChangeSet<LoadoutItemId, EntityId>> LoadoutItemIdsObservable { get; }
     public ObservableHashSet<LoadoutItemId> LoadoutItemIds { get; private set; } = [];

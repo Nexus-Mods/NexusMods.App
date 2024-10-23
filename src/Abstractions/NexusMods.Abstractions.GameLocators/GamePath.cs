@@ -2,6 +2,7 @@ using System.Diagnostics;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -137,7 +138,7 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
 /// <summary>
 /// Defines a GamePath attribute.
 /// </summary>
-public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePath, string>(ValueTag.Utf8, ns, name)
+public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePath, string, Utf8Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(GamePath value)
@@ -159,17 +160,13 @@ public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePat
 /// An attribute that combines an EntityId, LocationId and RelativePath into a single attribute. This is used to represent GamePaths prefixed
 /// with a parent entity so that range queries only return the paths that are children of the parent entity.
 /// </summary>
-public class GamePathParentAttribute(string ns, string name) : ScalarAttribute<(EntityId, LocationId, RelativePath), (EntityId, ushort, string)>(ValueTag.Tuple3_Ref_UShort_Utf8I,  ns, name) 
+public class GamePathParentAttribute(string ns, string name) : ScalarAttribute<(EntityId, LocationId, RelativePath), (EntityId, ushort, string), Tuple3_Ref_UShort_Utf8I_Serializer>(ns, name) 
 {
     /// <inheritdoc />
-    protected override (EntityId, ushort, string) ToLowLevel((EntityId, LocationId, RelativePath) value)
-    {
-        return (value.Item1, value.Item2.Value, value.Item3);
-    }
+    protected override (EntityId, ushort, string) ToLowLevel((EntityId, LocationId, RelativePath) value) 
+        => (value.Item1, value.Item2.Value, value.Item3);
 
     /// <inheritdoc />
-    protected override (EntityId, LocationId, RelativePath) FromLowLevel((EntityId, ushort, string) value, AttributeResolver resolver)
-    {
-        return (value.Item1, LocationId.From(value.Item2), RelativePath.FromUnsanitizedInput(value.Item3));
-    }
+    protected override (EntityId, LocationId, RelativePath) FromLowLevel((EntityId, ushort, string) value, AttributeResolver resolver) 
+        => (value.Item1, LocationId.From(value.Item2), RelativePath.FromUnsanitizedInput(value.Item3));
 }

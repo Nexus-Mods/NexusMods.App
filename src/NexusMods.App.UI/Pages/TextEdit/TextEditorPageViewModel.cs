@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Hashing;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -14,10 +15,9 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -90,7 +90,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             // hash and store the new contents
             var bytes = Encoding.UTF8.GetBytes(text);
-            var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
+            var hash = Hash.From(XxHash3.HashToUInt64(bytes));
             var size = Size.From((ulong)bytes.Length);
 
             using (var streamFactory = new MemoryStreamFactory(filePath.Path, new MemoryStream(bytes, writable: false)))
@@ -115,8 +115,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         {
             this.WhenAnyValue(vm => vm.Context)
                 .WhereNotNull()
-                .Select(context => LoadoutFile.Load(connection.Db, context.LoadoutFileId)
-                    .Revisions()
+                .Select(context => connection.ObserveDatoms(SliceDescriptor.Create(context.LoadoutFileId)) 
                     .Select(_ => context)
                 )
                 .Switch()

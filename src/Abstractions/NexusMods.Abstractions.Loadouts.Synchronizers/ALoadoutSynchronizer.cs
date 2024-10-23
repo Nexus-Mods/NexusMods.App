@@ -410,8 +410,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
@@ -549,7 +549,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
                 tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
                 tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
-                tx.Retract(id, DiskStateEntry.Game, item.Disk.Value.Game);
+                tx.Retract(id, DiskStateEntry.Game, (EntityId)item.Disk.Value.Game);
             }
         }
     }

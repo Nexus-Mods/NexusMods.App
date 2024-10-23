@@ -186,7 +186,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
                     var hash = code.ToString("X16");
                     sb.Append($"Blob 0x{hash} {byteArray.Length} bytes".PadRight(48));
                     break;
-                case DateTime dateTime:
+                case DateTimeOffset dateTime:
                     sb.Append($"DateTime : {dateTimeCount++}".PadRight(48));
                     break;
                 default:
