@@ -14,6 +14,7 @@ public static class Services
     public static IServiceCollection AddLoadoutAbstractions(this IServiceCollection services)
     {
         return services
+            .AddLoadoutModel()
             .AddLoadoutItemModel()
             .AddLoadoutItemGroupModel()
             .AddLoadoutGameFilesGroupModel()
