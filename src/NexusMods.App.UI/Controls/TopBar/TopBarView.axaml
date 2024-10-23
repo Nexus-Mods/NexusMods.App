@@ -83,7 +83,7 @@
                 </MenuItem.Header>
             </MenuItem>
             
-            <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem" ToolTip.Tip="Logged in to Nexus Mods as {USERNAME}">
+            <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="6">
                         <icons:UnifiedIcon Size="28" x:Name="AvatarIcon" />
