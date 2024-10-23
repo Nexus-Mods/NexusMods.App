@@ -1,7 +1,5 @@
 using System.Text.Json.Serialization;
-using ExCSS;
 using NexusMods.Abstractions.Collections.Types;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 
@@ -26,7 +24,7 @@ public class ModSource
     /// If this is a direct download, this is the URL to download the mod from
     /// </summary>
     [JsonPropertyName("url")]
-    public Url? Url { get; init; }
+    public Uri? Url { get; init; }
 
     /// <summary>
     /// The name of the mod in the installed loadout

@@ -46,7 +46,15 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var files = loadout.Items
             .OfTypeLoadoutItemWithTargetPath()
             .OfTypeLoadoutFile()
-            .Select(f => KeyValuePair.Create(((GamePath)f.AsLoadoutItemWithTargetPath().TargetPath).ToString(), f.Hash.ToString()))
+            .Select(f =>
+                {
+                    var group = f.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name;
+                    return KeyValuePair.Create(
+                        (group, ((GamePath)f.AsLoadoutItemWithTargetPath().TargetPath).ToString()),
+                        f.Hash.ToString()
+                    );
+                }
+            )
             .ToDictionary();
 
         await Verify(new
