@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Numerics;
 using System.Reactive.Subjects;
 using DynamicData.Kernel;
@@ -113,6 +112,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
 
     public void Dispose()
     {
+        // ReSharper disable once SuspiciousTypeConversion.Global
         if (_definition is IDisposable disposable)
         {
             disposable.Dispose();

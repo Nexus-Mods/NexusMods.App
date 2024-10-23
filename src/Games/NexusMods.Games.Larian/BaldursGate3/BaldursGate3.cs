@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -39,7 +38,9 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     {
         if (_osInformation.IsOSX)
             return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
-        return new GamePath(LocationId.Game, "bin/bg3.exe");
+        
+        // Use launcher to allow choosing between DirectX11 and Vulkan on GOG, Steam already always starts the launcher
+        return new GamePath(LocationId.Game, "Launcher/LariLauncher.exe");
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

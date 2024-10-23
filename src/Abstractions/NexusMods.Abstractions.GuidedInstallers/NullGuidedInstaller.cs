@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Abstractions.GuidedInstallers;
 

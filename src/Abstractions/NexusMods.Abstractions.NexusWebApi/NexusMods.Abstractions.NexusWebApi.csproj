@@ -16,4 +16,8 @@
     <ItemGroup>
       <Folder Include="Types\V2\" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+    </ItemGroup>
 </Project>
