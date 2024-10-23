@@ -17,7 +17,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.FOMOD;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
@@ -389,7 +389,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 using var md5 = MD5.Create();
                 md5.ComputeHash(patchedArray);
                 var md5Hash = Md5HashValue.From(md5.Hash!);
-                var xxHash = patchedArray.XxHash64();
+                var xxHash = patchedArray.xxHash3();
                 
                 patchedFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(srcPath, patchedFile), xxHash, Size.FromLong(patchedFile.Length)));
                 hashes[md5Hash] = new HashMapping

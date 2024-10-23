@@ -1,12 +1,12 @@
 ﻿[
   {
     FromPath: Recommended/Data/Generated/Public/Shared/Content/Assets/Characters/Character Editor Presets/Origin Presets/[PAK]_Shadowheart/_merged.lsf,
-    Hash: 0x8ED74FCCE6291C5E,
+    Hash: 0x7DB33D93F50FC967,
     ToGamePath: {Game}/Data/Generated/Public/Shared/Content/Assets/Characters/Character Editor Presets/Origin Presets/[PAK]_Shadowheart/_merged.lsf
   },
   {
     FromPath: Recommended/Data/Generated/Public/Shared/Assets/Characters/_Models/Humans/_Female/_Hair/Resources/HAIR_HUM_F_Shadowheart_Spring.gr2,
-    Hash: 0x3103D39FC0AEBDE5,
+    Hash: 0x59409C2FF0342D43,
     ToGamePath: {Game}/Data/Generated/Public/Shared/Assets/Characters/_Models/Humans/_Female/_Hair/Resources/HAIR_HUM_F_Shadowheart_Spring.gr2
   }
 ]

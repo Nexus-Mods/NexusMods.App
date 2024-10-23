@@ -228,7 +228,7 @@ public class Alert : ContentControl
 
         // turn off elements based on properties
         _dismissButton.IsVisible = ShowDismiss;
-        _bodyTextBorder.IsVisible = ShowBody && string.IsNullOrEmpty(Body);
+        _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
         _actionsRowBorder.IsVisible = Content != null && ShowActions;
 
         // set the text

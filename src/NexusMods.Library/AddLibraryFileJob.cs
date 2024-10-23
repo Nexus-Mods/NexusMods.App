@@ -6,7 +6,8 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -52,7 +53,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     private async Task<LibraryFile.New> AnalyzeOne(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath)
     {
         var isArchive = await CheckIfArchiveAsync(filePath);
-        var hash = await filePath.XxHash64Async();
+        var hash = await filePath.XxHash3Async();
         
         var libraryFile = CreateLibraryFile(Transaction, filePath, hash);
 

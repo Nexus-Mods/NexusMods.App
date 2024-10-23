@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 namespace NexusMods.App.GarbageCollection.DataModel;

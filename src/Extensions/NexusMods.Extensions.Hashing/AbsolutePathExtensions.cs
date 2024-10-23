@@ -1,5 +1,6 @@
+using System.IO.Hashing;
 using System.IO.MemoryMappedFiles;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Extensions.Hashing;
@@ -18,6 +19,8 @@ public static class AbsolutePathExtensions
         return await inputStream.HashingCopyAsync(Stream.Null, token, static _ => Task.CompletedTask);
     }
 
+    private static readonly Hash HashOfEmptyFile = Hash.From(XxHash3.HashToUInt64(ReadOnlySpan<byte>.Empty));
+
     /// <summary>
     /// Calculates the xxHash64 of a file by memory mapping it.
     /// </summary>
@@ -26,12 +29,12 @@ public static class AbsolutePathExtensions
         try
         {
             using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read, 0);
-            var hashValue = XxHash64Algorithm.HashBytes(mmf.AsSpan());
+            var hashValue = XxHash3.HashToUInt64(mmf.AsSpan());
             return Hash.From(hashValue);
         }
         catch (ArgumentException)
         {
-            return Hash.From(XxHash64Algorithm.HashOfEmptyFile);
+            return HashOfEmptyFile;
         }
     }
 }

@@ -6,9 +6,9 @@ namespace TestNamespace;
 
 partial class MyClass
 {
-	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something, global::System.Int32 Count)
+	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::System.String Something, global::System.Int32 Count)
 	{
-		var messageData = new Diagnostic1MessageData(ModA, ModB, Something, Count);
+		var messageData = new Diagnostic1MessageData(Something, Count);
 
 		return new global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData>
 		{
@@ -16,14 +16,12 @@ partial class MyClass
 			Title = "Diagnostic 1",
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
 			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("""
-Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!
+Mod conflicts with because it's missing '{Something}' and {Count} other stuff!
 """),
 			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,
 			MessageData = messageData,
 			DataReferences = new global::System.Collections.Generic.Dictionary<global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription, global::NexusMods.Abstractions.Diagnostics.References.IDataReference>
 			{
-				{ global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription.From("ModA"), messageData.ModA },
-				{ global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription.From("ModB"), messageData.ModB },
 			}
 
 			,
@@ -34,15 +32,11 @@ Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Cou
 
 	internal readonly struct Diagnostic1MessageData : global::NexusMods.Abstractions.Diagnostics.IDiagnosticMessageData
 	{
-		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA;
-		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB;
 		public readonly global::System.String Something;
 		public readonly global::System.Int32 Count;
 
-		public Diagnostic1MessageData(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something, global::System.Int32 Count)
+		public Diagnostic1MessageData(global::System.String Something, global::System.Int32 Count)
 		{
-			this.ModA = ModA;
-			this.ModB = ModB;
 			this.Something = Something;
 			this.Count = Count;
 		}
@@ -68,17 +62,7 @@ Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Cou
 
 				if (c != '}') continue;
 				var fieldName = span.Slice(bracesStartIndex + 1, i - bracesStartIndex - 1);
-				if (fieldName.Equals(nameof(ModA), global::System.StringComparison.Ordinal))
-				{
-					writer.Write(ref state, ModA);
-				}
-
-				 else if (fieldName.Equals(nameof(ModB), global::System.StringComparison.Ordinal))
-				{
-					writer.Write(ref state, ModB);
-				}
-
-				 else if (fieldName.Equals(nameof(Something), global::System.StringComparison.Ordinal))
+				if (fieldName.Equals(nameof(Something), global::System.StringComparison.Ordinal))
 				{
 					writer.Write(ref state, Something);
 				}
