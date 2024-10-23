@@ -3,11 +3,9 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Activities;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
@@ -64,7 +62,6 @@ public static class DependencyInjectionHelper
             .AddNexusModsCollections()
             .AddCrossPlatform()
             .AddGenericGameSupport()
-            .AddActivityMonitor()
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
             .AddDataModel()

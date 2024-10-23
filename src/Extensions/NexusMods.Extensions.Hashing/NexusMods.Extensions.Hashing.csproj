@@ -6,8 +6,4 @@
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
-    </ItemGroup>
 </Project>

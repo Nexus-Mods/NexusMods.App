@@ -31,7 +31,7 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
             var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
 
             CollectionMetadata.ObserveAll(conn)
-                .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(tileImagePipeline, conn, coll.Revisions.First().RevisionId))
+                .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(tileImagePipeline, WindowManager, WorkspaceId, conn, coll.Revisions.First().RevisionId))
                 .Bind(out _collections)
                 .Subscribe()
                 .DisposeWith(d);

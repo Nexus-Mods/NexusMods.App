@@ -3,6 +3,10 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
@@ -18,19 +22,34 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
 
     public CollectionCardViewModel(
         IResourceLoader<EntityId, Bitmap> tileImagePipeline,
+        IWindowManager windowManager,
+        WorkspaceId workspaceId,
         IConnection connection,
         RevisionId revision)
     {
         _revision = CollectionRevisionMetadata.FindByRevisionId(connection.Db, revision).First();
         _collection = _revision.Collection;
 
+        var workspaceController = windowManager.ActiveWorkspaceController;
+
+        OpenCollectionDownloadPageCommand = new ReactiveCommand<NavigationInformation>(execute: info =>
+        {
+            var page = new PageData
+            {
+                Context = new CollectionDownloadPageContext
+                {
+                    CollectionRevisionMetadataId = _revision,
+                },
+                FactoryId = CollectionDownloadPageFactory.StaticId,
+            };
+
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
+            workspaceController.OpenPage(workspaceId, page, behavior);
+        });
+
         this.WhenActivated(disposables =>
         {
-            Observable
-                .Return(_collection.Id)
-                .ObserveOnThreadPool()
-                .SelectAwait(async (id, cancellationToken) => await tileImagePipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
-                .Select(static resource => resource.Data)
+            ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (bitmap, self) => self.Image = bitmap)
                 .AddTo(disposables);
@@ -48,4 +67,5 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;
     public Bitmap AuthorAvatar => new(new MemoryStream(_collection.Author.AvatarImage.ToArray()));
+    public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }

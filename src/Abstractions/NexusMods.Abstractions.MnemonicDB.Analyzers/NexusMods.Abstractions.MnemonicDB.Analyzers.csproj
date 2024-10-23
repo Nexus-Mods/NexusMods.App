@@ -5,9 +5,4 @@
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <PackageVersion Update="NexusMods.MnemonicDB.Abstractions" Version="0.9.86" />
-    </ItemGroup>
-
 </Project>

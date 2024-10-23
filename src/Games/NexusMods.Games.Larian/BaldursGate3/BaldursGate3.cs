@@ -39,7 +39,9 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     {
         if (_osInformation.IsOSX)
             return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
-        return new GamePath(LocationId.Game, "bin/bg3.exe");
+        
+        // Use launcher to allow choosing between DirectX11 and Vulkan on GOG, Steam already always starts the launcher
+        return new GamePath(LocationId.Game, "Launcher/LariLauncher.exe");
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

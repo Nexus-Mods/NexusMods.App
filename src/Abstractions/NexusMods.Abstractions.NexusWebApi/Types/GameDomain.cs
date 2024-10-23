@@ -26,7 +26,7 @@ public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, Js
 /// <summary>
 /// MnemonicDB attribute for the GameDomain type.
 /// </summary>
-public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameDomain, string>(ValueTags.Ascii, ns, name)
+public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameDomain, string>(ValueTag.Ascii, ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(GameDomain value)
@@ -35,7 +35,7 @@ public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameD
     }
 
     /// <inheritdoc />
-    protected override GameDomain FromLowLevel(string value, ValueTags tag, AttributeResolver resolver)
+    protected override GameDomain FromLowLevel(string value, AttributeResolver resolver)
     {
         return GameDomain.From(value);
     }

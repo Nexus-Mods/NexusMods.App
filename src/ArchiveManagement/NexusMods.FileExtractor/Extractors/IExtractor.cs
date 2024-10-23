@@ -1,7 +1,5 @@
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.Extractors;
@@ -12,11 +10,6 @@ namespace NexusMods.FileExtractor.Extractors;
 /// </summary>
 public interface IExtractor
 {
-    /// <summary>
-    /// The activity group for activities created by extractors.
-    /// </summary>
-    public static readonly ActivityGroup Group = ActivityGroup.From("FileExtractor");
-
     /// <summary>
     /// A list of all the file type signatures supported by this extractor.
     /// </summary>

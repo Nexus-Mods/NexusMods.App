@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 /// Stores a <see cref="Hash"/> as a <see cref="ulong"/>.
 /// </summary>
-public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong>(ValueTags.UInt64, ns, name)
+public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong>(ValueTag.UInt64, ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(Hash value)
@@ -17,7 +17,7 @@ public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong
     }
     
     /// <inheritdoc />
-    protected override Hash FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
+    protected override Hash FromLowLevel(ulong value, AttributeResolver resolver)
     {
         return Hash.From(value);
     }

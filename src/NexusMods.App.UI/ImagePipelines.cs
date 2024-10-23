@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Resources.Resilience;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Media;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 
 namespace NexusMods.App.UI;
 
@@ -19,6 +20,16 @@ internal static class ImagePipelines
     private const string CollectionBackgroundImagePipelineKey = nameof(CollectionBackgroundImagePipelineKey);
 
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
+    private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
+
+    public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
+    {
+        return Observable
+            .Return(input)
+            .ObserveOnThreadPool()
+            .SelectAwait(async (id, cancellationToken) => await pipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
+            .Select(static resource => resource.Data);
+    }
 
     public static IServiceCollection AddImagePipelines(this IServiceCollection serviceCollection)
     {
@@ -82,7 +93,7 @@ internal static class ImagePipelines
             )
             .Decode(decoderType: DecoderType.Skia)
             .ToAvaloniaBitmap()
-            // TODO: .UseFallbackValue()
+            .UseFallbackValue(CollectionBackgroundFallback)
             .EntityIdToIdentifier(
                 connection: connection,
                 attribute: CollectionMetadata.BackgroundImageUri

@@ -1,13 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
-using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
-using NexusMods.DataModel;
 using NexusMods.Games.TestFramework;
-using NexusMods.Jobs;
 using NexusMods.Paths;
-using NexusMods.Settings;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 

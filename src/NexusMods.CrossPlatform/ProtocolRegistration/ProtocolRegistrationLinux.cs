@@ -88,6 +88,11 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
 
     private async Task CreateDesktopFile(AbsolutePath applicationsDirectory, CancellationToken cancellationToken = default)
     {
+        if (!applicationsDirectory.DirectoryExists())
+        {
+            applicationsDirectory.CreateDirectory();
+        }
+
         var filePath = applicationsDirectory.Combine(DesktopFile);
         var backupPath = filePath.AppendExtension(new Extension(".bak"));
 

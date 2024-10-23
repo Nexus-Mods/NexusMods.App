@@ -8,17 +8,17 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 /// <summary>
 /// A hashed blob attribute for <see cref="Memory{T}"/>.
 /// </summary>
-public class MemoryAttribute(string ns, string name) : HashedBlobAttribute<Memory<byte>>(ns, name)
+public class MemoryAttribute(string ns, string name) : ScalarAttribute<Memory<byte>, Memory<byte>>(ValueTag.HashedBlob, ns, name)
 {
     /// <inheritdoc />
-    protected override Memory<byte> FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
+    protected override Memory<byte> ToLowLevel(Memory<byte> value)
     {
-        return new Memory<byte>(value.ToArray());
+        return value;
     }
 
     /// <inheritdoc />
-    protected override void WriteValue<TWriter>(Memory<byte> value, TWriter writer)
+    protected override Memory<byte> FromLowLevel(Memory<byte> value, AttributeResolver resolver)
     {
-        writer.Write(value.Span);
+        return value;
     }
 }

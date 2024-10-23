@@ -1,5 +1,4 @@
 using System.Reactive.Linq;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -49,11 +48,6 @@ public partial class Mod : IModelDefinition
     /// The loadout this mod is part of.
     /// </summary>
     public static readonly ReferenceAttribute<Loadout> Loadout = new(Namespace, nameof(Loadout));
-    
-    /// <summary>
-    /// The Download Metadata the mod was installed from.
-    /// </summary>
-    public static readonly ReferenceAttribute<DownloadAnalysis> Source = new(Namespace, nameof(Source)) { IsOptional = true };
     
     /// <summary>
     /// The enabled status of the mod

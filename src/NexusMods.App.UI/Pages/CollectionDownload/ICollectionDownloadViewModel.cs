@@ -1,11 +1,12 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
-public interface ICollectionDownloadViewModel : IViewModelInterface
+public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
     /// <summary>
     /// Name of the collection
@@ -50,12 +51,12 @@ public interface ICollectionDownloadViewModel : IViewModelInterface
     /// <summary>
     /// The number of endorsements the collection has
     /// </summary>
-    public int EndorsementCount { get; }
+    public ulong EndorsementCount { get; }
     
     /// <summary>
     /// The number of downloads the collection has
     /// </summary>
-    public int DownloadCount { get; }
+    public ulong DownloadCount { get; }
     
     /// <summary>
     /// The size of the collection including all downloads and the collection file iteself
@@ -70,12 +71,12 @@ public interface ICollectionDownloadViewModel : IViewModelInterface
     /// <summary>
     /// The small tileable image of the collection
     /// </summary>
-    public Bitmap TileImage { get; }
+    public Bitmap? TileImage { get; }
     
     /// <summary>
     /// The background banner image of the collection
     /// </summary>
-    public Bitmap BackgroundImage { get; }
+    public Bitmap? BackgroundImage { get; }
     
     /// <summary>
     /// A text representation of the collection's status, such as "Downloading", "Installing", "Ready to Play", etc.

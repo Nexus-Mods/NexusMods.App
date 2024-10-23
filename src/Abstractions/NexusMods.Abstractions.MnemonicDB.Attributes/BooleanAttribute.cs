@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 ///    An attribute that represents a boolean value.
 /// </summary>
-public class BooleanAttribute(string ns, string name) : ScalarAttribute<bool, byte>(ValueTags.UInt8, ns, name)
+public class BooleanAttribute(string ns, string name) : ScalarAttribute<bool, byte>(ValueTag.UInt8, ns, name)
 {
     /// <inheritdoc />
     protected override byte ToLowLevel(bool value)
@@ -16,7 +16,7 @@ public class BooleanAttribute(string ns, string name) : ScalarAttribute<bool, by
     }
 
     /// <inheritdoc />
-    protected override bool FromLowLevel(byte value, ValueTags tags, AttributeResolver resolver)
+    protected override bool FromLowLevel(byte value, AttributeResolver resolver)
     {
         return value == 1;
     }

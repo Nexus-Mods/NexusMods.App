@@ -8,17 +8,11 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 /// <summary>
 /// An attribute that holds a <see cref="RevisionNumber"/> value.
 /// </summary>
-public class RevisionNumberAttribute(string ns, string name) : ScalarAttribute<RevisionNumber, ulong>(ValueTags.UInt64, ns, name)
+public class RevisionNumberAttribute(string ns, string name) : ScalarAttribute<RevisionNumber, ulong>(ValueTag.UInt64, ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(RevisionNumber value)
-    {
-        return value.Value;
-    }
+    protected override ulong ToLowLevel(RevisionNumber value) => value.Value;
 
     /// <inheritdoc />
-    protected override RevisionNumber FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
-    {
-        return RevisionNumber.From(value);
-    }
+    protected override RevisionNumber FromLowLevel(ulong value, AttributeResolver resolver) => RevisionNumber.From(value);
 }

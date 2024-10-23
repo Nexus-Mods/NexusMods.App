@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
@@ -63,4 +64,6 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// The author's avatar.
     /// </summary>
     public Bitmap AuthorAvatar { get; }
+
+    R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }

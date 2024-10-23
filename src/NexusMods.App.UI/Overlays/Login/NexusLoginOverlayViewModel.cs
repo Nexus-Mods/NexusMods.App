@@ -1,29 +1,28 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Windows.Input;
-using DynamicData;
-using NexusMods.Abstractions.Activities;
+﻿using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
-using ReactiveUI;
+using R3;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Login;
 
 public class NexusLoginOverlayViewModel : AOverlayViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel
 {
-    public NexusLoginOverlayViewModel(IReadOnlyActivity activity)
+    public NexusLoginOverlayViewModel(IJob job)
     {
-        Uri = (Uri)activity.Payload!;
-        Cancel = ReactiveCommand.Create(() =>
-            {
-                if (activity is IActivitySource activitySource)
-                    activitySource.Dispose();
-                Close();
-            }
-        );
+        if (job.Definition is IOAuthJob oAuthJob)
+        {
+            oAuthJob.LoginUriSubject
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (uri, self) => self.Uri = uri);
+        }
+
+        Cancel = new ReactiveCommand(execute: _ =>
+        {
+            // TODO: cancel job
+            Close();
+        });
     }
 
-    public ICommand Cancel { get; }
-
-    public Uri Uri { get; }
+    public ReactiveCommand Cancel { get; }
+    [Reactive] public Uri? Uri { get; private set; }
 }

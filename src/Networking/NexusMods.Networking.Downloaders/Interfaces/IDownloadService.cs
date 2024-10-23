@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-using DynamicData.Kernel;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Paths;
 
@@ -41,11 +39,6 @@ public interface IDownloadService
     /// Gets the total throughput of all downloads.
     /// </summary>
     Size GetThroughput();
-    
-    /// <summary>
-    /// Gets the total progress of all downloads.
-    /// </summary>
-    Optional<Percent> GetTotalProgress();
 
     /// <summary>
     /// Sets the <see cref="CompletedDownloadState.Hidden"/> on the tasks if they are completed.

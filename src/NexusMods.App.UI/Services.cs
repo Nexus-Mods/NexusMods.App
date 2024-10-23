@@ -40,6 +40,7 @@ using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
@@ -205,6 +206,9 @@ public static class Services
             .AddView<CollectionsView, ICollectionsViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
+            .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
+            .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -238,6 +242,7 @@ public static class Services
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionsPageFactory>()
+            .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

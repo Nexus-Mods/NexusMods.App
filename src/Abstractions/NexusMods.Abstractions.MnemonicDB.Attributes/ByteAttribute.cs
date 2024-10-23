@@ -7,14 +7,14 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 /// Attribute for storing a UInt8
 /// </summary>
-public class ByteAttribute(string ns, string name) : ScalarAttribute<byte, byte>(ValueTags.UInt8, ns, name)
+public class ByteAttribute(string ns, string name) : ScalarAttribute<byte, byte>(ValueTag.UInt8, ns, name)
 {
     protected override byte ToLowLevel(byte value)
     {
         return value;
     }
 
-    protected override byte FromLowLevel(byte value, ValueTags tags, AttributeResolver resolver)
+    protected override byte FromLowLevel(byte value, AttributeResolver resolver)
     {
         return value;
     }

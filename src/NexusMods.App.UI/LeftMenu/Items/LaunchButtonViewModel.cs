@@ -3,12 +3,10 @@ using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Percent = NexusMods.Abstractions.Activities.Percent;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
@@ -16,7 +14,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 {
     [Reactive] public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
-    [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.EnabledReactiveCommand;
+    [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 

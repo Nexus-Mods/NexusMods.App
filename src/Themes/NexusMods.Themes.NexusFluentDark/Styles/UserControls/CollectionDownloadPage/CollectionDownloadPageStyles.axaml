@@ -13,35 +13,41 @@
     </Design.PreviewWith>
 
     <Style Selector="collections|CollectionDownloadView">
-        
+
         <Style.Resources>
             <LinearGradientBrush x:Key="HeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
                 <GradientStop Offset="0" Color="#BF0F0F10" />
                 <GradientStop Offset="1" Color="#F20F0F10" />
             </LinearGradientBrush>
         </Style.Resources>
-        
+
         <Style Selector="^ panels|FlexPanel#Body">
             <Setter Property="Direction" Value="Column" />
             <Setter Property="AlignItems" Value="FlexStart" />
-            
-            
-            
-            <Style Selector="^ Border#HeaderBorder">
-                <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
-                <Setter Property="Padding" Value="24,24,24,16" />
+
+
+            <Style Selector="^ Border#HeaderBorderBackground">
+
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="panels:Flex.Grow" Value="0" />
+                <Setter Property="panels:Flex.Shrink" Value="0" />
 
-                <Style Selector="^ panels|FlexPanel#Header">
-                    <Setter Property="Direction" Value="Column" />
-                    <Setter Property="AlignItems" Value="Stretch" />
-                    <Setter Property="JustifyContent" Value="FlexStart" />
+                <Style Selector="^ Border#HeaderBorder">
+                    <Setter Property="Padding" Value="24,24,24,16" />
+                    <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
 
 
-                    <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
+                    <Style Selector="^ panels|FlexPanel#Header">
+                        <Setter Property="Direction" Value="Column" />
+                        <Setter Property="AlignItems" Value="Stretch" />
+                        <Setter Property="JustifyContent" Value="FlexStart" />
+
+
+                        <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
                     it's working, as things are aligned correctly, but the background is not being applied correctly. 
                     After chatting with @Al12rs, we are leaving this for now as we can't fully test this (yet) and we
                     don't want to add extra layout code for no reason -->
+
                         <Style Selector="^ Border#MainContentBorder">
                             <!-- <Setter Property="Background" Value="DarkRed" /> -->
                             <Setter Property="MaxWidth" Value="806" />
@@ -64,6 +70,7 @@
                                     <Style Selector="^ Image#CollectionImage">
                                         <Setter Property="Width" Value="154" />
                                         <Setter Property="Height" Value="190" />
+                                        <Setter Property="Stretch" Value="UniformToFill" />
                                     </Style>
                                 </Style>
 
@@ -82,85 +89,202 @@
                                         <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
                                         <Setter Property="BorderBrush"
                                                 Value="{StaticResource StrokeTranslucentWeakBrush}" />
-                                        
+
                                         <Style Selector="^ TextBlock#AuthorName">
-                                            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                         </Style>
                                     </Style>
-                                    
+
                                     <Style Selector="^ TextBlock#Title">
                                         <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
-                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                     </Style>
-                                    
+
                                     <Style Selector="^ TextBlock#Heading">
                                         <Setter Property="Padding" Value="0,0,0,8" />
                                         <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
-                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentStrongBrush}" />
                                         <Setter Property="TextWrapping" Value="NoWrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
 
                                     <Style Selector="^ TextBlock#Summary">
-                                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
                                 </Style>
 
+                            </Style>
                         </Style>
-                    </Style>
 
-                    <Style Selector="^ Border#StatsBorder">
-                        <Setter Property="Padding" Value="0, 12,0,8" />
-                        <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
-                        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                        <Style Selector="^ Border#StatsBorder">
+                            <Setter Property="Padding" Value="0, 12,0,8" />
+                            <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
+                            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                            <Setter Property="panels:Flex.Grow" Value="0" />
+                            <Setter Property="panels:Flex.Shrink" Value="0" />
 
-                        <Style Selector="^ panels|FlexPanel#Stats">
-                            <Setter Property="ColumnSpacing" Value="24" />
+                            <Style Selector="^ panels|FlexPanel#Stats">
+                                <Setter Property="ColumnSpacing" Value="24" />
 
-                            <Style Selector="^ panels|FlexPanel">
-                                <Setter Property="AlignItems" Value="Center" />
-                                <Setter Property="Direction" Value="Row" />
-                                <Setter Property="ColumnSpacing" Value="4" />
-                            </Style>
-
-                            <Style Selector="^ icons|UnifiedIcon">
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-                                <Setter Property="Width" Value="20" />
-                                <Setter Property="Height" Value="20" />
-                            </Style>
-
-                            <Style Selector="^ TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                            </Style>
-
-                            <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
-                                <Style Selector="^ > icons|UnifiedIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                                <Style Selector="^ panels|FlexPanel">
+                                    <Setter Property="AlignItems" Value="Center" />
+                                    <Setter Property="Direction" Value="Row" />
+                                    <Setter Property="ColumnSpacing" Value="4" />
                                 </Style>
-                                <Style Selector="^ > TextBlock#OverallRating">
-                                    <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+
+                                <Style Selector="^ icons|UnifiedIcon">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                                    <Setter Property="Width" Value="20" />
+                                    <Setter Property="Height" Value="20" />
+                                </Style>
+
+                                <Style Selector="^ TextBlock">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                </Style>
+
+                                <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
+                                    <Style Selector="^ > icons|UnifiedIcon">
+                                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                                    </Style>
+                                    <Style Selector="^ > TextBlock#OverallRating">
+                                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                                    </Style>
                                 </Style>
                             </Style>
                         </Style>
                     </Style>
                 </Style>
             </Style>
-
+            
             <Style Selector="^ Border#ListHeaderRowBorder">
-                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-                <Setter Property="Padding" Value="24" />
+                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+                        <Setter Property="Padding" Value="24, 12" />
+                        <Setter Property="panels:Flex.Grow" Value="0" />
+                        <Setter Property="panels:Flex.Shrink" Value="0" />
+                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
 
-                <Style Selector="^ panels|FlexPanel#ListHeaderRow">
-                    <Setter Property="JustifyContent" Value="FlexEnd" />
-                    <Setter Property="AlignItems" Value="Center" />
-                    <Setter Property="ColumnSpacing" Value="8" />
-                </Style>
-            </Style>
+                        <Style Selector="^ panels|FlexPanel#ListHeaderRow">
+                            <Setter Property="JustifyContent" Value="FlexEnd" />
+                            <Setter Property="AlignItems" Value="Center" />
+                            <Setter Property="ColumnSpacing" Value="8" />
+                        </Style>
+                    </Style>
+
+                    <!-- tabs -->
+
+                    <Style Selector="^ TabControl">
+
+                        <!-- right margin to stay left of the scrollbar -->
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="CornerRadius" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+
+                        <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+
+                        <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost">
+                            <Setter Property="BorderThickness" Value="0,1,0,0" />
+                            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                        </Style>
+
+                        <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+                            <Setter Property="Margin" Value="12,0,0,0" />
+                        </Style>
+
+                        <!-- tab item headers text -->
+
+                        <Style Selector="^ TabItem">
+
+                            <Setter Property="Margin" Value="0,12,0,0" />
+                            <Setter Property="Padding" Value="12,0,12,0" />
+
+                            <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
+                                <Setter Property="Margin" Value="0" />
+                                <Setter Property="CornerRadius" Value="0" />
+                            </Style>
+
+                            <Style Selector="^ Panel">
+                                <Setter Property="VerticalAlignment" Value="Bottom" />
+                            </Style>
+
+                            <Style
+                                Selector="^[TabStripPlacement=Top] /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Margin" Value="0,0,0,12" />
+                            </Style>
+
+
+                            <!-- default\unselected tabs -->
+                            <Style Selector="^ panels|FlexPanel">
+                                <Setter Property="ColumnSpacing" Value="{StaticResource Spacing-2}" />
+
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                                </Style>
+
+                                <Style Selector="^ Border">
+                                    <Setter Property="Padding" Value="8,2, 7,2" />
+                                    <Setter Property="CornerRadius" Value="{StaticResource Rounded-xl}" />
+                                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
+
+                                    <Style Selector="^ TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                    </Style>
+                                </Style>
+                            </Style>
+
+                            <!-- pointerover tabs -->
+                            <Style Selector="^:pointerover:not(:selected)">
+                                <Style Selector="^ panels|FlexPanel">
+                                    <Style Selector="^ TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                    </Style>
+                                </Style>
+
+                                <Style Selector="^ /template/ Border#PART_SelectedPipe">
+                                    <Setter Property="Background"
+                                            Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                                    <Setter Property="IsVisible" Value="True" />
+                                </Style>
+                            </Style>
+
+                            <!-- selected tabs -->
+                            <Style Selector="^:selected panels|FlexPanel">
+
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                                </Style>
+
+                                <Style Selector="^ Border">
+                                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+
+                                    <Style Selector="^ TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                    </Style>
+                                </Style>
+                            </Style>
+
+                        </Style>
+
+                    </Style>
         </Style>
     </Style>
 </Styles>

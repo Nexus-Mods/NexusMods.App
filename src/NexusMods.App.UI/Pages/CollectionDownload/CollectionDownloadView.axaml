@@ -49,7 +49,7 @@
 
     <panels:FlexPanel x:Name="Body">
 
-
+        <Border x:Name="HeaderBorderBackground">
             <Border x:Name="HeaderBorder">
                 <panels:FlexPanel x:Name="Header">
 
@@ -104,6 +104,7 @@
                     </Border>
                 </panels:FlexPanel>
             </Border>
+        </Border>
 
         <Border x:Name="ListHeaderRowBorder">
             <panels:FlexPanel x:Name="ListHeaderRow">
@@ -114,26 +115,33 @@
             </panels:FlexPanel>
         </Border>
 
+        <TabControl>
+            <TabItem>
+                <TabItem.Header>
+                    <panels:FlexPanel x:Name="RequiredModsFlexPanel">
+                        <TextBlock>Required</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="RequiredModsCount" />
+                        </Border>
+                    </panels:FlexPanel>
+                </TabItem.Header>
+                <!-- TreeDataGrid -->
+                <TextBlock>TODO: Required mods will appear here</TextBlock>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <panels:FlexPanel x:Name="OptionalModsFlexPanel">
+                        <TextBlock>Optional</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="OptionalModsCount" />
+                        </Border>
+                    </panels:FlexPanel>
+                </TabItem.Header>
+                <!-- TreeDataGrid -->
+                <TextBlock>TODO: Optional mods will appear here</TextBlock>
+            </TabItem>
+        </TabControl>
 
-        <!-- not touching these for now -->
-        <Expander>
-            <Expander.Header>
-                <panels:FlexPanel>
-                    <TextBlock>Required</TextBlock>
-                    <TextBlock x:Name="RequiredModsCount" />
-                </panels:FlexPanel>
-            </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
-        </Expander>
-        <Expander>
-            <Expander.Header>
-                <panels:FlexPanel>
-                    <TextBlock>Optional</TextBlock>
-                    <TextBlock x:Name="OptionalModsCount" />
-                </panels:FlexPanel>
-            </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
-        </Expander>
     </panels:FlexPanel>
 
 </reactiveUi:ReactiveUserControl>

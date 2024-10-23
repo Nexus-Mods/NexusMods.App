@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <PackageReference Include="K4os.Compression.LZ4" />
+      <PackageReference Include="Polly.Core" />
       <PackageReference Include="ZstdSharp.Port" />
     </ItemGroup>
 

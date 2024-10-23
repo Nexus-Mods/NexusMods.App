@@ -24,7 +24,6 @@ public class Startup
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.659.0"))
-            .AddFileStoreAbstractions()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
