@@ -3,7 +3,6 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -70,7 +69,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .Where(x => x.IsVisible())
             .Select(x =>
             {
-                var count = x.Mods.Count(mod => mod.Category == ModCategory.Mod);
+                var count = x.Items.Count();
                 return new Counters.LoadoutModCount(x.Installation.Name, count);
             })
             .ToArray();
