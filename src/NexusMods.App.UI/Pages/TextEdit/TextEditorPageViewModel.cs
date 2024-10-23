@@ -22,6 +22,7 @@ using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;
+using Hash = NexusMods.Hashing.xxHash3.Hash;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 

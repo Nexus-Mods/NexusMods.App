@@ -11,7 +11,7 @@ using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
@@ -65,7 +65,7 @@ public class ImageLoaderTests : AUiTest
             .PersistInDb(
                 connection: Connection,
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
-                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(partitionId)
             )
             .Decode(decoderType: DecoderType.Qoi)

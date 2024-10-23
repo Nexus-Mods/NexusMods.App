@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;

@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Abstractions.Resources.Resilience;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
@@ -66,7 +66,7 @@ internal static class ImagePipelines
             .PersistInDb(
                 connection: connection,
                 referenceAttribute: CollectionMetadata.TileImageResource,
-                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(ImagePartitionId)
             )
             .Decode(decoderType: DecoderType.Skia)
@@ -88,7 +88,7 @@ internal static class ImagePipelines
             .PersistInDb(
                 connection: connection,
                 referenceAttribute: CollectionMetadata.BackgroundImageResource,
-                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(ImagePartitionId)
             )
             .Decode(decoderType: DecoderType.Skia)
