@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using R3;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -7,7 +10,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// Specifies a tool that is run outside of the app. Could be the game itself,
 /// a file generator, some sort of editor, patcher, etc.
 /// </summary>
-public interface ITool
+public interface ITool : IJobDefinition<Unit>
 {
     /// <summary>
     /// List of supported game IDs.
@@ -20,7 +23,10 @@ public interface ITool
     public string Name { get; }
 
     /// <summary>
-    /// Executes this tool against the given loadout.
+    /// Executes this tool against the given loadout using the <see cref="IJobMonitor"/>.
     /// </summary>
-    public Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken);
+    /// <param name="loadout">The loadout to run the game with.</param>
+    /// <param name="monitor">The monitor to which the task should be queued.</param>
+    /// <param name="cancellationToken">Allows you to prematurely cancel the task.</param>
+    public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken);
 }

@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
@@ -23,11 +22,13 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private readonly IToolManager _toolManager;
     private readonly IConnection _conn;
+    private readonly IJobMonitor _monitor;
 
-    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn)
+    public LaunchButtonViewModel(IToolManager toolManager, IConnection conn, IJobMonitor monitor)
     {
         _toolManager = toolManager;
         _conn = conn;
+        _monitor = monitor;
 
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
@@ -39,7 +40,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
         await Task.Run(async () =>
         {
-            await _toolManager.RunTool(tool, marker, token: token);
+            await _toolManager.RunTool(tool, marker, _monitor, token: token);
         }, token);
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
     }
