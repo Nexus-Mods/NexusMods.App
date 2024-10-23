@@ -1,7 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -22,17 +20,6 @@ public static class ReferenceExtensions
             TxId = loadout.Db.BasisTxId,
         };
     }
-
-    /// <summary/>
-    [Obsolete("To be replaced")]
-    public static ModReference ToReference(this Mod.ReadOnly mod, Loadout.ReadOnly loadout)
-    {
-        return new ModReference
-        {
-            DataId = mod.ModId,
-            TxId = mod.Db.BasisTxId,
-        };
-    }
     
     /// <summary>
     /// Creates a new <see cref="LoadoutItemGroupReference"/> for the given <see cref="LoadoutItemGroup.ReadOnly"/>.
@@ -43,17 +30,6 @@ public static class ReferenceExtensions
         {
             DataId = group.LoadoutItemGroupId,
             TxId = group.Db.BasisTxId,
-        };
-    }
-
-    /// <summary/>
-    [Obsolete("To be replaced")]
-    public static ModFileReference ToReference(this File.ReadOnly modFile)
-    {
-        return new ModFileReference
-        {
-            DataId = modFile.FileId,
-            TxId = modFile.Db.BasisTxId,
         };
     }
 }

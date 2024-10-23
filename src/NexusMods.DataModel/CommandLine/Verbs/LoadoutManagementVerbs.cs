@@ -107,7 +107,7 @@ public static class LoadoutManagementVerbs
         var db = conn.Db;
         var rows = Loadout.All(db)
             .Where(x => x.IsVisible())
-            .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
+            .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Items.Count })
             .ToList();
 
         await renderer.Table(["Name", "Game", "Id", "Mod Count"], rows);

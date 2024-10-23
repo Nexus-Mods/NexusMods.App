@@ -27,12 +27,10 @@ internal partial class MyClass
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary(
 """
-Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!
+Mod conflicts with because it's missing '{Something}' and {Count} other stuff!
 """)
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("ModA")
-            .AddDataReference<ModReference>("ModB")
             .AddValue<string>("Something")
             .AddValue<int>("Count")
         )

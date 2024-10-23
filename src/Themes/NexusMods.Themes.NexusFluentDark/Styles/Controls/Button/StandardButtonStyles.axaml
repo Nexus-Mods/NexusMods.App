@@ -353,11 +353,11 @@
         <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">

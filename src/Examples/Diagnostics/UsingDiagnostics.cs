@@ -17,14 +17,13 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId("Examples", number: 6))
         .WithTitle("Mod is obsolete")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is obsolete")
+        .WithSummary("Mod is obsolete")
         .WithDetails("""
 Mod {Mod} has been made obsolete:
 
 > {ModName} is obsolete because {ReasonPhrase}
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
             .AddValue<string>("ModName")
             .AddValue<string>("ReasonPhrase")
         )
@@ -39,11 +38,10 @@ file class MyDiagnosticLoadoutEmitter : ILoadoutDiagnosticEmitter
     {
         var res = new List<Diagnostic>();
 
-        var someMod = loadout.Mods.First();
+        var someMod = loadout.Items.First();
 
         // this "Create" method was generated for you
         res.Add(Diagnostics.CreateModCompatabilityObsolete(
-                Mod: someMod.ToReference(loadout),
                 ModName: someMod.Name,
                 ReasonPhrase: "it's incompatible"
             )

@@ -12,11 +12,9 @@ public partial class ExampleDiagnostics
         .WithId(new DiagnosticId(source: "Example", number: 1))
         .WithTitle("Diagnostic 1")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!")
+        .WithSummary("Mod conflicts because it's missing '{Something}'!")
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("ModA")
-            .AddDataReference<ModReference>("ModB")
             .AddValue<string>("Something")
         )
         .Finish();

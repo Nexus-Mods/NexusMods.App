@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
@@ -11,7 +10,6 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -64,18 +62,6 @@ public partial class Loadout : IModelDefinition
         DefaultValue = DateTime.MinValue,
     };
     
-    /// <summary>
-    /// Mods that are part of this loadout point to this entity via Mod.Loadout
-    /// </summary>
-    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
-    public static readonly BackReferenceAttribute<Mod> Mods = new(Mod.Loadout);
-    
-    /// <summary>
-    /// All the files that are part of this loadout point to this entity via File.Loadout
-    /// </summary>
-    [Obsolete(message: $"To be replaced with {nameof(Items)}")]
-    public static readonly BackReferenceAttribute<File> Files = new(File.Loadout);
-
     /// <summary>
     /// All items in the Loadout.
     /// </summary>
