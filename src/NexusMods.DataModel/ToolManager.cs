@@ -1,10 +1,7 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
 
@@ -16,18 +13,16 @@ public class ToolManager : IToolManager
     private readonly ILookup<GameId,ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
     private readonly ISynchronizerService _syncService;
-    private readonly IConnection _conn;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, ISynchronizerService syncService, IConnection conn)
+    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, ISynchronizerService syncService)
     {
         _logger = logger;
         _tools = tools.SelectMany(tool => tool.GameIds.Select(gameId => (gameId, tool)))
             .ToLookup(t => t.gameId, t => t.tool);
         _syncService = syncService;
-        _conn = conn;
     }
 
     /// <inheritdoc />
