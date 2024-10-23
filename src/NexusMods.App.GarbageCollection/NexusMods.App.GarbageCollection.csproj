@@ -10,10 +10,4 @@
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.Tests"/>
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="NexusMods.Hashing.xxHash3">
-        <HintPath>..\..\..\..\Users\tbald\.nuget\packages\nexusmods.hashing.xxhash3\3.0.0\lib\net8.0\NexusMods.Hashing.xxHash3.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 </Project>

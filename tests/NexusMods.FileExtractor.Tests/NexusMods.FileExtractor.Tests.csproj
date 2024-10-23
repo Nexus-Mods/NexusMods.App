@@ -15,13 +15,7 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="NexusMods.Hashing.xxHash3">
-        <HintPath>..\..\..\..\Users\tbald\.nuget\packages\nexusmods.hashing.xxhash3\3.0.0\lib\net8.0\NexusMods.Hashing.xxHash3.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
+    
     <ItemGroup>
       <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
     </ItemGroup>
