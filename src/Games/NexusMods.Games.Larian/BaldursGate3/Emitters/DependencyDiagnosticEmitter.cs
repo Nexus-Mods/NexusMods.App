@@ -29,7 +29,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await DiagnosePakModulesAsync(loadout, cancellationToken);
+        var bg3LoadoutFile = GetScriptExtenderLoadoutFile(loadout);
+        var diagnostics = await DiagnosePakModulesAsync(loadout, bg3LoadoutFile, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
@@ -38,7 +39,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Diagnosers
 
-    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, Optional<LoadoutFile.ReadOnly> bg3LoadoutFile, CancellationToken cancellationToken)
     {
         var pakLoadoutFiles = GetAllPakLoadoutFiles(loadout, onlyEnabledMods: true);
         var metaFileTuples = await GetAllPakMetadata(pakLoadoutFiles,
@@ -67,9 +68,21 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             }
 
             // non error case
-            var metadata = metadataOrError.Result;
-            var dependencies = metadata.MetaFileData.Dependencies;
+            var pakMetaData = metadataOrError.Result;
 
+            // check if the mod requires the script extender and if SE is missing
+            if (pakMetaData.ScriptExtenderConfigMetadata is { HasValue: true, Value.RequiresScriptExtender: true } &&
+                !bg3LoadoutFile.HasValue)
+            {
+                diagnostics.Add(Diagnostics.CreateMissingRequiredScriptExtender(
+                    ModName: loadoutItemGroup.ToReference(loadout),
+                    PakName:pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                    BG3SENexusLink:BG3SENexusModsLink));
+            }
+
+
+            // check dependencies
+            var dependencies = pakMetaData.MetaFileData.Dependencies;
             foreach (var dependency in dependencies)
             {
                 var dependencyUuid = dependency.Uuid;
@@ -90,8 +103,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                             ModName: loadoutItemGroup.ToReference(loadout),
                             MissingDepName: dependency.Name,
                             MissingDepVersion: dependency.SemanticVersion.ToString(),
-                            PakModuleName: metadata.MetaFileData.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: pakMetaData.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             NexusModsLink: NexusModsLink
                         )
                     );
@@ -112,8 +125,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 {
                     diagnostics.Add(Diagnostics.CreateOutdatedDependency(
                             ModName: loadoutItemGroup.ToReference(loadout),
-                            PakModuleName: metadata.MetaFileData.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: pakMetaData.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             DepModName: matchLoadoutItemGroup.ToReference(loadout),
                             DepName: installedMatchModule.Name,
                             MinDepVersion: dependency.SemanticVersion.ToString(),
@@ -191,6 +204,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private static readonly NamedLink NexusModsLink = new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
+    private static readonly NamedLink BG3SENexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://www.nexusmods.com/baldursgate3/mods/2172"));
 
 #endregion Helpers
 }

@@ -44,7 +44,7 @@ internal static partial class Diagnostics
     [UsedImplicitly]
     internal static IDiagnosticTemplate OutdatedDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
-        .WithId(new DiagnosticId(Source, number: 1))
+        .WithId(new DiagnosticId(Source, number: 2))
         .WithTitle("Required dependency is outdated")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Mod {ModName} requires at least version {MinDepVersion}+ of '{DepName}' but only v{CurrentDepVersion} is installed.")
@@ -67,7 +67,7 @@ internal static partial class Diagnostics
     [UsedImplicitly]
     internal static IDiagnosticTemplate InvalidPakFileTemplate = DiagnosticTemplateBuilder
         .Start()
-        .WithId(new DiagnosticId(Source, number: 1))
+        .WithId(new DiagnosticId(Source, number: 3))
         .WithTitle("Invalid pak file")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Invalid .pak File Detected in {ModName}")
@@ -84,5 +84,24 @@ internal static partial class Diagnostics
             .AddValue<string>("PakFileName")
         )
         .Finish();
-    
+
+    [DiagnosticTemplate] [UsedImplicitly] internal static IDiagnosticTemplate MissingRequiredScriptExtenderTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 4))
+        .WithTitle("Missing Script Extender")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Missing BG3 Script Extender, required by {ModName}")
+        .WithDetails("""
+                     The .pak file {PakName} lists the Baldur's Gate 3 Script Extender (BG3SE) as a dependency, but it isn't installed.
+                     
+                     ## Recommended Actions
+                     Install the BG3 Script Extender from {BG3SENexusLink} or from the official source.
+                     """
+        )
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<LoadoutItemGroupReference>("ModName")
+            .AddValue<string>("PakName")
+            .AddValue<NamedLink>("BG3SENexusLink"))
+        .Finish();
+
 }
