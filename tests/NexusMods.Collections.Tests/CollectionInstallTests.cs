@@ -19,6 +19,8 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     [InlineData("jjctqn", 3)]
     // Includes bundled mod
     [InlineData("jjctqn", 4)]
+    // Includes direct download mod
+    [InlineData("jjctqn", 5)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
         await using var destination = TemporaryFileManager.CreateFile();

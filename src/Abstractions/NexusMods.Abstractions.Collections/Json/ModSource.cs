@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using ExCSS;
+using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
@@ -14,6 +16,24 @@ public class ModSource
     [JsonPropertyName("modId")]
     public ModId ModId { get; init; }
     
+    /// <summary>
+    /// MD5 hash a direct download
+    /// </summary>
+    [JsonPropertyName("md5")]
+    public Md5HashValue Md5 { get; init; }
+    
+    /// <summary>
+    /// If this is a direct download, this is the URL to download the mod from
+    /// </summary>
+    [JsonPropertyName("url")]
+    public Url? Url { get; init; }
+
+    /// <summary>
+    /// The name of the mod in the installed loadout
+    /// </summary>
+    [JsonPropertyName("logicalFilename")]
+    public string? LogicalFilename { get; init; }
+
     [JsonPropertyName("fileId")]
     public FileId FileId { get; init; }
     

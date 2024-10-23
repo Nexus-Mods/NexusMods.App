@@ -405,11 +405,20 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         return mod.Source.Type switch
         {
+            ModSourceType.direct => await EnsureDirectMod(mod),
             ModSourceType.nexus => await EnsureNexusModDownloaded(mod),
             // Nothing to downoad for a bundle
             ModSourceType.bundle => (mod, null),
             _ => throw new NotSupportedException($"The mod source type '{mod.Source.Type}' is not supported.")
         };
+    }
+
+    
+    private async Task<ModInstructions> EnsureDirectMod(Mod mod)
+    {
+        var db = Connection.Db;
+        var 
+        throw new NotImplementedException();
     }
 
     private async Task<ModInstructions> EnsureNexusModDownloaded(Mod mod)
