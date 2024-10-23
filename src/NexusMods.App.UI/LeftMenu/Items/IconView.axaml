@@ -18,11 +18,11 @@
         <items:IconDesignViewModel />
     </Design.DataContext>
 
-    <navigation:NavigationControl Classes="LeftMenuItem" 
-                                  x:Name="ItemButton" 
-                                  Width="184" 
-                                  Height="36"
-                                  Padding="8,0,8,0">
+    <navigation:NavigationControl x:Name="ItemButton"
+                                  Type="Tertiary"
+                                  Fill="None"
+                                  Padding="8,4"
+                                  HorizontalAlignment="Stretch">
         <Grid ColumnDefinitions="Auto, *, Auto">
             <icons:UnifiedIcon Grid.Column="0" x:Name="LeftIcon" />
             <TextBlock
