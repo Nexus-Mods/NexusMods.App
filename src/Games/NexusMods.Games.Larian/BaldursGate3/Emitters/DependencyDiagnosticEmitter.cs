@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
@@ -12,6 +13,7 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
@@ -20,16 +22,26 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
     private readonly IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> _metadataPipeline;
+    private readonly IOSInformation _os;
 
-    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
+    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger, IOSInformation os)
     {
         _logger = logger;
         _metadataPipeline = Pipelines.GetMetadataPipeline(serviceProvider);
+        _os = os;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var bg3LoadoutFile = GetScriptExtenderLoadoutFile(loadout);
+        
+        // BG3SE WINEDLLOVERRIDE diagnostic
+        if (_os.IsLinux  && bg3LoadoutFile.HasValue && loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
+        {
+            // yield return Diagnostics.
+            yield return Diagnostics.CreateBg3SeWineDllOverrideSteam(Template: "text");
+        }
+        
         var diagnostics = await DiagnosePakModulesAsync(loadout, bg3LoadoutFile, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
