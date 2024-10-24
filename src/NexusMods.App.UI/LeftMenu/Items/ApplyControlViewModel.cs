@@ -1,7 +1,10 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Aggregation;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
@@ -73,29 +76,33 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Switch();
 
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
-
-                Observable.CombineLatest(loadoutStatuses, gameStatuses, (loadout, game) => (loadout, game))
+                var isGameRunning = jobMonitor.ObserveActiveJobs<IRunGameTool>()
+                    .Count()
+                    .Select(x => x > 0)
+                    .StartWith(false); // fire an initial value because CombineLatest requires all stuff to have latest values.
+                
+                // We should prevent Apply from being available while a file is in use.
+                // A file may be in use because:
+                // - The user launched the game externally (e.g. through Steam).
+                //     - Approximate this by seeing if any EXE in any of the game folders are running.
+                //     - This is done in 'Synchronize' method.
+                // - They're running a tool from within the App.
+                //     - Check running jobs.
+                loadoutStatuses.CombineLatest(gameStatuses, isGameRunning, (loadout, game, running) => (loadout, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {
-                        var (ldStatus, gameStatus) = status;
-                        
-                        CanApply = gameStatus != GameSynchronizerState.Busy 
-                                   && ldStatus != LoadoutSynchronizerState.Pending 
-                                   && ldStatus != LoadoutSynchronizerState.Current;
-                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy;
+                        var (ldStatus, gameStatus, running) = status;
+
+                        CanApply = gameStatus != GameSynchronizerState.Busy
+                                   && ldStatus != LoadoutSynchronizerState.Pending
+                                   && ldStatus != LoadoutSynchronizerState.Current
+                                   && !running;
+                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy && !running;
                     })
                     .DisposeWith(disposables);
-                
             }
         );
-
-        // We should prevent Apply from being available while a file is in use.
-        // A file may be in use because:
-        // - The user launched the game externally (e.g. through Steam).
-        //     - Approximate this by seeing if any EXE in any of the game folders are running.
-        // - They're running a tool from within the App.
-        //     - Check running jobs.
     }
 
     private async Task Apply()
