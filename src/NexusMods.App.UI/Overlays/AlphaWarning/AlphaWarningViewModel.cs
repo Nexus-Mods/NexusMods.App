@@ -22,10 +22,7 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
     private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");
     private static readonly Uri GitHubUri = new("https://github.com/Nexus-Mods/NexusMods.App");
 
-    private static readonly Uri ChangelogUri = new("https://github.com/Nexus-Mods/NexusMods.App/blob/main/CHANGELOG.md");
-
     public ReactiveCommand<Unit, Unit> ViewChangelogInAppCommand { get; }
-    public ReactiveCommand<Unit, Uri> ViewChangelogInBrowserCommand { get; }
     public ReactiveCommand<Unit, Uri> OpenDiscordCommand { get; }
     public ReactiveCommand<Unit, Uri> OpenForumsCommand { get; }
     public ReactiveCommand<Unit, Uri> OpenGitHubCommand { get; }
@@ -45,7 +42,7 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
         OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
         OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
         OpenGitHubCommand = ReactiveCommand.Create(() => GitHubUri);
-        ViewChangelogInBrowserCommand = ReactiveCommand.Create(() => ChangelogUri);
+        //ViewChangelogInBrowserCommand = ReactiveCommand.Create(() => ChangelogUri);
 
         ViewChangelogInAppCommand = ReactiveCommand.Create(() =>
         {
@@ -82,8 +79,7 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
             this.WhenAnyObservable(
                 vm => vm.OpenDiscordCommand,
                 vm => vm.OpenForumsCommand,
-                vm => vm.OpenGitHubCommand,
-                vm => vm.ViewChangelogInBrowserCommand)
+                vm => vm.OpenGitHubCommand)
                 .SubscribeWithErrorLogging(uri =>
                 {
                     _ = Task.Run(async () =>

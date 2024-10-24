@@ -8,79 +8,86 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Overlays.AlphaWarning"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView">
 
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
-                <StackPanel Classes="Spacing-4">
-                    <TextBlock Classes="HeadingXSSemi">Thank you for joining the Nexus Mods App alpha test</TextBlock>
+            <StackPanel Orientation="Vertical" Margin="24" Classes="Spacing-3_5">
 
-                    <Border Classes="Rounded-lg WarningSubdued20" Padding="16">
-                        <StackPanel Spacing="8">
-                            <StackPanel Orientation="Horizontal" Spacing="2">
-                                <icons:UnifiedIcon Size="20" Classes="Alert"/>
-                                <TextBlock Classes="BodyLGBold">Important</TextBlock>
-                            </StackPanel>
+                <TextBlock Theme="{StaticResource HeadingXSSemiTheme}"
+                           Text="Thank you for joining the Nexus Mods app alpha test" />
 
-                            <TextBlock Classes="BodyMDNormal" TextWrapping="Wrap">This app is still very early in development and currently only supports a small set of games. Please ensure no mods are installed in your game folder before testing.</TextBlock>
-                        </StackPanel>
-                    </Border>
+                <alerts:Alert Title="Important"
+                              Body="This app is still very early in development and currently only supports a small set of games. Please ensure no mods are installed in your game folder before testing."
+                              ShowDismiss="False"
+                              Severity="Info" />
 
-                    <StackPanel Spacing="20">
-                        <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Congratulations on being one of the first to dive into the Alpha test version of the Nexus Mods App!</TextBlock>
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextWrapping="Wrap">
+                    Congratulations on being one of the first to dive into the Alpha test version of the Nexus Mods App!
+                    <LineBreak />
+                    <LineBreak />
+                    Your feedback is our compass. So, if you encounter any bugs, quirks, or have suggestions for improvement, don't hesitate to reach out.
+                </TextBlock>
 
-                        <Button x:Name="ViewChangelogInAppButton" Classes="Hyperlink Secondary">
-                            <TextBlock Classes="ForegroundModerate">View the changelog in app (closes this message)</TextBlock>
-                        </Button>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <controls:StandardButton x:Name="OpenDiscordButton"
+                                             Text="Discord"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             Size="Medium"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Discord}"
+                                             ToolTip.Tip="Open Discord" />
 
-                        <Button x:Name="ViewChangelogInBrowserButton" Classes="Hyperlink Secondary">
-                            <TextBlock Classes="ForegroundModerate">View the changelog (opens browser)</TextBlock>
-                        </Button>
+                    <controls:StandardButton x:Name="OpenForumsButton"
+                                             Text="Forum"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             Size="Medium"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Forum}"
+                                             ToolTip.Tip="Open Forums at Nexus Mods" />
 
-                        <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Your feedback is our compass. So, if you encounter any bugs, quirks, or have suggestions for improvement, don't hesitate to reach out.</TextBlock>
-                    </StackPanel>
+                    <controls:StandardButton x:Name="OpenGitHubButton"
+                                             Text="GitHub"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             Size="Medium"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Code}"
+                                             ToolTip.Tip="Open GitHub" />
+                </StackPanel>
 
-                    <Grid ColumnDefinitions="*, *, *">
-                        <Button Grid.Column="0" Width="165" x:Name="OpenDiscordButton" Classes="Rounded" HorizontalAlignment="Left">
-                            <StackPanel HorizontalAlignment="Center">
-                                <icons:UnifiedIcon Classes="Discord" />
-                                <TextBlock Classes="ForegroundStrong">App Discord</TextBlock>
-                            </StackPanel>
-                        </Button>
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           Text="Thank you for embarking on this exciting journey with us. Happy modding!" />
 
-                        <Button Grid.Column="1" Width="165" x:Name="OpenForumsButton" Classes="Rounded" HorizontalAlignment="Center">
-                            <StackPanel HorizontalAlignment="Center">
-                                <icons:UnifiedIcon Classes="Forum" />
-                                <TextBlock Classes="ForegroundStrong">Forums</TextBlock>
-                            </StackPanel>
-                        </Button>
-
-                        <Button Grid.Column="2" Width="165" x:Name="OpenGitHubButton" Classes="Rounded" HorizontalAlignment="Right">
-                            <StackPanel HorizontalAlignment="Center">
-                                <icons:UnifiedIcon Classes="Code" />
-                                <TextBlock Classes="ForegroundStrong">GitHub</TextBlock>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-
-                    <TextBlock Classes="BodyMDNormal ForegroundModerate">Thank you for embarking on this exciting journey with us. Happy modding!</TextBlock>
-
-                  </StackPanel>
             </StackPanel>
 
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
-                <Button x:Name="DoneButton" Classes="Standard Primary">
-                    <TextBlock>Let's Go!</TextBlock>
-                </Button>
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right"
+                        Classes="Spacing-3">
+                <controls:StandardButton x:Name="ViewChangelogInAppButton"
+                                         Text="Changelog"
+                                         Type="Tertiary"
+                                         Fill="Strong"
+                                         Size="Medium"
+                                         ShowIcon="None"
+                                         LeftIcon="{x:Static icons:IconValues.FileEdit}"
+                                         ToolTip.Tip="View the changelog in app (closes this message)" />
+
+                <controls:StandardButton x:Name="DoneButton"
+                                         HorizontalAlignment="Right"
+                                         Type="Primary"
+                                         Text="Let's Go" />
             </StackPanel>
 
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 
 </reactive:ReactiveUserControl>
-
