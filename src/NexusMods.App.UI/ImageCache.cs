@@ -4,7 +4,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Svg.Skia;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using Svg.Model;
 
 namespace NexusMods.App.UI;
@@ -50,7 +50,7 @@ internal sealed class ImageCache : IImageCache
     private static Hash GetHash(ImageIdentifier imageIdentifier)
     {
         return imageIdentifier.Union.Match(
-            f0: uri => uri.ToString().XxHash64AsUtf8(),
+            f0: uri => uri.ToString().xxHash3AsUtf8(),
             f1: hash => hash
         );
     }

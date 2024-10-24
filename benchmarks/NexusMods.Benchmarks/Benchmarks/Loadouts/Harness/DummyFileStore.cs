@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.IO;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;

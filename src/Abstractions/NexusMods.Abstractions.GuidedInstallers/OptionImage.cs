@@ -1,4 +1,4 @@
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using OneOf;
 
 namespace NexusMods.Abstractions.GuidedInstallers;

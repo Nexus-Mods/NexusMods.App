@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.UI;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -63,7 +63,7 @@ public class ImageCacheTests : AUiTest
         var httpClient = new HttpClient();
         var bytes = await httpClient.GetByteArrayAsync(url);
 
-        var hash = bytes.AsSpan().XxHash64();
+        var hash = bytes.AsSpan().xxHash3();
         var size = Size.FromLong(bytes.LongLength);
         var streamFactory = new MemoryStreamFactory("cat.jpg".ToRelativePath(), new MemoryStream(bytes));
 

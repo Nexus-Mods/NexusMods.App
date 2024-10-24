@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using FluentAssertions;
 using NexusMods.DataModel.ChunkedStreams;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests.ChunkedReaders;
@@ -15,7 +15,7 @@ public class ChunkedReaderTests
     {
         _ms = new MemoryStream();
         CreateData();
-        _hash = _ms.ToArray().AsSpan().XxHash64();
+        _hash = _ms.ToArray().AsSpan().xxHash3();
     }
 
     private void CreateData()
