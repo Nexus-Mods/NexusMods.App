@@ -700,7 +700,7 @@
         <value>Back</value>
     </data>
     <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
-        <value>Connect your Nexus Mods accoun</value>
+        <value>Connect your Nexus Mods account</value>
     </data>
     <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
         <value>Remove the selected mod(s) from this loadout</value>
