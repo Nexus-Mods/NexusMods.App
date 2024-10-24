@@ -42,7 +42,6 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
         OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
         OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
         OpenGitHubCommand = ReactiveCommand.Create(() => GitHubUri);
-        //ViewChangelogInBrowserCommand = ReactiveCommand.Create(() => ChangelogUri);
 
         ViewChangelogInAppCommand = ReactiveCommand.Create(() =>
         {
