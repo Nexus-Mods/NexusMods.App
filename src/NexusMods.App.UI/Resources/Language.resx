@@ -681,4 +681,12 @@
     <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
         <value>Installed Mods</value>
     </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Game already running</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>The game has already been started outside of the App.
+
+It is not possible to currently apply a loadout.</value>
+    </data>
 </root>

@@ -690,6 +690,26 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The game has already been started outside of the App.
+        ///
+        ///It is not possible to currently apply a loadout..
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Description {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game already running.
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Title {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The mod you&apos;re trying to access has been deleted or is missing..
         /// </summary>
         public static string ErrorView_MissingMod_Description {

@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Exceptions;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -25,13 +28,15 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IToolManager _toolManager;
     private readonly IConnection _conn;
     private readonly IJobMonitor _monitor;
+    private readonly IOverlayController _overlayController;
 
-    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor)
+    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IOverlayController overlayController)
     {
         _logger = logger;
         _toolManager = toolManager;
         _conn = conn;
         _monitor = monitor;
+        _overlayController = overlayController;
 
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
@@ -47,6 +52,10 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
             {
                 await _toolManager.RunTool(tool, marker, _monitor, token: token);
             }, token);
+        }
+        catch (ExecutableInUseException)
+        {
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController);
         }
         catch (Exception ex)
         {

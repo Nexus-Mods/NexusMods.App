@@ -7,7 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -25,6 +28,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly IJobMonitor _jobMonitor;
 
     private readonly LoadoutId _loadoutId;
+    private readonly IOverlayController _overlayController;
     private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
 
@@ -36,9 +40,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
-    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor)
+    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController)
     {
         _loadoutId = loadoutId;
+        _overlayController = overlayController;
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
@@ -107,9 +112,16 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private async Task Apply()
     {
-        await Task.Run(async () =>
+        try
         {
-            await _syncService.Synchronize(_loadoutId);
-        });
+            await Task.Run(async () =>
+            {
+                await _syncService.Synchronize(_loadoutId);
+            });
+        }
+        catch (ExecutableInUseException)
+        {
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController);
+        }
     }
 }
