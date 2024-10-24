@@ -71,7 +71,7 @@
 
         <base:MessageBoxBackground.BottomContent>
             <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right"
-                        Classes="Spacing-3">
+                        Spacing="{StaticResource Spacing-3}">
                 <controls:StandardButton x:Name="ViewChangelogInAppButton"
                                          Text="Changelog"
                                          Type="Tertiary"
