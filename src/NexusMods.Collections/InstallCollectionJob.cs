@@ -418,6 +418,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         return mod.Source.Type switch
         {
+            ModSourceType.browse => await EnsureBrowseModIsDirectDownloaded(mod),
             ModSourceType.direct => await EnsureDirectMod(mod),
             ModSourceType.nexus => await EnsureNexusModDownloaded(mod),
             // Nothing to downoad for a bundle
@@ -426,7 +427,35 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         };
     }
 
-    
+    private async Task<ModInstructions> EnsureBrowseModIsDirectDownloaded(Mod mod)
+    {
+        var db = Connection.Db;
+        if (DirectDownloadLibraryFile.FindByMd5(db, mod.Source.Md5).TryGetFirst(out var found))
+            return (mod, found.AsLibraryFile());
+        
+        // There's a small chance that the file may be downloadable via a direct download, so we'll try that
+        // by getting doing a HEAD request to the URL and checking the content type/size
+        
+        var request = new HttpRequestMessage(HttpMethod.Head, mod.Source.Url);
+        using var response = await SerivceProvider.GetRequiredService<HttpClient>().SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException("The mod could not be downloaded.");
+        
+        var contentType = response.Content.Headers.ContentType?.MediaType;
+        if (contentType is null || !contentType.StartsWith("application/octet-stream"))
+            throw new InvalidOperationException("The mod is not a direct download.");
+        
+        if (!response.Content.Headers.ContentLength.HasValue)
+            throw new InvalidOperationException("The mod does not have a content length.");
+        
+        var size = Size.FromLong(response.Content.Headers.ContentLength.Value);
+        if (size != mod.Source.FileSize)
+            throw new InvalidOperationException("The mod's file size does not match the expected size.");
+        
+        return await EnsureDirectMod(mod);
+    }
+
+
     private async Task<ModInstructions> EnsureDirectMod(Mod mod)
     {
         var db = Connection.Db;

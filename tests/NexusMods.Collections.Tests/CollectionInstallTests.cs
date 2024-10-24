@@ -21,6 +21,8 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     [InlineData("jjctqn", 4)]
     // Includes direct download mod
     [InlineData("jjctqn", 5)]
+    // Includes a browse mod that can be downloaded directly
+    [InlineData("jjctqn", 6)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
         await using var destination = TemporaryFileManager.CreateFile();
