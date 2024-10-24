@@ -84,7 +84,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var isGameRunning = jobMonitor.ObserveActiveJobs<IRunGameTool>()
                     .Count()
                     .Select(x => x > 0)
-                    .StartWith(false); // fire an initial value because CombineLatest requires all stuff to have latest values.
+                    .StartWith(jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running })); 
+                // fire an initial value because CombineLatest requires all stuff to have latest values.
                 
                 // We should prevent Apply from being available while a file is in use.
                 // A file may be in use because:
