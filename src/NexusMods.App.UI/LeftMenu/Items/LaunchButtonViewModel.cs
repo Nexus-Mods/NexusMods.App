@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
@@ -20,12 +21,14 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public Percent? Progress { get; set; }
 
+    private readonly ILogger<ILaunchButtonViewModel> _logger;
     private readonly IToolManager _toolManager;
     private readonly IConnection _conn;
     private readonly IJobMonitor _monitor;
 
-    public LaunchButtonViewModel(IToolManager toolManager, IConnection conn, IJobMonitor monitor)
+    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor)
     {
+        _logger = logger;
         _toolManager = toolManager;
         _conn = conn;
         _monitor = monitor;
@@ -36,12 +39,19 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private async Task LaunchGame(CancellationToken token)
     {
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
-        var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
-        var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
-        await Task.Run(async () =>
+        try
         {
-            await _toolManager.RunTool(tool, marker, _monitor, token: token);
-        }, token);
+            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
+            var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
+            await Task.Run(async () =>
+            {
+                await _toolManager.RunTool(tool, marker, _monitor, token: token);
+            }, token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error launching game: {ex.Message}\n{ex.StackTrace}");
+        }
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
     }
 }
