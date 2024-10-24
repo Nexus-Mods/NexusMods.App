@@ -268,6 +268,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Reso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Resources.Resilience", "src\Abstractions\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj", "{04219A58-C99C-4C3B-A477-5E4B29D1F275}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.UnrealEngine", "src\Games\NexusMods.Games.UnrealEngine\NexusMods.Games.UnrealEngine.csproj", "{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -698,6 +700,10 @@ Global
 		{04219A58-C99C-4C3B-A477-5E4B29D1F275}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04219A58-C99C-4C3B-A477-5E4B29D1F275}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04219A58-C99C-4C3B-A477-5E4B29D1F275}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -822,6 +828,7 @@ Global
 		{BE8C17C4-E3B0-4D07-8CD0-0D15C3CCA9D5} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{D3BA5B5A-668A-443B-872C-3116CBB0BC0D} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{04219A58-C99C-4C3B-A477-5E4B29D1F275} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{EC1D0F00-BFA9-40A6-AC61-41A5292DF163} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
