@@ -37,12 +37,22 @@
         
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button x:Name="GoBackInHistory" Classes="Action" Width="40" Height="40" ToolTip.Tip="Back">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" Size="24"/>
-            </Button>
-            <Button x:Name="GoForwardInHistory" Classes="Action" Width="40" Height="40" ToolTip.Tip="Forward">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" Size="24"/>
-            </Button>
+            
+            <controls:StandardButton x:Name="GoForwardInHistory" 
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}"/>
+            
+            <controls:StandardButton x:Name="GoBackInHistory" 
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
         </StackPanel>
 
         <Menu Grid.Column="2" Margin="12 0">

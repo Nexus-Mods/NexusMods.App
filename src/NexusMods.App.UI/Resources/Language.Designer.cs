@@ -1873,6 +1873,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string TopBar_Back_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_Back_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward.
+        /// </summary>
+        public static string TopBar_Forward_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_Forward_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help and feedback.
         /// </summary>
         public static string TopBar_Help_ToolTip {

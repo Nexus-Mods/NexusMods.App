@@ -693,4 +693,10 @@
     <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
         <value>Open Nexus Mods</value>
     </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Forward</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Back</value>
+    </data>
 </root>
