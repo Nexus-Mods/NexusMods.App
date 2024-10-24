@@ -4,7 +4,7 @@ This directory contains all assets used in the [CHANGELOG](https://github.com/Ne
 
 ## Adding Assets
 
-### Naming
+<!-- ### Naming
 
 Files should be hashed and named after their hash (`{hash}.{ext}`). This has multiple benefits:
 
@@ -24,7 +24,7 @@ Alternatively, `b2sum` can be used directly for distros that have coreutils 8:
 
 ```bash
 b2sum --length=128 filename
-```
+``` -->
 
 ### Images
 
@@ -38,7 +38,7 @@ b2sum --length=128 filename
     - With color profile
     - No thumbnail
 
-You can use any image manipulation program for this, like GIMP. Otherwise, if the image has already been cropped and you want to convert it to a WebP, use ffmpeg:
+You can use any image manipulation program for this, like [GIMP](https://www.gimp.org/). Otherwise, if the image has already been cropped and you want to convert it to a WebP, use [ffmpeg](https://www.ffmpeg.org/):
 
 ```bash
 ffmpeg -i input.png -pix_fmt yuv420p -c:v libwebp -quality 80 -compression_level 6 output.webp
