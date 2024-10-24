@@ -218,7 +218,7 @@ public class SynchronizerService : ISynchronizerService
         var primaryFile = game!.GetPrimaryFile(loadout.InstallationInstance.Store)
             .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]);
         if (IsFileInUse(primaryFile))
-            throw new ExecutableInUseException("Game's main executable file is in use." +
+            throw new ExecutableInUseException("Game's main executable file is in use.\n" +
                                                "This is an indicator the game may have been started outside of the App; and therefore files may be in use.");
         return;
 
