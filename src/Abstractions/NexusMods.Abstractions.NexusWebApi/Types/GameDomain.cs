@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types;
 
@@ -26,7 +27,7 @@ public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, Js
 /// <summary>
 /// MnemonicDB attribute for the GameDomain type.
 /// </summary>
-public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameDomain, string>(ValueTag.Ascii, ns, name)
+public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameDomain, string, AsciiSerializer>(ns, name)
 {
     /// <inheritdoc />
     protected override string ToLowLevel(GameDomain value)
