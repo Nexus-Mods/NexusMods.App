@@ -699,4 +699,13 @@
     <data name="TopBar_Back_ToolTip" xml:space="preserve">
         <value>Back</value>
     </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Connect your Nexus Mods accoun</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Remove the selected mod(s) from this loadout</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value />
+    </data>
 </root>

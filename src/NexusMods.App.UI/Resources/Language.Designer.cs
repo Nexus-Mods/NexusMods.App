@@ -1401,11 +1401,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove the selected mod(s) from this loadout.
+        /// </summary>
+        public static string LoadoutGridView__Remove_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Remove_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View Mod files.
         /// </summary>
         public static string LoadoutGridView__View_Files {
             get {
                 return ResourceManager.GetString("LoadoutGridView__View_Files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string LoadoutGridView__View_Files_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__View_Files_ToolTip", resourceCulture);
             }
         }
         
@@ -1923,6 +1941,15 @@ namespace NexusMods.App.UI.Resources {
         public static string TopBarActions__LOG_IN {
             get {
                 return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect your Nexus Mods accoun.
+        /// </summary>
+        public static string TopBarActions__LOG_IN_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBarActions__LOG_IN_ToolTip", resourceCulture);
             }
         }
         

@@ -32,7 +32,7 @@
                                               Fill="Weak"
                                               ShowIcon="Left"
                                               LeftIcon="{x:Static icons:IconValues.Folder}"
-                                              ToolTip.Tip="Browse the files in the selected mod" />
+                                              ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
                 
                 <controls:StandardButton x:Name="DeleteButton"
                                          Text="{x:Static resources:Language.LoadoutGridView__Remove}"
@@ -41,7 +41,7 @@
                                          Fill="Weak"
                                          ShowIcon="Left"
                                          LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
-                                         ToolTip.Tip="Remove the selected mod(s) from this loadout" />
+                                         ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
             </StackPanel>
         </Border>
 
