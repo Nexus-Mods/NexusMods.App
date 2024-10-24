@@ -20,7 +20,9 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Paths;
@@ -121,15 +123,26 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var groupResult = await tx.Commit();
         var groupRemapped = groupResult.Remap(group);
         
+        var insalled = new ConcurrentBag<(ModInstructions, LoadoutItemGroup.ReadOnly)>();
+        
         // Now install the mods
         await Parallel.ForEachAsync(toInstall, context.CancellationToken, async (file, _) =>
             {
                 // Bit strange, but Install Mod will want to find the collection group, so we'll have to rebase entity it will get the DB from
                 if (file.LibraryFile.HasValue) 
                     file = (file.Mod, file.LibraryFile!.Value.Rebase());
-                await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup(), archive);
+                var mod = await InstallMod(TargetLoadout, file, groupRemapped.AsCollectionGroup().AsLoadoutItemGroup(), archive);
+                insalled.Add((file, mod));
             }
         );
+        
+        using var tx2 = Connection.BeginTransaction();
+        foreach (var (instructions, modGroup) in insalled)
+        {
+            tx2.Add(modGroup.Id, LoadoutItem.Name, instructions.Mod.Name);
+        }
+
+        await tx2.Commit();
         
         return groupRemapped;
     }
@@ -405,11 +418,27 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         return mod.Source.Type switch
         {
+            ModSourceType.direct => await EnsureDirectMod(mod),
             ModSourceType.nexus => await EnsureNexusModDownloaded(mod),
             // Nothing to downoad for a bundle
             ModSourceType.bundle => (mod, null),
             _ => throw new NotSupportedException($"The mod source type '{mod.Source.Type}' is not supported.")
         };
+    }
+
+    
+    private async Task<ModInstructions> EnsureDirectMod(Mod mod)
+    {
+        var db = Connection.Db;
+        if (DirectDownloadLibraryFile.FindByMd5(db, mod.Source.Md5).TryGetFirst(out var found))
+            return (mod, found.AsLibraryFile());
+        
+        await using var tempPath = TemporaryFileManager.CreateFile();
+        
+        var job = DirectDownloadJob.Create(SerivceProvider, mod.Source.Url!, mod.Source.Md5, mod.Name);
+        var libraryFile = await LibraryService.AddDownload(job);
+
+        return (mod, libraryFile);
     }
 
     private async Task<ModInstructions> EnsureNexusModDownloaded(Mod mod)

@@ -19,6 +19,8 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     [InlineData("jjctqn", 3)]
     // Includes bundled mod
     [InlineData("jjctqn", 4)]
+    // Includes direct download mod
+    [InlineData("jjctqn", 5)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
         await using var destination = TemporaryFileManager.CreateFile();
@@ -44,7 +46,15 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var files = loadout.Items
             .OfTypeLoadoutItemWithTargetPath()
             .OfTypeLoadoutFile()
-            .Select(f => KeyValuePair.Create(((GamePath)f.AsLoadoutItemWithTargetPath().TargetPath).ToString(), f.Hash.ToString()))
+            .Select(f =>
+                {
+                    var group = f.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name;
+                    return KeyValuePair.Create(
+                        (group, ((GamePath)f.AsLoadoutItemWithTargetPath().TargetPath).ToString()),
+                        f.Hash.ToString()
+                    );
+                }
+            )
             .ToDictionary();
 
         await Verify(new
