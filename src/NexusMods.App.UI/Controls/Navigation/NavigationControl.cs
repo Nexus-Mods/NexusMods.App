@@ -11,7 +11,7 @@ using ReactiveUI;
 namespace NexusMods.App.UI.Controls.Navigation;
 
 [PublicAPI]
-public class NavigationControl : Button
+public class NavigationControl : StandardButton
 {
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
@@ -65,7 +65,7 @@ public class NavigationControl : Button
     }
 
     /// <inheritdoc/>
-    protected override Type StyleKeyOverride => typeof(Button);
+    protected override Type StyleKeyOverride => typeof(StandardButton);
 
     private bool _wasOnPointerPressedCalled;
 

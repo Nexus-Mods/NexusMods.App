@@ -17,12 +17,15 @@
     <Design.DataContext>
         <items:IconDesignViewModel />
     </Design.DataContext>
+    
+    <!-- NOTE(insomnious): This left hand menu item is getting overhauled in near future due to needing active states etc.
+    This is a temporary solution with a lot of inline styles to get back working again -->
 
-    <navigation:NavigationControl Classes="LeftMenuItem" 
-                                  x:Name="ItemButton" 
-                                  Width="184" 
-                                  Height="36"
-                                  Padding="8,0,8,0">
+    <navigation:NavigationControl x:Name="ItemButton"
+                                  Type="Tertiary"
+                                  Fill="None"
+                                  Padding="8,4"
+                                  HorizontalAlignment="Stretch">
         <Grid ColumnDefinitions="Auto, *, Auto">
             <icons:UnifiedIcon Grid.Column="0" x:Name="LeftIcon" />
             <TextBlock

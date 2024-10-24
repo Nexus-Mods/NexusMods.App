@@ -13,7 +13,8 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
@@ -36,12 +37,22 @@
         
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button x:Name="GoBackInHistory" Classes="Action" Width="40" Height="40">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" Size="24"/>
-            </Button>
-            <Button x:Name="GoForwardInHistory" Classes="Action" Width="40" Height="40">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" Size="24"/>
-            </Button>
+            
+            <controls:StandardButton x:Name="GoForwardInHistory" 
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}"/>
+            
+            <controls:StandardButton x:Name="GoBackInHistory" 
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
         </StackPanel>
 
         <Menu Grid.Column="2" Margin="12 0">
@@ -53,19 +64,13 @@
 
             <Separator Width="1" Height="40"/>
 
-            <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.SettingsView_Title}" />
-                </ToolTip.Tip>
+            <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem" ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}">
                 <navigation:NavigationMenuItem.Header>
                     <icons:UnifiedIcon Classes="Cog"/>
                 </navigation:NavigationMenuItem.Header>
             </navigation:NavigationMenuItem>
 
-            <MenuItem Classes="TopBarMenuItem" Width="64">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
-                </ToolTip.Tip>
+            <MenuItem Classes="TopBarMenuItem" Width="64" ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="10, 0 , 10,  0">
                         <icons:UnifiedIcon Classes="Help"/>
@@ -81,9 +86,10 @@
             
             <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
                 <MenuItem.Header>
-                    <Button Classes="Standard Primary" x:Name="LoginButton">
-                        <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
-                    </Button>
+                    <controls:StandardButton x:Name="LoginButton"
+                                             Text="{x:Static resources:Language.TopBarActions__LOG_IN}"
+                                             Type="Primary"
+                                             ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
                 </MenuItem.Header>
             </MenuItem>
             

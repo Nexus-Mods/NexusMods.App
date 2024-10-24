@@ -27,6 +27,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
     public IImage? Avatar { get; }
+    public string? Username { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
 

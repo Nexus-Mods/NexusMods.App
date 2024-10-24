@@ -203,13 +203,13 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>Parcourir tous les jeux</value>
     </data>
-    <data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
         <value>Effacer</value>
     </data>
-    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
         <value>Ajouter</value>
     </data>
-    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
         <value>Ajout avancé</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
@@ -535,7 +535,7 @@
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
         <value>Ajouter un mod à votre configuration</value>
     </data>
-    <data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
         <value>Remove mod from the library, saving disk space</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">

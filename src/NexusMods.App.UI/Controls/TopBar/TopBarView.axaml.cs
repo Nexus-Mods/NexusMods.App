@@ -1,5 +1,8 @@
 using System.Reactive.Disposables;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
+using DynamicData.Binding;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -72,6 +75,15 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     PremiumLabel.IsVisible = isLoggedIn && isPremium;
                     FreeLabel.IsVisible = isLoggedIn && !isPremium;
                     FreeLabel.IsEnabled = isLoggedIn && !isPremium;
+                })
+                .DisposeWith(d);
+            
+            this.WhenValueChanged(
+                    x => x.ViewModel!.Username
+                )
+                .Subscribe(username =>
+                {
+                    ToolTip.SetTip(AvatarMenuItem, $"Logged in to Nexus Mods as {username}");
                 })
                 .DisposeWith(d);
 
