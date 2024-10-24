@@ -442,7 +442,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             throw new InvalidOperationException("The mod could not be downloaded.");
         
         var contentType = response.Content.Headers.ContentType?.MediaType;
-        if (contentType is null || !contentType.StartsWith("application/octet-stream"))
+        if (contentType is null || !contentType.StartsWith("application/"))
             throw new InvalidOperationException("The mod is not a direct download.");
         
         if (!response.Content.Headers.ContentLength.HasValue)
