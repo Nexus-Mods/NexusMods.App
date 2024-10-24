@@ -7,5 +7,4 @@
         <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
     </ItemGroup>
-
 </Project>

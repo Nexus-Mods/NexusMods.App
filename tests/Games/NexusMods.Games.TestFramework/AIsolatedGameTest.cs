@@ -24,7 +24,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -117,7 +117,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .AddGames()
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
-            .AddFileStoreAbstractions()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }
@@ -168,7 +167,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         content ??= path.Path.ToString();
         var contentArray = Encoding.UTF8.GetBytes(content);
 
-        hash = contentArray.XxHash64();
+        hash = contentArray.xxHash3();
         size = Size.FromLong(contentArray.Length);
         return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
     }
@@ -233,7 +232,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         foreach (var path in paths)
         {
             var data = Encoding.UTF8.GetBytes(path);
-            var hash = data.XxHash64();
+            var hash = data.xxHash3();
             var size = Size.FromLong(path.Path.Length);
             
             // Create the LoadoutFile in DB
@@ -271,7 +270,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     private static LibraryFile.New CreateLibraryFile(string fileName, ITransaction tx, out EntityId entityId) => new(tx, out entityId)
     {
         FileName = fileName,
-        Hash = fileName.XxHash64AsUtf8(),
+        Hash = fileName.xxHash3AsUtf8(),
         Size = Size.FromLong(fileName.Length),
         LibraryItem = new LibraryItem.New(tx, entityId)
         {

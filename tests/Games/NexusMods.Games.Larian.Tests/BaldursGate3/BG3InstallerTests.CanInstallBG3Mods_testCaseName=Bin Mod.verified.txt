@@ -1,7 +1,7 @@
 ﻿[
   {
     FromPath: bin/bink2w64.dll,
-    Hash: 0xC6363140D5333C3E,
+    Hash: 0x8EB6493A00823A86,
     ToGamePath: {Game}/bin/bink2w64.dll
   }
 ]

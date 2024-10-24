@@ -2,7 +2,6 @@ using System.Reflection;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;

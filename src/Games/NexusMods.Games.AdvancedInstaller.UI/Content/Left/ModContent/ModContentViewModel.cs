@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using DynamicData;
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;

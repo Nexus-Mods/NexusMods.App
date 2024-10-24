@@ -11,8 +11,8 @@ using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using Polly;
 

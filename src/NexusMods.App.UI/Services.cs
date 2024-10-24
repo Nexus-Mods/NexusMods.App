@@ -256,7 +256,6 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
             // Diagnostics
-            .AddSingleton<IValueFormatter, ModReferenceFormatter>()
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IValueFormatter, LoadoutItemGroupFormatter>()

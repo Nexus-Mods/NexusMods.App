@@ -1,4 +1,5 @@
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+
 namespace NexusMods.App.GarbageCollection.Interfaces;
 
 /// <summary>

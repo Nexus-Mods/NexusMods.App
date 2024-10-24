@@ -4,8 +4,6 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
@@ -107,12 +105,6 @@ public static class Services
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();
-        
-        // Download Analyzer
-        coll.AddAttributeCollection(typeof(DownloadAnalysis));
-        coll.AddAttributeCollection(typeof(DownloadContentEntry));
-        coll.AddAttributeCollection(typeof(FilePathMetadata));
-        coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
         
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
