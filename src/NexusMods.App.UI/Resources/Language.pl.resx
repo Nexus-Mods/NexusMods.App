@@ -534,7 +534,7 @@
 		<value>Pomoc i opinie</value>
 	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-		<value>Dodaj wybrane mod(y) do tego zestawu</value>
+		<value>Dodaj wybrany mod do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
 		<value>Trwale usuń ten mod ze swojej biblioteki</value>
@@ -688,7 +688,7 @@
         <value>Połącz swoje konto Nexus Mods</value>
     </data>
     <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
-        <value>Usuń wybrane mod(y) z tego zestawu</value>
+        <value>Usuń wybrany mod z tego zestawu</value>
     </data>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
         <value></value>	<!-- Placeholder -->
