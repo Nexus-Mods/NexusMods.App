@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Diagnostics;
@@ -30,19 +31,19 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         switch (vm.Severity)
         {
             case DiagnosticSeverity.Suggestion:
-                SeverityIcon.Classes.Add("HelpCircle");
+                SeverityIcon.Value = IconValues.Help;
                 SeverityIcon.Classes.Add("ForegroundInfoStrong");
                 break;
             case DiagnosticSeverity.Warning:
-                SeverityIcon.Classes.Add("Alert");
+                SeverityIcon.Value = IconValues.Error;
                 SeverityIcon.Classes.Add("ForegroundWarningStrong");
                 break;
             case DiagnosticSeverity.Critical:
-                SeverityIcon.Classes.Add("AlertOctagon");
+                SeverityIcon.Value = IconValues.Alert;
                 SeverityIcon.Classes.Add("ForegroundDangerStrong");
                 break;
             default:
-                SeverityIcon.Classes.Add("Bell");
+                SeverityIcon.Value = IconValues.NotificationImportant;
                 break;
         }
                 
