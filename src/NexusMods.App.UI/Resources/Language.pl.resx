@@ -534,13 +534,13 @@
 		<value>Pomoc i opinie</value>
 	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-		<value>Dodaj mod do swojej listy modów</value>
+		<value>Dodaj wybrane mod(y) do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-		<value>Usuń moda z biblioteki, aby zwolnić miejsce na dysku</value>
+		<value>Trwale usuń ten mod ze swojej biblioteki</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-		<value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
+		<value>Wybierz określone pliki z moda, aby dodać je do swojego zestawu</value>
 	</data>
 	<data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
 		<value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
@@ -666,4 +666,31 @@
 	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
 		<value>Zainstalowane mody</value>
 	</data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Przełącz widok</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Pokaż lub ukryj grupy stron modów</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Zaimportuj mod z komputera</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Otwórz Nexus Mods</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Przejdź dalej</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Przejdź wstecz</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Połącz swoje konto Nexus Mods</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Usuń wybrane mod(y) z tego zestawu</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value></value>	<!-- Placeholder -->
+    </data>
 </root>
