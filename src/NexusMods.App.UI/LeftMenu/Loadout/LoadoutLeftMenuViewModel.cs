@@ -46,9 +46,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
-
+        var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+        
         WorkspaceId = workspaceId;
-        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider, monitor, overlayController);
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider, monitor, overlayController, gameRunningTracker);
         
         
         var installedModsItem = new IconViewModel

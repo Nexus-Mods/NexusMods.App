@@ -40,7 +40,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
-    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController)
+    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
         _loadoutId = loadoutId;
         _overlayController = overlayController;
@@ -80,33 +80,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
                     .Switch();
 
-                // Note(sewer): Yes, this is technically a race condition; however it's infinitely unlikely and
-                // does not cause fatal issues.
-                var numRunningJobs = jobMonitor.Jobs.Count(x => x is { Definition: IRunGameTool } && x.Status.IsActive());
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
-                var isGameRunning = jobMonitor.GetObservableChangeSet<IRunGameTool>()
-                    .TransformOnObservable(job => job.ObservableStatus)
-                    .Select(changes =>
-                        {
-                            // Note(sewer): We don't currently remove any old/stale jobs, so it's inefficient to
-                            // check the whole job set in case the App has been running for a long time.
-                            // Therefore, we instead count and manually maintain a running job count.
-                            foreach (var change in changes)
-                            {
-                                var isActivated = change.Current.WasActivated(change.Previous);
-                                var isDeactivated = change.Current.WasDeactivated(change.Previous);
-                                if (isActivated)
-                                    numRunningJobs++;
-                                if (isDeactivated)
-                                    numRunningJobs--;
-                            }
 
-                            return numRunningJobs > 0;
-                        }
-                    )
-                    .DistinctUntilChanged()
-                    .StartWith(numRunningJobs > 0);
-                
                 // Note(sewer):
                 // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
                 // In any case, we should prevent Apply from being available while a file is in use.
@@ -116,7 +91,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 //     - This is done in 'Synchronize' method.
                 // - They're running a tool from within the App.
                 //     - Check running jobs.
-                loadoutStatuses.CombineLatest(gameStatuses, isGameRunning, (loadout, game, running) => (loadout, game, running))
+                loadoutStatuses.CombineLatest(gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, game, running) => (loadout, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {

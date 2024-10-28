@@ -12,32 +12,19 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            var isRunning =
-                this.WhenAnyValue(view => view.ViewModel!.Command.CanExecute)
-                    .SelectMany(x => x)
-                    .Select(running => !running);
-
-            this.WhenAnyValue(view => view.ViewModel!.Command.CanExecute)
-                .SelectMany(x => x)
-                .BindToUi(this, view => view.LaunchButton.IsEnabled)
+            var isRunning = ViewModel!.IsRunningObservable;
+            var isNotRunning = ViewModel!.IsRunningObservable.Select(isRunning => !isRunning);
+            isNotRunning.BindToUi(this, view => view.LaunchButton.IsVisible)
                 .DisposeWith(d);
 
+            isNotRunning.BindToUi(this, view => view.LaunchButton.IsEnabled)
+                .DisposeWith(d);
+
+            isRunning.BindToUi(this, view => view.ProgressBarControl.IsVisible)
+                .DisposeWith(d);
+            
             this.WhenAnyValue(view => view.ViewModel!.Command)
                 .BindToUi(this, view => view.LaunchButton.Command)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(view => view.ViewModel!.Command)
-                .SelectMany(cmd => cmd.IsExecuting)
-                .CombineLatest(isRunning)
-                .Select(ex => ex is { First: false, Second: false })
-                .BindToUi(this, view => view.LaunchButton.IsVisible)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(view => view.ViewModel!.Command)
-                .SelectMany(cmd => cmd.IsExecuting)
-                .CombineLatest(isRunning)
-                .Select(ex => ex.First || ex.Second)
-                .BindToUi(this, view => view.ProgressBarControl.IsVisible)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Progress)

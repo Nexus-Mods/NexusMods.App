@@ -20,6 +20,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; }
 
+    public IObservable<bool> IsRunningObservable { get; }
+
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
     [Reactive] public Percent? Progress { get; set; }
@@ -30,7 +32,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IJobMonitor _monitor;
     private readonly IOverlayController _overlayController;
 
-    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IOverlayController overlayController)
+    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
         _logger = logger;
         _toolManager = toolManager;
@@ -38,6 +40,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         _monitor = monitor;
         _overlayController = overlayController;
 
+        IsRunningObservable = gameRunningTracker.GetWithCurrentStateAsStarting();
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
 

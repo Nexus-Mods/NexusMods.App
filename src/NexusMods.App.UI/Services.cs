@@ -84,6 +84,7 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
+            .AddSingleton<GameRunningTracker>()
             .AddTransient<MainWindow>()
 
             // Services
