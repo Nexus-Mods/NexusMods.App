@@ -81,13 +81,28 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Switch();
 
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
-                var isGameRunning = jobMonitor.ObserveActiveJobs<IRunGameTool>()
-                    .Count()
-                    .Select(x => x > 0)
-                    .StartWith(jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running })); 
-                // fire an initial value because CombineLatest requires all stuff to have latest values.
+                var isGameRunning = jobMonitor.GetObservableChangeSet<IRunGameTool>()
+                    .TransformOnObservable(job => job.ObservableStatus)
+                    .Select(_ =>
+                        {
+                            // TODO: We don't currently remove any old/stale jobs, this could be more efficient - sewer
+                            return jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running });
+                        }
+                    )
+                    .DistinctUntilChanged()
+                    .StartWith(jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running }));
                 
-                // We should prevent Apply from being available while a file is in use.
+                // Note(sewer):
+                // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
+                // Note: This observable is a bit complex. We can't just start listening to games closed or
+                //       new games started in isolation because we don't know the initial state here.
+                //      
+                //       For example, assume we listen only to started jobs. If a game is already running and the
+                //       user navigates to another loadout, then the 'isGameRunning' observable will be initialized with
+                //       `true` as initial state. However, because there is no prior state, closing the game will not yield
+                //       `false`.
+                //
+                // In any case, we should prevent Apply from being available while a file is in use.
                 // A file may be in use because:
                 // - The user launched the game externally (e.g. through Steam).
                 //     - Approximate this by seeing if any EXE in any of the game folders are running.
