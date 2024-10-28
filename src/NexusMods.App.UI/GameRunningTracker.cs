@@ -28,7 +28,12 @@ public class GameRunningTracker
     /// Retrieves the current state of the game running tracker,
     /// with the current state being immediately emitted as the first item.
     /// </summary>
-    public IObservable<bool> GetWithCurrentStateAsStarting() => _isGameRunning.StartWith(_numRunningJobs > 0);
+    public IObservable<bool> GetWithCurrentStateAsStarting() => _isGameRunning.StartWith(GetInitialRunningState());
+
+    /// <summary>
+    /// Gets the initial state, being `true` if we're running something, and `false` otherwise.
+    /// </summary>
+    public bool GetInitialRunningState() => _numRunningJobs > 0;
 
     public GameRunningTracker(IJobMonitor monitor)
     {

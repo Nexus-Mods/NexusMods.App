@@ -20,7 +20,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; }
 
-    public IObservable<bool> IsRunningObservable { get; }
+    public IObservable<bool> IsRunningObservable => _gameRunningTracker.GetWithCurrentStateAsStarting();
 
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
@@ -31,6 +31,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IConnection _conn;
     private readonly IJobMonitor _monitor;
     private readonly IOverlayController _overlayController;
+    private readonly GameRunningTracker _gameRunningTracker;
 
     public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
@@ -39,14 +40,15 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         _conn = conn;
         _monitor = monitor;
         _overlayController = overlayController;
+        _gameRunningTracker = gameRunningTracker;
+        Refresh();
 
-        IsRunningObservable = gameRunningTracker.GetWithCurrentStateAsStarting();
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
 
     private async Task LaunchGame(CancellationToken token)
     {
-        Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
+        SetLabelToRunning();
         try
         {
             var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
@@ -65,5 +67,15 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
             _logger.LogError($"Error launching game: {ex.Message}\n{ex.StackTrace}");
         }
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
+    }
+    private void SetLabelToRunning()
+    {
+        Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
+    }
+    
+    public void Refresh()
+    {
+        if (_gameRunningTracker.GetInitialRunningState())
+            SetLabelToRunning();
     }
 }
