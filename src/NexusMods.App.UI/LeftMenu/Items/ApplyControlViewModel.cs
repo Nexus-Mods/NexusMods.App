@@ -80,28 +80,35 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
                     .Switch();
 
+                // Note(sewer): Yes, this is technically a race condition; however it's infinitely unlikely and
+                // does not cause fatal issues.
+                var numRunningJobs = jobMonitor.Jobs.Count(x => x is { Definition: IRunGameTool } && x.Status.IsActive());
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
                 var isGameRunning = jobMonitor.GetObservableChangeSet<IRunGameTool>()
                     .TransformOnObservable(job => job.ObservableStatus)
-                    .Select(_ =>
+                    .Select(changes =>
                         {
-                            // TODO: We don't currently remove any old/stale jobs, this could be more efficient - sewer
-                            return jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running });
+                            // Note(sewer): We don't currently remove any old/stale jobs, so it's inefficient to
+                            // check the whole job set in case the App has been running for a long time.
+                            // Therefore, we instead count and manually maintain a running job count.
+                            foreach (var change in changes)
+                            {
+                                var isActivated = change.Current.WasActivated(change.Previous);
+                                var isDeactivated = change.Current.WasDeactivated(change.Previous);
+                                if (isActivated)
+                                    numRunningJobs++;
+                                if (isDeactivated)
+                                    numRunningJobs--;
+                            }
+
+                            return numRunningJobs > 0;
                         }
                     )
                     .DistinctUntilChanged()
-                    .StartWith(jobMonitor.Jobs.Any(x => x is { Definition: IRunGameTool, Status: JobStatus.Running }));
+                    .StartWith(numRunningJobs > 0);
                 
                 // Note(sewer):
                 // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
-                // Note: This observable is a bit complex. We can't just start listening to games closed or
-                //       new games started in isolation because we don't know the initial state here.
-                //      
-                //       For example, assume we listen only to started jobs. If a game is already running and the
-                //       user navigates to another loadout, then the 'isGameRunning' observable will be initialized with
-                //       `true` as initial state. However, because there is no prior state, closing the game will not yield
-                //       `false`.
-                //
                 // In any case, we should prevent Apply from being available while a file is in use.
                 // A file may be in use because:
                 // - The user launched the game externally (e.g. through Steam).
