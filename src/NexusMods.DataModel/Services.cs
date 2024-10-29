@@ -4,8 +4,6 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
@@ -86,7 +84,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-        
+        coll.AddSingleton<JsonConverterFactory, OptionalConverterFactory>();
+        coll.AddSingleton<JsonConverter, OptionalConverterFactory>();
+
         // Game Registry
         coll.AddSingleton<IGameRegistry, GameRegistry>();
         coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
@@ -106,12 +106,6 @@ public static class Services
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();
         
-        // Download Analyzer
-        coll.AddAttributeCollection(typeof(DownloadAnalysis));
-        coll.AddAttributeCollection(typeof(DownloadContentEntry));
-        coll.AddAttributeCollection(typeof(FilePathMetadata));
-        coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
-        
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddSettings<DiagnosticSettings>();
@@ -123,6 +117,7 @@ public static class Services
 
         // Verbs
         coll.AddLoadoutManagementVerbs()
+            .AddImportExportVerbs()
             .AddToolVerbs();
 
         return coll;

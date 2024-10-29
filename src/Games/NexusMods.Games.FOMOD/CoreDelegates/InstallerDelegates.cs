@@ -14,7 +14,7 @@ public sealed class InstallerDelegates : ICoreDelegates
     public IPluginDelegates plugin { get; }
 
     public IUIDelegates ui => UiDelegates;
-    public readonly UiDelegates UiDelegates;
+    public UiDelegates UiDelegates;
 
     public InstallerDelegates(
         ILoggerFactory loggerFactory,

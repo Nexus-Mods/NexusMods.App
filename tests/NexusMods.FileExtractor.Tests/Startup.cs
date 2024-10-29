@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Activities;
 using NexusMods.Paths;
 using NexusMods.Settings;
 
@@ -11,7 +10,6 @@ public class Startup
     {
         container.AddFileSystem()
             .AddSettingsManager()
-            .AddActivityMonitor()
             .AddFileExtractors();
     }
 }

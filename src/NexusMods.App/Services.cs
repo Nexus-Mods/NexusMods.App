@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
@@ -8,7 +7,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Activities;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -21,7 +19,6 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.Larian.BaldursGate3;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -85,11 +82,9 @@ public static class Services
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
                 .AddSupportedGames(experimentalSettings)
-                .AddActivityMonitor()
                 .AddCrossPlatform()
                 .AddGames()
                 .AddGenericGameSupport()
-                .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddFomod()
                 .AddNexusWebApi()

@@ -177,8 +177,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                 .RemoveKey()
                 .OnUI()
-                .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
-                .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount += changeSet.Adds)
+                .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange, ListChangeReason.Remove, ListChangeReason.RemoveRange)
+                .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount = Math.Max(0, NewDownloadModelCount + (changeSet.Adds - changeSet.Removes)))
                 .DisposeWith(disposable);
 
             // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream

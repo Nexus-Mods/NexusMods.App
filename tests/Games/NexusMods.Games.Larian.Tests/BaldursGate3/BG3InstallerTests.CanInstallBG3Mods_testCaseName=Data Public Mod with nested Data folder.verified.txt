@@ -1,12 +1,12 @@
 ﻿[
   {
     FromPath: Public/Shared/Stats/Generated/Data/XPData1.txt,
-    Hash: 0xC98EB6BC4E8661F0,
+    Hash: 0x8C0507C14B4BF188,
     ToGamePath: {Game}/Data/Public/Shared/Stats/Generated/Data/XPData1.txt
   },
   {
     FromPath: Public/SharedDev/Stats/Generated/Data/XPData2.txt,
-    Hash: 0x9345F61E5A6C7013,
+    Hash: 0xE1E5E9738F3B25AB,
     ToGamePath: {Game}/Data/Public/SharedDev/Stats/Generated/Data/XPData2.txt
   }
 ]

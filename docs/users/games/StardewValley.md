@@ -42,10 +42,11 @@ This game can be managed via the app on the following operating systems and plat
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
 |---|---|---|---|
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/413150/Stardew_Valley/) | :material-check-circle: | :material-check-circle:[^1] | :material-close-thick: |
-| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://www.gog.com/en/game/stardew_valley) | :material-check-circle: | :material-close-thick:[^2] | :material-close-thick: |
+| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://www.gog.com/en/game/stardew_valley) | :material-check-circle: | :material-check-circle:[^2][^4] | :material-close-thick: |
 | :fontawesome-brands-xbox: [Xbox Game Pass (PC)](https://www.xbox.com/en-GB/games/store/stardew-valley/c3d891z6tnqm) | :material-close-thick:[^3] | :material-close-thick: | :material-close-thick: |
 | <img src="../../images/wegame.svg" alt="WeGame" width="14"/> [WeGame (China only)](https://www.wegame.com.cn/store/2000064/Stardew_Valley) | :material-close-thick: | :material-close-thick: | :material-close-thick: |
 
 [^1]: Native Linux only. Proton is not supported.
 [^2]: Offline backup installs from GOG.com cannot be detected automatically.
 [^3]: Xbox Game Pass for PC is not yet supported. <a href="https://github.com/Nexus-Mods/NexusMods.App/issues/1476">More.</a>
+[^4]: [Heroic Launcher](https://heroicgameslauncher.com/) is required. 

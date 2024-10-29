@@ -18,7 +18,7 @@ public static class RunUpdateCheck
     /// <summary>
     /// Identifies all mod pages whose information needs refreshed.
     /// </summary>
-    public static async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckForModPagesWhichNeedUpdating(IDb db, INexusApiClient apiClient)
+    public static async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckForModPagesWhichNeedUpdating(IDb db, INexusApiClient apiClient, IGameDomainToGameIdMappingCache mappingCache)
     {
         // Extract all GameDomain(s)
         var modPages = PageMetadataMixin.EnumerateDatabaseEntries(db).ToArray();
@@ -33,7 +33,8 @@ public static class RunUpdateCheck
         foreach (var gameId in gameIds)
         {
             // Note (sewer): We need to update to V2 stat.
-            var modUpdates = await apiClient.ModUpdatesAsync(gameId.ToGameDomain().Value, PastTime.Month);
+            var gameDomain = (await mappingCache.TryGetDomainAsync(gameId, default(CancellationToken))).Value.Value;
+            var modUpdates = await apiClient.ModUpdatesAsync(gameDomain, PastTime.Month);
             var updateResults = ModFeedItemUpdateMixin.FromUpdateResults(modUpdates.Data, gameId);
             updater.Update(updateResults);
         }

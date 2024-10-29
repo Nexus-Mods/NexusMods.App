@@ -14,7 +14,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         
         var install = await CreateInstall();
 
-        var log = await Run("create-loadout", "-g", "stubbed-game", "-v",
+        var log = await Run("create-loadout", "-g", $"{uint.MaxValue}", "-v",
             install.Version.ToString(), "-n", listName);
 
         log = await Run("list-loadouts");

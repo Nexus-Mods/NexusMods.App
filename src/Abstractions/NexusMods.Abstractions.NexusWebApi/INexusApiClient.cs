@@ -23,12 +23,6 @@ public interface INexusApiClient
     Task<Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns a list of games supported by Nexus.
-    /// </summary>
-    /// <param name="token">Can be used to cancel this task.</param>
-    Task<Response<GameInfo[]>> Games(CancellationToken token = default);
-
-    /// <summary>
     /// Generates download links for a given game.
     /// [Premium only endpoint, use other overload for free users].
     /// </summary>
@@ -88,23 +82,4 @@ public interface INexusApiClient
     /// <param name="token">Token used to cancel the task.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     Task<Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default);
-
-    /// <summary>
-    /// Returns all of the downloadable files associated with a mod.
-    /// </summary>
-    /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.
-    /// </param>
-    /// <param name="modId">
-    ///    An individual identifier for the mod. Unique per game.
-    /// </param>
-    /// <param name="token">Token used to cancel the task.</param>
-    /// <returns></returns>
-    Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default);
-    
-    /// <summary>
-    /// Returns metadata about a specific mod.
-    /// </summary>
-    Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default);
 }

@@ -10,11 +10,11 @@ using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 
 // ReSharper disable InconsistentNaming
@@ -26,8 +26,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
     public override string Name => "Stubbed Game";
-    public override GameDomain Domain => GameDomain.From("stubbed-game");
-    
+    public override GameId GameId => GameId.From(uint.MaxValue);
+
     private readonly IServiceProvider _serviceProvider;
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
         IFileSystem fileSystem, IServiceProvider provider) : base(provider)

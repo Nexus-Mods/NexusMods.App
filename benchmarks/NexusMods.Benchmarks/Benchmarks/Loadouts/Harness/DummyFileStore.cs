@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.IO;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
@@ -34,6 +34,11 @@ public class DummyFileStore : IFileStore
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         return null!;
+    }
+
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        return Task.FromResult(Array.Empty<byte>());
     }
 
     public HashSet<ulong> GetFileHashes()

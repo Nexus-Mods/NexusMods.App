@@ -24,24 +24,21 @@
                     HorizontalAlignment="Stretch"
                     Classes="Spacing-2">
 
-            <navigation:NavigationControl Classes="Preview" HorizontalAlignment="Stretch" x:Name="ApplyDiffButton">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}" />
-                </ToolTip.Tip>
-                <StackPanel Orientation="Horizontal">
-                    <!-- <icons:UnifiedIcon Size="20" Classes="Visibility" /> -->
-                    <TextBlock x:Name="ViewApplyChangesTextBlock"
-                               Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}" />
-                </StackPanel>
-            </navigation:NavigationControl>
-
+            <navigation:NavigationControl x:Name="ApplyDiffButton"
+                                          Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}"
+                                          Type="Tertiary"
+                                          Fill="Weak"
+                                          Size="Small"
+                                          ToolTip.Tip="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}"
+                                          HorizontalAlignment="Stretch"/>
+            
             <!-- Apply button -->
             <Button Classes="Standard Primary"
                     HorizontalAlignment="Stretch"
                     Height="44"
                     x:Name="ApplyButton">
                 <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" />
+                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" Foreground="{StaticResource NeutralStrong}" />
                 </ToolTip.Tip>
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"

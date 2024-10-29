@@ -229,7 +229,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
+
+                Page newTabPage;
+                try
+                {
+                    newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
+                }
+                catch (Exception)
+                {
+                    // TODO: logging
+                    continue;
+                }
 
                 var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id, tab.Id)
                 {

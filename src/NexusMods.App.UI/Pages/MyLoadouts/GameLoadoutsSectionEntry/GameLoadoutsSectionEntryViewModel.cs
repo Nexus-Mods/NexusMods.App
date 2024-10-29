@@ -85,7 +85,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
             return (x, y) switch
             {
-                (LoadoutCardViewModel lx, LoadoutCardViewModel ly) => DateTime.Compare(lx.LoadoutVal.GetCreatedAt(), ly.LoadoutVal.GetCreatedAt()),
+                (LoadoutCardViewModel lx, LoadoutCardViewModel ly) => DateTimeOffset.Compare(lx.LoadoutVal.GetCreatedAt(), ly.LoadoutVal.GetCreatedAt()),
                 (SkeletonLoadoutCardViewModel sx, SkeletonLoadoutCardViewModel sy) => string.Compare(sx.LoadoutName, sy.LoadoutName, StringComparison.Ordinal),
                 (LoadoutCardViewModel lxs, SkeletonLoadoutCardViewModel sys) => -1,
                 (SkeletonLoadoutCardViewModel sxs, LoadoutCardViewModel lys) => 1,

@@ -1,0 +1,20 @@
+﻿ModuleShortDesc:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="Dnd5rBardCollegeOfSwordsHomebrew_fb035e66-c916-8b33-a4cd-af40b86e4813" />
+  <attribute id="MD5" type="LSString" value="92ae5c2df98777c464300fb9c7a5e6d2" />
+  <attribute id="Name" type="LSString" value="DnD 5R Bard - College of Swords (Homebrew)" />
+  <attribute id="PublishHandle" type="uint64" value="4343434" />
+  <attribute id="UUID" type="guid" value="fb035e66-c916-8b33-a4cd-af40b86e4813" />
+  <attribute id="Version64" type="int64" value="36028797018963969" />
+</node>
+Version: 1.0.0.1
+Dependency:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="SolomonsCompatibilityLibrary_888868ae-6b21-d328-9479-5cf969e9fdad" />
+  <attribute id="MD5" type="LSString" value="1ef20e4728ab9ba8501f0c1cc05cd221" />
+  <attribute id="Name" type="LSString" value="Solomon's Compatibility Library" />
+  <attribute id="PublishHandle" type="uint64" value="4336060" />
+  <attribute id="UUID" type="guid" value="888868ae-6b21-d328-9479-5cf969e9fdad" />
+  <attribute id="Version64" type="int64" value="36169536654802944" />
+</node>
+SemanticVersion: 1.1.1.0

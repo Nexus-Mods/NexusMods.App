@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -19,8 +19,11 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
@@ -33,22 +36,25 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
     [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
 
-    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 
-    public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
-    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
-    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
-    public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
 
     private readonly ObservableAsPropertyHelper<IImage?> _avatar;
     public IImage? Avatar => _avatar.Value;
+    
+    [Reactive] public string? Username { get; set; } = string.Empty;
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
 
@@ -129,13 +135,19 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             if (userInfo is null) return;
 
             var userId = userInfo.UserId.Value;
-            var uri = new Uri($"https://nexusmods.com/users/{userId}");
+            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = new Uri("https://users.nexusmods.com");
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
             await osInterop.OpenUrl(uri);
         });
 
@@ -146,6 +158,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .BindToVM(this, vm => vm.IsLoggedIn)
                 .DisposeWith(d);
 
+            _loginManager.UserInfoObservable
+                .Select(u => u?.Name)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(name => Username = name ?? "");
+            
             _loginManager.IsPremiumObservable
                 .OnUI()
                 .BindToVM(this, vm => vm.IsPremium)

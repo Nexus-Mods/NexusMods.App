@@ -15,7 +15,7 @@ using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ChunkedStreams;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -304,6 +304,31 @@ public class NxFileStore : IFileStore
 
         return Task.FromResult<Stream>(
             new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
+    }
+
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        if (hash == Hash.Zero)
+            throw new ArgumentNullException(nameof(hash));
+        
+        using var lck = _lock.ReadLock();
+        if (!TryGetLocation(_conn.Db, hash, null,
+                out var archivePath, out var entry))
+            throw new Exception($"Missing archive for {hash.ToHex()}");
+        
+        var file = archivePath.Read();
+
+        var provider = new FromStreamProvider(file);
+        var unpacker = new NxUnpacker(provider);
+        
+        var output = new OutputArrayProvider("", entry);
+        
+        unpacker.ExtractFiles([output], new UnpackerSettings()
+        {
+            MaxNumThreads = 1, 
+        });
+        
+        return Task.FromResult(output.Data);
     }
 
     /// <inheritdoc />

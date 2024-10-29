@@ -1,5 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -51,4 +55,16 @@ public readonly partial struct GameStore
     /// Manually added.
     /// </summary>
     public static readonly GameStore ManuallyAdded = From("Manually Added");
+}
+
+/// <summary>
+/// An attribute that contains the name of a game store.
+/// </summary>
+public class GameStoreAttribute(string ns, string name) : ScalarAttribute<GameStore, string, AsciiSerializer>(ns, name)
+{
+    /// <inheritdoc />
+    protected override string ToLowLevel(GameStore value) => value.Value;
+
+    /// <inheritdoc />
+    protected override GameStore FromLowLevel(string value, AttributeResolver resolver) => GameStore.From(value);
 }

@@ -1,4 +1,4 @@
-using NexusMods.Hashing.xxHash64;
+using System.IO.Hashing;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Extensions.Hashing;
@@ -22,7 +22,7 @@ public static class StringExtensions
     /// </remarks>
     public static ulong GetStableHash(this ReadOnlySpan<char> input)
     {
-        return XxHash64Algorithm.HashBytes(input.CastFast<char, byte>());  
+        return XxHash3.HashToUInt64(input.CastFast<char, byte>());  
     }
     
 }

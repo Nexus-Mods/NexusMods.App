@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Extensions.BCL;
@@ -108,8 +107,16 @@ public record FomodAnalyzerInfo
         async Task DumpItem(string relativePath, byte[] data)
         {
             var finalPath = fomodFolder.Combine(relativePath);
-            fs.CreateDirectory(finalPath.Parent);
-            await fs.WriteAllBytesAsync(finalPath, data);
+            try
+            {
+                fs.CreateDirectory(finalPath.Parent);
+                await fs.WriteAllBytesAsync(finalPath, data);
+            }
+            catch (IOException)
+            {
+                // ignored, this is a pathological case where path is broken 
+            }
+
         }
 
         // Dump Xml

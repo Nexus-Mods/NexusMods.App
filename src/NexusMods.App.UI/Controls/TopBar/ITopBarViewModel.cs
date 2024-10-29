@@ -21,11 +21,13 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
     public IImage? Avatar { get; }
+    public string? Username { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
 

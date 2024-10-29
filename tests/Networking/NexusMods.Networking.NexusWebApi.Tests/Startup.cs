@@ -1,13 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Jobs;
@@ -32,7 +29,6 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
-            .AddActivityMonitor()
             .AddCrossPlatform()
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()

@@ -6,9 +6,10 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Abstractions.Resources.Resilience;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Media;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 
 namespace NexusMods.App.UI;
 
@@ -19,6 +20,16 @@ internal static class ImagePipelines
     private const string CollectionBackgroundImagePipelineKey = nameof(CollectionBackgroundImagePipelineKey);
 
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
+    private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
+
+    public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
+    {
+        return Observable
+            .Return(input)
+            .ObserveOnThreadPool()
+            .SelectAwait(async (id, cancellationToken) => await pipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
+            .Select(static resource => resource.Data);
+    }
 
     public static IServiceCollection AddImagePipelines(this IServiceCollection serviceCollection)
     {
@@ -55,7 +66,7 @@ internal static class ImagePipelines
             .PersistInDb(
                 connection: connection,
                 referenceAttribute: CollectionMetadata.TileImageResource,
-                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(ImagePartitionId)
             )
             .Decode(decoderType: DecoderType.Skia)
@@ -77,12 +88,12 @@ internal static class ImagePipelines
             .PersistInDb(
                 connection: connection,
                 referenceAttribute: CollectionMetadata.BackgroundImageResource,
-                identifierToHash: static uri => uri.ToString().XxHash64AsUtf8(),
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(ImagePartitionId)
             )
             .Decode(decoderType: DecoderType.Skia)
             .ToAvaloniaBitmap()
-            // TODO: .UseFallbackValue()
+            .UseFallbackValue(CollectionBackgroundFallback)
             .EntityIdToIdentifier(
                 connection: connection,
                 attribute: CollectionMetadata.BackgroundImageUri

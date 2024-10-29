@@ -2,9 +2,9 @@ using System.Reflection;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
@@ -25,8 +25,8 @@ public class RedModDeployTool : ITool
         _toolRunner = toolRunner;
         _temporaryFileManager = temporaryFileManager;
     }
-
-    public IEnumerable<GameDomain> Domains => [Cyberpunk2077.Cyberpunk2077Game.StaticDomain];
+    
+    public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
@@ -71,7 +71,7 @@ public class RedModDeployTool : ITool
         // 3. Sort the redmods by their sort index
         // 4. Write the redmod names to the loadorder file using the `mod\{folder}` name
 
-        var redmods = loadout.Items 
+        var redmods = loadout.Items
             // Get all redmods
             .OfTypeLoadoutItemGroup()
             .OfTypeRedModLoadoutGroup()

@@ -5,5 +5,4 @@
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
-
 </Project>

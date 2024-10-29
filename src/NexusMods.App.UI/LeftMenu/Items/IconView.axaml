@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="40"
-    d:DesignWidth="184"
+    d:DesignHeight="50"
+    d:DesignWidth="300"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.IconView"
     x:TypeArguments="items:IIconViewModel"
@@ -15,14 +15,17 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <Design.DataContext>
-        <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some long Text" />
+        <items:IconDesignViewModel />
     </Design.DataContext>
+    
+    <!-- NOTE(insomnious): This left hand menu item is getting overhauled in near future due to needing active states etc.
+    This is a temporary solution with a lot of inline styles to get back working again -->
 
-    <navigation:NavigationControl Classes="LeftMenuItem" 
-                                  x:Name="ItemButton" 
-                                  Width="184" 
-                                  Height="36"
-                                  Padding="8,0,8,0">
+    <navigation:NavigationControl x:Name="ItemButton"
+                                  Type="Tertiary"
+                                  Fill="None"
+                                  Padding="8,4"
+                                  HorizontalAlignment="Stretch">
         <Grid ColumnDefinitions="Auto, *, Auto">
             <icons:UnifiedIcon Grid.Column="0" x:Name="LeftIcon" />
             <TextBlock
@@ -40,8 +43,9 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type system:String}">
-                        <Border Width="20" 
-                                Height="20" 
+                        <Border
+                                Padding="6,0"
+                                Height="20"
                                 CornerRadius="{StaticResource Rounded-full}" 
                                 Background="{StaticResource PrimaryModerate}">
                             <TextBlock
@@ -49,7 +53,7 @@
                                 TextAlignment="Center"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Classes="BodySMBold"
+                                Theme="{StaticResource BodySMBoldTheme}"
                                 Foreground="{StaticResource NeutralInverted}"
                                 Text="{CompiledBinding }"/>
                         </Border>

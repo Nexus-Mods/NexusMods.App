@@ -1,4 +1,8 @@
+using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -15,6 +19,9 @@ internal static class Verbs
 {
     internal static IServiceCollection AddCollectionVerbs(this IServiceCollection collection) =>
         collection
+#if DEBUG
+            .AddVerb(() => GatherCollectionDefinitions)
+#endif
             .AddVerb(() => InstallCollection);
 
 
@@ -39,6 +46,42 @@ internal static class Verbs
             throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
 
         var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile);
+
+        return 0;
+    }
+    
+    /// <summary>
+    /// This verb is only available in DEBUG builds, and is used to get large numbers of collection.json files. The code exists here incase we need
+    /// this behavior again in the future. Disabled in release builds to prevent people from running it without knowing what it does. 
+    /// </summary>
+    /// <returns></returns>
+    [Verb("gather-collection-definitions", "Downloads all the collection definitions for a given game, and extracts them to a folder")]
+    private static async Task<int> GatherCollectionDefinitions([Injected] IRenderer renderer,
+        [Option("g", "game", "Game to gather collection definitions for")] IGame game,
+        [Option("o", "output", "Output folder")] AbsolutePath outputFolder,
+        [Injected] TemporaryFileManager temporaryFileManager,
+        [Injected] NexusModsLibrary nexusModsLibraryService,
+        [Injected] INexusGraphQLClient nexusGraphQLClient,
+        [Injected] IFileExtractor fileExtractor,
+        [Injected] CancellationToken token)
+    {
+        var allCollections = await nexusGraphQLClient.CollectionsForGame.ExecuteAsync(game.GameId.ToString(), 0, 1000, token);
+        var collections = allCollections.Data!.Collections.Nodes;
+        
+        await renderer.Text("Found {0} collections", collections.Count);
+
+        foreach (var collection in collections)
+        {
+            var collFolder = outputFolder.Combine(collection.Slug + "_" + collection.LatestPublishedRevision!.RevisionNumber);
+            if (collFolder.DirectoryExists())
+                continue;
+            await renderer.Text("Downloading {0}", collection.Name);
+            await using var destination = temporaryFileManager.CreateFile();
+            _ = await nexusModsLibraryService.CreateCollectionDownloadJob(destination, CollectionSlug.From(collection.Slug), RevisionNumber.From((ulong)collection.LatestPublishedRevision!.RevisionNumber), token);
+            
+            await renderer.Text("Extracting {0}", collection.Name);
+            await fileExtractor.ExtractAllAsync(destination, collFolder, token);
+        }
 
         return 0;
     }

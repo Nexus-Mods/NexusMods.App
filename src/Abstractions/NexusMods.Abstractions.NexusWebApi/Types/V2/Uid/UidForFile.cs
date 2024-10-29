@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
 /// <summary>
@@ -45,6 +47,11 @@ public struct UidForFile
     public static UidForFile FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
 
     /// <summary>
+    /// Converts the UID to a string accepted by the V2 API.
+    /// </summary>
+    public string ToV2Api() => AsUlong.ToString();
+    
+    /// <summary>
     /// Reinterprets the current <see cref="UidForFile"/> as a single <see cref="ulong"/>.
     /// </summary>
     public ulong AsUlong => Unsafe.As<UidForFile, ulong>(ref this);
@@ -60,11 +67,11 @@ public struct UidForFile
 /// See <see cref="UidForFile"/> for more details.
 /// </summary>
 public class UidForFileAttribute(string ns, string name) 
-    : ScalarAttribute<UidForFile, ulong>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<UidForFile, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForFile.FromUlong(value);
+    protected override UidForFile FromLowLevel(ulong value, AttributeResolver resolver) => UidForFile.FromUlong(value);
 } 

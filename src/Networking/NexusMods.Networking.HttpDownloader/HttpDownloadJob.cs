@@ -44,11 +44,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     /// The destination of the download.
     /// </summary>
     public required AbsolutePath Destination { get; init; }
-
+    
     /// <summary>
     /// Only exists for extension by derived classes.
     /// </summary>
-    public ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
+    public virtual ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
     {
         return ValueTask.CompletedTask;
     }

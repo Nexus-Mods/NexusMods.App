@@ -6,11 +6,11 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.RedEngine.ModInstallers;
@@ -21,7 +21,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 [UsedImplicitly]
 public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
-    public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
+    public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
 
     public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
@@ -33,7 +33,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         => new Cyberpunk2077Synchronizer(provider);
 
     public override string Name => "Cyberpunk 2077";
-    public override GameDomain Domain => StaticDomain;
+    public override GameId GameId => GameIdStatic;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)

@@ -6,7 +6,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.DataModel;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -60,7 +60,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
         foreach (var (fileName, content) in files)
         {
             var data = Encoding.UTF8.GetBytes(content);
-            var hash = data.AsSpan().XxHash64();
+            var hash = data.AsSpan().xxHash3();
 
             var entry = new ArchivedFileEntry(
                 new MemoryStreamFactory(fileName.ToRelativePath(), new MemoryStream(data)),

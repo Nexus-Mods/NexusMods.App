@@ -1,6 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,7 +28,7 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.CurrentValue)
-                .Select(currentValue => Percent.CreateClamped(currentValue, 10))
+                .Select(currentValue => Percent.Create(current: currentValue, maximum: 10))
                 .BindToVM(this, vm => vm.Progress)
                 .DisposeWith(disposables);
         });

@@ -9,21 +9,52 @@ using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;
 
+[PublicAPI]
+public interface ITreeDataGridItemModel : IReactiveR3Object
+{
+    ReactiveProperty<bool> IsSelected { get; }
+}
+
 /// <summary>
 /// Base class for models of <see cref="Avalonia.Controls.TreeDataGrid"/> items.
 /// </summary>
-public class TreeDataGridItemModel : ReactiveR3Object;
+public class TreeDataGridItemModel : ReactiveR3Object, ITreeDataGridItemModel
+{
+    public ReactiveProperty<bool> IsSelected { get; } = new(value: false);
+}
+
+public interface ITreeDataGridItemModel<out TModel, TKey> : ITreeDataGridItemModel
+    where TModel : class, ITreeDataGridItemModel<TModel, TKey>
+    where TKey : notnull
+{
+    BindableReactiveProperty<bool> HasChildren { get; }
+
+    IEnumerable<TModel> Children { get; }
+
+    bool IsExpanded { get; [UsedImplicitly] set; }
+
+    public static HierarchicalExpanderColumn<TModel> CreateExpanderColumn(IColumn<TModel> innerColumn)
+    {
+        return new HierarchicalExpanderColumn<TModel>(
+            inner: innerColumn,
+            childSelector: static model => model.Children,
+            hasChildrenSelector: static model => model.HasChildren.Value,
+            isExpandedSelector: static model => model.IsExpanded
+        )
+        {
+            Tag = "expander",
+        };
+    }
+}
 
 /// <summary>
 /// Generic variant of <see cref="TreeDataGridItemModel"/>.
 /// </summary>
 [PublicAPI]
-public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
-    where TModel : TreeDataGridItemModel<TModel, TKey>
+public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeDataGridItemModel<TModel, TKey>
+    where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    public ReactiveProperty<bool> IsSelected { get; } = new(value: false);
-
     public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
     public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
@@ -145,21 +176,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel
     }
 
     [MustDisposeResource] protected static IDisposable WhenModelActivated<TItemModel>(TItemModel model, Action<TItemModel, CompositeDisposable> block)
-        where TItemModel : TreeDataGridItemModel
+        where TItemModel : ITreeDataGridItemModel
     {
         return model.WhenActivated(block);
-    }
-
-    public static HierarchicalExpanderColumn<TModel> CreateExpanderColumn(IColumn<TModel> innerColumn)
-    {
-        return new HierarchicalExpanderColumn<TModel>(
-            inner: innerColumn,
-            childSelector: static model => model.Children,
-            hasChildrenSelector: static model => model.HasChildren.Value,
-            isExpandedSelector: static model => model.IsExpanded
-        )
-        {
-            Tag = "expander",
-        };
     }
 }

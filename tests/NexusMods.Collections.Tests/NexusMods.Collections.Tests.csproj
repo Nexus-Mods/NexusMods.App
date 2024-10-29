@@ -8,14 +8,7 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="xunit"/>
-        <PackageReference Include="xunit.runner.visualstudio"/>
-    </ItemGroup>
-
+    
     <ItemGroup>
         <Using Include="Xunit"/>
     </ItemGroup>
@@ -23,6 +16,10 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.Collections\NexusMods.Collections.csproj" />
       <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="CollectionInstallTests.CanInstallCollections.verified.txt" />
     </ItemGroup>
 
 </Project>

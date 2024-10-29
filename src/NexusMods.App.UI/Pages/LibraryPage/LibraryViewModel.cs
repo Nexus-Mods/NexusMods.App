@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -22,6 +23,7 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ObservableCollections;
+using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -60,6 +62,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
+        IGameDomainToGameIdMappingCache gameIdMappingCache,
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
@@ -69,8 +72,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var ticker = R3.Observable
             .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
-            .Select(_ => DateTime.Now)
-            .Publish(initialValue: DateTime.Now);
+            .Select(_ => TimeProvider.System.GetLocalNow())
+            .Publish(initialValue: TimeProvider.System.GetLocalNow());
 
         var loadoutObservable = LoadoutSubject
             .Where(static id => id.HasValue)
@@ -99,7 +102,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = _loadout.InstallationInstance.Game;
-        var gameDomain = game.Domain;
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
@@ -146,10 +148,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
-
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken),
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = (await gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
+                var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
+                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
+            },
             awaitOperation: AwaitOperation.Parallel,
             configureAwait: false
         );
@@ -167,10 +172,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
                 {
-                    foreach (var id in message.Ids)
+                    if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
                     {
-                        var libraryItem = LibraryItem.Load(_connection.Db, id);
-                        if (!libraryItem.IsValid()) continue;
+                        foreach (var id in multipleIds)
+                        {
+                            var libraryItem = LibraryItem.Load(_connection.Db, id);
+                            if (!libraryItem.IsValid()) continue;
+                            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        var libraryItem = LibraryItem.Load(_connection.Db, singleId);
+                        if (!libraryItem.IsValid()) return;
                         await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
                     }
                 },
@@ -198,10 +212,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     private LibraryItemId[] GetSelectedIds()
     {
-        return Adapter.SelectedModels
-            .SelectMany(model => model.GetLoadoutItemIds())
-            .Distinct()
-            .ToArray();
+        var ids1 = Adapter.SelectedModels
+            .OfType<IIsParentLibraryItemModel>()
+            .SelectMany(static model => model.LibraryItemIds);
+
+        var ids2 = Adapter.SelectedModels
+            .OfType<IIsChildLibraryItemModel>()
+            .Select(static model => model.LibraryItemId);
+
+        return ids1.Concat(ids2).Distinct().ToArray();
     }
 
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -261,22 +280,22 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 }
 
-public readonly record struct InstallMessage(IReadOnlyCollection<LibraryItemId> Ids);
+public readonly record struct InstallMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload);
 
-public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, EntityId>,
+public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<InstallMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
-    private readonly ConnectableObservable<DateTime> _ticker;
+    private readonly ConnectableObservable<DateTimeOffset> _ticker;
     private readonly LibraryFilter _libraryFilter;
 
     public Subject<InstallMessage> MessageSubject { get; } = new();
-    private readonly Dictionary<LibraryItemModel, IDisposable> _commandDisposables = new();
+    private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;
     public LibraryTreeDataGridAdapter(
         IServiceProvider serviceProvider,
-        ConnectableObservable<DateTime> ticker,
+        ConnectableObservable<DateTimeOffset> ticker,
         LibraryFilter libraryFilter)
     {
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
@@ -298,33 +317,53 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
         });
     }
 
-    protected override void BeforeModelActivationHook(LibraryItemModel model)
+    protected override void BeforeModelActivationHook(ILibraryItemModel model)
     {
-        model.Ticker = _ticker;
-
-        var disposable = model.InstallCommand.Subscribe(MessageSubject, static (ids, subject) =>
+        if (model is IHasTicker hasTicker)
         {
-            subject.OnNext(new InstallMessage(ids));
-        });
+            hasTicker.Ticker = _ticker;
+        }
 
-        var didAdd = _commandDisposables.TryAdd(model, disposable);
-        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+        if (model is ILibraryItemWithInstallAction withInstallAction)
+        {
+            var disposable = withInstallAction.InstallItemCommand.Subscribe(MessageSubject, static (model, subject) =>
+            {
+                var payload = model switch
+                {
+                    IIsParentLibraryItemModel parent => OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId>.FromT0(parent.LibraryItemIds),
+                    IIsChildLibraryItemModel child => child.LibraryItemId,
+                    _ => throw new NotSupportedException(),
+                };
+
+                subject.OnNext(new InstallMessage(payload));
+            });
+
+            var didAdd = _commandDisposables.TryAdd(model, disposable);
+            Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+        }
+
 
         base.BeforeModelActivationHook(model);
     }
 
-    protected override void BeforeModelDeactivationHook(LibraryItemModel model)
+    protected override void BeforeModelDeactivationHook(ILibraryItemModel model)
     {
-        model.Ticker = null;
+        if (model is IHasTicker hasTicker)
+        {
+            hasTicker.Ticker = null;
+        }
 
-        var didRemove = _commandDisposables.Remove(model, out var disposable);
-        Debug.Assert(didRemove, "subscription for the model should exist");
-        disposable?.Dispose();
+        if (model is ILibraryItemWithAction)
+        {
+            var didRemove = _commandDisposables.Remove(model, out var disposable);
+            Debug.Assert(didRemove, "subscription for the model should exist");
+            disposable?.Dispose();
+        }
 
         base.BeforeModelDeactivationHook(model);
     }
 
-    protected override IObservable<IChangeSet<LibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         var observables = viewHierarchical
             ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems(_libraryFilter))
@@ -333,18 +372,18 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<LibraryItemModel, 
         return observables.MergeChangeSets();
     }
 
-    protected override IColumn<LibraryItemModel>[] CreateColumns(bool viewHierarchical)
+    protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = LibraryItemModel.CreateNameColumn();
+        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>();
 
         return
         [
-            viewHierarchical ? LibraryItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
-            LibraryItemModel.CreateVersionColumn(),
-            LibraryItemModel.CreateSizeColumn(),
-            LibraryItemModel.CreateAddedAtColumn(),
-            LibraryItemModel.CreateInstalledAtColumn(),
-            LibraryItemModel.CreateInstallColumn(),
+            viewHierarchical ? ILibraryItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithVersion>(),
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithSize>(),
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithDownloadedDate>(),
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithInstalledDate>(),
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithAction>(),
         ];
     }
 

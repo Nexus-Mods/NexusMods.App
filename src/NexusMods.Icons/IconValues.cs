@@ -1,6 +1,9 @@
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using NexusMods.Icons.SimpleVector;
+using Projektanker.Icons.Avalonia;
 
 namespace NexusMods.Icons;
 
@@ -61,6 +64,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/check-circle/
     public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
+    
+    // https://pictogrammers.com/library/mdi/icon/check-circle-outline/
+    public static readonly IconValue CheckCircleOutline = new ProjektankerIcon("mdi-check-circle-outline");
     
     // https://pictogrammers.com/library/mdi/icon/thumb-up/
     public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
@@ -126,6 +132,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/bell/
     public static readonly IconValue NotificationImportant = new ProjektankerIcon("mdi-bell");
+    
+    // https://pictogrammers.com/library/mdi/icon/information-outline/
+    public static readonly IconValue Info = new ProjektankerIcon("mdi-information-outline");
 
 #endregion
 
@@ -335,6 +344,8 @@ public static class IconValues
 #endregion
 
 #region Custom Icons
+    
+    
 
     // https://pictogrammers.com/library/mdi/icon/alert-octagon/
     public static readonly IconValue Alert = new ProjektankerIcon("mdi-alert-octagon");
@@ -448,6 +459,7 @@ public static class IconValues
         new Rect(0, 0, 20, 20)
     ));
     
-    
+    public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
+
 #endregion
 }

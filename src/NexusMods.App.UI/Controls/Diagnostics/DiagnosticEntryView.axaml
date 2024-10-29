@@ -20,7 +20,7 @@
             <panels:FlexPanel x:Name="EntryFlexPanel">
                 <icons:UnifiedIcon x:Name="SeverityIcon" />
                 <TextBlock x:Name="DescriptionText" />
-                <icons:UnifiedIcon x:Name="NavigationIcon" Classes="ChevronRight" />
+                <icons:UnifiedIcon x:Name="NavigationIcon" Value="{x:Static icons:IconValues.ChevronRight}" />
             </panels:FlexPanel>
         </navigation:NavigationControl>
     </Border>

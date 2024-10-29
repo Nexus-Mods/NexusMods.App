@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using static NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles.Helpers;

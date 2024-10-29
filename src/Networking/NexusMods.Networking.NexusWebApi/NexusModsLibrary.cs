@@ -1,7 +1,7 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -16,6 +16,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using StrawberryShake;
+using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -43,16 +45,16 @@ public class NexusModsLibrary
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
         ModId modId,
-        GameDomain gameDomain,
+        GameId gameId,
         CancellationToken cancellationToken = default)
     {
         var uid = new UidForMod
         {
-            GameId = GameId.FromGameDomain(gameDomain),
+            GameId = gameId,
             ModId = modId,
         };
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
-        if (modPageEntities.TryGetFirst(x => x.GameDomain == gameDomain, out var modPage)) return modPage;
+        if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
 
         using var tx = _connection.BeginTransaction();
 
@@ -138,37 +140,32 @@ public class NexusModsLibrary
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
         FileId fileId,
         NexusModsModPageMetadata.ReadOnly modPage,
-        GameDomain gameDomain,
         CancellationToken cancellationToken = default)
     {
         var uid = new UidForFile(fileId, modPage.Uid.GameId);
         var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
-        if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file)) return file;
+        if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file))
+            return file;
 
         using var tx = _connection.BeginTransaction();
 
-        var filesResponse = await _apiClient.ModFilesAsync(gameDomain.ToString(), modPage.Uid.ModId, cancellationToken);
-        var files = filesResponse.Data.Files;
+        var filesResponse = await _gqlClient.ModFilesByUid.ExecuteAsync([uid.ToV2Api()], cancellationToken);
+        filesResponse.EnsureNoErrors();
 
-        if (!files.TryGetFirst(x => x.FileId == fileId, out var fileInfo))
-            throw new NotImplementedException();
+        if (filesResponse.Data == null)
+            throw new Exception("Could not find file, despite knowing correct UID. Is our UID correct? Or is backend borked?");
 
-        var size = Optional<Size>.None;
-        if (fileInfo.SizeInBytes.HasValue)
-            size = Size.FromLong((long)fileInfo.SizeInBytes!);
-
+        var fileNode = filesResponse.Data.ModFilesByUid.Nodes.First();
+        var size = Size.FromLong(long.Parse(fileNode.SizeInBytes ?? "0"));
         var newFile = new NexusModsFileMetadata.New(tx)
         {
-            Name = fileInfo.Name,
-            Version = fileInfo.Version,
+            Name = fileNode.Name,
+            Version = fileNode.Version,
             ModPageId = modPage,
-            Uid = UidForFile.FromUlong((ulong)fileInfo.Uid),
-            UploadedAt = fileInfo.UploadedTime,
-            Size = size.HasValue ? size.Value : null,
+            Uid = uid,
+            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(fileNode.Date).UtcDateTime,
+            Size = size,
         };
-        
-        if (fileInfo.SizeInBytes.HasValue)
-            newFile.Size = Size.FromLong(fileInfo.SizeInBytes!.Value);
 
         var txResults = await tx.Commit();
         return txResults.Remap(newFile);
@@ -179,7 +176,7 @@ public class NexusModsLibrary
         Optional<(NXMKey, DateTime)> nxmData,
         CancellationToken cancellationToken = default)
     {
-        Response<DownloadLink[]> links;
+        Abstractions.NexusWebApi.DTOs.Response<DownloadLink[]> links;
 
         if (nxmData.HasValue)
         {
@@ -217,10 +214,12 @@ public class NexusModsLibrary
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NXMModUrl url,
+        IGameDomainToGameIdMappingCache mappingCache,
         CancellationToken cancellationToken)
     {
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        return await CreateDownloadJob(destination, GameDomain.From(url.Game), url.ModId, url.FileId, nxmData, cancellationToken);
+        var gameId = (await mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        return await CreateDownloadJob(destination, gameId, url.ModId, url.FileId, nxmData, cancellationToken);
     }
     
     /// <summary>
@@ -228,14 +227,14 @@ public class NexusModsLibrary
     /// </summary>
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
-        GameDomain gameDomain,
+        GameId gameId,
         ModId modId,
         FileId fileId,
         Optional<(NXMKey, DateTime)> nxmData = default,
         CancellationToken cancellationToken = default)
     {
-        var modPage = await GetOrAddModPage(modId, gameDomain, cancellationToken);
-        var file = await GetOrAddFile(fileId, modPage, gameDomain, cancellationToken);
+        var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
+        var file = await GetOrAddFile(fileId, modPage, cancellationToken);
         
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
         

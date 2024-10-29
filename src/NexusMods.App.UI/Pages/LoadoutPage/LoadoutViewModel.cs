@@ -164,7 +164,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 configureAwait: false).AddTo(disposables);
 
                 // Compute the target group for the ViewFilesCommand
-                Adapter.SelectedModels.ObserveCountChanged()
+                Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
                     .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
                     .ObserveOnThreadPool()
                     .Select(_connection,
@@ -268,7 +268,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
 
         return
         [
-            viewHierarchical ? LoadoutItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
+            viewHierarchical ? ITreeDataGridItemModel<LoadoutItemModel, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             // TODO: LoadoutItemModel.CreateVersionColumn(),
             // TODO: LoadoutItemModel.CreateSizeColumn(),
             LoadoutItemModel.CreateInstalledAtColumn(),

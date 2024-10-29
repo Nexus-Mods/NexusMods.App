@@ -1,4 +1,4 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.IO;
@@ -74,6 +74,11 @@ public interface IFileStore
     /// <param name="token"></param>
     /// <returns></returns>
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
+
+    /// <summary>
+    /// Load the given file into memory, 
+    /// </summary>
+    Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
     /// <summary>
     /// Retrieves hashes of all files associated with this FileStore.

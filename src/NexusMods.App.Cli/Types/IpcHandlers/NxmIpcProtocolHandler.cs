@@ -2,7 +2,6 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -11,10 +10,10 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Collections;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
@@ -30,8 +29,8 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
     private readonly ILogger<NxmIpcProtocolHandler> _logger;
     private readonly ILoginManager _loginManager;
-    private readonly DownloadService _downloadService;
     private readonly OAuth _oauth;
+    private readonly IGameDomainToGameIdMappingCache _cache;
 
     private readonly IServiceProvider _serviceProvider;
 
@@ -41,15 +40,15 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     public NxmIpcProtocolHandler(
         IServiceProvider serviceProvider,
         ILogger<NxmIpcProtocolHandler> logger, 
-        DownloadService downloadService, 
         OAuth oauth,
+        IGameDomainToGameIdMappingCache cache,
         ILoginManager loginManager)
     {
         _serviceProvider = serviceProvider;
 
         _logger = logger;
-        _downloadService = downloadService;
         _oauth = oauth;
+        _cache = cache;
         _loginManager = loginManager;
     }
 
@@ -95,10 +94,11 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private async Task HandleCollectionUrl(NXMCollectionUrl collectionUrl)
     {
         var domain = GameDomain.From(collectionUrl.Game);
+        var gameId = (await _cache.TryGetIdAsync(domain, CancellationToken.None)).Value.Value;
         var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
-        if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.Domain == domain, out var game))
+        if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.GameId == gameId, out var game))
             return;
                     
         var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
@@ -125,9 +125,10 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+        var cache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
 
         await using var destination = temporaryFileManager.CreateFile();
-        var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
+        var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cache, cancellationToken: cancel);
 
         var libraryJob = await library.AddDownload(downloadJob);
         _logger.LogInformation("{Result}", libraryJob);

@@ -1,0 +1,30 @@
+﻿ModuleShortDesc:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="WaypointInsideEmeraldGrove" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="Waypoint Inside Emerald Grove" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="e342ee75-f7c9-4aeb-b6de-403991578337" />
+  <attribute id="Version64" type="int64" value="72057598332895232" />
+</node>
+Version: 2.0.2.0
+Dependency:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="VolitionCabinet" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="VolitionCabinet" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="f97b43be-7398-4ea5-8fe2-be7eb3d4b5ca" />
+  <attribute id="Version64" type="int64" value="36028799166447616" />
+</node>
+SemanticVersion: 1.0.1.0
+Dependency:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="BG3MCM" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="Mod Configuration Menu" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="755a8a72-407f-4f0d-9a33-274ac0f0b53d" />
+  <attribute id="Version64" type="int64" value="36028797018963968" />
+</node>
+SemanticVersion: 1.0.0.0

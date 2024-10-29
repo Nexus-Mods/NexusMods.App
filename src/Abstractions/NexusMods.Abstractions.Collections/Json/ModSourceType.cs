@@ -6,5 +6,8 @@ namespace NexusMods.Abstractions.Collections.Json;
 /// </summary>
 public enum ModSourceType
 {
+    browse,
+    direct,
     nexus, 
+    bundle,
 }

@@ -1,23 +1,18 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// Bytes.
 /// </summary>
-public class BytesAttribute(string ns, string name) : BlobAttribute<byte[]>(ns, name)
+public class BytesAttribute(string ns, string name) : ScalarAttribute<Memory<byte>, Memory<byte>, BlobSerializer>(ns, name)
 {
-    /// <inheritdoc/>
-    protected override byte[] FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver) => value.ToArray();
+    /// <inheritdoc />
+    protected override Memory<byte> ToLowLevel(Memory<byte> value) => value;
 
-    /// <inheritdoc/>
-    protected override void WriteValue<TWriter>(byte[] value, TWriter writer)
-    {
-        var span = writer.GetSpan(sizeHint: value.Length);
-
-        value.CopyTo(span);
-        writer.Advance(value.Length);
-    }
+    /// <inheritdoc />
+    protected override Memory<byte> FromLowLevel(Memory<byte> value, AttributeResolver resolver) => value;
 }
