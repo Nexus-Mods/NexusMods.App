@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
@@ -24,7 +24,7 @@ public class LocalHttpServer : IDisposable
         _listener.Start();
 
         LargeData = GenerateLargeData();
-        LargeDataHash = LargeData.AsSpan().XxHash64();
+        LargeDataHash = LargeData.AsSpan().xxHash3();
 
         StartLoop();
     }

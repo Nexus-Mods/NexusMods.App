@@ -8,7 +8,7 @@ using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

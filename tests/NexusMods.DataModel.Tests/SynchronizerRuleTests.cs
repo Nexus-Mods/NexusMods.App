@@ -3,7 +3,7 @@ using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using Xunit.DependencyInjection;
 using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Actions;
 using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Signature;

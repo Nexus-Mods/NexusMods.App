@@ -7,7 +7,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.DataModel;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -125,7 +125,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
         foreach (var (fileName, content) in files)
         {
             var data = Encoding.UTF8.GetBytes(content);
-            var hash = data.AsSpan().XxHash64();
+            var hash = data.AsSpan().xxHash3();
             fileHashes[fileName] = hash;
 
             var entry = new ArchivedFileEntry(

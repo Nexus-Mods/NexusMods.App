@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Games.TestFramework.FluentAssertionExtensions;
@@ -24,7 +24,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         using var tx = Connection.BeginTransaction();
         
         var manifestData = "{}";
-        var manifestHash = manifestData.XxHash64AsUtf8();
+        var manifestHash = manifestData.xxHash3AsUtf8();
         
         var smapiMod = new SMAPIModLoadoutItem.New(tx, out var modId)
         {
