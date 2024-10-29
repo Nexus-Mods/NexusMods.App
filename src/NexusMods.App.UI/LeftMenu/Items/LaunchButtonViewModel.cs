@@ -48,10 +48,10 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private async Task LaunchGame(CancellationToken token)
     {
+        var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
         SetLabelToRunning();
         try
         {
-            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
             var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
             await Task.Run(async () =>
             {
@@ -60,7 +60,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         }
         catch (ExecutableInUseException)
         {
-            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
         }
         catch (Exception ex)
         {

@@ -119,7 +119,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         }
         catch (ExecutableInUseException)
         {
-            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController);
+            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
         }
     }
 }

@@ -14,12 +14,12 @@ public class MessageBoxOkViewModel : AOverlayViewModel<IMessageBoxOkViewModel, U
     /// <summary>
     /// Shows the 'Game is already Running' error when you try to synchronize and a game is already running (usually on Windows).
     /// </summary>
-    public static async Task ShowGameAlreadyRunningError(IOverlayController overlayController)
+    public static async Task ShowGameAlreadyRunningError(IOverlayController overlayController, string gameName)
     {
         var viewModel = new MessageBoxOkViewModel()
         {
             Title = Language.ErrorGameAlreadyRunning_Title,
-            Description = Language.ErrorGameAlreadyRunning_Description,
+            Description = string.Format(Language.ErrorGameAlreadyRunning_Description, gameName) ,
         };
         await overlayController.EnqueueAndWait(viewModel);
     }
