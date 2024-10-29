@@ -690,9 +690,8 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The game has already been started outside of the App.
-        ///
-        ///It is not possible to currently apply a loadout..
+        ///   Looks up a localized string similar to It looks like {0} is already running.
+        ///To apply changes or launch the game again, please close the game first..
         /// </summary>
         public static string ErrorGameAlreadyRunning_Description {
             get {
@@ -701,7 +700,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Game already running.
+        ///   Looks up a localized string similar to Game is currently running.
         /// </summary>
         public static string ErrorGameAlreadyRunning_Title {
             get {
