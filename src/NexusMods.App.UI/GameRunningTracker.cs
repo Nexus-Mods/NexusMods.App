@@ -14,7 +14,6 @@ namespace NexusMods.App.UI;
 /// </remarks>
 public class GameRunningTracker
 {
-    private readonly IJobMonitor _monitor;
     private readonly IObservable<bool> _observable;
     
     /// <summary>
@@ -25,13 +24,11 @@ public class GameRunningTracker
 
     public GameRunningTracker(IJobMonitor monitor)
     {
-        _monitor = monitor;
-        
         // Note(sewer): Yes, this technically can lead to a race condition;
         // however it's not possible to start a game before activating GameRunningTracker 
         // singleton for an end user.
-        var numRunning = _monitor.Jobs.Count(x => x is { Definition: IRunGameTool } && x.Status.IsActive());
-        _observable = _monitor.GetObservableChangeSet<IRunGameTool>()
+        var numRunning = monitor.Jobs.Count(x => x is { Definition: IRunGameTool } && x.Status.IsActive());
+        _observable = monitor.GetObservableChangeSet<IRunGameTool>()
             .TransformOnObservable(job => job.ObservableStatus)
             .QueryWhenChanged(query => query.Items.Any(x => x.IsActive()))
             .StartWith(numRunning > 0)
