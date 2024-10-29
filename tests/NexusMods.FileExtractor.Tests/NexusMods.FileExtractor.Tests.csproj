@@ -15,6 +15,10 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
+    </ItemGroup>
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>

@@ -119,12 +119,12 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         return string.Format(Language.LoadoutCardViewModel_FormatNumMods_Mods__0_, numMods);
     }
     
-    private static string FormatCreatedTime(DateTime creationTime)
+    private static string FormatCreatedTime(DateTimeOffset creationTime)
     {
         return string.Format(Language.LoadoutCardViewModel_CreationTimeConverter_Created__0_, creationTime.Humanize());
     }
     
-    private static string FormatLastAppliedTime(DateTime lastAppliedTime)
+    private static string FormatLastAppliedTime(DateTimeOffset lastAppliedTime)
     {
         var stringTime = lastAppliedTime == DateTime.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
         return string.Format(Language.LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_, stringTime);

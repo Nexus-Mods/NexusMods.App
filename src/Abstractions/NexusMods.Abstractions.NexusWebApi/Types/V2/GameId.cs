@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 
@@ -18,7 +19,7 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 /// Game ID attribute, for game identifiers from the GraphQL (V2) API.
 /// </summary>
 public class GameIdAttribute(string ns, string name) 
-    : ScalarAttribute<GameId, uint>(ValueTag.UInt32, ns, name)
+    : ScalarAttribute<GameId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(GameId value) => value.Value;

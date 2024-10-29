@@ -24,7 +24,7 @@ public static class EntityExtensions
     /// <param name="model"></param>
     /// <param name="dateTime">A default value to return if the model doesn't exist.</param>
     /// <returns></returns>
-    public static DateTime GetCreatedAt<T>(this T model, DateTime? dateTime = null)
+    public static DateTimeOffset GetCreatedAt<T>(this T model, DateTime? dateTime = null)
     where T : IReadOnlyModel
     {
         if (model.Count == 0)

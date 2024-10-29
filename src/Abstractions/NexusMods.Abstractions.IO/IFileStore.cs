@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.IO;

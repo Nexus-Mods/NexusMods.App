@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -59,17 +60,11 @@ public readonly partial struct GameStore
 /// <summary>
 /// An attribute that contains the name of a game store.
 /// </summary>
-public class GameStoreAttribute(string ns, string name) : ScalarAttribute<GameStore, string>(ValueTag.Ascii, ns, name)
+public class GameStoreAttribute(string ns, string name) : ScalarAttribute<GameStore, string, AsciiSerializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(GameStore value)
-    {
-        return value.Value;
-    }
+    protected override string ToLowLevel(GameStore value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameStore FromLowLevel(string value, AttributeResolver resolver)
-    {
-        return GameStore.From(value);
-    }
+    protected override GameStore FromLowLevel(string value, AttributeResolver resolver) => GameStore.From(value);
 }

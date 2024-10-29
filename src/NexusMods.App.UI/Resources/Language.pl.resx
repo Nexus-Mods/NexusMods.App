@@ -207,10 +207,10 @@
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
 		<value>Przeglądaj wszystkie gry</value>
 	</data>
-	<data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+	<data name="FileOriginPage_AddMod" xml:space="preserve">
 		<value>Dodaj</value>
 	</data>
-	<data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+	<data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
 		<value>Dodaj (zaawansowane)</value>
 	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
@@ -536,7 +536,7 @@
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
 		<value>Dodaj mod do swojej listy modów</value>
 	</data>
-	<data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
+	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
 		<value>Usuń moda z biblioteki, aby zwolnić miejsce na dysku</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
@@ -660,7 +660,7 @@
 	<data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
 		<value>Usuń zestaw</value>
 	</data>
-	<data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+	<data name="FileOriginPage_DeleteMod" xml:space="preserve">
 		<value>Usuń</value>
 	</data>
 	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">

@@ -1,6 +1,6 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using OneOf;
 
 namespace NexusMods.App.UI;

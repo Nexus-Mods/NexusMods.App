@@ -4,13 +4,12 @@ using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.Abstractions.Resources.DB;
 
 [PublicAPI]
-public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : IResourceLoader<EntityId, TData>
+public sealed class IdentifierLoader<TResourceIdentifier, TData> : IResourceLoader<EntityId, TData>
     where TResourceIdentifier : notnull
     where TData : notnull
-    where TLowerLevel : notnull
 {
     private readonly IConnection _connection;
-    private readonly Attribute<TResourceIdentifier, TLowerLevel> _attribute;
+    private readonly IReadableAttribute<TResourceIdentifier> _attribute;
     private readonly AttributeId _attributeId;
 
     private readonly IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, TData> _innerLoader;
@@ -20,7 +19,7 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : 
     /// </summary>
     public IdentifierLoader(
         IConnection connection,
-        Attribute<TResourceIdentifier, TLowerLevel> attribute,
+        IReadableAttribute<TResourceIdentifier> attribute,
         IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, TData> innerLoader)
     {
         _connection = connection;
@@ -53,17 +52,16 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData, TLowerLevel> : 
 
 public static partial class ExtensionsMethods
 {
-    public static IResourceLoader<EntityId, TData> EntityIdToIdentifier<TResourceIdentifier, TData, TLowerLevel>(
+    public static IResourceLoader<EntityId, TData> EntityIdToIdentifier<TResourceIdentifier, TData>(
         this IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, TData> inner,
         IConnection connection,
-        Attribute<TResourceIdentifier, TLowerLevel> attribute)
+        IReadableAttribute<TResourceIdentifier> attribute)
         where TResourceIdentifier : notnull
         where TData : notnull
-        where TLowerLevel : notnull
     {
         return inner.Then(
             state: (connection, attribute),
-            factory: static (input, inner) => new IdentifierLoader<TResourceIdentifier,TData,TLowerLevel>(
+            factory: static (input, inner) => new IdentifierLoader<TResourceIdentifier,TData>(
                 connection: input.connection,
                 attribute: input.attribute,
                 innerLoader: inner

@@ -2,7 +2,8 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -31,7 +32,7 @@ public class HttpDownloadJobWorkerTests
         outputPath.Path.FileExists.Should().BeTrue();
         outputPath.Path.FileInfo.Size.Should().Be(Size.MB * 100);
 
-        var hash = await outputPath.Path.XxHash64Async();
-        hash.Should().Be(Hash.From(0xBEEADB5B05BED390));
+        var hash = await outputPath.Path.XxHash3Async();
+        hash.Should().Be(Hash.From(0x2330001AD4114867));
     }
 }

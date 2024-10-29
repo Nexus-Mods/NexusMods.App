@@ -298,9 +298,9 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             if (yloadout == null) return 1;
             
             if (xloadout.Value.Value.Installation.Path != yloadout.Value.Value.Installation.Path)
-                return DateTime.Compare( xloadout.Value.Value.Installation.GetCreatedAt(), yloadout.Value.Value.Installation.GetCreatedAt());
+                return DateTimeOffset.Compare( xloadout.Value.Value.Installation.GetCreatedAt(), yloadout.Value.Value.Installation.GetCreatedAt());
             
-            return DateTime.Compare(xloadout.Value.Value.GetCreatedAt(), yloadout.Value.Value.GetCreatedAt());
+            return DateTimeOffset.Compare(xloadout.Value.Value.GetCreatedAt(), yloadout.Value.Value.GetCreatedAt());
         }
     }
 }
