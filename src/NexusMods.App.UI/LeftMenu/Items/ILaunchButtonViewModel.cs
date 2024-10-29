@@ -28,20 +28,4 @@ public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
     /// </summary>
     public string Label { get; }
     public Percent? Progress { get; }
-
-    /// <summary>
-    /// Refreshes initial state obtained during initialization of the view model.
-    /// </summary>
-    /// <remarks>
-    ///     The Nexus App persists the left menu as part of workspaces in eternity,
-    ///     meaning that spawning a new view will not re-evaluate existing state
-    ///     if the workspace has already been created. Some state however needs to be
-    ///     shared between workspaces, for example, if a given game is already running.
-    ///
-    ///     This achieves this in the meantime; however in the longer run, the code
-    ///     around the 'launch' button and friends could be further refactored here.
-    ///     Whether we're running games, and which games we're running should be considered
-    ///     global state, per game, as opposed to ViewModel specific state.
-    /// </remarks>
-    public void Refresh();
 }

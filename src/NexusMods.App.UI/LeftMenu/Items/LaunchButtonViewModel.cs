@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
@@ -41,7 +42,17 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         _monitor = monitor;
         _overlayController = overlayController;
         _gameRunningTracker = gameRunningTracker;
-        Refresh();
+        
+        this.WhenActivated(cd =>
+        {
+            _gameRunningTracker.GetWithCurrentStateAsStarting().Subscribe(isRunning =>
+            {
+                if (isRunning)
+                    SetLabelToRunning();
+                else
+                    SetLabelToLaunch();
+            }).DisposeWith(cd);
+        });
 
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
@@ -66,16 +77,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         {
             _logger.LogError($"Error launching game: {ex.Message}\n{ex.StackTrace}");
         }
-        Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
+        SetLabelToLaunch();
     }
-    private void SetLabelToRunning()
-    {
-        Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
-    }
-    
-    public void Refresh()
-    {
-        if (_gameRunningTracker.GetInitialRunningState())
-            SetLabelToRunning();
-    }
+    private void SetLabelToRunning() => Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
+    private void SetLabelToLaunch() => Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 }

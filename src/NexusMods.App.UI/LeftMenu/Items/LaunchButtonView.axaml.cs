@@ -14,17 +14,34 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
         {
             var isRunning = ViewModel!.IsRunningObservable;
             var isNotRunning = ViewModel!.IsRunningObservable.Select(running => !running);
-            ViewModel.Refresh();
             
             // Hide launch button when running
-            isNotRunning.BindToUi(this, view => view.LaunchButton.IsVisible)
+            isNotRunning
+                .OnUI()
+                .Subscribe(x =>
+                    {
+                        LaunchButton.IsVisible = x;
+                    }
+                )
                 .DisposeWith(d);
 
-            isNotRunning.BindToUi(this, view => view.LaunchButton.IsEnabled)
+            isNotRunning
+                .OnUI()
+                .Subscribe(x =>
+                    {
+                        LaunchButton.IsEnabled = x;
+                    }
+                )
                 .DisposeWith(d);
 
             // Show progress bar when running
-            isRunning.BindToUi(this, view => view.ProgressBarControl.IsVisible)
+            isRunning
+                .OnUI()
+                .Subscribe(x =>
+                    {
+                        ProgressBarControl.IsVisible = x;
+                    }
+                )
                 .DisposeWith(d);
             
             // Bind the 'launch' button.

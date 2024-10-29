@@ -22,7 +22,6 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
 
     [Reactive]
     public Percent? Progress { get; set; }
-    public void Refresh() { }
 
     public LaunchButtonDesignViewModel()
     {
