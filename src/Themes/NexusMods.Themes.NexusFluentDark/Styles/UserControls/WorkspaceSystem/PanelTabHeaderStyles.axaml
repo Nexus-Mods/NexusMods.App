@@ -9,26 +9,26 @@
 
         <Style Selector="^ Border#Container:not(.Selected)">
             <Setter Property="Background" Value="Transparent" />
-
-            <Style Selector="^ icons|UnifiedIcon">
+        
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 <Setter Property="Size" Value="20" />
             </Style>
-
+        
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Style>
-
+        
         <Style Selector="^ Border#Container.Selected">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-
-            <Style Selector="^ icons|UnifiedIcon">
+        
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 <Setter Property="Size" Value="20" />
             </Style>
-
+        
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 <Setter Property="VerticalAlignment" Value="Center" />

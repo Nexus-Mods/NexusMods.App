@@ -6,6 +6,8 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
@@ -43,12 +45,17 @@
                                     </ItemsControl>
                                 </StackPanel>
                                 <Separator x:Name="OneTabLine" Grid.Column="1"/>
+                                
                                 <Border Grid.Column="2" x:Name="AddTabButton1Container"
-                                        HorizontalAlignment="Stretch">
-                                    <Button x:Name="AddTabButton1"
-                                            Margin="12 12 10 12"
-                                            Classes="PanelTitlebar AddTab" >
-                                    </Button>
+                                        HorizontalAlignment="Stretch"
+                                        Padding="12,0,0,0">
+                                    
+                                    <controls:StandardButton x:Name="AddTabButton1"
+                                                             ShowLabel="False"
+                                                             ShowIcon="Left"
+                                                             LeftIcon="{x:Static icons:IconValues.Add}"
+                                                             Fill="None" />
+                                    
                                 </Border>
                                 <ToolTip.Tip>
                                     <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
@@ -57,17 +64,21 @@
 
                         </ScrollViewer>
 
-                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">
+                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder"
+                                Padding="12,0,0,0">
                             <StackPanel Orientation="Horizontal">
-                                <Button
-                                    x:Name="AddTabButton2"
-                                    Margin="12 12 10 12"
-                                    Classes="PanelTitlebar AddTab" />
-
-                                <Button
-                                    x:Name="ScrollRightButton"
-                                    Margin="10 12 12 12"
-                                    Classes="PanelTitlebar ScrollRight" />
+                                
+                                <controls:StandardButton x:Name="AddTabButton2"
+                                                         ShowLabel="False"
+                                                         ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.Add}"
+                                                         Fill="None" />
+                                
+                                <controls:StandardButton x:Name="ScrollRightButton"
+                                                         ShowLabel="False"
+                                                         ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.ChevronRight}"
+                                                         Fill="None" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -77,7 +88,8 @@
                             x:Name="TabHeaderSideArea"
                             Orientation="Horizontal"
                             Classes="Spacing-3"
-                            Margin="12, 12, 12, 12">
+                            Margin="6, 0, 8, 0">
+                            <!-- NOTE(insomnious): needs an extra 2 on the right margin to account for the 2px border -->
                             
                             <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
                             <Border IsVisible="False">
@@ -85,8 +97,11 @@
                                         Classes="PanelTitlebar OpenInWindow" />
                             </Border>
 
-                            <Button x:Name="ClosePanelButton"
-                                    Classes="PanelTitlebar Close" />
+                            <controls:StandardButton x:Name="ClosePanelButton"
+                                                     ShowLabel="False"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                                     Fill="None" />
                         </StackPanel>
                     </Border>
                 </Grid>
