@@ -18,6 +18,12 @@ public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
     public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     /// <summary>
+    /// Returns an observable which signals whether the game is currently running.
+    /// This signals the initials state immediately upon subscribing.
+    /// </summary>
+    public IObservable<bool> IsRunningObservable { get; }
+
+    /// <summary>
     /// Text to display on the button.
     /// </summary>
     public string Label { get; }

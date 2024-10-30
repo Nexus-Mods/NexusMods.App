@@ -33,6 +33,7 @@ using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
@@ -83,6 +84,7 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
+            .AddSingleton<GameRunningTracker>()
             .AddTransient<MainWindow>()
 
             // Services
@@ -117,6 +119,7 @@ public static class Services
             .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
             .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
+            .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
             .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
             .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
@@ -150,6 +153,7 @@ public static class Services
             .AddView<DownloadSizeView, IDownloadSizeViewModel>()
             .AddView<DownloadStatusView, IDownloadStatusViewModel>()
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
+            .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
