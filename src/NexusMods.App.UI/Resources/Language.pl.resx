@@ -666,6 +666,12 @@
 	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
 		<value>Zainstalowane mody</value>
 	</data>
+	<data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Gra jest już uruchomiona</value>
+    </data>
+	<data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>Wygląda na to, że gra {0} jest już uruchomiona.&#x0a;Aby zastosować zmiany lub ponownie uruchomić grę, proszę najpierw ją zamknąć.</value>
+    </data>
     <data name="FileOriginPage_SwitchView" xml:space="preserve">
         <value>Przełącz widok</value>
     </data>
