@@ -139,7 +139,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Type attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.None);
+    public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.Tertiary);
 
     /// <summary>
     /// Defines the Size attached property of the <see cref="StandardButton"/>.
@@ -149,7 +149,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Fill attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Fills> FillProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Fills>("Fill", defaultValue: Fills.None);
+    public static readonly AttachedProperty<Fills> FillProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Fills>("Fill", defaultValue: Fills.Weak);
 
     /// <summary>
     /// Defines the ShowLabel attached property of the <see cref="StandardButton"/>.
@@ -202,7 +202,7 @@ public class StandardButton : Button
     }
 
     /// <summary>
-    /// Gets or sets the type of the <see cref="StandardButton"/>.
+    /// Gets or sets the type of the <see cref="StandardButton"/>. Defaults to <see cref="Types.Tertiary"/>.
     /// </summary>
     public Types Type
     {
@@ -211,7 +211,7 @@ public class StandardButton : Button
     }
 
     /// <summary>
-    /// Gets or sets the size of the <see cref="StandardButton"/>.
+    /// Gets or sets the size of the <see cref="StandardButton"/>. Defaults to <see cref="Sizes.Medium"/>.
     /// </summary>
     public Sizes Size
     {
@@ -220,7 +220,7 @@ public class StandardButton : Button
     }
 
     /// <summary>
-    /// Gets or sets the fill option of the <see cref="StandardButton"/>.
+    /// Gets or sets the fill option of the <see cref="StandardButton"/>. Defaults to <see cref="Fills.Weak"/>.
     /// </summary>
     public Fills Fill
     {
