@@ -30,10 +30,12 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
     /// <inheritdoc />
     public override void Flush() { }
-
+    
+    /// <inheritdoc />
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
 
     /// <inheritdoc />
-    public override int Read(byte[] buffer, int offset, int count)
+    public override int Read(Span<byte> buffer)
     {
         if (_position >= _source.Size.Value)
         {
@@ -60,7 +62,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
         chunk.Slice((int)chunkOffset, toRead)
             .Span
-            .CopyTo(buffer.AsSpan(offset, toRead));
+            .CopyTo(buffer.SliceFast(0, toRead));
         _position += (ulong)toRead;
         
         Debug.Assert(_position <= _source.Size.Value, "Read more than the size of the stream");
@@ -70,7 +72,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
     /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = new())
     {
         if (_position >= _source.Size.Value)
         {
