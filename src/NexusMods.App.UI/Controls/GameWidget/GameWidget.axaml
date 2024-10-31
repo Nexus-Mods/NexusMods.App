@@ -12,7 +12,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
 
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
@@ -73,13 +74,13 @@
                             VerticalAlignment="Center"
                             HorizontalAlignment="Stretch"
                             IsVisible="False">
-                            <Button Classes="Standard Secondary" x:Name="AddGameButton" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Classes="Add" />
-                                    <TextBlock Classes="BodyMDNormal" 
-                                               Text="{x:Static resources:Language.GameWidget__Add_game}"/>
-                                </StackPanel>
-                            </Button>
+                            
+                            <controls:StandardButton x:Name="AddGameButton"
+                                                     Text="{x:Static resources:Language.GameWidget__Add_game}"
+                                                     LeftIcon="{x:Static icons:IconValues.Add}"
+                                                     ShowIcon="Left"
+                                                     Type="Secondary"
+                                                     Fill="Strong" />
                         </StackPanel>
                         
                         <!-- AddingGame -->
@@ -103,21 +104,20 @@
                               VerticalAlignment="Center"
                               HorizontalAlignment="Stretch"
                               Classes="Spacing-2">
-                            <Button Classes="Standard Tertiary Weak" x:Name="ViewGameButton"
-                                    HorizontalAlignment="Stretch"
-                                    Grid.Column="0">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Classes="Check" />
-                                    <TextBlock Classes="BodyMDNormal" 
-                                               Text="{x:Static resources:Language.GameWidget__View}"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Classes="Standard Tertiary Weak" 
-                                    HorizontalAlignment="Right"
-                                    x:Name="RemoveGameButton"
-                                    Grid.Column="2">
-                                <icons:UnifiedIcon Classes="DeleteForever" />
-                            </Button>
+                            <controls:StandardButton x:Name="ViewGameButton"
+                                                     Text="{x:Static resources:Language.GameWidget__View}"
+                                                     LeftIcon="{x:Static icons:IconValues.Check}"
+                                                     ShowIcon="Left"
+                                                     Type="Tertiary"
+                                                     Fill="Weak" 
+                                                     HorizontalAlignment="Stretch"/>
+                            
+                            <controls:StandardButton Grid.Column="2" x:Name="RemoveGameButton"
+                                                     LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                                     ShowLabel="False"
+                                                     ShowIcon="Left"
+                                                     Type="Tertiary"
+                                                     Fill="Weak" />
                         </Grid>
                         
                         <!-- RemovingGame -->

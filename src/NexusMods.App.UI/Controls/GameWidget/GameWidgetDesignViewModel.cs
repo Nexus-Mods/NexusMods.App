@@ -27,7 +27,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public GameWidgetDesignViewModel()
     {
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        State = GameWidgetState.DetectedGame;
+        State = GameWidgetState.ManagedGame;
         
         Version = $"Version: {Installation.Version}";
         Store = Installation.Store.Value;
