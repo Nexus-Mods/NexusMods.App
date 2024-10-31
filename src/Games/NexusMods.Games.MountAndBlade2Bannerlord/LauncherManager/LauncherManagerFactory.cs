@@ -7,6 +7,13 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 
+/// <summary>
+/// The LauncherManager holds a state per game instance.
+///
+/// (Aragas)
+/// This could be replaced by introducing a game instance DI scope.
+/// In that case the LauncherManager could be a scoped service and this factory would not be needed.
+/// </summary>
 public sealed class LauncherManagerFactory
 {
     private readonly IServiceProvider _serviceProvider;
