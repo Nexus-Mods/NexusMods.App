@@ -1,14 +1,14 @@
 using System.Reactive;
-using NexusMods.App.UI;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.Abstractions.Games.UI;
 
 public interface IObservableSortableItemViewModel : IViewModelInterface
 {
-    public IReactiveCommand MoveUp { get; }
+    public IReactiveCommand<Unit, Unit> MoveUp { get; }
     
-    public IReactiveCommand MoveDown { get; }
+    public IReactiveCommand<Unit, Unit> MoveDown { get; }
     
     public IReactiveCommand<int, Unit> MoveTo { get; }
     

@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Settings;

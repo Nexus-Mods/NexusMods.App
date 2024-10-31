@@ -272,6 +272,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.RedEngine.UI", "src\Games\NexusMods.Games.RedEngine.UI\NexusMods.Games.RedEngine.UI.csproj", "{7A43FD8D-A129-49BE-AB67-5EC9B0300D9F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.UI", "src\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj", "{A7417BB1-7E2C-413A-A999-546F021F683B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -710,6 +712,10 @@ Global
 		{7A43FD8D-A129-49BE-AB67-5EC9B0300D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A43FD8D-A129-49BE-AB67-5EC9B0300D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A43FD8D-A129-49BE-AB67-5EC9B0300D9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7417BB1-7E2C-413A-A999-546F021F683B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7417BB1-7E2C-413A-A999-546F021F683B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7417BB1-7E2C-413A-A999-546F021F683B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7417BB1-7E2C-413A-A999-546F021F683B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -836,6 +842,7 @@ Global
 		{04219A58-C99C-4C3B-A477-5E4B29D1F275} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{9303B42B-9525-4106-B60A-5AFAFB8944E7} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{7A43FD8D-A129-49BE-AB67-5EC9B0300D9F} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
+		{A7417BB1-7E2C-413A-A999-546F021F683B} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

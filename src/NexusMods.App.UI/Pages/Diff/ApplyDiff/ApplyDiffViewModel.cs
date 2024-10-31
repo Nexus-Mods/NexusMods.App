@@ -2,6 +2,7 @@ using System.Reactive;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;

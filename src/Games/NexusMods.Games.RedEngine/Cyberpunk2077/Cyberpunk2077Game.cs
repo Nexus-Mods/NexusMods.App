@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -14,6 +15,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.RedEngine.ModInstallers;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -23,10 +25,12 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConnection _connection;
 
-    public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
+    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
     {
         _serviceProvider = provider;
+        _connection = connection;
     }
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
@@ -72,6 +76,11 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, _serviceProvider),
         new MissingProtontricksForRedModEmitter(_serviceProvider),
         new MissingRedModEmitter(),
+    ];
+    
+    public override ISortableItemProvider[] SortableItemProviders =>
+    [
+        new RedModSortableItemProvider(_connection)
     ];
     
     /// <inheritdoc />

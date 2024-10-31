@@ -1,0 +1,22 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="prototype:ILoadOrderViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:prototype="clr-namespace:NexusMods.App.UI.Pages.LoadOrder.Prototype"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.LoadOrder.Prototype.LoadOrderView">
+    <ListBox x:Name="ItemsList">
+        <ListBox.ItemTemplate>
+            <DataTemplate >
+                <StackPanel Orientation="Horizontal">
+                    <controls:StandardButton x:Name="UpButton" />
+                    <controls:StandardButton x:Name="DownButton"/>
+                    <TextBlock x:Name="ItemIndex" Text=""/>
+                    <TextBlock x:Name="ItemText"  Text=""/>
+                </StackPanel>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</reactiveUi:ReactiveUserControl>

@@ -1,4 +1,4 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IViewModelInterface"
+<reactiveUi:ReactiveUserControl x:TypeArguments="ui1:IViewModelInterface"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,6 +7,7 @@
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.App.UI.Controls.Trees.Files.FileTreeNodeView"
                                 d:DataContext="{x:Static files:FileTreeNodeDesignViewModel.SampleFolder}">

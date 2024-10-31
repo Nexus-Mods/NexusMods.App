@@ -1,5 +1,5 @@
 using System.Reactive;
-using NexusMods.App.UI;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

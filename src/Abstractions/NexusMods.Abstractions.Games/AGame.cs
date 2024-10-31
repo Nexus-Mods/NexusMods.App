@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
@@ -63,7 +64,10 @@ public abstract class AGame : IGame
     public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
-    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
+    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
+
+    /// <inheritdoc/>
+    public virtual ISortableItemProvider[] SortableItemProviders { get; } = [];
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

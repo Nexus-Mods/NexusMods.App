@@ -1,4 +1,6 @@
-﻿namespace NexusMods.App.UI.Overlays;
+﻿using NexusMods.Abstractions.UI;
+
+namespace NexusMods.App.UI.Overlays;
 
 /// <summary>
 /// The status of the overlay.

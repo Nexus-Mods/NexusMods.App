@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
