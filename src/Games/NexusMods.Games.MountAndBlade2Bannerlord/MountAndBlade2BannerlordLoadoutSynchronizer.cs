@@ -34,8 +34,6 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 
         foreach (var newFile in newFiles)
         {
-            GamePath gamePath;
-
             if (!IsModFile(newFile.LoadoutItemWithTargetPath.TargetPath, out var modDirectoryName))
             {
                 continue;
@@ -43,7 +41,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 
             if (!modDirectoryNameToModel.TryGetValue(modDirectoryName, out var mod))
             {
-                if (!TryGetSMAPIMod(modDirectoryName, loadout, loadout.Db, out mod))
+                if (!TryGetMod(modDirectoryName, loadout, loadout.Db, out mod))
                 {
                     continue;
                 }
@@ -56,7 +54,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         return ValueTask.CompletedTask;
     }
 
-    private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out ModLoadoutItem.ReadOnly mod)
+    private static bool TryGetMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out ModLoadoutItem.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, ModsFolder.Join(modDirectoryName).Join(SubModuleFile));
 
@@ -71,17 +69,17 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         return true;
     }
 
-    private static bool IsModFile(GamePath gamePath, out RelativePath modDirectoryName)
+    private static bool IsModFile(GamePath gamePath, out RelativePath submoduleDirectoryName)
     {
-        modDirectoryName = RelativePath.Empty;
+        submoduleDirectoryName = RelativePath.Empty;
         if (gamePath.LocationId != LocationId.Game) return false;
         var path = gamePath.Path;
 
         if (!path.StartsWith(ModsFolder)) return false;
         path = path.DropFirst(numDirectories: 1);
 
-        modDirectoryName = path.TopParent;
-        if (modDirectoryName.Equals(RelativePath.Empty)) return false;
+        submoduleDirectoryName = path.TopParent;
+        if (submoduleDirectoryName.Equals(RelativePath.Empty)) return false;
 
         return true;
     }
