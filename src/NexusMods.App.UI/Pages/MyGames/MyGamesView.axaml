@@ -27,9 +27,9 @@
                 <!-- Title section -->
                 <StackPanel Orientation="Vertical"
                             Classes="Spacing-2">
-                    <TextBlock Classes="HeadingXSSemi" Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
+                    <TextBlock Theme="{StaticResource HeadingXSSemiTheme}" Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
                     <TextBlock x:Name="NoGamesDetectedTextBlock"
-                               Classes="BodyLGNormal ForegroundWeak"
+                               Theme="{StaticResource BodyLGNormalTheme}"
                                Text="{x:Static resources:Language.MyGamesView__NoGamesDetectedText}" />
                 </StackPanel>
 
@@ -60,12 +60,12 @@
                 <StackPanel Orientation="Vertical"
                             Classes="Spacing-2">
                     <TextBlock
-                        Classes="HeadingXSSemi"
+                        Theme="{StaticResource HeadingXSSemiTheme}"
                         Margin="0,24,0,0"
                         Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
 
                     <TextBlock x:Name="NoGamesManagedTextBlock"
-                               Classes="BodyLGNormal ForegroundWeak"
+                               Theme="{StaticResource BodyLGNormalTheme}"
                                Text="{x:Static resources:Language.MyGamesView__NoGamesManagedText}" />
                 </StackPanel>
 
