@@ -3,10 +3,12 @@ using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
+using R3;
 using static NexusMods.Games.RedEngine.Constants;
 
 namespace NexusMods.Games.RedEngine;
@@ -59,6 +61,15 @@ public class RedModDeployTool : ITool
     }
 
     public string Name => "RedMod Deploy";
+
+    public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken)
+    {
+        return monitor.Begin<ITool, Unit>(this, async _ =>
+        {
+            await Execute(loadout, cancellationToken);
+            return Unit.Default;
+        });
+    }
 
     private async Task<TemporaryPath> ExtractTemporaryDeployScript()
     {

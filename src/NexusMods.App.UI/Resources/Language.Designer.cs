@@ -690,6 +690,25 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It looks like {0} is already running.
+        ///To apply changes or launch the game again, please close the game first..
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Description {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game is currently running.
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Title {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The mod you&apos;re trying to access has been deleted or is missing..
         /// </summary>
         public static string ErrorView_MissingMod_Description {
