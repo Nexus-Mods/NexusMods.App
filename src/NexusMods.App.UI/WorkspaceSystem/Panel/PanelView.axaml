@@ -8,9 +8,8 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
-    x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
-    Width="0" Height="0">
+    mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+    x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView">
 
     <Border x:Name="PanelBorder" Classes="Rounded-lg Low">
         <Grid RowDefinitions="Auto, *">
@@ -18,18 +17,21 @@
                 <Grid ColumnDefinitions="*, Auto">
                     <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
                         <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
-                            <Button x:Name="ScrollLeftButton"
-                                    Margin="24 12 12 12"
-                                    Classes="PanelTitlebar ScrollLeft" />
+                            <controls:StandardButton x:Name="ScrollLeftButton"
+                                 ShowIcon="IconOnly"
+                                 LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
+                                 Fill="None"
+                                 Margin="8,0,8,0"/>
                         </Border>
 
                         <ScrollViewer Grid.Column="1"
                                       x:Name="TabHeaderScrollViewer"
                                       VerticalScrollBarVisibility="Disabled"
-                                      HorizontalScrollBarVisibility="Auto">
+                                      HorizontalScrollBarVisibility="Auto"
+                                      >
                             <Grid ColumnDefinitions="Auto, Auto, *">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                    <ItemsControl x:Name="TabHeaders" Height="52">
+                                    <ItemsControl x:Name="TabHeaders" Height="36">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Classes="Spacing-none" 
@@ -44,17 +46,17 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                 </StackPanel>
-                                <Separator x:Name="OneTabLine" Grid.Column="1"/>
+                                
+                                <Separator x:Name="OneTabLine" Grid.Column="1" Margin="4,0,0,0"/>
                                 
                                 <Border Grid.Column="2" x:Name="AddTabButton1Container"
-                                        HorizontalAlignment="Stretch"
-                                        Padding="12,0,0,0">
+                                        HorizontalAlignment="Stretch">
                                     
                                     <controls:StandardButton x:Name="AddTabButton1"
-                                                             ShowLabel="False"
-                                                             ShowIcon="Left"
+                                                             ShowIcon="IconOnly"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
-                                                             Fill="None" />
+                                                             Fill="None"
+                                                             Margin="8,0,0,0"/>
                                     
                                 </Border>
                                 <ToolTip.Tip>
@@ -64,19 +66,17 @@
 
                         </ScrollViewer>
 
-                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder"
-                                Padding="12,0,0,0">
-                            <StackPanel Orientation="Horizontal">
+                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
                                 
                                 <controls:StandardButton x:Name="AddTabButton2"
-                                                         ShowLabel="False"
-                                                         ShowIcon="Left"
+                                                         ShowIcon="IconOnly"
                                                          LeftIcon="{x:Static icons:IconValues.Add}"
-                                                         Fill="None" />
+                                                         Fill="None"
+                                                         Margin="8,0,0,0" />
                                 
                                 <controls:StandardButton x:Name="ScrollRightButton"
-                                                         ShowLabel="False"
-                                                         ShowIcon="Left"
+                                                         ShowIcon="IconOnly"
                                                          LeftIcon="{x:Static icons:IconValues.ChevronRight}"
                                                          Fill="None" />
                             </StackPanel>
@@ -98,8 +98,7 @@
                             </Border>
 
                             <controls:StandardButton x:Name="ClosePanelButton"
-                                                     ShowLabel="False"
-                                                     ShowIcon="Left"
+                                                     ShowIcon="IconOnly"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      Fill="None" />
                         </StackPanel>

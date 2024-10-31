@@ -8,39 +8,40 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="52"
+    mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
     <Design.DataContext>
         <workspace:PanelTabHeaderDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="Container">
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Horizontal"
-                        Classes="Spacing-2"
-                        Height="52"
-                        Margin="24, 0, 12, 0">
-                <StackPanel Orientation="Horizontal"
-                            Classes="Spacing-1_5"
-                            VerticalAlignment="Center">
-                    <icons:UnifiedIcon x:Name="Icon"/>
-                    <TextBlock x:Name="TitleTextBlock"
-                               Classes="BodyMDBold"
-                               MaxWidth="122"
-                               TextWrapping="NoWrap"
-                               TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
+    <Border x:Name="Container" HorizontalAlignment="Left">
 
-                <controls:StandardButton x:Name="CloseTabButton"
-                                         ShowLabel="False"
-                                         ShowIcon="Left"
-                                         LeftIcon="{x:Static icons:IconValues.Close}"
-                                         Fill="None" />
+        <DockPanel MinWidth="100" MaxWidth="260"
+                   Height="36"
+                   LastChildFill="False">
 
-            </StackPanel>
+            <controls:StandardButton x:Name="CloseTabButton"
+                                     ShowIcon="IconOnly"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     Fill="None"
+                                     Size="Small"
+                                     DockPanel.Dock="Right" Margin="0, 0, 8, 0" />
 
-        </StackPanel>
+            <DockPanel
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Margin="16,0,0,0">
+                <icons:UnifiedIcon x:Name="Icon" DockPanel.Dock="Left" />
+                <TextBlock x:Name="TitleTextBlock"
+                           Theme="{StaticResource BodySMBoldTheme}"
+                           TextWrapping="NoWrap"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="8,0,8,0" />
+            </DockPanel>
+
+        </DockPanel>
+
     </Border>
 
 </reactive:ReactiveUserControl>
