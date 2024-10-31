@@ -18,7 +18,7 @@
 
 ### Engine and Mod Support
 
-Bannerlord uses a native engine with self-hosted .NET 6 for Steam/GOG/Epic.
+Bannerlord uses a native engine with .NET Framework 4.7.2 on Steam/GOG/Epic and self-hosted .NET 6 for Xbox.
 Modding is supported out of the box.
 
 Bannerlord has a modding extension [BLSE](https://www.nexusmods.com/mountandblade2bannerlord/mods/1)
@@ -51,7 +51,7 @@ Since it's not a standard mod.
 BLSE needs to be placed beside the main game binary:
 
 - `bin/Gaming.Desktop.x64_Shipping_Client` for Xbox Store
-- `bin/Win64_Shipping_Client` for other targets
+- `bin/Win64_Shipping_Client` for other targets (Steam/GOG/Epic)
 
 Outside of that, we will want to launch BLSE rather than the regular game binary if BLSE is installed.
 
@@ -271,6 +271,8 @@ only work on Xbox.
 Whether we copy `Win64_Shipping_Client` to `Gaming.Desktop.x64_Shipping_Client` and vice versa
 will require discussion with rest of team and community.
 
+> It should be generally safe to use Win64_Shipping_Client on Gaming.Desktop.x64_Shipping_Client. It was added recently in the Vortex extension, generally works. The only exception was a Visual Basic mod (VB compiled to .NET FX isn't working on .NET 6?)
+
 ## Questions (Aragas & Co)
 
 ### What's Missing in Existing Mod Managers
@@ -290,6 +292,8 @@ Doing this may require some new tech in the App.
 ### Diagnostics for Save Breaking Features
 
 Are there diagnostics for things that break saves?
+> Save files contain the mods and the versions that were used. We produce a warning in both BLSE and Vortex when the version mismatches (should be an error if we downgraded, but it's not implemented)  
+> And there should be an error if a mod is missing
 
 That's not well defined in docs outside of https://docs.bannerlordmodding.com/_intro/general-recommendations.html (not linked in sidebar).
 
