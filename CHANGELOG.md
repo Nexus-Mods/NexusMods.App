@@ -1,3 +1,31 @@
+# v0.6.3 - 2024-11-xx
+
+**Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
+
+## Features
+- Baldur's Gate 3 PAK files are now parsed for additional metadata. (Possibly expand)
+- Baldur's Gate 3 - Added support for serialising and deserialising modsettings.lsx to support load ordering.
+- Standardised all "Button" components used across the app. 
+- Added a new "Alerts" component to the app for dismiss-able notices. 
+- Added a new page for Collections which will help the user see which mods are installed or missing from the library.
+
+## Technical Changes
+- Moved API requests from Nexus Mods API v1 to v2 where possible.
+- Cleared out lots of unused code related to earlier prototypes of the My Mods and Library pages. 
+
+## Bugfixes
+- Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly.
+- Selecting multiple mods to delete with Shift + Click will now delete all selected mods. 
+- The badge next the the Library in the left menu will now properly decrease when items are deleted.
+- Mods in a collection can now be correctly downloaded from hidden mod pages.
+- Added missing tooltips to several buttons in the UI. 
+- Fixed the "Running..." text getting stuck on the Play button.
+- Fixed an issue with the list-games CLI verb showing all games instead of the detected installations.
+- The main window will now pop into focus when the user successfully logs in. 
+
+
+
+
 # v0.6.2 - 2024-10-16
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
