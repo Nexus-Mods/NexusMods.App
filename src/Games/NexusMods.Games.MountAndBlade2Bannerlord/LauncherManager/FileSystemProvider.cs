@@ -1,64 +1,91 @@
 using Bannerlord.LauncherManager.External;
 using Microsoft.Extensions.Logging;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 
 internal sealed class FileSystemProvider : IFileSystemProvider
 {
     private readonly ILogger _logger;
+    private readonly IFileSystem _fileSystem;
 
-    public FileSystemProvider(ILogger<FileSystemProvider> logger)
+    public FileSystemProvider(ILogger<FileSystemProvider> logger, IFileSystem fileSystem)
     {
         _logger = logger;
+        _fileSystem = fileSystem;
     }
 
-    public byte[]? ReadFileContent(string filePath, int offset, int length)
+    private byte[] ReadFileContent(AbsolutePath filePath, int offset, int length)
     {
-        if (!File.Exists(filePath)) return null;
+        using var fs = _fileSystem.ReadFile(filePath);
+        fs.Seek(offset, SeekOrigin.Begin);
+
+        var toRead = length == -1 ? (int) fs.Length : length;
+        var data = GC.AllocateUninitializedArray<byte>(toRead);
+        
+        var offsetRead = 0;
+        while (offsetRead < toRead)
+            offsetRead += fs.Read(data, offsetRead, toRead - offsetRead);
+        return data;
+    }
+
+    public byte[]? ReadFileContent(string unsanitizedFilePath, int offset, int length)
+    {
+        var filePath = _fileSystem.FromUnsanitizedFullPath(unsanitizedFilePath);
+        if (!_fileSystem.FileExists(filePath)) return null;
 
         try
         {
-            if (offset == 0 && length == -1)
-            {
-                return File.ReadAllBytes(filePath);
-            }
-            else if (offset >= 0 && length > 0)
-            {
-                var data = new byte[length];
-                using var handle = File.OpenHandle(filePath, options: FileOptions.RandomAccess);
-                RandomAccess.Read(handle, data, offset);
-                return data;
-            }
-            else
-            {
-                return null;
-            }
+            if ((offset == 0 && length == -1) || (offset >= 0 && length > 0))
+                return ReadFileContent(filePath, offset, length);
+            
+            return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Bannerlord IO Read Operation failed! {Path}", filePath);
+            _logger.LogError(ex, "Bannerlord IO Read Operation failed! {Path}", unsanitizedFilePath);
             return null;
         }
     }
 
-    public void WriteFileContent(string filePath, byte[]? data)
+    public void WriteFileContent(string unsanitizedFilePath, byte[]? data)
     {
-        if (!File.Exists(filePath)) return;
+        var filePath = _fileSystem.FromUnsanitizedFullPath(unsanitizedFilePath);
+        if (!_fileSystem.FileExists(filePath)) return;
 
         try
         {
             if (data is null)
-                File.Delete(filePath);
+            {
+                _fileSystem.DeleteFile(filePath);
+            }
             else
-                File.WriteAllBytes(filePath, data);
+            {
+                using var fs = _fileSystem.WriteFile(filePath);
+                fs.Write(data, 0, data.Length);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Bannerlord IO Write Operation failed! {Path}", filePath);
+            _logger.LogError(ex, "Bannerlord IO Write Operation failed! {Path}", unsanitizedFilePath);
         }
     }
 
-    public string[]? ReadDirectoryFileList(string directoryPath) => Directory.Exists(directoryPath) ? Directory.GetFiles(directoryPath) : null;
+    public string[]? ReadDirectoryFileList(string unsanitizedDirectoryPath)
+    {
+        var directoryPath = _fileSystem.FromUnsanitizedFullPath(unsanitizedDirectoryPath);
 
-    public string[]? ReadDirectoryList(string directoryPath) => Directory.Exists(directoryPath) ? Directory.GetDirectories(directoryPath) : null;
+        return _fileSystem.DirectoryExists(directoryPath)
+            ? _fileSystem.EnumerateFiles(directoryPath).Select(x => x.GetFullPath()).ToArray()
+            : null;
+    }
+
+    public string[]? ReadDirectoryList(string unsanitizedDirectoryPath)
+    {
+        var directoryPath = _fileSystem.FromUnsanitizedFullPath(unsanitizedDirectoryPath);
+        
+        return _fileSystem.DirectoryExists(directoryPath)
+            ? _fileSystem.EnumerateDirectories(directoryPath).Select(x => x.GetFullPath()).ToArray()
+            : null;
+    }
 }
