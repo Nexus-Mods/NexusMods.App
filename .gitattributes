@@ -50,4 +50,4 @@
 *.verified.txt text eol=lf working-tree-encoding=UTF-8
 *.verified.xml text eol=lf working-tree-encoding=UTF-8
 *.verified.json text eol=lf working-tree-encoding=UTF-8
-*.db_snapshot.z filter=lfs diff=lfs merge=lfs -text
+*.rocksdb.zip filter=lfs diff=lfs merge=lfs -text
