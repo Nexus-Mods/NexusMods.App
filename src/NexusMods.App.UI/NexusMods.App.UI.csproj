@@ -85,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.UI\NexusMods.Abstractions.Games.UI.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
@@ -666,6 +667,15 @@
         <Compile Update="Controls\Alerts\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageDesignViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -6,5 +6,5 @@ namespace NexusMods.Abstractions.Games.UI;
 
 public interface IObservableSortableItemProvider
 {
-    IObservable<IChangeSet<ISortableItem, EntityId>> GetItems(IObservable<LoadoutId> loadoutId);
+    IObservable<IChangeSet<IObservableSortableItemViewModel, EntityId>> GetItems(IObservable<LoadoutId> loadoutId);
 }

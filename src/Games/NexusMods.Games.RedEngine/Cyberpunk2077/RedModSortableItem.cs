@@ -7,7 +7,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 public class RedModSortableItem(RedModSortableItemProvider provider, RedModLoadoutGroup.ReadOnly group) : ISortableItem
 {
     public ISortableItemProvider Provider => provider;
-    public int SortIndex => (int)group.SortIndex;
+    public int SortIndex => (int)group.Rebase().SortIndex;
     
     public EntityId EntityId => group.Id;
     

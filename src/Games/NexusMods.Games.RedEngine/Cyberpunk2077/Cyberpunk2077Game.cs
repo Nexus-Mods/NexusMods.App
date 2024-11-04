@@ -7,6 +7,7 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.UI;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -15,6 +16,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.RedEngine.ModInstallers;
+using NexusMods.Games.RedEngine.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -78,9 +80,9 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new MissingRedModEmitter(),
     ];
     
-    public override ISortableItemProvider[] SortableItemProviders =>
+    public override IObservableSortableItemProvider[] SortableItemProviders =>
     [
-        new RedModSortableItemProvider(_connection)
+        new RedModObservableSortableItemProvider(_connection),
     ];
     
     /// <inheritdoc />

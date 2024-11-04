@@ -2,6 +2,7 @@ using System.Reactive;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

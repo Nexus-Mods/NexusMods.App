@@ -1,16 +1,16 @@
-using System.Reactive;
 using NexusMods.Abstractions.UI;
 using ReactiveUI;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.Abstractions.Games.UI;
 
 public interface IObservableSortableItemViewModel : IViewModelInterface
 {
-    public IReactiveCommand<Unit, Unit> MoveUp { get; }
+    public ReactiveCommand<Unit, Unit> MoveUp { get; }
     
-    public IReactiveCommand<Unit, Unit> MoveDown { get; }
+    public ReactiveCommand<Unit, Unit> MoveDown { get; }
     
-    public IReactiveCommand<int, Unit> MoveTo { get; }
+    public ReactiveCommand<int, Unit> MoveTo { get; }
     
     public int SortIndex { get; }
     
@@ -20,7 +20,7 @@ public interface IObservableSortableItemViewModel : IViewModelInterface
     
     public bool IsEnabled { get; }
     
-    public IReactiveCommand<bool, Unit> SetEnabled { get; }
+    public ReactiveCommand<bool, Unit> SetEnabled { get; }
     
     public string[] InCollections { get; }
 }
