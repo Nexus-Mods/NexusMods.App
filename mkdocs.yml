@@ -139,6 +139,7 @@ nav:
         - '00: Template': developers/games/0000-Template.md
         - '01: Stardew Valley': developers/games/0001-StardewValley.md
         - '02: Cyberpunk 2077': developers/games/0002-Cyberpunk2077.md
+        - '03: BaldursGate3': developers/games/0003-BaldursGate3.md
     - Misc:
         - About Fomod: developers/misc/AboutFomod.md
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
