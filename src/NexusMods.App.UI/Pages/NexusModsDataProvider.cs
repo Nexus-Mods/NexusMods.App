@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -17,13 +18,33 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 namespace NexusMods.App.UI.Pages;
 
 [UsedImplicitly]
-internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
+public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
+    }
+
+    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
+        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        return _connection
+            .ObserveDatoms(CollectionRevisionModFile.CollectionRevision, revisionMetadata)
+            .AsEntityIds()
+            .Transform(datom => CollectionRevisionModFile.Load(_connection.Db, datom.E).NexusModFile)
+            .Transform(ILibraryItemModel (nexusModsFileMetadata) =>
+            {
+                var model = new NexusModsFileMetadataLibraryItemModel(nexusModsFileMetadata);
+
+                model.Name.Value = nexusModsFileMetadata.Name;
+                model.Version.Value = nexusModsFileMetadata.Version;
+
+                if (NexusModsFileMetadata.Size.TryGet(nexusModsFileMetadata, out var size)) model.ItemSize.Value = size;
+
+                return model;
+            });
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)

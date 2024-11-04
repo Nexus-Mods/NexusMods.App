@@ -5,10 +5,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Resources/ResourceIndex.axaml"/>
+                <ResourceInclude Source="avares://NexusMods.App.UI/Pages/LibraryPage/TreeDataGridLibraryResources.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
-
 
     <FluentTheme>
         <FluentTheme.Palettes>

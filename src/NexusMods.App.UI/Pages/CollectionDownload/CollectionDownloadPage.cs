@@ -33,6 +33,7 @@ public class CollectionDownloadPageFactory : APageFactory<ICollectionDownloadVie
 
         return new CollectionDownloadViewModel(
             windowManager: WindowManager,
+            nexusModsDataProvider: ServiceProvider.GetRequiredService<NexusModsDataProvider>(),
             tileImagePipeline: ImagePipelines.GetCollectionTileImagePipeline(ServiceProvider),
             backgroundImagePipeline: ImagePipelines.GetCollectionBackgroundImagePipeline(ServiceProvider),
             revisionMetadata: metadata
