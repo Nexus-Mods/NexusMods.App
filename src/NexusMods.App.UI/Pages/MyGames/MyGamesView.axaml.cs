@@ -13,24 +13,19 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
 
         this.WhenActivated(d =>
         {
-            
-            this.WhenAnyValue(view => view.ViewModel!.DetectedGames)
+            this.WhenAnyValue(view => view.ViewModel!.InstalledGames)
                 .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.SupportedGames)
                 .BindToView(this, view => view.SupportedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
-            //
-            // this.WhenAnyValue(view => view.ViewModel!.DetectedGames.Count)
-            //     .Select(count => count == 0)
-            //     .BindToView(this, view => view.NoGamesDetectedTextBlock.IsVisible)
-            //     .DisposeWith(d);
-            //
-            // this.WhenAnyValue(view => view.ViewModel!.ManagedGames.Count)
-            //     .Select(count => count == 0)
-            //     .BindToView(this, view => view.NoGamesManagedTextBlock.IsVisible)
-            //     .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.OpenRoadmapCommand, view => view.OpenRoadmapButton)
+                .DisposeWith(d);
         });
     }
 }

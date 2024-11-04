@@ -70,9 +70,6 @@
                     
                     <!-- DetectedGame -->
                         <StackPanel x:Name="DetectedGameStackPanel"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Stretch"
                             IsVisible="False">
                             
                             <controls:StandardButton x:Name="AddGameButton"

@@ -16,14 +16,9 @@ namespace NexusMods.App.UI.Controls.MiniGameWidget;
 
 public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewModel>
 {
-    private StackPanel? _gameStack = null;
-    private StackPanel? _placeholderStack = null;
-    
     public MiniGameWidget()
     {
         InitializeComponent();
-        
-        
         
         this.WhenActivated(d =>
             {
@@ -32,23 +27,20 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
 
                 this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsFound, v => v.IsFoundTextBlock.IsVisible)
+                    .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsFound, v => v.NotFoundTextBlock.IsVisible, isFound => !isFound)
+                    .DisposeWith(d);
+                
+                
+                this.OneWayBind(ViewModel, vm => vm.EmptyState, v => v.EmptyState.IsVisible)
+                    .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.EmptyState, v => v.GameStackPanel.IsVisible, isEmptyState => !isEmptyState )
+                    .DisposeWith(d);
             }
         );
-    }
-
-    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
-    {
-        base.OnApplyTemplate(e);
-        
-        _gameStack = e.NameScope.Find<StackPanel>("GameStackPanel");
-        _placeholderStack = e.NameScope.Find<StackPanel>("PlaceholderStackPanel");
-        
-        Console.WriteLine(ViewModel);
-        
-        if (_gameStack == null || _placeholderStack == null)
-            return;
-        
-        //_gameStack.IsVisible = !ViewModel.Placeholder;
-        //_placeholderStack.IsVisible = ViewModel.Placeholder;
     }
 }
