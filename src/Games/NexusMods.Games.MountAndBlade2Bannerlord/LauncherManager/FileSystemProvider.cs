@@ -23,9 +23,7 @@ internal sealed class FileSystemProvider : IFileSystemProvider
         var toRead = length == -1 ? (int) fs.Length : length;
         var data = GC.AllocateUninitializedArray<byte>(toRead);
         
-        var offsetRead = 0;
-        while (offsetRead < toRead)
-            offsetRead += fs.Read(data, offsetRead, toRead - offsetRead);
+        fs.ReadAtLeast(data, toRead, false);
         return data;
     }
 
@@ -36,8 +34,17 @@ internal sealed class FileSystemProvider : IFileSystemProvider
 
         try
         {
-            if ((offset == 0 && length == -1) || (offset >= 0 && length > 0))
+            if (offset == 0 && length == -1)
+            {
                 return ReadFileContent(filePath, offset, length);
+            }
+            
+            if (offset >= 0 && length > 0)
+            {
+                var data = GC.AllocateUninitializedArray<byte>(length);
+                _fileSystem.ReadBytesRandomAccess(filePath, data, offset);
+                return data;
+            }
             
             return null;
         }
