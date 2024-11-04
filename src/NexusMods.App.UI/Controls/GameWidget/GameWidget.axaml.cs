@@ -17,6 +17,7 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
     public GameWidget()
     {
         InitializeComponent();
+        
         this.WhenActivated(d =>
             {
                 this.WhenAnyValue(view => view.ViewModel!.State)

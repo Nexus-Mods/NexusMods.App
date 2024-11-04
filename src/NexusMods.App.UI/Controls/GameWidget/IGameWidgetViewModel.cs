@@ -20,12 +20,3 @@ public interface IGameWidgetViewModel : IViewModelInterface
 
     public GameWidgetState State { get; set; }
 }
-
-public enum GameWidgetState : byte
-{
-    DetectedGame,
-    AddingGame,
-    ManagedGame,
-    RemovingGame,
-}
-

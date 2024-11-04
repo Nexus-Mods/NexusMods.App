@@ -1,0 +1,81 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="48"
+    d:DesignWidth="282"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.MiniGameWidget.MiniGameWidget"
+    x:TypeArguments="miniGameWidget:IMiniGameWidgetViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
+    <Design.DataContext>
+        <miniGameWidget:MiniGameWidgetDesignViewModel />
+    </Design.DataContext>
+
+    <Border x:Name="MiniGameWidgetBorder">
+
+        <Grid>
+            <StackPanel
+                x:Name="GameStackPanel"
+                Orientation="Horizontal"
+                Spacing="12"
+                VerticalAlignment="Bottom">
+
+                <Border x:Name="ImageSectionBorder"
+                        CornerRadius="8"
+                        ClipToBounds="True">
+
+                    <Image x:Name="GameImage"
+                           Width="48"
+                           Height="48"
+                           Stretch="UniformToFill" />
+                </Border>
+
+                <StackPanel
+                    VerticalAlignment="Center">
+                    <TextBlock x:Name="NameTextBlock"
+                               Text="Stardew Valley"
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralModerateBrush}" />
+                    <TextBlock x:Name="InstallationTextBlock"
+                               Text="Installation Found"
+                               Theme="{StaticResource BodyMDBoldTheme}"
+                               Foreground="{StaticResource NeutralModerateBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel
+                x:Name="PlaceholderStackPanel"
+                Orientation="Horizontal"
+                Spacing="12"
+                VerticalAlignment="Center">
+
+                <Border
+                    CornerRadius="8"
+                    ClipToBounds="True"
+                    Width="48"
+                    Height="48"
+                    Background="{StaticResource SurfaceMidBrush}">
+
+                    <icons:UnifiedIcon
+                        Value="{x:Static icons:IconValues.Game}"
+                        Size="24" />
+                </Border>
+                
+                <Button Classes="Hyperlink Secondary">
+                    <TextBlock
+                        Text="More games coming soon"
+                        Theme="{StaticResource BodyMDNormalTheme}"
+                        Foreground="{StaticResource NeutralStrongBrush}"
+                        VerticalAlignment="Center" />
+                </Button>
+                
+            </StackPanel>
+        </Grid>
+    </Border>
+
+</reactiveUi:ReactiveUserControl>

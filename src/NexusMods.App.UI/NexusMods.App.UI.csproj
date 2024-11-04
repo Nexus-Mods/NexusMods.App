@@ -300,12 +300,6 @@
         <Compile Update="WorkspaceSystem\Page\APageViewModel.cs">
           <DependentUpon>IPageViewModelInterface.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
-          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
-          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
           <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
         </Compile>
@@ -665,6 +659,22 @@
         <Compile Update="Controls\Alerts\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidget.axaml.cs">
+          <DependentUpon>MiniGameWidget.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetDesignViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

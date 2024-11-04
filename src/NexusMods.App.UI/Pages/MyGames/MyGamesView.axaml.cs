@@ -14,23 +14,23 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
         this.WhenActivated(d =>
         {
             
-            this.WhenAnyValue(view => view.ViewModel!.ManagedGames)
-                .BindToView(this, view => view.ManagedGamesItemsControl.ItemsSource)
-                .DisposeWith(d);
-            
             this.WhenAnyValue(view => view.ViewModel!.DetectedGames)
                 .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
             
-            this.WhenAnyValue(view => view.ViewModel!.DetectedGames.Count)
-                .Select(count => count == 0)
-                .BindToView(this, view => view.NoGamesDetectedTextBlock.IsVisible)
+            this.WhenAnyValue(view => view.ViewModel!.SupportedGames)
+                .BindToView(this, view => view.SupportedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.ManagedGames.Count)
-                .Select(count => count == 0)
-                .BindToView(this, view => view.NoGamesManagedTextBlock.IsVisible)
-                .DisposeWith(d);
+            //
+            // this.WhenAnyValue(view => view.ViewModel!.DetectedGames.Count)
+            //     .Select(count => count == 0)
+            //     .BindToView(this, view => view.NoGamesDetectedTextBlock.IsVisible)
+            //     .DisposeWith(d);
+            //
+            // this.WhenAnyValue(view => view.ViewModel!.ManagedGames.Count)
+            //     .Select(count => count == 0)
+            //     .BindToView(this, view => view.NoGamesManagedTextBlock.IsVisible)
+            //     .DisposeWith(d);
         });
     }
 }

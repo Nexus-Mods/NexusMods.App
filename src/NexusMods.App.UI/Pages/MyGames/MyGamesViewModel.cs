@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -31,10 +32,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly IWindowManager _windowManager;
     private readonly IJobMonitor _jobMonitor;
 
-    private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
+    private ReadOnlyObservableCollection<IMiniGameWidgetViewModel> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames = new([]);
 
-    public ReadOnlyObservableCollection<IGameWidgetViewModel> ManagedGames => _managedGames;
+    public ReadOnlyObservableCollection<IMiniGameWidgetViewModel> SupportedGames => _supportedGames;
     public ReadOnlyObservableCollection<IGameWidgetViewModel> DetectedGames => _detectedGames;
 
     public MyGamesViewModel(
@@ -55,7 +56,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
         {
-            // Managed games widgets
+            // detected games widgets
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible())
                 .DistinctValues(loadout => loadout.InstallationInstance)
@@ -81,7 +82,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                     return vm;
                 })
-                .Bind(out _managedGames)
+                .Bind(out _detectedGames)
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
 
@@ -89,28 +90,19 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             // to the collection here so we don't need any temporary collections or observables
             gameRegistry.InstalledGames
                 .ToObservableChangeSet()
-                .Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
+                //.Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
                 .OnUI()
                 .Transform(install =>
                 {
-                    var vm = provider.GetRequiredService<IGameWidgetViewModel>();
+                    var vm = provider.GetRequiredService<IMiniGameWidgetViewModel>();
                     vm.Installation = install;
-
-                    vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                    {
-                        if (GetJobRunningForGameInstallation(install).IsT1) return;
-
-                        vm.State = GameWidgetState.AddingGame;
-                        await Task.Run(async () => await ManageGame(install));
-                        vm.State = GameWidgetState.ManagedGame;
-                    });
-
+                    
                     var job = GetJobRunningForGameInstallation(install);
                     vm.State = job.IsT1 ? GameWidgetState.AddingGame : GameWidgetState.DetectedGame;
 
                     return vm;
                 })
-                .Bind(out _detectedGames)
+                .Bind(out _supportedGames)
                 .SubscribeWithErrorLogging()
                 .DisposeWith(d);
         });

@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
+using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Spine;
@@ -102,6 +103,7 @@ public static class Services
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
+            .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
@@ -134,6 +136,7 @@ public static class Services
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
+            .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
