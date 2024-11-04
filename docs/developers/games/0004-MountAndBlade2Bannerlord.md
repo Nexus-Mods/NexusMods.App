@@ -191,6 +191,21 @@ even take half an hour, or longer on some machines based on reports.
 It's imperative we ingest the files generated in this folder right into the App, so the user can
 quickly switch between loadouts. An override of `MoveNewFilesToMods` should do the trick.
 
+### Importing Load Orders
+
+Note: 'Load Order' here refers to 'a list of enabled mods and order they are loaded in'
+
+These can be imported from the following formats:
+- `.bmlist` (Bannerlord Mod List)
+- `.sav` (Bannerlord Save File)
+- `.xml` (Novus Preset)
+
+Some mod authors sometimes upload mod load orders, for example for compilations,
+which live outside the 'Collections' system. Therefore it's imperative we support
+loading these.
+
+Thankfully the `LauncherManager` library is ready to support this.
+
 ## Diagnostics
 
 [Diagnostics NMA Wiki Link](https://nexus-mods.github.io/NexusMods.App/developers/development-guidelines/Diagnostics/#choosing-the-severity)
