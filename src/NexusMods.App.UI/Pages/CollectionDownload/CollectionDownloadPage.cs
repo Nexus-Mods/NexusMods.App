@@ -1,9 +1,11 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -33,9 +35,7 @@ public class CollectionDownloadPageFactory : APageFactory<ICollectionDownloadVie
 
         return new CollectionDownloadViewModel(
             windowManager: WindowManager,
-            nexusModsDataProvider: ServiceProvider.GetRequiredService<NexusModsDataProvider>(),
-            tileImagePipeline: ImagePipelines.GetCollectionTileImagePipeline(ServiceProvider),
-            backgroundImagePipeline: ImagePipelines.GetCollectionBackgroundImagePipeline(ServiceProvider),
+            ServiceProvider,
             revisionMetadata: metadata
         );
     }

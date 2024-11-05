@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using Avalonia.Input.Raw;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,8 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
     private readonly IDisposable _observeDatomDisposable;
 
+    public bool IsPremium { get; private set; }
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -61,8 +64,17 @@ public sealed class LoginManager : IDisposable, ILoginManager
             {
                 _cachedUserInfo.Evict();
 
-                if (!hasValue) _userInfo.OnNext(value: null);
-                else _userInfo.OnNext(await Verify(cancellationToken));
+                if (!hasValue)
+                {
+                    _userInfo.OnNext(value: null);
+                    IsPremium = false;
+                }
+                else
+                {
+                    var userInfo = await Verify(cancellationToken);
+                    _userInfo.OnNext(userInfo);
+                    IsPremium = userInfo?.IsPremium ?? false;
+                }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
 
