@@ -26,8 +26,6 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData.Aggregation;
-using DynamicData.Alias;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.CrossPlatform.Process;
@@ -81,7 +79,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                var uri = NexusModsUrlBuilder.CreateGenericUri(TrelloPublicRoadmapUrl);
+                var uri = new Uri(TrelloPublicRoadmapUrl);
                 await osInterop.OpenUrl(uri);
             }
         );
@@ -130,7 +128,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             {
                                 CreateLoadoutJob _ => GameWidgetState.AddingGame,
                                 UnmanageGameJob _ => GameWidgetState.RemovingGame,
-                                _ => GameWidgetState.DetectedGame
+                                _ => GameWidgetState.DetectedGame,
                             };
 
                             return vm;
@@ -151,10 +149,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             vm.Game = game;
                             vm.Name = game.Name;
                             // is this supported game installed?
-                            vm.IsFound = _installedGames.Any(installation => installation.Installation.GetGame().Equals(game));
+                            vm.IsFound = _installedGames.Any(install => install.Installation.GetGame().GameId == game.GameId);
                             vm.GameInstallations = _installedGames
-                                .Where(installation => installation.Installation.GetGame().Equals(game))
-                                .Select(installation => installation.Installation)
+                                .Where(install => install.Installation.GetGame().GameId == game.GameId)
+                                .Select(install => install.Installation)
                                 .ToArray();
                             return vm;
                         }

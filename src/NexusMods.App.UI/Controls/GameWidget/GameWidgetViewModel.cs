@@ -26,8 +26,6 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            .Where(installation => installation.Game is not null)
             .OffUi()
             .SelectMany(LoadImage)
             .WhereNotNull()

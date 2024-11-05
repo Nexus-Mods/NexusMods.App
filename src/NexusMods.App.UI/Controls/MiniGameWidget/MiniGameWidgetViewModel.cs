@@ -29,8 +29,6 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
 
         _image = this
             .WhenAnyValue(vm => vm.Game)
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            .Where(game => game is not null)
             .OffUi()
             .SelectMany(LoadImage)
             .WhereNotNull()
