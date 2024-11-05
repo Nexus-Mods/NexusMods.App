@@ -19,7 +19,23 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
+        // ReSharper disable once NotDisposedResource
+        var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
+        {
+            self.IsInLibraryObservable.CombineLatest(
+                source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
+                resultSelector: static (a, b) => (a, b))
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(self, static (tuple, self) =>
+                {
+                    var (inLibrary, status) = tuple;
+                    self.DownloadState.Value = inLibrary ? JobStatus.Completed : status;
+                    self.DownloadButtonText.Value = ILibraryItemWithDownloadAction.GetButtonText(status: self.DownloadState.Value);
+                }).AddTo(disposables);
+        });
+
         _modelDisposable = Disposable.Combine(
+            modelActivationDisposable,
             Name,
             Version,
             ItemSize,
@@ -29,6 +45,9 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
             DownloadButtonText
         );
     }
+
+    public required Observable<bool> IsInLibraryObservable { get; init; }
+    public required Observable<IJob> DownloadJobObservable { get; init; }
 
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
