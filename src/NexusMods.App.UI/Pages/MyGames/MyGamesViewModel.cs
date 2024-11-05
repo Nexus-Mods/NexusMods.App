@@ -37,20 +37,18 @@ namespace NexusMods.App.UI.Pages.MyGames;
 [UsedImplicitly]
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
+    private const string TrelloPublicRoadmapUrl = "https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap";
+
     private readonly IWindowManager _windowManager;
     private readonly IJobMonitor _jobMonitor;
 
     private ReadOnlyObservableCollection<IMiniGameWidgetViewModel> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
 
-    // top list of games that are detected and managed or not managed
     public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenRoadmapCommand { get; }
     public ReadOnlyObservableCollection<IGameWidgetViewModel> InstalledGames => _installedGames;
-
-    // bottom list of games we support, whether you have them installed or not
     public ReadOnlyObservableCollection<IMiniGameWidgetViewModel> SupportedGames => _supportedGames;
-
 
     public MyGamesViewModel(
         IWindowManager windowManager,
@@ -69,28 +67,27 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         var provider = serviceProvider;
         _windowManager = windowManager;
-        
-        var workspaceController = windowManager.ActiveWorkspaceController;
-        
-        GiveFeedbackCommand = ReactiveCommand.Create(() =>
-        {
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = workspaceController;
 
-            overlayController.Enqueue(alphaWarningViewModel);
-        });
-        
+        var workspaceController = windowManager.ActiveWorkspaceController;
+
+        GiveFeedbackCommand = ReactiveCommand.Create(() =>
+            {
+                var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
+                alphaWarningViewModel.WorkspaceController = workspaceController;
+
+                overlayController.Enqueue(alphaWarningViewModel);
+            }
+        );
+
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap");
-            await osInterop.OpenUrl(uri);
-        });
+            {
+                var uri = NexusModsUrlBuilder.CreateGenericUri(TrelloPublicRoadmapUrl);
+                await osInterop.OpenUrl(uri);
+            }
+        );
 
         this.WhenActivated(d =>
             {
-                
-
-
                 gameRegistry.InstalledGames
                     .ToObservableChangeSet()
                     .OnUI()
@@ -125,32 +122,24 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)
                                 .Count()
                                 .Select(c => c > 0);
-                            
+
                             var job = GetJobRunningForGameInstallation(installation);
 
-                            switch (job.Value)
+                            // fixes when the page loads and a job is still running
+                            vm.State = job.Value switch
                             {
-                                case CreateLoadoutJob _:
-                                    vm.State = GameWidgetState.AddingGame;
-                                    break;
-                                case UnmanageGameJob _:
-                                    vm.State = GameWidgetState.RemovingGame;
-                                    break;
-                                default:
-                                    vm.State = GameWidgetState.DetectedGame;
-                                    break;
-                            }
+                                CreateLoadoutJob _ => GameWidgetState.AddingGame,
+                                UnmanageGameJob _ => GameWidgetState.RemovingGame,
+                                _ => GameWidgetState.DetectedGame
+                            };
 
                             return vm;
                         }
                     )
-                    .Sort(SortExpressionComparer<IGameWidgetViewModel>.Descending(vm => vm.State))
                     .Bind(out _installedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
-                
-                // supported games
-                
+
                 // NOTE(insomnious): The weird cast is so that we don't get a circular reference with Abstractions.Games when
                 // referencing Abstractions.GameLocators directly 
                 var supportedGamesAsIGame = gameRegistry.SupportedGames.Cast<IGame>();
@@ -163,12 +152,16 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             vm.Name = game.Name;
                             // is this supported game installed?
                             vm.IsFound = _installedGames.Any(installation => installation.Installation.GetGame().Equals(game));
+                            vm.GameInstallations = _installedGames
+                                .Where(installation => installation.Installation.GetGame().Equals(game))
+                                .Select(installation => installation.Installation)
+                                .ToArray();
                             return vm;
                         }
                     )
                     .OrderByDescending(vm => vm.IsFound)
                     .ToList();
-                
+
                 _supportedGames = new ReadOnlyObservableCollection<IMiniGameWidgetViewModel>(new ObservableCollection<IMiniGameWidgetViewModel>(miniGameWidgetViewModels));
             }
         );

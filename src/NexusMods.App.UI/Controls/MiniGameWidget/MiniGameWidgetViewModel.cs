@@ -51,7 +51,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
     {
         if (game is null)
             return null;
-        
+
         try
         {
             var stream = await game.Icon.GetStreamAsync();
@@ -63,13 +63,13 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
             return null;
         }
     }
-    
+
     [Reactive] public IGame? Game { get; set; }
+    public GameInstallation[]? GameInstallations { get; set; }
     [Reactive] public string Name { get; set; } = "";
     public bool IsFound { get; set; }
-
-    private readonly ObservableAsPropertyHelper<Bitmap> _image;
-    
     public Bitmap Image => _image.Value;
-    public bool EmptyState { get; set; }
+    
+    private readonly ObservableAsPropertyHelper<Bitmap> _image;
+
 }

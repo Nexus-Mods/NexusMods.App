@@ -17,10 +17,7 @@
     </Design.DataContext>
 
     <Border x:Name="MiniGameWidgetBorder">
-
-        <Grid>
             <StackPanel
-                x:Name="GameStackPanel"
                 Orientation="Horizontal"
                 Spacing="12"
                 VerticalAlignment="Bottom">
@@ -44,43 +41,13 @@
                     <TextBlock x:Name="IsFoundTextBlock"
                                Text="Installation Found"
                                Theme="{StaticResource BodyMDBoldTheme}"
-                               Foreground="{StaticResource NeutralModerateBrush}" />
+                               Foreground="{StaticResource NeutralModerateBrush}"/>
                     <TextBlock x:Name="NotFoundTextBlock"
                                Text="Installation Not Found"
                                Theme="{StaticResource BodyMDBoldTheme}"
                                Foreground="{StaticResource NeutralSubduedBrush}" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel
-                x:Name="EmptyState"
-                IsVisible="False"
-                Orientation="Horizontal"
-                Spacing="12"
-                VerticalAlignment="Center">
-            
-                <Border
-                    CornerRadius="8"
-                    ClipToBounds="True"
-                    Width="48"
-                    Height="48"
-                    Background="{StaticResource SurfaceMidBrush}">
-            
-                    <icons:UnifiedIcon
-                        Value="{x:Static icons:IconValues.Game}"
-                        Size="24" />
-                </Border>
-            
-                <Button Classes="Hyperlink Secondary">
-                    <TextBlock
-                        Text="More games coming soon"
-                        Theme="{StaticResource BodyMDNormalTheme}"
-                        Foreground="{StaticResource NeutralStrongBrush}"
-                        VerticalAlignment="Center" />
-                </Button>
-            
-            </StackPanel>
-        </Grid>
     </Border>
 
 </reactiveUi:ReactiveUserControl>

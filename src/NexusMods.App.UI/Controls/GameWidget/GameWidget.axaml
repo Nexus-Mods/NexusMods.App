@@ -23,119 +23,118 @@
         Height="293"
         Width="184"
         x:Name="GameWidgetBorder">
-        
-            <StackPanel Spacing="12">
-                
-                <!-- image section -->
-                
-                <Border x:Name="ImageSectionBorder">
-                    <Grid RowDefinitions="Auto" Height="184" x:Name="ImageGrid">
-                        <Image Grid.Row="0"
-                               x:Name="GameImage"
-                        />
-                        <Border Grid.Row="0"
-                                Height="36"
-                                Width="36"
-                                VerticalAlignment="Top"
-                                HorizontalAlignment="Left"
-                                x:Name="StoreBackground">
-                            <icons:UnifiedIcon Size="24" x:Name="GameStoreIcon"/>
-                            <ToolTip.Tip>
-                                <TextBlock x:Name="GameStoreToolTipTextBlock" />
-                            </ToolTip.Tip>
-                        </Border>
-                    </Grid>
-                </Border>
-                
-                <!-- details section -->
-                
-                <StackPanel x:Name="DetailsSectionStackPanel">
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        TextTrimming="CharacterEllipsis"
-                        TextWrapping="NoWrap"
-                        x:Name="NameTextBlock" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        TextTrimming="CharacterEllipsis"
-                        TextWrapping="NoWrap"
-                        x:Name="VersionTextBlock" />
-                </StackPanel>
-                
-                <!-- buttons section -->
-                
-                <StackPanel>
-                    
-                    <!-- DetectedGame -->
-                        <StackPanel x:Name="DetectedGameStackPanel"
+
+        <StackPanel Spacing="12">
+
+            <!-- image section -->
+
+            <Border x:Name="ImageSectionBorder">
+                <Grid RowDefinitions="Auto" Height="184" x:Name="ImageGrid">
+                    <Image Grid.Row="0"
+                           x:Name="GameImage" />
+                    <Border Grid.Row="0"
+                            Height="36"
+                            Width="36"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            x:Name="StoreBackground">
+                        <icons:UnifiedIcon Size="24" x:Name="GameStoreIcon" />
+                        <ToolTip.Tip>
+                            <TextBlock x:Name="GameStoreToolTipTextBlock" />
+                        </ToolTip.Tip>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- details section -->
+
+            <StackPanel x:Name="DetailsSectionStackPanel">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap"
+                    x:Name="NameTextBlock" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap"
+                    x:Name="VersionTextBlock" />
+            </StackPanel>
+
+            <!-- buttons section -->
+
+            <StackPanel>
+
+                <!-- DetectedGame -->
+                <StackPanel x:Name="DetectedGameStackPanel"
                             IsVisible="False">
-                            
-                            <controls:StandardButton x:Name="AddGameButton"
-                                                     HorizontalAlignment="Stretch"
-                                                     Text="{x:Static resources:Language.GameWidget__Add_game}"
-                                                     LeftIcon="{x:Static icons:IconValues.Add}"
-                                                     ShowIcon="Left"
-                                                     Type="Secondary"
-                                                     Fill="Strong" />
-                        </StackPanel>
-                        
-                        <!-- AddingGame -->
-                        <StackPanel x:Name="AddingGameStackPanel"
+
+                    <controls:StandardButton x:Name="AddGameButton"
+                                             HorizontalAlignment="Stretch"
+                                             Text="{x:Static resources:Language.GameWidget__Add_game}"
+                                             LeftIcon="{x:Static icons:IconValues.Add}"
+                                             ShowIcon="Left"
+                                             Type="Secondary"
+                                             Fill="Strong" />
+                </StackPanel>
+
+                <!-- AddingGame -->
+                <StackPanel x:Name="AddingGameStackPanel"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
                             Classes="Spacing-1"
                             Spacing="8"
                             IsVisible="False">
-                            <progressRing:ProgressRing Height="24" Width="24"
-                                                       VerticalAlignment="Center"/>
-                            <TextBlock x:Name="AddingGameTextBlock"  
-                                       VerticalAlignment="Center"
-                                       Text="{x:Static resources:Language.GameWidget__Adding_game}"/>
-                        </StackPanel>
-                        
-                        <!-- ManagedGame -->
-                        <Grid x:Name="ManagedGameGrid"
-                              ColumnDefinitions="*, 12, Auto" 
-                              IsVisible="False"
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Stretch"
-                              Classes="Spacing-2">
-                            <controls:StandardButton x:Name="ViewGameButton"
-                                                     Text="{x:Static resources:Language.GameWidget__View}"
-                                                     LeftIcon="{x:Static icons:IconValues.Check}"
-                                                     ShowIcon="Left"
-                                                     Type="Tertiary"
-                                                     Fill="Weak" 
-                                                     HorizontalAlignment="Stretch"/>
-                            
-                            <controls:StandardButton Grid.Column="2" x:Name="RemoveGameButton"
-                                                     LeftIcon="{x:Static icons:IconValues.DeleteForever}"
-                                                     ShowLabel="False"
-                                                     ShowIcon="Left"
-                                                     Type="Tertiary"
-                                                     Fill="Weak" />
-                        </Grid>
-                        
-                        <!-- RemovingGame -->
-                        <StackPanel x:Name="RemovingGameStackPanel"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center"
-                                    Classes="Spacing-1"
-                                    Spacing="8"
-                                    IsVisible="False">
-                            <progressRing:ProgressRing Height="24" Width="24"
-                                                       VerticalAlignment="Center"/>
-                            <TextBlock x:Name="RemovingGameTextBlock" 
-                                       VerticalAlignment="Center"
-                                       Text="{x:Static resources:Language.GameWidget__Removing_game}"/>
-                        </StackPanel>
-                    
-                    
+                    <progressRing:ProgressRing Height="24" Width="24"
+                                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="AddingGameTextBlock"
+                               VerticalAlignment="Center"
+                               Text="{x:Static resources:Language.GameWidget__Adding_game}" />
                 </StackPanel>
 
+                <!-- ManagedGame -->
+                <Grid x:Name="ManagedGameGrid"
+                      ColumnDefinitions="*, 12, Auto"
+                      IsVisible="False"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Stretch"
+                      Classes="Spacing-2">
+                    <controls:StandardButton x:Name="ViewGameButton"
+                                             Text="{x:Static resources:Language.GameWidget__View}"
+                                             LeftIcon="{x:Static icons:IconValues.Check}"
+                                             ShowIcon="Left"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             HorizontalAlignment="Stretch" />
+
+                    <controls:StandardButton Grid.Column="2" x:Name="RemoveGameButton"
+                                             LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                             ShowLabel="False"
+                                             ShowIcon="Left"
+                                             Type="Tertiary"
+                                             Fill="Weak" />
+                </Grid>
+
+                <!-- RemovingGame -->
+                <StackPanel x:Name="RemovingGameStackPanel"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Classes="Spacing-1"
+                            Spacing="8"
+                            IsVisible="False">
+                    <progressRing:ProgressRing Height="24" Width="24"
+                                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="RemovingGameTextBlock"
+                               VerticalAlignment="Center"
+                               Text="{x:Static resources:Language.GameWidget__Removing_game}" />
+                </StackPanel>
+
+
             </StackPanel>
-        </Border>
-    
+
+        </StackPanel>
+    </Border>
+
 </reactiveUi:ReactiveUserControl>
