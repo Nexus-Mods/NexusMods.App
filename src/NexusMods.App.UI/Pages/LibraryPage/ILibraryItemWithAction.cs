@@ -66,4 +66,17 @@ public interface ILibraryItemWithInstallAction : ILibraryItemWithAction
 public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
 {
     ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
+
+    BindableReactiveProperty<bool> IsDownloaded { get; }
+
+    BindableReactiveProperty<string> DownloadButtonText { get; }
+
+    public static ReactiveCommand<Unit, Unit> CreateCommand<TModel>(TModel model)
+        where TModel : ILibraryItemModel, ILibraryItemWithDownloadAction
+    {
+        var canDownload = model.IsDownloaded.Select(static isDownloaded => !isDownloaded);
+        return canDownload.ToReactiveCommand<Unit, Unit>(static x => x, initialCanExecute: false);
+    }
+
+    public static string GetButtonText(bool isDownloaded) => isDownloaded ? "Downloaded" : "Download";
 }

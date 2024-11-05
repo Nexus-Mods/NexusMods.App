@@ -16,15 +16,16 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
     public NexusModsFileMetadataLibraryItemModel(NexusModsFileMetadata.ReadOnly fileMetadata)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
-
-        DownloadItemCommand = new ReactiveCommand<Unit, Unit>(static x => x);
+        DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
         _modelDisposable = Disposable.Combine(
             Name,
             Version,
             ItemSize,
             FormattedSize,
-            DownloadItemCommand
+            DownloadItemCommand,
+            IsDownloaded,
+            DownloadButtonText
         );
     }
 
@@ -35,6 +36,10 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
     public BindableReactiveProperty<string> FormattedSize { get; }
 
     public ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
+
+    public BindableReactiveProperty<bool> IsDownloaded { get; } = new();
+
+    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(isDownloaded: false));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
