@@ -24,6 +24,9 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
 
             this.OneWayBind(ViewModel, vm => vm.Category, view => view.CategoryText.Text)
                 .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.IsAdult, view => view.AdultText.IsVisible)
+                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Summary, view => view.SummaryText.Text)
                 .DisposeWith(d);

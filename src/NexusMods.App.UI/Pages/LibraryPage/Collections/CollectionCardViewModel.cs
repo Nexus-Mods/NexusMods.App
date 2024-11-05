@@ -59,7 +59,8 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public string Name => _collection.Name;
     [Reactive] public Bitmap? Image { get; private set; }
     public string Summary => _collection.Summary;
-    public string Category => _revision.AdultContent ? "Adult" : "Non-Adult";
+    public string Category => _collection.Tags.Count != 0 ? _collection.Tags.First().Name : "Unknown";
+    public bool IsAdult => _revision.AdultContent;
     public int ModCount => _revision.Files.Count;
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong DownloadCount => _revision.Downloads;

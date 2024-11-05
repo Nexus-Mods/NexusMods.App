@@ -84,11 +84,15 @@
                             <!-- Margin needed to left offset top and bottom border -->
                             <Setter Property="Margin" Value="12, 0, 0, 0" />
 
-                            <Style Selector="^ > TextBlock">
+                            <Style Selector="^ > StackPanel > TextBlock">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                                 <Setter Property="TextWrapping" Value="NoWrap" />
                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                            </Style>
+                            
+                            <Style Selector="^ TextBlock#AdultText">
+                                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
                             </Style>
                         </Style>
 

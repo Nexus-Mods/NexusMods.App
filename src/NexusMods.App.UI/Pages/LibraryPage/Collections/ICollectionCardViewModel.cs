@@ -31,6 +31,11 @@ public interface ICollectionCardViewModel : IViewModelInterface
     public string Category { get; }
     
     /// <summary>
+    /// The website category of the collection.
+    /// </summary>
+    public bool IsAdult { get; }
+    
+    /// <summary>
     /// Number of mods in the collection.
     /// </summary>
     public int ModCount { get; }
