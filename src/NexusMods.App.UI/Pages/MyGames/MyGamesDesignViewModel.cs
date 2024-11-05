@@ -25,8 +25,6 @@ public class MyGamesDesignViewModel : APageViewModel<IMyGamesViewModel>, IMyGame
         var supportedGames = Enumerable.Range(0, 3)
             .Select(_ => new MiniGameWidgetDesignViewModel())
             .ToList();
-
-        //supportedGames.Add(new MiniGameWidgetDesignViewModel() { EmptyState = true });
         
         InstalledGames = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(detectedGames));
         SupportedGames = new ReadOnlyObservableCollection<IMiniGameWidgetViewModel>(new ObservableCollection<IMiniGameWidgetViewModel>(supportedGames));
