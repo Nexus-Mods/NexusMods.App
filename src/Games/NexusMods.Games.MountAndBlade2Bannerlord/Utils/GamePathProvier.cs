@@ -7,6 +7,9 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
 public static class GamePathProvier
 {
+    // Note(Aragas, Sewer) https://github.com/Nexus-Mods/NexusMods.App/pull/2180#discussion_r1823624814
+    // 'Xbox is only supported with BLSE', so skipping 'PrimaryXboxLauncherFile' here is correct behaviour.
+    // BLSE requirement will be emitted as diagnostic.
     private static string GetConfiguration(GameStore store) =>
         LauncherManagerHandler.GetConfigurationByPlatform(LauncherManagerHandler.FromStore(Converter.ToGameStoreTW(store)));
 
