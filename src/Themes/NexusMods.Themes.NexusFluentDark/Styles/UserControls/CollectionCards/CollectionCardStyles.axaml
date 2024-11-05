@@ -176,12 +176,6 @@
                     <Setter Property="panels:Flex.Basis" Value="0%" />
                     <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="ColumnSpacing" Value="8" />
-
-                    <Style Selector="^ > Button">
-                        <Style Selector="^ TextBlock">
-                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                        </Style>
-                    </Style>
                 </Style>
 
                 <Style Selector="^ panels|FlexPanel#FooterLabels">
