@@ -24,7 +24,7 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
             ItemSize,
             FormattedSize,
             DownloadItemCommand,
-            IsDownloaded,
+            DownloadState,
             DownloadButtonText
         );
     }
@@ -37,9 +37,9 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
 
     public ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
 
-    public BindableReactiveProperty<bool> IsDownloaded { get; } = new();
+    public BindableReactiveProperty<DownloadState> DownloadState { get; } = new();
 
-    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(isDownloaded: false));
+    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(state: LibraryPage.DownloadState.NotDownloaded));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;

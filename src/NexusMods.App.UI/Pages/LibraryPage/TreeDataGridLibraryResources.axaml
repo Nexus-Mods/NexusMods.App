@@ -117,12 +117,8 @@
                 <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadAction}">
                     <Button Command="{CompiledBinding DownloadItemCommand}"
                             Classes="Standard"
-                            Classes.Primary="{CompiledBinding !IsDownloaded.Value}"
-                            Classes.Tertiary="{CompiledBinding IsDownloaded.Value}"
                             HorizontalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}"
-                                               IsVisible="{CompiledBinding IsDownloaded.Value}" />
                             <TextBlock Text="{CompiledBinding DownloadButtonText.Value}" />
                         </StackPanel>
                     </Button>
