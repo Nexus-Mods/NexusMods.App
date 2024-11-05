@@ -1,29 +1,98 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.Networking.NexusWebApi;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
 [UsedImplicitly]
-internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
+public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
+    private readonly IJobMonitor _jobMonitor;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+    }
+
+    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
+        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        return _connection
+            .ObserveDatoms(CollectionRevisionModFile.CollectionRevision, revisionMetadata)
+            .AsEntityIds()
+            .Transform(datom => CollectionRevisionModFile.Load(_connection.Db, datom.E).NexusModFile)
+            .Transform(ILibraryItemModel (nexusModsFileMetadata) =>
+            {
+                var isInLibraryObservable = _connection
+                    .ObserveDatoms(NexusModsLibraryItem.FileMetadata, nexusModsFileMetadata)
+                    .Transform(datom => LibraryFile.Hash.IsIn(_connection.Db, datom.E))
+                    .IsNotEmpty()
+                    .ToObservable()
+                    .Prepend((_connection, nexusModsFileMetadata), static state =>
+                    {
+                        var (connection, fileMetadata) = state;
+                        var libraryItems = NexusModsLibraryItem.FindByFileMetadata(connection.Db, fileMetadata);
+                        foreach (var libraryItem in libraryItems)
+                        {
+                            if (LibraryFile.Hash.IsIn(libraryItem))
+                                return true;
+                        }
+
+                        return false;
+                    });
+
+                var downloadJobObservable = _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
+                    .Filter(job =>
+                    {
+                        var definition = job.Definition as NexusModsDownloadJob;
+                        Debug.Assert(definition is not null);
+                        return definition.FileMetadata.Id == nexusModsFileMetadata;
+                    })
+                    .QueryWhenChanged(static query => query.Items.MaxBy(job => job.Status))
+                    .ToObservable()
+                    .Prepend((_jobMonitor, nexusModsFileMetadata), static state =>
+                    {
+                        var (jobMonitor, fileMetadata) = state;
+                        if (jobMonitor.Jobs.TryGetFirst(job => job.Definition is NexusModsDownloadJob nexusModsDownloadJob && nexusModsDownloadJob.FileMetadata.Id == fileMetadata, out var job))
+                            return job;
+                        return null;
+                    })
+                    .WhereNotNull();
+
+                var model = new NexusModsFileMetadataLibraryItemModel(nexusModsFileMetadata)
+                {
+                    IsInLibraryObservable = isInLibraryObservable,
+                    DownloadJobObservable = downloadJobObservable,
+                };
+
+                model.Name.Value = nexusModsFileMetadata.Name;
+                model.Version.Value = nexusModsFileMetadata.Version;
+
+                if (NexusModsFileMetadata.Size.TryGet(nexusModsFileMetadata, out var size)) model.ItemSize.Value = size;
+
+                return model;
+            });
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
@@ -185,7 +254,7 @@ internal class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
                 {
-                    NameObservable = Observable.Return(modPage.Name),
+                    NameObservable = System.Reactive.Linq.Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
                     IsEnabledObservable = isEnabledObservable,
 

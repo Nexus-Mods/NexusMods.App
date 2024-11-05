@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -42,8 +43,17 @@ public static class FragmentExtensions
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
         nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);
+
         if (ulong.TryParse(modFileFragment.SizeInBytes, out var size))
+        {
             nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.From(size));
+        }
+        else
+        {
+            Debug.WriteLine($"Unable to parse `{modFileFragment.SizeInBytes}` as bytes for Uid `{modFileFragment.Uid}`");
+            nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.Zero);
+        }
+
         return nexusFileResolver.Id;
     }
 
