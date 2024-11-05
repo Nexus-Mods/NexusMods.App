@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls;
 using R3;
 
@@ -67,31 +68,28 @@ public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
 {
     ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
 
-    BindableReactiveProperty<DownloadState> DownloadState { get; }
+    BindableReactiveProperty<JobStatus> DownloadState { get; }
 
     BindableReactiveProperty<string> DownloadButtonText { get; }
 
     public static ReactiveCommand<Unit, Unit> CreateCommand<TModel>(TModel model)
         where TModel : ILibraryItemModel, ILibraryItemWithDownloadAction
     {
-        var canDownload = model.DownloadState.Select(static state => state == LibraryPage.DownloadState.NotDownloaded);
+        var canDownload = model.DownloadState.Select(static state => state < JobStatus.Running);
         return canDownload.ToReactiveCommand<Unit, Unit>(static x => x, initialCanExecute: false);
     }
 
-    public static string GetButtonText(DownloadState state)
+    public static string GetButtonText(JobStatus status)
     {
-        return state switch
+        return status switch
         {
-            LibraryPage.DownloadState.NotDownloaded => "Download",
-            LibraryPage.DownloadState.Downloading => "Downloading",
-            LibraryPage.DownloadState.Downloaded => "Downloaded",
+            < JobStatus.Running => "Download",
+            JobStatus.Running => "Downloading",
+            JobStatus.Paused => "Paused",
+            JobStatus.Completed => "Downloaded",
+            JobStatus.Cancelled => "Cancelled",
+            JobStatus.Failed => "Failed",
         };
     }
 }
 
-public enum DownloadState
-{
-    NotDownloaded,
-    Downloading,
-    Downloaded,
-}

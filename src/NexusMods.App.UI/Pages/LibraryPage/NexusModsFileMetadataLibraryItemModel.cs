@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -37,9 +38,9 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
 
     public ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
 
-    public BindableReactiveProperty<DownloadState> DownloadState { get; } = new();
+    public BindableReactiveProperty<JobStatus> DownloadState { get; } = new();
 
-    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(state: LibraryPage.DownloadState.NotDownloaded));
+    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(status: JobStatus.None));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
