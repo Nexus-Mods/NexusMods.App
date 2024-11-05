@@ -23,6 +23,7 @@ We are continuing to add features to support modding Baldur's Gate 3. In this up
 * Cleared out lots of unused code related to earlier prototypes of the My Mods and Library pages. 
 
 ## Bugfixes
+* Starting Baldur's Gate 3 on GOG (Windows) will now open the Larian Launcher rather than defaulting to the Vulkan version of the game. 
 * Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly.
 * Selecting multiple mods to delete with Shift + Click will now delete all selected mods. 
 * The badge next the the Library in the left menu will now properly decrease when items are deleted.
