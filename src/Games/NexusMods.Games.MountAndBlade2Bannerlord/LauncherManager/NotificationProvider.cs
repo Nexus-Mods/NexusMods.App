@@ -8,44 +8,12 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 
 internal class NotificationProvider : INotificationProvider
 {
-    private readonly ConcurrentDictionary<string, object?> _notificationIds = new();
-    
-    private Window? _window; // TODO: How to inject the window?
-
     public void SendNotification(string id, NotificationType type, string message, uint displayMs)
     {
-        if (_window is null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrEmpty(id)) id = Guid.NewGuid().ToString();
-
-        // Prevents message spam
-        if (_notificationIds.TryAdd(id, null)) return;
-        using var cts = new CancellationTokenSource();
-        _ = Task.Delay(TimeSpan.FromMilliseconds(displayMs), cts.Token).ContinueWith(x => _notificationIds.TryRemove(id, out _), cts.Token);
-
-        var translatedMessage = new BUTRTextObject(message).ToString();
-        switch (type)
-        {
-            case NotificationType.Hint:
-            {
-                //HintManager.ShowHint(translatedMessage);
-                cts.Cancel();
-                break;
-            }
-            case NotificationType.Info:
-            {
-                // TODO:
-                //HintManager.ShowHint(translatedMessage);
-                cts.Cancel();
-                break;
-            }
-            default:
-                //MessageBox.Show(translatedMessage);
-                cts.Cancel();
-                break;
-        }
+        // This implementation has been stubbed out; it's only used to report borked SubModule.xml files in the game folder.
+        // See a835fd43316905c06b35db8813af4dae3fb75fcd for last non-stubbed function with partial implementation.
+        // Comment: https://github.com/Nexus-Mods/NexusMods.App/pull/2180#discussion_r1824783523
+        // We will need to show a notification in the case of ingesting modules already in game folder,
+        // in the case user downloaded one externally and we can't properly pick up on that.
     }
 }
