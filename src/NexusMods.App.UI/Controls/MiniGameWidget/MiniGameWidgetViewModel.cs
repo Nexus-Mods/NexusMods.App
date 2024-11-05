@@ -29,6 +29,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
 
         _image = this
             .WhenAnyValue(vm => vm.Game)
+            .Where(game => game is not null)
             .OffUi()
             .SelectMany(LoadImage)
             .WhereNotNull()
