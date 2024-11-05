@@ -324,3 +324,7 @@ That's not well defined in docs outside of https://docs.bannerlordmodding.com/_i
     - Does this affect load ordering?
     - Can a `.tpac` file contain any content that 'maps' onto the module folder?
     - Should we emit a diagnostic if a mod can be packed as `.tpac` for performance reasons?
+
+## Miscallenous
+
+For info on integration with `LauncherManager` library, look at `LauncherManagerNexusModsApp` class which extends from `LauncherManagerHandler`.
