@@ -3,8 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
@@ -31,15 +33,34 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
         using var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, provider.GetServices<IAnalyzer>());
         
-        await Verify(GetStatistics(connection.Db, name)).UseParameters(name);
+        var oldFingerprint = RecordedFingerprint(connection.Db);
+        
+        var migrationService = new MigrationService(provider.GetRequiredService<ILogger<MigrationService>>(), connection, provider.GetServices<IMigration>());
+        await migrationService.Run();
+        
+        await Verify(GetStatistics(connection.Db, name, oldFingerprint)).UseParameters(name);
     }
 
-    private Statistics GetStatistics(IDb db, string name)
+    private Hash? RecordedFingerprint(IDb db)
+    {
+        var cache = db.AttributeCache;
+        if (!cache.Has(SchemaVersion.Fingerprint.Id))
+            return null;
+        
+        var fingerprints = db.Datoms(SchemaVersion.Fingerprint);
+        if (fingerprints.Count == 0)
+            return null;
+        return Hash.From(ValueTag.UInt64.Read<ulong>(fingerprints.First().ValueSpan));
+    }
+
+    private Statistics GetStatistics(IDb db, string name, Hash? oldFingerprint)
     {
         var timestampAttr = MnemonicDB.Abstractions.BuiltInEntities.Transaction.Timestamp;
         return new Statistics
         {
             Name = name,
+            OldFingerprint = oldFingerprint?.ToString() ?? "None",
+            NewFingerprint = RecordedFingerprint(db)?.ToString() ?? "None",
             Loadouts = Loadout.All(db).Count,
             LoadoutItemGroups = LoadoutItemGroup.All(db).Count,
             Files = LoadoutItemWithTargetPath.All(db).Count,
@@ -54,6 +75,11 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
     record Statistics
     {
         public string Name { get; init; }
+        
+        public string OldFingerprint { get; init; }
+        
+        public string NewFingerprint { get; init; }
+        
         public int Loadouts { get; init; }
         public int LoadoutItemGroups { get; init; }
         public int Files { get; init; }

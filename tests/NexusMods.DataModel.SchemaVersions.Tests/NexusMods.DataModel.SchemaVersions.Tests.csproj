@@ -7,6 +7,7 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <RootNamespace>NexusMods.DataModel.Migrations.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,7 +18,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
-      <ProjectReference Include="..\..\src\NexusMods.DataModel.Migrations\NexusMods.DataModel.Migrations.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.DataModel.SchemaVersions\NexusMods.DataModel.SchemaVersions.csproj" />
     </ItemGroup>
 
 </Project>

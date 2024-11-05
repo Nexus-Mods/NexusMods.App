@@ -5,15 +5,13 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel.Migrations.Tests;
 
-public class MigrationFailsafes(IConnection connection)
+public class SchemaFailsafes(IConnection connection)
 {
 
     [Fact]
     public async Task SchemaFingerprintHasntChanged()
     {
         var db = connection.Db;
-        SchemaFingerprint.GenerateFingerprint(db).Should().Be(Hash.From(0x5FDE3EA34B8150F9));
-
         var records = db.AttributeCache.AllAttributeIds
             .OrderBy(id => id.Id)
             .Select(id =>

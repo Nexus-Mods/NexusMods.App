@@ -17,6 +17,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.Migrations;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
@@ -39,6 +40,7 @@ public static class Services
     {
         coll.AddMnemonicDB();
         coll.AddAnalyzers();
+        coll.AddMigrations();
 
         // Settings
         coll.AddSettings<DataModelSettings>();
