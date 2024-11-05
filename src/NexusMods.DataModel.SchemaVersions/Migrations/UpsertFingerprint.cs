@@ -25,7 +25,7 @@ public class UpsertFingerprint : IMigration
             return true;
         
         var currentFingerprint = SchemaFingerprint.GenerateFingerprint(db);
-        var dbFingerprint = Hash.From(ValueTag.UInt64.Read<ulong>(fingerprints.First().ValueSpan));
+        var dbFingerprint = Hash.From(UInt64Serializer.Read(fingerprints[0].ValueSpan));
         // Is the fingerprint up to date?
         return currentFingerprint != dbFingerprint;
     }
