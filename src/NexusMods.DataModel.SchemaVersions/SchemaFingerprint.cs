@@ -15,7 +15,7 @@ public class SchemaFingerprint
         StringBuilder sb = new();
         var cache = db.AttributeCache;
         
-        foreach (var id in cache.AllAttributeIds.OrderBy(id => id.Id))
+        foreach (var id in cache.AllAttributeIds.OrderBy(id => id.Id, StringComparer.OrdinalIgnoreCase))
         {
             var aid = cache.GetAttributeId(id);
             sb.AppendLine(id.ToString());
