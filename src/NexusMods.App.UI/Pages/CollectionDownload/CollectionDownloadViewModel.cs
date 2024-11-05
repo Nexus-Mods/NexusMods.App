@@ -113,7 +113,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         }
         else
         {
-            await _osInterop.OpenUrl(fileMetadata.ModPage.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            await _osInterop.OpenUrl(fileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
         }
     }
 

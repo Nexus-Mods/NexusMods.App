@@ -61,6 +61,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
 
     public partial struct ReadOnly
     {
-        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}");
+        public string GetBaseUrl() => $"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}";
+        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri(GetBaseUrl());
     }
 }
