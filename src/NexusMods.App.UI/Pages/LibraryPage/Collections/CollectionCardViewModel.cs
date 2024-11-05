@@ -59,7 +59,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public string Name => _collection.Name;
     [Reactive] public Bitmap? Image { get; private set; }
     public string Summary => _collection.Summary;
-    public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
+    public string Category => _revision.AdultContent ? "Adult" : "Non-Adult";
     public int ModCount => _revision.Files.Count;
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong DownloadCount => _revision.Downloads;

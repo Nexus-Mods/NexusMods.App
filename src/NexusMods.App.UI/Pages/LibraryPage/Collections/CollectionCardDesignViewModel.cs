@@ -11,7 +11,7 @@ public class CollectionCardDesignViewModel : AViewModel<ICollectionCardViewModel
     public string Name => "Vanilla+ [Quality of Life]";
     public Bitmap? Image => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public string Summary => "1.6.8 This visual mod collection is designed to create a witchy medieval cottage aethetic experience for Stardew Valley, and Stardew Valley Expanded.";
-    public string Category => "All-in-One \u2022 Fair and Balanced \u2022 Gameplay \u2022 Lore-friendly";
+    public string Category => "All-in-One \u2022 Adult";
     public int ModCount => 9;
     public ulong EndorsementCount => 248;
     public ulong DownloadCount => 30000;
