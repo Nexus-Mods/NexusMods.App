@@ -2,28 +2,44 @@
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
+This release includes further improvements to Baldur's Gate 3 support, updated UI styles and lots of bug fixes.
+
+## Baldur's Gate 3 Improvements
+We are continuing to add features to support modding Baldur's Gate 3. In this updat, we've focused on improvement the Health Check diagnostics presented to the user and begun the back-end work to provide load ordering:
+* Added a Health Check diagnostic for outdated dependencies.
+* Added a Health Check diagnostic for invalid PAK files.
+* Improved the missing dependencies diagnostic message.
+* Additional metadata is being parsed from the PAK files.
+* Added support for serialising and deserialising modsettings.lsx to support load ordering in a future update.
+
 ## Features
-- Baldur's Gate 3 PAK files are now parsed for additional metadata. (Possibly expand)
-- Baldur's Gate 3 - Added support for serialising and deserialising modsettings.lsx to support load ordering.
-- Standardised all "Button" components used across the app. 
-- Added a new "Alerts" component to the app for dismiss-able notices. 
-- Added a new page for Collections which will help the user see which mods are installed or missing from the library.
+* Added a new page for Collections which will help the user see which mods are installed or missing from the library.
+* Standardised all "Button" components used across the app. 
+* Added a new "Alerts" component to the app for dismiss-able notices. 
 
 ## Technical Changes
-- Moved API requests from Nexus Mods API v1 to v2 where possible.
-- Cleared out lots of unused code related to earlier prototypes of the My Mods and Library pages. 
+* Migrated several backend function from Nexus Mods API v1 to v2.
+* Cleared out lots of unused code related to earlier prototypes of the My Mods and Library pages. 
 
 ## Bugfixes
-- Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly.
-- Selecting multiple mods to delete with Shift + Click will now delete all selected mods. 
-- The badge next the the Library in the left menu will now properly decrease when items are deleted.
-- Mods in a collection can now be correctly downloaded from hidden mod pages.
-- Added missing tooltips to several buttons in the UI. 
-- Fixed the "Running..." text getting stuck on the Play button.
-- Fixed an issue with the list-games CLI verb showing all games instead of the detected installations.
-- The main window will now pop into focus when the user successfully logs in. 
+* Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly. (Thanks BucketListMod)
+* Selecting multiple mods to delete with Shift + Click will now delete all selected mods. 
+* The badge next the the Library in the left menu will now properly decrease when items are deleted.
+* Mods in a collection can now be correctly downloaded from hidden mod pages.
+* Added missing tooltips to several buttons in the UI. 
+* Fixed the "Running..." text getting stuck on the Play button.
+* Fixed an issue with the list-games CLI verb showing all games instead of the detected installations.
+* The main window will now pop into focus when the user successfully logs in. 
 
-
+## Known Issues
+* Most collection installations will not complete successfully. This is due to several features that have not yet been implemented. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* Trying to install a collection with an unsupported type of mod (e.g. non-Nexus Mods files) will fail with no error message. This is not supported in the current build.
+* Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
+* Once a collection is added to the app, it cannot be removed from the left menu.
+* Collections allow users to modify the included mods but do not allow you to reset them to the original state. 
+* The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
 
 
 # v0.6.2 - 2024-10-16
@@ -70,7 +86,6 @@ We're starting work on showing when a mod has an update in the app. The backend 
 * Collections allow users to modify the included mods but do not allow you to reset them to the original state. 
 * The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
 * The "Switch View" option does not persist in the Library/Installed Mods view.
-
 
 ## Bugfixes
 * The app will now uninstall correctly when installed outside of the default directory on Windows. 
