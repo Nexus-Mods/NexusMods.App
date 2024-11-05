@@ -5,7 +5,7 @@
 This release includes further improvements to Baldur's Gate 3 support, updated UI styles and lots of bug fixes.
 
 ## Baldur's Gate 3 Improvements
-We are continuing to add features to support modding Baldur's Gate 3. In this updat, we've focused on improvement the Health Check diagnostics presented to the user and begun the back-end work to provide load ordering:
+We are continuing to add features to support modding Baldur's Gate 3. In this update, we've focused on improving the Health Check diagnostics presented to the user and begun the back-end work to provide load ordering:
 * Added a Health Check diagnostic for outdated dependencies.
 * Added a Health Check diagnostic for invalid PAK files.
 * Improved the missing dependencies diagnostic message.
@@ -13,16 +13,17 @@ We are continuing to add features to support modding Baldur's Gate 3. In this up
 * Added support for serialising and deserialising modsettings.lsx to support load ordering in a future update.
 
 ## Features
-* Added a new page for Collections which will help the user see which mods are installed or missing from the library.
+* Collections requiring non-Nexus Mods files that can be directly downloaded are now supported. 
+* Added the framework for a new Collection Download page which will show which mods are installed or missing from the library.
 * Standardised all "Button" components used across the app. 
 * Added a new "Alerts" component to the app for dismiss-able notices. 
 
 ## Technical Changes
-* Migrated several backend function from Nexus Mods API v1 to v2.
+* Migrated several backend functions from Nexus Mods API v1 to v2.
 * Cleared out lots of unused code related to earlier prototypes of the My Mods and Library pages. 
 
 ## Bugfixes
-* Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly. (Thanks BucketListMod)
+* Fixed a bug where Stardew Valley mods that used BOM characters in the manifest.json could not be read properly.
 * Selecting multiple mods to delete with Shift + Click will now delete all selected mods. 
 * The badge next the the Library in the left menu will now properly decrease when items are deleted.
 * Mods in a collection can now be correctly downloaded from hidden mod pages.
@@ -32,10 +33,9 @@ We are continuing to add features to support modding Baldur's Gate 3. In this up
 * The main window will now pop into focus when the user successfully logs in. 
 
 ## Known Issues
-* Most collection installations will not complete successfully. This is due to several features that have not yet been implemented. 
-* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-* Trying to install a collection with an unsupported type of mod (e.g. non-Nexus Mods files) will fail with no error message. This is not supported in the current build.
+* Installing a collection which includes mods where the user must browse an external website to obtain the file(s) will fail with no error message. This is not supported in the current build.
 * Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * Once a collection is added to the app, it cannot be removed from the left menu.
 * Collections allow users to modify the included mods but do not allow you to reset them to the original state. 
 * The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
