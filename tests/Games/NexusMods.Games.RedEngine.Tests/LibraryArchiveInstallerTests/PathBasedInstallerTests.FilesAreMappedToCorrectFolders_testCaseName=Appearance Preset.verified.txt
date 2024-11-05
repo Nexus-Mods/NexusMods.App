@@ -1,12 +1,12 @@
 ﻿[
   {
     FromPath: cool_choom.preset,
-    Hash: 0x7B15871FB267B315,
+    Hash: 0x6E41F20E86AFAB2B,
     ToGamePath: {Game}/bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset
   },
   {
     FromPath: cool_choom.preset,
-    Hash: 0x7B15871FB267B315,
+    Hash: 0x6E41F20E86AFAB2B,
     ToGamePath: {Game}/bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset
   }
 ]

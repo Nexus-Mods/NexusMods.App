@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;

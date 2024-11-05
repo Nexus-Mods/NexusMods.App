@@ -3,7 +3,8 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -51,14 +52,14 @@ public class SevenZipExtractionTests
 
 
         (await tempFolder.Path.EnumerateFiles()
-                .SelectAsync(async f => (f.RelativeTo(dest), await f.XxHash64Async()))
+                .SelectAsync(async f => (f.RelativeTo(dest), await f.XxHash3Async()))
                 .ToArrayAsync())
             .Should()
             .BeEquivalentTo(new[]
             {
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
             });
 
 
@@ -71,7 +72,7 @@ public class SevenZipExtractionTests
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (_, e) =>
         {
             await using var fs = await e.GetStreamAsync();
-            return await fs.XxHash64Async(CancellationToken.None);
+            return await fs.XxHash3Async(CancellationToken.None);
         }, CancellationToken.None);
 
         results.Count.Should().Be(3);
@@ -80,9 +81,9 @@ public class SevenZipExtractionTests
             .Should()
             .BeEquivalentTo(new[]
             {
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
             });
     }
 }

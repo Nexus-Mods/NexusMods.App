@@ -1,18 +1,18 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 
-public class FloatAttribute(string ns, string name) : ScalarAttribute<float, float>(ValueTags.Float32, ns, name)
+/// <summary>
+/// Float attribute (32-bit)
+/// </summary>
+public class FloatAttribute(string ns, string name) : ScalarAttribute<float, float, Float32Serializer>(ns, name)
 {
-    protected override float ToLowLevel(float value)
-    {
-        return value;
-    }
+    /// <inheritdoc />
+    protected override float ToLowLevel(float value) => value;
 
-    protected override float FromLowLevel(float value, ValueTags tags, AttributeResolver resolver)
-    {
-        return value;
-    }
+    /// <inheritdoc />
+    protected override float FromLowLevel(float value, AttributeResolver resolver) => value;
 }

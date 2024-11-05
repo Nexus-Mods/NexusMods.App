@@ -14,8 +14,8 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Extensions.BCL;
-using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -410,8 +410,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
@@ -549,7 +549,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
                 tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
                 tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
-                tx.Retract(id, DiskStateEntry.Game, item.Disk.Value.Game);
+                tx.Retract(id, DiskStateEntry.Game, (EntityId)item.Disk.Value.Game);
             }
         }
     }
@@ -895,7 +895,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // If the files don't match, update the entry
                             if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
                             {
-                                var newHash = await file.XxHash64Async();
+                                var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
                                 tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
@@ -905,7 +905,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         else
                         {
                             // No previous entry found, so create a new one
-                            var newHash = await file.XxHash64Async(token: token);
+                            var newHash = await file.XxHash3Async(token: token);
                             _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                             {
                                 Path = gamePath.ToGamePathParentTuple(metadata.Id),
@@ -960,7 +960,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         return;
                     }
 
-                    var newHash = await file.XxHash64Async(token: token);
+                    var newHash = await file.XxHash3Async(token: token);
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = gamePath.ToGamePathParentTuple(metaDataId),
@@ -1222,7 +1222,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
-                ValueHelpers.Remap(remapFn, datom.Prefix, buffer[..datom.ValueSpan.Length].Span);
+                datom.Prefix.ValueTag.Remap(buffer[..datom.ValueSpan.Length].Span, remapFn);
                 
                 // Add the new datom
                 tx.Add(newDatom);

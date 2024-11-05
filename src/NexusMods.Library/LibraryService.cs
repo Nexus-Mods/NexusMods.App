@@ -46,7 +46,7 @@ public sealed class LibraryService : ILibraryService
     {
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
-
+    
     public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? itemInstaller = null)
     {
         if (!parent.HasValue)

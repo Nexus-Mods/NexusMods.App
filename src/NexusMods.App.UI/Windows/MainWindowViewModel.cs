@@ -66,6 +66,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
 
             loginManager.IsLoggedInObservable
+                .DistinctUntilChanged()
                 .Where(isSignedIn => isSignedIn)
                 .Select(_ => Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)

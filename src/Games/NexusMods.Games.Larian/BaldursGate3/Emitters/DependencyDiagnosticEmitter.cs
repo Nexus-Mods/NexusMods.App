@@ -7,15 +7,16 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
+using NexusMods.Hashing.xxHash3;
+using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IResourceLoader<Hash, LsxXmlFormat.MetaFileData> _metadataPipeline;
+    private readonly IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> _metadataPipeline;
 
     public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
     {
@@ -25,7 +26,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await DiagnoseDependenciesAsync(loadout, cancellationToken);
+        var diagnostics = await DiagnosePakModulesAsync(loadout, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
@@ -34,10 +35,10 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Diagnosers
 
-    private async Task<IEnumerable<Diagnostic>> DiagnoseDependenciesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var pakLoadoutFiles = GetAllPakLoadoutFiles(loadout, onlyEnabledMods: true);
-        var allFileMetadata = await GetAllPakMetadata(pakLoadoutFiles,
+        var metaFileTuples = await GetAllPakMetadata(pakLoadoutFiles,
                 _metadataPipeline,
                 _logger,
                 cancellationToken
@@ -46,28 +47,77 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         var diagnostics = new List<Diagnostic>();
 
-        foreach (var metaFileData in allFileMetadata)
+        foreach (var metaFileTuple in metaFileTuples)
         {
-            var dependencies = metaFileData.Item2.Dependencies;
-            var loadoutItemGroup = metaFileData.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+            var (mod, metadataOrError) = metaFileTuple;
+            var loadoutItemGroup = mod.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+
+            // error case
+            if (metadataOrError.Exception is not null)
+            {
+                diagnostics.Add(Diagnostics.CreateInvalidPakFile(
+                        ModName: loadoutItemGroup.ToReference(loadout),
+                        PakFileName: mod.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName
+                    )
+                );
+                continue;
+            }
+
+            // non error case
+            var metadata = metadataOrError.Result;
+            var dependencies = metadata.Dependencies;
 
             foreach (var dependency in dependencies)
             {
                 var dependencyUuid = dependency.Uuid;
+                if (dependencyUuid == string.Empty)
+                    continue;
 
-                if (dependencyUuid == string.Empty || allFileMetadata.Any(x => x.Item2.ModuleShortDesc.Uuid == dependencyUuid))
+                var matchingDeps = metaFileTuples.Where(
+                        x =>
+                            x.Item2.Exception is null &&
+                            x.Item2.Result.ModuleShortDesc.Uuid == dependencyUuid
+                    )
+                    .ToArray();
+
+                if (matchingDeps.Length == 0)
                 {
+                    // Missing dependency
+                    diagnostics.Add(Diagnostics.CreateMissingDependency(
+                            ModName: loadoutItemGroup.ToReference(loadout),
+                            MissingDepName: dependency.Name,
+                            MissingDepVersion: dependency.SemanticVersion.ToString(),
+                            PakModuleName: metadata.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            NexusModsLink: NexusModsLink
+                        )
+                    );
                     continue;
                 }
 
-                // add diagnostic
-                diagnostics.Add(Diagnostics.CreateMissingDependency(
-                        PakMod: loadoutItemGroup.ToReference(loadout),
-                        MissingDependencyName: dependency.Name,
-                        PakModuleName: metaFileData.Item2.ModuleShortDesc.Name,
-                        NexusModsLink: NexusModsLink
-                    )
+                if (dependency.SemanticVersion == default(LsxXmlFormat.ModuleVersion))
+                    continue;
+
+                var highestInstalledMatch = matchingDeps.MaxBy(
+                    x => x.Item2.Result.ModuleShortDesc.SemanticVersion
                 );
+                var installedMatchModule = highestInstalledMatch.Item2.Result.ModuleShortDesc;
+                var matchLoadoutItemGroup = highestInstalledMatch.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
+
+                // Check if found dependency is outdated
+                if (installedMatchModule.SemanticVersion < dependency.SemanticVersion)
+                {
+                    diagnostics.Add(Diagnostics.CreateOutdatedDependency(
+                            ModName: loadoutItemGroup.ToReference(loadout),
+                            PakModuleName: metadata.ModuleShortDesc.Name,
+                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            DepModName: matchLoadoutItemGroup.ToReference(loadout),
+                            DepName: installedMatchModule.Name,
+                            MinDepVersion: dependency.SemanticVersion.ToString(),
+                            CurrentDepVersion: installedMatchModule.SemanticVersion.ToString()
+                        )
+                    );
+                }
             }
         }
 
@@ -78,15 +128,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
-    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, LsxXmlFormat.MetaFileData>> GetAllPakMetadata(
+    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LsxXmlFormat.MetaFileData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
-        IResourceLoader<Hash, LsxXmlFormat.MetaFileData> metadataPipeline,
+        IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> metadataPipeline,
         ILogger logger,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var pakLoadoutFile in pakLoadoutFiles)
         {
-            Resource<LsxXmlFormat.MetaFileData> resource;
+            Resource<Outcome<LsxXmlFormat.MetaFileData>> resource;
             try
             {
                 resource = await metadataPipeline.LoadResourceAsync(pakLoadoutFile.Hash, cancellationToken);
@@ -95,6 +145,12 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             {
                 logger.LogError(e, "Exception while getting metadata for `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
                 continue;
+            }
+
+            // Log the InvalidDataException case, but still return the resource
+            if (resource.Data.Exception is not null)
+            {
+                logger.LogWarning(resource.Data.Exception, "Detected invalid BG3 Pak file: `{Name}`", pakLoadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3);
             }
 
             yield return (pakLoadoutFile, resource.Data);
@@ -118,7 +174,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .ToArray();
     }
 
-    private static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
+    private static readonly NamedLink NexusModsLink = new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
 
 #endregion Helpers
 }

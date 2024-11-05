@@ -1,15 +1,18 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// A MneumonicDB attribute for a ulong value
 /// </summary>
-public class ULongAttribute(string ns, string name) : ScalarAttribute<ulong, ulong>(ValueTags.UInt64, ns, name)
+public class ULongAttribute(string ns, string name) : ScalarAttribute<ulong, ulong, UInt64Serializer>(ns, name)
 {
+    /// <inheritdoc />
     protected override ulong ToLowLevel(ulong value) => value;
-    
-    protected override ulong FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => value;
+
+    /// <inheritdoc />
+    protected override ulong FromLowLevel(ulong value, AttributeResolver resolver) => value;
 }

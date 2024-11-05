@@ -26,7 +26,6 @@ public class Startup
             .AddStardewValley()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
             .AddSerializationAbstractions()
             .Validate();

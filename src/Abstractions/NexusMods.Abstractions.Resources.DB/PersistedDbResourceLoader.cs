@@ -1,6 +1,6 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 
@@ -90,7 +90,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
 
         return new Resource<byte[]>
         {
-            Data = bytes,
+            Data = bytes.ToArray(),
             ExpiresAt = persistedResource.ExpiresAt,
         };
     }

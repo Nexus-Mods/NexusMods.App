@@ -1,9 +1,8 @@
 using System.Reactive.Disposables;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -30,7 +29,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         loginManager.IsPremiumObservable.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
 
         // download size
-        _connection.ObserveDatoms(DownloadAnalysis.Size)
+        _connection.ObserveDatoms(LibraryFile.Size)
             .Transform(d => (SizeAttribute.ReadDatom)d.Resolved(_connection))
             .RemoveKey()
             .QueryWhenChanged(datoms => datoms.Sum(d => d.V))
@@ -70,7 +69,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .Where(x => x.IsVisible())
             .Select(x =>
             {
-                var count = x.Mods.Count(mod => mod.Category == ModCategory.Mod);
+                var count = x.Items.Count();
                 return new Counters.LoadoutModCount(x.Installation.Name, count);
             })
             .ToArray();

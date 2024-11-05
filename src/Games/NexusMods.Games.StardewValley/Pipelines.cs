@@ -7,7 +7,7 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley;
@@ -33,11 +33,11 @@ internal static class Pipelines
 
     private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore)
     {
-        var pipeline = new FileStoreLoader(fileStore)
+        var pipeline = new FileStoreStreamLoader(fileStore)
             .ThenDo(Unit.Default, static (_, _, resource, _) =>
             {
-                var bytes = resource.Data;
-                var json = Encoding.UTF8.GetString(bytes);
+                using var streamReader = new StreamReader(stream: resource.Data, encoding: Encoding.UTF8);
+                var json = streamReader.ReadToEnd();
 
                 var manifest = Interop.SMAPIJsonHelper.Deserialize<SMAPIManifest>(json);
                 ArgumentNullException.ThrowIfNull(manifest);

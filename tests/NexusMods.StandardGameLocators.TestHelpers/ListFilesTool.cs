@@ -1,9 +1,8 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.MnemonicDB.Abstractions;
+using R3;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -20,6 +19,14 @@ public class ListFilesTool : ITool
             .ToArray();
 
         await outPath.WriteAllLinesAsync(lines, cancellationToken);
+    }
+    public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken)
+    {
+        return monitor.Begin(this, async _ =>
+        {
+            await Execute(loadout, cancellationToken);
+            return Unit.Default;
+        });
     }
 
     public IEnumerable<GameId> GameIds => [ GameId.From(uint.MaxValue) ];

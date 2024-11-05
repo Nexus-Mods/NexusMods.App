@@ -15,7 +15,7 @@ using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ChunkedStreams;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
