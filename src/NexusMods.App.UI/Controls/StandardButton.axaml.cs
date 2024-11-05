@@ -41,7 +41,12 @@ public class StandardButton : Button
         /// <summary>
         /// Icons are displayed on both sides.
         /// </summary>
-        Both,
+        Both,  
+        
+        /// <summary>
+        /// Single icon is displayed with zero padding and no label.
+        /// </summary>
+        IconOnly,
     }
 
     /// <summary>
@@ -139,7 +144,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Type attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.None);
+    public static readonly AttachedProperty<Types> TypeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Types>("Type", defaultValue: Types.Tertiary);
 
     /// <summary>
     /// Defines the Size attached property of the <see cref="StandardButton"/>.
@@ -149,7 +154,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Fill attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Fills> FillProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Fills>("Fill", defaultValue: Fills.None);
+    public static readonly AttachedProperty<Fills> FillProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Fills>("Fill", defaultValue: Fills.Weak);
 
     /// <summary>
     /// Defines the ShowLabel attached property of the <see cref="StandardButton"/>.
@@ -191,18 +196,18 @@ public class StandardButton : Button
         get => GetValue(RightIconProperty);
         set => SetValue(RightIconProperty, value);
     }
-
+    
     /// <summary>
-    /// Gets or sets a value indicating whether the label is shown on the <see cref="StandardButton"/>.
+    /// Gets or sets a value indicating whether the label is shown on the <see cref="StandardButton"/>. Defaults to True.
     /// </summary>
     public bool ShowLabel
     {
         get => GetValue(ShowLabelProperty);
         set => SetValue(ShowLabelProperty, value);
     }
-
+    
     /// <summary>
-    /// Gets or sets the type of the <see cref="StandardButton"/>.
+    /// Gets or sets the type of the <see cref="StandardButton"/>. Defaults to <see cref="Types.Tertiary"/>.
     /// </summary>
     public Types Type
     {
@@ -211,7 +216,7 @@ public class StandardButton : Button
     }
 
     /// <summary>
-    /// Gets or sets the size of the <see cref="StandardButton"/>.
+    /// Gets or sets the size of the <see cref="StandardButton"/>. Defaults to <see cref="Sizes.Medium"/>.
     /// </summary>
     public Sizes Size
     {
@@ -220,7 +225,7 @@ public class StandardButton : Button
     }
 
     /// <summary>
-    /// Gets or sets the fill option of the <see cref="StandardButton"/>.
+    /// Gets or sets the fill option of the <see cref="StandardButton"/>. Defaults to <see cref="Fills.Weak"/>.
     /// </summary>
     public Fills Fill
     {
@@ -244,14 +249,14 @@ public class StandardButton : Button
         _leftIcon.Value = LeftIcon;
         _rightIcon.Value = RightIcon;
 
-        _label.IsVisible = ShowLabel;
+        _label.IsVisible = ShowLabel && ShowIcon != ShowIconOptions.IconOnly;
 
         // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
         // Otherwise, build the button from the set properties
         _content.IsVisible = Content is not null;
         _border.IsVisible = Content is null;
         
-        _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both;
+        _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
         _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
 }

@@ -1,5 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
+using OneOf;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
@@ -63,7 +66,39 @@ public interface ILibraryItemWithInstallAction : ILibraryItemWithAction
     }
 }
 
+public class DownloadableItem : OneOfBase<NexusModsFileMetadata.ReadOnly>
+{
+    public DownloadableItem(OneOf<NexusModsFileMetadata.ReadOnly> input) : base(input) { }
+}
+
 public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
 {
-    ReactiveCommand<Unit, Unit> DownloadItemCommand { get; }
+    DownloadableItem DownloadableItem { get; }
+
+    ReactiveCommand<Unit, DownloadableItem> DownloadItemCommand { get; }
+
+    BindableReactiveProperty<JobStatus> DownloadState { get; }
+
+    BindableReactiveProperty<string> DownloadButtonText { get; }
+
+    public static ReactiveCommand<Unit, DownloadableItem> CreateCommand<TModel>(TModel model)
+        where TModel : ILibraryItemModel, ILibraryItemWithDownloadAction
+    {
+        var canDownload = model.DownloadState.Select(static state => state < JobStatus.Running);
+        return canDownload.ToReactiveCommand<Unit, DownloadableItem>(_ => model.DownloadableItem, initialCanExecute: false);
+    }
+
+    public static string GetButtonText(JobStatus status)
+    {
+        return status switch
+        {
+            < JobStatus.Running => "Download",
+            JobStatus.Running => "Downloading",
+            JobStatus.Paused => "Paused",
+            JobStatus.Completed => "Downloaded",
+            JobStatus.Cancelled => "Cancelled",
+            JobStatus.Failed => "Failed",
+        };
+    }
 }
+
