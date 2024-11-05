@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.GameLocators;
@@ -21,6 +22,8 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> RemoveAllLoadoutsCommand { get; set; } = ReactiveCommand.Create(() => { });
+    
+    public IObservable<bool> IsManagedObservable { get; set; } = Observable.Return(false);
 
     [Reactive]
     public GameWidgetState State { get; set; }
@@ -28,7 +31,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public GameWidgetDesignViewModel()
     {
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        State = GameWidgetState.ManagedGame;
+        State = GameWidgetState.DetectedGame;
         
         Version = $"Version: {Installation.Version}";
         Store = Installation.Store.Value;

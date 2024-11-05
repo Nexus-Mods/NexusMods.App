@@ -17,7 +17,7 @@ public interface IGameRegistry
     /// <summary>
     /// Get an array of all supported games.
     /// </summary>
-    public IGame[] SupportedGames { get; }    
+    public ILocatableGame[] SupportedGames { get; }    
     
     /// <summary>
     /// All the installations indexed by their ID.

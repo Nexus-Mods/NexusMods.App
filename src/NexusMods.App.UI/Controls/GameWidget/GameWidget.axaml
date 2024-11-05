@@ -73,6 +73,7 @@
                             IsVisible="False">
                             
                             <controls:StandardButton x:Name="AddGameButton"
+                                                     HorizontalAlignment="Stretch"
                                                      Text="{x:Static resources:Language.GameWidget__Add_game}"
                                                      LeftIcon="{x:Static icons:IconValues.Add}"
                                                      ShowIcon="Left"

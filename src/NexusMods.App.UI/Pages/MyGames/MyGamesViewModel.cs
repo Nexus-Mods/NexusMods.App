@@ -24,6 +24,9 @@ using OneOf;
 using OneOf.Types;
 using ReactiveUI;
 using System.Reactive;
+using System.Reactive.Linq;
+using DynamicData.Aggregation;
+using DynamicData.Alias;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -85,36 +88,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(d =>
             {
-
-                // detected games widgets
-                // Loadout.ObserveAll(conn)
-                //     .Filter(l => l.IsVisible())
-                //     .DistinctValues(loadout => loadout.InstallationInstance)
-                //     .OnUI()
-                //     .Transform(installation =>
-                //     {
-                //         var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                //         vm.Installation = installation;
-                //
-                //         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
-                //         {
-                //             if (GetJobRunningForGameInstallation(installation).IsT2) return;
-                //
-                //             vm.State = GameWidgetState.RemovingGame;
-                //             await Task.Run(async () => await RemoveAllLoadouts(installation));
-                //             vm.State = GameWidgetState.ManagedGame;
-                //         });
-                //
-                //         vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToFirstLoadout(conn, installation); });
-                //
-                //         var job = GetJobRunningForGameInstallation(installation);
-                //         vm.State = job.IsT2 ? GameWidgetState.RemovingGame : GameWidgetState.ManagedGame;
-                //
-                //         return vm;
-                //     })
-                //     .Bind(out _detectedGames)
-                //     .SubscribeWithErrorLogging()
-                //     .DisposeWith(d);
+                
 
 
                 gameRegistry.InstalledGames
@@ -147,6 +121,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToFirstLoadout(conn, installation); });
 
+                            vm.IsManagedObservable = Loadout.ObserveAll(conn)
+                                .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)
+                                .Count()
+                                .Select(c => c > 0);
+                            
                             var job = GetJobRunningForGameInstallation(installation);
 
                             switch (job.Value)
@@ -171,25 +150,26 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DisposeWith(d);
                 
                 // supported games
-                var readOnlySupportedGames = new ReadOnlyObservableCollection<IGame>(new ObservableCollection<IGame>(gameRegistry.SupportedGames));
                 
-                readOnlySupportedGames
-                    .ToObservableChangeSet()
-                    .OnUI()
-                    .Transform(game =>
+                // NOTE(insomnious): The weird cast is so that we don't get a circular reference with Abstractions.Games when
+                // referencing Abstractions.GameLocators directly 
+                var supportedGamesAsIGame = gameRegistry.SupportedGames.Cast<IGame>();
+
+                var miniGameWidgetViewModels = supportedGamesAsIGame
+                    .Select(game =>
                         {
                             var vm = provider.GetRequiredService<IMiniGameWidgetViewModel>();
                             vm.Game = game;
                             vm.Name = game.Name;
                             // is this supported game installed?
-                            vm.IsFound = _installedGames.Any(installation => installation.Installation.GetGame().Equals(game)); 
+                            vm.IsFound = _installedGames.Any(installation => installation.Installation.GetGame().Equals(game));
                             return vm;
                         }
                     )
-                    .Sort(SortExpressionComparer<IMiniGameWidgetViewModel>.Descending(vm => vm.IsFound))
-                    .Bind(out _supportedGames)
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(d);
+                    .OrderByDescending(vm => vm.IsFound)
+                    .ToList();
+                
+                _supportedGames = new ReadOnlyObservableCollection<IMiniGameWidgetViewModel>(new ObservableCollection<IMiniGameWidgetViewModel>(miniGameWidgetViewModels));
             }
         );
     }
