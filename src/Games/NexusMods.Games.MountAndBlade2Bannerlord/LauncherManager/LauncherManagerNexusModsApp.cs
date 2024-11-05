@@ -17,7 +17,6 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler,
     IGameInfoProvider,
     ILauncherStateProvider,
-    ILoadOrderPersistenceProvider,
     ILoadOrderStateProvider
 {
     private readonly ILogger _logger;
@@ -36,7 +35,6 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
         _installationPath = installationPath;
         
         Initialize(this,
-            this,
             this,
             serviceProvider.GetRequiredService<FileSystemProvider>(),
             serviceProvider.GetRequiredService<DialogProvider>(),
@@ -106,11 +104,6 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// </summary>
     void ILoadOrderStateProvider.SetModuleViewModels(IReadOnlyList<IModuleViewModel> moduleViewModels)
     {
-        // The 'LauncherManager' module passes the elements in order, but without an updated
-        // 'index' field. This means we must update it ourselves.
-        for (var x = 0; x < moduleViewModels.Count; x++)
-            moduleViewModels[x].Index = x;
-        
         // TODO: The set of 'enabled' mods may have changed.
         // The set of 'index'es may have changed.
         // We need to diff against our state in the DB, and update the DB accordingly.
@@ -136,9 +129,4 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
            
            Existing items will not 'vanish', they will be imported.
     */
-    
-    // TODO: Make this optional in underlying LauncherManager.
-    // This is only used in Inversion of Control scenarios like Vortex.
-    LoadOrder ILoadOrderPersistenceProvider.LoadLoadOrder() => null!;
-    void ILoadOrderPersistenceProvider.SaveLoadOrder(LoadOrder loadOrder) { }
 }
