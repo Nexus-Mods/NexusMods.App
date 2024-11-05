@@ -4,11 +4,6 @@
         <RootNamespace>NexusMods.DataModel.Migrations.Tests</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="Verify.Xunit" />
-    </ItemGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
