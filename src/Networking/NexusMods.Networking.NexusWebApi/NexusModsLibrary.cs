@@ -113,6 +113,7 @@ public class NexusModsLibrary
         revisionResolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(ulong.Parse(revisionInfo.TotalSize)));
         revisionResolver.Add(CollectionRevisionMetadata.OverallRating, float.Parse(revisionInfo.OverallRating ?? "0.0") / 100);
         revisionResolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revisionInfo.OverallRatingCount ?? 0));
+        revisionResolver.Add(CollectionRevisionMetadata.AdultContent, (bool)revisionInfo.AdultContent);
 
         foreach (var file in revisionInfo.ModFiles)
         {

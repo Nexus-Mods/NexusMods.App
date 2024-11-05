@@ -14,6 +14,8 @@ public partial class CollectionRevisionMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Library.NexusModsCollectionRevision";
     
+    
+    
     /// <summary>
     /// The globally unique id identifying a specific revision of a collection.
     /// </summary>
@@ -28,6 +30,11 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// The collection this revision belongs to.
     /// </summary>
     public static readonly ReferenceAttribute<CollectionMetadata> Collection = new(Namespace, nameof(Collection));
+    
+    /// <summary>
+    /// Does this revision contain adult content or not
+    /// </summary>
+    public static readonly BooleanAttribute AdultContent = new(Namespace, nameof(AdultContent));
     
     /// <summary>
     /// All the mod files in this revision.
