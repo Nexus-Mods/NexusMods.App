@@ -29,6 +29,18 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
     private static GamePath ModuleBirthAndAgingOptions => new(LocationId.Game, "Modules/BirthAndDeath");
     private static GamePath ModuleMultiplayer => new(LocationId.Game, "Modules/BirthAndDeath");
 
+    // Base game folders that are never modified
+    private static GamePath BaseGameXmlSchemas => new(LocationId.Game, "XmlSchemas");
+    private static GamePath BaseGameSounds => new(LocationId.Game, "Sounds");
+    private static GamePath BaseGameShaders => new(LocationId.Game, "Shaders");
+    private static GamePath BaseGameMusic => new(LocationId.Game, "music"); // yes it's lowercase
+    private static GamePath BaseGameIcons => new(LocationId.Game, "Icons");
+    private static GamePath BaseGameGui => new(LocationId.Game, "GUI");
+    private static GamePath BaseGameDigitalCompanion => new(LocationId.Game, "DigitalCompanion");
+    private static GamePath BaseGameData => new(LocationId.Game, "Data");
+    private static GamePath BaseGameCrashUploader => new(LocationId.Game, "bin/CrashUploader.Publish");
+    
+    
     // Paths ignored for backup.
     private static readonly GamePath[] IgnoredBackupPaths =
     [
@@ -41,6 +53,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
     // Folders ignored for backup.
     private static readonly GamePath[] IgnoredBackupFolders =
     [
+        // Base game mods
         ModuleNative,
         ModuleSandboxCore,
         ModuleCustomBattle,
@@ -48,6 +61,17 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         ModuleStoryMode,
         ModuleBirthAndAgingOptions,
         ModuleMultiplayer,
+        
+        // Base game folders that are never modified
+        BaseGameXmlSchemas,
+        BaseGameSounds,
+        BaseGameShaders,
+        BaseGameMusic,
+        BaseGameIcons,
+        BaseGameGui,
+        BaseGameDigitalCompanion,
+        BaseGameData,
+        BaseGameCrashUploader,
     ];
 
     public MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
