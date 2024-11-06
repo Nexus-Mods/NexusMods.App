@@ -13,18 +13,28 @@ public class SchemaFingerprint
     {
         StringBuilder sb = new();
         var cache = db.AttributeCache;
+
+        
+        void AppendLine(string s)
+        {
+            // We want platform independent newlines.
+            sb.Append(s);
+            sb.Append("\n");
+        }
         
         foreach (var id in cache.AllAttributeIds.OrderBy(id => id.Id, StringComparer.Ordinal))
         {
             var aid = cache.GetAttributeId(id);
-            sb.AppendLine(id.ToString());
-            sb.AppendLine(cache.GetValueTag(aid).ToString());
-            sb.AppendLine(cache.IsIndexed(aid).ToString());
-            sb.AppendLine(cache.IsCardinalityMany(aid).ToString());
-            sb.AppendLine(cache.IsNoHistory(aid).ToString());
-            sb.AppendLine("--");
+            AppendLine(id.ToString());
+            AppendLine(cache.GetValueTag(aid).ToString());
+            AppendLine(cache.IsIndexed(aid).ToString());
+            AppendLine(cache.IsCardinalityMany(aid).ToString());
+            AppendLine(cache.IsNoHistory(aid).ToString());
+            AppendLine("--");
         }
-        return sb.ToString().xxHash3AsUtf8();
+        // Use ascii as the attribute names must be ascii and this makes data comparisons simpler.
+        var bytes = Encoding.ASCII.GetBytes(sb.ToString());
+        return bytes.xxHash3();
     }
     
 }

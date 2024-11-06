@@ -14,7 +14,7 @@ public class SchemaFailsafes(IConnection connection)
     {
         var db = connection.Db;
         var records = db.AttributeCache.AllAttributeIds
-            .OrderBy(id => id.Id)
+            .OrderBy(id => id.Id, StringComparer.Ordinal)
             .Select(id =>
                 {
                     var aid = db.AttributeCache.GetAttributeId(id);
