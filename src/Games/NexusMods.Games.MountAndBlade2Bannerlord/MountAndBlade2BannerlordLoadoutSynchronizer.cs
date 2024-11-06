@@ -14,6 +14,42 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 {
+    // Paths to known locations
+    private static GamePath GameGenegratedImGuiFile => new(LocationId.Game, "bin/Win64_Shipping_Client/imgui.ini");
+    private static GamePath GameGeneratedSteamAppIdFile => new(LocationId.Game, "bin/Win64_Shipping_Client/steam_appid.txt");
+    private static GamePath GameGenegratedImGuiFileXbox => new(LocationId.Game, "bin/Gaming.Desktop.x64_Shipping_Client/imgui.ini");
+    private static GamePath GameGeneratedSteamAppIdFileXbox => new(LocationId.Game, "bin/Gaming.Desktop.x64_Shipping_Client/steam_appid.txt");
+    
+    // Base game mods that are part of the game distribution and which MUST be enabled
+    private static GamePath ModuleNative => new(LocationId.Game, "Modules/Native");
+    private static GamePath ModuleSandboxCore => new(LocationId.Game, "Modules/SandBoxCore");
+    private static GamePath ModuleCustomBattle => new(LocationId.Game, "Modules/CustomBattle");
+    private static GamePath ModuleSandbox => new(LocationId.Game, "Modules/SandBox");
+    private static GamePath ModuleStoryMode => new(LocationId.Game, "Modules/StoryMode");
+    private static GamePath ModuleBirthAndAgingOptions => new(LocationId.Game, "Modules/BirthAndDeath");
+    private static GamePath ModuleMultiplayer => new(LocationId.Game, "Modules/BirthAndDeath");
+
+    // Paths ignored for backup.
+    private static readonly GamePath[] IgnoredBackupPaths =
+    [
+        GameGenegratedImGuiFile,
+        GameGenegratedImGuiFileXbox,
+        GameGeneratedSteamAppIdFile,
+        GameGeneratedSteamAppIdFileXbox,
+    ];
+    
+    // Folders ignored for backup.
+    private static readonly GamePath[] IgnoredBackupFolders =
+    [
+        ModuleNative,
+        ModuleSandboxCore,
+        ModuleCustomBattle,
+        ModuleSandbox,
+        ModuleStoryMode,
+        ModuleBirthAndAgingOptions,
+        ModuleMultiplayer,
+    ];
+
     public MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
     {
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
@@ -25,7 +61,29 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
     public override bool IsIgnoredBackupPath(GamePath path)
     {
         if (_settings.DoFullGameBackup) return false;
-        return true;
+        return path.LocationId == LocationId.Game && IsIgnoredPathInner(path);
+    }
+    
+    public override bool IsIgnoredPath(GamePath path) => !_settings.DoFullGameBackup && IsIgnoredPathInner(path);
+
+    private static bool IsIgnoredPathInner(GamePath path)
+    {
+        // Note(sewer): No LINQ, game has a lot of files and a lot of things to ignore.
+        // Ignore the standard module set if we're not doing a full game backup 
+        foreach (var folder in IgnoredBackupFolders)
+        {
+            if (path.InFolder(folder))
+                return true; 
+        }
+        
+        // And ignore any runtime generated files that are not in game depot
+        foreach (var ignoredPath in IgnoredBackupPaths)
+        {
+            if (path == ignoredPath)
+                return true; 
+        }
+
+        return false;
     }
 
     protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
