@@ -10,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using Xunit;
 
 namespace NexusMods.DataModel.Migrations.Tests;
 

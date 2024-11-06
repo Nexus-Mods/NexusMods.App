@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD66CD1AC2BACBF15
-   - Total attributes: 126
-   - Total namespaces: 49
+   - Fingerprint: 0x07693787527C2955
+   - Total attributes: 128
+   - Total namespaces: 51
    
 ## Attributes
 | AttributeId                                                                                      | Type                    | Indexed | Many  | NoHistory | 
@@ -119,6 +119,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.MnemonicDB.DatomStore/ValueType                                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/ExcisedDatoms                                                   | UInt64                  | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/Timestamp                                                       | Int64                   | False   | False | False     | 
+| NexusMods.MountAndBlade2Bannerlord.ModLoadoutItem/ModuleInfo                                     | Reference               | False   | False | False     | 
+| NexusMods.MountAndBlade2Bannerlord.ModuleInfoLoadoutFile/ModuleInfoFile                          | Null                    | False   | False | False     | 
 | NexusMods.Networking.NexusWebApi.Auth.ApiKey/Key                                                 | Utf8                    | False   | False | False     | 
 | NexusMods.Networking.NexusWebApi.Auth.JWTToken/AccessToken                                       | Utf8                    | False   | False | False     | 
 | NexusMods.Networking.NexusWebApi.Auth.JWTToken/ExpiresAt                                         | Int64                   | False   | False | False     | 

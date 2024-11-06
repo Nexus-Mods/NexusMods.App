@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Migrations;
 using NexusMods.DataModel.Migrations.Migrations;
 
-namespace NexusMods.DataModel.Migrations;
+namespace NexusMods.DataModel.SchemaVersions;
 
 public static class Services
 {

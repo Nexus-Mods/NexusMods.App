@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <RootNamespace>NexusMods.DataModel.Migrations.Tests</RootNamespace>
+        <XunitStartupAssembly>NexusMods.DataModel.SchemaVersions.Tests</XunitStartupAssembly>
     </PropertyGroup>
-
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.DataModel.SchemaVersions\NexusMods.DataModel.SchemaVersions.csproj" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+      <PackageReference Include="Verify" />
+      <PackageReference Include="Verify.Xunit" />  
+    </ItemGroup>
 </Project>
