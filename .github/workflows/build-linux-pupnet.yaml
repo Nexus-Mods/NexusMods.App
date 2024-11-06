@@ -99,7 +99,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-Archive" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Linux-Archive" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload
@@ -157,7 +157,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload
