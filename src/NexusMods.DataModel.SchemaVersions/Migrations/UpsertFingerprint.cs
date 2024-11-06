@@ -1,3 +1,4 @@
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;

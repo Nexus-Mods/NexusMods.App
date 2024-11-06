@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 
