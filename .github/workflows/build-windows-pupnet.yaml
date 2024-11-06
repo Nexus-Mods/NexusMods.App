@@ -129,7 +129,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload
@@ -210,7 +210,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload
