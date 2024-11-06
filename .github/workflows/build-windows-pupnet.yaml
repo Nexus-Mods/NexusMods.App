@@ -150,6 +150,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.Target || github.sha }}
           submodules: "recursive"
 
       - name: Transform inputs
