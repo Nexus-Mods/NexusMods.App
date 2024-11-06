@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x07693787527C2955
+   - Fingerprint: 0xE5D4012CA6D4D678
    - Total attributes: 128
    - Total namespaces: 51
    
