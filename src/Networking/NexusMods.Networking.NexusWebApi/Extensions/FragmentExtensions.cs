@@ -18,14 +18,11 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IUserFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static async Task<EntityId> Resolve(this IUserFragment userFragment, IDb db, ITransaction tx, HttpClient client, CancellationToken token)
+    public static EntityId Resolve(this IUserFragment userFragment, IDb db, ITransaction tx)
     {
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)userFragment.MemberId);
         userResolver.Add(User.Name, userFragment.Name);
         userResolver.Add(User.Avatar, new Uri(userFragment.Avatar));
-        
-        var avatarImage = await DownloadImage(client, userFragment.Avatar, token);
-        userResolver.Add(User.AvatarImage,avatarImage);
         return userResolver.Id;
     }
 
