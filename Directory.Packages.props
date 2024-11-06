@@ -11,19 +11,19 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
-    <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.2" />
-    <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.2" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.10.0" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.95" />
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.95" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.95" />
+    <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.2" />
+    <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.2" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.11.0" />
     <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.10.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.1" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
-    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
-    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
+    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.138" />
+    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.46" />
     <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="ObservableCollections" Version="2.2.0" />

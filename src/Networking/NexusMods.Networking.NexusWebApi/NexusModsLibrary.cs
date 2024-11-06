@@ -30,6 +30,7 @@ public class NexusModsLibrary
     private readonly INexusApiClient _apiClient;
     private readonly NexusGraphQLClient _gqlClient;
     private readonly HttpClient _httpClient;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
     /// <summary>
     /// Constructor.
@@ -41,6 +42,7 @@ public class NexusModsLibrary
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
         _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
+        _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -243,7 +245,15 @@ public class NexusModsLibrary
 
         return nexusJob;
     }
-    
+
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
+        NexusModsFileMetadata.ReadOnly fileMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        await using var tempPath = _temporaryFileManager.CreateFile();
+        return await CreateDownloadJob(tempPath, fileMetadata.Uid.GameId, fileMetadata.ModPage.Uid.ModId, fileMetadata.Uid.FileId, cancellationToken: cancellationToken);
+    }
+
     /// <summary>
     /// Create a job that downloads a collection
     /// </summary>

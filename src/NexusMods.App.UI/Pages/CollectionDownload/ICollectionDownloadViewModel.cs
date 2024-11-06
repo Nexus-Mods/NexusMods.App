@@ -8,6 +8,8 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
+    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
+
     /// <summary>
     /// Name of the collection
     /// </summary>
