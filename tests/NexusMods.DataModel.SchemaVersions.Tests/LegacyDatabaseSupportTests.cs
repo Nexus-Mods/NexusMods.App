@@ -57,6 +57,9 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
     private Statistics GetStatistics(IDb db, string name, Hash? oldFingerprint)
     {
         var timestampAttr = MnemonicDB.Abstractions.BuiltInEntities.Transaction.Timestamp;
+        
+        var timestamp = (DateTimeOffset)db.Get(PartitionId.Transactions.MakeEntityId(1)).Resolved(db.Connection).First(t => t.A == timestampAttr).ObjectValue;
+        
         return new Statistics
         {
             Name = name,
@@ -66,7 +69,7 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
             LoadoutItemGroups = LoadoutItemGroup.All(db).Count,
             Files = LoadoutItemWithTargetPath.All(db).Count,
             Collections = CollectionGroup.All(db).Count,
-            Created = db.Get(PartitionId.Transactions.MakeEntityId(1)).Resolved(db.Connection).First(t => t.A == timestampAttr).ObjectValue.ToString(),
+            Created = timestamp.ToString("yyyy-MM-dd HH:mm:ss")
         };
     }
 
