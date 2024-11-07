@@ -44,7 +44,13 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public abstract string Name { get; }
-    
+
+    /// <inheritdoc />
+    public abstract SupportType SupportType { get; }
+
+    /// <inheritdoc />
+    public virtual HashSet<FeatureStatus> Features { get; } = [];
+
     /// <inheritdoc />
     public abstract GameId GameId { get; }
 
