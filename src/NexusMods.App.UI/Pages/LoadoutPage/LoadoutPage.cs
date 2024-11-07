@@ -48,7 +48,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
-
+        
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
