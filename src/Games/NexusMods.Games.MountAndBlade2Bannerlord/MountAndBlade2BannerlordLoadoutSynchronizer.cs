@@ -73,6 +73,13 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         BaseGameData,
         BaseGameCrashUploader,
     ];
+    
+    // A whitelist which takes priority over the blacklist above.
+    // In some cases, you may want to capture metadata files with specific names.
+    private static RelativePath[] ForceBackupList =
+    {
+        "SubModule.xml", // Mods shipped with basegame.
+    };
 
     public MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
     {
@@ -92,6 +99,15 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 
     private static bool IsIgnoredPathInner(GamePath path)
     {
+        // File names in 'force allow list' should always be matches, such as
+        // module names required by diagnostics.
+        var fileName = path.FileName;
+        foreach (var file in ForceBackupList)
+        {
+            if (file == fileName) 
+                return false;
+        }
+        
         // Note(sewer): No LINQ, game has a lot of files and a lot of things to ignore.
         // Ignore the standard module set if we're not doing a full game backup 
         foreach (var folder in IgnoredBackupFolders)
