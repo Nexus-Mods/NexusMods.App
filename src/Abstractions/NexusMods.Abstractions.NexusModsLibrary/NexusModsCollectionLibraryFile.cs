@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
@@ -13,9 +13,8 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 public partial class NexusModsCollectionLibraryFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile";
-    
-    /// <summary>
-    /// The collection revision this file belongs to.
-    /// </summary>
-    public static readonly ReferenceAttribute<Models.CollectionRevisionMetadata> CollectionRevision = new(Namespace, nameof(CollectionRevision));
+
+    public static readonly CollectionsSlugAttribute CollectionSlug = new(Namespace, nameof(CollectionSlug)) { IsIndexed = true };
+
+    public static readonly RevisionNumberAttribute CollectionRevisionNumber = new(Namespace, nameof(CollectionRevisionNumber)) { IsIndexed = true };
 }
