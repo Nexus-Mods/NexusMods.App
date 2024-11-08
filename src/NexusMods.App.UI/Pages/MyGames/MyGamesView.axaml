@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="400"
-    d:DesignWidth="500"
+    d:DesignHeight="700"
+    d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.MyGames.MyGamesView"
     x:TypeArguments="myGames:IMyGamesViewModel"
@@ -11,82 +11,112 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:myGames="clr-namespace:NexusMods.App.UI.Pages.MyGames"
-    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget">
+    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
+    xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
     <ScrollViewer>
         <StackPanel Margin="24"
-                    Classes="Spacing-9"
-                    Orientation="Vertical">
+                    Orientation="Vertical"
+                    Spacing="24">
 
-            <!-- Detected Games -->
-            <StackPanel x:Name="DetectedGamesSection"
-                        Classes="Spacing-4"
-                        Orientation="Vertical">
-                <!-- Title section -->
-                <StackPanel Orientation="Vertical"
-                            Classes="Spacing-2">
-                    <TextBlock Classes="HeadingXSSemi" Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
-                    <TextBlock x:Name="NoGamesDetectedTextBlock"
-                               Classes="BodyLGNormal ForegroundWeak"
-                               Text="{x:Static resources:Language.MyGamesView__NoGamesDetectedText}" />
+            <Border x:Name="AddGamesToGetStarted"
+                    Padding="24"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                    CornerRadius="8">
+
+                <StackPanel Spacing="24">
+                    <TextBlock Text="Add games to get started"
+                               Theme="{StaticResource HeadingXSSemiTheme}"
+                               Foreground="{StaticResource NeutralStrongBrush}" />
+                    <ItemsControl
+                        x:Name="DetectedGamesItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <panels:FlexPanel 
+                                    RowSpacing="24" 
+                                    ColumnSpacing="24"
+                                    Wrap="Wrap" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
+                                <reactiveUi:ViewModelViewHost
+                                    ViewModel="{CompiledBinding .}"
+                                    Width="184"
+                                    Height="293" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
+            </Border>
 
-                <ItemsControl
-                    x:Name="DetectedGamesItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
-                            <reactiveUi:ViewModelViewHost
-                                ViewModel="{CompiledBinding .}"
-                                Width="208"
-                                Height="317"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+            <Border x:Name="AllCurrentlySupportedGames"
+                    Padding="24"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                    CornerRadius="8">
 
-            <!-- Managed Games -->
-            <StackPanel x:Name="ManagedGamesSection"
-                        Classes="Spacing-4"
-                        Orientation="Vertical">
+                <StackPanel Spacing="24">
+                    
+                    <TextBlock Text="All currently supported games"
+                               Theme="{StaticResource HeadingXSSemiTheme}"
+                               Foreground="{StaticResource NeutralStrongBrush}" />
+                    
+                    <ItemsControl x:Name="SupportedGamesItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <panels:FlexPanel 
+                                    Wrap="Wrap"
+                                    RowSpacing="12" 
+                                    ColumnSpacing="12" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="miniGameWidget:IMiniGameWidgetViewModel">
+                                <reactiveUi:ViewModelViewHost
+                                    ViewModel="{CompiledBinding .}"
+                                    Width="282"
+                                    Height="48" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                    <controls:StandardButton x:Name="OpenRoadmapButton"
+                                              Text="More games coming soon"
+                                              Fill="None"
+                                              Type="Secondary"
+                                              Size="Small"
+                                              ShowIcon="Right"
+                                              RightIcon="{x:Static icons:IconValues.OpenInNew}"
+                                              Margin="0, 0, 0, 0" />
+                    
+                    <Separator 
+                        Background="{StaticResource StrokeTranslucentWeakBrush}"
+                        Margin="0" />
 
-                <!-- Title section -->
-                <StackPanel Orientation="Vertical"
-                            Classes="Spacing-2">
-                    <TextBlock
-                        Classes="HeadingXSSemi"
-                        Margin="0,24,0,0"
-                        Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Text="If your installed game was not found, it might be because our auto-detection didn’t pick it up."
+                            Theme="{StaticResource BodyMDNormalTheme}"
+                            Foreground="{StaticResource NeutralSubduedBrush}"
+                            TextWrapping="Wrap" />
+                        <controls:StandardButton x:Name="GiveFeedbackButton"
+                                                 Text="Report supported game not found"
+                                                 Fill="None"
+                                                 Type="Secondary"
+                                                 Size="Small"
+                                                 Margin="0, 0, 0, 0" />
+                    </StackPanel>
 
-                    <TextBlock x:Name="NoGamesManagedTextBlock"
-                               Classes="BodyLGNormal ForegroundWeak"
-                               Text="{x:Static resources:Language.MyGamesView__NoGamesManagedText}" />
                 </StackPanel>
+            </Border>
 
-                <!-- Games -->
-                <ItemsControl
-                    x:Name="ManagedGamesItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
-                            <reactiveUi:ViewModelViewHost
-                                ViewModel="{CompiledBinding .}"
-                                Width="208"
-                                Height="317" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
         </StackPanel>
 
     </ScrollViewer>
