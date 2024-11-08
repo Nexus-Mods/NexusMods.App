@@ -28,7 +28,7 @@ public class BG3ModsettingsFileFormatTests
             LsxXmlFormat.MetaFileData metaFileData;
             try
             {
-                metaFileData = PakFileParser.ParsePakMeta(pakFileStream);
+                metaFileData = PakFileParser.ParsePakMeta(pakFileStream).MetaFileData;
             }
             catch (InvalidDataException)
             {
