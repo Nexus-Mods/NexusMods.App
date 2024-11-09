@@ -21,11 +21,6 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     /// The download destination.
     /// </summary>
     public required AbsolutePath Destination { get; set; }
-    
-    /// <summary>
-    /// The metadata of the collection revision.
-    /// </summary>
-    public CollectionRevisionMetadata.ReadOnly? Metadata { get; set; }
 
     /// <summary>
     /// The collection slug
@@ -88,7 +83,8 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     {
         _ = new NexusModsCollectionLibraryFile.New(tx, libraryFile.Id)
         {
-            CollectionRevisionId = Metadata,
+            CollectionSlug = Slug,
+            CollectionRevisionNumber = Revision,
             LibraryFile = libraryFile,
         };
         return ValueTask.CompletedTask;
@@ -97,7 +93,6 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     /// <inheritdoc />
     public async ValueTask<AbsolutePath> StartAsync(IJobContext<NexusModsCollectionDownloadJob> context)
     {
-        Metadata = await Library.GetOrAddCollectionRevision(Slug, Revision, context.CancellationToken);
         var downloadLinks = await ApiClient.CollectionDownloadLinksAsync(Slug, Revision, true, context.CancellationToken);
         DownloadJob = HttpDownloadJob.Create(ServiceProvider, downloadLinks.Data.DownloadLinks.First().Uri, downloadLinks.Data.DownloadLinks.First().Uri, Destination);
         return await DownloadJob;

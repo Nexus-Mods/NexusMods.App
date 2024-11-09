@@ -1,6 +1,9 @@
 using System.Reactive.Disposables;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -11,10 +14,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
     {
         InitializeComponent();
 
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, RequiredModsTree, vm => vm.TreeDataGridAdapter);
+
         this.WhenActivated(d =>
             {
-                
-                // Uncomment this to enable the background image
+                this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.RequiredModsTree.Source)
+                    .DisposeWith(d);
+
                  this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
                      .WhereNotNull()
                      .SubscribeWithErrorLogging(image => HeaderBorderBackground.Background = new ImageBrush { Source = image, Stretch = Stretch.UniformToFill, AlignmentY = AlignmentY.Top})

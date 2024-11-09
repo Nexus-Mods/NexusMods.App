@@ -9,6 +9,18 @@
                 <StackPanel Spacing="4">
                     <Button IsEnabled="False">Test</Button>
                     <controls:StandardButton IsEnabled="False" />
+                    <StackPanel Orientation="Horizontal">
+                        <controls:StandardButton ShowIcon="IconOnly" />
+                        <controls:StandardButton ShowIcon="IconOnly" Size="Small" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" />
+                        <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" Size="Small" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Fill="Strong"/>
+                        <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Size="Small" />
+                    </StackPanel>
                     <controls:StandardButton>
                         <StackPanel>
                             <TextBlock>Test 1</TextBlock>
@@ -25,7 +37,8 @@
                                              LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
                     <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
-                    <controls:StandardButton IsEnabled="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                    <controls:StandardButton IsEnabled="False" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
                 </StackPanel>
 
                 <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
@@ -294,12 +307,23 @@
             <Style Selector="^:disabled">
                 <Setter Property="Opacity" Value="0.4" />
             </Style>
+            
+            <!-- icon only variants -->
+            <Style Selector="^[ShowIcon=IconOnly]">
+                <Setter Property="Padding" Value="0" />
+                
+                <Style Selector="^ /template/ Border">
+                    <!-- NOTE(insomnious): fixed size as we know how big the icons are -->
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="Width" Value="24" />
+                </Style>
+            </Style>
         </Style>
 
         <!-- small variants -->
         <Style Selector="^[Size=Small]">
             <Setter Property="Padding" Value="{DynamicResource ButtonPaddingSmall}" />
-
+            
             <Style Selector="^ StackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}"></Setter>
             </Style>
@@ -315,6 +339,17 @@
                     <!-- needs a little horizontal padding to fully match figma -->
                     <Setter Property="Padding" Value="1 0" />
                     <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                </Style>
+            </Style>
+            
+            <!-- icon only variants -->
+            <Style Selector="^[ShowIcon=IconOnly]">
+                <Setter Property="Padding" Value="0" />
+                
+                <Style Selector="^ /template/ Border">
+                    <!-- NOTE(insomnious): fixed size as we know how big the icons are -->
+                    <Setter Property="Height" Value="20" />
+                    <Setter Property="Width" Value="20" />
                 </Style>
             </Style>
         </Style>

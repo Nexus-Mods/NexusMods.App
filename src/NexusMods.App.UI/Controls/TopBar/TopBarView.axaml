@@ -89,6 +89,7 @@
                     <controls:StandardButton x:Name="LoginButton"
                                              Text="{x:Static resources:Language.TopBarActions__LOG_IN}"
                                              Type="Primary"
+                                             Fill="Strong"
                                              ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
                 </MenuItem.Header>
             </MenuItem>

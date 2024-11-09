@@ -35,7 +35,6 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                 .Subscribe(title =>
                 {
                     ToolTip.SetTip(this, title);
-                    ToolTip.SetShowDelay(this, (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds);
                 })
                 .DisposeWith(disposables);
 

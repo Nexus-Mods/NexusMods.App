@@ -95,6 +95,7 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
@@ -299,12 +300,6 @@
         </Compile>
         <Compile Update="WorkspaceSystem\Page\APageViewModel.cs">
           <DependentUpon>IPageViewModelInterface.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
-          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
-          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
           <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
@@ -665,6 +660,22 @@
         <Compile Update="Controls\Alerts\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidget.axaml.cs">
+          <DependentUpon>MiniGameWidget.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetDesignViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

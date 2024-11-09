@@ -5,9 +5,11 @@ using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -42,9 +44,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
-
+        var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
+        var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+        
         WorkspaceId = workspaceId;
-        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider, monitor, overlayController, gameRunningTracker);
         
         
         var installedModsItem = new IconViewModel

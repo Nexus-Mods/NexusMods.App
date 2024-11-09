@@ -23,8 +23,7 @@ public static class IJobMonitorExtensions
         where TJobType : IJobDefinition
     {
         return jobMonitor.GetObservableChangeSet<TJobType>()
-            .FilterOnObservable(job => job.ObservableStatus
-                .Select(status => status is JobStatus.Running or JobStatus.Paused));
+            .FilterOnObservable(job => job.ObservableStatus.Select(status => status.IsActive()));
     } 
     
     

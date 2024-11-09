@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.Jobs;
+
 namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
@@ -19,8 +21,9 @@ public interface IToolManager
     /// <param name="tool"></param>
     /// <param name="loadout"></param>
     /// <param name="generatedFilesMod"></param>
+    /// <param name="monitor">The job system executor.</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout,
+    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout, IJobMonitor monitor,
         CancellationToken token = default);
 }

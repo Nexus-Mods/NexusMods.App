@@ -10,6 +10,8 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
 {
+    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; } = null!;
+
     public CollectionDownloadDesignViewModel() : base(new DesignWindowManager()) { }
 
     public string Name => "Vanilla+ [Quality of Life]";

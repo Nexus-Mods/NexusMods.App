@@ -26,7 +26,7 @@ public class BG3PakParsingTests
     {
         var fullPath = _fs.GetKnownPath(KnownPath.EntryDirectory).Combine("BaldursGate3/Resources/PakFiles/" + pakFilePath);
         await using var pakFileStream = File.OpenRead(fullPath.ToString());
-        var metaFileData = PakFileParser.ParsePakMeta(pakFileStream);
+        var metaFileData = PakFileParser.ParsePakMeta(pakFileStream).MetaFileData;
         var sb = new StringBuilder();
         
         sb.AppendLine("ModuleShortDesc:");

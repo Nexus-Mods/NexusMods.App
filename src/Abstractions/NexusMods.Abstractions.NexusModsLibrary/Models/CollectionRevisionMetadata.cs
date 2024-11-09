@@ -43,12 +43,12 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// Total download size of all files in this revision, including the size of the revision's files.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
-    
+
     /// <summary>
     /// The overall rating of this revision (often displayed as a percentage).
     /// </summary>
-    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating));
-    
+    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+
     /// <summary>
     /// The total number of ratings this revision has.
     /// </summary>
