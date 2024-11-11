@@ -5,18 +5,18 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:prototype="clr-namespace:NexusMods.App.UI.Pages.LoadOrder.Prototype"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.Games.UI;assembly=NexusMods.Abstractions.Games"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.Games"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.LoadOrder.Prototype.LoadOrderView">
     <ItemsControl x:Name="ItemsList">
         <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="ui1:IObservableSortableItemViewModel">
+            <DataTemplate DataType="ui1:ISortableItemViewModel">
                 <StackPanel Orientation="Horizontal">
                     <controls:StandardButton x:Name="UpButton" Command="{CompiledBinding MoveDown}" LeftIcon="{x:Static icons:IconValues.ArrowUp}" ShowIcon="Left" Text=""/>
                     <controls:StandardButton x:Name="DownButton" Command="{CompiledBinding MoveUp}" LeftIcon="{x:Static icons:IconValues.ArrowDown}" ShowIcon="Left" Text=""/>
                     <TextBlock x:Name="ItemIndex" Text="{CompiledBinding SortIndex}"/>
-                    <TextBlock x:Name="ItemText"  Text="{CompiledBinding Name}"/>
+                    <TextBlock x:Name="ItemText"  Text="{CompiledBinding DisplayName}"/>
                 </StackPanel>
             </DataTemplate>
         </ItemsControl.ItemTemplate>

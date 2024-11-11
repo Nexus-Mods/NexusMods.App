@@ -3,10 +3,10 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Games.StardewValley.SMAPI.Toolkit;
+using NexusMods.Games.StardewValley.SMAPI.Toolkit.Clients.WebApi;
 using NexusMods.Paths;
 using StardewModdingAPI;
-using StardewModdingAPI.Toolkit.Framework.Clients.WebApi;
-using StardewModdingAPI.Toolkit.Utilities;
 
 namespace NexusMods.Games.StardewValley.WebAPI;
 

@@ -85,7 +85,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.UI\NexusMods.Abstractions.Games.UI.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />

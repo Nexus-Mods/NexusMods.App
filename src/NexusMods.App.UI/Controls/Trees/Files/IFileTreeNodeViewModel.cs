@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Common;

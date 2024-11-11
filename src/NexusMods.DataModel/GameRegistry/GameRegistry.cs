@@ -11,7 +11,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.DataModel.GameRegistry;
 
 /// <summary>
 /// Game registry for all installed games.

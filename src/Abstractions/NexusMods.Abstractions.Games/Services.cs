@@ -12,6 +12,7 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddGames(this IServiceCollection services)
     {
-        return services;
+        return services
+            .AddSortableItemModelModel();
     }
 }

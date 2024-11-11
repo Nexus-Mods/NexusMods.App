@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Common;

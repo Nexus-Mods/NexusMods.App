@@ -1,6 +1,6 @@
 using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.DataModel.Sorting;
 
 namespace NexusMods.DataModel.Tests;

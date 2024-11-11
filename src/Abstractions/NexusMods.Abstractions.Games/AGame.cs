@@ -3,10 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.Games.UI;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
@@ -68,7 +66,7 @@ public abstract class AGame : IGame
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
 
     /// <inheritdoc/>
-    public virtual IObservableSortableItemProvider[] SortableItemProviders { get; } = [];
+    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

@@ -119,7 +119,6 @@ public class RedModInstaller : ALibraryArchiveInstaller
             {
                 LoadoutItemGroup = groupItem,
                 RedModInfoFileId = redModInfoFile.Id,
-                SortIndex = SortableItemsHelper.NextSortIndex(loadout),
             };
         }
 

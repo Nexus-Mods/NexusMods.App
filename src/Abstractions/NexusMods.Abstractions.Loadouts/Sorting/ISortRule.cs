@@ -1,5 +1,5 @@
 // ReSharper disable UnusedTypeParameter
-namespace NexusMods.Abstractions.DataModel.Entities.Sorting;
+namespace NexusMods.Abstractions.Loadouts.Sorting;
 
 /// <summary>
 /// A marker interface for rules used in sorting

@@ -26,8 +26,8 @@
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
     <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
-    <PackageVersion Include="ObservableCollections" Version="2.2.0" />
-    <PackageVersion Include="ObservableCollections.R3" Version="3.1.0" />
+    <PackageVersion Include="ObservableCollections" Version="3.3.1" />
+    <PackageVersion Include="ObservableCollections.R3" Version="3.3.1" />
     <PackageVersion Include="QoiSharp" Version="1.0.0" />
     <PackageVersion Include="R3" Version="1.2.9" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.9" />

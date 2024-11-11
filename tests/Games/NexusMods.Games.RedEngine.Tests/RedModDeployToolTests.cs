@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
+using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
@@ -27,7 +28,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     [Theory]
     [InlineData("Driver_Shotguns", 3)]
     [InlineData("Driver_Shotguns", -3)]
-    [InlineData("Driver_Shotguns", 11)]
+    [InlineData("Driver_Shotguns", -11)]
     [InlineData("maestros_of_synth_body_heat_radio", -1)]
     [InlineData("maestros_of_synth_body_heat_radio", 10)]
     [InlineData("maestros_of_synth_the_dirge", -11)]
@@ -35,12 +36,13 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     {
         var loadout = await SetupLoadout();
         
-        var provider = ServiceProvider.GetRequiredService<RedModSortableItemProvider>();
-        var groups = provider.GetItems(loadout);
-        var specificGroup = groups.OfType<RedModSortableItem>().Single(g => g.Name == name);
+        var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
+        var provider = factory.GetLoadoutSortableItemProvider(loadout);
+        var order = provider.SortableItems;
+        var specificGroup = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
         
-        await specificGroup.SetRelativePosition(delta);
-
+        await provider.SetRelativePosition(specificGroup, delta);
+        
         loadout = loadout.Rebase();
         await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
     }

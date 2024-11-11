@@ -2,15 +2,12 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.DiskState;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
@@ -88,8 +85,8 @@ public static class Services
         coll.AddSingleton<JsonConverter, OptionalConverterFactory>();
 
         // Game Registry
-        coll.AddSingleton<IGameRegistry, GameRegistry>();
-        coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
+        coll.AddSingleton<IGameRegistry, GameRegistry.GameRegistry>();
+        coll.AddHostedService(s => (GameRegistry.GameRegistry)s.GetRequiredService<IGameRegistry>());
         coll.AddAttributeCollection(typeof(GameInstallMetadata));
         
         // File Store

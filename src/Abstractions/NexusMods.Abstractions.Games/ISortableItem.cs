@@ -7,25 +7,34 @@ namespace NexusMods.Abstractions.Games;
 /// All items in the list will have a non-gaming sort index. If a item is moved the other items will
 /// adjust to compensate for the positional change.
 /// </summary>
-public interface ISortableItem
+public interface ISortableItem : IComparable<ISortableItem>
 {
     /// <summary>
-    /// The provider that contains all the items that can be sorted
+    /// Reference to the provider that manages this item
     /// </summary>
-    public ISortableItemProvider Provider { get; }
+    public ILoadoutSortableItemProvider SortableItemProvider { get; }
     
     /// <summary>
     /// The index of the item in a sorted list of item as given by the provider
     /// </summary>
-    public int SortIndex { get; }
+    public int SortIndex { get; set; }
     
     /// <summary>
-    /// This is used as the unique identifier for the entity.
+    /// Name of the item for display purposes
     /// </summary>
-    public EntityId EntityId { get; }
+    public string DisplayName { get; }
     
     /// <summary>
-    /// Moves the item relative to other items by the sepecified amount
+    /// The name of the winning mod containing the item
     /// </summary>
-    public Task SetRelativePosition(int delta);
+    public string ModName { get; set; }
+    
+    /// <summary>
+    /// Represents whether the item is active in the load order or not
+    /// An item is considered active if it is part of the load order and will be loaded by the game
+    /// An item is considered inactive if it is for some reason not going to be loaded by the game,
+    /// e.g. it is disabled in the load order, or parent mod is disabled.
+    /// </summary>
+    public bool IsActive { get; set; }
+    
 }

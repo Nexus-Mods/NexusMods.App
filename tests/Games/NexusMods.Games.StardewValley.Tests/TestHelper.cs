@@ -1,6 +1,6 @@
 using System.Text;
 using NexusMods.Paths;
-using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
+using SMAPIManifest = NexusMods.Games.StardewValley.SMAPI.Toolkit.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Tests;
 

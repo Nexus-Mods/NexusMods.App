@@ -23,7 +23,7 @@ public class LoadOrdersPageViewModel : APageViewModel<ILoadOrdersPageViewModel>,
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         var loadout = Loadout.Load(_connection.Db, _loadoutId);
-        var sortableItemProviders = loadout.InstallationInstance.GetGame().SortableItemProviders;
+        var sortableItemProviders = loadout.InstallationInstance.GetGame().SortableItemProviderFactories;
         if (sortableItemProviders.Length > 0)
         {
             LoadOrderViewModel = new LoadOrderViewModel(serviceProvider, _loadoutId, sortableItemProviders[0]);

@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.UI;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -37,10 +36,10 @@ public interface IGame : ILocatableGame
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
     
     /// <summary>
-    /// An array of all instances of <see cref="ISortableItemProvider"/> supported
+    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
     /// by the game.
     /// </summary>
-    public IObservableSortableItemProvider[] SortableItemProviders { get; }
+    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
 
     /// <summary>
     /// The synchronizer for this game.

@@ -8,13 +8,13 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.Games.StardewValley.SMAPI.Toolkit.ModData;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
-using StardewModdingAPI.Toolkit.Framework.ModData;
-using ModStatus = StardewModdingAPI.Toolkit.Framework.ModData.ModStatus;
-using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
-using SMAPIModDatabase = StardewModdingAPI.Toolkit.Framework.ModData.ModDatabase;
+using ModStatus = NexusMods.Games.StardewValley.SMAPI.Toolkit.ModData.ModStatus;
+using SMAPIManifest = NexusMods.Games.StardewValley.SMAPI.Toolkit.Models.Manifest;
+using SMAPIModDatabase = NexusMods.Games.StardewValley.SMAPI.Toolkit.ModData.ModDatabase;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 

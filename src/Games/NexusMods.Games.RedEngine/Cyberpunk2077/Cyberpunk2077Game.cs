@@ -7,7 +7,6 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.UI;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -15,8 +14,8 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
+using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 using NexusMods.Games.RedEngine.ModInstallers;
-using NexusMods.Games.RedEngine.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -28,11 +27,17 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
+    private ISortableItemProviderFactory[] _sortableItemProviderFactories;
 
     public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
     {
         _serviceProvider = provider;
         _connection = connection;
+        
+        _sortableItemProviderFactories =
+        [
+            _serviceProvider.GetRequiredService<RedModSortableItemProviderFactory>(),
+        ];
     }
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
@@ -79,11 +84,8 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new MissingProtontricksForRedModEmitter(_serviceProvider),
         new MissingRedModEmitter(),
     ];
-    
-    public override IObservableSortableItemProvider[] SortableItemProviders =>
-    [
-        new RedModObservableSortableItemProvider(_connection),
-    ];
+
+    public override ISortableItemProviderFactory[] SortableItemProviderFactories => _sortableItemProviderFactories;
     
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>

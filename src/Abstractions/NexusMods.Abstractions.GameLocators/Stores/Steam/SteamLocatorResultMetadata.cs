@@ -1,8 +1,7 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games.Stores.Steam;
+namespace NexusMods.Abstractions.GameLocators.Stores.Steam;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="ISteamGame"/>.

@@ -2,7 +2,7 @@ using System.Text;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;

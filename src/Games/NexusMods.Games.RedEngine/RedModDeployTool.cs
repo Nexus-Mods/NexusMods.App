@@ -1,8 +1,10 @@
 using System.Reflection;
 using CliWrap;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Loadouts.Extensions;
@@ -66,30 +68,45 @@ public class RedModDeployTool : ITool
     internal async Task WriteLoadorderFile(AbsolutePath loadorderFilePath, Loadout.ReadOnly loadout)
     {
         // The process is as follows:
-        // 1. Get all redmods from the loadout
+        // 1. Get all redModSortable items for the loadouts
         // 2. Remove all remods that are not enabled (or parent is disabled)
-        // 3. Sort the redmods by their sort index
-        // 4. Write the redmod names to the loadorder file using the `mod\{folder}` name
-
-        var redmods = loadout.Items
-            // Get all redmods
-            .OfTypeLoadoutItemGroup()
-            .OfTypeRedModLoadoutGroup()
-            // Only want the enabled redmods
-            .Where(RedModIsEnabled)
-            // Order by sort index
-            .OrderBy(g => g.SortIndex)
-            // Get the folder filename, so `My Mod` instead of `mod\My Mod\info.json`
-            .Select(g => RedModFolder(g).Name.ToString());
+        // 3. Sort by the sort index
+        // 4. Write the redmod folder names to the loadorder file using
         
-        await loadorderFilePath.WriteAllLinesAsync(redmods);
+        var conn = loadout.Db.Connection;
 
+        var loadOrder = RedModLoadOrder.All(conn.Db)
+            .FirstOrOptional(g => g.AsLoadOrder().LoadoutId == loadout.LoadoutId);
+
+        if (!loadOrder.HasValue)
+        {
+            // Write an empty file
+            await loadorderFilePath.WriteAllLinesAsync([""]);
+            return;
+        }
+        
+        var redMods = RedModLoadoutGroup.All(conn.Db)
+            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
+            .Where(RedModIsEnabled)
+            .Select(g => RedModFolder(g).Name.ToString());
+
+        var order = RedModSortableItemModel.All(conn.Db)
+            // Get all sortable items
+            .Where(g => g.AsSortableItemModel().ParentLoadOrder.LoadOrderId == loadOrder.Value.AsLoadOrder().LoadOrderId)
+            // Only want the enabled redmods
+            .Where(g => redMods.FirstOrOptional(m => m == g.RedModFolderName).HasValue)
+            // Order by sort index
+            .OrderBy(g => g.AsSortableItemModel().SortIndex)
+            // Get the folder filename, so `My Mod` instead of `mod\My Mod\info.json`
+            .Select(g => g.RedModFolderName);
+        
+        await loadorderFilePath.WriteAllLinesAsync(order);
     }
 
     internal static RelativePath RedModFolder(RedModLoadoutGroup.ReadOnly group)
     {
         var redModInfoFile = group.RedModInfoFile.AsLoadoutFile().AsLoadoutItemWithTargetPath().TargetPath.Item3;
-        return redModInfoFile.Parent;
+        return redModInfoFile.Parent.FileName;
     }
 
     /// <summary>

@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Hashing.xxHash3;
-using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
+using SMAPIManifest = NexusMods.Games.StardewValley.SMAPI.Toolkit.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley;
 
