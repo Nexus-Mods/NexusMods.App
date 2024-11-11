@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,12 +18,20 @@ namespace NexusMods.DataModel.Migrations.Tests;
 
 public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFileManager tempManager, IFileExtractor extractor)
 {
+    private const string LFSMagic = "version https://git-lfs.github.com";
+
     [Theory]
     [MemberData(nameof(DatabaseNames))]
     public async Task TestDatabase(string name)
     {
         var path = DatabaseFolder().Combine(name);
         path.FileExists.Should().BeTrue();
+
+        var bytes = ArrayPool<byte>.Shared.Rent(minimumLength: LFSMagic.Length);
+        await path.FileSystem.ReadBytesRandomAccessAsync(path, bytes.AsMemory(start: 0, length: LFSMagic.Length), offset: 0);
+
+        var isLFS = Encoding.UTF8.GetString(bytes).StartsWith(LFSMagic, StringComparison.OrdinalIgnoreCase);
+        isLFS.Should().BeFalse(because: "file should've been downloaded using Git LFS (`git lfs pull`)");
 
         await using var workingFolder = tempManager.CreateFolder();
         await extractor.ExtractAllAsync(path, workingFolder.Path);
