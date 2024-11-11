@@ -4,7 +4,7 @@ using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.DataModel.Migrations.Tests;
+namespace NexusMods.DataModel.SchemaVersions.Tests;
 
 public class SchemaFailsafes(IConnection connection)
 {
