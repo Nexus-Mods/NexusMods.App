@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.FOMOD;
@@ -170,7 +171,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var prefixPath = "bundled".ToRelativePath().Join(fileMod.Source.FileExpression);
         // These are the files to install
         var prefixFiles = collectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();        
-        
+
         using var tx = Connection.BeginTransaction();
 
         if (!collectionArchive.AsLibraryFile().TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))

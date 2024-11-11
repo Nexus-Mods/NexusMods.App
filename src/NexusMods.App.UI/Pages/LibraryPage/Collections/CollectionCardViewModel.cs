@@ -60,12 +60,12 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     [Reactive] public Bitmap? Image { get; private set; }
     public string Summary => _collection.Summary;
     public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
-    public int ModCount => _revision.Files.Count;
+    public int ModCount => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => _revision.Downloads;
+    public ulong DownloadCount => (ulong)_revision.Downloads.Count;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;
-    public Bitmap AuthorAvatar => new(new MemoryStream(_collection.Author.AvatarImage.ToArray()));
+    public Bitmap? AuthorAvatar => null;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }
