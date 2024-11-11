@@ -1,4 +1,3 @@
-using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
@@ -16,7 +15,8 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 public class RedModSortableItemProvider : ILoadoutSortableItemProvider
 {
     private readonly IConnection _connection;
-    private readonly ObservableList<ISortableItem> _orderList = new();
+    private readonly ObservableList<ISortableItem> _orderList;
+    private readonly LoadOrderId _loadOrderId;
 
     public ObservableList<ISortableItem> SortableItems => _orderList;
 
@@ -46,11 +46,11 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
         _connection = connection;
         LoadoutId = loadoutId;
         ParentFactory = parentFactory;
-        var loadOrderId = loadOrder.AsLoadOrder().LoadOrderId;
+        _loadOrderId = loadOrder.AsLoadOrder().LoadOrderId;
 
         // load the previously saved order
         var order = RedModSortableItemModel.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == loadOrderId)
+            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
             .OrderBy(si => si.AsSortableItemModel().SortIndex)
             .Select(redModSortableItem =>
                 {
@@ -63,7 +63,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
                     );
                 }
             );
-        _orderList.AddRange(order);
+        _orderList = new ObservableList<ISortableItem>(order);
 
 
         // Observe changes in the RedMods and adjust the order list accordingly
@@ -152,11 +152,12 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
 
         // Observe changes in the order list and update the database accordingly
         _orderList.ObserveChanged()
-            .Prepend(new CollectionChangedEvent<ISortableItem>())
+            .Select(_ => _orderList)
+            .Prepend(_orderList)
             .SubscribeAwait(async (_, _) =>
                 {
                     var persistentSortableItems = RedModSortableItemModel.All(_connection.Db)
-                        .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == loadOrderId)
+                        .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
                         .OrderBy(si => si.AsSortableItemModel().SortIndex).ToArray();
                     
                     using var tx = _connection.BeginTransaction();
@@ -171,7 +172,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
                         if (!liveItem.HasValue)
                         {
                             tx.Delete(dbItem, recursive: false);
+                            continue;
                         }
+                        
                         var liveIdx = _orderList.IndexOf(liveItem.Value);
                         
                         if (dbItem.AsSortableItemModel().SortIndex != liveIdx)
@@ -189,7 +192,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
                         
                         var newDbItem = new SortableItemModel.New(tx)
                         {
-                            ParentLoadOrderId = loadOrderId,
+                            ParentLoadOrderId = _loadOrderId,
                             SortIndex = i,
                             Name = liveItem.DisplayName,
                         };
@@ -260,6 +263,15 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
         }
         
         return Task.CompletedTask;
+    }
+
+    public string[] GetRedModOrder()
+    {
+        return RedModSortableItemModel.All(_connection.Db)
+            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
+            .OrderBy(si => si.AsSortableItemModel().SortIndex)
+            .Select(si => si.RedModFolderName)
+            .ToArray();
     }
 
 

@@ -4,7 +4,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Loadouts.Extensions;
@@ -21,7 +20,7 @@ public class RedModDeployTool : ITool
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly ILogger _logger;
 
-    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger)
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _toolRunner = toolRunner;
@@ -73,9 +72,9 @@ public class RedModDeployTool : ITool
         // 3. Sort by the sort index
         // 4. Write the redmod folder names to the loadorder file using
         
-        var conn = loadout.Db.Connection;
+        var db = loadout.Db;
 
-        var loadOrder = RedModLoadOrder.All(conn.Db)
+        var loadOrder = RedModLoadOrder.All(db)
             .FirstOrOptional(g => g.AsLoadOrder().LoadoutId == loadout.LoadoutId);
 
         if (!loadOrder.HasValue)
@@ -85,12 +84,12 @@ public class RedModDeployTool : ITool
             return;
         }
         
-        var redMods = RedModLoadoutGroup.All(conn.Db)
+        var redMods = RedModLoadoutGroup.All(db)
             .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
             .Where(RedModIsEnabled)
             .Select(g => RedModFolder(g).Name.ToString());
 
-        var order = RedModSortableItemModel.All(conn.Db)
+        var order = RedModSortableItemModel.All(db)
             // Get all sortable items
             .Where(g => g.AsSortableItemModel().ParentLoadOrder.LoadOrderId == loadOrder.Value.AsLoadOrder().LoadOrderId)
             // Only want the enabled redmods
