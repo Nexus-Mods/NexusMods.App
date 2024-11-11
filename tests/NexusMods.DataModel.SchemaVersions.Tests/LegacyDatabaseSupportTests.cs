@@ -34,11 +34,15 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
         
         await using var workingFolder = tempManager.CreateFolder();
         await extractor.ExtractAllAsync(path, workingFolder.Path);
-
+        
+        var datamodelFolder = workingFolder.Path.Combine("MnemonicDB.rocksdb");
+        datamodelFolder.DirectoryExists().Should().BeTrue("the extracted database folder should exist");
+        datamodelFolder.EnumerateFiles().Should().NotBeEmpty("the extracted database folder should contain files");
+        
         using var backend = new Backend();
         var settings = new DatomStoreSettings
         {
-            Path = workingFolder.Path.Combine("MnemonicDB.rocksdb"),
+            Path = datamodelFolder,
         };
         using var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, provider.GetServices<IAnalyzer>());
