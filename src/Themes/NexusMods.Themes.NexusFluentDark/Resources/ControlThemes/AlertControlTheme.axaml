@@ -72,7 +72,8 @@
                                                          RightIcon="{x:Static icons:IconValues.Close}"
                                                          ShowIcon="Right"
                                                          ShowLabel="False"
-                                                         Type="Tertiary" />
+                                                         Type="Tertiary"
+                                                         Fill="None"/>
                             </panels:FlexPanel>
                         </Border>
 
