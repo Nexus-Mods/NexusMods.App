@@ -6,9 +6,9 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 
-namespace NexusMods.App.UI.Pages.LoadOrder;
+namespace NexusMods.App.UI.Pages.Sorting;
 
-[JsonName("NexusMods.App.UI.Pages.LoadOrder.LoadOrdersPageContext")]
+[JsonName("NexusMods.App.UI.Pages.Sorting.LoadOrdersPageContext")]
 public record LoadOrdersPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }

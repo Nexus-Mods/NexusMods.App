@@ -1,8 +1,9 @@
-using NexusMods.App.UI.Pages.LoadOrder.Prototype;
+using System.Collections.ObjectModel;
+using NexusMods.App.UI.Pages.Sorting.Prototype;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 
-namespace NexusMods.App.UI.Pages.LoadOrder;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrdersPageDesignViewModel : APageViewModel<ILoadOrdersPageViewModel>, ILoadOrdersPageViewModel
 {
@@ -10,5 +11,5 @@ public class LoadOrdersPageDesignViewModel : APageViewModel<ILoadOrdersPageViewM
     {
     }
 
-    public ILoadOrderViewModel? LoadOrderViewModel { get; }
+    public ReadOnlyObservableCollection<ILoadOrderViewModel> LoadOrderViewModels { get; } = new([]);
 }

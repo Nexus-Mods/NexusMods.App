@@ -13,6 +13,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
     private readonly Dictionary<LoadoutId, RedModSortableItemProvider> _providers = new();
 
     public Guid StaticSortOrderTypeId { get; } = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
+    public string SortOrderName { get; } = "REDmod Load Order";
 
     public RedModSortableItemProviderFactory(IConnection connection)
     {

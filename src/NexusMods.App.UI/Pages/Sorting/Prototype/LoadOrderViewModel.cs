@@ -7,14 +7,17 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadOrder.Prototype;
+namespace NexusMods.App.UI.Pages.Sorting.Prototype;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     private readonly ReadOnlyObservableCollection<ISortableItemViewModel> _sortableItemViewModels;
+    
+    public string SortOrderName { get; }
     public ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems => _sortableItemViewModels;
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
     {
+        SortOrderName = sortableItemProviderFactory.SortOrderName;
         var provider = sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
 
         var subscription = provider

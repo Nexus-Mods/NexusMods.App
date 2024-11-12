@@ -2,7 +2,7 @@ using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.LoadOrder;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public partial class LoadOrdersPageView : ReactiveUserControl<ILoadOrdersPageViewModel>
 {
@@ -12,9 +12,7 @@ public partial class LoadOrdersPageView : ReactiveUserControl<ILoadOrdersPageVie
         
         this.WhenActivated(disposables =>
             {
-                this.WhenAnyValue(v=> v.ViewModel!.LoadOrderViewModel)
-                    .WhereNotNull()
-                    .BindToView(this, v => v.LoadOrderView.ViewModel)
+                this.OneWayBind(ViewModel, vm => vm.LoadOrderViewModels, v => v.SortOrdersTabControl.ItemsSource)
                     .DisposeWith(disposables);
             }
         );
