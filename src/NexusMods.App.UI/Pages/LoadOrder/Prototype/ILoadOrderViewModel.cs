@@ -6,5 +6,5 @@ namespace NexusMods.App.UI.Pages.LoadOrder.Prototype;
 
 public interface ILoadOrderViewModel : IViewModelInterface
 {
-    ICollection<ISortableItemViewModel> SortableItems { get; }
+    ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems { get; }
 }

@@ -1,19 +1,26 @@
+using System.Reactive.Linq;
+using DynamicData.Binding;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using R3;
+using ReactiveUI;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
 public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Game>
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly RedModDeployTool _tool;
 
-    public RedModDeployToolTests(ITestOutputHelper helper) : base(helper)
+    public RedModDeployToolTests(ITestOutputHelper helper, ITestOutputHelper testOutputHelper) : base(helper)
     {
+        _testOutputHelper = testOutputHelper;
         _tool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
     }
     
@@ -43,6 +50,22 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         await provider.SetRelativePosition(specificGroup, delta);
         
         loadout = loadout.Rebase();
+        // var unboundList = ((RedModSortableItemProvider)provider).GetRedModOrder();
+        // var boundList = ((RedModSortableItemProvider)provider).GetRedModOrder(loadout.Db);
+        //
+        // _testOutputHelper.WriteLine("Unbound:");
+        // foreach (var item in unboundList)
+        // {
+        //     _testOutputHelper.WriteLine(item);
+        // }
+        // _testOutputHelper.WriteLine("Bound:");
+        // foreach (var item in boundList)
+        // {
+        //     _testOutputHelper.WriteLine(item);
+        // }
+        //
+        // unboundList.Should().Equal(boundList);
+
         await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
     }
 

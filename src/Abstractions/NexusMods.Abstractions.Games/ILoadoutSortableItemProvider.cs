@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
 using ObservableCollections;
 
@@ -19,8 +20,10 @@ public interface ILoadoutSortableItemProvider
     public LoadoutId LoadoutId { get; }
     
     
-    public ObservableList<ISortableItem> SortableItems { get; }
+    // public ObservableList<ISortableItem> SortableItems { get; }
     
+    public ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
+
     /// <summary>
     /// Sets the relative position of a sortable item in the load order
     /// </summary>
