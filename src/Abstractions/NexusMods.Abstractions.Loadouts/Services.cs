@@ -24,6 +24,6 @@ public static class Services
             .AddLoadoutFileModel()
             .AddDeletedFileModel()
             .AddCollectionGroupModel()
-            .AddLoadOrderModel();
+            .AddSortOrderModel();
     }
 }

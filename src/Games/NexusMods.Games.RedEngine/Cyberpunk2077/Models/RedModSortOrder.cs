@@ -8,10 +8,10 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 /// Represents the RedMod load order
 /// </summary>
 [PublicAPI]
-[Include<Abstractions.Loadouts.LoadOrder>]
-public partial class RedModLoadOrder : IModelDefinition
+[Include<Abstractions.Loadouts.SortOrder>]
+public partial class RedModSortOrder : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModLoadOrder";
+    private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortOrder";
     
     /// <summary>
     /// This value should be updated every time the load order is changed, used for detecting changes.

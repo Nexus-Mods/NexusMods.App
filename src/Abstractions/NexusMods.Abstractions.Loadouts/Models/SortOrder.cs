@@ -8,18 +8,14 @@ namespace NexusMods.Abstractions.Loadouts;
 /// <summary>
 /// Represents a sorting of some sortable items in this Loadout.
 /// A Game (and subsequently a Loadout) can have multiple LoadOrders of different types of sortable items.
-/// <remarks>
-/// This should 
-///
-/// </remarks>
 /// </summary>
 [PublicAPI]
-public partial class LoadOrder : IModelDefinition
+public partial class SortOrder : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Loadouts.LoadOrder";
+    private const string Namespace = "NexusMods.Loadouts.SortOrder";
     
     /// <summary>
-    /// The Loadout that this LoadOrder is associated with.
+    /// The Loadout that this SortOrder is associated with.
     /// </summary>
     public static readonly ReferenceAttribute<Loadout> Loadout = new(Namespace, nameof(Loadout))
     {

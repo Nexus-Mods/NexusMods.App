@@ -20,7 +20,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.DisplayName);
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
-    private readonly LoadOrderId _loadOrderId;
+    private readonly SortOrderId _loadOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
 
@@ -46,13 +46,13 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     private RedModSortableItemProvider(
         IConnection connection,
         LoadoutId loadoutId,
-        RedModLoadOrder.ReadOnly loadOrder,
+        RedModSortOrder.ReadOnly loadOrder,
         ISortableItemProviderFactory parentFactory)
     {
         _connection = connection;
         LoadoutId = loadoutId;
         ParentFactory = parentFactory;
-        _loadOrderId = loadOrder.AsLoadOrder().LoadOrderId;
+        _loadOrderId = loadOrder.AsSortOrder().SortOrderId;
 
         // load the previously saved order
         var order = RedModSortableItemModel.All(_connection.Db)
@@ -225,27 +225,27 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _semaphore.Release();
     }
 
-    private static async ValueTask<RedModLoadOrder.ReadOnly> GetOrAddLoadOrderModel(
+    private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddLoadOrderModel(
         IConnection connection,
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
-        var loadOrder = RedModLoadOrder.All(connection.Db)
-            .FirstOrOptional(lo => lo.AsLoadOrder().LoadoutId == loadoutId);
+        var loadOrder = RedModSortOrder.All(connection.Db)
+            .FirstOrOptional(lo => lo.AsSortOrder().LoadoutId == loadoutId);
 
         if (loadOrder.HasValue)
             return loadOrder.Value;
 
         using var ts = connection.BeginTransaction();
-        var newLoadOrder = new Abstractions.Loadouts.LoadOrder.New(ts)
+        var newLoadOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
             LoadOrderTypeId = parentFactory.StaticLoadOrderTypeId,
         };
 
-        var newRedModLoadOrder = new RedModLoadOrder.New(ts, newLoadOrder.LoadOrderId)
+        var newRedModLoadOrder = new RedModSortOrder.New(ts, newLoadOrder.SortOrderId)
         {
-            LoadOrder = newLoadOrder,
+            SortOrder = newLoadOrder,
             Revision = 0,
         };
 

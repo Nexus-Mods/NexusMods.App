@@ -14,7 +14,7 @@ public static class Services
     {
         services.AddGame<Cyberpunk2077Game>()
             .AddRedModInfoFileModel()
-            .AddRedModLoadOrderModel()
+            .AddRedModSortOrderModel()
             .AddRedModLoadoutGroupModel()
             .AddRedModSortableItemModelModel()
             .AddSingleton<ITool, RunGameTool<Cyberpunk2077Game>>()

@@ -21,7 +21,7 @@ public partial class SortableItemModel : IModelDefinition
     /// <summary>
     /// Reference to the Load Order that this item is part of.
     /// </summary>
-    public static readonly ReferenceAttribute<LoadOrder> ParentLoadOrder = new(Namespace, nameof(ParentLoadOrder))
+    public static readonly ReferenceAttribute<SortOrder> ParentLoadOrder = new(Namespace, nameof(ParentLoadOrder))
     {
         IsIndexed = true,
     };

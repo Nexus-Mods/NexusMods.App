@@ -57,7 +57,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                             continue;
                         }
                         
-                        // TODO: Delete LoadOrder and SortableItem entities from DB if it isn't done in Synchronizer.DeleteLoadout()
+                        // TODO: Delete SortOrder and SortableItem entities from DB if it isn't done in Synchronizer.DeleteLoadout()
                         provider.Dispose();
                     }
                 }
