@@ -1,14 +1,19 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
+using NexusMods.Paths;
 using Polly;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
@@ -16,17 +21,28 @@ namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> _metadataPipeline;
+    private readonly IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> _metadataPipeline;
+    private readonly IOSInformation _os;
 
-    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger)
+    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger, IOSInformation os)
     {
         _logger = logger;
         _metadataPipeline = Pipelines.GetMetadataPipeline(serviceProvider);
+        _os = os;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var diagnostics = await DiagnosePakModulesAsync(loadout, cancellationToken);
+        var bg3LoadoutFile = GetScriptExtenderLoadoutFile(loadout);
+        
+        // BG3SE WINEDLLOVERRIDE diagnostic
+        if (_os.IsLinux  && bg3LoadoutFile.HasValue && loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
+        {
+            // yield return Diagnostics.
+            yield return Diagnostics.CreateBg3SeWineDllOverrideSteam(Template: "text");
+        }
+        
+        var diagnostics = await DiagnosePakModulesAsync(loadout, bg3LoadoutFile, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
@@ -35,7 +51,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Diagnosers
 
-    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Diagnostic>> DiagnosePakModulesAsync(Loadout.ReadOnly loadout, Optional<LoadoutFile.ReadOnly> bg3LoadoutFile, CancellationToken cancellationToken)
     {
         var pakLoadoutFiles = GetAllPakLoadoutFiles(loadout, onlyEnabledMods: true);
         var metaFileTuples = await GetAllPakMetadata(pakLoadoutFiles,
@@ -64,9 +80,21 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             }
 
             // non error case
-            var metadata = metadataOrError.Result;
-            var dependencies = metadata.Dependencies;
+            var pakMetaData = metadataOrError.Result;
 
+            // check if the mod requires the script extender and if SE is missing
+            if (pakMetaData.ScriptExtenderConfigMetadata is { HasValue: true, Value.RequiresScriptExtender: true } &&
+                !bg3LoadoutFile.HasValue)
+            {
+                diagnostics.Add(Diagnostics.CreateMissingRequiredScriptExtender(
+                    ModName: loadoutItemGroup.ToReference(loadout),
+                    PakName:pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                    BG3SENexusLink:BG3SENexusModsLink));
+            }
+
+
+            // check dependencies
+            var dependencies = pakMetaData.MetaFileData.Dependencies;
             foreach (var dependency in dependencies)
             {
                 var dependencyUuid = dependency.Uuid;
@@ -76,7 +104,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var matchingDeps = metaFileTuples.Where(
                         x =>
                             x.Item2.Exception is null &&
-                            x.Item2.Result.ModuleShortDesc.Uuid == dependencyUuid
+                            x.Item2.Result.MetaFileData.ModuleShortDesc.Uuid == dependencyUuid
                     )
                     .ToArray();
 
@@ -87,8 +115,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                             ModName: loadoutItemGroup.ToReference(loadout),
                             MissingDepName: dependency.Name,
                             MissingDepVersion: dependency.SemanticVersion.ToString(),
-                            PakModuleName: metadata.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: pakMetaData.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             NexusModsLink: NexusModsLink
                         )
                     );
@@ -99,9 +127,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     continue;
 
                 var highestInstalledMatch = matchingDeps.MaxBy(
-                    x => x.Item2.Result.ModuleShortDesc.SemanticVersion
+                    x => x.Item2.Result.MetaFileData.ModuleShortDesc.SemanticVersion
                 );
-                var installedMatchModule = highestInstalledMatch.Item2.Result.ModuleShortDesc;
+                var installedMatchModule = highestInstalledMatch.Item2.Result.MetaFileData.ModuleShortDesc;
                 var matchLoadoutItemGroup = highestInstalledMatch.Item1.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent;
 
                 // Check if found dependency is outdated
@@ -109,8 +137,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 {
                     diagnostics.Add(Diagnostics.CreateOutdatedDependency(
                             ModName: loadoutItemGroup.ToReference(loadout),
-                            PakModuleName: metadata.ModuleShortDesc.Name,
-                            PakModuleVersion: metadata.ModuleShortDesc.SemanticVersion.ToString(),
+                            PakModuleName: pakMetaData.MetaFileData.ModuleShortDesc.Name,
+                            PakModuleVersion: pakMetaData.MetaFileData.ModuleShortDesc.SemanticVersion.ToString(),
                             DepModName: matchLoadoutItemGroup.ToReference(loadout),
                             DepName: installedMatchModule.Name,
                             MinDepVersion: dependency.SemanticVersion.ToString(),
@@ -128,15 +156,28 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 #region Helpers
 
-    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LsxXmlFormat.MetaFileData>>> GetAllPakMetadata(
+    private static Optional<LoadoutFile.ReadOnly> GetScriptExtenderLoadoutFile(Loadout.ReadOnly loadout)
+    {
+        return loadout.Items.OfTypeLoadoutItemGroup()
+            .Where(g => g.AsLoadoutItem().IsEnabled())
+            .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
+                .OfTypeLoadoutFile()
+                .Where(file => file.AsLoadoutItemWithTargetPath().TargetPath.Item2 == Bg3Constants.BG3SEGamePath.LocationId &&
+                               file.AsLoadoutItemWithTargetPath().TargetPath.Item3 == Bg3Constants.BG3SEGamePath.Path
+                )
+            ).FirstOrOptional(_ => true);
+    }
+
+
+    private static async IAsyncEnumerable<ValueTuple<LoadoutFile.ReadOnly, Outcome<LspkPackageFormat.PakMetaData>>> GetAllPakMetadata(
         LoadoutFile.ReadOnly[] pakLoadoutFiles,
-        IResourceLoader<Hash, Outcome<LsxXmlFormat.MetaFileData>> metadataPipeline,
+        IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> metadataPipeline,
         ILogger logger,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var pakLoadoutFile in pakLoadoutFiles)
         {
-            Resource<Outcome<LsxXmlFormat.MetaFileData>> resource;
+            Resource<Outcome<LspkPackageFormat.PakMetaData>> resource;
             try
             {
                 resource = await metadataPipeline.LoadResourceAsync(pakLoadoutFile.Hash, cancellationToken);
@@ -175,6 +216,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private static readonly NamedLink NexusModsLink = new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/baldursgate3"));
+    private static readonly NamedLink BG3SENexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://www.nexusmods.com/baldursgate3/mods/2172"));
 
 #endregion Helpers
 }

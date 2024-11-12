@@ -47,16 +47,13 @@
 
 
         <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
-
             <controls:EmptyState.Subtitle>
                 <StackPanel>
                     <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
-                    <navigation:NavigationControl Classes="Square Primary" x:Name="ViewLibraryButton">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
-                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued" VerticalAlignment="Center" Size="18" />
-                            <TextBlock Text="Library" />
-                        </StackPanel>
-                    </navigation:NavigationControl>
+                    <navigation:NavigationControl x:Name="ViewLibraryButton"
+                                                  Text="Library"
+                                                  ShowIcon="Left"
+                                                  LeftIcon="{x:Static icons:IconValues.ModLibrary}"/>
                 </StackPanel>
             </controls:EmptyState.Subtitle>
 

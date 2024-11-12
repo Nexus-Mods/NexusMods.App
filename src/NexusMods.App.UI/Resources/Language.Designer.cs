@@ -654,7 +654,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Downloads page is currently being reworked and will be replaced in a future update. We apologize for the inconvenience..
+        ///   Looks up a localized string similar to The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience..
         /// </summary>
         public static string DownloadsView_UnderDevelopment {
             get {
@@ -686,6 +686,25 @@ namespace NexusMods.App.UI.Resources {
         public static string EmptyLibraryTitleText {
             get {
                 return ResourceManager.GetString("EmptyLibraryTitleText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It looks like {0} is already running.
+        ///To apply changes or launch the game again, please close the game first..
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Description {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game is currently running.
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Title {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Title", resourceCulture);
             }
         }
         
@@ -1945,7 +1964,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connect your Nexus Mods accoun.
+        ///   Looks up a localized string similar to Connect your Nexus Mods account.
         /// </summary>
         public static string TopBarActions__LOG_IN_ToolTip {
             get {

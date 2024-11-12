@@ -9,7 +9,6 @@
         </ResourceDictionary>
     </Styles.Resources>
 
-
     <FluentTheme>
         <FluentTheme.Palettes>
             <ColorPaletteResources x:Key="Dark"

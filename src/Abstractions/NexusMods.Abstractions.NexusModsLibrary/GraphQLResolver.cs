@@ -23,6 +23,8 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     public static GraphQLResolver Create<THighLevel>(IDb db, ITransaction tx, 
         IWritableAttribute<THighLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
     {
+        if (!primaryKeyAttribute.IsIndexed) throw new ArgumentException($"Attribute {primaryKeyAttribute.Id} is not indexed", nameof(primaryKeyAttribute));
+
         var existing = db.Datoms(primaryKeyAttribute, primaryKeyValue);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0].E;
@@ -40,6 +42,9 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
         where THighLevel1 : notnull
         where THighLevel2 : notnull
     {
+        if (!pair1.A.IsIndexed) throw new ArgumentException($"Attribute {pair1.A.Id} is not indexed", nameof(pair1));
+        if (!pair2.A.IsIndexed) throw new ArgumentException($"Attribute {pair2.A.Id} is not indexed", nameof(pair2));
+
         var existing = referenceDb.Datoms(pair1, pair2);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0];

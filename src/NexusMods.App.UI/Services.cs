@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
+using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Spine;
@@ -33,6 +34,7 @@ using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
@@ -58,6 +60,7 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
@@ -85,6 +88,7 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
+            .AddSingleton<GameRunningTracker>()
             .AddTransient<MainWindow>()
 
             // Services
@@ -102,6 +106,7 @@ public static class Services
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
+            .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
@@ -119,6 +124,7 @@ public static class Services
             .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
             .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
+            .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
             .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
             .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
@@ -133,6 +139,7 @@ public static class Services
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
+            .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
@@ -152,6 +159,7 @@ public static class Services
             .AddView<DownloadSizeView, IDownloadSizeViewModel>()
             .AddView<DownloadStatusView, IDownloadStatusViewModel>()
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
+            .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
@@ -280,6 +288,7 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
+            .AddSingleton<NexusModsDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddFileSystem()

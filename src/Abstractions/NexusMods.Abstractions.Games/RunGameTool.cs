@@ -6,10 +6,12 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -53,7 +55,7 @@ public class RunGameTool<T> : IRunGameTool
     /// <inheritdoc />
     public string Name => $"Run {_game.Name}";
 
-    /// <inheritdoc />
+    /// <summary/>
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
@@ -248,5 +250,15 @@ public class RunGameTool<T> : IRunGameTool
     {
         return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.Store)
             .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
+    }
+
+    /// <inheritdoc />
+    public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken)
+    {
+        return monitor.Begin<ITool, Unit>(this, async _ =>
+        {
+            await Execute(loadout, cancellationToken);
+            return Unit.Default;
+        });
     }
 }

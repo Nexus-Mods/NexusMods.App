@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using System.Reactive.Subjects;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
@@ -14,6 +15,8 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> Command { get; set; }
+
+    public IObservable<bool> IsRunningObservable { get; } = new Subject<bool>();
 
     [Reactive]
     public string Label { get; set; } = "PLAY";

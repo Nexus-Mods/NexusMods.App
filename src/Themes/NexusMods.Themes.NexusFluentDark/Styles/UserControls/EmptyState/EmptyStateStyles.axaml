@@ -8,7 +8,6 @@
                 <controls:EmptyState.Subtitle>
                     <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
                 </controls:EmptyState.Subtitle>
-
                 <TextBlock>There is something here</TextBlock>
             </controls:EmptyState>
 
@@ -20,55 +19,53 @@
                         <TextBlock>More text</TextBlock>
                     </StackPanel>
                 </controls:EmptyState.Subtitle>
-
                 <TextBlock>There is something here</TextBlock>
             </controls:EmptyState>
         </StackPanel>
-
     </Design.PreviewWith>
 
     <Style Selector="controls|EmptyState">
         <Style Selector="^ /template/ Border#EmptyStateBorder">
-            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="IsVisible" Value="False" />
 
             <Style Selector="^ StackPanel#Panel">
-                <Setter Property="Orientation" Value="Vertical"/>
-                <Setter Property="Margin" Value="16 64 16 0"/>
-                <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Margin" Value="16 64 16 0" />
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             </Style>
 
             <Style Selector="^ icons|UnifiedIcon#Icon">
-                <Setter Property="Size" Value="36"/>
+                <Setter Property="Size" Value="36" />
             </Style>
 
             <Style Selector="^ TextBlock#HeaderTextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style Selector="^ ContentPresenter#SubtitleContentPresenter">
-                <Style Selector="^ StackPanel">
-                    <Setter Property="Orientation" Value="Horizontal"/>
-                    <Setter Property="Spacing" Value="2"/>
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                </Style>
 
-                <Style Selector="^ TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}"/>
+                <Style Selector="^ > StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                     <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+                
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
-                    <Setter Property="TextAlignment" Value="Center"/>
                 </Style>
             </Style>
         </Style>
 
         <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
-            <Setter Property="IsVisible" Value="True"/>
+            <Setter Property="IsVisible" Value="True" />
         </Style>
 
         <Style Selector="^ /template/ icons|UnifiedIcon#Icon">
@@ -76,17 +73,16 @@
         </Style>
 
         <Style Selector="^:icon /template/ icons|UnifiedIcon#Icon">
-            <Setter Property="IsVisible" Value="True"/>
+            <Setter Property="IsVisible" Value="True" />
         </Style>
 
         <Style Selector="^:active /template/ Border#EmptyStateBorder">
-            <Setter Property="IsVisible" Value="True"/>
+            <Setter Property="IsVisible" Value="True" />
         </Style>
 
         <Style Selector="^:active /template/ ContentPresenter#ContentPresenter">
-            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="IsVisible" Value="False" />
         </Style>
     </Style>
 
 </Styles>
-

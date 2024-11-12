@@ -84,6 +84,7 @@
                 <controls:StandardButton x:Name="DoneButton"
                                          HorizontalAlignment="Right"
                                          Type="Primary"
+                                         Fill="Strong"
                                          Text="Let's Go" />
             </StackPanel>
 

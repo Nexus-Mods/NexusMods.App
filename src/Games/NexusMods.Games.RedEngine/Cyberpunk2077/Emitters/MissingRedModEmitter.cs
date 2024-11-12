@@ -9,7 +9,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 public partial class MissingRedModEmitter : ILoadoutDiagnosticEmitter
 {
     public static readonly NamedLink RedmodGenericLink = new("REDmod DLC", new Uri("https://www.cyberpunk.net/en/modding-support"));
-    public static readonly NamedLink RedmodSteamLink = new("REDmod DLC", new Uri("steam://run/2060310"));
+    public static readonly NamedLink RedmodSteamLink = new("REDmod DLC", new Uri("steam://store/2060310"));
     public static readonly NamedLink RedmodGOGLink = new("REDmod DLC", new Uri("goggalaxy://openStoreUrl/embed.gog.com/game/cyberpunk_2077_redmod"));
     public static readonly NamedLink RedmodEGSLink = new("REDmod DLC", new Uri("com.epicgames.launcher://store/p/cyberpunk-2077"));
 

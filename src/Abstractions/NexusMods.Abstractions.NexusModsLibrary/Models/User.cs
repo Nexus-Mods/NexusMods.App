@@ -31,5 +31,7 @@ public partial class User : IModelDefinition
     /// <summary>
     /// The user's avatar image.
     /// </summary>
-    public static readonly MemoryAttribute AvatarImage = new(Namespace, nameof(AvatarImage));
+    [Obsolete]
+    // TODO: use image pipeline
+    public static readonly MemoryAttribute AvatarImage = new(Namespace, nameof(AvatarImage)) {IsOptional = true};
 }

@@ -6,4 +6,6 @@ namespace NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 /// </summary>
 public interface IMessageBoxOkViewModel : IOverlayViewModel<Unit>
 {
+    public string Title { get; set; }
+    public string Description { get; set; }
 }
