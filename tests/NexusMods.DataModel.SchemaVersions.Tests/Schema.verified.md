@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x4D2CA4734D65E53D
-   - Total attributes: 133
-   - Total namespaces: 53
+   - Fingerprint: 0x572809F282D439D2
+   - Total attributes: 134
+   - Total namespaces: 54
    
 ## Attributes
 | AttributeId                                                                                            | Type                    | Indexed | Many  | NoHistory | 
@@ -32,8 +32,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.NexusModsLibrary.CollectionTag/NexusId                                          | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionRevisionNumber | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionSlug           | Ascii                   | True    | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.User/Avatar                                                    | Utf8                    | False   | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.User/AvatarImage                                               | HashedBlob              | False   | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.User/AvatarResource                                            | Reference               | False   | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.User/AvatarUri                                                 | Utf8                    | False   | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.User/Name                                                      | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.User/NexusId                                                   | UInt64                  | True    | False | False     | 
 | NexusMods.App.UI.Windows.WindowData/Data                                                               | Utf8                    | False   | False | False     | 
@@ -57,6 +57,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.CollectionDownload/CollectionRevision                                                | Reference               | False   | False | False     | 
 | NexusMods.Library.CollectionDownload/IsOptional                                                        | UInt8                   | False   | False | False     | 
 | NexusMods.Library.CollectionDownload/Name                                                              | Utf8                    | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadBundled/BundledPath                                                | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Library.CollectionDownloadExternal/Md5                                                       | UInt128                 | False   | False | False     | 
 | NexusMods.Library.CollectionDownloadExternal/Size                                                      | UInt64                  | False   | False | False     | 
 | NexusMods.Library.CollectionDownloadExternal/Uri                                                       | Utf8                    | False   | False | False     | 
