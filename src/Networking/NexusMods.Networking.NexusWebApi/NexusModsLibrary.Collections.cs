@@ -48,10 +48,10 @@ public partial class NexusModsLibrary
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
-        var resolvedEntitiesLookup = CreateResolvedEntitiesLookup(db, tx, collectionRevisionInfo);
         var collectionEntityId = UpdateCollectionInfo(db, tx, slug, collectionRevisionInfo.Collection);
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, revisionNumber, collectionEntityId, collectionRevisionInfo);
 
+        var resolvedEntitiesLookup = CreateResolvedEntitiesLookup(db, tx, collectionRevisionInfo);
         UpdateFiles(db, tx, collectionRevisionEntityId, collectionRevisionInfo, collectionRoot, gameIds, resolvedEntitiesLookup);
 
         var results = await tx.Commit();
