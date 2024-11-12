@@ -56,8 +56,9 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                             Debug.Assert(false, $"RedModSortableItemProviderFactory: provider not found for loadout {removal.Current.LoadoutId}");
                             continue;
                         }
-
-                        // provider.Dispose();
+                        
+                        // TODO: Delete LoadOrder and SortableItem entities from DB if it isn't done in Synchronizer.DeleteLoadout()
+                        provider.Dispose();
                     }
                 }
             );

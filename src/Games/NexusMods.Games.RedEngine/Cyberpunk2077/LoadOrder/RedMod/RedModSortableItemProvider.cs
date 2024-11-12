@@ -14,7 +14,7 @@ using R3;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 
-public class RedModSortableItemProvider : ILoadoutSortableItemProvider
+public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposable
 {
     private readonly IConnection _connection;
 
@@ -22,6 +22,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
     private readonly LoadOrderId _loadOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly CompositeDisposable _disposables = new();
 
     public ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
 
@@ -75,7 +76,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
             .Transform(item => item as ISortableItem)
             .SortBy(item => item.SortIndex)
             .Bind(out _readOnlyOrderList)
-            .Subscribe();
+            .Subscribe()
+            .AddTo(_disposables);
 
 
         // Observe changes in the RedMods and adjust the order list accordingly
@@ -163,7 +165,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
                     );
                 },
                 awaitOperation: AwaitOperation.Sequential
-            );
+            )
+            .AddTo(_disposables);
     }
 
 
@@ -313,5 +316,12 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     {
         var redModInfoFile = group.RedModInfoFile.AsLoadoutFile().AsLoadoutItemWithTargetPath().TargetPath.Item3;
         return redModInfoFile.Parent.FileName;
+    }
+
+    public void Dispose()
+    {
+        _disposables.Dispose();
+        _semaphore.Dispose();
+        _orderCache.Dispose();
     }
 }
