@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.Library.Models;
@@ -51,16 +52,18 @@ public partial class NexusModsLibrary
         var collectionEntityId = UpdateCollectionInfo(db, tx, slug, collectionRevisionInfo.Collection);
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, revisionNumber, collectionEntityId, collectionRevisionInfo);
 
-        var resolvedEntitiesLookup = CreateResolvedEntitiesLookup(db, tx, collectionRevisionInfo);
+        var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionRoot, gameIds, collectionRevisionInfo);
         UpdateFiles(db, tx, collectionRevisionEntityId, collectionRevisionInfo, collectionRoot, gameIds, resolvedEntitiesLookup);
 
         var results = await tx.Commit();
         return CollectionRevisionMetadata.Load(results.Db, results[collectionRevisionEntityId]);
     }
 
-    private static ResolvedEntitiesLookup CreateResolvedEntitiesLookup(
+    private static ResolvedEntitiesLookup ResolveModFiles(
         IDb db,
         ITransaction tx,
+        CollectionRoot collectionRoot,
+        GameIdCache gameIds,
         ICollectionRevisionInfo_CollectionRevision collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
@@ -79,6 +82,16 @@ public partial class NexusModsLibrary
             );
 
             res[id] = (modEntityId, fileEntityId);
+        }
+
+        foreach (var collectionMod in collectionRoot.Mods)
+        {
+            if (collectionMod.Source.Type != ModSourceType.nexus) continue;
+            var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+            if (res.ContainsKey(fileId)) continue;
+
+            // TODO: use normal API to query information about this file
+            throw new NotImplementedException();
         }
 
         return res;
@@ -156,13 +169,9 @@ public partial class NexusModsLibrary
 
         var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 
-        if (!resolvedEntitiesLookup.TryGetValue(fileId, out var ids))
-        {
-            // NOTE(erri120): seems odd, we should probably just query the mod and file using the API normally
-            throw new NotImplementedException();
-        }
+        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files ealier");
+        var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
 
-        var (_, fileMetadataId) = ids;
         _ = new CollectionDownloadNexusMods.New(tx, downloadEntity.Id)
         {
             CollectionDownload = downloadEntity,
