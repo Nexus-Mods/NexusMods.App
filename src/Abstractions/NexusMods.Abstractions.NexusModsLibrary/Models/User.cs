@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
+using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
@@ -24,14 +25,12 @@ public partial class User : IModelDefinition
     public static readonly ULongAttribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
     
     /// <summary>
-    /// The user's avatar URL.
+    /// Url to the avatar.
     /// </summary>
-    public static readonly UriAttribute Avatar = new(Namespace, nameof(Avatar));
-    
+    public static readonly UriAttribute AvatarUri = new(Namespace, nameof(AvatarUri));
+
     /// <summary>
-    /// The user's avatar image.
+    /// Avatar resource.
     /// </summary>
-    [Obsolete]
-    // TODO: use image pipeline
-    public static readonly MemoryAttribute AvatarImage = new(Namespace, nameof(AvatarImage)) {IsOptional = true};
+    public static readonly ReferenceAttribute<PersistedDbResource> AvatarResource = new(Namespace, nameof(AvatarResource)) { IsOptional = true };
 }

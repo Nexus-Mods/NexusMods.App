@@ -22,6 +22,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
 
     public CollectionCardViewModel(
         IResourceLoader<EntityId, Bitmap> tileImagePipeline,
+        IResourceLoader<EntityId, Bitmap> userAvatarPipeline,
         IWindowManager windowManager,
         WorkspaceId workspaceId,
         IConnection connection,
@@ -53,11 +54,17 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (bitmap, self) => self.Image = bitmap)
                 .AddTo(disposables);
+
+            ImagePipelines.CreateObservable(_collection.Author.Id, userAvatarPipeline)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (bitmap, self) => self.AuthorAvatar = bitmap)
+                .AddTo(disposables);
         });
     }
 
     public string Name => _collection.Name;
     [Reactive] public Bitmap? Image { get; private set; }
+    [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     public string Summary => _collection.Summary;
     public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
     public int ModCount => _revision.Downloads.Count;
@@ -66,6 +73,5 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;
-    public Bitmap? AuthorAvatar => null;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }
