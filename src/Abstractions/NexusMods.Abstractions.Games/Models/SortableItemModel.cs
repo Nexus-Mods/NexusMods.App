@@ -19,11 +19,6 @@ public partial class SortableItemModel : IModelDefinition
     private const string Namespace = "NexusMods.Loadouts.SortableItemModel";
     
     /// <summary>
-    /// Name of the item for display purposes.
-    /// </summary>
-    public static readonly StringAttribute Name = new(Namespace, nameof(Name));
-    
-    /// <summary>
     /// Reference to the Load Order that this item is part of.
     /// </summary>
     public static readonly ReferenceAttribute<LoadOrder> ParentLoadOrder = new(Namespace, nameof(ParentLoadOrder))

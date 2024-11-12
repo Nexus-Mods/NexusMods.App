@@ -63,7 +63,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                     var sortableItem = redModSortableItem.AsSortableItemModel();
                     return new RedModSortableItem(this,
                         sortableItem.SortIndex,
-                        sortableItem.Name,
+                        redModSortableItem.RedModFolderName,
                         redModSortableItem.RedModFolderName,
                         isActive: false // Will need to be updated when we load the RedMods
                     );
@@ -142,6 +142,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                         var item = stagingList[i];
                         item.SortIndex = i;
 
+                        // TODO: determine the winning mod in case of multiple mods with the same name, instead of just the first one
                         if (!redModsGroups.TryGetFirst(g => RedModFolder(g).ToString() == item.DisplayName, out var redModMatch))
                         {
                             // shouldn't happen because any missing items should have been added
@@ -211,7 +212,6 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             {
                 ParentLoadOrderId = _loadOrderId,
                 SortIndex = i,
-                Name = liveItem.DisplayName,
             };
 
             _ = new RedModSortableItemModel.New(tx, newDbItem)

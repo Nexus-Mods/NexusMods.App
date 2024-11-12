@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.Games;
+using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 
