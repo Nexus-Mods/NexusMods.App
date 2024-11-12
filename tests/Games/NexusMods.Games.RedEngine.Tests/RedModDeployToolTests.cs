@@ -47,8 +47,13 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
         
-        // wait for the order to be updated
         var tsc1 = new TaskCompletionSource<Unit>();
+        // avoid stalling the test on failure
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(TimeSpan.FromSeconds(7));
+        cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
+        
+        // wait for the order to be updated
         provider.SortableItems
             .WhenAnyValue(coll => coll.Count)
             .Where(count => count == 12)
