@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using DynamicData;
 using DynamicData.Binding;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
+using StrawberryShake.Extensions;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
@@ -44,27 +46,28 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         
         var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
+        
+        // wait for the order to be updated
+        var tsc1 = new TaskCompletionSource<Unit>();
+        provider.SortableItems
+            .WhenAnyValue(coll => coll.Count)
+            .Where(count => count == 12)
+            .Distinct()
+            .Subscribe(_ =>
+            {
+                if (!tsc1.Task.IsCompleted)
+                {
+                    tsc1.SetResult(Unit.Default);
+                };
+            } );
+        await tsc1.Task;
+        
         var order = provider.SortableItems;
         var specificGroup = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
         
         await provider.SetRelativePosition(specificGroup, delta);
         
         loadout = loadout.Rebase();
-        // var unboundList = ((RedModSortableItemProvider)provider).GetRedModOrder();
-        // var boundList = ((RedModSortableItemProvider)provider).GetRedModOrder(loadout.Db);
-        //
-        // _testOutputHelper.WriteLine("Unbound:");
-        // foreach (var item in unboundList)
-        // {
-        //     _testOutputHelper.WriteLine(item);
-        // }
-        // _testOutputHelper.WriteLine("Bound:");
-        // foreach (var item in boundList)
-        // {
-        //     _testOutputHelper.WriteLine(item);
-        // }
-        //
-        // unboundList.Should().Equal(boundList);
 
         await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
     }
