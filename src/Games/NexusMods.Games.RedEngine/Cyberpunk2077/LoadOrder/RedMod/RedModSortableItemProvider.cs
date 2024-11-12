@@ -18,7 +18,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 {
     private readonly IConnection _connection;
 
-    private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.DisplayName);
+    private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
     private readonly SortOrderId _loadOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -64,8 +64,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                     return new RedModSortableItem(this,
                         sortableItem.SortIndex,
                         redModSortableItem.RedModFolderName,
-                        redModSortableItem.RedModFolderName,
-                        isActive: false // Will need to be updated when we load the RedMods
+                        // Temp values, will get updated when we load the RedMods
+                        modName: redModSortableItem.RedModFolderName, 
+                        isActive: false
                     );
                 }
             );
@@ -95,7 +96,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                     {
                         // TODO: determine the winning mod in case of multiple mods with the same name
                         var redModMatch = redModsGroups.FirstOrOptional(
-                            g => RedModFolder(g).ToString() == si.DisplayName
+                            g => RedModFolder(g) == si.RedModFolderName
                         );
 
                         if (!redModMatch.HasValue)
@@ -143,7 +144,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                         item.SortIndex = i;
 
                         // TODO: determine the winning mod in case of multiple mods with the same name, instead of just the first one
-                        if (!redModsGroups.TryGetFirst(g => RedModFolder(g).ToString() == item.DisplayName, out var redModMatch))
+                        if (!redModsGroups.TryGetFirst(g => RedModFolder(g) == item.RedModFolderName, out var redModMatch))
                         {
                             // shouldn't happen because any missing items should have been added
                             continue;
@@ -184,7 +185,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         foreach (var dbItem in persistentSortableItems)
         {
             var liveItem = orderList.FirstOrOptional(
-                i => i.DisplayName == dbItem.RedModFolderName
+                i => i.RedModFolderName == dbItem.RedModFolderName
             );
 
             if (!liveItem.HasValue)
@@ -205,7 +206,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         for (var i = 0; i < orderList.Count; i++)
         {
             var liveItem = orderList[i];
-            if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.DisplayName))
+            if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.RedModFolderName))
                 continue;
 
             var newDbItem = new SortableEntry.New(tx)
@@ -217,7 +218,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             _ = new RedModSortableEntry.New(tx, newDbItem)
             {
                 SortableEntry = newDbItem,
-                RedModFolderName = liveItem.DisplayName,
+                RedModFolderName = liveItem.RedModFolderName,
             };
         }
 
@@ -308,7 +309,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
             .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
             .OrderBy(si => si.AsSortableEntry().SortIndex)
-            .Select(si => si.RedModFolderName)
+            .Select(si => si.RedModFolderName.ToString())
             .ToList();
     }
 

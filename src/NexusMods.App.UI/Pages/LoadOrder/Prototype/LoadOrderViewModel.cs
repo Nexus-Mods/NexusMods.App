@@ -13,7 +13,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 {
     private readonly ReadOnlyObservableCollection<ISortableItemViewModel> _sortableItemViewModels;
     public ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems => _sortableItemViewModels;
-    public LoadOrderViewModel(IServiceProvider serviceProvider, LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
+    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
     {
         var provider = sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
 

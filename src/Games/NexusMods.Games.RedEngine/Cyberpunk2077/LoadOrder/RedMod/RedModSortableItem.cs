@@ -1,18 +1,22 @@
 using NexusMods.Abstractions.Games;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 
 public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
 {
-    public RedModSortableItem(RedModSortableItemProvider provider, int sortIndex, string displayName, string modName, bool isActive)
+    public RedModSortableItem(RedModSortableItemProvider provider, int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
     {
         SortableItemProvider = provider;
         SortIndex = sortIndex;
-        DisplayName = displayName;
+        RedModFolderName = redModFolderName;
+        DisplayName = redModFolderName.ToString();
         ModName = modName;
         IsActive = isActive;
     }
+    
+    public RelativePath RedModFolderName { get; set; }
 
     public ILoadoutSortableItemProvider SortableItemProvider { get; }
     public int SortIndex { get; set; }

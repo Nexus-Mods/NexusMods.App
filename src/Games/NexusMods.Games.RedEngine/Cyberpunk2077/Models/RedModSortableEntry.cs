@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games;
-using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;
@@ -14,6 +14,5 @@ public partial class RedModSortableEntry : IModelDefinition
     /// <summary>
     /// The identifier used by the game for the RedMod load order
     /// </summary>
-    public static readonly StringAttribute RedModFolderName = new(Namespace, nameof(RedModFolderName));
-    
+    public static readonly RelativePathAttribute RedModFolderName = new(Namespace, nameof(RedModFolderName));
 }
