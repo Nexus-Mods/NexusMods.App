@@ -231,11 +231,11 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
-        var loadOrder = RedModSortOrder.All(connection.Db)
+        var sortOrder = RedModSortOrder.All(connection.Db)
             .FirstOrOptional(lo => lo.AsSortOrder().LoadoutId == loadoutId);
 
-        if (loadOrder.HasValue)
-            return loadOrder.Value;
+        if (sortOrder.HasValue)
+            return sortOrder.Value;
 
         using var ts = connection.BeginTransaction();
         var newLoadOrder = new Abstractions.Loadouts.SortOrder.New(ts)
@@ -247,13 +247,12 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         var newRedModLoadOrder = new RedModSortOrder.New(ts, newLoadOrder.SortOrderId)
         {
             SortOrder = newLoadOrder,
-            Revision = 0,
         };
 
         var commitResult = await ts.Commit();
 
-        loadOrder = commitResult.Remap(newRedModLoadOrder);
-        return loadOrder.Value;
+        sortOrder = commitResult.Remap(newRedModLoadOrder);
+        return sortOrder.Value;
     }
 
     

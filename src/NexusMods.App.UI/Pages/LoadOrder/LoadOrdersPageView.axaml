@@ -7,6 +7,6 @@
                                 xmlns:prototype="clr-namespace:NexusMods.App.UI.Pages.LoadOrder.Prototype"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.LoadOrder.LoadOrdersPageView">
-    <prototype:LoadOrderView x:Name="LoadOrderView"/>
-</reactiveUi:ReactiveUserControl>
 
+    <prototype:LoadOrderView x:Name="LoadOrderView" />
+</reactiveUi:ReactiveUserControl>
