@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.DataModel.Migrations;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;

@@ -77,7 +77,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     {
         await using var tempFile = TemporaryFileManager.CreateFile();
         loadout = loadout.Rebase();
-        await _tool.WriteLoadorderFile(tempFile.Path, loadout);
+        await _tool.WriteLoadOrderFile(tempFile.Path, loadout);
         return await tempFile.Path.ReadAllTextAsync();
     }
 

@@ -6,12 +6,12 @@
                                 xmlns:prototype="clr-namespace:NexusMods.App.UI.Pages.LoadOrder.Prototype"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.Games"
+                                xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.LoadOrder.Prototype.LoadOrderView">
     <ItemsControl x:Name="ItemsList">
         <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="ui1:ISortableItemViewModel">
+            <DataTemplate DataType="games:ISortableItemViewModel">
                 <StackPanel Orientation="Horizontal">
                     <controls:StandardButton x:Name="UpButton" Command="{CompiledBinding MoveDown}" LeftIcon="{x:Static icons:IconValues.ArrowUp}" ShowIcon="Left" Text=""/>
                     <controls:StandardButton x:Name="DownButton" Command="{CompiledBinding MoveUp}" LeftIcon="{x:Static icons:IconValues.ArrowDown}" ShowIcon="Left" Text=""/>

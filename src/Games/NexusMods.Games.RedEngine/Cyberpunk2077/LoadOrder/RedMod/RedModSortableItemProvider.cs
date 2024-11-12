@@ -69,7 +69,6 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                     );
                 }
             );
-        // _orderList = new ObservableList<ISortableItem>(order);
         _orderCache.AddOrUpdate(order);
 
         _orderCache.Connect()
@@ -298,9 +297,16 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     public List<string> GetRedModOrder(IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
+        
+        var enabledRedMods = RedModLoadoutGroup.All(dbToUse)
+            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+            .Where(RedModIsEnabled)
+            .Select(g => RedModFolder(g).ToString())
+            .ToList();
+        
         return RedModSortableItemModel.All(dbToUse)
             .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
-            // TODO: only return enabled mods
+            .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
             .OrderBy(si => si.AsSortableItemModel().SortIndex)
             .Select(si => si.RedModFolderName)
             .ToList();

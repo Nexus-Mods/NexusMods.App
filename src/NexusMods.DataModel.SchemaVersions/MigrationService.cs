@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.MnemonicDB.Abstractions;
 
-namespace NexusMods.DataModel.Migrations;
+namespace NexusMods.DataModel.SchemaVersions;
 
 /// <summary>
 /// Updates the state of a database and provides hooks for migrating schemas

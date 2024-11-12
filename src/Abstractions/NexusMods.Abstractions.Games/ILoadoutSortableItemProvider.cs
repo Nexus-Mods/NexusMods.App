@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
-using ObservableCollections;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -19,9 +18,9 @@ public interface ILoadoutSortableItemProvider
     /// </summary>
     public LoadoutId LoadoutId { get; }
     
-    
-    // public ObservableList<ISortableItem> SortableItems { get; }
-    
+    /// <summary>
+    /// Observable collection of sorted sortable items in the load order
+    /// </summary>
     public ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
 
     /// <summary>
@@ -29,6 +28,5 @@ public interface ILoadoutSortableItemProvider
     /// </summary>
     /// <param name="sortableItem">item to move</param>
     /// <param name="delta">positive or negative index delta</param>
-    /// <returns></returns>
     Task SetRelativePosition(ISortableItem sortableItem, int delta);
 }

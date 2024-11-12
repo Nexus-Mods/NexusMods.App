@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.Generic;
+using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Paths;
 using R3;
@@ -21,12 +22,14 @@ public class RedModDeployTool : ITool
     private readonly GameToolRunner _toolRunner;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly ILogger _logger;
+    private readonly RedModSortableItemProviderFactory _sortableItemProviderFactory;
 
-    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger, IServiceProvider serviceProvider)
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger, RedModSortableItemProviderFactory sortableItemProviderFactory)
     {
         _logger = logger;
         _toolRunner = toolRunner;
         _temporaryFileManager = temporaryFileManager;
+        _sortableItemProviderFactory = sortableItemProviderFactory;
     }
     
     public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
@@ -37,7 +40,7 @@ public class RedModDeployTool : ITool
         var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
 
         await using var loadorderFile = _temporaryFileManager.CreateFile();
-        await WriteLoadorderFile(loadorderFile.Path, loadout);
+        await WriteLoadOrderFile(loadorderFile.Path, loadout);
         
         // RedMod deploys to this folder and freaks out if it doesn't exist, but our synchronizer will
         // delete it if it's empty, so we need to recreate it here.
@@ -66,56 +69,13 @@ public class RedModDeployTool : ITool
         }
     }
 
-    internal async Task WriteLoadorderFile(AbsolutePath loadorderFilePath, Loadout.ReadOnly loadout)
+    internal async Task WriteLoadOrderFile(AbsolutePath loadorderFilePath, Loadout.ReadOnly loadout)
     {
-        // The process is as follows:
-        // 1. Get all redModSortable items for the loadouts
-        // 2. Remove all remods that are not enabled (or parent is disabled)
-        // 3. Sort by the sort index
-        // 4. Write the redmod folder names to the loadorder file using
-        
-        var db = loadout.Db;
+        var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
+        // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
+        var order = provider.GetRedModOrder(loadout.Db);
 
-        var loadOrder = RedModLoadOrder.All(db)
-            .FirstOrOptional(g => g.AsLoadOrder().LoadoutId == loadout.LoadoutId);
-
-        if (!loadOrder.HasValue)
-        {
-            // Write an empty file
-            await loadorderFilePath.WriteAllLinesAsync([""]);
-            return;
-        }
-        
-        var redMods = RedModLoadoutGroup.All(db)
-            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
-            .Where(RedModIsEnabled)
-            .Select(g => RedModFolder(g).Name.ToString());
-
-        var order = RedModSortableItemModel.All(db)
-            // Get all sortable items
-            .Where(g => g.AsSortableItemModel().ParentLoadOrder.LoadOrderId == loadOrder.Value.AsLoadOrder().LoadOrderId)
-            // Only want the enabled redmods
-            .Where(g => redMods.FirstOrOptional(m => m == g.RedModFolderName).HasValue)
-            // Order by sort index
-            .OrderBy(g => g.AsSortableItemModel().SortIndex)
-            // Get the folder filename, so `My Mod` instead of `mod\My Mod\info.json`
-            .Select(g => g.RedModFolderName);
-        
         await loadorderFilePath.WriteAllLinesAsync(order);
-    }
-
-    internal static RelativePath RedModFolder(RedModLoadoutGroup.ReadOnly group)
-    {
-        var redModInfoFile = group.RedModInfoFile.AsLoadoutFile().AsLoadoutItemWithTargetPath().TargetPath.Item3;
-        return redModInfoFile.Parent.FileName;
-    }
-
-    /// <summary>
-    /// Returns true if the file and all its parents are not disabled.
-    /// </summary>
-    private static bool RedModIsEnabled(RedModLoadoutGroup.ReadOnly grp)
-    {
-        return !grp.AsLoadoutItemGroup().AsLoadoutItem().GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
     }
 
     public string Name => "RedMod Deploy";
