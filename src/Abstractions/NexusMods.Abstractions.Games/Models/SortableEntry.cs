@@ -14,9 +14,9 @@ namespace NexusMods.Abstractions.Games;
 /// E.g. the plugin name for Skyrim plugins, or the module uuid for BG3 pak files.
 /// </summary>
 [PublicAPI]
-public partial class SortableItemModel : IModelDefinition
+public partial class SortableEntry : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Loadouts.SortableItemModel";
+    private const string Namespace = "NexusMods.Loadouts.SortableEntry";
     
     /// <summary>
     /// Reference to the Load Order that this item is part of.

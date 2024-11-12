@@ -6,10 +6,10 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 
 [PublicAPI]
-[Include<SortableItemModel>]
-public partial class RedModSortableItemModel : IModelDefinition
+[Include<SortableEntry>]
+public partial class RedModSortableEntry : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortableItemModel";
+    private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortableEntry";
     
     /// <summary>
     /// The identifier used by the game for the RedMod load order

@@ -55,12 +55,12 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _loadOrderId = loadOrder.AsSortOrder().SortOrderId;
 
         // load the previously saved order
-        var order = RedModSortableItemModel.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
-            .OrderBy(si => si.AsSortableItemModel().SortIndex)
+        var order = RedModSortableEntry.All(_connection.Db)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
+            .OrderBy(si => si.AsSortableEntry().SortIndex)
             .Select(redModSortableItem =>
                 {
-                    var sortableItem = redModSortableItem.AsSortableItemModel();
+                    var sortableItem = redModSortableItem.AsSortableEntry();
                     return new RedModSortableItem(this,
                         sortableItem.SortIndex,
                         redModSortableItem.RedModFolderName,
@@ -173,9 +173,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     private async Task PersistOrder(List<RedModSortableItem> orderList)
     {
         await _semaphore.WaitAsync();
-        var persistentSortableItems = RedModSortableItemModel.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
-            .OrderBy(si => si.AsSortableItemModel().SortIndex)
+        var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
+            .OrderBy(si => si.AsSortableEntry().SortIndex)
             .ToArray();
 
         using var tx = _connection.BeginTransaction();
@@ -195,9 +195,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
             var liveIdx = orderList.IndexOf(liveItem.Value);
 
-            if (dbItem.AsSortableItemModel().SortIndex != liveIdx)
+            if (dbItem.AsSortableEntry().SortIndex != liveIdx)
             {
-                tx.Add(dbItem, SortableItemModel.SortIndex, liveIdx);
+                tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
             }
         }
 
@@ -208,15 +208,15 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.DisplayName))
                 continue;
 
-            var newDbItem = new SortableItemModel.New(tx)
+            var newDbItem = new SortableEntry.New(tx)
             {
                 ParentLoadOrderId = _loadOrderId,
                 SortIndex = i,
             };
 
-            _ = new RedModSortableItemModel.New(tx, newDbItem)
+            _ = new RedModSortableEntry.New(tx, newDbItem)
             {
-                SortableItemModel = newDbItem,
+                SortableEntry = newDbItem,
                 RedModFolderName = liveItem.DisplayName,
             };
         }
@@ -304,10 +304,10 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .Select(g => RedModFolder(g).ToString())
             .ToList();
         
-        return RedModSortableItemModel.All(dbToUse)
-            .Where(si => si.IsValid() && si.AsSortableItemModel().ParentLoadOrderId == _loadOrderId)
+        return RedModSortableEntry.All(dbToUse)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
             .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
-            .OrderBy(si => si.AsSortableItemModel().SortIndex)
+            .OrderBy(si => si.AsSortableEntry().SortIndex)
             .Select(si => si.RedModFolderName)
             .ToList();
     }
