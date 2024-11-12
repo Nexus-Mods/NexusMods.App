@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
-using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
+using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using R3;

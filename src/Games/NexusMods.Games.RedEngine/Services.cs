@@ -3,8 +3,8 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
-using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
+using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 namespace NexusMods.Games.RedEngine;
 

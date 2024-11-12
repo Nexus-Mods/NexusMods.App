@@ -17,5 +17,5 @@ public interface ISortableItemProviderFactory
     /// <summary>
     /// Returns id of the type of the loadout
     /// </summary>
-    Guid StaticLoadOrderTypeId { get; }
+    Guid StaticSortOrderTypeId { get; }
 }

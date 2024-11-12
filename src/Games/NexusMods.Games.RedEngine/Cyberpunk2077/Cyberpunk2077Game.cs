@@ -14,7 +14,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
-using NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
+using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

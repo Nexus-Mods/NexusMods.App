@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Represents a sorting of some sortable items in this Loadout.
-/// A Game (and subsequently a Loadout) can have multiple LoadOrders of different types of sortable items.
+/// A Game (and subsequently a Loadout) can have multiple SortOrders of different types of sortable items.
 /// </summary>
 [PublicAPI]
 public partial class SortOrder : IModelDefinition
@@ -23,9 +23,9 @@ public partial class SortOrder : IModelDefinition
     };
     
     /// <summary>
-    /// Static Guid id of this load order type, to distinguish it from other load orders types used by the game.
-    /// E.g. RedMod Load Order and .archive Load Order will have two different LoadOrderTypeIds. 
+    /// Static Guid id of this sort order type, to distinguish it from other sort orders types used by the game.
+    /// E.g. RedMod Load Order and .archive load order will have two different SortOrderTypeIds. 
     /// </summary>
-    public static readonly GuidAttribute LoadOrderTypeId = new(Namespace, nameof(LoadOrderTypeId));
+    public static readonly GuidAttribute SortOrderTypeId = new(Namespace, nameof(SortOrderTypeId));
     
 }

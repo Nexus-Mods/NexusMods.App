@@ -9,10 +9,9 @@ using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using ObservableCollections;
 using R3;
 
-namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
+namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposable
 {
@@ -20,7 +19,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
-    private readonly SortOrderId _loadOrderId;
+    private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
 
@@ -35,10 +34,10 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
-        var loadOrder = await GetOrAddLoadOrderModel(connection, loadoutId, parentFactory);
+        var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
         return new RedModSortableItemProvider(connection,
             loadoutId,
-            loadOrder,
+            sortOrderModel,
             parentFactory
         );
     }
@@ -46,17 +45,17 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     private RedModSortableItemProvider(
         IConnection connection,
         LoadoutId loadoutId,
-        RedModSortOrder.ReadOnly loadOrder,
+        RedModSortOrder.ReadOnly sortOrderModel,
         ISortableItemProviderFactory parentFactory)
     {
         _connection = connection;
         LoadoutId = loadoutId;
         ParentFactory = parentFactory;
-        _loadOrderId = loadOrder.AsSortOrder().SortOrderId;
+        _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
         var order = RedModSortableEntry.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
             .OrderBy(si => si.AsSortableEntry().SortIndex)
             .Select(redModSortableItem =>
                 {
@@ -175,7 +174,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     {
         await _semaphore.WaitAsync();
         var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
             .OrderBy(si => si.AsSortableEntry().SortIndex)
             .ToArray();
 
@@ -211,7 +210,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
             var newDbItem = new SortableEntry.New(tx)
             {
-                ParentLoadOrderId = _loadOrderId,
+                ParentSortOrderId = _sortOrderId,
                 SortIndex = i,
             };
 
@@ -226,7 +225,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _semaphore.Release();
     }
 
-    private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddLoadOrderModel(
+    private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddSortOrderModel(
         IConnection connection,
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
@@ -238,20 +237,20 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             return sortOrder.Value;
 
         using var ts = connection.BeginTransaction();
-        var newLoadOrder = new Abstractions.Loadouts.SortOrder.New(ts)
+        var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
-            LoadOrderTypeId = parentFactory.StaticLoadOrderTypeId,
+            SortOrderTypeId = parentFactory.StaticSortOrderTypeId,
         };
 
-        var newRedModLoadOrder = new RedModSortOrder.New(ts, newLoadOrder.SortOrderId)
+        var newRedModSortOrder = new RedModSortOrder.New(ts, newSortOrder.SortOrderId)
         {
-            SortOrder = newLoadOrder,
+            SortOrder = newSortOrder,
         };
 
         var commitResult = await ts.Commit();
 
-        sortOrder = commitResult.Remap(newRedModLoadOrder);
+        sortOrder = commitResult.Remap(newRedModSortOrder);
         return sortOrder.Value;
     }
 
@@ -305,7 +304,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .ToList();
         
         return RedModSortableEntry.All(dbToUse)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentLoadOrderId == _loadOrderId)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
             .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
             .OrderBy(si => si.AsSortableEntry().SortIndex)
             .Select(si => si.RedModFolderName.ToString())

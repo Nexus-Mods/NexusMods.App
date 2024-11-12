@@ -1,19 +1,18 @@
 using System.Diagnostics;
 using DynamicData;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 
-namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
+namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 {
     private readonly IConnection _connection;
     private readonly Dictionary<LoadoutId, RedModSortableItemProvider> _providers = new();
 
-    public Guid StaticLoadOrderTypeId { get; } = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
+    public Guid StaticSortOrderTypeId { get; } = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
 
     public RedModSortableItemProviderFactory(IConnection connection)
     {

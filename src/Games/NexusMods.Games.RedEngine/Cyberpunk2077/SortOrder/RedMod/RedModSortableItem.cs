@@ -1,8 +1,7 @@
 using NexusMods.Abstractions.Games;
-using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.RedEngine.Cyberpunk2077.LoadOrder;
+namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
 {

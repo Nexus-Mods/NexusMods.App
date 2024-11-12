@@ -30,10 +30,10 @@ public interface ISortableItem : IComparable<ISortableItem>
     public string ModName { get; set; }
     
     /// <summary>
-    /// Represents whether the item is active in the load order or not
-    /// An item is considered active if it is part of the load order and will be loaded by the game
+    /// Represents whether the item is active in the sort order or not
+    /// An item is considered active if it is part of the sort order and will be loaded by the game
     /// An item is considered inactive if it is for some reason not going to be loaded by the game,
-    /// e.g. it is disabled in the load order, or parent mod is disabled.
+    /// e.g. it is disabled in the sort order, or parent mod is disabled.
     /// </summary>
     public bool IsActive { get; set; }
     

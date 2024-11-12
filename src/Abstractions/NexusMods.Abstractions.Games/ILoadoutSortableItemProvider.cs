@@ -19,12 +19,12 @@ public interface ILoadoutSortableItemProvider
     public LoadoutId LoadoutId { get; }
     
     /// <summary>
-    /// Observable collection of sorted sortable items in the load order
+    /// Observable collection of sorted sortable items in the sort order
     /// </summary>
     public ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
 
     /// <summary>
-    /// Sets the relative position of a sortable item in the load order
+    /// Sets the relative position of a sortable item in the sort order
     /// </summary>
     /// <param name="sortableItem">item to move</param>
     /// <param name="delta">positive or negative index delta</param>
