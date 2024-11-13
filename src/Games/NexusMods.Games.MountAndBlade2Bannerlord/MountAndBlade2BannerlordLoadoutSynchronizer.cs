@@ -7,7 +7,6 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
