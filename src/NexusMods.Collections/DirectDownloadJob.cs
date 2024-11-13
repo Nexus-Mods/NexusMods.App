@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;

@@ -2,23 +2,36 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 
-namespace NexusMods.Abstractions.Collections.Types;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes;
+
+/// <summary>
+/// An attribute representing an MD5 hash value.
+/// </summary>
+public class Md5Attribute(string ns, string name) : ScalarAttribute<Md5HashValue, UInt128, UInt128Serializer>(ns, name)
+{
+    /// <inheritdoc />
+    protected override UInt128 ToLowLevel(Md5HashValue value) => value.Value;
+
+    /// <inheritdoc />
+    protected override Md5HashValue FromLowLevel(UInt128 value, AttributeResolver resolver) => Md5HashValue.From(value);
+}
 
 /// <summary>
 /// A value object representing an MD5 hash.
 /// </summary>
-[JsonConverter(typeof(MD5HashValueConverter))]
+[JsonConverter(typeof(Md5HashValueConverter))]
 [ValueObject<UInt128>]
 public readonly partial struct Md5HashValue
 {
-
     /// <summary>
     /// Parse this from a hexadecimal string.
     /// </summary>
     public static Md5HashValue Parse(string value) => From(UInt128.Parse(value, NumberStyles.HexNumber));
-
 
     /// <summary>
     /// Make a MD5 hash from a byte array.
@@ -27,12 +40,11 @@ public readonly partial struct Md5HashValue
     {
         if (bytes.Length != 16)
             throw new ArgumentException("MD5 hash must be 16 bytes long.", nameof(bytes));
-        
+
         if (BitConverter.IsLittleEndian)
             Array.Reverse(bytes);
         return From(MemoryMarshal.Read<UInt128>(bytes));
     }
-
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString("x8");
@@ -42,7 +54,7 @@ public readonly partial struct Md5HashValue
 /// <summary>
 /// JSON converter for <see cref="Md5HashValue"/>.
 /// </summary>
-internal class MD5HashValueConverter : JsonConverter<Md5HashValue>
+internal class Md5HashValueConverter : JsonConverter<Md5HashValue>
 {
     public override Md5HashValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

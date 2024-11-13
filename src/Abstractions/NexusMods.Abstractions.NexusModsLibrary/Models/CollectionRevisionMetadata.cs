@@ -32,15 +32,10 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// All the mod files in this revision.
     /// </summary>
-    public static readonly BackReferenceAttribute<CollectionRevisionModFile> Files = new(CollectionRevisionModFile.CollectionRevision);
-    
+    public static readonly BackReferenceAttribute<CollectionDownload> Downloads = new(CollectionDownload.CollectionRevision);
+
     /// <summary>
-    /// The number of downloads this revision has.
-    /// </summary>
-    public static readonly ULongAttribute Downloads = new(Namespace, nameof(Downloads));
-    
-    /// <summary>
-    /// Total download size of all files in this revision, including the size of the revision's files.
+    /// Total download size according to external sources.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
 

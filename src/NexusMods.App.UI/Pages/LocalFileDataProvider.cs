@@ -128,7 +128,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Transform(item => item.GetCreatedAt())
                     .QueryWhenChanged(query =>
                     {
-                        if (query.Count == 0) return default(DateTime);
+                        if (query.Count == 0) return DateTimeOffset.MinValue;
                         return query.Items.Max();
                     });
 
