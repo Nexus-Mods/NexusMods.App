@@ -424,10 +424,10 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
                     .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
             
                 sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
-                sb.AppendLine("| Path | Hash | Size | TxId |");
-                sb.AppendLine("| --- | --- | --- | --- |");
+                sb.AppendLine("| Path | Hash | Size |");
+                sb.AppendLine("| --- | --- | --- |");
                 foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
-                    sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+                    sb.AppendLine($"| {FmtPath(entry.AsLoadoutItemWithTargetPath().TargetPath)} | {entry.Hash} | {entry.Size} |");
             }
         }
         
@@ -436,11 +436,16 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
             var entries = metadata.DiskStateAsOf(asOf);
-            sb.AppendLine($"{sectionName} - ({entries.Count}) - {TxId.From(asOf.Id.Value)}");
-            sb.AppendLine("| Path | Hash | Size | TxId |");
-            sb.AppendLine("| --- | --- | --- | --- |");
+            sb.AppendLine($"{sectionName} - ({entries.Count})");
+            sb.AppendLine("| Path | Hash | Size |");
+            sb.AppendLine("| --- | --- | --- |");
             foreach (var entry in entries.OrderBy(e=> e.Path)) 
-                sb.AppendLine($"| {entry.Path} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+                sb.AppendLine($"| {FmtPath(entry.Path)} | {entry.Hash} | {entry.Size} |");
+        }
+        
+        static string FmtPath((EntityId entityId, LocationId locationId, RelativePath relativePath) targetPath)
+        {
+            return $"{{{targetPath.locationId}, {targetPath.relativePath}}}";
         }
     }
 
