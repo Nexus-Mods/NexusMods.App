@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
@@ -36,6 +37,7 @@ public class Startup
             .AddLibrary()
             .AddLibraryModels()
             .AddFileExtractors()
+            .AddSerializationAbstractions()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
