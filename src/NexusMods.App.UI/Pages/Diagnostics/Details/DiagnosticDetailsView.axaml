@@ -13,30 +13,35 @@
     <Design.DataContext>
         <diagnostics:DiagnosticDetailsDesignViewModel />
     </Design.DataContext>
-    
+
     <!-- NOTE(insomnious): if we need any more styling than this, we should move it to a separate style file -->
-    <Border Padding="24" MaxWidth="1000">
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Stretch"
-                    Classes="Spacing-3">
-            
-            <StackPanel x:Name="TitleLineStackPanel"
-                        Orientation="Horizontal"
-                        Classes="Spacing-1">
-                
-                <icons:UnifiedIcon x:Name="SeverityIcon"
-                                         Size="20"
-                                         VerticalAlignment="Center"/>
-                
-                <TextBlock x:Name="SeverityTitleTextBlock"
-                           Classes="TitleSMSemi" 
-                           VerticalAlignment="Center" />
+
+    <ScrollViewer>
+        <Border Padding="24" MaxWidth="1000">
+
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Stretch"
+                        Spacing="{StaticResource Spacing-3}">
+
+                <StackPanel x:Name="TitleLineStackPanel"
+                            Orientation="Horizontal"
+                            Spacing="{StaticResource Spacing-1}">
+
+                    <icons:UnifiedIcon x:Name="SeverityIcon"
+                                       Size="20"
+                                       VerticalAlignment="Center" />
+
+                    <TextBlock x:Name="SeverityTitleTextBlock"
+                               Theme="{StaticResource TitleSMSemiTheme}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Border x:Name="HorizontalLine" Height="1" />
+
+                <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
             </StackPanel>
 
-            <Border x:Name="HorizontalLine" Height="1" />
-
-            <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost"/>
-        </StackPanel>
-    </Border>
+        </Border>
+    </ScrollViewer>
 
 </reactiveUi:ReactiveUserControl>
