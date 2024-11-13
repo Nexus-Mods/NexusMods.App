@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xB7C3D4E5188271EA
-   - Total attributes: 129
-   - Total namespaces: 51
+   - Fingerprint: 0x3EEC865F2AF5AD44
+   - Total attributes: 135
+   - Total namespaces: 55
    
 ## Attributes
 | AttributeId                                                                                            | Type                    | Indexed | Many  | NoHistory | 
@@ -54,6 +54,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Name                                            | Utf8                    | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Version                                         | Utf8                    | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                              | Reference               | False   | False | False     | 
+| NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortOrder/Marker                                         | Null                    | False   | False | False     | 
+| NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortableEntry/RedModFolderName                           | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Library.CollectionRevisionModFile/CollectionRevision                                         | Reference               | False   | False | False     | 
 | NexusMods.Library.CollectionRevisionModFile/FileId                                                     | UInt64                  | True    | False | False     | 
 | NexusMods.Library.CollectionRevisionModFile/IsOptional                                                 | UInt8                   | False   | False | False     | 
@@ -111,6 +113,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.LoadoutItemGroup/Group                                                              | Null                    | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutItemWithTargetPath/TargetPath                                                | Tuple3_Ref_UShort_Utf8I | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutOverridesGroup/OverridesFor                                                  | Reference               | False   | False | False     | 
+| NexusMods.Loadouts.SortOrder/Loadout                                                                   | Reference               | True    | False | False     | 
+| NexusMods.Loadouts.SortOrder/SortOrderTypeId                                                           | UInt128                 | False   | False | False     | 
+| NexusMods.Loadouts.SortableEntry/ParentSortOrder                                                       | Reference               | True    | False | False     | 
+| NexusMods.Loadouts.SortableEntry/SortIndex                                                             | Int32                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                                            | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                                          | Utf8                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Indexed                                                                | Null                    | False   | False | False     | 
