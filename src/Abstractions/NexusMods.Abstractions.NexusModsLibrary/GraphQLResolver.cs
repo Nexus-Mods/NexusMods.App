@@ -75,7 +75,7 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
             if (datom.ObjectValue.Equals(value))
                 return;
         }
-        
+
         // Else add the value
         Tx.Add(Model.Id, attribute, value);
     }
