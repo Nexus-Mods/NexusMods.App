@@ -10,7 +10,7 @@ using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
-using SMAPIManifest = NexusMods.Games.StardewValley.SMAPI.Toolkit.Models.Manifest;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 

@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
-using NexusMods.Games.StardewValley.SMAPI.Toolkit.Models;
+using StardewModdingAPI.Toolkit.Serialization.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 

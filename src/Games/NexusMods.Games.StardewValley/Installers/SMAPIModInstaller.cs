@@ -9,7 +9,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
-using SMAPIManifest = NexusMods.Games.StardewValley.SMAPI.Toolkit.Models.Manifest;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Installers;
 

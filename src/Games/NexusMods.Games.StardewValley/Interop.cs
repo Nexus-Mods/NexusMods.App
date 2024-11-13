@@ -1,10 +1,9 @@
 using System.Text;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Games.StardewValley.Models;
-using NexusMods.Games.StardewValley.SMAPI.Toolkit;
-using NexusMods.Games.StardewValley.SMAPI.Toolkit.ModData;
-using NexusMods.Games.StardewValley.SMAPI.Toolkit.Models;
+using StardewModdingAPI.Toolkit.Framework.ModData;
+using StardewModdingAPI.Toolkit.Serialization;
+using StardewModdingAPI.Toolkit.Serialization.Models;
 
 namespace NexusMods.Games.StardewValley;
 
