@@ -19,6 +19,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
+    private readonly ReadOnlyObservableCollection<RedModLoadoutGroup.ReadOnly> _redModsGroups;
     private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
@@ -54,21 +55,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
-        var order = RedModSortableEntry.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
-            .OrderBy(si => si.AsSortableEntry().SortIndex)
-            .Select(redModSortableItem =>
-                {
-                    var sortableItem = redModSortableItem.AsSortableEntry();
-                    return new RedModSortableItem(this,
-                        sortableItem.SortIndex,
-                        redModSortableItem.RedModFolderName,
-                        // Temp values, will get updated when we load the RedMods
-                        modName: redModSortableItem.RedModFolderName, 
-                        isActive: false
-                    );
-                }
-            );
+        var order = RetrieveSortOrder();
         _orderCache.AddOrUpdate(order);
 
         _orderCache.Connect()
@@ -83,96 +70,222 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         RedModLoadoutGroup.ObserveAll(_connection)
             .Filter(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
             .SortBy(g => RedModFolder(g).ToString())
-            .Bind(out var redModsGroups)
+            .Bind(out _redModsGroups)
             .ToObservable()
-            .SubscribeAwait(async (changes, _) =>
-                {
-                    var redModsToAdd = new List<RedModLoadoutGroup.ReadOnly>();
-                    var sortableItemsToRemove = new List<RedModSortableItem>();
-
-                    // Find items to remove
-                    foreach (var si in _orderCache.Items)
-                    {
-                        // TODO: determine the winning mod in case of multiple mods with the same name
-                        var redModMatch = redModsGroups.FirstOrOptional(
-                            g => RedModFolder(g) == si.RedModFolderName
-                        );
-
-                        if (!redModMatch.HasValue)
-                        {
-                            sortableItemsToRemove.Add(si);
-                        }
-                    }
-
-                    // Find items to add
-                    foreach (var redMod in redModsGroups)
-                    {
-                        var redModFolder = RedModFolder(redMod);
-
-                        var sortableItem = _orderCache.Lookup(redModFolder);
-
-                        if (!sortableItem.HasValue)
-                        {
-                            redModsToAdd.Add(redMod);
-                        }
-                    }
-
-                    // Get a staging list of the items to make changes to
-                    var stagingList = _orderCache.Items
-                        .OrderBy(item => item.SortIndex)
-                        .ToList();
-
-                    stagingList.Remove(sortableItemsToRemove);
-
-                    // New items should win over existing ones,
-                    // for RedMods this means they should be added at the beginning of the order.
-                    stagingList.InsertRange(0,
-                        redModsToAdd.Select((redMod, idx) =>
-                            new RedModSortableItem(this,
-                                idx,
-                                RedModFolder(redMod).ToString(),
-                                redMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                                isActive: RedModIsEnabled(redMod)
-                            )
-                        )
-                    );
-
-                    for (var i = 0; i < stagingList.Count; i++)
-                    {
-                        var item = stagingList[i];
-                        item.SortIndex = i;
-
-                        // TODO: determine the winning mod in case of multiple mods with the same name, instead of just the first one
-                        if (!redModsGroups.TryGetFirst(g => RedModFolder(g) == item.RedModFolderName, out var redModMatch))
-                        {
-                            // shouldn't happen because any missing items should have been added
-                            continue;
-                        }
-
-                        item.IsActive = RedModIsEnabled(redModMatch);
-                        item.ModName = redModMatch.AsLoadoutItemGroup().AsLoadoutItem().Name;
-                    }
-                    
-                    // Update the database
-                    await PersistOrder(stagingList);
-                    
-                    // Update the cache
-                    _orderCache.Edit(innerCache =>
-                        {
-                            innerCache.Clear();
-                            innerCache.AddOrUpdate(stagingList);
-                        }
-                    );
-                },
+            .SubscribeAwait(
+                async (changes, _) => { await UpdateOrderCache(); },
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
     }
 
 
-    private async Task PersistOrder(List<RedModSortableItem> orderList)
+    public async Task SetRelativePosition(ISortableItem sortableItem, int delta)
     {
         await _semaphore.WaitAsync();
+        try
+        {
+            var redModSortableItem = (RedModSortableItem)sortableItem;
+            // Get a stagingList of the items in the order
+            var stagingList = _orderCache.Items
+                .OrderBy(item => item.SortIndex)
+                .ToList();
+
+            // Get the current index of the item relative to the full list
+            var currentIndex = stagingList.IndexOf(sortableItem);
+
+            // Get the new index of the group relative to the full list
+            var newIndex = currentIndex + delta;
+
+            // Ensure the new index is within the bounds of the list
+            if (newIndex < 0 || newIndex >= stagingList.Count)
+                return;
+
+            // Move the item in the list
+            stagingList.RemoveAt(currentIndex);
+            stagingList.Insert(newIndex, redModSortableItem);
+
+            // Update the sort index of all items
+            for (var i = 0; i < stagingList.Count; i++)
+            {
+                stagingList[i].SortIndex = i;
+            }
+
+            await PersistOrder(stagingList);
+
+            _orderCache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(stagingList);
+                }
+            );
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Returns the list of RedMod folder names, sorted by the load order, that are enabled in the loadout
+    /// </summary>
+    /// <param name="db">
+    /// If provided, the method will attempt to retrieve both the RedMods and the sorting data from the specified database snapshot.
+    /// If not provided, the method will use the latest available data in the database.
+    /// In both cases, the method will perform the normal synchronization of the sorting to the available RedMods,
+    /// but the order might not be the most up to date regardless.
+    /// </param>
+    public List<string> GetRedModOrder(IDb? db = null)
+    {
+        var dbToUse = db ?? _connection.Db;
+
+        var redMods = RedModLoadoutGroup.All(dbToUse)
+            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+            .ToList();
+
+        var enabledRedMods = redMods
+            .Where(RedModIsEnabled)
+            .Select(RedModFolder)
+            .ToList();
+
+        // Retrieves the order from the database using the passed db
+        // NOTE: depending on the db passed, the order might not be the latest
+        var sortOrder = RetrieveSortOrder(dbToUse);
+
+        // Sanitize the order, applying it to the redMods in questions
+        var validatedOrder = SynchronizeSortingToItems(redMods, sortOrder, this);
+
+        return validatedOrder
+            .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
+            .Select(si => si.RedModFolderName.ToString())
+            .ToList();
+    }
+
+    private async Task UpdateOrderCache()
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var redModsGroups = _redModsGroups.ToList();
+            var oldOrder = _orderCache.Items.OrderBy(item => item.SortIndex);
+
+            // Update the order
+            var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder.ToList(), this);
+
+            // Update the database
+            await PersistOrder(stagingList);
+
+            // Update the cache
+            _orderCache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(stagingList);
+                }
+            );
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    private List<RedModSortableItem> RetrieveSortOrder(IDb? db = null)
+    {
+        var dbToUse = db ?? _connection.Db;
+
+        return RedModSortableEntry.All(dbToUse)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
+            .OrderBy(si => si.AsSortableEntry().SortIndex)
+            .Select(redModSortableItem =>
+                {
+                    var sortableItem = redModSortableItem.AsSortableEntry();
+                    return new RedModSortableItem(this,
+                        sortableItem.SortIndex,
+                        redModSortableItem.RedModFolderName,
+                        // Temp values, will get updated when we load the RedMods
+                        modName: redModSortableItem.RedModFolderName,
+                        isActive: false
+                    );
+                }
+            )
+            .ToList();
+    }
+
+    private static List<RedModSortableItem> SynchronizeSortingToItems(IList<RedModLoadoutGroup.ReadOnly> redModsGroups, List<RedModSortableItem> orderList, RedModSortableItemProvider provider)
+    {
+        var redModsToAdd = new List<RedModLoadoutGroup.ReadOnly>();
+        var sortableItemsToRemove = new List<RedModSortableItem>();
+
+        // Find items to remove
+        foreach (var si in orderList)
+        {
+            // TODO: determine the winning mod in case of multiple mods with the same name
+            var redModMatch = redModsGroups.FirstOrOptional(
+                g => RedModFolder(g) == si.RedModFolderName
+            );
+
+            if (!redModMatch.HasValue)
+            {
+                sortableItemsToRemove.Add(si);
+            }
+        }
+
+        // Find items to add
+        foreach (var redMod in redModsGroups)
+        {
+            var redModFolder = RedModFolder(redMod);
+
+            var sortableItem = orderList.FirstOrOptional(item => item.RedModFolderName == redModFolder);
+
+            if (!sortableItem.HasValue)
+            {
+                redModsToAdd.Add(redMod);
+            }
+        }
+
+        // Get a staging list of the items to make changes to
+        var stagingList = orderList
+            .OrderBy(item => item.SortIndex)
+            .ToList();
+
+        stagingList.Remove(sortableItemsToRemove);
+
+        // New items should win over existing ones,
+        // for RedMods this means they should be added at the beginning of the order.
+        stagingList.InsertRange(0,
+            redModsToAdd.Select((redMod, idx) =>
+                new RedModSortableItem(provider,
+                    idx,
+                    RedModFolder(redMod).ToString(),
+                    redMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    isActive: RedModIsEnabled(redMod)
+                )
+            )
+        );
+
+        for (var i = 0; i < stagingList.Count; i++)
+        {
+            var item = stagingList[i];
+            item.SortIndex = i;
+
+            // TODO: determine the winning mod in case of multiple mods with the same name, instead of just the first one
+            if (!redModsGroups.TryGetFirst(g => RedModFolder(g) == item.RedModFolderName, out var redModMatch))
+            {
+                // shouldn't happen because any missing items should have been added
+                continue;
+            }
+
+            item.IsActive = RedModIsEnabled(redModMatch);
+            item.ModName = redModMatch.AsLoadoutItemGroup().AsLoadoutItem().Name;
+        }
+
+
+        return stagingList;
+    }
+
+
+    private async Task PersistOrder(List<RedModSortableItem> orderList)
+    {
         var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
             .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
             .OrderBy(si => si.AsSortableEntry().SortIndex)
@@ -222,7 +335,6 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         }
 
         await tx.Commit();
-        _semaphore.Release();
     }
 
     private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddSortOrderModel(
@@ -252,63 +364,6 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
         sortOrder = commitResult.Remap(newRedModSortOrder);
         return sortOrder.Value;
-    }
-
-    
-    public async Task SetRelativePosition(ISortableItem sortableItem, int delta)
-    {
-        var redModSortableItem = (RedModSortableItem)sortableItem;
-        // Get a stagingList of the items in the order
-        var stagingList = _orderCache.Items
-            .OrderBy(item => item.SortIndex)
-            .ToList();
-        
-        // Get the current index of the item relative to the full list
-        var currentIndex = stagingList.IndexOf(sortableItem);
-
-        // Get the new index of the group relative to the full list
-        var newIndex = currentIndex + delta;
-
-        // Ensure the new index is within the bounds of the list
-        if (newIndex < 0 || newIndex >= stagingList.Count)
-            return;
-
-        // Move the item in the list
-        stagingList.RemoveAt(currentIndex);
-        stagingList.Insert(newIndex, redModSortableItem);
-
-        // Update the sort index of all items
-        for (var i = 0; i < stagingList.Count; i++)
-        {
-            stagingList[i].SortIndex = i;
-        }
-        
-        await PersistOrder(stagingList);
-        
-        _orderCache.Edit(innerCache =>
-            {
-                innerCache.Clear();
-                innerCache.AddOrUpdate(stagingList);
-            }
-        );
-    }
-
-    public List<string> GetRedModOrder(IDb? db = null)
-    {
-        var dbToUse = db ?? _connection.Db;
-        
-        var enabledRedMods = RedModLoadoutGroup.All(dbToUse)
-            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
-            .Where(RedModIsEnabled)
-            .Select(g => RedModFolder(g).ToString())
-            .ToList();
-        
-        return RedModSortableEntry.All(dbToUse)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
-            .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
-            .OrderBy(si => si.AsSortableEntry().SortIndex)
-            .Select(si => si.RedModFolderName.ToString())
-            .ToList();
     }
 
 
