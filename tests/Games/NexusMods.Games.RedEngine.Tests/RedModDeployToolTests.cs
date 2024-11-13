@@ -91,10 +91,15 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var loadout = await CreateLoadout();
         var files = new[] { "one_mod.7z", "several_red_mods.7z" };
         
+        await using var tempDir = TemporaryFileManager.CreateFolder();
         foreach (var file in files)
         {
-            var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("LibraryArchiveInstallerTests/Resources/" + file);
-            var libraryArchive = await RegisterLocalArchive(fullPath);
+            var sourcePath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("LibraryArchiveInstallerTests/Resources/" + file);
+            var copyPath = tempDir.Path.Combine(file);
+            // Create copy to avoid "file in use" by other tests issues
+            File.Copy(sourcePath.ToString(), copyPath.ToString(), overwrite: true);
+            
+            var libraryArchive = await RegisterLocalArchive(copyPath);
             await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
         
