@@ -22,7 +22,7 @@ public static class FragmentExtensions
     {
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)userFragment.MemberId);
         userResolver.Add(User.Name, userFragment.Name);
-        userResolver.Add(User.Avatar, new Uri(userFragment.Avatar));
+        userResolver.Add(User.AvatarUri, new Uri(userFragment.Avatar));
         return userResolver.Id;
     }
 

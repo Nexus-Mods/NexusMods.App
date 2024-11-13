@@ -64,7 +64,7 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// <summary>
     /// The author's avatar.
     /// </summary>
-    public Bitmap AuthorAvatar { get; }
+    public Bitmap? AuthorAvatar { get; }
 
     R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }

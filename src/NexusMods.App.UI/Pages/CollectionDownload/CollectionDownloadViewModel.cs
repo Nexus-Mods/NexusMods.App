@@ -65,7 +65,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
         var requiredModCount = 0;
         var optionalModCount = 0;
-        foreach (var file in _revision.Files)
+        foreach (var file in _revision.Downloads)
         {
             var isOptional = file.IsOptional;
 
@@ -120,9 +120,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
-    public int ModCount => _revision.Files.Count;
+    public int ModCount => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => _revision.Downloads;
+    public ulong DownloadCount => (ulong)_revision.Downloads.Count;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;

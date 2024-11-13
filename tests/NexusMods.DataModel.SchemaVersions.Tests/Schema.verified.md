@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x3EEC865F2AF5AD44
-   - Total attributes: 135
-   - Total namespaces: 55
+   - Fingerprint: 0xFD0CB07FED5FC1DC
+   - Total attributes: 140
+   - Total namespaces: 58
    
 ## Attributes
 | AttributeId                                                                                            | Type                    | Indexed | Many  | NoHistory | 
@@ -32,8 +32,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.NexusModsLibrary.CollectionTag/NexusId                                          | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionRevisionNumber | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionSlug           | Ascii                   | True    | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.User/Avatar                                                    | Utf8                    | False   | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.User/AvatarImage                                               | HashedBlob              | False   | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.User/AvatarResource                                            | Reference               | False   | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.User/AvatarUri                                                 | Utf8                    | False   | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.User/Name                                                      | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.User/NexusId                                                   | UInt64                  | True    | False | False     | 
 | NexusMods.App.UI.Windows.WindowData/Data                                                               | Utf8                    | False   | False | False     | 
@@ -56,10 +56,16 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                              | Reference               | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortOrder/Marker                                         | Null                    | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortableEntry/RedModFolderName                           | Utf8Insensitive         | False   | False | False     | 
-| NexusMods.Library.CollectionRevisionModFile/CollectionRevision                                         | Reference               | False   | False | False     | 
-| NexusMods.Library.CollectionRevisionModFile/FileId                                                     | UInt64                  | True    | False | False     | 
-| NexusMods.Library.CollectionRevisionModFile/IsOptional                                                 | UInt8                   | False   | False | False     | 
-| NexusMods.Library.CollectionRevisionModFile/NexusModFile                                               | Reference               | False   | False | False     | 
+| NexusMods.Library.CollectionDownload/CollectionRevision                                                | Reference               | False   | False | False     | 
+| NexusMods.Library.CollectionDownload/IsOptional                                                        | UInt8                   | False   | False | False     | 
+| NexusMods.Library.CollectionDownload/Name                                                              | Utf8                    | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadBundled/BundledPath                                                | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadExternal/Md5                                                       | UInt128                 | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadExternal/Size                                                      | UInt64                  | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadExternal/Uri                                                       | Utf8                    | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadNexusMods/FileMetadata                                             | Reference               | False   | False | False     | 
+| NexusMods.Library.CollectionDownloadNexusMods/FileUid                                                  | UInt64                  | True    | False | False     | 
+| NexusMods.Library.CollectionDownloadNexusMods/ModUid                                                   | UInt64                  | True    | False | False     | 
 | NexusMods.Library.DownloadedFile/DownloadPageUri                                                       | Utf8                    | False   | False | False     | 
 | NexusMods.Library.LibraryArchive/Archive                                                               | Null                    | False   | False | False     | 
 | NexusMods.Library.LibraryArchiveFileEntry/Parent                                                       | Reference               | False   | False | False     | 
@@ -80,7 +86,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.NexusModsCollectionMetadata/TileImageResource                                        | Reference               | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/TileImageUri                                             | Utf8                    | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/Collection                                               | Reference               | False   | False | False     | 
-| NexusMods.Library.NexusModsCollectionRevision/Downloads                                                | UInt64                  | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/OverallRating                                            | Float32                 | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionId                                               | UInt64                  | True    | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionNumber                                           | UInt64                  | True    | False | False     | 

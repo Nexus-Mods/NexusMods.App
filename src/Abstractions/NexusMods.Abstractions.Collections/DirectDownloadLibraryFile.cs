@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.Collections.Attributes;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
