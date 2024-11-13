@@ -275,17 +275,17 @@ Common reasons for incompatibility:
         .Finish();
 
     [DiagnosticTemplate, UsedImplicitly]
-    internal static IDiagnosticTemplate ModVersionTooHighTemplate = DiagnosticTemplateBuilder
+    internal static IDiagnosticTemplate ModVersionTooLowTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 6))
         .WithTitle("{ModName} Dependency Version Too New: {DependencyId}")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{ModName} requires {DependencyId} version {Version} or older but found newer version {InstalledVersion}")
+        .WithSummary("{ModName} requires {DependencyId} version {Version} or newer but found older version {InstalledVersion}")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires version `{Version}` or older of `{DependencyId}`, but version `{InstalledVersion}` is installed.
+The mod `{ModName}` (`{ModId}`) requires version `{Version}` or newer of `{DependencyId}`, but version `{InstalledVersion}` is installed.
 
 ### How to Resolve
-1. Replace `{DependencyId}` version `{InstalledVersion}` with version `{Version}` or older
+1. Replace `{DependencyId}` version `{InstalledVersion}` with version `{Version}` or newer
 2. Enable the compatible version
 
 ### Technical Details
@@ -296,7 +296,7 @@ Looking at `{ModName}`'s `SubModule.xml`:
     <!-- 👇 Current mod is `{ModName}` -->
     <Id value="{ModId}"/>
     <DependedModuleMetadatas>
-        <!-- ❌ `{DependencyId}` version `{InstalledVersion}` is newer than maximum allowed version `{Version}` -->
+        <!-- ❌ `{DependencyId}` version `{InstalledVersion}` is older than minimum allowed version `{Version}` -->
         <DependedModuleMetadata id="{DependencyId}" version="{Version}" />
     </DependedModuleMetadatas>
 </Module>
@@ -304,15 +304,13 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 Common scenarios:
 
-1. A dependency was automatically updated to a newer incompatible version
+1. `{ModName}` was updated to a newer version without updating `{DependencyId}`
 2. Multiple versions are installed and the wrong one is active
-3. The mod hasn't been updated to support newer dependency versions
 
-If you cannot find the exact version:
+If you cannot find the right mod or version:
 
-1. Check if a newer version of `{ModName}` is available that supports your dependency version
-2. Contact the mod author about updating compatibility
-3. Search for archived versions of the dependency
+1. Contact the mod author of `{ModName}`
+2. Downgrade `{ModName}` to an older version; if this happened right after mod update
 """
         )
         .WithMessageData(messageBuilder => messageBuilder

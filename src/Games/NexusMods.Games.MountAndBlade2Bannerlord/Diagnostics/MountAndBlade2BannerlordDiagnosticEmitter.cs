@@ -94,8 +94,8 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
                 VersionRange: missingRange.Dependency.VersionRange.ToString()
             ),
 
-            // Version Mismatch: Installed Version Too High
-            ModuleVersionMismatchLessThanOrEqualSpecificIssue mismatchLow => Diagnostics.CreateModVersionTooHigh(
+            // Version Mismatch: Installed Version Too Low
+            ModuleVersionMismatchLessThanOrEqualSpecificIssue mismatchLow => Diagnostics.CreateModVersionTooLow(
                 ModId: mismatchLow.Module.Id,
                 ModName: mismatchLow.Module.Name,
                 DependencyId: mismatchLow.Dependency.Id,
