@@ -19,7 +19,7 @@ public class Alert : ContentControl
         Info,
         Success,
         Warning,
-        Error
+        Error,
     }
 
     /// <summary>

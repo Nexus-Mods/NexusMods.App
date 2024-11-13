@@ -33,6 +33,8 @@ public class GameRegistry : IGameRegistry, IHostedService
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
 
+    public ILocatableGame[] SupportedGames => _games;
+
     /// <inheritdoc />
     public IDictionary<EntityId, GameInstallation> Installations => _byId;
 

@@ -26,7 +26,6 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             .Where(installation => installation.Game is not null)
             .OffUi()
             .SelectMany(LoadImage)
@@ -53,6 +52,12 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                 this.WhenAnyValue(vm => vm.Installation)
                     .Select(inst => MapGameStoreToIcon(inst.Store))
                     .BindToVM(this, vm => vm.GameStoreIcon)
+                    .DisposeWith(disposables);
+                
+                IsManagedObservable
+                    .Select(v => v ? GameWidgetState.ManagedGame : GameWidgetState.DetectedGame)
+                    .OnUI()
+                    .BindToVM(this, vm => vm.State)
                     .DisposeWith(disposables);
 
                 _image.DisposeWith(disposables);
@@ -114,6 +119,8 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     [Reactive] public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; }
 
     [Reactive] public ReactiveCommand<Unit, Unit> RemoveAllLoadoutsCommand { get; set; }
+    
+    public IObservable<bool> IsManagedObservable { get; set; } = Observable.Return(false);
 
 
     [Reactive] public GameWidgetState State { get; set; }

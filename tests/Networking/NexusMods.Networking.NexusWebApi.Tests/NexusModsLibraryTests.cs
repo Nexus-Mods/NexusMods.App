@@ -36,8 +36,8 @@ public class NexusModsLibraryTests
         
         // Make sure the metadata is linked correctly
         libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile).Should().BeTrue();
-        collectionFile.CollectionRevision.RevisionNumber.Value.Should().Be(revisionNumber);
-        collectionFile.CollectionRevision.Collection.Slug.Value.Should().Be(slug);
+        collectionFile.CollectionRevisionNumber.Value.Should().Be(revisionNumber);
+        collectionFile.CollectionSlug.Value.Should().Be(slug);
 
         // The downloaded file should be the correct size
         libraryFile.Size.Value.Should().BeGreaterThan(0);
