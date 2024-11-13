@@ -35,8 +35,8 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// The date the file was uploaded at.
     /// </summary>
-    public static readonly DateTimeAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
-    
+    public static readonly TimestampAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
+
     /// <summary>
     /// The size in bytes of the file.
     /// </summary>

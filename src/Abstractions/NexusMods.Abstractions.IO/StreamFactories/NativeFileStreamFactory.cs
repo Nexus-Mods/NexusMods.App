@@ -8,7 +8,6 @@ namespace NexusMods.Abstractions.IO.StreamFactories;
 public class NativeFileStreamFactory : IStreamFactory
 {
     private AbsolutePath _file;
-    private DateTime? _lastModifiedCache;
 
     /// <inheritdoc />
     public Size Size => _file.FileInfo.Size;

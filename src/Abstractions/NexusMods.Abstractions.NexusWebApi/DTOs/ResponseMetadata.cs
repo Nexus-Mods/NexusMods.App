@@ -21,7 +21,7 @@ public class ResponseMetadata
     /// <summary>
     /// [Rate Limit] Stores the time when the daily limit is next reset.
     /// </summary>
-    public DateTime DailyReset { get; set; }
+    public DateTimeOffset DailyReset { get; set; }
 
     /// <summary>
     /// [Rate Limit] Stores the limit your <see cref="HourlyRemaining"/> will be reset to once
@@ -37,7 +37,7 @@ public class ResponseMetadata
     /// <summary>
     /// [Rate Limit] Stores the time when the hourly limit is next reset.
     /// </summary>
-    public DateTime HourlyReset { get; set; }
+    public DateTimeOffset HourlyReset { get; set; }
 
     /// <summary>
     /// Time taken to execute the request server side, in seconds.
@@ -58,11 +58,11 @@ public class ResponseMetadata
                     output = limit;
         }
 
-        void ParseDateTime(string headerName, out DateTime output)
+        void ParseDateTime(string headerName, out DateTimeOffset output)
         {
             output = default;
             if (result.Headers.TryGetValues(headerName, out var values))
-                if (DateTime.TryParse(values.First(), out var limit))
+                if (DateTimeOffset.TryParse(values.First(), out var limit))
                     output = limit;
         }
 

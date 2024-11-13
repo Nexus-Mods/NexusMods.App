@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Resources.DB;
@@ -20,7 +21,7 @@ public partial class PersistedDbResource : IModelDefinition
     /// <summary>
     /// The expiration date.
     /// </summary>
-    public static readonly DateTimeAttribute ExpiresAt = new(Namespace, nameof(ExpiresAt));
+    public static readonly TimestampAttribute ExpiresAt = new(Namespace, nameof(ExpiresAt));
 
     /// <summary>
     /// The resource identifier as a hash.
@@ -32,6 +33,6 @@ public partial class PersistedDbResource : IModelDefinition
         /// <summary>
         /// Whether the resource is expired.
         /// </summary>
-        public bool IsExpired => DateTime.UtcNow > ExpiresAt;
+        public bool IsExpired => TimeProvider.System.GetLocalNow() > ExpiresAt;
     }
 }

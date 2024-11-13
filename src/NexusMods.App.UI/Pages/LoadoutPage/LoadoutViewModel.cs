@@ -41,8 +41,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var ticker = Observable
             .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
-            .Select(_ => DateTime.Now)
-            .Publish(initialValue: DateTime.Now);
+            .Select(_ => TimeProvider.System.GetLocalNow())
+            .Publish(initialValue: TimeProvider.System.GetLocalNow());
 
         var loadoutFilter = new LoadoutFilter
         {
@@ -188,7 +188,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     ITreeDataGirdMessageAdapter<ToggleEnableState>
 {
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
-    private readonly ConnectableObservable<DateTime> _ticker;
+    private readonly ConnectableObservable<DateTimeOffset> _ticker;
     private readonly IConnection _connection;
     private readonly LoadoutFilter _loadoutFilter;
 
@@ -196,7 +196,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     private readonly Dictionary<LoadoutItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;
-    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker, LoadoutFilter loadoutFilter)
+    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTimeOffset> ticker, LoadoutFilter loadoutFilter)
     {
         _loadoutFilter = loadoutFilter;
         _ticker = ticker;

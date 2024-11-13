@@ -63,7 +63,7 @@ public partial class JWTToken : IModelDefinition
 
         tx.Add(entityId, AccessToken, reply.AccessToken);
         tx.Add(entityId, RefreshToken, reply.RefreshToken);
-        tx.Add(entityId, ExpiresAt, DateTimeOffset.FromUnixTimeSeconds(reply.CreatedAt).DateTime + TimeSpan.FromSeconds(reply.ExpiresIn));
+        tx.Add(entityId, ExpiresAt, DateTimeOffset.FromUnixTimeSeconds(reply.CreatedAt) + TimeSpan.FromSeconds(reply.ExpiresIn));
 
         return entityId;
     }

@@ -63,8 +63,7 @@ public interface INexusApiClient
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default);
-
+    Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTimeOffset expireTime, CancellationToken token = default);
 
     /// <summary>
     /// Get the download links for a collection.

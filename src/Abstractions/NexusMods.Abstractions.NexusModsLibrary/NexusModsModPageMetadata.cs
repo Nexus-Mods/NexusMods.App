@@ -40,7 +40,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The last time the mod page was updated (UTC). This is useful for cache invalidation.
     /// </summary>
-    public static readonly DateTimeAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
+    public static readonly TimestampAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
 
     /// <summary>
     /// Uri for the full sized picture of the mod.

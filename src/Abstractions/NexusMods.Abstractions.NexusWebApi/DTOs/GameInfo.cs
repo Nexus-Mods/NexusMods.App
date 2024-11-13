@@ -89,7 +89,7 @@ public class GameInfo : IJsonArraySerializable<GameInfo>
     /// <summary>
     /// Timestamp of when the game was approved by the site staff, expressed as UTC, Coordinated Universal Time.
     /// </summary>
-    public DateTime ApprovedDateUtc => DateTimeOffset.FromUnixTimeSeconds(ApprovedDate).UtcDateTime;
+    public DateTimeOffset ApprovedDateUtc => DateTimeOffset.FromUnixTimeSeconds(ApprovedDate);
 
     /// <summary>
     /// Number of views on this file.

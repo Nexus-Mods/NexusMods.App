@@ -16,7 +16,7 @@ public record Resource<TData> where TData : notnull
     /// <summary>
     /// Gets the expiration date.
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.MaxValue;
+    public DateTimeOffset ExpiresAt { get; init; } = DateTimeOffset.MaxValue;
 
     /// <summary>
     /// Creates a new resource.

@@ -340,7 +340,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
-        tx.Add(loadout.Id, Loadout.LastAppliedDateTime, DateTime.UtcNow);
+        tx.Add(loadout.Id, Loadout.LastAppliedDateTime, TimeProvider.System.GetLocalNow());
         await tx.Commit();
 
         loadout = loadout.Rebase();
@@ -499,7 +499,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, TimeProvider.System.GetLocalNow());
                 }
                 else
                 {
@@ -508,7 +508,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
-                        LastModified = DateTime.UtcNow,
+                        LastModified = TimeProvider.System.GetLocalNow(),
                         GameId = gameMetadataId,
                     };
                 }
@@ -591,7 +591,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
                     
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, TimeProvider.System.GetLocalNow());
                     continue;
                 }
             }
@@ -624,7 +624,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutFileEntry = loadoutFile,
                 }
             );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, TimeProvider.System.GetLocalNow());
         }
 
         if (added.Count > 0)

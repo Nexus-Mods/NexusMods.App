@@ -113,7 +113,7 @@ public class ModFile : IJsonSerializable<ModFile>
     ///    Expressed as ISO 8601 compatible date/time notation.
     /// </remarks>
     [JsonPropertyName("uploaded_time")]
-    public DateTime UploadedTime { get; set; }
+    public DateTimeOffset UploadedTime { get; set; }
 
     /// <summary>
     /// Version of the mod. See <see cref="Version"/> for more details.

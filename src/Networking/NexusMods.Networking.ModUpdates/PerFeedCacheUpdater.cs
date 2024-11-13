@@ -62,8 +62,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
             _itemToIndex[_items[x].GetModPageId().ModId] = x;
 
         // Set the action to refresh cache for any mods which exceed max age.
-        var utcNow = DateTime.UtcNow;
-        var minCachedDate = utcNow - expiry; 
+        var minCachedDate = TimeProvider.System.GetLocalNow()- expiry;
         for (var x = 0; x < _items.Length; x++)
         {
             if (_items[x].GetLastUpdatedDateUtc() < minCachedDate)

@@ -54,14 +54,9 @@ public partial class Loadout : IModelDefinition
 
     /// <summary>
     /// DateTime when the loadout was last applied.
-    /// Returns DateTime.MinValue if the loadout has never been applied.
     /// </summary>
-    public static readonly DateTimeAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime))
-    {
-        IsOptional = true,
-        DefaultValue = DateTime.MinValue,
-    };
-    
+    public static readonly TimestampAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime)) { IsOptional = true, };
+
     /// <summary>
     /// All items in the Loadout.
     /// </summary>

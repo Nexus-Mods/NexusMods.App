@@ -23,7 +23,7 @@ public class MultiFeedCacheUpdaterTests
         // should be marked as 'Out of Date' across multiple feeds.
         
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = TimeProvider.System.GetLocalNow();
         var items = new[]
         {
             Create(1, 1, now.AddDays(-40)),
@@ -52,7 +52,7 @@ public class MultiFeedCacheUpdaterTests
         // under this category across multiple feeds.
 
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = TimeProvider.System.GetLocalNow();
         var items = new[]
         {
             Create(1, 1, now.AddDays(-10)),
@@ -90,7 +90,7 @@ public class MultiFeedCacheUpdaterTests
         // across multiple feeds.
         
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = TimeProvider.System.GetLocalNow();
         var items = new[]
         {
             Create(1, 1, now.AddDays(-10)),
@@ -131,7 +131,7 @@ public class MultiFeedCacheUpdaterTests
         // therefore they should be ignored without side effects.
 
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = TimeProvider.System.GetLocalNow();
         var items = new[]
         {
             Create(1, 1, now.AddDays(-10)),
@@ -176,7 +176,7 @@ public class MultiFeedCacheUpdaterTests
         // from different feeds separately.
 
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = TimeProvider.System.GetLocalNow();
         var items = new[]
         {
             Create(1, 1, now.AddDays(-10)),

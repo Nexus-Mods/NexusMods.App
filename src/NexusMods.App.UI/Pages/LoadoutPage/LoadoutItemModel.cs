@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Humanizer;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
-    public ReactiveProperty<DateTimeOffset> InstalledAt { get; } = new(DateTime.UnixEpoch);
+    public ReactiveProperty<DateTimeOffset> InstalledAt { get; } = new(DateTimeOffset.UnixEpoch);
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Name { get; } = new("-");
@@ -31,7 +31,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     private readonly LoadoutItemId[] _fixedId;
     public virtual IReadOnlyCollection<LoadoutItemId> GetLoadoutItemIds() => _fixedId;
 
-    public Observable<DateTime>? Ticker { get; set; }
+    public Observable<DateTimeOffset>? Ticker { get; set; }
     public BindableReactiveProperty<string> FormattedInstalledAt { get; } = new("-");
 
     private readonly IDisposable _modelActivationDisposable;
@@ -52,7 +52,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
-                model.FormattedInstalledAt.Value = FormatDate(now, model.InstalledAt.Value);
+                model.FormattedInstalledAt.Value = model.InstalledAt.Value.FormatDate(now);
             }).AddTo(disposables);
 
             model.NameObservable.OnUI().Subscribe(name => model.Name.Value = name).AddTo(disposables);
@@ -60,14 +60,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             model.SizeObservable.OnUI().Subscribe(size => model.ItemSize.Value = size).AddTo(disposables);
             model.IsEnabledObservable.OnUI().Subscribe(isEnabled => model.IsEnabled.Value = isEnabled).AddTo(disposables);
 
-            model.InstalledAt.Subscribe(model, static (date, model) => model.FormattedInstalledAt.Value = FormatDate(DateTime.Now, date)).AddTo(disposables);
+            model.InstalledAt.Subscribe(model, static (date, model) => model.FormattedInstalledAt.Value = date.FormatDate(TimeProvider.System.GetLocalNow())).AddTo(disposables);
         });
-    }
-
-    private static string FormatDate(DateTimeOffset now, DateTimeOffset date)
-    {
-        if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
-        return date.Humanize(dateToCompareAgainst: now > date ? now : DateTime.Now);
     }
 
     private bool _isDisposed;
@@ -162,8 +156,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             getter: model => model.FormattedInstalledAt.Value,
             options: new TextColumnOptions<LoadoutItemModel>
             {
-                CompareAscending = static (a, b) => a?.InstalledAt.Value.CompareTo(b?.InstalledAt.Value ?? DateTime.UnixEpoch) ?? 1,
-                CompareDescending = static (a, b) => b?.InstalledAt.Value.CompareTo(a?.InstalledAt.Value ?? DateTime.UnixEpoch) ?? 1,
+                CompareAscending = static (a, b) => a?.InstalledAt.Value.CompareTo(b?.InstalledAt.Value ?? DateTimeOffset.MinValue) ?? 1,
+                CompareDescending = static (a, b) => b?.InstalledAt.Value.CompareTo(a?.InstalledAt.Value ?? DateTimeOffset.MinValue) ?? 1,
                 IsTextSearchEnabled = false,
                 CanUserResizeColumn = true,
                 CanUserSortColumn = true,

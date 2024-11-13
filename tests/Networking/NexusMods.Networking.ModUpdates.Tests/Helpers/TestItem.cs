@@ -5,14 +5,14 @@ namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
 // Helper class to simulate updateable items
 public class TestItem : IModFeedItem
 {
-    public DateTime LastUpdated { get; set; }
+    public DateTimeOffset LastUpdated { get; set; }
     public UidForMod Uid { get; set; }
 
-    public DateTime GetLastUpdatedDateUtc() => LastUpdated;
+    public DateTimeOffset GetLastUpdatedDateUtc() => LastUpdated;
     public UidForMod GetModPageId() => Uid;
     
     // Helper method to create a test item
-    public static TestItem Create(uint gameId, uint modId, DateTime lastUpdated)
+    public static TestItem Create(uint gameId, uint modId, DateTimeOffset lastUpdated)
     {
         return new TestItem
         {

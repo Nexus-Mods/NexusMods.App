@@ -35,19 +35,18 @@ public sealed class HttpLoader : IResourceLoader<Uri, byte[]>
         };
     }
 
-    private static DateTime GetExpiresAt(HttpResponseMessage responseMessage)
+    private static DateTimeOffset GetExpiresAt(HttpResponseMessage responseMessage)
     {
         var cacheControl = responseMessage.Headers.CacheControl;
-        if (cacheControl is null) return DateTime.MaxValue;
 
-        var maxAge = cacheControl.MaxAge;
-        if (!maxAge.HasValue) return DateTime.MaxValue;
+        var maxAge = cacheControl?.MaxAge;
+        if (!maxAge.HasValue) return DateTimeOffset.MaxValue;
 
         var age = responseMessage.Headers.Age;
 
         var diff = maxAge.Value;
         if (age.HasValue) diff -= age.Value;
 
-        return DateTime.UtcNow + diff;
+        return TimeProvider.System.GetUtcNow() + diff;
     }
 }

@@ -16,12 +16,12 @@ public class NXMUrl
     /// <summary>
     /// if applicable, the time the url becomes invalid
     /// </summary>
-    public DateTime? ExpireTime
+    public DateTimeOffset? ExpireTime
     {
         get
         {
             var expires = Query.Get("expires");
-            return expires != null ? DateTime.UnixEpoch.AddSeconds(ulong.Parse(expires)) : null;
+            return expires != null ? DateTimeOffset.UnixEpoch.AddSeconds(ulong.Parse(expires)) : null;
         }
     }
 

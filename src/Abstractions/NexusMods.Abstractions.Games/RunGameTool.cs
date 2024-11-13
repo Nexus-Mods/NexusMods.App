@@ -207,8 +207,8 @@ public class RunGameTool<T> : IRunGameTool
 
         try
         {
-            var start = DateTime.UtcNow;
-            while (!cancellationToken.IsCancellationRequested && start + timeout > DateTime.UtcNow)
+            var start = TimeProvider.System.GetTimestamp();
+            while (!cancellationToken.IsCancellationRequested && TimeProvider.System.GetElapsedTime(start) > timeout)
             {
                 var processes = Process.GetProcessesByName(processName);
                 var target = existingProcesses is not null

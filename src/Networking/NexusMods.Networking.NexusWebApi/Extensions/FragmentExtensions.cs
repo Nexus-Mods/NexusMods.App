@@ -39,7 +39,7 @@ public static class FragmentExtensions
         nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
-        nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);
+        nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date));
 
         if (ulong.TryParse(modFileFragment.SizeInBytes, out var size))
         {
@@ -62,7 +62,7 @@ public static class FragmentExtensions
         var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
-        nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);
+        nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt);
 
         if (Uri.TryCreate(modFragment.PictureUrl, UriKind.Absolute, out var fullSizedPictureUri))
             nexusModResolver.Add(NexusModsModPageMetadata.FullSizedPictureUri, fullSizedPictureUri);

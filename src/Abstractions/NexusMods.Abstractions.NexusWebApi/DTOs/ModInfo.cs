@@ -64,13 +64,13 @@ public class ModInfo : IJsonSerializable<ModInfo>
     public int CreatedTimestamp { get; set; }
 
     [JsonPropertyName("created_time")] 
-    public DateTime CreatedTime { get; set; }
+    public DateTimeOffset CreatedTime { get; set; }
 
     [JsonPropertyName("updated_timestamp")]
     public int UpdatedTimestamp { get; set; }
 
     [JsonPropertyName("updated_time")] 
-    public DateTime UpdatedTime { get; set; }
+    public DateTimeOffset UpdatedTime { get; set; }
 
     [JsonPropertyName("author")] 
     public string Author { get; set; } = "";

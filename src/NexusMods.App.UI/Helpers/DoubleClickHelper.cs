@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using JetBrains.Annotations;
+using LiveChartsCore.Defaults;
 
 namespace NexusMods.App.UI.Helpers;
 
@@ -61,7 +62,7 @@ public static class DoubleClickHelper
         where TRoutedEventArgs : RoutedEventArgs
     {
         private readonly TimeSpan _timeout;
-        private DateTime _lastDateTime = DateTime.UnixEpoch;
+        private long _lastTimestamp;
 
         public DoubleClickSubject(
             Control control,
@@ -76,10 +77,11 @@ public static class DoubleClickHelper
 
         protected override bool IsDoubleClick(TRoutedEventArgs args)
         {
-            var currentDateTime = DateTime.Now;
-            var isDoubleClick = currentDateTime - _lastDateTime <= _timeout;
-            _lastDateTime = currentDateTime;
+            var timestamp = TimeProvider.System.GetTimestamp();
+            var elapsedTime = TimeProvider.System.GetElapsedTime(_lastTimestamp, timestamp);
+            var isDoubleClick = elapsedTime <= _timeout;
 
+            _lastTimestamp = timestamp;
             return isDoubleClick;
         }
     }

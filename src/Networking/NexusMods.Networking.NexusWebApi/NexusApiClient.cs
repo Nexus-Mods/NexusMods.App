@@ -105,10 +105,10 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default)
+    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTimeOffset expireTime, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
+            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={expireTime.ToUnixTimeSeconds()}"));
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
 

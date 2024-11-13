@@ -105,7 +105,7 @@ public partial class NexusModsLibrary
             Version = fileNode.Version,
             ModPageId = modPage,
             Uid = uid,
-            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(fileNode.Date).UtcDateTime,
+            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(fileNode.Date),
             Size = size,
         };
 
@@ -115,7 +115,7 @@ public partial class NexusModsLibrary
 
     public async Task<Uri> GetDownloadUri(
         NexusModsFileMetadata.ReadOnly file,
-        Optional<(NXMKey, DateTime)> nxmData,
+        Optional<(NXMKey, DateTimeOffset)> nxmData,
         CancellationToken cancellationToken = default)
     {
         Abstractions.NexusWebApi.DTOs.Response<DownloadLink[]> links;
@@ -159,7 +159,7 @@ public partial class NexusModsLibrary
         IGameDomainToGameIdMappingCache mappingCache,
         CancellationToken cancellationToken)
     {
-        var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
+        var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTimeOffset)>();
         var gameId = (await mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
         return await CreateDownloadJob(destination, gameId, url.ModId, url.FileId, nxmData, cancellationToken);
     }
@@ -172,7 +172,7 @@ public partial class NexusModsLibrary
         GameId gameId,
         ModId modId,
         FileId fileId,
-        Optional<(NXMKey, DateTime)> nxmData = default,
+        Optional<(NXMKey, DateTimeOffset)> nxmData = default,
         CancellationToken cancellationToken = default)
     {
         var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
