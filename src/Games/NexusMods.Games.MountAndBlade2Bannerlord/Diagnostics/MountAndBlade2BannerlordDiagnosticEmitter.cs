@@ -44,11 +44,11 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
         
         foreach (var moduleAndMod in modulesAndMods)
         {
-            var (modEntity, moduleInfo) = moduleAndMod;
+            var (_, moduleInfo) = moduleAndMod;
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true).Select(x => CreateDiagnostic(loadout, modEntity, moduleInfo, x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true).Select(x => CreateDiagnostic(x)))
             {
                 if (diagnostic != null)
                     yield return diagnostic;
@@ -56,7 +56,7 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
         }
     }
 
-    private static Diagnostic? CreateDiagnostic(Loadout.ReadOnly loadout, ModLoadoutItem.ReadOnly mod, ModuleInfoExtended currentModule, ModuleIssueV2 issue)
+    private static Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
     {
         return issue switch
         {
@@ -185,6 +185,7 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
                 ModId: missingDependencyId.Module.Id,
                 ModName: missingDependencyId.Module.Name
             ),
+
             // Base classes, ignore.
             ModuleVersionMismatchRangeIssue moduleVersionMismatchRangeIssue => null,
             ModuleVersionMismatchSpecificIssue moduleVersionMismatchSpecificIssue => null,
