@@ -5,6 +5,7 @@ using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -12,6 +13,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.Extensions.BCL;
@@ -43,7 +45,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .ObserveDatoms(CollectionDownloadEntity.CollectionRevision, revisionMetadata)
             .AsEntityIds()
             .Transform(datom => CollectionDownloadEntity.Load(_connection.Db, datom.E))
-            .Filter(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods())// TODO: || downloadEntity.IsCollectionDownloadExternal())
+            .Filter(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods() || downloadEntity.IsCollectionDownloadExternal())
             .Transform(ILibraryItemModel (downloadEntity) =>
             {
                 if (downloadEntity.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
@@ -106,14 +108,34 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = nexusModsDownload.FileMetadata.Name;
         model.Version.Value = nexusModsDownload.FileMetadata.Version;
-
-        if (NexusModsFileMetadata.Size.TryGet(nexusModsDownload.FileMetadata, out var size)) model.ItemSize.Value = size;
+        model.ItemSize.Value = nexusModsDownload.FileMetadata.Size;
         return model;
     }
 
     private ILibraryItemModel ToLibraryItemModel(CollectionDownloadExternal.ReadOnly externalDownload)
     {
-        throw new NotImplementedException();
+        var isInLibraryObservable = _connection
+            .ObserveDatoms(DirectDownloadLibraryFile.Md5)
+            .Transform(datom => DirectDownloadLibraryFile.Md5.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver))
+            .Filter(hash => hash == externalDownload.Md5)
+            .IsNotEmpty()
+            .ToObservable()
+            .Prepend((_connection, externalDownload.Md5), static state =>
+            {
+                var (connection, hash) = state;
+                var libraryItems = DirectDownloadLibraryFile.FindByMd5(connection.Db, hash);
+                return libraryItems.Count > 0;
+            });
+
+        var model = new ExternalDownloadItemModel(externalDownload)
+        {
+            IsInLibraryObservable = isInLibraryObservable,
+            // DownloadJobObservable = ,
+        };
+
+        model.Name.Value = externalDownload.AsCollectionDownload().Name;
+        model.ItemSize.Value = externalDownload.Size;
+        return model;
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)

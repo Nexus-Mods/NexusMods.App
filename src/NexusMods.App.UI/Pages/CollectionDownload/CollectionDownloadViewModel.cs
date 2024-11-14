@@ -9,8 +9,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Resources;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -96,11 +94,23 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 .AddTo(disposables);
 
             TreeDataGridAdapter.MessageSubject.SubscribeAwait(
-                onNextAsync: (message, cancellationToken) => DownloadOrOpenPage(message.Item.AsT0, cancellationToken),
+                onNextAsync: (message, cancellationToken) =>
+                {
+                    return message.Item.Match(
+                        f0: x => DownloadOrOpenPage(x, cancellationToken),
+                        f1: x => DownloadExternalItem(x, cancellationToken)
+                    );
+                },
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
         });
+    }
+
+    private async ValueTask DownloadExternalItem(ExternalItem externalItem, CancellationToken cancellationToken)
+    {
+        // TODO:
+        await Task.Yield();
     }
 
     private async ValueTask DownloadOrOpenPage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
