@@ -19,7 +19,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     public MountAndBlade2BannerlordDiagnosticEmitter(IServiceProvider serviceProvider)
     {
