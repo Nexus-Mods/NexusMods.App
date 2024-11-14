@@ -163,6 +163,12 @@ jobs:
           $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
           echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
           echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+          
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        id: stepid
+        with:
+          dotnet-version: '9.x'          
 
       - name: Print debug info
         run: dotnet --info
