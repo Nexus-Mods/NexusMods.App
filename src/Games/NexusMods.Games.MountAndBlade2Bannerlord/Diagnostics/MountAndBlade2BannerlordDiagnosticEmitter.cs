@@ -47,8 +47,7 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             var (_, moduleInfo) = moduleAndMod;
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
-            var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true).Select(x => CreateDiagnostic(x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x)))
             {
                 if (diagnostic != null)
                     yield return diagnostic;
@@ -95,10 +94,11 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             ),
 
             // Version Mismatch: Installed Version Too Low
-            ModuleVersionMismatchLessThanOrEqualSpecificIssue mismatchLow => Diagnostics.CreateModVersionTooLow(
+            ModuleVersionTooLowIssue mismatchLow => Diagnostics.CreateModVersionTooLow(
                 ModId: mismatchLow.Module.Id,
                 ModName: mismatchLow.Module.Name,
                 DependencyId: mismatchLow.Dependency.Id,
+                DependencyName: mismatchLow.Dependency.Name,
                 Version: mismatchLow.Version.ToString(),
                 InstalledVersion: mismatchLow.Dependency.Version.ToString()
             ),
@@ -125,7 +125,8 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             ModuleIncompatibleIssue incompatibleIssue => Diagnostics.CreateModIncompatible(
                 ModId: incompatibleIssue.Module.Id,
                 ModName: incompatibleIssue.Module.Name,
-                IncompatibleId: incompatibleIssue.IncompatibleModuleId
+                IncompatibleId: incompatibleIssue.IncompatibleModule.Id,
+                IncompatibleName: incompatibleIssue.IncompatibleModule.Name
             ),
 
             // Conflicting Dependency: Dependent and Incompatible
@@ -146,21 +147,22 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             ModuleDependencyConflictCircularIssue circularIssue => Diagnostics.CreateCircularDependency(
                 ModId: circularIssue.Module.Id,
                 ModName: circularIssue.Module.Name,
-                CircularDependencyId: circularIssue.CircularDependency.Id
+                CircularDependencyId: circularIssue.CircularDependency.Id,
+                CircularDependencyName: circularIssue.CircularDependency.Name
             ),
 
             // Load Order Not Met: Must Load Before
             ModuleDependencyNotLoadedBeforeIssue notLoadedBefore => Diagnostics.CreateModMustLoadBefore(
                 ModId: notLoadedBefore.Module.Id,
                 ModName: notLoadedBefore.Module.Name,
-                DependencyId: notLoadedBefore.DependencyId
+                DependencyId: notLoadedBefore.Dependency.Id
             ),
 
             // Load Order Not Met: Must Load After
             ModuleDependencyNotLoadedAfterIssue notLoadedAfter => Diagnostics.CreateModMustLoadAfter(
                 ModId: notLoadedAfter.Module.Id,
                 ModName: notLoadedAfter.Module.Name,
-                DependencyId: notLoadedAfter.DependencyId
+                DependencyId: notLoadedAfter.Dependency.Id
             ),
 
             // Configuration Error: Missing ID

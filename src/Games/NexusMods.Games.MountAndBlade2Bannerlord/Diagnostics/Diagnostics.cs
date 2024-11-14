@@ -11,23 +11,24 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate MissingDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 0))
-        .WithTitle("{ModName} Missing Dependency: {DependencyId}")
+        .WithTitle("'{ModName}' Is Missing Ddependency with ID '{DependencyId}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} requires {DependencyId} which is not installed")
+        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' which is not installed")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires `{DependencyId}` to function, but `{DependencyId}` is not installed.
+The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` is not installed.
 
 ### How to Resolve
-1. Download and install `{DependencyId}`
-2. Enable `{DependencyId}`
+1. Download and install mod `{DependencyId}`
+2. Enable mod `{DependencyId}`
 
 ### Technical Details
 Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModules>
         <!-- ❌ This dependency `{DependencyId}` is not installed -->
         <DependedModule Id="{DependencyId}" />
@@ -53,24 +54,25 @@ The issue can arise in these scenarios:
     internal static IDiagnosticTemplate MissingVersionRangeTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 1))
-        .WithTitle("{ModName} Missing Dependency: {DependencyId} {VersionRange}")
+        .WithTitle("'{ModName}' is Missing Dependency with ID '{DependencyId}', version '{VersionRange}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} requires {DependencyId} version {VersionRange} which is not installed")
+        .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' which is not installed")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires a version of `{DependencyId}` within the range `{VersionRange}`, but no compatible version is installed.
+The mod `{ModName}` mod requires a mod with the ID `{DependencyId}` within the range `{VersionRange}`, but no compatible version is installed.
 
 ### How to Resolve
-1. Download a version of `{DependencyId}` within the range `{VersionRange}`
-2. Install `{DependencyId}` into your loadout
-3. Enable `{DependencyId}`
+1. Download a version of mod `{DependencyId}` within the range `{VersionRange}`
+2. Install mod `{DependencyId}` into your loadout
+3. Enable mod `{DependencyId}`
 
 ### Technical Details
 Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ This dependency `{DependencyId}` (version range `{VersionRange}`) is not installed -->
         <DependedModuleMetadata id="{DependencyId}" version="{VersionRange}" />
@@ -78,11 +80,11 @@ Looking at `{ModName}`'s `SubModule.xml`:
 </Module>
 ```
 
-Usually this is because `{DependencyId}` is not installed at all.
+Usually this is because mod with `{DependencyId}` is not installed at all.
 
 If you cannot find a compatible version:
 
-1. Try a newer version of `{ModName}` that might support different versions
+1. Try a newer version of mod `{ModName}` that might support different versions
 2. Contact the mod author for guidance
 3. Search for archived versions of the mod
 """
@@ -99,23 +101,24 @@ If you cannot find a compatible version:
     internal static IDiagnosticTemplate ModVersionRangeTooLowTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 2))
-        .WithTitle("{ModName} Dependency Version Too Old: {DependencyId}")
+        .WithTitle("'{ModName}' Has an Outdated Dependency with ID '{DependencyId}'")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{ModName} requires {DependencyId} version {VersionRange} but found older version {InstalledVersion}")
+        .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' but found older version '{InstalledVersion}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires a version of `{DependencyId}` within the range `{VersionRange}`, but version `{InstalledVersion}` is installed which is too old.
+The mod `{ModName}` mod requires a mod with the ID `{DependencyId}` within the version range `{VersionRange}`, but version `{InstalledVersion}` is installed which is too old.
 
 ### How to Resolve
-1. Update `{DependencyId}` from version `{InstalledVersion}` to a version within the range `{VersionRange}`
-2. Enable the updated version of `{DependencyId}`
+1. Update mod `{DependencyId}` from version `{InstalledVersion}` to a version within the range `{VersionRange}`
+2. Enable the updated version of mod `{DependencyId}`
 
 ### Technical Details
 Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ `{DependencyId}` version `{InstalledVersion}` is below minimum required range `{VersionRange}` -->
         <DependedModuleMetadata id="{DependencyId}" version="{VersionRange}" />
@@ -143,23 +146,24 @@ Common scenarios:
     internal static IDiagnosticTemplate ModVersionRangeTooHighTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 3))
-        .WithTitle("{ModName} Dependency Version Too New: {DependencyId}")
+        .WithTitle("'{ModName}' Has a Too Recent Dependency with ID '{DependencyId}'")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{ModName} requires {DependencyId} version {VersionRange} but found newer version {InstalledVersion}")
+        .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' but found newer version '{InstalledVersion}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires a version of `{DependencyId}` within the range `{VersionRange}`, but version `{InstalledVersion}` is installed which is too new.
+The mod `{ModName}` mod requires a mod with ID `{DependencyId}` within the version range `{VersionRange}`, but version `{InstalledVersion}` is installed which is too new.
 
 ### How to Resolve
-1. Replace `{DependencyId}` version `{InstalledVersion}` with a version within the range `{VersionRange}`
-2. Enable the compatible version
+1. Replace mod `{DependencyId}` version `{InstalledVersion}` with a version within the range `{VersionRange}`
+2. Enable the mod you just replaced
 
 ### Technical Details
 Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ `{DependencyId}` version `{InstalledVersion}` exceeds maximum allowed range `{VersionRange}` -->
         <DependedModuleMetadata id="{DependencyId}" version="{VersionRange}" />
@@ -193,23 +197,24 @@ If you cannot find an older version:
     internal static IDiagnosticTemplate MissingDependencyWithVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 4))
-        .WithTitle("{ModName} Missing Dependency: {DependencyId} {Version}")
+        .WithTitle("'{ModName}' Is Missing Dependency with ID '{DependencyId}' and Version '{Version}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} requires {DependencyId} {Version} which is not installed")
+        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' and Version '{Version}' which is not installed")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` is not installed.
+The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` is not installed.
 
 ### How to Resolve
-1. Download version `{Version}` of `{DependencyId}`
-2. Enable `{DependencyId}`
+1. Download version `{Version}` of mod `{DependencyId}`
+2. Enable mod `{DependencyId}`
 
 ### Technical Details
 This issue occurs when a mod needs a specific version of a dependency. Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ This dependency `{DependencyId}` (version `{Version}`) is not installed -->
         <DependedModuleMetadata id="{DependencyId}" order="LoadBeforeThis" version="{Version}" />
@@ -236,14 +241,14 @@ The issue can arise in these scenarios:
     internal static IDiagnosticTemplate ModIncompatibleTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 5))
-        .WithTitle("{ModName} Incompatible With: {IncompatibleId}")
+        .WithTitle("'{ModName}' Is Incompatible With '{IncompatibleName}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} is not compatible with {IncompatibleId}")
+        .WithSummary("'{ModName}' is not compatible with '{IncompatibleName}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) cannot be used with `{IncompatibleId}` as they are marked as incompatible.
+The mod `{ModName}` cannot be used with mod `{IncompatibleName}` as they are marked as incompatible.
 
 ### How to Resolve
-1. Disable either `{ModName}` or `{IncompatibleId}`
+1. Disable either mod `{ModName}` or mod `{IncompatibleName}`
 2. Look for alternative mods that are compatible with your loadout
 
 ### Technical Details
@@ -251,10 +256,11 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
-        <!-- ❌ This mod is incompatible with `{IncompatibleId}` -->
+        <!-- ❌ This mod is incompatible with `{IncompatibleId}` which is `{IncompatibleName}` -->
         <DependedModuleMetadata id="{IncompatibleId}" incompatible="true" />
     </DependedModuleMetadatas>
 </Module>
@@ -270,6 +276,7 @@ Common reasons for incompatibility:
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("ModId")
             .AddValue<string>("ModName")
+            .AddValue<string>("IncompatibleName")
             .AddValue<string>("IncompatibleId")
         )
         .Finish();
@@ -278,24 +285,26 @@ Common reasons for incompatibility:
     internal static IDiagnosticTemplate ModVersionTooLowTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 6))
-        .WithTitle("{ModName} Dependency Version Too New: {DependencyId}")
+        .WithTitle("Version of '{DependencyName}' Dependency Required by '{ModName}' is Too New")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{ModName} requires {DependencyId} version {Version} or newer but found older version {InstalledVersion}")
+        .WithSummary("'{ModName}' requires '{DependencyName}' version '{Version}' or newer but found older version '{InstalledVersion}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires version `{Version}` or newer of `{DependencyId}`, but version `{InstalledVersion}` is installed.
+The mod `{ModName}` requires version `{Version}` or newer of `{DependencyName}` mod, but version `{InstalledVersion}` is installed.
 
 ### How to Resolve
-1. Replace `{DependencyId}` version `{InstalledVersion}` with version `{Version}` or newer
-2. Enable the compatible version
+1. Replace mod `{DependencyName}` version `{InstalledVersion}` with version `{Version}` or newer
+2. Enable the compatible version of the `{DependencyName}` mod
 
 ### Technical Details
 Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
+        <!-- 💡 The required mod `{DependencyName}` has id `{DependencyId}` -->
         <!-- ❌ `{DependencyId}` version `{InstalledVersion}` is older than minimum allowed version `{Version}` -->
         <DependedModuleMetadata id="{DependencyId}" version="{Version}" />
     </DependedModuleMetadatas>
@@ -304,7 +313,7 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 Common scenarios:
 
-1. `{ModName}` was updated to a newer version without updating `{DependencyId}`
+1. `{ModName}` was updated to a newer version without updating `{DependencyName}`
 2. Multiple versions are installed and the wrong one is active
 
 If you cannot find the right mod or version:
@@ -317,6 +326,7 @@ If you cannot find the right mod or version:
             .AddValue<string>("ModId")
             .AddValue<string>("ModName")
             .AddValue<string>("DependencyId")
+            .AddValue<string>("DependencyName")
             .AddValue<string>("Version")
             .AddValue<string>("InstalledVersion")
         )
@@ -326,11 +336,11 @@ If you cannot find the right mod or version:
     internal static IDiagnosticTemplate BothRequiredAndIncompatibleTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 7))
-        .WithTitle("{ModName} Configuration Error: {ConflictingId}")
+        .WithTitle("Configuration Error in '{ModName}'. A dependency is marked both required and incompatible")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} has conflicting configuration: {ConflictingId} marked as both required and incompatible")
+        .WithSummary("'{ModName}' has conflicting configuration: '{ConflictingId}' is marked as both required and incompatible")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) has contradictory settings - it lists `{ConflictingId}` as both a required dependency and an incompatible mod.
+The mod `{ModName}` has contradictory settings - it lists the ID `{ConflictingId}` as both a required dependency and an incompatible mod.
 
 ### How to Resolve
 Contact the mod author to fix this configuration error in `{ModName}`.
@@ -340,8 +350,9 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModules>
         <!-- 👇 `{ConflictingId}` is marked as a required dependency -->
         <DependedModule Id="{ConflictingId}" />
@@ -353,7 +364,7 @@ Looking at `{ModName}`'s `SubModule.xml`:
 </Module>
 ```
 
-This is a configuration error as a mod cannot be both required and incompatible simultaneously.
+❌ This is a configuration error as a mod cannot be both required and incompatible simultaneously.
 """
         )
         .WithMessageData(messageBuilder => messageBuilder
@@ -367,11 +378,11 @@ This is a configuration error as a mod cannot be both required and incompatible 
     internal static IDiagnosticTemplate LoadOrderConflictTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 8))
-        .WithTitle("{ModName} Load Order Conflict: {ConflictingId}")
+        .WithTitle("'{ModName}' Load Order Conflicts with mod ID '{ConflictingId}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} has conflicting load order requirements with {ConflictingId}")
+        .WithSummary("'{ModName}' has conflicting load order requirements for ID '{ConflictingId}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) has contradictory load order requirements - it requires `{ConflictingId}` to load both before and after it.
+The mod `{ModName}` has contradictory load order requirements - it requires mod ID `{ConflictingId}` to load both before and after it.
 
 ### How to Resolve
 Ensure `{ConflictingId}` does not have contradictory rules in `{ModName}`'s `SubModule.xml`.
@@ -384,8 +395,9 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- 👇 `{ConflictingId}` is marked as `LoadBeforeThis` -->
         <DependedModuleMetadata id="{ConflictingId}" order="LoadBeforeThis" />
@@ -409,11 +421,11 @@ Looking at `{ModName}`'s `SubModule.xml`:
     internal static IDiagnosticTemplate CircularDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 9))
-        .WithTitle("{ModName} Circular Dependency: {CircularDependencyId}")
+        .WithTitle("'{ModName}' Has Circular Dependency with '{CircularDependencyName}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} and {CircularDependencyId} have circular dependencies")
+        .WithSummary("'{ModName}' and '{CircularDependencyName}' are circular dependencies")
         .WithDetails("""
-The mods `{ModName}` (`{ModId}`) and `{CircularDependencyId}` create a circular dependency chain where they depend on each other.
+The mods `{ModName}` and `{CircularDependencyName}` create a circular dependency chain where they depend on each other.
 
 ### How to Resolve
 1. Contact the mod authors to resolve the circular dependency
@@ -425,9 +437,11 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
+        <!-- 💡 The required mod `{CircularDependencyName}` has id `{CircularDependencyId}` -->
         <!-- 👇 `{ModName}` requests that `{CircularDependencyId}` loads first -->
         <DependedModuleMetadata id="{CircularDependencyId}" order="LoadBeforeThis" />
     </DependedModuleMetadatas>
@@ -438,8 +452,9 @@ And looking at `{CircularDependencyId}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Other mod is `{CircularDependencyId}` -->
+    <!-- 👇 Other mod is `{CircularDependencyName}` with id `{CircularDependencyId}` -->
     <Id value="{CircularDependencyId}"/>
+    <Name value="{CircularDependencyName}"/>
     <DependedModuleMetadatas>
         <!-- 👇 `{CircularDependencyId}` requests that `{ModName}` loads first -->
         <DependedModuleMetadata id="{ModId}" order="LoadBeforeThis" />
@@ -494,6 +509,7 @@ And put all of these features in `ModC`, this way both mods can interoperate.
             .AddValue<string>("ModId")
             .AddValue<string>("ModName")
             .AddValue<string>("CircularDependencyId")
+            .AddValue<string>("CircularDependencyName")
         )
         .Finish();
 
@@ -501,11 +517,11 @@ And put all of these features in `ModC`, this way both mods can interoperate.
     internal static IDiagnosticTemplate ModMustLoadAfterTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 10))
-        .WithTitle("{ModName} Load Order Error: {DependencyId} Must Load After")
+        .WithTitle("Load Order Error: '{DependencyId}' Must Load After '{ModName}'")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyId} should be loaded after {ModName}")
+        .WithSummary("'{DependencyId}' should be loaded after '{ModName}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires `{DependencyId}` to load after it, but the current load order has them in the wrong order.
+The mod `{ModName}` requires `{DependencyId}` to load after it, but the current load order has them in the wrong order.
 
 ### How to Resolve
 Reorder your mods to ensure `{DependencyId}` loads after `{ModName}`.
@@ -515,8 +531,9 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ `{DependencyId}` must load after this mod -->
         <DependedModuleMetadata id="{DependencyId}" order="LoadAfterThis" />
@@ -550,11 +567,11 @@ Should be:
     internal static IDiagnosticTemplate ModMustLoadBeforeTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 11))
-        .WithTitle("{ModName} Load Order Error: {DependencyId} Must Load Before")
+        .WithTitle("Load Order Error: '{DependencyId}' Must Load Before '{ModName}'")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyId} should be loaded before {ModName}")
+        .WithSummary("'{DependencyId}' should be loaded before '{ModName}'")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) requires `{DependencyId}` to load before it, but the current load order has them in the wrong order.
+The mod `{ModName}` requires `{DependencyId}` to load before it, but the current load order has them in the wrong order.
 
 ### How to Resolve
 Reorder your mods to ensure `{DependencyId}` loads before `{ModName}`.
@@ -564,8 +581,9 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModuleMetadatas>
         <!-- ❌ `{DependencyId}` must load before this mod -->
         <DependedModuleMetadata id="{DependencyId}" order="LoadBeforeThis" />
@@ -599,11 +617,11 @@ Should be:
     internal static IDiagnosticTemplate ModBadConfigMissingIdTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 12))
-        .WithTitle("{ModName} Configuration Error: Missing ID")
+        .WithTitle("'{ModName}' Configuration Error: Missing ID")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("Mod with name '{ModName}' is missing its Id field")
+        .WithSummary("Mod with name '{ModName}' is missing its 'Id' field")
         .WithDetails("""
-The mod named `{ModName}` is missing its required ID field in its configuration.
+The mod `{ModName}` is missing its required ID field in its configuration.
 
 The `Id` is a globally unique name for your mod that should not be shared with any other.
 We recommend using a human friendly name; commonly the `Id` is just the mod name without spaces.
@@ -649,9 +667,9 @@ The Id field is required for:
     internal static IDiagnosticTemplate ModBadConfigMissingNameTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 13))
-        .WithTitle("{ModId} Configuration Error: Missing Name")
+        .WithTitle("'{ModId}' Configuration Error: Missing 'Name'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("Mod with Id '{ModId}' is missing its Name field")
+        .WithSummary("Mod with Id '{ModId}' is missing its 'Name' field")
         .WithDetails("""
 The mod with ID `{ModId}` is missing its required `Name` field in its configuration.
 
@@ -696,11 +714,11 @@ The Name field is required for:
     internal static IDiagnosticTemplate ModBadConfigNullDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 14))
-        .WithTitle("{ModName} Configuration Error: Empty Dependency")
+        .WithTitle("'{ModName}' Configuration Error: Empty Dependency")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} has an empty dependency entry")
+        .WithSummary("'{ModName}' has an empty dependency entry")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) has an empty or invalid dependency entry in its configuration.
+The mod `{ModName}` has an empty or invalid dependency entry in its configuration.
 
 ### How to Resolve
 Fix the empty dependency entry in `{ModName}`'s `SubModule.xml`.
@@ -713,8 +731,9 @@ Looking at `{ModName}`'s `SubModule.xml`:
 
 ```xml
 <Module>
-    <!-- 👇 Current mod is `{ModName}` -->
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
     <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
     <DependedModules>
         <!-- ❌ Empty/invalid dependency entry -->
         <DependedModule />
@@ -746,11 +765,11 @@ All dependency entries must include an Id to properly identify the required mod.
     internal static IDiagnosticTemplate ModBadConfigDependencyMissingIdTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 15))
-        .WithTitle("{ModName} Configuration Error: Dependency Missing ID")
+        .WithTitle("'{ModName}' Configuration Error: Dependency is Missing 'ID'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("{ModName} has a dependency entry missing its Id field")
+        .WithSummary("'{ModName}' has a dependency entry missing its 'id' field")
         .WithDetails("""
-The mod `{ModName}` (`{ModId}`) has a dependency entry that is missing its required `id` field.
+The mod `{ModName}` has a dependency entry that is missing its required `id` field.
 
 ### How to Resolve
 Add the missing dependency ID in `{ModName}`'s `SubModule.xml`.
