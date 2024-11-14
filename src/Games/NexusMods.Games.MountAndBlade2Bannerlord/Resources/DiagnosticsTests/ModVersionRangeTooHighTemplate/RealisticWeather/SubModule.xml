@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `RealisticWeather` -->
+    <Id value="RealisticWeather"/>
+    <Name value="Realistic Weather"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ This dependency `Harmony` with version range `v2.0.0-v2.5.0` is installed with a version too high -->
+        <DependedModuleMetadata id="Harmony" version="v2.0.0-v2.5.0" />
+    </DependedModuleMetadatas>
+</Module>
