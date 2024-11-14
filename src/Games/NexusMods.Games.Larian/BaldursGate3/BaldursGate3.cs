@@ -33,6 +33,26 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         _serviceProvider = provider;
         _osInformation = provider.GetRequiredService<IOSInformation>();
     }
+    
+    protected override Version GetVersion(GameLocatorResult locatorResult)
+    {
+        try
+        {
+            // Use the vulkan executable to get the version, not the primary file (launcher)
+            var executableGamePath = _osInformation.IsOSX 
+                ? new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3") 
+                : new GamePath(LocationId.Game, "bin/bg3.exe");
+
+            var fvi = executableGamePath
+                .Combine(locatorResult.Path).FileInfo
+                .GetFileVersionInfo();
+            return fvi.ProductVersion;
+        }
+        catch (Exception)
+        {
+            return new Version(0, 0, 0, 0);
+        }
+    }
 
     public override GamePath GetPrimaryFile(GameStore store)
     {
