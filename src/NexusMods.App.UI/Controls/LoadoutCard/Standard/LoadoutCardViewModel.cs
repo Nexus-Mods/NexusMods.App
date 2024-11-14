@@ -73,7 +73,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .BindToVM(this, x => x.HumanizedLoadoutCreationTime)
                 .DisposeWith(d);
             
-            interval.Select(_ => FormatLastAppliedTime(loadout.LastAppliedDateTime))
+            interval.Select(_ => FormatLastAppliedTime(loadout.LastAppliedDateTime.Value))
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime)
                 .DisposeWith(d);
