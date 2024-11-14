@@ -100,7 +100,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             })
             .WhereNotNull();
 
-        var model = new NexusModsFileMetadataLibraryItemModel(nexusModsDownload.FileMetadata)
+        var model = new NexusModsFileMetadataLibraryItemModel(nexusModsDownload)
         {
             IsInLibraryObservable = isInLibraryObservable,
             DownloadJobObservable = downloadJobObservable,
@@ -127,10 +127,28 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 return libraryItems.Count > 0;
             });
 
+        var downloadJobObservable = _jobMonitor.GetObservableChangeSet<ExternalDownloadJob>()
+            .Filter(job =>
+            {
+                var definition = job.Definition as ExternalDownloadJob;
+                Debug.Assert(definition is not null);
+                return definition.ExpectedMd5 == externalDownload.Md5;
+            })
+            .QueryWhenChanged(static query => query.Items.MaxBy(job => job.Status))
+            .ToObservable()
+            .Prepend((_jobMonitor, externalDownload), static state =>
+            {
+                var (jobMonitor, download) = state;
+                if (jobMonitor.Jobs.TryGetFirst(job => job.Definition is ExternalDownloadJob externalDownloadJob && externalDownloadJob.ExpectedMd5 == download.Md5, out var job))
+                    return job;
+                return null;
+            })
+            .WhereNotNull();
+
         var model = new ExternalDownloadItemModel(externalDownload)
         {
             IsInLibraryObservable = isInLibraryObservable,
-            // DownloadJobObservable = ,
+            DownloadJobObservable = downloadJobObservable,
         };
 
         model.Name.Value = externalDownload.AsCollectionDownload().Name;

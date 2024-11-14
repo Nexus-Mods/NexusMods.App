@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
 using NexusMods.Paths;
 using OneOf;
@@ -68,11 +69,9 @@ public interface ILibraryItemWithInstallAction : ILibraryItemWithAction
     }
 }
 
-public record struct ExternalItem(Uri Uri, Size Size, Md5HashValue Md5);
-
-public class DownloadableItem : OneOfBase<NexusModsFileMetadata.ReadOnly, ExternalItem>
+public class DownloadableItem : OneOfBase<CollectionDownloadNexusMods.ReadOnly, CollectionDownloadExternal.ReadOnly>
 {
-    public DownloadableItem(OneOf<NexusModsFileMetadata.ReadOnly, ExternalItem> input) : base(input) { }
+    public DownloadableItem(OneOf<CollectionDownloadNexusMods.ReadOnly, CollectionDownloadExternal.ReadOnly> input) : base(input) { }
 }
 
 public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction

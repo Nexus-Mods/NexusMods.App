@@ -16,17 +16,21 @@ public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel
 {
     public ExternalDownloadItemModel(CollectionDownloadExternal.ReadOnly externalDownload)
     {
-        DownloadableItem = new DownloadableItem(new ExternalItem(externalDownload.Uri, externalDownload.Size, externalDownload.Md5));
+        DownloadableItem = new DownloadableItem(externalDownload);
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
         // ReSharper disable once NotDisposedResource
         var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
         {
-            self.IsInLibraryObservable.ObserveOnUIThreadDispatcher()
-                .Subscribe(self, static (inLibrary, self) =>
+            self.IsInLibraryObservable.CombineLatest(
+                    source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
+                    resultSelector: static (a, b) => (a, b))
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(self, static (tuple, self) =>
                 {
-                    self.DownloadState.Value = inLibrary ? JobStatus.Completed : JobStatus.None;
+                    var (inLibrary, status) = tuple;
+                    self.DownloadState.Value = inLibrary ? JobStatus.Completed : status;
                     self.DownloadButtonText.Value = ILibraryItemWithDownloadAction.GetButtonText(status: self.DownloadState.Value);
                 }).AddTo(disposables);
         });
@@ -43,7 +47,7 @@ public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel
     }
 
     public required Observable<bool> IsInLibraryObservable { get; init; }
-    // public required Observable<IJob> DownloadJobObservable { get; init; }
+    public required Observable<IJob> DownloadJobObservable { get; init; }
 
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
 

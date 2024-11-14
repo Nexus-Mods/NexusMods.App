@@ -465,7 +465,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         
         await using var tempPath = TemporaryFileManager.CreateFile();
         
-        var job = DirectDownloadJob.Create(SerivceProvider, mod.Source.Url!, mod.Source.Md5, mod.Name);
+        var job = ExternalDownloadJob.Create(SerivceProvider, mod.Source.Url!, mod.Source.Md5, mod.Name);
         var libraryFile = await LibraryService.AddDownload(job);
 
         return (mod, libraryFile);
