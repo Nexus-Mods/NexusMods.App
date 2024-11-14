@@ -27,6 +27,15 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];
     public override GameId GameId => GameId.From(3474);
+    public override SupportType SupportType => SupportType.Official;
+
+    public override HashSet<FeatureStatus> Features { get; } =
+    [
+        new(BaseFeatures.GameLocatable, IsImplemented: true),
+        new(BaseFeatures.HasInstallers, IsImplemented: true),
+        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
+        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
+    ];
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
