@@ -1,23 +1,23 @@
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
 
-namespace NexusMods.App.UI.Pages.LibraryPage;
+namespace NexusMods.App.UI.Pages.CollectionDownload;
 
-public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
+public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithName,
-    ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDownloadAction
 {
-    public NexusModsFileMetadataLibraryItemModel(CollectionDownloadNexusMods.ReadOnly download)
+    public ExternalDownloadItemModel(CollectionDownloadExternal.ReadOnly externalDownload)
     {
-        DownloadableItem = new DownloadableItem(download);
+        DownloadableItem = new DownloadableItem(externalDownload);
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
@@ -25,8 +25,8 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
         var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
         {
             self.IsInLibraryObservable.CombineLatest(
-                source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
-                resultSelector: static (a, b) => (a, b))
+                    source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
+                    resultSelector: static (a, b) => (a, b))
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(self, static (tuple, self) =>
                 {
@@ -39,7 +39,6 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
         _modelDisposable = Disposable.Combine(
             modelActivationDisposable,
             Name,
-            Version,
             ItemSize,
             FormattedSize,
             DownloadItemCommand,
@@ -52,7 +51,6 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
     public required Observable<IJob> DownloadJobObservable { get; init; }
 
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
-    public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
@@ -83,6 +81,5 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
         base.Dispose(disposing);
     }
 
-    public override string ToString() => $"Nexus Mods File Metadata: {Name.Value}";
+    public override string ToString() => $"External Download: {Name.Value}";
 }
-

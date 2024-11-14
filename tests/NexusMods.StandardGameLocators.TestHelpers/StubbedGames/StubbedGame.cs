@@ -28,6 +28,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public override string Name => "Stubbed Game";
     public override GameId GameId => GameId.From(uint.MaxValue);
 
+    public override SupportType SupportType => SupportType.Unsupported;
+
     private readonly IServiceProvider _serviceProvider;
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
         IFileSystem fileSystem, IServiceProvider provider) : base(provider)

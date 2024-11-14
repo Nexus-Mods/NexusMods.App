@@ -44,7 +44,7 @@ public partial class NexusModsLibrary
         );
 
         var collectionRevisionInfo = apiResult.Data?.CollectionRevision;
-        if (collectionRevisionInfo is null) throw new NotSupportedException($"API call returned no data for `{slug}` `{revisionNumber}`");
+        if (collectionRevisionInfo is null) throw new NotSupportedException($"API call returned no data for collection slug `{slug}` revision `{revisionNumber}`");
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;

@@ -4,22 +4,15 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Resources;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
@@ -31,12 +24,10 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 {
     private readonly CollectionRevisionMetadata.ReadOnly _revision;
     private readonly CollectionMetadata.ReadOnly _collection;
+
+    private readonly IServiceProvider _serviceProvider;
     private readonly NexusModsDataProvider _nexusModsDataProvider;
-    private readonly NexusModsLibrary _nexusModsLibrary;
-    private readonly ILibraryService _libraryService;
-    private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly IOSInterop _osInterop;
-    private readonly ILoginManager _loginManager;
+    private readonly CollectionDownloader _collectionDownloader;
 
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
@@ -45,12 +36,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
+        _serviceProvider = serviceProvider;
         _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
-        _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
-        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-        _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        _collectionDownloader = new CollectionDownloader(_serviceProvider);
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -97,25 +85,17 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 .AddTo(disposables);
 
             TreeDataGridAdapter.MessageSubject.SubscribeAwait(
-                onNextAsync: (message, cancellationToken) => DownloadOrOpenPage(message.Item.AsT0, cancellationToken),
+                onNextAsync: (message, cancellationToken) =>
+                {
+                    return message.Item.Match(
+                        f0: x => _collectionDownloader.Download(x, cancellationToken),
+                        f1: x => _collectionDownloader.Download(x, cancellationToken)
+                    );
+                },
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
         });
-    }
-
-    private async ValueTask DownloadOrOpenPage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
-    {
-        if (_loginManager.IsPremium)
-        {
-            await using var tempPath = _temporaryFileManager.CreateFile();
-            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, fileMetadata.Uid.GameId, fileMetadata.ModPage.Uid.ModId, fileMetadata.Uid.FileId, cancellationToken: cancellationToken);
-            await _libraryService.AddDownload(job);
-        }
-        else
-        {
-            await _osInterop.OpenUrl(fileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
-        }
     }
 
     public string Name => _collection.Name;
