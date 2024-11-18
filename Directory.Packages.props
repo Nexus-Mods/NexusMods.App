@@ -4,7 +4,7 @@
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.2.0" />
     <PackageVersion Include="Avalonia.Skia" Version="11.2.0" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
-    <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.231" />
+    <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.242" />
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.7-beta" />
     <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
