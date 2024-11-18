@@ -1,0 +1,7 @@
+
+<Module>
+    <!-- 👇 Installed mod is `Harmony` -->
+    <Id value="Harmony"/>
+    <Name value="Harmony"/>
+    <Version value="v2.4.0"/>
+</Module>

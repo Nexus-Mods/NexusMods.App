@@ -20,7 +20,7 @@ public static class Services
             // Diagnostics
 
             // Attributes
-            .AddModLoadoutItemModel()
+            .AddBannerlordModuleLoadoutItemModel()
             .AddModuleInfoFileLoadoutFileModel()
    
             // Misc

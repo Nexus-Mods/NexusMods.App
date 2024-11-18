@@ -1,0 +1,4 @@
+<Module>
+    <!-- 👇❌ Required `Name` element is missing here -->
+    <Id value="Harmony"/>
+</Module>

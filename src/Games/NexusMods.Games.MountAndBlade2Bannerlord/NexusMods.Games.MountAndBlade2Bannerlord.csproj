@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bannerlord.ModuleManager" />
     <PackageReference Include="LinqGen" />
     <PackageReference Include="NexusMods.Paths" />
     <PackageReference Include="Bannerlord.LauncherManager" />
@@ -29,11 +30,6 @@
     <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Emitters\" />
-    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

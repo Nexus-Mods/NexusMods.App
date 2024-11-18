@@ -96,7 +96,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
             
             Debug.Assert(moduleInfoLoadoutItemId.HasValue);
 
-            _ = new ModLoadoutItem.New(transaction, modGroupEntityId)
+            _ = new BannerlordModuleLoadoutItem.New(transaction, modGroupEntityId)
             {
                 ModuleInfoId = moduleInfoLoadoutItemId.Value,
                 LoadoutItemGroup = modGroup,
