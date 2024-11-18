@@ -42,7 +42,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
     <PackageVersion Include="Polly.Core" Version="8.4.2" />
     <PackageVersion Include="Polly" Version="8.4.2" />
-    <PackageVersion Include="Verify" Version="26.6.0" />
+    <PackageVersion Include="Verify" Version="28.3.0" />
     <PackageVersion Include="ZstdSharp.Port" Version="0.8.1" />
   </ItemGroup>
   <ItemGroup>
@@ -71,7 +71,7 @@
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
+    <PackageVersion Include="System.IO.Hashing" Version="9.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
@@ -108,7 +108,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Verify.Xunit" Version="26.6.0" />
+    <PackageVersion Include="Verify.Xunit" Version="28.3.0" />
     <PackageVersion Include="Verify.ImageMagick" Version="3.4.2" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />
