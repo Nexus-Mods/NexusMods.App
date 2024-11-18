@@ -8,23 +8,18 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class Helpers
 {
-    public static async IAsyncEnumerable<ValueTuple<ModLoadoutItem.ReadOnly, ModuleInfoExtended>> GetAllManifestsAsync(
+    public static async IAsyncEnumerable<ValueTuple<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended>> GetAllManifestsAsync(
         ILogger logger,
         Loadout.ReadOnly loadout,
-        IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended> pipeline,
+        IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> pipeline,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var asyncEnumerable = loadout.Items
+        var enumerable = loadout.Items
             .OfTypeLoadoutItemGroup()
-            .OfTypeModLoadoutItem()
-            .ToAsyncEnumerable()
-            .ConfigureAwait(continueOnCapturedContext: false)
-            .WithCancellation(cancellationToken);
+            .OfTypeBannerlordModuleLoadoutItem();
 
-        await using var enumerator = asyncEnumerable.GetAsyncEnumerator();
-        while (await enumerator.MoveNextAsync())
+        foreach (var bannerlordMod in enumerable)
         {
-            var bannerlordMod = enumerator.Current;
             Resource<ModuleInfoExtended> resource;
 
             try

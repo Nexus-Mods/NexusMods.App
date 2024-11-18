@@ -18,7 +18,7 @@ internal static class Pipelines
 
     public static IServiceCollection AddPipelines(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddKeyedSingleton<IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended>>(
+        return serviceCollection.AddKeyedSingleton<IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended>>(
             serviceKey: ManifestPipelineKey,
             implementationFactory: static (serviceProvider, _) => CreateManifestPipeline(
                 fileStore: serviceProvider.GetRequiredService<IFileStore>()
@@ -26,12 +26,12 @@ internal static class Pipelines
         );
     }
 
-    public static IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended> GetManifestPipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> GetManifestPipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended>>(serviceKey: ManifestPipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended>>(serviceKey: ManifestPipelineKey);
     }
 
-    private static IResourceLoader<ModLoadoutItem.ReadOnly, ModuleInfoExtended> CreateManifestPipeline(IFileStore fileStore)
+    private static IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> CreateManifestPipeline(IFileStore fileStore)
     {
         var pipeline = new FileStoreStreamLoader(fileStore)
             .ThenDo(Unit.Default, static (_, _, resource, _) =>
@@ -46,7 +46,7 @@ internal static class Pipelines
                 keyComparer: EqualityComparer<Hash>.Default,
                 capacityPartition: new FavorWarmPartition(totalCapacity: 1000)
             )
-            .ChangeIdentifier<ModLoadoutItem.ReadOnly, Hash, ModuleInfoExtended>(
+            .ChangeIdentifier<BannerlordModuleLoadoutItem.ReadOnly, Hash, ModuleInfoExtended>(
                 static mod => mod.ModuleInfo.AsLoadoutFile().Hash
             );
 

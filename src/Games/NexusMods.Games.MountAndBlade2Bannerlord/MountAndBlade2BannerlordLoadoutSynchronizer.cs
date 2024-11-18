@@ -126,7 +126,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 
     protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
-        var modDirectoryNameToModel = new Dictionary<RelativePath, ModLoadoutItem.ReadOnly>();
+        var modDirectoryNameToModel = new Dictionary<RelativePath, BannerlordModuleLoadoutItem.ReadOnly>();
 
         foreach (var newFile in newFiles)
         {
@@ -150,18 +150,18 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         return ValueTask.CompletedTask;
     }
 
-    private static bool TryGetMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out ModLoadoutItem.ReadOnly mod)
+    private static bool TryGetMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out BannerlordModuleLoadoutItem.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, ModsFolder.Join(modDirectoryName).Join(SubModuleFile));
 
         if (!LoadoutItemWithTargetPath.FindByTargetPath(db, manifestFilePath.ToGamePathParentTuple(loadout))
                 .TryGetFirst(x => x.AsLoadoutItem().LoadoutId == loadout && x.Contains(ModuleInfoFileLoadoutFile.ModuleInfoFile), out var file))
         {
-            mod = default(ModLoadoutItem.ReadOnly);
+            mod = default(BannerlordModuleLoadoutItem.ReadOnly);
             return false;
         }
 
-        mod = ModLoadoutItem.Load(db, file.AsLoadoutItem().Parent);
+        mod = BannerlordModuleLoadoutItem.Load(db, file.AsLoadoutItem().Parent);
         return true;
     }
 
