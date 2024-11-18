@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `AdvancedPartyAI` -->
+    <Id value="AdvancedPartyAI"/>
+    <Name value="Advanced Party AI"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ This dependency `Bannerlord.ButterLib` with version range `v2.0.0-v3.0.0` is not installed -->
+        <DependedModuleMetadata id="Bannerlord.ButterLib" version="v2.0.0-v3.0.0" />
+    </DependedModuleMetadatas>
+</Module>
