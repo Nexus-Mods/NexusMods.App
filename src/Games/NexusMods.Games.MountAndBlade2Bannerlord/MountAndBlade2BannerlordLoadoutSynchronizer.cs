@@ -39,7 +39,6 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
     private static GamePath BaseGameData => new(LocationId.Game, "Data");
     private static GamePath BaseGameCrashUploader => new(LocationId.Game, "bin/CrashUploader.Publish");
     
-    
     // Paths ignored for backup.
     private static readonly GamePath[] IgnoredBackupPaths =
     [
@@ -73,11 +72,11 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         BaseGameCrashUploader,
     ];
     
-    // A whitelist which takes priority over the blacklist above.
+    // An 'allow list' which takes priority over the 'not allowed' ignore list.
     // In some cases, you may want to capture metadata files with specific names.
     private static RelativePath[] ForceBackupList =
     {
-        "SubModule.xml", // Mods shipped with basegame.
+        "SubModule.xml", // Metadata about mods shipped with basegame.
     };
 
     public MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
