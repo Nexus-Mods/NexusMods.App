@@ -55,7 +55,7 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
         }
     }
 
-    private static Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
+    private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
     {
         return issue switch
         {
@@ -194,7 +194,15 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             ModuleVersionMismatchIssue moduleVersionMismatchIssue => null,
             
             // A new variant that's unknown to our code.
-            _ => throw new ArgumentOutOfRangeException(nameof(issue), issue, null),
+            _ => LogAndReturnUnknownDiagnostic(issue), 
         };
+    }
+
+    private Diagnostic? LogAndReturnUnknownDiagnostic(ModuleIssueV2 issue)
+    {
+        _logger.LogError("Unknown issue. This indicates an update in `Bannerlord.ModuleManager`" +
+                         "which is not handled on our end in a switch statement.\n" +
+                         "Issue text is below: {Issue}", issue);
+        return null;
     }
 }
