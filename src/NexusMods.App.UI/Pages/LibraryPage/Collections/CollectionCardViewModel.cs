@@ -66,10 +66,10 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     [Reactive] public Bitmap? Image { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     public string Summary => _collection.Summary;
-    public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
+    public string Category => _collection.Category.Name;
     public int ModCount => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => (ulong)_revision.Downloads.Count;
+    public ulong DownloadCount => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;
