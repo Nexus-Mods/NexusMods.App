@@ -39,9 +39,6 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
-        TabTitle = _collection.Name;
-        TabIcon = IconValues.Collections;
-
         _serviceProvider = serviceProvider;
         _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
         _collectionDownloader = new CollectionDownloader(_serviceProvider);
@@ -52,6 +49,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
         _revision = revisionMetadata;
         _collection = revisionMetadata.Collection;
+
+        TabTitle = _collection.Name;
+        TabIcon = IconValues.Collections;
 
         RequiredDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
         RequiredDownloadsAdapter.ViewHierarchical.Value = false;
