@@ -99,8 +99,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             var newIndex = currentIndex + delta;
 
             // Ensure the new index is within the bounds of the list
-            if (newIndex < 0 || newIndex >= stagingList.Count)
-                return;
+            newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
+            if (newIndex == currentIndex) return;
 
             // Move the item in the list
             stagingList.RemoveAt(currentIndex);
