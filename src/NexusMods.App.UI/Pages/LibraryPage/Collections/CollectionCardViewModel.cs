@@ -72,6 +72,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
+    public bool IsAdult => _revision.IsAdult;
     public string AuthorName => _collection.Author.Name;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }

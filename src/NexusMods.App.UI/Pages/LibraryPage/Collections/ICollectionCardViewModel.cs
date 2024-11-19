@@ -32,6 +32,9 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// <inheritdoc cref="CollectionRevisionMetadata.OverallRating"/>
     Percent OverallRating { get; }
 
+    /// <inheritdoc cref="CollectionRevisionMetadata.IsAdult"/>
+    bool IsAdult { get; }
+
     /// <summary>
     /// The tile image of the collection.
     /// </summary>
