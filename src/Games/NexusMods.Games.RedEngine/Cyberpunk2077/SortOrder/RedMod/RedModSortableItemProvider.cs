@@ -55,7 +55,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
-        var order = RetrieveSortOrder();
+        var order = RetrieveSortableEntries();
         _orderCache.AddOrUpdate(order);
 
         _orderCache.Connect()
@@ -112,7 +112,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                 stagingList[i].SortIndex = i;
             }
 
-            await PersistOrder(stagingList);
+            await PersistSortableEntries(stagingList);
 
             _orderCache.Edit(innerCache =>
                 {
@@ -151,7 +151,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
         // Retrieves the order from the database using the passed db
         // NOTE: depending on the db passed, the order might not be the latest
-        var sortOrder = RetrieveSortOrder(dbToUse);
+        var sortOrder = RetrieveSortableEntries(dbToUse);
 
         // Sanitize the order, applying it to the redMods in questions
         var validatedOrder = SynchronizeSortingToItems(redMods, sortOrder, this);
@@ -174,7 +174,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder.ToList(), this);
 
             // Update the database
-            await PersistOrder(stagingList);
+            await PersistSortableEntries(stagingList);
 
             // Update the cache
             _orderCache.Edit(innerCache =>
@@ -190,7 +190,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         }
     }
 
-    private List<RedModSortableItem> RetrieveSortOrder(IDb? db = null)
+    private List<RedModSortableItem> RetrieveSortableEntries(IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
 
@@ -285,7 +285,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     }
 
 
-    private async Task PersistOrder(List<RedModSortableItem> orderList)
+    private async Task PersistSortableEntries(List<RedModSortableItem> orderList)
     {
         var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
             .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
