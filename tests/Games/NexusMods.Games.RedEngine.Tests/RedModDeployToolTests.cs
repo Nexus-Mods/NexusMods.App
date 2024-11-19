@@ -66,9 +66,9 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         await tsc1.Task;
         
         var order = provider.SortableItems;
-        var specificGroup = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
+        var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
         
-        await provider.SetRelativePosition(specificGroup, delta);
+        await provider.SetRelativePosition(specificRedMod, delta);
         
         loadout = loadout.Rebase();
 
