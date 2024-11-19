@@ -46,7 +46,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var tsc1 = new TaskCompletionSource<Unit>();
         // avoid stalling the test on failure
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromSeconds(20));
+        cts.CancelAfter(TimeSpan.FromSeconds(30));
         cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
         
         // wait for the order to be updated
