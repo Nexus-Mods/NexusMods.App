@@ -140,6 +140,7 @@ nav:
         - '01: Stardew Valley': developers/games/0001-StardewValley.md
         - '02: Cyberpunk 2077': developers/games/0002-Cyberpunk2077.md
         - '03: BaldursGate3': developers/games/0003-BaldursGate3.md
+        - '04: M&B2 Bannerlord': developers/games/0004-MountAndBlade2Bannerlord.md
     - Misc:
         - About Fomod: developers/misc/AboutFomod.md
         - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
