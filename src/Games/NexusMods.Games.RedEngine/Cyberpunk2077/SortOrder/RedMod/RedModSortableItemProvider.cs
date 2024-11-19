@@ -212,16 +212,24 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .ToList();
     }
 
-    private static List<RedModSortableItem> SynchronizeSortingToItems(IList<RedModLoadoutGroup.ReadOnly> redModsGroups, List<RedModSortableItem> orderList, RedModSortableItemProvider provider)
+    /// <summary>
+    /// This method generates a new order list from currentOrder, after removing items that are no longer available and
+    /// adding new items that have become available.
+    /// New items are added at the beginning of the list, to make them win over existing items.
+    /// </summary>
+    /// <param name="availableRedMods">Collection of RedMods to synchronize against</param>
+    /// <param name="currentOrder">The starting order</param>
+    /// <returns>The new sorting</returns>
+    private static List<RedModSortableItem> SynchronizeSortingToItems(IList<RedModLoadoutGroup.ReadOnly> availableRedMods, List<RedModSortableItem> currentOrder, RedModSortableItemProvider provider)
     {
         var redModsToAdd = new List<RedModLoadoutGroup.ReadOnly>();
         var sortableItemsToRemove = new List<RedModSortableItem>();
 
         // Find items to remove
-        foreach (var si in orderList)
+        foreach (var si in currentOrder)
         {
             // TODO: determine the winning mod in case of multiple mods with the same name
-            var redModMatch = redModsGroups.FirstOrOptional(
+            var redModMatch = availableRedMods.FirstOrOptional(
                 g => RedModFolder(g) == si.RedModFolderName
             );
 
@@ -232,11 +240,11 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         }
 
         // Find items to add
-        foreach (var redMod in redModsGroups)
+        foreach (var redMod in availableRedMods)
         {
             var redModFolder = RedModFolder(redMod);
 
-            var sortableItem = orderList.FirstOrOptional(item => item.RedModFolderName == redModFolder);
+            var sortableItem = currentOrder.FirstOrOptional(item => item.RedModFolderName == redModFolder);
 
             if (!sortableItem.HasValue)
             {
@@ -245,7 +253,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         }
 
         // Get a staging list of the items to make changes to
-        var stagingList = orderList
+        var stagingList = currentOrder
             .OrderBy(item => item.SortIndex)
             .ToList();
 
@@ -270,7 +278,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             item.SortIndex = i;
 
             // TODO: determine the winning mod in case of multiple mods with the same name, instead of just the first one
-            if (!redModsGroups.TryGetFirst(g => RedModFolder(g) == item.RedModFolderName, out var redModMatch))
+            if (!availableRedMods.TryGetFirst(g => RedModFolder(g) == item.RedModFolderName, out var redModMatch))
             {
                 // shouldn't happen because any missing items should have been added
                 continue;
