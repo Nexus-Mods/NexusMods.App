@@ -226,6 +226,7 @@ public partial class NexusModsLibrary
         resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
         resolver.Add(CollectionRevisionMetadata.RevisionNumber, revisionNumber);
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
+        resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
 
         if (ulong.TryParse(revisionInfo.TotalSize, out var totalSize))
             resolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(totalSize));
