@@ -67,9 +67,9 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     public string Summary => _collection.Summary;
     public string Category => _collection.Category.Name;
-    public int ModCount => _revision.Downloads.Count;
+    public int NumDownloads => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => _collection.TotalDownloads;
+    public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;
