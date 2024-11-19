@@ -1,7 +1,4 @@
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -10,7 +7,6 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
-using StrawberryShake.Extensions;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
@@ -23,14 +19,15 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     {
         _tool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
     }
-    
+
     [Fact]
     public async Task LoadorderFileIsWrittenCorrectly()
     {
-        var loadout = await SetupLoadout();
+        var loadout = await CreateLoadout();
+        loadout = await AddRedMods(loadout);
         await Verify(await WriteLoadoutFile(loadout));
     }
-    
+
     [Theory]
     [InlineData("Driver_Shotguns", 3)]
     [InlineData("Driver_Shotguns", -3)]
@@ -40,36 +37,43 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     [InlineData("maestros_of_synth_the_dirge", -11)]
     public async Task MovingModsRelativelyResultsInCorrectOrdering(string name, int delta)
     {
-        var loadout = await SetupLoadout();
-        
+        var loadout = await CreateLoadout();
+
         var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
-        
+
         var tsc1 = new TaskCompletionSource<Unit>();
         // avoid stalling the test on failure
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromSeconds(20));
+        cts.CancelAfter(TimeSpan.FromSeconds(30));
         cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
-        
-        // wait for the order to be updated
+
+        // listen for the order to be updated
         provider.SortableItems
             .WhenAnyValue(coll => coll.Count)
             .Where(count => count == 12)
             .Distinct()
             .Subscribe(_ =>
-            {
-                if (!tsc1.Task.IsCompleted)
                 {
-                    tsc1.SetResult(Unit.Default);
-                };
-            } );
-        await tsc1.Task;
+                    if (!tsc1.Task.IsCompleted)
+                    {
+                        tsc1.SetResult(Unit.Default);
+                    }
+                }
+            );
         
+        // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
+        // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
+        loadout = await AddRedMods(loadout);
+        
+        // wait for the order to be updated
+        await tsc1.Task;
+
         var order = provider.SortableItems;
         var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
-        
+
         await provider.SetRelativePosition(specificRedMod, delta);
-        
+
         loadout = loadout.Rebase();
 
         await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
@@ -84,11 +88,10 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         return await tempFile.Path.ReadAllTextAsync();
     }
 
-    private async Task<Loadout.ReadOnly> SetupLoadout()
+    private async Task<Loadout.ReadOnly> AddRedMods(Loadout.ReadOnly loadout)
     {
-        var loadout = await CreateLoadout();
         var files = new[] { "one_mod.7z", "several_red_mods.7z" };
-        
+
         await using var tempDir = TemporaryFileManager.CreateFolder();
         foreach (var file in files)
         {
@@ -96,14 +99,12 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             var copyPath = tempDir.Path.Combine(file);
             // Create copy to avoid "file in use" by other tests issues
             File.Copy(sourcePath.ToString(), copyPath.ToString(), overwrite: true);
-            
+
             var libraryArchive = await RegisterLocalArchive(copyPath);
             await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
-        
+
         loadout = loadout.Rebase();
         return loadout;
     }
-
-
 }

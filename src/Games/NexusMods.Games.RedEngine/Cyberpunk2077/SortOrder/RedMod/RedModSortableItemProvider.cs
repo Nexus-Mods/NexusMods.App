@@ -69,6 +69,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         // Observe changes in the RedMods and adjust the order list accordingly
         RedModLoadoutGroup.ObserveAll(_connection)
             .Filter(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+            // NOTE(Al12rs): Sorting by folder name, to ensure the order of new entries is consistent
             .SortBy(g => RedModFolder(g).ToString())
             .Bind(out _redModsGroups)
             .ToObservable()
@@ -98,8 +99,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             var newIndex = currentIndex + delta;
 
             // Ensure the new index is within the bounds of the list
-            if (newIndex < 0 || newIndex >= stagingList.Count)
-                return;
+            newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
+            if (newIndex == currentIndex) return;
 
             // Move the item in the list
             stagingList.RemoveAt(currentIndex);
