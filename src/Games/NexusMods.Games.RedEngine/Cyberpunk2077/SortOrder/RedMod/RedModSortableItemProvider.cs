@@ -69,6 +69,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         // Observe changes in the RedMods and adjust the order list accordingly
         RedModLoadoutGroup.ObserveAll(_connection)
             .Filter(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+            // NOTE(Al12rs): Sorting by folder name, to ensure the order of new entries is consistent
             .SortBy(g => RedModFolder(g).ToString())
             .Bind(out _redModsGroups)
             .ToObservable()
