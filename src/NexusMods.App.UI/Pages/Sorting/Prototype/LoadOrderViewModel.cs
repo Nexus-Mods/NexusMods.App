@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
@@ -30,8 +31,10 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             .ToObservableChangeSet()
             .Transform(item => (ISortableItemViewModel)new SortableItemViewModel(item))
             .Bind(out _sortableItemViewModels);
+        
+        
 
-        TreeSource = new FlatTreeDataGridSource<ISortableItemViewModel>(_sortableItemViewModels)
+        var source = new FlatTreeDataGridSource<ISortableItemViewModel>(_sortableItemViewModels)
         {
             Columns =
             {
@@ -61,6 +64,14 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 ),
             },
         };
+        
+        var selection = new TreeDataGridRowSelectionModel<ISortableItemViewModel>(source)
+        {
+            SingleSelect = false,
+        };
+        source.Selection = selection;
+        
+        TreeSource = source;
 
         this.WhenActivated(d =>
             {
