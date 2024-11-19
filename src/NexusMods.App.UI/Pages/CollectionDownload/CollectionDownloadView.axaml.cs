@@ -81,7 +81,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 {
                     if (vm.OptionalDownloadsCount == 0)
                     {
-                        //TabControl.IsVisible = false;
+                        // TabControl.IsVisible = false;
                     }
                 }).DisposeWith(d);
 
