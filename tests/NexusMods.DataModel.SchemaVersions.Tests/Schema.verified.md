@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x954B6FA0118F05B5
-   - Total attributes: 135
+   - Fingerprint: 0x1A97F1D9BCD28C72
+   - Total attributes: 136
    - Total namespaces: 54
    
 ## Attributes
@@ -85,6 +85,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.NexusModsCollectionMetadata/TileImageUri                                             | Utf8                    | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/TotalDownloads                                           | UInt64                  | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/Collection                                               | Reference               | False   | False | False     | 
+| NexusMods.Library.NexusModsCollectionRevision/IsAdult                                                  | UInt8                   | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/OverallRating                                            | Float32                 | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionId                                               | UInt64                  | True    | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionNumber                                           | UInt64                  | True    | False | False     | 
