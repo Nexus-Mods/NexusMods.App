@@ -37,4 +37,10 @@ public interface ISortableItem : IComparable<ISortableItem>
     /// </summary>
     public bool IsActive { get; set; }
     
+    
+    int IComparable<ISortableItem>.CompareTo(ISortableItem? other)
+    {
+        if (other == null) return 1;
+        return SortIndex.CompareTo(other.SortIndex);
+    }
 }

@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
@@ -12,9 +14,12 @@ namespace NexusMods.App.UI.Pages.Sorting.Prototype;
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     private readonly ReadOnlyObservableCollection<ISortableItemViewModel> _sortableItemViewModels;
-    
+
     public string SortOrderName { get; }
     public ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems => _sortableItemViewModels;
+
+    public ITreeDataGridSource<ISortableItemViewModel> TreeSource { get; }
+
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
     {
         SortOrderName = sortableItemProviderFactory.SortOrderName;
@@ -26,12 +31,42 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             .Transform(item => (ISortableItemViewModel)new SortableItemViewModel(item))
             .Bind(out _sortableItemViewModels);
 
-        this.WhenActivated(d =>
+        TreeSource = new FlatTreeDataGridSource<ISortableItemViewModel>(_sortableItemViewModels)
         {
-            subscription.Subscribe()
-                .DisposeWith(d);
-        });
-        
-    }
+            Columns =
+            {
+                new TemplateColumn<ISortableItemViewModel>(
+                    "Load Order",
+                    "IndexColumnDataTemplate",
+                    options: new TemplateColumnOptions<ISortableItemViewModel>
+                    {
+                        // sort by SortIndex
+                        CompareAscending = (x, y) =>
+                        {
+                            if (x is null || y is null)
+                                return 0;
+                            return x.SortIndex.CompareTo(y.SortIndex);
+                        },
+                        CompareDescending = (x, y) =>
+                        {
+                            if (x is null || y is null)
+                                return 0;
+                            return y.SortIndex.CompareTo(x.SortIndex);
+                        }
+                    }
+                ),
+                new TextColumn<ISortableItemViewModel, string>(
+                    "Name",
+                    x => x.DisplayName
+                ),
+            },
+        };
 
+        this.WhenActivated(d =>
+            {
+                subscription.Subscribe()
+                    .DisposeWith(d);
+            }
+        );
+    }
 }
