@@ -16,6 +16,16 @@ namespace NexusMods.Networking.NexusWebApi.Extensions;
 public static class FragmentExtensions
 {
     /// <summary>
+    /// Resolves a category.
+    /// </summary>
+    public static EntityId Resolve(this ICollectionRevisionInfo_CollectionRevision_Collection_Category category, IDb db, ITransaction tx)
+    {
+        var resolver = GraphQLResolver.Create(db, tx, CollectionCategory.NexusId, (ulong)category.Id);
+        resolver.Add(CollectionCategory.Name, category.Name);
+        return resolver.Id;
+    }
+
+    /// <summary>
     /// Resolves the IUserFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
     public static EntityId Resolve(this IUserFragment userFragment, IDb db, ITransaction tx)

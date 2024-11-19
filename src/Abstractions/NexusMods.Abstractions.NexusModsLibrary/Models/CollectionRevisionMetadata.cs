@@ -47,5 +47,5 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The total number of ratings this revision has.
     /// </summary>
-    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings));
+    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
 }
