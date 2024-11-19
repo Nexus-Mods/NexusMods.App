@@ -17,12 +17,10 @@ namespace NexusMods.Games.RedEngine.Tests;
 
 public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Game>
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly RedModDeployTool _tool;
 
-    public RedModDeployToolTests(ITestOutputHelper helper, ITestOutputHelper testOutputHelper) : base(helper)
+    public RedModDeployToolTests(ITestOutputHelper helper) : base(helper)
     {
-        _testOutputHelper = testOutputHelper;
         _tool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
     }
     
