@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 [Include<LoadoutItemGroup>]
-public partial class ModLoadoutItem : IModelDefinition
+public partial class BannerlordModuleLoadoutItem : IModelDefinition
 {
     private const string Namespace = "NexusMods.MountAndBlade2Bannerlord.ModLoadoutItem";
 
