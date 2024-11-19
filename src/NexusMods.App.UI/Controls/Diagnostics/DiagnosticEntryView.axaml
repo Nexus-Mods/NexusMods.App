@@ -15,15 +15,12 @@
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="DropShadowBorder">
-        <navigation:NavigationControl x:Name="EntryButton">
-            <panels:FlexPanel x:Name="EntryFlexPanel">
-                <icons:UnifiedIcon x:Name="SeverityIcon" />
-                <TextBlock x:Name="DescriptionText" />
-                <icons:UnifiedIcon x:Name="NavigationIcon" Value="{x:Static icons:IconValues.ChevronRight}" />
-            </panels:FlexPanel>
-        </navigation:NavigationControl>
-    </Border>
-
+    <navigation:NavigationControl x:Name="EntryButton">
+        <panels:FlexPanel x:Name="EntryFlexPanel">
+            <icons:UnifiedIcon x:Name="SeverityIcon" />
+            <TextBlock x:Name="DescriptionText" />
+            <icons:UnifiedIcon x:Name="NavigationIcon" Value="{x:Static icons:IconValues.ChevronRight}" />
+        </panels:FlexPanel>
+    </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>

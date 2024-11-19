@@ -33,36 +33,41 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
                     var total = numCritical + numWarnings + numSuggestions;
 
                     // set button texts
-                    AllDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
-                    CriticalDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
-                    WarningDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
-                    SuggestionDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
+                    AllDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
+                    SuggestionDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
+                    WarningDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
+                    CriticalDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
+                    
+                    //AllDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
+                    //CriticalDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
+                    //WarningDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
+                    //SuggestionDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
 
                     EmptyState.IsActive = total == 0;
                 })
                 .DisposeWith(disposable);
 
             // toggle commands
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.CriticalDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Critical))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.WarningDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Warning))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.SuggestionDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Suggestion))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel, vm => vm.ShowAllCommand, view => view.AllDiagnosticsButton)
-                .DisposeWith(disposable);
+            // this.BindCommand(ViewModel,
+            //         vm => vm.ToggleSeverityCommand,
+            //         view => view.CriticalDiagnosticsButton,
+            //         withParameter: Observable.Return(DiagnosticSeverity.Critical))
+            //     .DisposeWith(disposable);
+            //
+            // this.BindCommand(ViewModel,
+            //         vm => vm.ToggleSeverityCommand,
+            //         view => view.WarningDiagnosticsButton,
+            //         withParameter: Observable.Return(DiagnosticSeverity.Warning))
+            //     .DisposeWith(disposable);
+            //
+            // this.BindCommand(ViewModel,
+            //         vm => vm.ToggleSeverityCommand,
+            //         view => view.SuggestionDiagnosticsButton,
+            //         withParameter: Observable.Return(DiagnosticSeverity.Suggestion))
+            //     .DisposeWith(disposable);
+            //
+            // this.BindCommand(ViewModel, vm => vm.ShowAllCommand, view => view.AllDiagnosticsButton)
+            //     .DisposeWith(disposable);
 
             // filter changes
             this.WhenAnyValue(view => view.ViewModel!.Filter)
@@ -76,17 +81,17 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
 
                     if (showCritical && showWarnings && showSuggestions)
                     {
-                        AllDiagnosticsButton.Classes.Add(selectedClass);
-                        CriticalDiagnosticsButton.Classes.Remove(selectedClass);
-                        WarningDiagnosticsButton.Classes.Remove(selectedClass);
-                        SuggestionDiagnosticsButton.Classes.Remove(selectedClass);
+                        //AllDiagnosticsButton.Classes.Add(selectedClass);
+                        //CriticalDiagnosticsButton.Classes.Remove(selectedClass);
+                        //WarningDiagnosticsButton.Classes.Remove(selectedClass);
+                        //SuggestionDiagnosticsButton.Classes.Remove(selectedClass);
                     }
                     else
                     {
-                        AllDiagnosticsButton.Classes.Remove(selectedClass);
-                        CriticalDiagnosticsButton.Classes.ToggleIf(selectedClass, showCritical);
-                        WarningDiagnosticsButton.Classes.ToggleIf(selectedClass, showWarnings);
-                        SuggestionDiagnosticsButton.Classes.ToggleIf(selectedClass, showSuggestions);
+                        // AllDiagnosticsButton.Classes.Remove(selectedClass);
+                        // CriticalDiagnosticsButton.Classes.ToggleIf(selectedClass, showCritical);
+                        // WarningDiagnosticsButton.Classes.ToggleIf(selectedClass, showWarnings);
+                        // SuggestionDiagnosticsButton.Classes.ToggleIf(selectedClass, showSuggestions);
                     }
                 })
                 .DisposeWith(disposable);

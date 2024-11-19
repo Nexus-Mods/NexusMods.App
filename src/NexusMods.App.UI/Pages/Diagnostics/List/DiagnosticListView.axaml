@@ -10,69 +10,72 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
     <!-- TODO: anymore work on this and it should be moved to a separate style file -->
 
-    <Grid RowDefinitions="Auto, *">
-        <Border Grid.Row="0" Classes="OutlineWeak" BorderThickness="0 0 0 1" Padding="24 10">
-            <Border.Styles>
-                <Style Selector="Button.Selected">
-                    <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-                </Style>
-            </Border.Styles>
+    <reactive:ReactiveUserControl.Styles>
+        <Style Selector="ScrollViewer">
+            <Setter Property="ClipToBounds" Value="False" />
+        </Style>
+    </reactive:ReactiveUserControl.Styles>
 
-            <StackPanel Orientation="Horizontal" Classes="Spacing-2" MaxWidth="1000">
-                <Button Classes="Rounded Primary" x:Name="AllDiagnosticsButton">
-                    <TextBlock x:Name="AllDiagnosticsButtonText" />
-                </Button>
-                <Button Classes="Rounded Primary" x:Name="CriticalDiagnosticsButton">
-                    <TextBlock x:Name="CriticalDiagnosticsButtonText" />
-                </Button>
-                <Button Classes="Rounded Primary" x:Name="WarningDiagnosticsButton">
-                    <TextBlock x:Name="WarningDiagnosticsButtonText" />
-                </Button>
-                <Button Classes="Rounded Primary" x:Name="SuggestionDiagnosticsButton">
-                    <TextBlock x:Name="SuggestionDiagnosticsButtonText" />
-                </Button>
+    <controls:EmptyState x:Name="EmptyState"
+                         Grid.Row="1"
+                         Icon="{x:Static icons:IconValues.CheckCircle}"
+                         Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
+                         Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}"
+                         IsActive="False">
+
+        <controls:EmptyState.Styles>
+            <Style Selector="icons|UnifiedIcon#Icon">
+                <Setter Property="Foreground" Value="{StaticResource SuccessStrong}" />
+            </Style>
+        </controls:EmptyState.Styles>
+
+        <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="12,24,12,24">
+            <StackPanel>
+
+                <TextBlock Text="Health Check" Theme="{StaticResource HeadingSMSemiTheme}" />
+
+                <TextBlock Text="Review your Loadout for any issues and learn how to resolve them if needed."
+                           Theme="{StaticResource BodyMDNormalTheme}" />
+
+                <TabControl x:Name="HealthCheckTabControl" Classes="Subtabs" Margin="0,24,0,0">
+                    <TabItem Header="All (12)" x:Name="AllDiagnosticsTab">
+
+                        <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <!-- Do not replace with ReactiveUI, the generated component and kills shadows -->
+                            <!-- due to enforced ClipToBounds that can't be overwritten by styles -->
+                            <ItemsControl.DataTemplates>
+                                <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                    <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                                </DataTemplate>
+                            </ItemsControl.DataTemplates>
+                        </ItemsControl>
+                    </TabItem>
+                    <TabItem Header="Suggestions (2)" x:Name="SuggestionDiagnosticsTab">
+                        <TextBlock Text="Content for Tab 2" />
+                    </TabItem>
+                    <TabItem Header="Warnings (4)" x:Name="WarningDiagnosticsTab">
+                        <TextBlock Text="Content for Tab 3" />
+                    </TabItem>
+                    <TabItem Header="Critical (6)" x:Name="CriticalDiagnosticsTab">
+                        <TextBlock Text="Content for Tab 4" />
+                    </TabItem>
+                </TabControl>
             </StackPanel>
         </Border>
 
-        <controls:EmptyState x:Name="EmptyState"
-                             Grid.Row="1"
-                             Icon="{x:Static icons:IconValues.CheckCircle}"
-                             Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
-                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
+    </controls:EmptyState>
 
-            <controls:EmptyState.Styles>
-                <Style Selector="icons|UnifiedIcon#Icon">
-                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}" />
-                </Style>
-            </controls:EmptyState.Styles>
-
-            <ScrollViewer>
-                <Border Padding="24">
-                    <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel x:Name="ListViewPanel" Spacing="{StaticResource Spacing-2}" MaxWidth="1000" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-
-                        <!-- Do not replace with ReactiveUI, the generated component and kills shadows
-                         due to enforced ClipToBounds that can't be overwritten by styles -->
-                        <ItemsControl.DataTemplates>
-                            <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
-                                <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
-                            </DataTemplate>
-                        </ItemsControl.DataTemplates>
-                    </ItemsControl>
-                </Border>
-            </ScrollViewer>
-        </controls:EmptyState>
-
-    </Grid>
 
 </reactive:ReactiveUserControl>
