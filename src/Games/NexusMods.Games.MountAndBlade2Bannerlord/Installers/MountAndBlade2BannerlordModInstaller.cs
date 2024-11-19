@@ -14,7 +14,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths.Extensions;
-using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
+using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 

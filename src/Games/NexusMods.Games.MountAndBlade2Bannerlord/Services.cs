@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
@@ -12,7 +13,8 @@ public static class Services
     public static IServiceCollection AddMountAndBlade2Bannerlord(this IServiceCollection services)
     {
         return services
-            .AddGame<MountAndBlade2Bannerlord>()
+            .AddGame<Bannerlord>()
+            .AddSingleton<ITool, BannerlordRunGameTool>()
 
             // Installers
             .AddSingleton<MountAndBlade2BannerlordModInstaller>()
@@ -24,7 +26,7 @@ public static class Services
             .AddModuleInfoFileLoadoutFileModel()
    
             // Misc
-            .AddSettings<MountAndBlade2BannerlordSettings>()
+            .AddSettings<BannerlordSettings>()
             .AddSingleton<LauncherManagerFactory>()
             .AddSingleton<FileSystemProvider>()
             .AddSingleton<NotificationProvider>()

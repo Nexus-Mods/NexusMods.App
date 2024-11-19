@@ -20,7 +20,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     ILoadOrderStateProvider
 {
     private readonly ILogger _logger;
-    private readonly MountAndBlade2BannerlordSettings _settings;
+    private readonly BannerlordSettings _settings;
     private readonly string _installationPath;
 
     public string ExecutableParameters { get; private set; } = string.Empty;
@@ -30,7 +30,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
         _logger = serviceProvider.GetRequiredService<ILogger<LauncherManagerNexusModsApp>>();
         
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-        _settings = settingsManager.Get<MountAndBlade2BannerlordSettings>();
+        _settings = settingsManager.Get<BannerlordSettings>();
 
         _installationPath = installationPath;
         

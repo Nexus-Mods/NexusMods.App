@@ -18,7 +18,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
-using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
+using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -26,7 +26,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
+public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
 {
     public static readonly GameId GameIdStatic = GameId.From(3174);
     public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
@@ -53,10 +53,10 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
+        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
+        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
@@ -67,7 +67,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
         new MountAndBlade2BannerlordDiagnosticEmitter(_serviceProvider),
     ];
 
-    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
+    public Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;
@@ -94,7 +94,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new MountAndBlade2BannerlordLoadoutSynchronizer(provider);
+        return new BannerlordLoadoutSynchronizer(provider);
     }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
