@@ -33,11 +33,14 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+
         <TreeDataGrid x:Name="SortOrderTreeDataGrid"
                       AutoDragDropRows="True"
                       RowDrop="OnRowDrop"
                       Margin="0,20"
-                      >
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="False">
+
             <TreeDataGrid.Resources>
                 <DataTemplate x:Key="IndexColumnDataTemplate"
                               DataType="games:ISortableItemViewModel">
@@ -59,7 +62,7 @@
             </TreeDataGrid.Resources>
 
         </TreeDataGrid>
-        <TextBlock Text="Placeholder"/>
+        
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>
