@@ -63,7 +63,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// </summary>
     LauncherOptions ILauncherStateProvider.GetOptions() => new()
     {
-        BetaSorting = _settings.BetaSorting
+        BetaSorting = _settings.BetaSorting,
     };
     
     /// <summary>

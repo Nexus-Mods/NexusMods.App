@@ -1,0 +1,11 @@
+<Module>
+    <!-- 👇 Current mod is `DiplomacyFixes` -->
+    <Id value="DiplomacyFixes"/>
+    <Name value="Diplomacy Fixes"/>
+    <DependedModuleMetadatas>
+        <!-- ✅ `Harmony` is installed -->
+        <DependedModuleMetadata id="Harmony" version="v2.5.0-v3.0.0" />
+        <!-- ❌ But the installed version (2.4.0) does not fall into range -->
+    </DependedModuleMetadatas>
+</Module>
+

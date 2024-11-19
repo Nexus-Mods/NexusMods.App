@@ -1,0 +1,6 @@
+To recreate a given diagnostic.
+
+1. Select folder corresponding to a given diagnostic.
+2. Zip up every subfolder.
+3. Create a new loadout.
+4. Install each mod into loadout.

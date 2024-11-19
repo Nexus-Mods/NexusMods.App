@@ -1,0 +1,11 @@
+<Module>
+    <!-- 👇 Current mod is `ImprovedGarrisons` -->
+    <Id value="ImprovedGarrisons"/>
+    <Name value="Improved Garrisons"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ `RealisticWeather` is marked to load before this mod -->
+        <DependedModuleMetadata id="RealisticWeather" order="LoadBeforeThis" />
+        <!-- ❌ `RealisticWeather` is also marked to load after this mod -->
+        <DependedModuleMetadata id="RealisticWeather" order="LoadAfterThis" />
+    </DependedModuleMetadatas>
+</Module>

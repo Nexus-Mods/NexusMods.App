@@ -1,0 +1,14 @@
+<Module>
+    <!-- 👇 Current mod is `CustomTroops` -->
+    <Id value="CustomTroops"/>
+    <Name value="Custom Troops"/>
+    <DependedModules>
+        <!-- 👇 `TroopOverhaul` is marked as a required dependency -->
+        <DependedModule Id="TroopOverhaul" />
+    </DependedModules>
+    <DependedModuleMetadatas>
+        <!-- ❌ `TroopOverhaul` is marked as incompatible, despite being required -->
+        <DependedModuleMetadata id="TroopOverhaul" incompatible="true" />
+    </DependedModuleMetadatas>
+</Module>
+
