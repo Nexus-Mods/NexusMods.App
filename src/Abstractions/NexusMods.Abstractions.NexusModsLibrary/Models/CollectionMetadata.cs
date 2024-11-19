@@ -23,7 +23,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// The name of the collection.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
-    
+
     /// <summary>
     /// The short description of the collection
     /// </summary>
@@ -40,10 +40,15 @@ public partial class CollectionMetadata : IModelDefinition
     public static readonly BackReferenceAttribute<CollectionRevisionMetadata> Revisions = new(CollectionRevisionMetadata.Collection);
     
     /// <summary>
-    /// The tags on the collection.
+    /// The category of the collection.
     /// </summary>
-    public static readonly ReferencesAttribute<CollectionTag> Tags = new(Namespace, nameof(Tags));
-    
+    public static readonly ReferenceAttribute<CollectionCategory> Category = new(Namespace, nameof(Category)) { IsOptional = true };
+
+    /// <summary>
+    /// Total number of times the collection was downloaded.
+    /// </summary>
+    public static readonly ULongAttribute TotalDownloads = new(Namespace, nameof(TotalDownloads));
+
     /// <summary>
     /// The number of endorsements the collection has.
     /// </summary>

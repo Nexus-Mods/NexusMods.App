@@ -102,7 +102,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     public string Summary => _collection.Summary;
     public int ModCount => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => (ulong)_revision.Downloads.Count;
+    public ulong DownloadCount => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
     public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
     public string AuthorName => _collection.Author.Name;

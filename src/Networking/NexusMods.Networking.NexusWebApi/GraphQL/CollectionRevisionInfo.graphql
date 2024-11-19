@@ -6,7 +6,6 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
     collectionRevision(slug: $slug, revision: $revisionNumber, viewAdultContent: $viewAdultContent)
     {
         id
-        totalDownloads
         assetsSizeBytes
         revisionNumber
         adultContent
@@ -29,20 +28,21 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
             updatePolicy,
             version,
         }
-        
+
         collection {
             name
             summary
             endorsements
+            totalDownloads
+            category {
+                name
+                id
+            }
             tileImage {
                 thumbnailUrl(size: small)
             }
             headerImage {
                 url
-            }
-            tags {
-                name
-                id
             }
             user {
                 ...UserFragment
