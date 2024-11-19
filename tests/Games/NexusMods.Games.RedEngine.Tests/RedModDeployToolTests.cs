@@ -1,7 +1,4 @@
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -10,7 +7,6 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
-using StrawberryShake.Extensions;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
@@ -40,6 +36,8 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     [InlineData("maestros_of_synth_the_dirge", -11)]
     public async Task MovingModsRelativelyResultsInCorrectOrdering(string name, int delta)
     {
+        // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
+        // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
         var loadout = await SetupLoadout();
         
         var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
