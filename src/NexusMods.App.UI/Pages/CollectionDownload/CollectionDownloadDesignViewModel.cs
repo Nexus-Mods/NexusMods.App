@@ -10,7 +10,8 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
 {
-    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; } = null!;
+    public CollectionDownloadTreeDataGridAdapter RequiredDownloadsAdapter { get; } = null!;
+    public CollectionDownloadTreeDataGridAdapter OptionalDownloadsAdapter { get; } = null!;
 
     public CollectionDownloadDesignViewModel() : base(new DesignWindowManager()) { }
 
@@ -22,11 +23,13 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public string Summary =>
         "Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content.";
 
-    public int ModCount => 9;
-    public int RequiredModCount => 7;
-    public int OptionalModCount => 2;
+    public string Category => "Themed";
+    public bool IsAdult => true;
+    public int RequiredDownloadsCount => 9;
+    public int OptionalDownloadsCount => 2;
+    public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
     public ulong EndorsementCount => 248;
-    public ulong DownloadCount => 35_123;
+    public ulong TotalDownloads => 30_000;
     public Size TotalSize { get; } = Size.From(76_123_456);
     public Percent OverallRating { get; } = Percent.CreateClamped(0.82);
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));

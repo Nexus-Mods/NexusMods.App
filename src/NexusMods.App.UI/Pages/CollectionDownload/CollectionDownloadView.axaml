@@ -82,7 +82,7 @@
                         <panels:FlexPanel x:Name="Stats" IsVisible="True">
                             <panels:FlexPanel x:Name="ModsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                                <TextBlock x:Name="ModCount" />
+                                <TextBlock x:Name="NumDownloads" />
                             </panels:FlexPanel>
                             <panels:FlexPanel x:Name="EndorsementsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
@@ -90,7 +90,7 @@
                             </panels:FlexPanel>
                             <panels:FlexPanel x:Name="DownloadsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                <TextBlock x:Name="Downloads" />
+                                <TextBlock x:Name="TotalDownloads" />
                             </panels:FlexPanel>
                             <panels:FlexPanel x:Name="TotalSizePanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
@@ -115,29 +115,29 @@
             </panels:FlexPanel>
         </Border>
 
-        <TabControl>
+        <TabControl x:Name="TabControl">
             <TabItem>
                 <TabItem.Header>
                     <panels:FlexPanel x:Name="RequiredModsFlexPanel">
                         <TextBlock>Required</TextBlock>
                         <Border>
-                            <TextBlock x:Name="RequiredModsCount" />
+                            <TextBlock x:Name="RequiredDownloadsCount" />
                         </Border>
                     </panels:FlexPanel>
                 </TabItem.Header>
 
-                <TreeDataGrid x:Name="RequiredModsTree"/>
+                <TreeDataGrid x:Name="RequiredDownloadsTree"/>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <panels:FlexPanel x:Name="OptionalModsFlexPanel">
                         <TextBlock>Optional</TextBlock>
                         <Border>
-                            <TextBlock x:Name="OptionalModsCount" />
+                            <TextBlock x:Name="OptionalDownloadsCount" />
                         </Border>
                     </panels:FlexPanel>
                 </TabItem.Header>
-                <TreeDataGrid x:Name="OptionalModsTree"/>
+                <TreeDataGrid x:Name="OptionalDownloadsTree"/>
             </TabItem>
         </TabControl>
 

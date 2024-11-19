@@ -1,70 +1,63 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
 /// <summary>
-/// View model for a collection card.
+/// Collection card view model.
 /// </summary>
 public interface ICollectionCardViewModel : IViewModelInterface
 {
-    /// <summary>
-    /// The name of the collection.
-    /// </summary>
-    public string Name { get; }
+    /// <inheritdoc cref="CollectionMetadata.Name"/>
+    string Name { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Summary"/>
+    string Summary { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Category"/>
+    string Category { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Endorsements"/>
+    ulong EndorsementCount { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.TotalDownloads"/>
+    ulong TotalDownloads { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.TotalSize"/>
+    Size TotalSize { get; }
     
+    /// <inheritdoc cref="CollectionRevisionMetadata.OverallRating"/>
+    Percent OverallRating { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.IsAdult"/>
+    bool IsAdult { get; }
+
     /// <summary>
     /// The tile image of the collection.
     /// </summary>
-    public Bitmap? Image { get; }
-    
+    Bitmap? Image { get; }
+
     /// <summary>
-    /// Summary of the collection.
+    /// Number of files/mods to download.
     /// </summary>
-    public string Summary { get; }
-    
-    /// <summary>
-    /// The website category of the collection.
-    /// </summary>
-    public string Category { get; }
-    
-    /// <summary>
-    /// Number of mods in the collection.
-    /// </summary>
-    public int ModCount { get; }
-    
-    /// <summary>
-    /// Endorsement count of the collection.
-    /// </summary>
-    public ulong EndorsementCount { get; }
-    
-    /// <summary>
-    /// Number of downloads of the collection.
-    /// </summary>
-    public ulong DownloadCount { get; }
-    
-    /// <summary>
-    /// Total size of the collection (including all mods).
-    /// </summary>
-    public Size TotalSize { get; }
-    
-    /// <summary>
-    /// The overall rating of the collection.
-    /// </summary>
-    public Percent OverallRating { get; }
-    
+    int NumDownloads { get; }
+
     /// <summary>
     /// The name of the author of the collection.
     /// </summary>
-    public string AuthorName { get; }
-    
+    string AuthorName { get; }
+
     /// <summary>
     /// The author's avatar.
     /// </summary>
-    public Bitmap? AuthorAvatar { get; }
+    Bitmap? AuthorAvatar { get; }
 
+    /// <summary>
+    /// Command to open the download page.
+    /// </summary>
     R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }
