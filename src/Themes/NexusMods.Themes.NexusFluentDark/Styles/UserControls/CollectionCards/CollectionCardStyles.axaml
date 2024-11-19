@@ -17,7 +17,6 @@
                 <collections:CollectionCardView DataContext="{StaticResource LoadoutCardDesignViewModel}" />
             </panels:FlexPanel>
         </Border>
-
     </Design.PreviewWith>
 
     <Style Selector="collections|CollectionCardView">
@@ -83,13 +82,27 @@
                             <Setter Property="Padding" Value="0, 8, 0, 8" />
                             <!-- Margin needed to left offset top and bottom border -->
                             <Setter Property="Margin" Value="12, 0, 0, 0" />
-
+                            
                             <Style Selector="^ > TextBlock">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                                 <Setter Property="TextWrapping" Value="NoWrap" />
                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             </Style>
+                            
+                            <Style Selector="^ Ellipse#AdultSeperator">
+                                <Setter Property="Width" Value="4" />
+                                <Setter Property="Height" Value="4" />
+                                <Setter Property="Margin" Value="8, 0" />
+                                <Setter Property="Fill" Value="{StaticResource NeutralSubduedBrush}" />
+                            </Style>
+
+                            <Style Selector="^ TextBlock#AdultText">
+                                <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+                                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+                            </Style>
+
+                            
                         </Style>
 
                         <Style Selector="^ Border#SummaryTextFlexPanel">
@@ -124,20 +137,19 @@
 
             <Style Selector="^ panels|FlexPanel#Stats">
                 <Setter Property="Margin" Value="0" />
-                <Setter Property="ColumnSpacing" Value="12" />
+                <Setter Property="ColumnSpacing" Value="{StaticResource Spacing-4}" />
 
                 <Style Selector="^ panels|FlexPanel">
                     <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="Direction" Value="Row" />
-                    <Setter Property="ColumnSpacing" Value="4" />
+                    <Setter Property="ColumnSpacing" Value="{StaticResource Spacing-1}" />
                 </Style>
 
                 <Style Selector="^ icons|UnifiedIcon">
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                     <Setter Property="Margin" Value="0" />
                     <Setter Property="Padding" Value="0" />
-                    <Setter Property="Width" Value="20" />
-                    <Setter Property="Height" Value="20" />
+                    <Setter Property="Size" Value="20" />
                 </Style>
 
                 <Style Selector="^ TextBlock">

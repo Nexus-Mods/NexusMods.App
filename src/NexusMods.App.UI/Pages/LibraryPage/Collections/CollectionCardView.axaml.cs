@@ -45,6 +45,9 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
 
             this.OneWayBind(ViewModel, vm => vm.IsAdult, view => view.AdultText.IsVisible)
                 .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.IsAdult, view => view.AdultSeperator.IsVisible)
+                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.AuthorName, view => view.AuthorName.Text)
                 .DisposeWith(d);

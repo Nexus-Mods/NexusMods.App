@@ -8,7 +8,8 @@
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="1620" d:DesignHeight="600"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
@@ -66,10 +67,12 @@
                                 <Border x:Name="TagsPanelBorder">
                                     <panels:FlexPanel x:Name="TagsPanel">
                                         <TextBlock x:Name="Revision" />
-                                        <TextBlock x:Name="AuthorName" />
-                                        <Border x:Name="AuthorAvatarBorder">
-                                            <Image x:Name="AuthorAvatar" />
-                                        </Border>
+                                        <StackPanel x:Name="AuthorStackPanel">
+                                            <Border x:Name="AuthorAvatarBorder">
+                                                <Image x:Name="AuthorAvatar" />
+                                            </Border>
+                                            <TextBlock x:Name="AuthorName" />
+                                        </StackPanel>
                                     </panels:FlexPanel>
                                 </Border>
                                 <TextBlock x:Name="Summary" />
@@ -108,10 +111,10 @@
 
         <Border x:Name="ListHeaderRowBorder">
             <panels:FlexPanel x:Name="ListHeaderRow">
-                <TextBlock x:Name="CollectionStatusText"></TextBlock>
-                <Button x:Name="InstallButton">Install</Button>
-                <Button x:Name="DownloadAllButton">DownloadAll</Button>
-                <Button x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}">...</Button>
+                <TextBlock x:Name="CollectionStatusText"/>
+                <controls:StandardButton x:Name="InstallButton" Text="Install" />
+                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All"/>
+                <controls:StandardButton x:Name="FlyoutMenuButton"  Flyout="{StaticResource CollectionMenuFlyout}" Text="..."/>
             </panels:FlexPanel>
         </Border>
 
@@ -126,7 +129,7 @@
                     </panels:FlexPanel>
                 </TabItem.Header>
 
-                <TreeDataGrid x:Name="RequiredDownloadsTree"/>
+                <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
             <TabItem>
                 <TabItem.Header>
@@ -137,7 +140,7 @@
                         </Border>
                     </panels:FlexPanel>
                 </TabItem.Header>
-                <TreeDataGrid x:Name="OptionalDownloadsTree"/>
+                <TreeDataGrid x:Name="OptionalDownloadsTree" />
             </TabItem>
         </TabControl>
 
