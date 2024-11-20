@@ -61,9 +61,8 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         var manifestPipeline = Pipelines.GetManifestPipeline(_serviceProvider);
         var modules = (await Helpers.GetAllManifestsAsync(_logger, loadout, manifestPipeline, cancellationToken).ToArrayAsync(cancellationToken))
             .Select(x => x.Item2);
-        var sortedModules = Hack.GetDummyBaseGameModules()
-            .Concat(AutoSort(modules)) 
-            .Select(x => x.Id).ToArray();
+        var sortedModules = AutoSort(Hack.GetDummyBaseGameModules()
+            .Concat(modules)).Select(x => x.Id).ToArray();
         var loadOrderCli = sortedModules.Length > 0 ? $"_MODULES_*{string.Join("*", sortedModules)}*_MODULES_" : string.Empty;
 
         // Add the new arguments

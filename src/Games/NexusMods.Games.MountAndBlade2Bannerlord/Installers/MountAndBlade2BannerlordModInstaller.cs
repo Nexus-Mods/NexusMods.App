@@ -80,7 +80,6 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
             var hasXboxFiles = storeFilesToCopy.Any(x => x.Store == GameStore.Xbox);
             var hasNonXboxFiles = storeFilesToCopy.Any(x => x.Store != GameStore.Xbox);
             var usedDestinations = new HashSet<RelativePath>();
-            var moduleFolderPrefix = $"{ModulesFolder}/{moduleInfo.Id}/";
             
             foreach (var instruction in storeFilesToCopy)
             {
@@ -89,10 +88,6 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
                 //      For more info, see `0004-MountAndBlade2Bannerlord.md`.
                 var source = instruction.Source.ToRelativePath();
                 var destination = instruction.Destination.ToRelativePath();
-                
-                // Trim the module folder prefix from the destination, as store files belong in the 'bin' folder.
-                if (destination.Path.StartsWith(moduleFolderPrefix))
-                    destination = destination.Path[moduleFolderPrefix.Length..];
                 
                 // If this mod has no files for Xbox store, and we're on Xbox store.
                 // InstallModuleContent emits multiple stores for `Win64_Shipping_Client`,
