@@ -122,7 +122,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
         3. `LauncherManagerHandler.Sort` can be used for an `Auto-sort` feature, if user wants to reset load order.
             - Note: This calls into `SetModuleViewModels`.
             
-        4. For importing enabled mods (& LoadOrder) from existing setups on initial ingest,
+        4. For importing enabled mods (& SortOrder) from existing setups on initial ingest,
            use `ModuleListHandler.Import`. This will import a load order (ordered list of enabled mods).
            The mods in that list will be enabled, order will be set, and `SetModuleViewModels`
            will be called.

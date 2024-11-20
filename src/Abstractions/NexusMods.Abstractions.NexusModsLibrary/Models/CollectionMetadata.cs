@@ -1,9 +1,7 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -12,7 +10,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class CollectionMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsCollectionMetadata";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionMetadata";
     
     /// <summary>
     /// The collection slug.
@@ -23,7 +21,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// The name of the collection.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
-    
+
     /// <summary>
     /// The short description of the collection
     /// </summary>
@@ -40,14 +38,19 @@ public partial class CollectionMetadata : IModelDefinition
     public static readonly BackReferenceAttribute<CollectionRevisionMetadata> Revisions = new(CollectionRevisionMetadata.Collection);
     
     /// <summary>
-    /// The tags on the collection.
+    /// The category of the collection.
     /// </summary>
-    public static readonly ReferencesAttribute<CollectionTag> Tags = new(Namespace, nameof(Tags));
-    
+    public static readonly ReferenceAttribute<CollectionCategory> Category = new(Namespace, nameof(Category)) { IsOptional = true };
+
+    /// <summary>
+    /// Total number of times the collection was downloaded.
+    /// </summary>
+    public static readonly UInt64Attribute TotalDownloads = new(Namespace, nameof(TotalDownloads));
+
     /// <summary>
     /// The number of endorsements the collection has.
     /// </summary>
-    public static readonly ULongAttribute Endorsements = new(Namespace, nameof(Endorsements));
+    public static readonly UInt64Attribute Endorsements = new(Namespace, nameof(Endorsements));
 
     /// <summary>
     /// The tile image uri.

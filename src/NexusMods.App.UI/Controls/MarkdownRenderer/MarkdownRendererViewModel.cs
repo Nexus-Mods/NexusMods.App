@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Hashing.xxHash3;

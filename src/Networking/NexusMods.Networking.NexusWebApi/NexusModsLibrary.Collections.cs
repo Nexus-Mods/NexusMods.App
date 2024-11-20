@@ -226,6 +226,7 @@ public partial class NexusModsLibrary
         resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
         resolver.Add(CollectionRevisionMetadata.RevisionNumber, revisionNumber);
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
+        resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
 
         if (ulong.TryParse(revisionInfo.TotalSize, out var totalSize))
             resolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(totalSize));
@@ -234,8 +235,9 @@ public partial class NexusModsLibrary
 
         if (float.TryParse(revisionInfo.OverallRating ?? "0.0", out var overallRating))
             resolver.Add(CollectionRevisionMetadata.OverallRating, overallRating / 100);
+        if (revisionInfo.OverallRatingCount is not null)
+            resolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)revisionInfo.OverallRatingCount.Value);
 
-        resolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revisionInfo.OverallRatingCount ?? 0));
         return resolver.Id;
     }
 
@@ -251,11 +253,16 @@ public partial class NexusModsLibrary
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
 
+        resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
+
         if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
             resolver.Add(CollectionMetadata.TileImageUri, tileImageUri);
 
         if (Uri.TryCreate(collectionInfo.HeaderImage?.Url, UriKind.Absolute, out var backgroundImageUri))
             resolver.Add(CollectionMetadata.BackgroundImageUri, backgroundImageUri);
+
+        if (collectionInfo.Category is not null)
+            resolver.Add(CollectionMetadata.Category, collectionInfo.Category.Resolve(db, tx));
 
         var user = collectionInfo.User.Resolve(db, tx);
         resolver.Add(CollectionMetadata.Author, user);

@@ -15,7 +15,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 [PublicAPI]
 public partial class NexusModsFileMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsFileMetadata";
+    private const string Namespace = "NexusMods.NexusModsLibrary.NexusModsFileMetadata";
 
     /// <summary>
     /// Unique identifier for the file on Nexus Mods.

@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.NexusWebApi;
 /// </summary>
 public partial class NexusModsArchiveMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.NexusWebApi.NexusModsArchiveMetadata";
+    private const string Namespace = "NexusMods.NexusWebApi.NexusModsArchiveMetadata";
     
     /// <summary>
     /// The NexusMods API game ID.

@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Abstractions.DataModel.Entities.Sorting;
+namespace NexusMods.Abstractions.Loadouts.Sorting;
 
 [PublicAPI]
 public record Last<TType, TId> : ISortRule<TType, TId>;

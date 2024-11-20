@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -89,7 +90,7 @@ public class SynchronizerService : ISynchronizerService
     {
         var metadata = gameInstallation.GetMetadata(_conn);
         
-        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId))
+        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId))
         {
             loadout = Loadout.Load(_conn.Db, lastId);
             return true;
@@ -105,8 +106,8 @@ public class SynchronizerService : ISynchronizerService
         return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) 
-                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId) 
+                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

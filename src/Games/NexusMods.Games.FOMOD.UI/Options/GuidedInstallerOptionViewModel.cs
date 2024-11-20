@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
 using ReactiveUI.Fody.Helpers;
 

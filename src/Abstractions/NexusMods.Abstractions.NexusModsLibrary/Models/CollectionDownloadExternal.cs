@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -14,7 +15,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 [Include<CollectionDownload>]
 public partial class CollectionDownloadExternal : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.CollectionDownloadExternal";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionDownloadExternal";
 
     /// <summary>
     /// MD5 hash of the file.
