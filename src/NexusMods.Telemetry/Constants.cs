@@ -7,10 +7,15 @@ namespace NexusMods.Telemetry;
 [PublicAPI]
 internal static class Constants
 {
-    // NOTE(erri120): don't change this, this has to be in sync with the backend
+    // NOTE(erri120): don't change this, ask me if you have questions
+    public static readonly Uri MatomoTrackingEndpoint = new("https://pw.nexusmods.com/matomo.php");
+    public const string MatomoSiteId = "7";
+
+    // NOTE(erri120): don't change this, this has to be in sync with the backend, ask me if you have questions
     public static readonly TimeSpan ExportInterval = TimeSpan.FromMinutes(1);
     public static readonly TimeSpan ExporterTimeout = TimeSpan.FromSeconds(10);
 
+    // NOTE(erri120): don't change this, ask me if you have questions
     public static readonly Uri MetricsEndpoint = new("https://collector.nexusmods.com/v1/metrics");
     public static readonly Uri TracesEndpoint = new("https://collector.nexusmods.com/v1/traces");
 

@@ -29,6 +29,7 @@ using DynamicData.Aggregation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Telemetry;
 
 namespace NexusMods.App.UI.Pages.MyGames;
 
@@ -95,24 +96,26 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             vm.Installation = installation;
 
                             vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                                {
-                                    if (GetJobRunningForGameInstallation(installation).IsT1) return;
+                            {
+                                if (GetJobRunningForGameInstallation(installation).IsT1) return;
 
-                                    vm.State = GameWidgetState.AddingGame;
-                                    await Task.Run(async () => await ManageGame(installation));
-                                    vm.State = GameWidgetState.ManagedGame;
-                                }
-                            );
+                                vm.State = GameWidgetState.AddingGame;
+                                await Task.Run(async () => await ManageGame(installation));
+                                vm.State = GameWidgetState.ManagedGame;
+
+                                Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: installation.Game.Name));
+                            });
 
                             vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
-                                {
-                                    if (GetJobRunningForGameInstallation(installation).IsT2) return;
+                            {
+                                if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
-                                    vm.State = GameWidgetState.RemovingGame;
-                                    await Task.Run(async () => await RemoveAllLoadouts(installation));
-                                    vm.State = GameWidgetState.DetectedGame;
-                                }
-                            );
+                                vm.State = GameWidgetState.RemovingGame;
+                                await Task.Run(async () => await RemoveAllLoadouts(installation));
+                                vm.State = GameWidgetState.DetectedGame;
+
+                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: installation.Game.Name));
+                            });
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToFirstLoadout(conn, installation); });
 

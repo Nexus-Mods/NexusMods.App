@@ -10,6 +10,7 @@
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.0.0" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.79" />
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.97" />
@@ -45,6 +46,7 @@
     <PackageVersion Include="Polly" Version="8.5.0" />
     <PackageVersion Include="Verify" Version="28.2.1" />
     <PackageVersion Include="ZstdSharp.Port" Version="0.8.2" />
+    <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MemoryPack.Streaming" Version="1.21.3" />

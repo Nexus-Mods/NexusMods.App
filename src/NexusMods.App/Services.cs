@@ -70,6 +70,7 @@ public static class Services
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
+                .AddTracking(telemetrySettings ?? new TelemetrySettings())
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
