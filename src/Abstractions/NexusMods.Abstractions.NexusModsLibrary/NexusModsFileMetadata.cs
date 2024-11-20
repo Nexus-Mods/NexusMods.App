@@ -1,7 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -35,8 +32,8 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// The date the file was uploaded at.
     /// </summary>
-    public static readonly DateTimeAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
-    
+    public static readonly TimestampAttribute UploadedAt = new(Namespace, nameof(UploadedAt));
+
     /// <summary>
     /// The size in bytes of the file.
     /// </summary>

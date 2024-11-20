@@ -91,7 +91,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         return new Resource<byte[]>
         {
             Data = bytes.ToArray(),
-            ExpiresAt = persistedResource.ExpiresAt,
+            ExpiresAt = persistedResource.ExpiresAt.DateTime,
         };
     }
 
