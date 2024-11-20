@@ -38,7 +38,6 @@ public class Startup
             .AddLibrary()
             .AddLibraryModels()
             .AddFileExtractors()
-            .AddSerializationAbstractions()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
