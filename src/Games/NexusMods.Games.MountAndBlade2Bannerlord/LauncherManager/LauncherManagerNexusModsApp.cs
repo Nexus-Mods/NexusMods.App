@@ -3,7 +3,6 @@ using Bannerlord.LauncherManager.External;
 using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;

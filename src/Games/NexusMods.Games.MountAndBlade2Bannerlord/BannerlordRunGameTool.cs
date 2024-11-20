@@ -1,6 +1,7 @@
-using Bannerlord.LauncherManager.External;
-using Bannerlord.LauncherManager.Models;
+using Bannerlord.LauncherManager.Utils;
+using Bannerlord.ModuleManager;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
@@ -12,33 +13,51 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// </summary>
 public class BannerlordRunGameTool : RunGameTool<Bannerlord>
 {
-    private readonly LauncherManagerFactory _launcherManagerFactory;
+    private readonly ILogger<BannerlordRunGameTool> _logger;
+    private IServiceProvider _serviceProvider;
     
     public BannerlordRunGameTool(IServiceProvider serviceProvider, Bannerlord game)
         : base(serviceProvider, game)
     {
-        _launcherManagerFactory = serviceProvider.GetRequiredService<LauncherManagerFactory>();
+        _serviceProvider = serviceProvider;
+        _logger = serviceProvider.GetRequiredService<ILogger<BannerlordRunGameTool>>();
     }
 
     protected override bool UseShell { get; set; } = false;
     
-    public override Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)
+    public override async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)
     {
         commandLineArgs ??= [];
-        
+
         // We need to 'inject' the current set of enabled modules in addition to any existing parameters.
         // This way, external arguments specified by outside entities are preserved.
-        var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
-        
-        // Set the (automatic) load order.
-        launcherManager.Sort();
-        ILoadOrderStateProvider loadOrderStateProvider = launcherManager;
-        var lo = new LoadOrder(loadOrderStateProvider.GetModuleViewModels()!);
-        launcherManager.SetGameParameterLoadOrder(lo);
-        
-        // Add the new arguments
-        commandLineArgs = commandLineArgs.Concat(launcherManager.ExecutableParameters).ToArray();
 
-        return base.Execute(loadout, cancellationToken, commandLineArgs);
+        // Set the (automatic) load order.
+        // Copied from Bannerlord.LauncherManager
+        // will make PR upstream after this is merged to expose this logic in a way
+        // that does not require external dependencies of things we don't need or
+        // want to provide.
+        var manifestPipeline = Pipelines.GetManifestPipeline(_serviceProvider);
+        var modules = (await Helpers.GetAllManifestsAsync(_logger, loadout, manifestPipeline, cancellationToken).ToArrayAsync(cancellationToken))
+            .Select(x => x.Item2)
+            .Concat(Hack.GetDummyBaseGameModules());
+        var sortedModules = AutoSort(modules).Select(x => x.Id).ToArray();
+        var loadOrderCli = sortedModules.Length > 0 ? $"_MODULES_*{string.Join("*", sortedModules)}*_MODULES_" : string.Empty;
+
+        // Add the new arguments
+        commandLineArgs = commandLineArgs.Concat(["/singleplayer", loadOrderCli]).ToArray();
+        await base.Execute(loadout, cancellationToken, commandLineArgs);
+    }
+    
+    // Copied from Bannerlord.LauncherManager
+    // needs downstream changes, will do those changes when possible
+    private static IEnumerable<ModuleInfoExtended> AutoSort(IEnumerable<ModuleInfoExtended> source)
+    {
+        var orderedModules = source
+            .OrderByDescending(x => x.IsOfficial)
+            .ThenBy(x => x.Id, new AlphanumComparatorFast())
+            .ToArray();
+
+        return ModuleSorter.TopologySort(orderedModules, module => ModuleUtilities.GetDependencies(orderedModules, module));
     }
 }

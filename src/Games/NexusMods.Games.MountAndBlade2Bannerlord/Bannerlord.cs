@@ -66,7 +66,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
     ];
     public override IDiagnosticEmitter[] DiagnosticEmitters => 
     [
-        new MountAndBlade2BannerlordDiagnosticEmitter(_serviceProvider),
+        new BannerlordDiagnosticEmitter(_serviceProvider),
     ];
 
     public Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
