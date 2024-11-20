@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Extensions;
@@ -110,7 +109,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         model.Version.Value = nexusModsDownload.FileMetadata.Version;
         if (nexusModsDownload.FileMetadata.Size.TryGet(out var size))
             model.ItemSize.Value = size;
-        
+
         return model;
     }
 
@@ -197,7 +196,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
         model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
         model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
-        model.ItemSize.Value = nexusModsLibraryItem.FileMetadata.Size.Value;
+
+        if (nexusModsLibraryItem.FileMetadata.Size.TryGet(out var size))
+            model.ItemSize.Value = size;
 
         return model;
     }

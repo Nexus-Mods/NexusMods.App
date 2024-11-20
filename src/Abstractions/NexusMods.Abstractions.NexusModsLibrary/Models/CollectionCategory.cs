@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -19,5 +18,5 @@ public partial class CollectionCategory : IModelDefinition
     /// <summary>
     /// The Nexus mods id of the collection tag.
     /// </summary>
-    public static readonly ULongAttribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
+    public static readonly UInt64Attribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
 }

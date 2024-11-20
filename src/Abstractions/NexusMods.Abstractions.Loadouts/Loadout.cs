@@ -4,14 +4,10 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using EntityExtensions = NexusMods.Abstractions.MnemonicDB.Attributes.Extensions.EntityExtensions;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -43,8 +39,8 @@ public partial class Loadout : IModelDefinition
     /// this value by one. This will then be used by the UI and other parts of the app to determine
     /// what aspects of the loadout have changed and need to be reloaded
     /// </summary>
-    public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
-    
+    public static readonly UInt64Attribute Revision = new(Namespace, nameof(Revision));
+
     /// <summary>
     /// Defines the 'type' of layout that this layout represents.
     /// Currently it is just `Default`, 'Deleted' and `VanillaState` type, with
@@ -101,9 +97,9 @@ public partial class Loadout : IModelDefinition
         /// </summary>
         public LoadoutWithTxId GetLoadoutWithTxId()
         {
-            return new(Id, this.Max(d => d.T));
+            return new LoadoutWithTxId(Id, this.Max(d => d.T));
         }
-        
+
         /// <summary>
         /// This is true if the loadout is the 'Vanilla State' loadout.
         /// This loadout is created from the original game state and should
@@ -137,24 +133,5 @@ public partial class Loadout : IModelDefinition
                 .FindByLibraryItem(Db, libraryItem)
                 .Where(linked => linked.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == thisId);
         }
-    }
-}
-
-public partial struct LoadoutId
-{
-    
-    /// <summary>
-    /// Try to parse a LoadoutId from a hex string.
-    /// </summary>
-    public static bool TryParseFromHex(string hex, out LoadoutId id)
-    {
-        
-        if (EntityExtensions.TryParseFromHex(hex, out var entityId))
-        {
-            id = From(entityId);
-            return true;
-        }
-        id = default(LoadoutId);
-        return false;
     }
 }
