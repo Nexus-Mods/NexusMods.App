@@ -1,12 +1,11 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using R3;
 
-namespace NexusMods.App.UI.Controls;
+namespace NexusMods.Abstractions.UI;
 
 [PublicAPI]
 public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable

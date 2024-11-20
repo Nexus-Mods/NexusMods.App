@@ -1,57 +1,57 @@
 ﻿## 1 - Loadout Created (A) - Synced:
 Added a new loadout and synced it.
-### Initial State - (0) - Tx:100000000000005
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-### Last Synced State - (0) - Tx:100000000000008
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-### Current State - (0) - Tx:100000000000008
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
+### Initial State - (0)
+| Path | Hash | Size |
+| --- | --- | --- |
+### Last Synced State - (0)
+| Path | Hash | Size |
+| --- | --- | --- |
+### Current State - (0)
+| Path | Hash | Size |
+| --- | --- | --- |
 ### Loadout A - (0)
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
+| Path | Hash | Size |
+| --- | --- | --- |
 
 
 
 ## 2 - Added bin/newFile - Synced:
 Added a new file to the game and synced it.
-### Initial State - (0) - Tx:100000000000005
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-### Last Synced State - (1) - Tx:10000000000000B
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
-### Current State - (1) - Tx:10000000000000B
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
+### Initial State - (0)
+| Path | Hash | Size |
+| --- | --- | --- |
+### Last Synced State - (1)
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |
+### Current State - (1)
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |
 ### Loadout A - (1)
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000003, Game, bin/newFile.txt) | 0x673E3C493921A2D5 | 12 B | Tx:10000000000000B |
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |
 
 
 
 ## 2 - Updated the file - Synced:
 Updated the new file file and synced it.
-### Initial State - (0) - Tx:100000000000005
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-### Last Synced State - (1) - Tx:10000000000000E
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
-### Current State - (1) - Tx:10000000000000E
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000001, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
+### Initial State - (0)
+| Path | Hash | Size |
+| --- | --- | --- |
+### Last Synced State - (1)
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |
+### Current State - (1)
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |
 ### Loadout A - (1)
-| Path | Hash | Size | TxId |
-| --- | --- | --- | --- |
-| (EId:200000000000003, Game, bin/newFile.txt) | 0xB4E7270703F5F646 | 21 B | Tx:10000000000000E |
+| Path | Hash | Size |
+| --- | --- | --- |
+| {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |
 
 
 

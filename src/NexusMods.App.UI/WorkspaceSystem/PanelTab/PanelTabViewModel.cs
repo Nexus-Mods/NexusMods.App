@@ -1,5 +1,6 @@
 using System.Reactive;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

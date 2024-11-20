@@ -53,6 +53,8 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.Sorting;
+using NexusMods.App.UI.Pages.Sorting.Prototype;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -216,6 +218,12 @@ public static class Services
 
             .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
             .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
+            
+            .AddView<LoadOrderView, ILoadOrderViewModel>()
+            .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
+            
+            .AddView<LoadOrdersPageView,ILoadOrdersPageViewModel>()
+            .AddViewModel<LoadOrdersPageViewModel, ILoadOrdersPageViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -251,6 +259,7 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionsPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
+            .AddSingleton<IPageFactory, LoadOrdersPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

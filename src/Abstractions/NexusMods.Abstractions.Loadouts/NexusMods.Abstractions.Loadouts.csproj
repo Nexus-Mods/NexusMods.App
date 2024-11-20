@@ -17,32 +17,29 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="LoadoutFile.cs">
-        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutItemGroup.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutItemWithTargetPath.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="DeletedFile.cs">
-        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LibraryLinkedLoadoutItem.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutGameFilesGroup.cs">
+      <Compile Update="Models\CollectionGroup.cs">
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
-      <Compile Update="LoadoutOverridesGroup.cs">
+      <Compile Update="Models\LoadoutItemGroup.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutItemWithTargetPath.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutOverridesGroup.cs">
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
-      <Compile Update="LoadoutObservables.cs">
-        <DependentUpon>Loadout.cs</DependentUpon>
+      <Compile Update="Models\LoadoutFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
       </Compile>
-      <Compile Update="DiskStateExtensions.cs">
-        <DependentUpon>GameInstallMetadata.cs</DependentUpon>
+      <Compile Update="Models\LibraryLinkedLoadoutItem.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\DeletedFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutGameFilesGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Loadouts;

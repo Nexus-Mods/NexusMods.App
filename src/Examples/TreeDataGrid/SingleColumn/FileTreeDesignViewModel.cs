@@ -5,6 +5,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using Examples.TreeDataGrid.SingleColumn.FileColumn;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;

@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
 
-namespace NexusMods.Abstractions.Loadouts.Synchronizers;
+namespace NexusMods.Abstractions.Loadouts.Files.Diff;
 
 /// <summary>
 /// A tree that files and their change states

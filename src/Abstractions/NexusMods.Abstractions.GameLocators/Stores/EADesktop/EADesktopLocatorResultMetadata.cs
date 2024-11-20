@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.EADesktop;
 
-namespace NexusMods.Abstractions.Games.Stores.EADesktop;
+namespace NexusMods.Abstractions.GameLocators.Stores.EADesktop;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="IEADesktopGame"/>.

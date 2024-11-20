@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI;
 

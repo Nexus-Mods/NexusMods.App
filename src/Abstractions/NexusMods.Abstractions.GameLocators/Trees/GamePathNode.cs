@@ -1,10 +1,8 @@
-using System.Runtime.CompilerServices;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
-namespace NexusMods.Abstractions.Games.Trees;
+namespace NexusMods.Abstractions.GameLocators.Trees;
 
 /// <summary>
 ///     Represents a tree node used for storing a game pathed location.

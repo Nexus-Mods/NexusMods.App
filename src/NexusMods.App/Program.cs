@@ -13,7 +13,7 @@ using NexusMods.App.UI;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
-using NexusMods.DataModel.Migrations;
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Settings;

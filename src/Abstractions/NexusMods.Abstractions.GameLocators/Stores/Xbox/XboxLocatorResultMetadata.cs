@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 
-namespace NexusMods.Abstractions.Games.Stores.Xbox;
+namespace NexusMods.Abstractions.GameLocators.Stores.Xbox;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="IXboxGame"/>.

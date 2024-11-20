@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using ReactiveUI;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.Abstractions.UI;
 
 /// <summary>
 /// Marker interface for view model interfaces.

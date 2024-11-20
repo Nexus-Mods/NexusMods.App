@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Loadouts.Sorting;
 
 namespace NexusMods.DataModel.Sorting;
 

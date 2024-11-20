@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;

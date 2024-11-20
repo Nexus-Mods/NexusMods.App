@@ -4,6 +4,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

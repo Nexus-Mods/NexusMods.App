@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
