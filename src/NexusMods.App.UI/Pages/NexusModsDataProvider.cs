@@ -108,7 +108,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = nexusModsDownload.FileMetadata.Name;
         model.Version.Value = nexusModsDownload.FileMetadata.Version;
-        model.ItemSize.Value = nexusModsDownload.FileMetadata.Size;
+        if (nexusModsDownload.FileMetadata.Size.TryGet(out var size))
+            model.ItemSize.Value = size;
+        
         return model;
     }
 
@@ -195,7 +197,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
         model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
         model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
-        model.ItemSize.Value = nexusModsLibraryItem.FileMetadata.Size;
+        model.ItemSize.Value = nexusModsLibraryItem.FileMetadata.Size.Value;
 
         return model;
     }

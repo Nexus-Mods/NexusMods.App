@@ -133,7 +133,16 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     public ulong TotalDownloads => _collection.TotalDownloads;
     public string Category => _collection.Category.Name;
     public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
+    public Percent OverallRating
+    {
+        get
+        {
+            if (_revision.OverallRating.TryGet(out var rating))
+                return Percent.CreateClamped(rating);
+            return Percent.Zero;
+        }
+    }
+
     public string AuthorName => _collection.Author.Name;
     public bool IsAdult => _revision.IsAdult;
     public CollectionSlug Slug => _collection.Slug;

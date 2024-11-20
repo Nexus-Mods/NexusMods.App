@@ -4,6 +4,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -71,7 +72,8 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
+    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating.ValueOr(0));
+
     public bool IsAdult => _revision.IsAdult;
     public string AuthorName => _collection.Author.Name;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }

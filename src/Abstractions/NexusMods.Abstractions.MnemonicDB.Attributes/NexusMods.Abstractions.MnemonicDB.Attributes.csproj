@@ -9,4 +9,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
 </Project>
