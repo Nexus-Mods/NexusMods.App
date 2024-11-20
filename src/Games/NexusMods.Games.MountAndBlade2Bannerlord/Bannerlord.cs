@@ -1,3 +1,5 @@
+using Bannerlord.ModuleManager;
+using FetchBannerlordVersion;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
@@ -77,8 +79,11 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     protected override Version GetVersion(GameLocatorResult installation)
     {
-        var launcherManagerHandler = _launcherManagerFactory.Get(installation);
-        return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
+        // Note(sewer): Bannerlord can use prefixes on versions etc. ,we want to strip them out
+        // so we sanitize/parse with `ApplicationVersion`.
+        var bannerlordVerStr = Fetcher.GetVersion(installation.Path.ToString(), "TaleWorlds.Library.dll");
+        var versionStr = ApplicationVersion.TryParse(bannerlordVerStr, out var av) ? $"{av.Major}.{av.Minor}.{av.Revision}.{av.ChangeSet}" : "0.0.0.0";
+        return Version.TryParse(versionStr, out var val) ? val : new Version();
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

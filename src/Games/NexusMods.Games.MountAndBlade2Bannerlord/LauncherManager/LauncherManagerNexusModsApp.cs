@@ -3,6 +3,7 @@ using Bannerlord.LauncherManager.External;
 using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
@@ -23,7 +24,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     private readonly BannerlordSettings _settings;
     private readonly string _installationPath;
 
-    public string ExecutableParameters { get; private set; } = string.Empty;
+    public string[] ExecutableParameters { get; private set; } = [];
 
     public LauncherManagerNexusModsApp(IServiceProvider serviceProvider, string installationPath, GameStore store)
     {
@@ -56,7 +57,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// </summary>
     /// <param name="executable">The game executable.</param>
     /// <param name="gameParameters">List of commandline arguments.</param>
-    public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = string.Join(" ", gameParameters);
+    public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = gameParameters.ToArray();
     
     /// <summary>
     /// Allows us to modify the settings for the vanilla Bannerlord Launcher.

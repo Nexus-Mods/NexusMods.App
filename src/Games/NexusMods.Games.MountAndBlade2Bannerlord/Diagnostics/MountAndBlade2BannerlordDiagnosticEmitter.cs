@@ -23,7 +23,6 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
 
     public MountAndBlade2BannerlordDiagnosticEmitter(IServiceProvider serviceProvider)
     {
-        serviceProvider.GetRequiredService<LauncherManagerFactory>();
         _logger = serviceProvider.GetRequiredService<ILogger<MountAndBlade2BannerlordDiagnosticEmitter>>();
         _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }

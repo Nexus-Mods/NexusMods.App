@@ -1,5 +1,8 @@
+using Bannerlord.LauncherManager.External;
+using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -18,4 +21,24 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
     }
 
     protected override bool UseShell { get; set; } = false;
+    
+    public override Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)
+    {
+        commandLineArgs ??= [];
+        
+        // We need to 'inject' the current set of enabled modules in addition to any existing parameters.
+        // This way, external arguments specified by outside entities are preserved.
+        var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
+        
+        // Set the (automatic) load order.
+        launcherManager.Sort();
+        ILoadOrderStateProvider loadOrderStateProvider = launcherManager;
+        var lo = new LoadOrder(loadOrderStateProvider.GetModuleViewModels()!);
+        launcherManager.SetGameParameterLoadOrder(lo);
+        
+        // Add the new arguments
+        commandLineArgs = commandLineArgs.Concat(launcherManager.ExecutableParameters).ToArray();
+
+        return base.Execute(loadout, cancellationToken, commandLineArgs);
+    }
 }
