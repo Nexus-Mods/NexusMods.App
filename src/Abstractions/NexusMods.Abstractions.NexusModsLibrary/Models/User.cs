@@ -1,9 +1,6 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -22,8 +19,8 @@ public partial class User : IModelDefinition
     /// <summary>
     /// The nexus id of the user.
     /// </summary>
-    public static readonly ULongAttribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
-    
+    public static readonly UInt64Attribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
+
     /// <summary>
     /// Url to the avatar.
     /// </summary>
