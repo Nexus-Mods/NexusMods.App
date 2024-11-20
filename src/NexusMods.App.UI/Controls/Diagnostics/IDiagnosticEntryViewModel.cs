@@ -1,5 +1,5 @@
-using System.Reactive;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 

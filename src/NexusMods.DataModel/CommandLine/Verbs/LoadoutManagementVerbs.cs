@@ -3,7 +3,6 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;

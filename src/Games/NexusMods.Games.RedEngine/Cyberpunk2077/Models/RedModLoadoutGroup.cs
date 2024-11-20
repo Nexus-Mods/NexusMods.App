@@ -13,5 +13,7 @@ public partial class RedModLoadoutGroup : IModelDefinition
     /// The info.json file for this RedMod
     /// </summary>
     public static readonly ReferenceAttribute<RedModInfoFile> RedModInfoFile = new(Namespace, nameof(RedModInfoFile));
+    
+    
 }
 

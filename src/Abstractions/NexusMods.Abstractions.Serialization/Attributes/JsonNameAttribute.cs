@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using NexusMods.Abstractions.Serialization.Json;
 
 namespace NexusMods.Abstractions.Serialization.Attributes;
 

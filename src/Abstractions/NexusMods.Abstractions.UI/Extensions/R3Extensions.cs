@@ -1,10 +1,10 @@
 using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Controls;
 using ObservableCollections;
 using R3;
+using CompositeDisposable = R3.CompositeDisposable;
 
-namespace NexusMods.App.UI.Extensions;
+namespace NexusMods.Abstractions.UI.Extensions;
 
 [PublicAPI]
 public static class R3Extensions

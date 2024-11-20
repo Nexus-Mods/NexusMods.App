@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI;
+﻿using NexusMods.Abstractions.UI;
+
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IAdvancedInstallerWindowViewModel : IViewModelInterface
 {

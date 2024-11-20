@@ -23,6 +23,7 @@ public static class Services
             .AddLoadoutItemWithTargetPathModel()
             .AddLoadoutFileModel()
             .AddDeletedFileModel()
-            .AddCollectionGroupModel();
+            .AddCollectionGroupModel()
+            .AddSortOrderModel();
     }
 }

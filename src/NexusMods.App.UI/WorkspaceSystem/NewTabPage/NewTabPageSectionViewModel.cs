@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

@@ -2,7 +2,6 @@ using GameFinder.StoreHandlers.EGS;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Stores.EGS;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

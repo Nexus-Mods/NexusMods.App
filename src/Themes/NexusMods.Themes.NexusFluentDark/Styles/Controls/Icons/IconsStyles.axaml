@@ -38,6 +38,8 @@
             <icons:UnifiedIcon Classes="Tune" />
             <icons:UnifiedIcon Classes="ArrowLeft" />
             <icons:UnifiedIcon Classes="ArrowRight" />
+            <icons:UnifiedIcon Classes="ArrowDown" />
+            <icons:UnifiedIcon Classes="ArrowUp" />
             <icons:UnifiedIcon Classes="Plus" />
             <icons:UnifiedIcon Classes="MenuDown" />
             <icons:UnifiedIcon Classes="MenuUp" />
@@ -249,6 +251,14 @@
 
     <Style Selector="icons|UnifiedIcon.ArrowRight">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowForward}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDown}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ArrowUp">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowUp}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.Plus">

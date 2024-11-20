@@ -2,7 +2,6 @@ using GameFinder.StoreHandlers.GOG;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Stores.GOG;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

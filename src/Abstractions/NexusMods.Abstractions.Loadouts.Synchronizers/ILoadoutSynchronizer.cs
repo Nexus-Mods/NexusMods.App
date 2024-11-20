@@ -2,6 +2,7 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

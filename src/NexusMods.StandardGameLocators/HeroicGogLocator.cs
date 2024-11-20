@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.GOG;
 
 namespace NexusMods.StandardGameLocators;
 
