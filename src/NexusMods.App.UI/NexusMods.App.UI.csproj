@@ -688,6 +688,9 @@
         <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
           <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Sorting\LoadOrdersPageDesignViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
