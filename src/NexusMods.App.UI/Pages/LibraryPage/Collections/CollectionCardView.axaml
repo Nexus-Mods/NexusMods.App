@@ -27,7 +27,10 @@
                     <panels:FlexPanel x:Name="TitleContainer">
                         <TextBlock x:Name="TitleText" />
                         <Border x:Name="CategoryTextBorder">
-                            <TextBlock x:Name="CategoryText" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="CategoryText" />
+                                <TextBlock x:Name="AdultText" Text="Adult"/>
+                            </StackPanel>
                         </Border>
                         <Border x:Name="SummaryTextFlexPanel">
                             <TextBlock x:Name="SummaryText" />
@@ -42,7 +45,7 @@
                 <panels:FlexPanel x:Name="Stats" IsVisible="True">
                     <panels:FlexPanel x:Name="ModsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                        <TextBlock x:Name="ModCount" />
+                        <TextBlock x:Name="NumDownloads" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="EndorsementsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
@@ -50,7 +53,7 @@
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="DownloadsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                        <TextBlock x:Name="Downloads" />
+                        <TextBlock x:Name="TotalDownloads" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="TotalSizePanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />

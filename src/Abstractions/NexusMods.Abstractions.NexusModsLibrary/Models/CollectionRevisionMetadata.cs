@@ -35,6 +35,11 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     public static readonly BackReferenceAttribute<CollectionDownload> Downloads = new(CollectionDownload.CollectionRevision);
 
     /// <summary>
+    /// Whether the collection contains adult mods.
+    /// </summary>
+    public static readonly BooleanAttribute IsAdult = new(Namespace, nameof(IsAdult));
+
+    /// <summary>
     /// Total download size according to external sources.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
@@ -47,5 +52,5 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The total number of ratings this revision has.
     /// </summary>
-    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings));
+    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
 }

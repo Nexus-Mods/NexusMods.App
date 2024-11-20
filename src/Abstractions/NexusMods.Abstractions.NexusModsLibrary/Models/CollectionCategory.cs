@@ -1,22 +1,20 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
-namespace NexusMods.Abstractions.NexusModsLibrary;
+namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
 /// <summary>
-/// A tag for a collection.
+/// A collection category.
 /// </summary>
-public partial class CollectionTag : IModelDefinition
+public partial class CollectionCategory : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.NexusModsLibrary.CollectionTag";
-    
+    private const string Namespace = "NexusMods.Abstractions.NexusModsLibrary.CollectionCategory";
+
     /// <summary>
     /// The name of the collection tag.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
-    
+
     /// <summary>
     /// The Nexus mods id of the collection tag.
     /// </summary>

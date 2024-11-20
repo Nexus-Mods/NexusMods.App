@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x572809F282D439D2
-   - Total attributes: 134
+   - Fingerprint: 0x1A97F1D9BCD28C72
+   - Total attributes: 136
    - Total namespaces: 54
    
 ## Attributes
@@ -28,8 +28,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Loadouts.Loadout/Name                                                           | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.Loadouts.Loadout/Revision                                                       | UInt64                  | False   | False | False     | 
 | NexusMods.Abstractions.Loadouts.Loadout/ShortName                                                      | Utf8                    | True    | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.CollectionTag/Name                                             | Utf8                    | True    | False | False     | 
-| NexusMods.Abstractions.NexusModsLibrary.CollectionTag/NexusId                                          | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.CollectionCategory/Name                                        | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.NexusModsLibrary.CollectionCategory/NexusId                                     | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionRevisionNumber | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.Models.NexusModsCollectionLibraryFile/CollectionSlug           | Ascii                   | True    | False | False     | 
 | NexusMods.Abstractions.NexusModsLibrary.User/AvatarResource                                            | Reference               | False   | False | False     | 
@@ -76,14 +76,16 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.NexusModsCollectionMetadata/Author                                                   | Reference               | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/BackgroundImageResource                                  | Reference               | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/BackgroundImageUri                                       | Utf8                    | False   | False | False     | 
+| NexusMods.Library.NexusModsCollectionMetadata/Category                                                 | Reference               | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/Endorsements                                             | UInt64                  | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/Name                                                     | Utf8                    | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/Slug                                                     | Ascii                   | True    | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/Summary                                                  | Utf8                    | False   | False | False     | 
-| NexusMods.Library.NexusModsCollectionMetadata/Tags                                                     | Reference               | False   | True  | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/TileImageResource                                        | Reference               | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionMetadata/TileImageUri                                             | Utf8                    | False   | False | False     | 
+| NexusMods.Library.NexusModsCollectionMetadata/TotalDownloads                                           | UInt64                  | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/Collection                                               | Reference               | False   | False | False     | 
+| NexusMods.Library.NexusModsCollectionRevision/IsAdult                                                  | UInt8                   | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/OverallRating                                            | Float32                 | False   | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionId                                               | UInt64                  | True    | False | False     | 
 | NexusMods.Library.NexusModsCollectionRevision/RevisionNumber                                           | UInt64                  | True    | False | False     | 
