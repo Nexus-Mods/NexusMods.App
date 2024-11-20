@@ -13,8 +13,11 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using static Bannerlord.LauncherManager.Constants;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
+using GameStore = Bannerlord.LauncherManager.Models.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
@@ -35,6 +38,9 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
         if (moduleInfoFileTuples.Count == 0) return new NotSupported(); // TODO: Will it install in root folder the content?
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
+        var store = loadout.Installation.Store;
+        var isXboxStore = store == Abstractions.GameLocators.GameStore.XboxGamePass;
+        var isNonXboxStore = !isXboxStore;
         
         foreach (var tuple in moduleInfoFileTuples)
         {
@@ -62,36 +68,71 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
             var filesToCopy = installResult.Instructions.OfType<CopyInstallInstruction>();
             foreach (var instruction in filesToCopy)
             {
-                var fileRelativePath = instruction.Source.ToRelativePath();
-                var fileEntry = libraryArchive.Children.First(x => x.Path.Equals(fileRelativePath));
-
-                var to = new GamePath(LocationId.Game, instruction.Destination.ToRelativePath());
-
-                var loadoutFile = new LoadoutFile.New(transaction, out var entityId)
-                {
-                    Hash = fileEntry.AsLibraryFile().Hash,
-                    Size = fileEntry.AsLibraryFile().Size,
-                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
-                    {
-                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
-                        LoadoutItem = new LoadoutItem.New(transaction, entityId)
-                        {
-                            Name = fileEntry.AsLibraryFile().FileName,
-                            LoadoutId = loadout,
-                            ParentId = modGroup,
-                        },
-                    },
-                };
+                var source = instruction.Source.ToRelativePath();
+                var destination = instruction.Destination.ToRelativePath();
+                moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
+                    source, destination, modGroup, moduleInfoFile,
+                    moduleInfoLoadoutItemId
+                );
+            }
+            
+            var storeFilesToCopy = installResult.Instructions.OfType<CopyStoreInstallInstruction>().ToArray();
+            var hasXboxFiles = storeFilesToCopy.Any(x => x.Store == GameStore.Xbox);
+            var hasNonXboxFiles = storeFilesToCopy.Any(x => x.Store != GameStore.Xbox);
+            var usedDestinations = new HashSet<RelativePath>();
+            var moduleFolderPrefix = $"{ModulesFolder}/{moduleInfo.Id}/";
+            
+            foreach (var instruction in storeFilesToCopy)
+            {
+                // Note(sewer) Alias Xbox store with Steam store files, in case mod author
+                //      included files for only one version of the game.
+                //      For more info, see `0004-MountAndBlade2Bannerlord.md`.
+                var source = instruction.Source.ToRelativePath();
+                var destination = instruction.Destination.ToRelativePath();
                 
-                if (fileEntry.Id == moduleInfoFile.Id)
+                // Trim the module folder prefix from the destination, as store files belong in the 'bin' folder.
+                if (destination.Path.StartsWith(moduleFolderPrefix))
+                    destination = destination.Path[moduleFolderPrefix.Length..];
+                
+                // If this mod has no files for Xbox store, and we're on Xbox store.
+                // InstallModuleContent emits multiple stores for `Win64_Shipping_Client`,
+                // so we want to avoid adding multiple times, hence the hashset.
+                
+                // Alias non-Xbox files onto Xbox files, if only non-Xbox files exist.
+                if (!hasXboxFiles && isXboxStore && !usedDestinations.Contains(destination))
                 {
-                    moduleInfoLoadoutItemId = entityId;
-                    _ = new ModuleInfoFileLoadoutFile.New(transaction, entityId)
+                    destination = destination.Path.Replace("Win64_Shipping_Client", "Gaming.Desktop.x64_Shipping_Client").ToRelativePath();
+                    if (!usedDestinations.Contains(destination))
                     {
-                        IsModuleInfoFile = true,
-                        LoadoutFile = loadoutFile,
-                    };
+                        moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
+                            source, destination, modGroup, moduleInfoFile,
+                            moduleInfoLoadoutItemId
+                        );
+                    }
                 }
+
+                // Alias Xbox files onto non-Xbox files, if only Xbox files exist.
+                if (!hasNonXboxFiles && isNonXboxStore)
+                {
+                    destination = destination.Path.Replace("Gaming.Desktop.x64_Shipping_Client", "Win64_Shipping_Client").ToRelativePath();
+                    if (!usedDestinations.Contains(destination))
+                    {
+                        moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
+                            source, destination, modGroup, moduleInfoFile,
+                            moduleInfoLoadoutItemId
+                        );
+                    }
+                }
+
+                if (!usedDestinations.Contains(destination))
+                {
+                    moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
+                        source, destination, modGroup, moduleInfoFile,
+                        moduleInfoLoadoutItemId
+                    );
+                }
+
+                usedDestinations.Add(destination);
             }
             
             Debug.Assert(moduleInfoLoadoutItemId.HasValue);
@@ -105,7 +146,51 @@ public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstal
 
         return new Success();
     }
-    
+
+    private static bool StoreEquals(GameStore bannerlordStore, Abstractions.GameLocators.GameStore nexusModsAppStore)
+    {
+        var isXbox = bannerlordStore == GameStore.Xbox && nexusModsAppStore == Abstractions.GameLocators.GameStore.XboxGamePass;
+        var isGog = bannerlordStore == GameStore.GOG && nexusModsAppStore == Abstractions.GameLocators.GameStore.GOG;
+        var isEpic = bannerlordStore == GameStore.Epic && nexusModsAppStore == Abstractions.GameLocators.GameStore.EGS;
+        var isSteam = bannerlordStore == GameStore.Steam && nexusModsAppStore == Abstractions.GameLocators.GameStore.Steam;
+        return isXbox || isGog || isEpic || isSteam;
+    }
+
+    private static Optional<EntityId> AddFileFromFilesToCopy(
+        LibraryArchive.ReadOnly libraryArchive, ITransaction transaction, Loadout.ReadOnly loadout, RelativePath source, RelativePath destination, LoadoutItemGroup.New modGroup, LibraryArchiveFileEntry.ReadOnly moduleInfoFile, Optional<EntityId> moduleInfoLoadoutItemId)
+    {
+        var fileEntry = libraryArchive.Children.First(x => x.Path.Equals(source));
+        var to = new GamePath(LocationId.Game, destination);
+
+        var loadoutFile = new LoadoutFile.New(transaction, out var entityId)
+        {
+            Hash = fileEntry.AsLibraryFile().Hash,
+            Size = fileEntry.AsLibraryFile().Size,
+            LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
+            {
+                TargetPath = to.ToGamePathParentTuple(loadout.Id),
+                LoadoutItem = new LoadoutItem.New(transaction, entityId)
+                {
+                    Name = fileEntry.AsLibraryFile().FileName,
+                    LoadoutId = loadout,
+                    ParentId = modGroup,
+                },
+            },
+        };
+
+        if (fileEntry.Id != moduleInfoFile.Id) 
+            return moduleInfoLoadoutItemId;
+ 
+        moduleInfoLoadoutItemId = entityId;
+                
+        _ = new ModuleInfoFileLoadoutFile.New(transaction, entityId)
+        {
+            IsModuleInfoFile = true,
+            LoadoutFile = loadoutFile,
+        };
+        return moduleInfoLoadoutItemId;
+    }
+
     private async ValueTask<List<ValueTuple<LibraryArchiveFileEntry.ReadOnly, ModuleInfoExtended>>> GetModuleInfoFiles(
         LibraryArchive.ReadOnly libraryArchive,
         CancellationToken cancellationToken)

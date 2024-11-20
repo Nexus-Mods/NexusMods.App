@@ -60,9 +60,10 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         // Copied from Bannerlord.LauncherManager
         var manifestPipeline = Pipelines.GetManifestPipeline(_serviceProvider);
         var modules = (await Helpers.GetAllManifestsAsync(_logger, loadout, manifestPipeline, cancellationToken).ToArrayAsync(cancellationToken))
-            .Select(x => x.Item2)
-            .Concat(Hack.GetDummyBaseGameModules());
-        var sortedModules = AutoSort(modules).Select(x => x.Id).ToArray();
+            .Select(x => x.Item2);
+        var sortedModules = Hack.GetDummyBaseGameModules()
+            .Concat(AutoSort(modules)) 
+            .Select(x => x.Id).ToArray();
         var loadOrderCli = sortedModules.Length > 0 ? $"_MODULES_*{string.Join("*", sortedModules)}*_MODULES_" : string.Empty;
 
         // Add the new arguments
@@ -70,7 +71,7 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
     }
     
     // Copied from Bannerlord.LauncherManager
-    // needs upstream changes, will do those changes tomorrow
+    // needs upstream changes, will do those changes tomorrow (21st Nov 2024)
     private static IEnumerable<ModuleInfoExtended> AutoSort(IEnumerable<ModuleInfoExtended> source)
     {
         var orderedModules = source

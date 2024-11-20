@@ -22,6 +22,7 @@ public static class Hack
     public static IEnumerable<ModuleInfoExtended> GetDummyBaseGameModules()
     {
         // These are ordered as they are in launcher defaults.
+        // Do not reorder, I didn't fully stub the items above
         yield return MakeDummyOfficialModule("Native");
         yield return MakeDummyOfficialModule("SandBoxCore");
         yield return MakeDummyOfficialModule("CustomBattle");
