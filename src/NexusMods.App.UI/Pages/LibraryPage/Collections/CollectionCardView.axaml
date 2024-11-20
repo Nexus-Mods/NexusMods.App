@@ -27,10 +27,12 @@
                     <panels:FlexPanel x:Name="TitleContainer">
                         <TextBlock x:Name="TitleText" />
                         <Border x:Name="CategoryTextBorder">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock x:Name="CategoryText" />
-                                <Ellipse x:Name="AdultSeperator" />
-                                <TextBlock x:Name="AdultText" Text="Adult"/>
+                                <StackPanel x:Name="AdultStackPanel" Orientation="Horizontal" Spacing="8">
+                                    <Ellipse Width="4" Height="4"/>
+                                    <TextBlock x:Name="AdultText" Text="Adult"/>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                         <Border x:Name="SummaryTextFlexPanel">

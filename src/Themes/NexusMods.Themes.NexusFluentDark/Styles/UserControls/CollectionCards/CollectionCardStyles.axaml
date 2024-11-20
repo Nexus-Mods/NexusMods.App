@@ -90,10 +90,7 @@
                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             </Style>
                             
-                            <Style Selector="^ Ellipse#AdultSeperator">
-                                <Setter Property="Width" Value="4" />
-                                <Setter Property="Height" Value="4" />
-                                <Setter Property="Margin" Value="8, 0" />
+                            <Style Selector="^ Ellipse">
                                 <Setter Property="Fill" Value="{StaticResource NeutralSubduedBrush}" />
                             </Style>
 

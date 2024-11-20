@@ -17,7 +17,7 @@ public class CollectionCardDesignViewModel : AViewModel<ICollectionCardViewModel
     public ulong TotalDownloads => 30_000;
     public Size TotalSize => Size.From(907 * 1024 * 1024);
     public Percent OverallRating => Percent.CreateClamped(0.84);
-    public bool IsAdult => false;
+    public bool IsAdult => true;
     public string AuthorName => "FantasyAuthor";
     public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
     public R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; } = new(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
