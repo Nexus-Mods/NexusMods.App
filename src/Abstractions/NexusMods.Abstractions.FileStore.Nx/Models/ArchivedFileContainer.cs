@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.FileStore.Nx.Models;
 /// </summary>
 public partial class ArchivedFileContainer : IModelDefinition
 {
-    private const string Namespace = "NexusMods.DataModel.ArchiveContents.ArchivedFileContainer";
+    private const string Namespace = "NexusMods.ArchiveContents.ArchivedFileContainer";
     
     /// <summary>
     /// The name of the container on-disk. This will be relative to some archive root path.

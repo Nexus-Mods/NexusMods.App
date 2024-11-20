@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Collections;
 [Include<LibraryFile>]
 public partial class DirectDownloadLibraryFile : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Collections";
+    private const string Namespace = "NexusMods.Collections.DirectDownloadLibraryFile";
 
     /// <summary>
     /// The MD5 hash value of the downloaded file.
