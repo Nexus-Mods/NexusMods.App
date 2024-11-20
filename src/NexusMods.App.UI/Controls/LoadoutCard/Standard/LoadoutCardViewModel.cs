@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -72,8 +73,16 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutCreationTime)
                 .DisposeWith(d);
-            
-            interval.Select(_ => FormatLastAppliedTime(loadout.LastAppliedDateTime.Value))
+
+            interval.Select(_ =>
+                    {
+                        if (loadout.LastAppliedDateTime.TryGet(out var lastAppliedTime))
+                        {
+                            return FormatLastAppliedTime(lastAppliedTime);
+                        }
+                        return "";
+                    }
+                )
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime)
                 .DisposeWith(d);

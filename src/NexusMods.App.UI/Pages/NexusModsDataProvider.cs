@@ -108,7 +108,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = nexusModsDownload.FileMetadata.Name;
         model.Version.Value = nexusModsDownload.FileMetadata.Version;
-        model.ItemSize.Value = nexusModsDownload.FileMetadata.Size.Value;
+        if (nexusModsDownload.FileMetadata.Size.TryGet(out var size))
+            model.ItemSize.Value = size;
+        
         return model;
     }
 
