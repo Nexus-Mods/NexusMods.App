@@ -35,7 +35,11 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
     private readonly IDisposable _observeDatomDisposable;
 
+    /// <inheritdoc />
     public bool IsPremium { get; private set; }
+
+    /// <inheritdoc />
+    public bool IsOAuthLogin => JWTToken.All(_conn.Db).Any();
 
     /// <summary>
     /// Constructor.

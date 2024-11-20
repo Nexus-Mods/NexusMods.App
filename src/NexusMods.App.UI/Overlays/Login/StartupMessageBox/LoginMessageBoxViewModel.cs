@@ -32,6 +32,11 @@ public class LoginMessageBoxViewModel : AOverlayViewModel<ILoginMessageBoxViewMo
     
     public bool MaybeShow()
     {
+        // If we're already logged in via OAuth, don't show the login modal
+        if (_loginManager.IsOAuthLogin) 
+            return false;
+        
+        // If we've already shown the modal, don't show it again
         if (_settingsManager.Get<LoginSettings>().HasShownModal) return false;
         _settingsManager.Update<LoginSettings>(settings => settings with { HasShownModal = true });
         

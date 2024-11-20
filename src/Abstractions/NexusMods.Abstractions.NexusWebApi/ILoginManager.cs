@@ -13,7 +13,15 @@ public interface ILoginManager
     /// </summary>
     Observable<UserInfo?> UserInfoObservable { get; }
 
+    /// <summary>
+    /// True if the user is a premium member
+    /// </summary>
     bool IsPremium { get; }
+    
+    /// <summary>
+    /// True if the user is logged in (via OAuth, not via API Key)
+    /// </summary>
+    bool IsOAuthLogin { get; }
 
     /// <summary>
     /// True if the user is logged in
