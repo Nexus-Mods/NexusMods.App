@@ -72,7 +72,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.CollectionStatusText.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text)
+            this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel)

@@ -8,7 +8,6 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Pages.LoadoutPage;
