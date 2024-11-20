@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class CollectionMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsCollectionMetadata";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionMetadata";
     
     /// <summary>
     /// The collection slug.

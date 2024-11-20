@@ -7,7 +7,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 [Include<LoadoutItemGroup>]
 public partial class RedModLoadoutGroup : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModLoadoutGroup";
+    private const string Namespace = "NexusMods.RedEngine.Cyberpunk2077.RedModLoadoutGroup";
     
     /// <summary>
     /// The info.json file for this RedMod

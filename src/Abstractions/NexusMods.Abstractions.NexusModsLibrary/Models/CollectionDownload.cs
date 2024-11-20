@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 [PublicAPI]
 public partial class CollectionDownload : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.CollectionDownload";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionDownload";
 
     /// <summary>
     /// The revision this download is a part of.
