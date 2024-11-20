@@ -17,21 +17,6 @@ public static class EntityExtensions
     {
         return model.Max(m => m.T);
     }
-
-    /// <summary>
-    /// Gets the timestamp of the transaction that created the model.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="dateTime">A default value to return if the model doesn't exist.</param>
-    /// <returns></returns>
-    public static DateTimeOffset GetCreatedAt<T>(this T model, DateTime? dateTime = null)
-    where T : IReadOnlyModel
-    {
-        if (model.Count == 0)
-            return dateTime ?? DateTime.MinValue;
-        var tx = new Transaction.ReadOnly(model.Db, EntityId.From(model.Min(m => m.T).Value));
-        return Transaction.Timestamp.Get(tx);
-    }
     
     /// <summary>
     /// Tries to parse an entity id from a hex string.
