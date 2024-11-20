@@ -95,7 +95,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                         _ => "LowRating",
                     };
                 })
-                .Subscribe(className => OverallRating.Classes.Add(className))
+                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
                 .DisposeWith(d);
         });
     }

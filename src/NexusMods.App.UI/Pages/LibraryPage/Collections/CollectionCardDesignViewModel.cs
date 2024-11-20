@@ -16,7 +16,7 @@ public class CollectionCardDesignViewModel : AViewModel<ICollectionCardViewModel
     public ulong EndorsementCount => 248;
     public ulong TotalDownloads => 30_000;
     public Size TotalSize => Size.From(907 * 1024 * 1024);
-    public Percent OverallRating => Percent.CreateClamped(0.84);
+    public Percent OverallRating => Percent.CreateClamped(0.54);
     public bool IsAdult => true;
     public string AuthorName => "FantasyAuthor";
     public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));

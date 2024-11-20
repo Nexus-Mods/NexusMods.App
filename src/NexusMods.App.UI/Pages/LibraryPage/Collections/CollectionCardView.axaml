@@ -63,7 +63,7 @@
                         <TextBlock x:Name="TotalSize" />
                     </panels:FlexPanel>
                     <panels:FlexPanel x:Name="OverallRatingPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}" />
+                        <icons:UnifiedIcon x:Name="OverallRatingIcon" Value="{x:Static icons:IconValues.CheckCircle}" />
                         <TextBlock x:Name="OverallRating" />
                     </panels:FlexPanel>
                 </panels:FlexPanel>

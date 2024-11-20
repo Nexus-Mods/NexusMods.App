@@ -146,12 +146,31 @@
                     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 </Style>
 
+                <!-- color changes for rating values -->
                 <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
-                    <Style Selector="^ > icons|UnifiedIcon">
-                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                    <Style Selector="^.LowRating">
+                        <Style Selector="^ TextBlock#OverallRating">
+                            <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+                        </Style>
+                        <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                            <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+                        </Style>
                     </Style>
-                    <Style Selector="^ > TextBlock#OverallRating">
-                        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                    <Style Selector="^.MidRating">
+                        <Style Selector="^ TextBlock#OverallRating">
+                            <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+                        </Style>
+                        <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                            <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+                        </Style>
+                    </Style>
+                    <Style Selector="^.HighRating">
+                        <Style Selector="^ TextBlock#OverallRating">
+                            <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                        </Style>
+                        <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                            <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+                        </Style>
                     </Style>
                 </Style>
             </Style>
