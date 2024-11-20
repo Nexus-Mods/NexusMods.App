@@ -415,7 +415,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Section("### Current State", metadata.LastScannedDiskStateTransaction);
         if (loadouts is not null)
         {
-            foreach (var loadout in loadouts.OrderBy(ld=> ld.ShortName))
+            foreach (var loadout in loadouts)
             {
                 if (!loadout.Items.Any())
                     continue;

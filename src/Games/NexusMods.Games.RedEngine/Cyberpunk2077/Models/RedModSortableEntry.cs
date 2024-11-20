@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;

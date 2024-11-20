@@ -8,6 +8,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -39,9 +40,6 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
-        TabTitle = _collection.Name;
-        TabIcon = IconValues.Collections;
-
         _serviceProvider = serviceProvider;
         _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
         _collectionDownloader = new CollectionDownloader(_serviceProvider);
@@ -52,6 +50,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
         _revision = revisionMetadata;
         _collection = revisionMetadata.Collection;
+
+        TabTitle = _collection.Name;
+        TabIcon = IconValues.Collections;
 
         RequiredDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
         RequiredDownloadsAdapter.ViewHierarchical.Value = false;
@@ -133,7 +134,16 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     public ulong TotalDownloads => _collection.TotalDownloads;
     public string Category => _collection.Category.Name;
     public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
+    public Percent OverallRating
+    {
+        get
+        {
+            if (_revision.OverallRating.TryGet(out var rating))
+                return Percent.CreateClamped(rating);
+            return Percent.Zero;
+        }
+    }
+
     public string AuthorName => _collection.Author.Name;
     public bool IsAdult => _revision.IsAdult;
     public CollectionSlug Slug => _collection.Slug;

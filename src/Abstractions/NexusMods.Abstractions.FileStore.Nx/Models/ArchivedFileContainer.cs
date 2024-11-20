@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.FileStore.Nx.Models;
 
