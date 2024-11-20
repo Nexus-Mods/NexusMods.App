@@ -121,24 +121,24 @@
         <TabControl x:Name="TabControl">
             <TabItem>
                 <TabItem.Header>
-                    <panels:FlexPanel x:Name="RequiredModsFlexPanel">
+                    <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
                         <TextBlock>Required</TextBlock>
                         <Border>
                             <TextBlock x:Name="RequiredDownloadsCount" />
                         </Border>
-                    </panels:FlexPanel>
+                    </StackPanel>
                 </TabItem.Header>
 
                 <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <panels:FlexPanel x:Name="OptionalModsFlexPanel">
+                    <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
                         <TextBlock>Optional</TextBlock>
                         <Border>
                             <TextBlock x:Name="OptionalDownloadsCount" />
                         </Border>
-                    </panels:FlexPanel>
+                    </StackPanel>
                 </TabItem.Header>
                 <TreeDataGrid x:Name="OptionalDownloadsTree" />
             </TabItem>

@@ -5,6 +5,7 @@
     <Design.PreviewWith>
         <Border Padding="24">
             <StackPanel Spacing="8">
+                <TextBlock Text="TabControl" />
                 <TabControl>
                     <TabItem Header="Tab 1">
                         <TextBlock Text="Content for Tab 1" />
@@ -15,7 +16,19 @@
                     <TabItem Header="Tab 3">
                         <TextBlock Text="Content for Tab 3" />
                     </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
+                                <TextBlock Text="Optional" />
+                                <Border>
+                                    <TextBlock x:Name="OptionalDownloadsCount" Text="123" />
+                                </Border>
+                            </StackPanel>
+                        </TabItem.Header>
+                        <TextBlock Text="Content for Tab 4" />
+                    </TabItem>
                 </TabControl>
+                <TextBlock Text="TabControl (Subtabs)" />
                 <TabControl Classes="Subtabs">
                     <TabItem Header="Tab 1">
                         <TextBlock Text="Content for Tab 1" />
@@ -28,75 +41,88 @@
                     </TabItem>
                 </TabControl>
             </StackPanel>
-
         </Border>
     </Design.PreviewWith>
 
     <Style Selector="TabControl">
         <!-- <Setter Property="ClipToBounds" Value="False" /> -->
         <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="8" />
         <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
         <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        <!-- <Setter Property="HorizontalAlignment" Value="Stretch" /> -->
 
         <!-- tab item headers text -->
 
         <Style Selector="^ TabItem">
-
-            <Setter Property="Margin" Value="0,12,0,0" />
             <Setter Property="Padding" Value="12,0,12,0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
-            <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
-                <Setter Property="Margin" Value="0" />
-                <Setter Property="CornerRadius" Value="0" />
-            </Style>
-
-
-            <Style
-                Selector="^[TabStripPlacement=Top] /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Margin" Value="0,0,0,12" />
-            </Style>
-
-
-            <!-- default\unselected tabs -->
-            <Style Selector="^ panels|FlexPanel">
-                <Setter Property="ColumnSpacing" Value="{StaticResource Spacing-2}" />
-
+            <!-- this is our primary way with custom header -->
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
                 <Style Selector="^ > TextBlock">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                    <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
+                </Style>
+                <!-- badge -->
+                <Style Selector="^ > Border">
+                    <Setter Property="Padding" Value="8,2" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                    <Setter Property="CornerRadius" Value="50" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                    </Style>
+                </Style>
+            </Style>
+
+            <!-- this is our secondary way without custom header and only using text -->
+            <Style Selector="^ > AccessText">
+                <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
+            </Style>
+
+
+            <!-- selected state -->
+            <Style Selector="^:selected">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+
+                <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 </Style>
 
+                <Style Selector="^ > StackPanel">
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
+                    <!-- badge -->
+                    <Style Selector="^ > Border">
+                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                        <Style Selector="^ > TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        </Style>
+                    </Style>
+                </Style>
             </Style>
 
             <!-- pointerover tabs -->
+
             <Style Selector="^:pointerover:not(:selected)">
-                <Style Selector="^ panels|FlexPanel">
-                    <Style Selector="^ TextBlock">
+                <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                </Style>
+
+                <Style Selector="^ > StackPanel">
+                    <Style Selector="^ > TextBlock">
                         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     </Style>
-                </Style>
-
-                <Style Selector="^ /template/ Border#PART_SelectedPipe">
-                    <Setter Property="Background"
-                            Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-                    <Setter Property="IsVisible" Value="True" />
-                </Style>
-            </Style>
-
-            <!-- selected tabs -->
-            <Style Selector="^:selected panels|FlexPanel">
-
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                </Style>
-
-                <Style Selector="^ Border">
-                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-
-                    <Style Selector="^ TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                    <!-- badge -->
+                    <Style Selector="^ > Border">
+                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                        <Style Selector="^ > TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                        </Style>
                     </Style>
                 </Style>
             </Style>
@@ -107,7 +133,8 @@
         <!-- subtabs -->
 
         <Style Selector="^.Subtabs">
-            <Setter Property="Padding" Value="0,24,0,12" />
+
+            <!-- <Setter Property="Padding" Value="0,24,0,12" /> -->
 
             <Style Selector="^ TabItem">
                 <Setter Property="Padding" Value="12,0,12,0" />
@@ -117,24 +144,22 @@
                 <Setter Property="MinHeight" Value="28" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
+                <!-- hide the underline element -->
                 <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
                     <Setter Property="IsVisible" Value="False" />
                 </Style>
 
-                <Style Selector="^[TabStripPlacement=Top] /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Margin" Value="0,0,0,0" />
-                </Style>
-                
+                <!-- this is our primary way using default header 'Text' property -->
                 <Style Selector="^ > AccessText">
                     <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                 </Style>
-                
-                <!-- first child -->
+
+                <!-- first child (rounded left corners) -->
                 <Style Selector="^:nth-child(1)">
                     <Setter Property="CornerRadius" Value="4,0,0,4" />
                 </Style>
-                
-                <!-- last child -->
+
+                <!-- last child (rounded right corners) -->
                 <Style Selector="^:nth-last-child(1)">
                     <Setter Property="CornerRadius" Value="0,4,4,0" />
                 </Style>
@@ -144,20 +169,27 @@
                 <Style Selector="^:selected">
                     <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
                     <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                    
+                    <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                        <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                    </Style>
+                </Style>
+
+                <!-- pointerover tabs -->
+                <Style Selector="^:pointerover:not(:selected)">
+                    <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                        <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
                 </Style>
                 
                 <!-- pointerover tabs -->
-                <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Style Selector="^:pointerover:selected">
+                    <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                        <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
                 </Style>
-                
-                <!--  selected pointerover state  -->
-                <Style Selector="^:selected:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-                </Style>
+
             </Style>
 
 

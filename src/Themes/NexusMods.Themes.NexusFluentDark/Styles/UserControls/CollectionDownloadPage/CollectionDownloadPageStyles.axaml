@@ -172,7 +172,7 @@
                                             Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                     <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                                 </Style>
-                                
+
                                 <!-- color changes for rating values -->
                                 <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
                                     <Style Selector="^.LowRating">
@@ -228,7 +228,9 @@
                 </Style>
             </Style>
 
-                    
+            <Style Selector="^ TabControl">
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+            </Style>
         </Style>
     </Style>
 </Styles>
