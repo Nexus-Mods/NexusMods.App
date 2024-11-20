@@ -1,7 +1,6 @@
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
