@@ -18,7 +18,7 @@ public static class DiskStateExtensions
     /// </summary>
     public static Optional<LoadoutId> LastSynchronizedLoadout(this GameInstallMetadata.ReadOnly metadata)
     {
-        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastApplied))
+        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastApplied))
             return LoadoutId.From(lastApplied);
         return Optional<LoadoutId>.None;
     }
