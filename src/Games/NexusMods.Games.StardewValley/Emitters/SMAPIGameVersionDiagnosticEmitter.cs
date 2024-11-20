@@ -67,7 +67,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         
         if (!SemanticVersion.TryParse(smapiVersionString, out var smapiVersion))
         {
-            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapi.Version);
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiVersionString);
             yield break;
         }
 

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Extensions;
@@ -160,7 +159,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
     }
-    
+
     private static Task CopyLoadout(Loadout.ReadOnly loadout)
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.CopyLoadout(loadout));

@@ -1,8 +1,6 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -52,5 +50,5 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The total number of ratings this revision has.
     /// </summary>
-    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
+    public static readonly UInt64Attribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
 }

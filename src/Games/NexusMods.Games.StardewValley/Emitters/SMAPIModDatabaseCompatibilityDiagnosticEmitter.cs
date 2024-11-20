@@ -64,7 +64,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
         if (!SemanticVersion.TryParse(smapiStrVersion, out var smapiVersion))
         {
-            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapi.Version);
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiStrVersion);
             yield break;
         }
 

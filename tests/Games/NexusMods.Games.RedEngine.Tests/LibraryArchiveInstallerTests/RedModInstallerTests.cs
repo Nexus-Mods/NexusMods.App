@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Games.RedEngine.ModInstallers;
@@ -38,6 +37,6 @@ public class RedModInstallerTests(ITestOutputHelper outputHelper) : ALibraryArch
             childGroup.TryGetAsRedModLoadoutGroup(out var redModGroup).Should().BeTrue("The child should be a red mod loadout group.");
         }
 
-        await VerifyTx(group.MostRecentTxId()).UseParameters(filename);
+        await VerifyTx(group.Max(m => m.T)).UseParameters(filename);
     }
 }
