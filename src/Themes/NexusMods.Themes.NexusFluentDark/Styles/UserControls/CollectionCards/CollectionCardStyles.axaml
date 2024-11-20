@@ -59,7 +59,6 @@
 
                     <!-- right column -->
                     <Style Selector="^ panels|FlexPanel#TitleContainer">
-                        <!-- <Setter Property="Background" Value="DarkBlue" /> -->
                         <Setter Property="Direction" Value="Column" />
 
                         <!-- Fixed sizes for child elements -->
@@ -76,39 +75,33 @@
                         </Style>
 
                         <Style Selector="^ Border#CategoryTextBorder">
-                            <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
                             <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
                             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
                             <Setter Property="Padding" Value="0, 8, 0, 8" />
                             <!-- Margin needed to left offset top and bottom border -->
                             <Setter Property="Margin" Value="12, 0, 0, 0" />
-                            
+
                             <Style Selector="^ > TextBlock">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                                 <Setter Property="TextWrapping" Value="NoWrap" />
                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             </Style>
-                            
+
                             <Style Selector="^ Ellipse">
                                 <Setter Property="Fill" Value="{StaticResource NeutralSubduedBrush}" />
                             </Style>
 
                             <Style Selector="^ TextBlock#AdultText">
-                                <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
                                 <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
                             </Style>
-
-                            
                         </Style>
 
                         <Style Selector="^ Border#SummaryTextFlexPanel">
-                            <!-- <Setter Property="Background" Value="Red" /> -->
                             <Setter Property="panels:Flex.Grow" Value="1" />
                             <Setter Property="panels:Flex.Shrink" Value="1" />
 
                             <Style Selector="^ TextBlock#SummaryText">
-                                <!-- <Setter Property="Background" Value="DarkBlue" /> -->
                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
                                 <Setter Property="Padding" Value="12, 4, 0, 0" />
@@ -179,7 +172,6 @@
                 <Setter Property="ColumnSpacing" Value="16" />
 
                 <Style Selector="^ panels|FlexPanel#ActionGroup">
-                    <!-- <Setter Property="Background" Value="Red"/> -->
                     <Setter Property="panels:Flex.Grow" Value="1" />
                     <Setter Property="panels:Flex.Shrink" Value="0" />
                     <Setter Property="panels:Flex.Basis" Value="0%" />

@@ -30,8 +30,8 @@
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock x:Name="CategoryText" />
                                 <StackPanel x:Name="AdultStackPanel" Orientation="Horizontal" Spacing="8">
-                                    <Ellipse Width="4" Height="4"/>
-                                    <TextBlock x:Name="AdultText" Text="Adult"/>
+                                    <Ellipse Width="4" Height="4" />
+                                    <TextBlock x:Name="AdultText" Text="Adult" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -78,8 +78,7 @@
                                                       LeftIcon="{x:Static icons:IconValues.Download}"
                                                       RightIcon="{x:Static icons:IconValues.ChevronRight}"
                                                       ShowIcon="Both"
-                                                      Text="Continue Download"
-                                                      />
+                                                      Text="Continue Download" />
                     </panels:FlexPanel>
 
                     <panels:FlexPanel x:Name="FooterLabels">

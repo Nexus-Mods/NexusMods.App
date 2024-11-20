@@ -53,10 +53,8 @@
                             <Setter Property="MaxWidth" Value="806" />
                             <Setter Property="Padding" Value="0, 0, 0, 24" />
                             <Setter Property="panels:Flex.AlignSelf" Value="FlexStart" />
-                            <!-- <Setter Property="HorizontalAlignment" Value="Left" /> -->
 
                             <Style Selector="^ panels|FlexPanel#MainContent">
-                                <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
                                 <Setter Property="Direction" Value="Row" />
 
                                 <!-- left column -->
@@ -77,7 +75,6 @@
                                 <!-- right column -->
                                 <Style Selector="^ panels|FlexPanel#CollectionDetails">
                                     <Setter Property="Margin" Value="24, 0" />
-                                    <!-- <Setter Property="Background" Value="#404050" /> -->
                                     <Setter Property="Direction" Value="Column" />
                                     <Setter Property="RowSpacing" Value="4" />
                                     <Setter Property="panels:Flex.Grow" Value="1" />
@@ -203,12 +200,12 @@
                     <Setter Property="JustifyContent" Value="FlexEnd" />
                     <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="ColumnSpacing" Value="8" />
-                    
+
                     <Style Selector="^ TextBlock#CollectionStatusText">
                         <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
                         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                     </Style>
-                    
+
                 </Style>
             </Style>
 
