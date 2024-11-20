@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Loadouts;
 [Include<LoadoutItemGroup>]
 public partial class CollectionGroup : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Loadouts.CollectionGroup";
+    private const string Namespace = "NexusMods.Loadouts.CollectionGroup";
 
     /// <summary>
     /// If the collection is read-only it won't support adding new mods or modifying the existing files. 

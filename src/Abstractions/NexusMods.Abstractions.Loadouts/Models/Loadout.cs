@@ -17,7 +17,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public partial class Loadout : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Loadouts.Loadout";
+    private const string Namespace = "NexusMods.Loadouts.Loadout";
 
     /// <summary>
     /// The human friendly name for this loadout.

@@ -111,7 +111,8 @@ public static class Services
         
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
-
+        
+        
         coll.AddPersistedDbResourceModel();
 
         // Verbs

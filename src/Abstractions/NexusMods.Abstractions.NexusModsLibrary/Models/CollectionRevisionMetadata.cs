@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class CollectionRevisionMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsCollectionRevision";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionRevisionMetadata";
     
     /// <summary>
     /// The globally unique id identifying a specific revision of a collection.

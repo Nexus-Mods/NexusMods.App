@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public partial class GameInstallMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Loadouts.GameMetadata";
+    private const string Namespace = "NexusMods.Loadouts.GameMetadata";
 
     /// <summary>
     /// The game's unique id.
