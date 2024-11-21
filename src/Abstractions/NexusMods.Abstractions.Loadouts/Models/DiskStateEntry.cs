@@ -35,8 +35,8 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The last modified time of the file
     /// </summary>
-    public static readonly DateTimeAttribute LastModified = new(Namespace, nameof(LastModified));
-    
+    public static readonly TimestampAttribute LastModified = new(Namespace, nameof(LastModified));
+
     /// <summary>
     /// The owning game installation
     /// </summary>
