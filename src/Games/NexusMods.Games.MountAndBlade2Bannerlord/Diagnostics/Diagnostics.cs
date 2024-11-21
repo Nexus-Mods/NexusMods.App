@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Generators.Diagnostics;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 
@@ -808,6 +809,24 @@ All dependency entries must include an ID to properly identify the required mod.
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("ModId")
             .AddValue<string>("ModName")
+        )
+        .Finish();
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingProtontricksForRedMod = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 16))
+        .WithTitle("Missing 'Protontricks' dependency")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("Protontricks is required to run the game but is not present.")
+        .WithDetails("""
+Protontricks is required to run the game but is not present.
+
+Refer to the {ProtontricksUri} for installation instructions.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("ProtontricksUri")
         )
         .Finish();
 }
