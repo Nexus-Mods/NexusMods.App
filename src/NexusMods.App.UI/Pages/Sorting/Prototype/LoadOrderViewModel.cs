@@ -1,13 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Selection;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting.Prototype;
@@ -19,7 +18,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string SortOrderName { get; }
     public ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems => _sortableItemViewModels;
 
-    public ITreeDataGridSource<ISortableItemViewModel> TreeSource { get; }
+
+    public LoadOrderTreeDataGridAdapter Adapter { get; }
 
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
     {
@@ -31,53 +31,86 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             .ToObservableChangeSet()
             .Transform(item => (ISortableItemViewModel)new SortableItemViewModel(item))
             .Bind(out _sortableItemViewModels);
-        
-        
 
-        var source = new FlatTreeDataGridSource<ISortableItemViewModel>(_sortableItemViewModels)
-        {
-            Columns =
-            {
-                new TemplateColumn<ISortableItemViewModel>(
-                    "Load Order",
-                    "IndexColumnDataTemplate",
-                    options: new TemplateColumnOptions<ISortableItemViewModel>
-                    {
-                        // sort by SortIndex
-                        CompareAscending = (x, y) =>
-                        {
-                            if (x is null || y is null)
-                                return 0;
-                            return x.SortIndex.CompareTo(y.SortIndex);
-                        },
-                        CompareDescending = (x, y) =>
-                        {
-                            if (x is null || y is null)
-                                return 0;
-                            return y.SortIndex.CompareTo(x.SortIndex);
-                        }
-                    }
-                ),
-                new TextColumn<ISortableItemViewModel, string>(
-                    "Name",
-                    x => x.DisplayName
-                ),
-            },
-        };
-        
-        var selection = new TreeDataGridRowSelectionModel<ISortableItemViewModel>(source)
-        {
-            SingleSelect = false,
-        };
-        source.Selection = selection;
-        
-        TreeSource = source;
+        Adapter = new LoadOrderTreeDataGridAdapter(provider);
+        Adapter.ViewHierarchical.Value = true;
 
         this.WhenActivated(d =>
             {
+                Adapter.Activate();
+                Disposable.Create(() => Adapter.Deactivate())
+                    .DisposeWith(d);
+
                 subscription.Subscribe()
                     .DisposeWith(d);
             }
         );
+    }
+}
+
+public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemModel, Guid>
+{
+    private ILoadoutSortableItemProvider _sortableItemsProvider;
+
+    public LoadOrderTreeDataGridAdapter(ILoadoutSortableItemProvider sortableItemsProvider)
+    {
+        _sortableItemsProvider = sortableItemsProvider;
+    }
+
+    protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
+    {
+        return _sortableItemsProvider.SortableItems
+            .ToObservableChangeSet(_ => new Guid())
+            .Transform((item, id) => (ILoadOrderItemModel)new LoadOrderItemModel(item, id));
+    }
+
+    protected override IColumn<ILoadOrderItemModel>[] CreateColumns(bool viewHierarchical)
+    {
+        return
+        [
+            // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
+            new HierarchicalExpanderColumn<ILoadOrderItemModel>(
+            inner: CreateIndexColumn(),
+            childSelector: static model => model.Children,
+            hasChildrenSelector: static model => model.HasChildren.Value,
+            isExpandedSelector: static model => model.IsExpanded
+            )
+            {
+            Tag = "expander",
+            },
+            CreateNameColumn(),
+        ];
+    }
+
+    private static IColumn<ILoadOrderItemModel> CreateIndexColumn()
+    {
+        return new CustomTemplateColumn<ILoadOrderItemModel>(
+            header: "Load Order",
+            cellTemplateResourceKey: "LoadOrderItemIndexColumnTemplate",
+            options: new TemplateColumnOptions<ILoadOrderItemModel>
+            {
+                CanUserSortColumn = false,
+                CanUserResizeColumn = true,
+            }
+        )
+        {
+            Id = "Index",
+        };
+    }
+
+    private static IColumn<ILoadOrderItemModel> CreateNameColumn()
+    {
+        return new CustomTemplateColumn<ILoadOrderItemModel>(
+            header: "Name",
+            cellTemplateResourceKey: "LoadOrderItemNameColumnTemplate",
+            options: new TemplateColumnOptions<ILoadOrderItemModel>
+            {
+                CanUserSortColumn = false,
+                CanUserResizeColumn = true,
+            }
+        )
+        {
+            Id = "Name",
+        };
     }
 }

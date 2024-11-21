@@ -36,14 +36,16 @@
 
         <TreeDataGrid x:Name="SortOrderTreeDataGrid"
                       AutoDragDropRows="True"
-                      RowDrop="OnRowDrop"
                       Margin="0,20"
                       CanUserResizeColumns="True"
-                      CanUserSortColumns="False">
+                      CanUserSortColumns="False"
+                      ShowColumnHeaders="True"
+                      RowDrop="OnRowDrop">
 
             <TreeDataGrid.Resources>
-                <DataTemplate x:Key="IndexColumnDataTemplate"
-                              DataType="games:ISortableItemViewModel">
+                
+                <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
+                              DataType="prototype:ILoadOrderItemModel">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock x:Name="ItemIndex"
                                    Text="{CompiledBinding SortIndex}" />
@@ -59,6 +61,15 @@
                                                  Text="" />
                     </StackPanel>
                 </DataTemplate>
+                
+                <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
+                              DataType="prototype:ILoadOrderItemModel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="ItemName"
+                                   Text="{CompiledBinding DisplayName}" />
+                    </StackPanel>
+                </DataTemplate>
+                
             </TreeDataGrid.Resources>
 
         </TreeDataGrid>

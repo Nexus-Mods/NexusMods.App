@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Avalonia.Controls;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.UI;
 
@@ -11,5 +10,5 @@ public interface ILoadOrderViewModel : IViewModelInterface
     
     ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems { get; }
     
-    ITreeDataGridSource<ISortableItemViewModel> TreeSource { get; }
+    LoadOrderTreeDataGridAdapter Adapter { get; }
 }
