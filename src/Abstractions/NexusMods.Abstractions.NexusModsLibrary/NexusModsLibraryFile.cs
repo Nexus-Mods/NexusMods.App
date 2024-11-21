@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 [Include<LibraryItem>]
 public partial class NexusModsLibraryItem : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsLibraryItem";
+    private const string Namespace = "NexusMods.NexusModsLibrary.NexusModsLibraryItem";
 
     /// <summary>
     /// Remote metadata of the file on Nexus Mods.

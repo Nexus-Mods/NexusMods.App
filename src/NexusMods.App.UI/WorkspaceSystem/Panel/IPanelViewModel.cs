@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 

@@ -1,6 +1,4 @@
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
@@ -14,7 +12,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public partial class GameInstallMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Loadouts.GameMetadata";
+    private const string Namespace = "NexusMods.Loadouts.GameMetadata";
 
     /// <summary>
     /// The game's unique id.

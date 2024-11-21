@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;

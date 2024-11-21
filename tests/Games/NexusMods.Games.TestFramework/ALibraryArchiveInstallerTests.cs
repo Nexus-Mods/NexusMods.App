@@ -44,13 +44,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         return await RegisterLocalArchive(file);
     }
 
-    public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
-    {
-        var libraryFile = await LibraryService.AddLocalFile(file);
-        if (!libraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
-            throw new InvalidOperationException("The library file should be an archive.");
-        return archive;
-    }
+
 
     protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller

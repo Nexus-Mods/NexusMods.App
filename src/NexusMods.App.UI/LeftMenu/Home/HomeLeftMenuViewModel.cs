@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;

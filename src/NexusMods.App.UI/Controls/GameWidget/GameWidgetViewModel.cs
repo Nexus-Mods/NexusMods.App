@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.UI;
 using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

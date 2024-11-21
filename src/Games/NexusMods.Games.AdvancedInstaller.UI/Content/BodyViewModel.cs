@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;

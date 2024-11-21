@@ -1,10 +1,8 @@
-using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
-namespace NexusMods.DataModel.Migrations.Migrations;
+namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
 public class UpsertFingerprint : IMigration
 {

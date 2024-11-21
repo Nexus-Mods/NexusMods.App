@@ -1,5 +1,6 @@
 using System.Reactive;
 using Avalonia;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

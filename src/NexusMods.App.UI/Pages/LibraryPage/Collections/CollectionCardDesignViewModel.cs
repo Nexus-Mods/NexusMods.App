@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
 

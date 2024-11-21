@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class User : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.NexusModsLibrary.User";
+    private const string Namespace = "NexusMods.NexusModsLibrary.User";
     
     /// <summary>
     /// The user's username.

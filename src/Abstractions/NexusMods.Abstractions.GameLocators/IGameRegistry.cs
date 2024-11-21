@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.Games;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.GameLocators;

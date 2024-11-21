@@ -1,5 +1,4 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Hashing.xxHash3;

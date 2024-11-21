@@ -13,7 +13,7 @@ namespace NexusMods.Abstractions.FileStore.Nx.Models;
 /// </summary>
 public partial class ArchivedFile : IModelDefinition
 {
-    private const string Namespace = "NexusMods.DataModel.ArchivedFile";
+    private const string Namespace = "NexusMods.ArchivedFile";
     
     // TODO: Remove history from here.
 

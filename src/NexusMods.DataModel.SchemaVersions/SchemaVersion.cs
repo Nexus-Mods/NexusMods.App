@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.DataModel.Migrations;
+namespace NexusMods.DataModel.SchemaVersions;
 
 public partial class SchemaVersion : IModelDefinition
 {

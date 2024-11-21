@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.Unknown;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.Unknown;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

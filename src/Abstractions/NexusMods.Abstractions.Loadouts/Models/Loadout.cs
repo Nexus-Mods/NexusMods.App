@@ -17,7 +17,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public partial class Loadout : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Loadouts.Loadout";
+    private const string Namespace = "NexusMods.Loadouts.Loadout";
 
     /// <summary>
     /// The human friendly name for this loadout.
@@ -53,12 +53,12 @@ public partial class Loadout : IModelDefinition
     /// DateTime when the loadout was last applied.
     /// Returns DateTime.MinValue if the loadout has never been applied.
     /// </summary>
-    public static readonly DateTimeAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime))
+    public static readonly TimestampAttribute LastAppliedDateTime = new(Namespace, nameof(LastAppliedDateTime))
     {
         IsOptional = true,
-        DefaultValue = DateTime.MinValue,
+        DefaultValue = DateTimeOffset.MinValue,
     };
-    
+
     /// <summary>
     /// All items in the Loadout.
     /// </summary>

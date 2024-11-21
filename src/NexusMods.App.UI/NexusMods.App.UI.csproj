@@ -93,6 +93,7 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
@@ -662,6 +663,15 @@
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageDesignViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\MiniGameWidget\MiniGameWidget.axaml.cs">
           <DependentUpon>MiniGameWidget.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -677,6 +687,18 @@
         </Compile>
         <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
           <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrdersPageDesignViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderItemModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrdersPageViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

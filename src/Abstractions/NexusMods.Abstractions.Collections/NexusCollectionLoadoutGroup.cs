@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Collections;
 [Include<CollectionGroup>]
 public partial class NexusCollectionLoadoutGroup : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.Collections.NexusCollectionLoadoutItem";
+    private const string Namespace = "NexusMods.Collections.NexusCollectionLoadoutGroup";
     
     /// <summary>
     /// The collection library file.

@@ -1,5 +1,6 @@
 using System.Reactive;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;

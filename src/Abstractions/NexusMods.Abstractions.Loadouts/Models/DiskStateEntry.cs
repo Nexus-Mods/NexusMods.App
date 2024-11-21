@@ -1,5 +1,4 @@
 ﻿using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
@@ -7,7 +6,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.DiskState;
+namespace NexusMods.Abstractions.Loadouts;
 
 public partial class DiskStateEntry : IModelDefinition
 {
@@ -16,7 +15,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// </summary>
     public static readonly PartitionId EntryPartition = PartitionId.User(4);
     
-    private const string Namespace = "NexusMods.DataModel.DiskStateEntry";
+    private const string Namespace = "NexusMods.Loadouts.DiskStateEntry";
     
     /// <summary>
     /// The path to the file
@@ -36,8 +35,8 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The last modified time of the file
     /// </summary>
-    public static readonly DateTimeAttribute LastModified = new(Namespace, nameof(LastModified));
-    
+    public static readonly TimestampAttribute LastModified = new(Namespace, nameof(LastModified));
+
     /// <summary>
     /// The owning game installation
     /// </summary>

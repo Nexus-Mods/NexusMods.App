@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Files;
 
 namespace NexusMods.App.UI.Controls.Trees;

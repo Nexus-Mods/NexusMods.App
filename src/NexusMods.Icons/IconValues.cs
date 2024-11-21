@@ -277,6 +277,12 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/arrow-right/
     public static readonly IconValue ArrowForward = new ProjektankerIcon("mdi-arrow-right");
+    
+    // https://pictogrammers.com/library/mdi/icon/arrow-up/
+    public static readonly IconValue ArrowUp = new ProjektankerIcon("mdi-arrow-up");
+    
+    // https://pictogrammers.com/library/mdi/icon/arrow-down/
+    public static readonly IconValue ArrowDown = new ProjektankerIcon("mdi-arrow-down");
 
     // https://pictogrammers.com/library/mdi/icon/menu-down/
     public static readonly IconValue ArrowDropDown = new ProjektankerIcon("mdi-menu-down");

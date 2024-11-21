@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 
+
 namespace NexusMods.Abstractions.Games;
 
 /// <summary>
@@ -38,6 +39,12 @@ public interface IGame : ILocatableGame
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
     
+    /// <summary>
+    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
+    /// by the game.
+    /// </summary>
+    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
+
     /// <summary>
     /// The synchronizer for this game.
     /// </summary>

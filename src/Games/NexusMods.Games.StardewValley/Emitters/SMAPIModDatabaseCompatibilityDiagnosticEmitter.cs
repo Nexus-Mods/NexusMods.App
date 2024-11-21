@@ -16,6 +16,7 @@ using ModStatus = StardewModdingAPI.Toolkit.Framework.ModData.ModStatus;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 using SMAPIModDatabase = StardewModdingAPI.Toolkit.Framework.ModData.ModDatabase;
 
+
 namespace NexusMods.Games.StardewValley.Emitters;
 
 /// <summary>

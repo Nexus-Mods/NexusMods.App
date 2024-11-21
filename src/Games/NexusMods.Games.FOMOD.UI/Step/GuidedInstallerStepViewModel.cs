@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;

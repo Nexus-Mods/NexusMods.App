@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;

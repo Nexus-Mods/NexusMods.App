@@ -1,12 +1,10 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Aggregation;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
