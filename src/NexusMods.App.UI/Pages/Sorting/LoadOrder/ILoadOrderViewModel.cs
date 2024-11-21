@@ -13,7 +13,7 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string InfoAlertTitle { get; }
     string InfoAlertHeading { get; }
     string InfoAlertMessage { get; }
-    bool InfoAlertIsVisible { get; }
+    bool InfoAlertIsVisible { get; set; }
     ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     string TrophyToolTip { get; }
     ListSortDirection SortDirectionCurrent { get; set; }

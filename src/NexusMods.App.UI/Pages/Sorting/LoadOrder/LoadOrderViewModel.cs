@@ -21,7 +21,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string InfoAlertTitle { get; } = "";
     public string InfoAlertHeading { get; } = "";
     public string InfoAlertMessage { get; } = "";
-    [Reactive] public bool InfoAlertIsVisible { get; } = false;
+    [Reactive] public bool InfoAlertIsVisible { get; set; } = false;
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "";
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; } = ListSortDirection.Ascending;
