@@ -10,30 +10,6 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.Prototype.LoadOrderView">
     <StackPanel Orientation="Vertical">
-        <ItemsControl x:Name="ItemsList">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="games:ISortableItemViewModel">
-                    <StackPanel Orientation="Horizontal">
-                        <controls:StandardButton x:Name="UpButton"
-                                                 Command="{CompiledBinding MoveDown}"
-                                                 LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
-                        <controls:StandardButton x:Name="DownButton"
-                                                 Command="{CompiledBinding MoveUp}"
-                                                 LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
-                        <TextBlock x:Name="ItemIndex"
-                                   Text="{CompiledBinding SortIndex}" />
-                        <TextBlock x:Name="ItemText"
-                                   Text="{CompiledBinding DisplayName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-
         <TreeDataGrid x:Name="SortOrderTreeDataGrid"
                       AutoDragDropRows="False"
                       Margin="0,20"

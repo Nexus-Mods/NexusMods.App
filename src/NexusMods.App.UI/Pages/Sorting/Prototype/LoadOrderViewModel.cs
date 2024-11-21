@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
@@ -13,11 +12,7 @@ namespace NexusMods.App.UI.Pages.Sorting.Prototype;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
-    private readonly ReadOnlyObservableCollection<ISortableItemViewModel> _sortableItemViewModels;
-
     public string SortOrderName { get; }
-    public ReadOnlyObservableCollection<ISortableItemViewModel> SortableItems => _sortableItemViewModels;
-
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
@@ -26,12 +21,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         SortOrderName = sortableItemProviderFactory.SortOrderName;
         var provider = sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
 
-        var subscription = provider
-            .SortableItems
-            .ToObservableChangeSet()
-            .Transform(item => (ISortableItemViewModel)new SortableItemViewModel(item))
-            .Bind(out _sortableItemViewModels);
-
         Adapter = new LoadOrderTreeDataGridAdapter(provider);
         Adapter.ViewHierarchical.Value = true;
 
@@ -39,9 +28,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             {
                 Adapter.Activate();
                 Disposable.Create(() => Adapter.Deactivate())
-                    .DisposeWith(d);
-
-                subscription.Subscribe()
                     .DisposeWith(d);
             }
         );
