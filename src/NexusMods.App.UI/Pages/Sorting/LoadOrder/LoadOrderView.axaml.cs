@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.Sorting.Prototype;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
 {
