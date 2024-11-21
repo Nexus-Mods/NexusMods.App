@@ -230,6 +230,7 @@
 
             <Style Selector="^ TabControl">
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="Padding" Value="0" />
             </Style>
         </Style>
     </Style>

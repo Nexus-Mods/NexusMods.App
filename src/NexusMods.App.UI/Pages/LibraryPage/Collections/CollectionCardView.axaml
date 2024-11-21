@@ -11,22 +11,27 @@
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
+
     <Design.DataContext>
         <collections:CollectionCardDesignViewModel />
     </Design.DataContext>
+
     <Border x:Name="CardCollectionBorder">
-        <panels:FlexPanel x:Name="CardCollection">
+        <StackPanel x:Name="CardCollection">
 
+            <!-- top row -->
             <Border x:Name="ContainerBorder">
-                <panels:FlexPanel x:Name="Container">
+                <DockPanel x:Name="Container">
 
-                    <Border x:Name="TileImageBorder">
+                    <!-- left column -->
+                    <Border x:Name="TileImageBorder" DockPanel.Dock="Left">
                         <Image x:Name="TileImage" />
                     </Border>
 
-                    <panels:FlexPanel x:Name="TitleContainer">
-                        <TextBlock x:Name="TitleText" />
-                        <Border x:Name="CategoryTextBorder">
+                    <!-- right column -->
+                    <Grid x:Name="TitleContainer" RowDefinitions="Auto,Auto,*">
+                        <TextBlock Grid.Row="0" x:Name="TitleText" />
+                        <Border Grid.Row="1" x:Name="CategoryTextBorder">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock x:Name="CategoryText" />
                                 <StackPanel x:Name="AdultStackPanel" Orientation="Horizontal" Spacing="8">
@@ -35,68 +40,68 @@
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-                        <Border x:Name="SummaryTextFlexPanel">
+                        <Border Grid.Row="2" x:Name="SummaryTextFlexPanel">
                             <TextBlock x:Name="SummaryText" />
                         </Border>
-                    </panels:FlexPanel>
+                    </Grid>
 
-                </panels:FlexPanel>
+                </DockPanel>
             </Border>
 
-
+            <!-- middle row (stats) -->
             <Border x:Name="StatsBorder">
-                <panels:FlexPanel x:Name="Stats" IsVisible="True">
-                    <panels:FlexPanel x:Name="ModsPanel">
+                <StackPanel x:Name="StatsPanel" IsVisible="True">
+                    <StackPanel x:Name="ModsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
                         <TextBlock x:Name="NumDownloads" />
-                    </panels:FlexPanel>
-                    <panels:FlexPanel x:Name="EndorsementsPanel">
+                    </StackPanel>
+                    <StackPanel x:Name="EndorsementsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
                         <TextBlock x:Name="Endorsements" />
-                    </panels:FlexPanel>
-                    <panels:FlexPanel x:Name="DownloadsPanel">
+                    </StackPanel>
+                    <StackPanel x:Name="DownloadsPanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
                         <TextBlock x:Name="TotalDownloads" />
-                    </panels:FlexPanel>
-                    <panels:FlexPanel x:Name="TotalSizePanel">
+                    </StackPanel>
+                    <StackPanel x:Name="TotalSizePanel">
                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
                         <TextBlock x:Name="TotalSize" />
-                    </panels:FlexPanel>
-                    <panels:FlexPanel x:Name="OverallRatingPanel">
+                    </StackPanel>
+                    <StackPanel x:Name="OverallRatingPanel">
                         <icons:UnifiedIcon x:Name="OverallRatingIcon" Value="{x:Static icons:IconValues.CheckCircle}" />
                         <TextBlock x:Name="OverallRating" />
-                    </panels:FlexPanel>
-                </panels:FlexPanel>
+                    </StackPanel>
+                </StackPanel>
             </Border>
 
-
+            <!-- bottom row (actions) -->
             <Border x:Name="ActionFooterBorder">
-                <panels:FlexPanel x:Name="ActionFooter">
+                <Grid x:Name="ActionFooter" ColumnDefinitions="Auto,*,Auto">
 
-                    <panels:FlexPanel x:Name="ActionGroup">
+                    <StackPanel Grid.Column="1" x:Name="ActionGroup">
                         <navigation:NavigationControl x:Name="DownloadButton"
                                                       LeftIcon="{x:Static icons:IconValues.Download}"
                                                       RightIcon="{x:Static icons:IconValues.ChevronRight}"
                                                       ShowIcon="Both"
+                                                      Size="Small"
+                                                      Type="Secondary"
+                                                      Fill="Strong"
                                                       Text="Continue Download" />
-                    </panels:FlexPanel>
+                    </StackPanel>
 
-                    <panels:FlexPanel x:Name="FooterLabels">
-                        <panels:FlexPanel x:Name="UserLabel">
+                    <StackPanel Grid.Column="2" x:Name="FooterLabels">
+                        <StackPanel x:Name="UserLabel">
                             <Border x:Name="AvatarImageBorder">
                                 <Image x:Name="AuthorAvatarImage" />
                             </Border>
                             <TextBlock x:Name="AuthorName" />
-                        </panels:FlexPanel>
-                        <panels:FlexPanel x:Name="ListingLabel">
+                        </StackPanel>
+                        <StackPanel x:Name="ListingLabel">
                             <TextBlock x:Name="ListingLabelText" />
-                        </panels:FlexPanel>
-                    </panels:FlexPanel>
-
-                </panels:FlexPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Border>
-
-        </panels:FlexPanel>
-
+        </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>
