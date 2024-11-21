@@ -422,11 +422,12 @@ Looking at `{ModName}`'s `SubModule.xml`:
     internal static IDiagnosticTemplate CircularDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 9))
-        .WithTitle("'{ModName}' Has Circular Dependency with '{CircularDependencyName}'")
+        .WithTitle("Mods Are Stuck In a Loop: '{ModName}' and '{CircularDependencyName}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("'{ModName}' and '{CircularDependencyName}' are circular dependencies")
+        .WithSummary("Mods Are Stuck In a Loop: '{ModName}' and '{CircularDependencyName}'")
         .WithDetails("""
-The mods `{ModName}` and `{CircularDependencyName}` create a circular dependency chain where they depend on each other.
+`{ModName}` and `{CircularDependencyName}` are creating a `circular dependency`.
+This means each mod is waiting for the other to load first, causing a loop that stops both mods from working.
 
 ### How to Resolve
 1. Contact the mod authors to resolve the circular dependency
