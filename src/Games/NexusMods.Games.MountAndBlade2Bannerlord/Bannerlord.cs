@@ -62,7 +62,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
-        _serviceProvider.GetRequiredService<MountAndBlade2BannerlordModInstaller>(),
+        _serviceProvider.GetRequiredService<BannerlordModInstaller>(),
     ];
     public override IDiagnosticEmitter[] DiagnosticEmitters => 
     [

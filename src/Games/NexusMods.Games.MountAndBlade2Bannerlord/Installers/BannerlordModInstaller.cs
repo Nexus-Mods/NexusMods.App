@@ -21,12 +21,12 @@ using GameStore = Bannerlord.LauncherManager.Models.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
-public sealed class MountAndBlade2BannerlordModInstaller : ALibraryArchiveInstaller
+public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
 {
     private readonly LauncherManagerFactory _launcherManagerFactory;
     private readonly IFileStore _fileStore;
 
-    public MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<MountAndBlade2BannerlordModInstaller>>())
+    public BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<BannerlordModInstaller>>())
     {
         _launcherManagerFactory = serviceProvider.GetRequiredService<LauncherManagerFactory>();
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
