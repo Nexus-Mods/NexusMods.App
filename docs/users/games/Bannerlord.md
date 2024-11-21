@@ -1,3 +1,5 @@
+# Mount & Blade II: Bannerlord
+
 !!! example "We're working on it"
     Bannerlord support is currently in development. Get involved by joining us on [GitHub](https://github.com/Nexus-Mods/NexusMods.App/issues/new/choose), [Discord](https://discord.gg/ReWTxb93jS) or the [forums](https://forums.nexusmods.com/forum/9052-nexus-mods-app/)!
 
@@ -6,6 +8,8 @@ In addition to basic mod management features, players also benefit from these de
 
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
+
+![An example Health Check message prompting the installation of a missing mod.](../images/0.7.0/HealthCheckExampleBannerlord.webp)
 
 Diagnostics are shown in the following situations and uses the SubModule.xml file included with mods to generate these messages: 
 
