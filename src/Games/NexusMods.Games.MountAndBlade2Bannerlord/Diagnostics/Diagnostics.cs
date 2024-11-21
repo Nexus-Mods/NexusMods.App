@@ -12,7 +12,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate MissingDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 0))
-        .WithTitle("'{ModName}' Is Missing Ddependency with ID '{DependencyId}'")
+        .WithTitle("'{ModName}' Is Missing Dependency with ID '{DependencyId}'")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' which is not installed")
         .WithDetails("""
