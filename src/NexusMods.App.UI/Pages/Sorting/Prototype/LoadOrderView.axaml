@@ -9,26 +9,47 @@
                                 xmlns:prototype="clr-namespace:NexusMods.App.UI.Pages.Sorting.Prototype"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.Prototype.LoadOrderView">
-    <ItemsControl x:Name="ItemsList">
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="games:ISortableItemViewModel">
-                <StackPanel Orientation="Horizontal">
-                    <controls:StandardButton x:Name="UpButton"
-                                             Command="{CompiledBinding MoveDown}"
-                                             LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                             ShowIcon="Left"
-                                             Text="" />
-                    <controls:StandardButton x:Name="DownButton"
-                                             Command="{CompiledBinding MoveUp}"
-                                             LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                             ShowIcon="Left"
-                                             Text="" />
-                    <TextBlock x:Name="ItemIndex"
-                               Text="{CompiledBinding SortIndex}" />
-                    <TextBlock x:Name="ItemText"
-                               Text="{CompiledBinding DisplayName}" />
-                </StackPanel>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <StackPanel Orientation="Vertical">
+        <TreeDataGrid x:Name="SortOrderTreeDataGrid"
+                      AutoDragDropRows="False"
+                      Margin="0,20"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="False"
+                      ShowColumnHeaders="True"
+                      RowDrop="OnRowDrop">
+
+            <TreeDataGrid.Resources>
+                
+                <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
+                              DataType="prototype:ILoadOrderItemModel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="ItemIndex"
+                                   Text="{CompiledBinding SortIndex}" />
+                        <controls:StandardButton x:Name="UpButton"
+                                                 Command="{CompiledBinding MoveDown}"
+                                                 LeftIcon="{x:Static icons:IconValues.ArrowUp}"
+                                                 ShowIcon="Left"
+                                                 Text="" />
+                        <controls:StandardButton x:Name="DownButton"
+                                                 Command="{CompiledBinding MoveUp}"
+                                                 LeftIcon="{x:Static icons:IconValues.ArrowDown}"
+                                                 ShowIcon="Left"
+                                                 Text="" />
+                    </StackPanel>
+                </DataTemplate>
+                
+                <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
+                              DataType="prototype:ILoadOrderItemModel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="ItemName"
+                                   Text="{CompiledBinding DisplayName}" />
+                    </StackPanel>
+                </DataTemplate>
+                
+            </TreeDataGrid.Resources>
+
+        </TreeDataGrid>
+        
+    </StackPanel>
+
 </reactiveUi:ReactiveUserControl>

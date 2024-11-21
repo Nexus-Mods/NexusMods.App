@@ -13,6 +13,7 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
         DisplayName = redModFolderName.ToString();
         ModName = modName;
         IsActive = isActive;
+        ItemId = Guid.NewGuid();
     }
     
     public RelativePath RedModFolderName { get; set; }
@@ -22,6 +23,8 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
     public string DisplayName { get; }
     public string ModName { get; set; }
     public bool IsActive { get; set; }
+    
+    public Guid ItemId { get; }
 
     public int CompareTo(RedModSortableItem? other)
     {
@@ -29,6 +32,8 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
         if (other is null) return 1;
         return SortIndex.CompareTo(other.SortIndex);
     }
+
+
 
     public int CompareTo(ISortableItem? other)
     {
