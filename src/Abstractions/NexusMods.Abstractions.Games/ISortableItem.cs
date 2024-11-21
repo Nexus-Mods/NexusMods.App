@@ -1,4 +1,3 @@
-using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -36,6 +35,11 @@ public interface ISortableItem : IComparable<ISortableItem>
     /// e.g. it is disabled in the sort order, or parent mod is disabled.
     /// </summary>
     public bool IsActive { get; set; }
+    
+    /// <summary>
+    /// Identifier for the item, meant to be used as Key for changesets and other UI related collection tracking
+    /// </summary>
+    public Guid ItemId { get; }
     
     
     int IComparable<ISortableItem>.CompareTo(ISortableItem? other)

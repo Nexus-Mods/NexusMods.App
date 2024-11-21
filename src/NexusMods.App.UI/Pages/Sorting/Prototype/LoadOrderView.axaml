@@ -35,7 +35,7 @@
 
 
         <TreeDataGrid x:Name="SortOrderTreeDataGrid"
-                      AutoDragDropRows="True"
+                      AutoDragDropRows="False"
                       Margin="0,20"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="False"

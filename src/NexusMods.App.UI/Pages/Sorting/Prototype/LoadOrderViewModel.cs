@@ -60,8 +60,8 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
     {
         return _sortableItemsProvider.SortableItems
-            .ToObservableChangeSet(_ => new Guid())
-            .Transform((item, id) => (ILoadOrderItemModel)new LoadOrderItemModel(item, id));
+            .ToObservableChangeSet(item => item.ItemId)
+            .Transform(item => (ILoadOrderItemModel)new LoadOrderItemModel(item));
     }
 
     protected override IColumn<ILoadOrderItemModel>[] CreateColumns(bool viewHierarchical)
