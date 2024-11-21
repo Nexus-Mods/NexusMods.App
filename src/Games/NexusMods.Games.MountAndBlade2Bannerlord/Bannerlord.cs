@@ -55,7 +55,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
     public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
+        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.png");
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
