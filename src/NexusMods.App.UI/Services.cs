@@ -222,7 +222,7 @@ public static class Services
             .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
             
             .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
-            .AddViewModel<LoadOrdersWipWipPageViewModel, ILoadOrdersWIPPageViewModel>()
+            .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
