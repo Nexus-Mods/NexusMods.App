@@ -21,7 +21,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public string AuthorName => "Lowtonotolerance";
 
     public string Summary =>
-        "Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content.";
+        "1.6.14 The story of Stardew Valley expands outside of Pelican Town with this expanded collection designed to stay true to the original game. Created with co-op in mind, perfect for experienced solo-players. Easy install, includes configuration.";
 
     public string Category => "Themed";
     public bool IsAdult => true;

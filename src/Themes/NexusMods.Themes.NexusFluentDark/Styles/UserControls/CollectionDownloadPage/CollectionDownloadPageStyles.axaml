@@ -4,12 +4,12 @@
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Grid Width="1000" Height="600">
-            <Grid.Resources>
+        <Border Width="400" Height="500">
+            <Border.Resources>
                 <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
-            </Grid.Resources>
+            </Border.Resources>
             <collections:CollectionDownloadView DataContext="{StaticResource CollectionDownloadPageDesignViewModel}" />
-        </Grid>
+        </Border>
     </Design.PreviewWith>
 
     <Style Selector="collections|CollectionDownloadView">
@@ -21,27 +21,21 @@
             </LinearGradientBrush>
         </Style.Resources>
 
-        <Style Selector="^ panels|FlexPanel#Body">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="FlexStart" />
-
+        <Style Selector="^ StackPanel#Body">
+            <Setter Property="Orientation" Value="Vertical" />
 
             <Style Selector="^ Border#HeaderBorderBackground">
 
-                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <Setter Property="panels:Flex.Grow" Value="0" />
-                <Setter Property="panels:Flex.Shrink" Value="0" />
-
                 <Style Selector="^ Border#HeaderBorder">
+                    <!-- <Setter Property="MaxWidth" Value="628" /> -->
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="24,24,24,16" />
                     <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
 
 
-                    <Style Selector="^ panels|FlexPanel#Header">
-                        <Setter Property="Direction" Value="Column" />
-                        <Setter Property="AlignItems" Value="Stretch" />
-                        <Setter Property="JustifyContent" Value="FlexStart" />
-
+                    <Style Selector="^ StackPanel#Header">
+                        <!-- -->
+                        <!-- <Setter Property="HorizontalAlignment" Value="Left"/> -->
 
                         <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
                     it's working, as things are aligned correctly, but the background is not being applied correctly. 
@@ -49,23 +43,20 @@
                     don't want to add extra layout code for no reason -->
 
                         <Style Selector="^ Border#MainContentBorder">
-                            <!-- <Setter Property="Background" Value="DarkRed" /> -->
-                            <Setter Property="MaxWidth" Value="806" />
+                            <Setter Property="Background" Value="DarkGoldenrod" />
                             <Setter Property="Padding" Value="0, 0, 0, 24" />
-                            <Setter Property="panels:Flex.AlignSelf" Value="FlexStart" />
 
-                            <Style Selector="^ panels|FlexPanel#MainContent">
-                                <Setter Property="Direction" Value="Row" />
+                            <Style Selector="^ Grid#MainContent">
+                                <Setter Property="Background" Value="DarkRed" />
 
                                 <!-- left column -->
                                 <Style Selector="^ Border#CollectionImageBorder">
                                     <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                     <Setter Property="ClipToBounds" Value="True" />
-
-                                    <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
                                     <Setter Property="Width" Value="154" />
                                     <Setter Property="Height" Value="190" />
                                     <Style Selector="^ Image#CollectionImage">
+                                        <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
                                         <Setter Property="Width" Value="154" />
                                         <Setter Property="Height" Value="190" />
                                         <Setter Property="Stretch" Value="UniformToFill" />
@@ -73,14 +64,9 @@
                                 </Style>
 
                                 <!-- right column -->
-                                <Style Selector="^ panels|FlexPanel#CollectionDetails">
-                                    <Setter Property="Margin" Value="24, 0" />
-                                    <Setter Property="Direction" Value="Column" />
-                                    <Setter Property="RowSpacing" Value="4" />
-                                    <Setter Property="panels:Flex.Grow" Value="1" />
-                                    <Setter Property="panels:Flex.Shrink" Value="0" />
-                                    <Setter Property="panels:Flex.Basis" Value="0" />
-
+                                <Style Selector="^ Grid#CollectionDetails">
+                                    <Setter Property="Background" Value="DarkSlateGray" />
+                                    <Setter Property="Margin" Value="0, 0" />
 
                                     <Style Selector="^ TextBlock#Title">
                                         <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
@@ -103,8 +89,9 @@
                                         <Setter Property="BorderBrush"
                                                 Value="{StaticResource StrokeTranslucentWeakBrush}" />
 
-                                        <Style Selector="^ panels|FlexPanel#TagsPanel">
-                                            <Setter Property="ColumnSpacing" Value="{StaticResource Spacing-3}" />
+                                        <Style Selector="^ StackPanel#TagsPanel">
+                                            <Setter Property="Orientation" Value="Horizontal" />
+                                            <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
 
                                             <Style Selector="^ TextBlock#Revision">
                                                 <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
@@ -132,12 +119,19 @@
                                         </Style>
                                     </Style>
 
+
                                     <Style Selector="^ TextBlock#Summary">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="Width" Value="{Binding $parent[Grid].Bounds.Width}" />
+                                        <Setter Property="Background" Value="DarkMagenta" />
                                         <Setter Property="Foreground"
                                                 Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                        <Setter Property="Text"
+                                                Value="Something goes here. Something goes here. Something goes here. " />
                                     </Style>
+
                                 </Style>
 
                             </Style>
@@ -147,34 +141,32 @@
                             <Setter Property="Padding" Value="0, 12,0,8" />
                             <Setter Property="BorderThickness" Value="0, 1, 0, 0" />
                             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-                            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                            <Setter Property="panels:Flex.Grow" Value="0" />
-                            <Setter Property="panels:Flex.Shrink" Value="0" />
 
-                            <Style Selector="^ panels|FlexPanel#Stats">
-                                <Setter Property="ColumnSpacing" Value="24" />
+                            <Style Selector="^ StackPanel#Stats">
+                                <Setter Property="Spacing" Value="{StaticResource Spacing-6}" />
+                                <Setter Property="Orientation" Value="Horizontal" />
 
-                                <Style Selector="^ panels|FlexPanel">
-                                    <Setter Property="AlignItems" Value="Center" />
-                                    <Setter Property="Direction" Value="Row" />
-                                    <Setter Property="ColumnSpacing" Value="4" />
-                                </Style>
+                                <!-- all stats -->
+                                <Style Selector="^ > StackPanel">
+                                    <Setter Property="Orientation" Value="Horizontal" />
+                                    <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
-                                <Style Selector="^ icons|UnifiedIcon">
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-                                    <Setter Property="Width" Value="20" />
-                                    <Setter Property="Height" Value="20" />
-                                </Style>
+                                    <Style Selector="^ > icons|UnifiedIcon">
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                                        <Setter Property="Width" Value="20" />
+                                        <Setter Property="Height" Value="20" />
+                                    </Style>
 
-                                <Style Selector="^ TextBlock">
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                    <Style Selector="^ > TextBlock">
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                    </Style>
                                 </Style>
 
                                 <!-- color changes for rating values -->
-                                <Style Selector="^ panels|FlexPanel#OverallRatingPanel">
+                                <Style Selector="^ StackPanel#OverallRatingPanel">
                                     <Style Selector="^.LowRating">
                                         <Style Selector="^ TextBlock#OverallRating">
                                             <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
