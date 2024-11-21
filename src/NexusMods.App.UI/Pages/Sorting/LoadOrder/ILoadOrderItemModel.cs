@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.Sorting.Prototype;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public interface ILoadOrderItemModel : ITreeDataGridItemModel<ILoadOrderItemModel, Guid>
 {

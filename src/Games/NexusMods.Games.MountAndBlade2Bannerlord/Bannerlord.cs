@@ -1,3 +1,5 @@
+using Bannerlord.ModuleManager;
+using FetchBannerlordVersion;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
@@ -18,7 +20,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
-using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
+using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -26,7 +28,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
+public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
 {
     public static readonly GameId GameIdStatic = GameId.From(3174);
     public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
@@ -53,21 +55,22 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
+        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.png");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
+        new EmbededResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
-        _serviceProvider.GetRequiredService<MountAndBlade2BannerlordModInstaller>(),
+        _serviceProvider.GetRequiredService<BannerlordModInstaller>(),
     ];
     public override IDiagnosticEmitter[] DiagnosticEmitters => 
     [
-        new MountAndBlade2BannerlordDiagnosticEmitter(_serviceProvider),
+        new BannerlordDiagnosticEmitter(_serviceProvider),
+        new MissingProtontricksEmitter(_serviceProvider),
     ];
 
-    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
+    public Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;
@@ -77,8 +80,11 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     protected override Version GetVersion(GameLocatorResult installation)
     {
-        var launcherManagerHandler = _launcherManagerFactory.Get(installation);
-        return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
+        // Note(sewer): Bannerlord can use prefixes on versions etc. ,we want to strip them out
+        // so we sanitize/parse with `ApplicationVersion`.
+        var bannerlordVerStr = Fetcher.GetVersion(installation.Path.ToString(), "TaleWorlds.Library.dll");
+        var versionStr = ApplicationVersion.TryParse(bannerlordVerStr, out var av) ? $"{av.Major}.{av.Minor}.{av.Revision}.{av.ChangeSet}" : "0.0.0.0";
+        return Version.TryParse(versionStr, out var val) ? val : new Version();
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -94,7 +100,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new MountAndBlade2BannerlordLoadoutSynchronizer(provider);
+        return new BannerlordLoadoutSynchronizer(provider);
     }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)

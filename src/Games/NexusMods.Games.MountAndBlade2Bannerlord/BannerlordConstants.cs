@@ -4,7 +4,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public static class MountAndBlade2BannerlordConstants
+public static class BannerlordConstants
 {
     public static readonly string DocumentsFolderName = "Mount and Blade II Bannerlord";
 

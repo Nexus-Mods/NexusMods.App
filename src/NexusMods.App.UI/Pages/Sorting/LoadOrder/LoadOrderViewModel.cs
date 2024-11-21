@@ -8,7 +8,7 @@ using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Pages.Sorting.Prototype;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
