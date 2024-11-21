@@ -10,6 +10,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -36,6 +37,7 @@ internal class TypeFinder : ITypeFinder
         typeof(ItemContentsFileTreePageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
+        typeof(LoadOrdersWIPPageContext),
 
         // workspace context
         typeof(EmptyContext),

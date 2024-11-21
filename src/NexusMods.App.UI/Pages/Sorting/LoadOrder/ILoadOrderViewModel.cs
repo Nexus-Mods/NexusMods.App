@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.UI;
 
-namespace NexusMods.App.UI.Pages.Sorting.Prototype;
+namespace NexusMods.App.UI.Pages.Sorting;
 
 public interface ILoadOrderViewModel : IViewModelInterface
 {
