@@ -200,9 +200,9 @@ If you cannot find an older version:
         .WithId(new DiagnosticId(Source, 4))
         .WithTitle("'{ModName}' Is Missing Dependency with ID '{DependencyId}' and Version '{Version}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' and Version '{Version}' which is not installed")
+        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' and Version '{Version}' or higher which is not installed")
         .WithDetails("""
-The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` is not installed.
+The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` (or higher) is not installed.
 
 ### How to Resolve
 1. Download version `{Version}` of mod `{DependencyId}`
