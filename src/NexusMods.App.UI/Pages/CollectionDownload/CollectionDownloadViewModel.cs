@@ -5,6 +5,7 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
@@ -78,7 +79,8 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         RequiredDownloadsCount = requiredDownloadCount;
         OptionalDownloadsCount = optionalDownloadCount;
 
-        DownloadAllCommand = new ReactiveCommand(
+        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        DownloadAllCommand = loginManager.IsPremiumObservable.ToObservable().ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
