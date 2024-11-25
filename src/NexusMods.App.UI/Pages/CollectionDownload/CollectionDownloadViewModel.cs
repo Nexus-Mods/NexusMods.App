@@ -19,6 +19,7 @@ using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -28,6 +29,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     private readonly CollectionMetadata.ReadOnly _collection;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConnection _connection;
     private readonly NexusModsDataProvider _nexusModsDataProvider;
     private readonly CollectionDownloader _collectionDownloader;
 
@@ -41,6 +43,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
         _collectionDownloader = new CollectionDownloader(_serviceProvider);
 
@@ -75,6 +78,14 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         RequiredDownloadsCount = requiredDownloadCount;
         OptionalDownloadsCount = optionalDownloadCount;
 
+        DownloadAllCommand = new ReactiveCommand(
+            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken),
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        InstallCollectionCommand = new ReactiveCommand<Unit>(canExecuteSource: Observable.Return(false), initialCanExecute: false);
+
         this.WhenActivated(disposables =>
         {
             RequiredDownloadsAdapter.Activate();
@@ -97,24 +108,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 .Subscribe(this, static (bitmap, self) => self.AuthorAvatar = bitmap)
                 .AddTo(disposables);
 
-            _nexusModsDataProvider
-                .ObserveCollectionItems(revisionMetadata)
-                .SubscribeWithErrorLogging()
-                .AddTo(disposables);
-
-            RequiredDownloadsAdapter.MessageSubject.SubscribeAwait(
-                onNextAsync: (message, cancellationToken) =>
-                {
-                    return message.Item.Match(
-                        f0: x => _collectionDownloader.Download(x, cancellationToken),
-                        f1: x => _collectionDownloader.Download(x, cancellationToken)
-                    );
-                },
-                awaitOperation: AwaitOperation.Parallel,
-                configureAwait: false
-            ).AddTo(disposables);
-
-            OptionalDownloadsAdapter.MessageSubject.SubscribeAwait(
+            RequiredDownloadsAdapter.MessageSubject.Merge(OptionalDownloadsAdapter.MessageSubject).SubscribeAwait(
                 onNextAsync: (message, cancellationToken) =>
                 {
                     return message.Item.Match(
@@ -148,6 +142,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     [Reactive] public Bitmap? BackgroundImage { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     [Reactive] public string CollectionStatusText { get; private set; }
+
+    public ReactiveCommand<Unit> DownloadAllCommand { get; }
+    public ReactiveCommand<Unit> InstallCollectionCommand { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);
