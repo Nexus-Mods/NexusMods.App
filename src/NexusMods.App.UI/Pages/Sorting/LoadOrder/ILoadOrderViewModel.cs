@@ -64,10 +64,10 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// <summary>
     /// Title text for the empty state, in case there are no sortable items to display
     /// </summary>
-    string EmptyStateTitle { get; }
+    string EmptyStateMessageTitle { get; }
     
     /// <summary>
     /// Contents text for the empty state, in case there are no sortable items to display
     /// </summary>
-    string EmptyStateMessage { get; }
+    string EmptyStateMessageContents { get; }
 }
