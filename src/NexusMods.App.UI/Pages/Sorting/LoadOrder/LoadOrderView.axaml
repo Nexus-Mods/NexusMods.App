@@ -11,7 +11,6 @@
     <StackPanel Orientation="Vertical">
         <TreeDataGrid x:Name="SortOrderTreeDataGrid"
                       AutoDragDropRows="False"
-                      Margin="0,20"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="False"
                       ShowColumnHeaders="True"
@@ -27,13 +26,11 @@
                         <controls:StandardButton x:Name="UpButton"
                                                  Command="{CompiledBinding MoveDown}"
                                                  LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
+                                                 ShowIcon="IconOnly" />
                         <controls:StandardButton x:Name="DownButton"
                                                  Command="{CompiledBinding MoveUp}"
                                                  LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
+                                                 ShowIcon="IconOnly" />
                     </StackPanel>
                 </DataTemplate>
                 
