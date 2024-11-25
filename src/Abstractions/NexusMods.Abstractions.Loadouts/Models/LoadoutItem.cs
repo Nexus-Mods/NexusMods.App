@@ -36,6 +36,7 @@ public partial class LoadoutItem : IModelDefinition
     /// </summary>
     public static readonly ReferenceAttribute<LoadoutItemGroup> Parent = new(Namespace, nameof(Parent)) { IsIndexed = true, IsOptional = true };
 
+    [PublicAPI]
     public partial struct ReadOnly
     {
         /// <summary>
