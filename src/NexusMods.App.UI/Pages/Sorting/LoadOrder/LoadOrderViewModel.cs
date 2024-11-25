@@ -16,8 +16,6 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
-    
-    // TODO: Populate these properly
     public string InfoAlertTitle { get; }
     public string InfoAlertHeading { get; }
     public string InfoAlertMessage { get; }
@@ -33,9 +31,9 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
     {
-        SortOrderName = itemProviderFactory.SortOrderName;
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
         
+        SortOrderName = itemProviderFactory.SortOrderName;
         InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
         InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
         InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
@@ -85,7 +83,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-            inner: CreateIndexColumn(),
+            inner: CreateIndexColumn(_sortableItemsProvider.ParentFactory.IndexColumnHeader),
             childSelector: static model => model.Children,
             hasChildrenSelector: static model => model.HasChildren.Value,
             isExpandedSelector: static model => model.IsExpanded
@@ -93,14 +91,14 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             {
             Tag = "expander",
             },
-            CreateNameColumn(),
+            CreateNameColumn(_sortableItemsProvider.ParentFactory.NameColumnHeader),
         ];
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateIndexColumn()
+    private static IColumn<ILoadOrderItemModel> CreateIndexColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Load Order",
+            header: headerName,
             cellTemplateResourceKey: "LoadOrderItemIndexColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
@@ -113,10 +111,10 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         };
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateNameColumn()
+    private static IColumn<ILoadOrderItemModel> CreateNameColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Name",
+            header: headerName,
             cellTemplateResourceKey: "LoadOrderItemNameColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
