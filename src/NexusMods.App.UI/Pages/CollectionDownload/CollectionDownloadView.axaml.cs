@@ -20,6 +20,9 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
         this.WhenActivated(d =>
         {
+            this.BindCommand(ViewModel, vm => vm.DownloadAllCommand, view => view.DownloadAllButton)
+                .DisposeWith(d);
+
             this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsAdapter.Source.Value, view => view.RequiredDownloadsTree.Source)
                 .DisposeWith(d);
 
