@@ -4,7 +4,7 @@
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Width="400" Height="500">
+        <Border Width="500" Height="500">
             <Border.Resources>
                 <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
             </Border.Resources>
@@ -43,16 +43,17 @@
                     don't want to add extra layout code for no reason -->
 
                         <Style Selector="^ Border#MainContentBorder">
-                            <Setter Property="Background" Value="DarkGoldenrod" />
+                            <!-- <Setter Property="Background" Value="DarkGoldenrod" /> -->
                             <Setter Property="Padding" Value="0, 0, 0, 24" />
 
                             <Style Selector="^ Grid#MainContent">
-                                <Setter Property="Background" Value="DarkRed" />
+                                <!-- <Setter Property="Background" Value="DarkRed" /> -->
 
                                 <!-- left column -->
                                 <Style Selector="^ Border#CollectionImageBorder">
                                     <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                     <Setter Property="ClipToBounds" Value="True" />
+                                    <Setter Property="VerticalAlignment" Value="Top" />
                                     <Setter Property="Width" Value="154" />
                                     <Setter Property="Height" Value="190" />
                                     <Style Selector="^ Image#CollectionImage">
@@ -65,8 +66,8 @@
 
                                 <!-- right column -->
                                 <Style Selector="^ Grid#CollectionDetails">
-                                    <Setter Property="Background" Value="DarkSlateGray" />
-                                    <Setter Property="Margin" Value="0, 0" />
+                                    <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+                                    <Setter Property="Margin" Value="24, 0,0,0" />
 
                                     <Style Selector="^ TextBlock#Title">
                                         <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
@@ -121,16 +122,18 @@
 
 
                                     <Style Selector="^ TextBlock#Summary">
-                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="Margin" Value="0,8,0,0" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="VerticalAlignment" Value="Top" />
+                                        <Setter Property="MaxWidth" Value="600" />
+                                        <Setter Property="MaxHeight" Value="95" />
                                         <Setter Property="Width" Value="{Binding $parent[Grid].Bounds.Width}" />
-                                        <Setter Property="Background" Value="DarkMagenta" />
+                                        <!-- <Setter Property="Background" Value="DarkMagenta" /> -->
                                         <Setter Property="Foreground"
                                                 Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                        <Setter Property="Text"
-                                                Value="Something goes here. Something goes here. Something goes here. " />
-                                    </Style>
+                                        </Style>
 
                                 </Style>
 
