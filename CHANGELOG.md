@@ -19,25 +19,26 @@ We've further refined the Collections download page which unlocks the ability fo
 ![The Collection Download Page showing a Stardew Valley collection.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732544476-32114395.png)
 
 ## EXPERIMENTAL - Cyberpunk 2077 REDmod Load Order
-Users can now manage the order of REDmods installed for Cyberpunk 2077 through the new "Load Orders (WIP)" page that can be accessed from the New Tab page. 
+Users can now manage the order of REDmods installed for Cyberpunk 2077 through the new "Load Orders (WIP)" page that can be accessed from the New Tab menu. 
 
 Please note, this page is currently very basic and has not yet been styled. 
 
 ## Features
-* Baldur's Gate 3: Added diagnostics relating to BG3 Script Extender. 
-* Updated the My Games page design to better showcase which games you have managed, which have been detected and which are available in the app but not detected. 
+* Baldur's Gate 3: Added [diagnostics](https://nexus-mods.github.io/NexusMods.App/users/games/BaldursGate3/#loadout-health-check) relating to BG3 Script Extender. 
+* Updated the My Games page design to better showcase the games you have managed, detected and available in the app but not detected. 
 * Updated the design of tabs in the Workspace system to make them more compact.
 * General polish to areas of the UI such as Health Check. 
 
 ## Technical Changes
 * We've added a framework for data migrations which gets us a step closer to allowing users to update the app without resetting everything. 
-* The app has been upgraded to use .NET 9. This allows us to take advantage of the latest performance improvements on security fixes. 
+* The app has been upgraded to use .NET 9. This allows us to take advantage of the latest performance improvements and security fixes. 
 
 ## Bugfixes
 * Fixed an issue where the app would prompt the user to log in to Nexus Mods when starting up, even if they are already logged in. 
 
 ## Known Issues
-* The Collections feature is able to download all required files but will not install them. Mod can be manually installed from the Library. This feature will be re-implemented in the future.
+* On the Collection Download page, swapping between the "Required" and "Optional" tabs may cause a crash. 
+* The Collections feature is able to download all required files but will not install them. Mods can be manually installed from the Library but this will not import the collection configuration options. This feature will be re-implemented in the future.
 * Any non-Nexus Mods file in a collection that requires the user to browse an external website can be installed into the library manually but will not be recognised as part of the collection.
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * Once a collection is added to the app, it cannot be removed.
