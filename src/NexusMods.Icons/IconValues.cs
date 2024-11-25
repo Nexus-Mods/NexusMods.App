@@ -324,6 +324,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/lightbulb/
     public static readonly IconValue Lightbulb = new ProjektankerIcon("mdi-lightbulb");
     
+    // https://pictogrammers.com/library/mdi/icon/trophy/
+    public static readonly IconValue Trophy = new ProjektankerIcon("mdi-trophy");
+    
 #endregion
 
 #region Social
