@@ -17,7 +17,9 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public string TrophyToolTip { get; set;} = "Trophy Tool Tip";
     public ListSortDirection SortDirectionCurrent { get; set; }
     public bool IsWinnerTop { get; set;}
-    
+    public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
+    public string EmptyStateMessageContents { get; } = "Empty State Message Contents";
+
     public LoadOrderDesignViewModel()
     {
         Adapter = new LoadOrderTreeDataGridAdapter(new MockLoadoutSortableItemProvider());
