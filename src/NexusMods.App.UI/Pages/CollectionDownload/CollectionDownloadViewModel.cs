@@ -58,9 +58,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         TabTitle = _collection.Name;
         TabIcon = IconValues.Collections;
 
-        RequiredDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
+        RequiredDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata, isRequired: true);
         RequiredDownloadsAdapter.ViewHierarchical.Value = false;
-        OptionalDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
+        OptionalDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata, isRequired: false);
         OptionalDownloadsAdapter.ViewHierarchical.Value = false;
 
         // TODO:
@@ -161,11 +161,16 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
     private readonly IDisposable _activationDisposable;
+    private readonly bool _isRequired;
 
-    public CollectionDownloadTreeDataGridAdapter(NexusModsDataProvider nexusModsDataProvider, CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    public CollectionDownloadTreeDataGridAdapter(
+        NexusModsDataProvider nexusModsDataProvider,
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        bool isRequired)
     {
         _nexusModsDataProvider = nexusModsDataProvider;
         _revisionMetadata = revisionMetadata;
+        _isRequired = isRequired;
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
         {
@@ -213,7 +218,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata);
+        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, _isRequired);
     }
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)

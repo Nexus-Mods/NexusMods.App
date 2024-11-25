@@ -38,13 +38,19 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        bool isRequired)
     {
         return _connection
             .ObserveDatoms(CollectionDownloadEntity.CollectionRevision, revisionMetadata)
             .AsEntityIds()
             .Transform(datom => CollectionDownloadEntity.Load(_connection.Db, datom.E))
-            .Filter(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods() || downloadEntity.IsCollectionDownloadExternal())
+            .FilterImmutable(downloadEntity =>
+            {
+                if (isRequired) return !downloadEntity.IsOptional;
+                return downloadEntity.IsOptional;
+            })
+            .FilterImmutable(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods() || downloadEntity.IsCollectionDownloadExternal())
             .Transform(ILibraryItemModel (downloadEntity) =>
             {
                 if (downloadEntity.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
