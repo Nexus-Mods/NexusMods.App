@@ -24,7 +24,6 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         SortIndex = sortableItem.SortIndex;
         DisplayName = sortableItem.DisplayName;
         
-        // TODO: Should this be a subscription?
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
         
