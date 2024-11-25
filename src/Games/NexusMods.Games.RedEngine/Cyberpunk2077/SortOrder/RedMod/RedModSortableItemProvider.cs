@@ -361,7 +361,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
-            SortOrderTypeId = parentFactory.StaticSortOrderTypeId,
+            SortOrderTypeId = parentFactory.SortOrderTypeId,
         };
 
         var newRedModSortOrder = new RedModSortOrder.New(ts, newSortOrder.SortOrderId)
