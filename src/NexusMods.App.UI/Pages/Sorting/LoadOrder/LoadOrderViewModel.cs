@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
@@ -7,12 +9,23 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
+    
+    // TODO: Populate these properly
+    public string InfoAlertTitle { get; } = "";
+    public string InfoAlertHeading { get; } = "";
+    public string InfoAlertMessage { get; } = "";
+    [Reactive] public bool InfoAlertIsVisible { get; set; } = false;
+    public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
+    public string TrophyToolTip { get; } = "";
+    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; } = ListSortDirection.Ascending;
+    [Reactive] public bool IsWinnerTop { get; set; } = true;
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
