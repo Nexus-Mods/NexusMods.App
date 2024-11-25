@@ -22,5 +22,5 @@ public partial class LocalFile : IModelDefinition
     /// <summary>
     /// The MD5 hash value of the file.
     /// </summary>
-    public static readonly Md5Attribute Md5 = new(Namespace, nameof(Md5)) { IsOptional = true };
+    public static readonly Md5Attribute Md5 = new(Namespace, nameof(Md5)) { IsOptional = true, IsIndexed = true };
 }
