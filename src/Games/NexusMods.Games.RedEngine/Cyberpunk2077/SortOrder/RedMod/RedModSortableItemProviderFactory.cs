@@ -23,7 +23,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
     public string OverrideInfoHeading => "Load Order for REDmods in Cyberpunk 2077 - First Loaded Wins";
 
     public string OverrideInfoMessage => """
-                                         Some Cyberpunk 2077 mods use REDmod files to alter core gameplay elements. If two REDmod files modify the same part of the game, the one loaded first will take priority and overwrite changes from those loaded later.
+                                         Some Cyberpunk 2077 mods use REDmods modules to alter core gameplay elements. If two REDmods modify the same part of the game, the one loaded first will take priority and overwrite changes from those loaded later.
                                          
                                          For example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on.
                                          """;
@@ -33,6 +33,9 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
     public string IndexColumnHeader => "Load Order";
 
     public string NameColumnHeader => "REDmod Name";
+    
+    public string EmptyStateMessageTitle => "No REDmods detected";
+    public string EmptyStateMessageContents => "Some mods contain REDmods modules that can alter core gameplay elements. When detected they will appear here for load order configuration.";
 
     public ListSortDirection SortDirectionDefault => ListSortDirection.Ascending;
 

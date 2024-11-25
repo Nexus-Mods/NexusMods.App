@@ -66,6 +66,16 @@ public interface ISortableItemProviderFactory
     string NameColumnHeader { get; }
     
     /// <summary>
+    /// Title text to display in case there are no sortable items to sort
+    /// </summary>
+    string EmptyStateMessageTitle { get; }
+    
+    /// <summary>
+    /// Contents text to display in case there are no sortable items to sort
+    /// </summary>
+    string EmptyStateMessageContents { get; }
+    
+    /// <summary>
     /// Default direction (ascending/descending) in which sortIndexes should be sorted and displayed
     /// </summary>
     /// <remarks>
