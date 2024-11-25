@@ -10,7 +10,7 @@ namespace NexusMods.DataModel.Settings;
 /// <summary>
 /// A settings backend that uses the MnemonicDB for storage.
 /// </summary>
-internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
+internal sealed class MnemonicDBSettingsBackend : IAsyncSettingsStorageBackend
 {
     private readonly ILogger<MnemonicDBSettingsBackend> _logger;
     private readonly Lazy<IConnection> _conn;
@@ -58,9 +58,18 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
             return null;
         }
     }
+    private static string GetId<T>() where T : ISettings
+    {
+        return typeof(T).FullName ?? typeof(T).Name;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
 
     /// <inheritdoc />
-    public void Save<T>(T value) where T : class, ISettings, new()
+    public async ValueTask Save<T>(T value, CancellationToken cancellationToken) where T : class, ISettings, new()
     {
         var db = _conn.Value.Db;
         using var tx = _conn.Value.BeginTransaction();
@@ -77,26 +86,15 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
         }
         
         tx.Add(id, Setting.Value, Serialize(value) ?? "null");
-        tx.Commit().ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                    _logger.LogError(t.Exception, "Failed to save settings for `{Type}`", typeof(T));
-            }
-        );
+        await tx.Commit();
     }
 
     /// <inheritdoc />
-    public T? Load<T>() where T : class, ISettings, new()
+    public ValueTask<T?> Load<T>(CancellationToken cancellationToken) where T : class, ISettings, new()
     {
         var settings = Setting.FindByName(_conn.Value.Db, GetId<T>()).ToArray();
         if (!settings.Any()) 
-            return null;
-        
-        return Deserialize<T>(settings.First().Value);
-    }
-
-    private static string GetId<T>() where T : ISettings
-    {
-        return typeof(T).FullName ?? typeof(T).Name;
+            return ValueTask.FromResult<T?>(null);
+        return ValueTask.FromResult(Deserialize<T>(settings.First().Value));
     }
 }

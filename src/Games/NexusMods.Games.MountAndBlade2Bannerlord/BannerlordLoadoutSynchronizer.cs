@@ -7,11 +7,11 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
+using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
+public class BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 {
     // Paths to known locations
     private static GamePath GameGenegratedImGuiFile => new(LocationId.Game, "bin/Win64_Shipping_Client/imgui.ini");
@@ -79,13 +79,13 @@ public class MountAndBlade2BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         "SubModule.xml", // Metadata about mods shipped with basegame.
     };
 
-    public MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
+    public BannerlordLoadoutSynchronizer(IServiceProvider provider) : base(provider)
     {
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
-        _settings = settingsManager.Get<MountAndBlade2BannerlordSettings>();
+        _settings = settingsManager.Get<BannerlordSettings>();
     }
 
-    private readonly MountAndBlade2BannerlordSettings _settings;
+    private readonly BannerlordSettings _settings;
 
     public override bool IsIgnoredBackupPath(GamePath path)
     {

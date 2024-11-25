@@ -34,7 +34,7 @@ where TInner : class, IViewModelInterface
     private readonly TaskCompletionSource _taskCompletionSource = new();
     public Task CompletionTask => _taskCompletionSource.Task;
 
-    public void Close()
+    public virtual void Close()
     {
         Debug.Assert(Controller != null, "Controller != null");
         if (Status == Status.Closed)

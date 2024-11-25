@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
-using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 
@@ -16,15 +16,14 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 ///
 /// Only caveat, is we get the current state from loadout, rather than from real disk.
 /// </summary>
-internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
+internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
 
-    public MountAndBlade2BannerlordDiagnosticEmitter(IServiceProvider serviceProvider)
+    public BannerlordDiagnosticEmitter(IServiceProvider serviceProvider)
     {
-        serviceProvider.GetRequiredService<LauncherManagerFactory>();
-        _logger = serviceProvider.GetRequiredService<ILogger<MountAndBlade2BannerlordDiagnosticEmitter>>();
+        _logger = serviceProvider.GetRequiredService<ILogger<BannerlordDiagnosticEmitter>>();
         _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
@@ -38,13 +37,28 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
         foreach (var module in modulesAndMods)
         {
             var mod = module.Item1;
-            var isEnabled = !mod.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
+            var loadoutItem = mod.AsLoadoutItemGroup().AsLoadoutItem();
+            
+            // Note(sewer): We create a LoadoutItemGroup for each module, which is a child of the one
+            //              used for the archive. Since in theory the item can be disabled at any level
+            //              in the tree, we need to check if the parent is disabled.
+            var isEnabled = loadoutItem.IsEnabled();
             isEnabledDict[module.Item2] = isEnabled;
         }
         
-        foreach (var moduleAndMod in modulesAndMods)
+        // TODO: HACK. Pretend base game modules are installed before we can properly ingest them.
+        foreach (var module in Hack.GetDummyBaseGameModules())
+            isEnabledDict[module] = true;
+        modulesOnly = modulesOnly.Concat(Hack.GetDummyBaseGameModules()).ToArray();
+        // TODO: HACK. Pretend base game modules are installed before we can properly ingest them.
+        
+        // Emit diagnostics
+        foreach (var moduleAndMod in isEnabledDict)
         {
-            var (_, moduleInfo) = moduleAndMod;
+            var moduleInfo = moduleAndMod.Key;
+            if (!moduleAndMod.Value)
+                continue;
+
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
             foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x)))
@@ -54,6 +68,8 @@ internal partial class MountAndBlade2BannerlordDiagnosticEmitter : ILoadoutDiagn
             }
         }
     }
+    
+    
 
     private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
     {

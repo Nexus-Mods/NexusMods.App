@@ -1,9 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
@@ -76,11 +80,7 @@ public class CollectionDownloader
             return false;
         }
     }
-
-    /// <summary>
-    /// Downloads an external file or opens the browser if the file can't be downloaded automatically.
-    /// </summary>
-    public async ValueTask Download(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
+    private async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
     {
         if (await CanDirectDownload(download, cancellationToken))
         {
@@ -90,9 +90,44 @@ public class CollectionDownloader
         }
         else
         {
+            if (onlyDirectDownloads) return;
+
             _logger.LogInformation("Unable to direct download `{Uri}`, using browse as a fallback", download.Uri);
             await _osInterop.OpenUrl(download.Uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
         }
+    }
+
+    /// <summary>
+    /// Downloads an external file or opens the browser if the file can't be downloaded automatically.
+    /// </summary>
+    public ValueTask Download(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
+    {
+        return Download(download, onlyDirectDownloads: false, cancellationToken);
+    }
+
+    /// <summary>
+    /// Checks whether the item was already downloaded.
+    /// </summary>
+    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null)
+    {
+        db ??= download.Db;
+        var directDownloadDatoms = db.Datoms(DirectDownloadLibraryFile.Md5, download.Md5);
+        if (directDownloadDatoms.Count > 0) return true;
+
+        var locallyAddedDatoms = db.Datoms(LocalFile.Md5, download.Md5);
+        if (locallyAddedDatoms.Count > 0) return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks whether the item was already downloaded.
+    /// </summary>
+    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null)
+    {
+        db ??= download.Db;
+        var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
+        return datoms.Count > 0;
     }
 
     /// <summary>
@@ -110,5 +145,39 @@ public class CollectionDownloader
         {
             await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
         }
+    }
+
+    /// <summary>
+    /// Downloads everything in the revision.
+    /// </summary>
+    public async ValueTask DownloadAll(
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        bool onlyRequired,
+        IDb? db = null,
+        int maxDegreeOfParallelism = -1,
+        CancellationToken cancellationToken = default)
+    {
+        var downloads = revisionMetadata.Downloads.ToArray();
+
+        await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
+        {
+            CancellationToken = cancellationToken,
+            MaxDegreeOfParallelism = maxDegreeOfParallelism == -1 ? Environment.ProcessorCount : maxDegreeOfParallelism,
+        }, body: async (index, token) =>
+        {
+            var download = downloads[index];
+
+            if (download.IsOptional && onlyRequired) return;
+
+            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+            {
+                if (IsDownloaded(nexusModsDownload, db)) return;
+                await Download(nexusModsDownload, token);
+            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+            {
+                if (IsDownloaded(externalDownload, db)) return;
+                await Download(externalDownload, onlyDirectDownloads: true, token);
+            }
+        });
     }
 }

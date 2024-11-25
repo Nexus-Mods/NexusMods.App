@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Generators.Diagnostics;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 
@@ -11,7 +12,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate MissingDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 0))
-        .WithTitle("'{ModName}' Is Missing Ddependency with ID '{DependencyId}'")
+        .WithTitle("'{ModName}' Is Missing Dependency with ID '{DependencyId}'")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' which is not installed")
         .WithDetails("""
@@ -199,9 +200,9 @@ If you cannot find an older version:
         .WithId(new DiagnosticId(Source, 4))
         .WithTitle("'{ModName}' Is Missing Dependency with ID '{DependencyId}' and Version '{Version}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' and Version '{Version}' which is not installed")
+        .WithSummary("'{ModName}' requires mod with ID '{DependencyId}' and Version '{Version}' or higher which is not installed")
         .WithDetails("""
-The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` is not installed.
+The mod `{ModName}` requires a mod with the ID `{DependencyId}` to function, but `{DependencyId}` with version `{Version}` (or higher) is not installed.
 
 ### How to Resolve
 1. Download version `{Version}` of mod `{DependencyId}`
@@ -421,11 +422,12 @@ Looking at `{ModName}`'s `SubModule.xml`:
     internal static IDiagnosticTemplate CircularDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 9))
-        .WithTitle("'{ModName}' Has Circular Dependency with '{CircularDependencyName}'")
+        .WithTitle("Mods Are Stuck In a Loop: '{ModName}' and '{CircularDependencyName}'")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("'{ModName}' and '{CircularDependencyName}' are circular dependencies")
+        .WithSummary("Mods Are Stuck In a Loop: '{ModName}' and '{CircularDependencyName}'")
         .WithDetails("""
-The mods `{ModName}` and `{CircularDependencyName}` create a circular dependency chain where they depend on each other.
+`{ModName}` and `{CircularDependencyName}` are creating a `circular dependency`.
+This means each mod is waiting for the other to load first, causing a loop that stops both mods from working.
 
 ### How to Resolve
 1. Contact the mod authors to resolve the circular dependency
@@ -808,6 +810,24 @@ All dependency entries must include an ID to properly identify the required mod.
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("ModId")
             .AddValue<string>("ModName")
+        )
+        .Finish();
+    
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingProtontricksForRedMod = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 16))
+        .WithTitle("Missing 'Protontricks' dependency")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("Protontricks is required to run the game but is not present.")
+        .WithDetails("""
+Protontricks is required to run the game but is not present.
+
+Refer to the {ProtontricksUri} for installation instructions.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("ProtontricksUri")
         )
         .Finish();
 }

@@ -20,17 +20,17 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     ILoadOrderStateProvider
 {
     private readonly ILogger _logger;
-    private readonly MountAndBlade2BannerlordSettings _settings;
+    private readonly BannerlordSettings _settings;
     private readonly string _installationPath;
 
-    public string ExecutableParameters { get; private set; } = string.Empty;
+    public string[] ExecutableParameters { get; private set; } = [];
 
     public LauncherManagerNexusModsApp(IServiceProvider serviceProvider, string installationPath, GameStore store)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<LauncherManagerNexusModsApp>>();
         
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-        _settings = settingsManager.Get<MountAndBlade2BannerlordSettings>();
+        _settings = settingsManager.Get<BannerlordSettings>();
 
         _installationPath = installationPath;
         
@@ -56,7 +56,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// </summary>
     /// <param name="executable">The game executable.</param>
     /// <param name="gameParameters">List of commandline arguments.</param>
-    public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = string.Join(" ", gameParameters);
+    public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = gameParameters.ToArray();
     
     /// <summary>
     /// Allows us to modify the settings for the vanilla Bannerlord Launcher.
