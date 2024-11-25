@@ -16,13 +16,17 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     
     // TODO: Populate these properly
     public string ModName { get; } = string.Empty;
-    public bool IsActive { get; } = true;
+    public bool IsActive { get; }
 
     public LoadOrderItemModel(ISortableItem sortableItem)
     {
         InnerItem = sortableItem;
         SortIndex = sortableItem.SortIndex;
         DisplayName = sortableItem.DisplayName;
+        
+        // TODO: Should this be a subscription?
+        IsActive = sortableItem.IsActive;
+        ModName = sortableItem.ModName;
         
         MoveUp = ReactiveCommand.CreateFromTask(async () =>
             {
