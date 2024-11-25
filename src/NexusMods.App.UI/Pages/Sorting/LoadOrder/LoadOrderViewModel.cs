@@ -16,7 +16,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
-    
+
     // TODO: Populate these properly
     public string InfoAlertTitle { get; } = "";
     public string InfoAlertHeading { get; } = "";
@@ -69,13 +69,13 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-            inner: CreateIndexColumn(),
-            childSelector: static model => model.Children,
-            hasChildrenSelector: static model => model.HasChildren.Value,
-            isExpandedSelector: static model => model.IsExpanded
+                inner: CreateIndexColumn(),
+                childSelector: static model => model.Children,
+                hasChildrenSelector: static model => model.HasChildren.Value,
+                isExpandedSelector: static model => model.IsExpanded
             )
             {
-            Tag = "expander",
+                Tag = "expander",
             },
             CreateNameColumn(),
         ];
@@ -84,12 +84,12 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     private static IColumn<ILoadOrderItemModel> CreateIndexColumn()
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Load Order",
+            header: "LOAD ORDER",
             cellTemplateResourceKey: "LoadOrderItemIndexColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
                 CanUserSortColumn = false,
-                CanUserResizeColumn = true,
+                CanUserResizeColumn = false,
             }
         )
         {
@@ -100,12 +100,12 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     private static IColumn<ILoadOrderItemModel> CreateNameColumn()
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Name",
+            header: "NAME",
             cellTemplateResourceKey: "LoadOrderItemNameColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
                 CanUserSortColumn = false,
-                CanUserResizeColumn = true,
+                CanUserResizeColumn = false,
             }
         )
         {

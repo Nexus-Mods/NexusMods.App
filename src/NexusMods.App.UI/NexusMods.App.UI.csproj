@@ -710,6 +710,12 @@
         <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionViewModel.cs">
           <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewDesignViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
+          <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
