@@ -5,7 +5,7 @@
 This release includes initial support for Mount & Blade II: Bannerlord, a basic implementation of REDmod load order for Cyberpunk 2077 and several UI refinements.
 
 ## Mount & Blade II: Bannerlord 
-This version adds Bannerlord as the 4th supported game. All modules can be easily installed and managed. We've also added several advanced [Health Check diagnostics](https://nexus-mods.github.io/NexusMods.App/users/games/Bannerlord/#loadout-health-check) to allow players to understand common issues in their setup, with more planned for the future when we add load order support!
+This version adds basic support for Bannerlord. All modules can be easily installed and managed. We've also added several advanced [Health Check diagnostics](https://nexus-mods.github.io/NexusMods.App/users/games/Bannerlord/#loadout-health-check) to allow players to understand common issues in their setup, with more planned for the future when we add load order support!
 
 ![An example of the "Missing Dependency" and "Incompatible Mods" diagnostics for Bannerlord.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732536855-1001051460.png)
 
