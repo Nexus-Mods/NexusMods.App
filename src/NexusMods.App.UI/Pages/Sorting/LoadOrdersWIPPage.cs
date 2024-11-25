@@ -8,25 +8,25 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
-[JsonName("NexusMods.App.UI.Pages.Sorting.LoadOrdersPageContext")]
-public record LoadOrdersPageContext : IPageFactoryContext
+[JsonName("NexusMods.App.UI.Pages.Sorting.LoadOrdersWIPPageContext")]
+public record LoadOrdersWIPPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
 }
 
 [UsedImplicitly]
-public class LoadOrdersPageFactory : APageFactory<ILoadOrdersPageViewModel, LoadOrdersPageContext>
+public class LoadOrdersWIPPageFactory : APageFactory<ILoadOrdersWIPPageViewModel, LoadOrdersWIPPageContext>
 {
-    public LoadOrdersPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    public LoadOrdersWIPPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("5192B4BE-4DEF-4C99-BDB9-32AEAF70D9A8"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILoadOrdersPageViewModel CreateViewModel(LoadOrdersPageContext context)
+    public override ILoadOrdersWIPPageViewModel CreateViewModel(LoadOrdersWIPPageContext context)
     {
-        var vm = new LoadOrdersPageViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LoadOrdersWipPageViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
         return vm;
     }
 
@@ -42,7 +42,7 @@ public class LoadOrdersPageFactory : APageFactory<ILoadOrdersPageViewModel, Load
             PageData = new PageData
             {
                 FactoryId = Id,
-                Context = new LoadOrdersPageContext
+                Context = new LoadOrdersWIPPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
                 }

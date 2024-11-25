@@ -688,6 +688,28 @@
         <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
           <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderItemModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrdersWipPageViewModel.cs">
+          <DependentUpon>ILoadOrdersWIPPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelectionView\SortingSelectionView.axaml.cs">
+          <DependentUpon>SortingSelectionView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionViewModel.cs">
+          <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
