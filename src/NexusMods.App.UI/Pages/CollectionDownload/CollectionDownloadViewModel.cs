@@ -79,7 +79,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         OptionalDownloadsCount = optionalDownloadCount;
 
         DownloadAllCommand = new ReactiveCommand(
-            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken),
+            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );

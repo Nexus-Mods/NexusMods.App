@@ -154,6 +154,7 @@ public class CollectionDownloader
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         bool onlyRequired,
         IDb? db = null,
+        int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
     {
         var downloads = revisionMetadata.Downloads.ToArray();
@@ -161,7 +162,7 @@ public class CollectionDownloader
         await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
         {
             CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            MaxDegreeOfParallelism = maxDegreeOfParallelism == -1 ? Environment.ProcessorCount : maxDegreeOfParallelism,
         }, body: async (index, token) =>
         {
             var download = downloads[index];
