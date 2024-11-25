@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
@@ -41,7 +42,7 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
             // Note(sewer): We create a LoadoutItemGroup for each module, which is a child of the one
             //              used for the archive. Since in theory the item can be disabled at any level
             //              in the tree, we need to check if the parent is disabled.
-            var isEnabled = !loadoutItem.IsDisabledOrParentsDisabled();
+            var isEnabled = loadoutItem.IsEnabled();
             isEnabledDict[module.Item2] = isEnabled;
         }
         
