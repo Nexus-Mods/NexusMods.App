@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD83A4542F4337FDB
+   - Fingerprint: 0x1A0740A80D5D60A9
    - Total attributes: 143
    - Total namespaces: 58
    
@@ -35,7 +35,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.LibraryFile/Hash                                                 | UInt64                  | True    | False | False     | 
 | NexusMods.Library.LibraryFile/Size                                                 | UInt64                  | False   | False | False     | 
 | NexusMods.Library.LibraryItem/Name                                                 | Utf8                    | False   | False | False     | 
-| NexusMods.Library.LocalFile/Md5                                                    | UInt128                 | False   | False | False     | 
+| NexusMods.Library.LocalFile/Md5                                                    | UInt128                 | True    | False | False     | 
 | NexusMods.Library.LocalFile/OriginalPath                                           | Utf8                    | False   | False | False     | 
 | NexusMods.Loadouts.CollectionGroup/IsReadOnly                                      | UInt8                   | True    | False | False     | 
 | NexusMods.Loadouts.DeletedFile/Reason                                              | Utf8                    | False   | False | False     | 
