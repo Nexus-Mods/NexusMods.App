@@ -15,7 +15,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     public string DisplayName { get; }
     
     // TODO: Populate these properly
-    public string ModName { get; } = string.Empty;
+    public string ModName { get; }
     public bool IsActive { get; }
 
     public LoadOrderItemModel(ISortableItem sortableItem)
