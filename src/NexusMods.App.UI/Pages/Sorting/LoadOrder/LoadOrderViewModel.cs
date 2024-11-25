@@ -26,6 +26,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string TrophyToolTip { get; } = "";
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; } = ListSortDirection.Ascending;
     [Reactive] public bool IsWinnerTop { get; set; } = true;
+    public string EmptyStateMessageTitle { get; } = "";
+    public string EmptyStateMessageContents { get; } = "";
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
