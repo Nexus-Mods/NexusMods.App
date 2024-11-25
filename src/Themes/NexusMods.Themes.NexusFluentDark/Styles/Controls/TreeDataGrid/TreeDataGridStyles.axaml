@@ -194,9 +194,9 @@
 
         <!-- last column header -->
         <Style Selector="^:nth-last-child(1)">
-            <Style Selector="^ /template/ DockPanel#DataGridDockPanel">
-                <Setter Property="HorizontalAlignment" Value="Right" />
-            </Style>
+            <!-- <Style Selector="^ /template/ DockPanel#DataGridDockPanel"> -->
+            <!--     <Setter Property="HorizontalAlignment" Value="Right" /> -->
+            <!-- </Style> -->
         </Style>
     </Style>
 
@@ -283,7 +283,7 @@
         <!-- "RootRow" is a class that was manually added to the TreeDataGridRow that have indent level 0. -->
         <!-- See `NexusMods.App.UI.Controls.CustomElementFactory.cs` for more information. -->
         <Style Selector="^.RootRow">
-            <Setter Property="ZIndex" Value="100" />
+            <!-- <Setter Property="ZIndex" Value="100" /> -->
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
 
             <!-- <Style Selector="^ Border#RowBorder"> -->
