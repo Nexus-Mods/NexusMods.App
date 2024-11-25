@@ -18,24 +18,38 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string SortOrderName { get; }
     
     // TODO: Populate these properly
-    public string InfoAlertTitle { get; } = "";
-    public string InfoAlertHeading { get; } = "";
-    public string InfoAlertMessage { get; } = "";
-    [Reactive] public bool InfoAlertIsVisible { get; set; } = false;
+    public string InfoAlertTitle { get; }
+    public string InfoAlertHeading { get; }
+    public string InfoAlertMessage { get; }
+    [Reactive] public bool InfoAlertIsVisible { get; set; }
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
-    public string TrophyToolTip { get; } = "";
-    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; } = ListSortDirection.Ascending;
-    [Reactive] public bool IsWinnerTop { get; set; } = true;
-    public string EmptyStateMessageTitle { get; } = "";
-    public string EmptyStateMessageContents { get; } = "";
+    public string TrophyToolTip { get; }
+    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
+    [Reactive] public bool IsWinnerTop { get; set; }
+    public string EmptyStateMessageTitle { get; }
+    public string EmptyStateMessageContents { get; }
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
-    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
+    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
     {
-        SortOrderName = sortableItemProviderFactory.SortOrderName;
-        var provider = sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
+        SortOrderName = itemProviderFactory.SortOrderName;
+        var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
+        
+        InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
+        InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
+        InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
+        TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
+        EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
+        EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
+        
+        // TODO: load these from settings
+        SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
+        IsWinnerTop = itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins && 
+                      SortDirectionCurrent == ListSortDirection.Ascending;
+        InfoAlertIsVisible = true;
 
+        
         Adapter = new LoadOrderTreeDataGridAdapter(provider);
         Adapter.ViewHierarchical.Value = true;
 
