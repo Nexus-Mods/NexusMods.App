@@ -1,4 +1,4 @@
-# v0.7.0 - 2024-11-21
+# v0.7.0 - 2024-11-XX
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
