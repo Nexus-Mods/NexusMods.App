@@ -17,4 +17,5 @@ public interface ILoadOrderViewModel : IViewModelInterface
     ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     string TrophyToolTip { get; }
     ListSortDirection SortDirectionCurrent { get; set; }
+    bool isWinnerTop { get; }
 }

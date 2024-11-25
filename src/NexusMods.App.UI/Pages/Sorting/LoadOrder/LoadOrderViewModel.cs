@@ -25,6 +25,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "";
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; } = ListSortDirection.Ascending;
+    [Reactive] public bool isWinnerTop { get; set; } = true;
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
