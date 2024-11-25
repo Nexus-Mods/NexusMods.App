@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using DynamicData;
 using NexusMods.Abstractions.Games;
@@ -11,9 +12,31 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 {
     private readonly IConnection _connection;
     private readonly Dictionary<LoadoutId, RedModSortableItemProvider> _providers = new();
+    private static readonly Guid StaticTypeId = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
 
-    public Guid StaticSortOrderTypeId { get; } = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
-    public string SortOrderName { get; } = "REDmod Load Order";
+    public Guid SortOrderTypeId => StaticTypeId;
+
+    public string SortOrderName => "REDmod Load Order";
+
+    public string OverrideInfoTitle => "First Loaded REDmod Wins";
+
+    public string OverrideInfoHeading => "Load Order for REDmods in Cyberpunk 2077 - First Loaded Wins";
+
+    public string OverrideInfoMessage => """
+                                         Some Cyberpunk 2077 mods use REDmod files to alter core gameplay elements. If two REDmod files modify the same part of the game, the one loaded first will take priority and overwrite changes from those loaded later.
+                                         
+                                         For example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on.
+                                         """;
+
+    public string WinnerIndexToolTip => "The REDmod that will overwrite all others";
+
+    public string IndexColumnHeader => "Load Order";
+
+    public string NameColumnHeader => "REDmod Name";
+
+    public ListSortDirection SortDirectionDefault => ListSortDirection.Ascending;
+
+    public IndexOverrideBehavior IndexOverrideBehavior => IndexOverrideBehavior.SmallerIndexWins;
 
     public RedModSortableItemProviderFactory(IConnection connection)
     {
@@ -56,7 +79,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                             Debug.Assert(false, $"RedModSortableItemProviderFactory: provider not found for loadout {removal.Current.LoadoutId}");
                             continue;
                         }
-                        
+
                         // TODO: Delete SortOrder and SortableItem entities from DB if it isn't done in Synchronizer.DeleteLoadout()
                         provider.Dispose();
                     }
@@ -74,5 +97,4 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 
         throw new InvalidOperationException($"RedModSortableItemProviderFactory: provider not found for loadout {loadoutId}");
     }
-
 }
