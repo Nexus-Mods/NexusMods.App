@@ -16,7 +16,7 @@ A huge thank you to [Aragas](https://www.nexusmods.com/mountandblade2bannerlord/
 
 We've further refined the Collections download page which unlocks the ability for non-Premium users to use the Collections feature and provides Premium users with the ability to see the list of mods included in a collection before downloading. As this page is still a work in progress, some of the UI buttons may not work as expected yet. 
 
-PICTURE HERE!
+![The Collection Download Page showing a Stardew Valley collection.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732544476-32114395.png)
 
 ## EXPERIMENTAL - Cyberpunk 2077 REDmod Load Order
 Users can now manage the order of REDmods installed for Cyberpunk 2077 through the new "Load Orders (WIP)" page that can be accessed from the New Tab page. 
