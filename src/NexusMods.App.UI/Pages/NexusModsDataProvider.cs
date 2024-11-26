@@ -15,6 +15,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.Collections;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
@@ -75,27 +76,12 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     private ILibraryItemModel ToLibraryItemModel(CollectionDownloadNexusMods.ReadOnly nexusModsDownload)
     {
-        var isInLibraryObservable = _connection
-            .ObserveDatoms(NexusModsLibraryItem.FileMetadata, nexusModsDownload.FileMetadata)
-            .Transform(datom => LibraryFile.Hash.IsIn(_connection.Db, datom.E))
-            .FilterImmutable(static hasHash => hasHash)
-            .IsNotEmpty()
+        var isInLibraryObservable = CollectionDownloader.IsDownloadedObservable(_connection, nexusModsDownload)
             .ToObservable()
-            .Prepend((_connection, nexusModsDownload.FileMetadata), static state =>
-            {
-                var (connection, fileMetadata) = state;
-                var libraryItems = NexusModsLibraryItem.FindByFileMetadata(connection.Db, fileMetadata);
-                foreach (var libraryItem in libraryItems)
-                {
-                    if (LibraryFile.Hash.IsIn(libraryItem))
-                        return true;
-                }
-
-                return false;
-            });
+            .Prepend(nexusModsDownload, static download => CollectionDownloader.IsDownloaded(download));
 
         var downloadJobObservable = _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .Filter(job =>
+            .FilterImmutable(job =>
             {
                 var definition = job.Definition as NexusModsDownloadJob;
                 Debug.Assert(definition is not null);
@@ -128,21 +114,12 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     private ILibraryItemModel ToLibraryItemModel(CollectionDownloadExternal.ReadOnly externalDownload)
     {
-        var isInLibraryObservable = _connection
-            .ObserveDatoms(DirectDownloadLibraryFile.Md5)
-            .Transform(datom => DirectDownloadLibraryFile.Md5.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver))
-            .FilterImmutable(hash => hash == externalDownload.Md5)
-            .IsNotEmpty()
+        var isInLibraryObservable = CollectionDownloader.IsDownloadedObservable(_connection, externalDownload)
             .ToObservable()
-            .Prepend((_connection, externalDownload.Md5), static state =>
-            {
-                var (connection, hash) = state;
-                var libraryItems = DirectDownloadLibraryFile.FindByMd5(connection.Db, hash);
-                return libraryItems.Count > 0;
-            });
+            .Prepend(externalDownload, static download => CollectionDownloader.IsDownloaded(download));
 
         var downloadJobObservable = _jobMonitor.GetObservableChangeSet<ExternalDownloadJob>()
-            .Filter(job =>
+            .FilterImmutable(job =>
             {
                 var definition = job.Definition as ExternalDownloadJob;
                 Debug.Assert(definition is not null);
