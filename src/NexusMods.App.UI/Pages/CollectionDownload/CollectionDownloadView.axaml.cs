@@ -94,11 +94,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
-                .Where(static vm => vm.OptionalDownloadsCount == 0)
-                .Subscribe(_ =>
+                .Select(static vm => vm.OptionalDownloadsCount > 0)
+                .Subscribe(hasOptionalDownloads =>
                 {
-                    TabControl.IsVisible = false;
-                    TabControl.SelectedItem = RequiredTab;
+                    if (hasOptionalDownloads) TabControl.Classes.Remove("SingleTab");
+                    else TabControl.Classes.Add("SingleTab");
+
+                    if (!hasOptionalDownloads) TabControl.SelectedItem = RequiredTab;
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.OverallRating)

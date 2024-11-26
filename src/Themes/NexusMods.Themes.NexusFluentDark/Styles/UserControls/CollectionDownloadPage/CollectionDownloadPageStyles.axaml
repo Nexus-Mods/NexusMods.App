@@ -227,6 +227,13 @@
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
                 <Setter Property="Padding" Value="0" />
             </Style>
+
+            <!-- NOTE(erri120): Hide the tab strip when there's only one tab -->
+            <Style Selector="^ TabControl.SingleTab">
+                <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </Style>
         </Style>
     </Style>
 </Styles>
