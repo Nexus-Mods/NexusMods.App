@@ -27,7 +27,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string EmptyStateMessageTitle { get; }
     public string EmptyStateMessageContents { get; }
 
-    public LoadOrderTreeDataGridAdapter Adapter { get; }
+    public TreeDataGridAdapter<ILoadOrderItemModel, Guid> Adapter { get; }
 
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
     {
@@ -89,13 +89,13 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             isExpandedSelector: static model => model.IsExpanded
             )
             {
-            Tag = "expander",
+                Tag = "expander",
             },
             CreateNameColumn(_sortableItemsProvider.ParentFactory.NameColumnHeader),
         ];
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateIndexColumn(string headerName)
+    internal static IColumn<ILoadOrderItemModel> CreateIndexColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
             header: headerName,
@@ -103,7 +103,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
                 CanUserSortColumn = false,
-                CanUserResizeColumn = true,
+                CanUserResizeColumn = false,
             }
         )
         {
@@ -111,7 +111,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         };
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateNameColumn(string headerName)
+    internal static IColumn<ILoadOrderItemModel> CreateNameColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
             header: headerName,
@@ -119,7 +119,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
                 CanUserSortColumn = false,
-                CanUserResizeColumn = true,
+                CanUserResizeColumn = false,
             }
         )
         {
