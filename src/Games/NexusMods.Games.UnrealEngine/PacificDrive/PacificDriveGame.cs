@@ -31,6 +31,7 @@ public class PacificDriveGame : AGame, ISteamGame, IEpicGame
 
     public override string Name => "Pacific Drive";
     public override GameId GameId => GameId.From(6169);
+    public override SupportType SupportType => SupportType.Community;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "PenDriverPro/Binaries/Win64/PenDriverPro-Win64-Shipping.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
