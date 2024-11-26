@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Games.Generic;
+using NexusMods.Paths;
 using static Bannerlord.LauncherManager.Constants;
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -19,12 +21,14 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
     private readonly ILogger<BannerlordRunGameTool> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly GameToolRunner _runner;
+    private readonly IOSInformation _os;
 
-    public BannerlordRunGameTool(IServiceProvider serviceProvider, Bannerlord game, GameToolRunner runner)
+    public BannerlordRunGameTool(IServiceProvider serviceProvider, Bannerlord game, GameToolRunner runner, IOSInformation os)
         : base(serviceProvider, game)
     {
         _serviceProvider = serviceProvider;
         _runner = runner;
+        _os = os;
         _logger = serviceProvider.GetRequiredService<ILogger<BannerlordRunGameTool>>();
     }
 
@@ -41,7 +45,18 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         var exe = install.LocationsRegister[LocationId.Game];
 
         if (loadout.LocateBLSE(out var blseRelativePath))
+        {
             exe = exe/blseRelativePath;
+            
+            // Note(sewer): If the user is on Linux, there is no guarantee they
+            // have .NET Framework installed; instead, Framework stuff may be run on
+            // Mono. Because BLSE interacts with low level components of the runtime,
+            // we will instead use a 'hidden' BLSE feature to use the .NET Runtime
+            // stored in the game folder. In this case, that's .NET 6 at the time of
+            // writing.
+            if (_os.IsLinux)
+                args = [..args, "/forcenetcore"];
+        }
         else
         {
             if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
