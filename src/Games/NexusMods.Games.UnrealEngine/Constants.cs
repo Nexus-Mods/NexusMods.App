@@ -52,6 +52,6 @@ public static partial class Constants
     [GeneratedRegex(@"^(?<modName>.*?)\s?[-_]?\s?(?<version>[\d.]+)\.(zip|rar)$", RegexOptions.IgnoreCase)]
     public static partial Regex ModArchiveNameRegexFallback();
 
-    [GeneratedRegex(@"[\w/]+\.(uasset|uexp|ubulk)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"[-\w/]*\.(uasset|uexp|ubulk|cfg)", RegexOptions.IgnoreCase)]
     public static partial Regex UEObjectsRegex();
 }
