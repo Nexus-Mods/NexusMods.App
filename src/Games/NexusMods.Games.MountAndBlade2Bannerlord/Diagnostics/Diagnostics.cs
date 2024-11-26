@@ -830,4 +830,43 @@ Refer to the {ProtontricksUri} for installation instructions.
             .AddValue<NamedLink>("ProtontricksUri")
         )
         .Finish();
+    
+    [DiagnosticTemplate, UsedImplicitly]
+    internal static IDiagnosticTemplate MissingBLSETemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, 16))
+        .WithTitle("'{ModName}' Requires Bannerlord Software Extender (BLSE)")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("'{ModName}' Requires Bannerlord Software Extender (BLSE) which is not installed")
+        .WithDetails("""
+'{ModName}' Requires Bannerlord Software Extender (BLSE) which is not installed.
+
+### How to Resolve
+1. Download and install {BLSELink}.
+2. Enable BLSE.
+
+### Technical Details
+Looking at `{ModName}`'s `SubModule.xml`:
+
+```xml
+<Module>
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
+    <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
+    <DependedModules>
+        <!-- 💡 This mod requires `{DependencyId}` which is provided by BLSE -->
+        <DependedModule Id="{DependencyId}" />
+        <!-- ❌ BLSE is not installed -->
+    </DependedModules>
+</Module>
+```
+"""
+        )
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("ModId")
+            .AddValue<string>("ModName")
+            .AddValue<string>("DependencyId")
+            .AddValue<NamedLink>("BLSELink")
+        )
+        .Finish();
 }

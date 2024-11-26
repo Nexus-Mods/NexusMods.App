@@ -39,8 +39,14 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         var args = await GetBannerlordExeCommandlineArgs(loadout, commandLineArgs, cancellationToken);
         var install = loadout.InstallationInstance;
         var exe = install.LocationsRegister[LocationId.Game];
-        if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
-        else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
+
+        if (loadout.LocateBLSE(out var blseRelativePath))
+            exe = exe/blseRelativePath;
+        else
+        {
+            if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
+            else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
+        }
 
         var command = Cli.Wrap(exe.ToString())
             .WithArguments(args)

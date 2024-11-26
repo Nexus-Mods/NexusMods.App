@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
@@ -17,6 +18,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 /// </summary>
 internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
+    private static NamedLink _blseLink = new("Bannerlord Software Extender", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/1"));
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
 
@@ -47,22 +49,21 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
         // TODO: HACK. Pretend base game modules are installed before we can properly ingest them.
         
         // Emit diagnostics
+        var isBlseInstalled = loadout.IsBLSEInstalled();
         foreach (var moduleAndMod in isEnabledDict)
         {
             var moduleInfo = moduleAndMod.Key;
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
-            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x, isBlseInstalled)))
             {
                 if (diagnostic != null)
                     yield return diagnostic;
             }
         }
     }
-    
-    
 
-    private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
+    private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue, bool isBlseInstalled)
     {
         return issue switch
         {
@@ -77,6 +78,14 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
             // Note(sewer): We emit this from the dependency mod itself.
             ModuleDependencyValidationIssue dependencyValidation => null,
 
+            // Missing BLSE Dependency
+            ModuleMissingBLSEDependencyIssue missingUnversioned when !isBlseInstalled => Diagnostics.CreateMissingBLSE(
+                ModId: missingUnversioned.Module.Id,
+                ModName: missingUnversioned.Module.Name,
+                DependencyId: missingUnversioned.Dependency.Id,
+                BLSELink: _blseLink
+            ),
+            
             // Missing Unversioned Dependency
             ModuleMissingUnversionedDependencyIssue missingUnversioned => Diagnostics.CreateMissingDependency(
                 ModId: missingUnversioned.Module.Id,
