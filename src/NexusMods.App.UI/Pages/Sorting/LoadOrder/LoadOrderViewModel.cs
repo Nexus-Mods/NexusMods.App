@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
@@ -7,20 +9,45 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
+    public string InfoAlertTitle { get; }
+    public string InfoAlertHeading { get; }
+    public string InfoAlertMessage { get; }
+    [Reactive] public bool InfoAlertIsVisible { get; set; }
+    public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
+    public string TrophyToolTip { get; }
+    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
+    [Reactive] public bool IsWinnerTop { get; set; }
+    public string EmptyStateMessageTitle { get; }
+    public string EmptyStateMessageContents { get; }
 
     public LoadOrderTreeDataGridAdapter Adapter { get; }
 
-    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory sortableItemProviderFactory)
+    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
     {
-        SortOrderName = sortableItemProviderFactory.SortOrderName;
-        var provider = sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
+        var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
+        
+        SortOrderName = itemProviderFactory.SortOrderName;
+        InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
+        InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
+        InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
+        TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
+        EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
+        EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
+        
+        // TODO: load these from settings
+        SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
+        IsWinnerTop = itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins && 
+                      SortDirectionCurrent == ListSortDirection.Ascending;
+        InfoAlertIsVisible = true;
 
+        
         Adapter = new LoadOrderTreeDataGridAdapter(provider);
         Adapter.ViewHierarchical.Value = true;
 
@@ -56,7 +83,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-            inner: CreateIndexColumn(),
+            inner: CreateIndexColumn(_sortableItemsProvider.ParentFactory.IndexColumnHeader),
             childSelector: static model => model.Children,
             hasChildrenSelector: static model => model.HasChildren.Value,
             isExpandedSelector: static model => model.IsExpanded
@@ -64,14 +91,14 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             {
             Tag = "expander",
             },
-            CreateNameColumn(),
+            CreateNameColumn(_sortableItemsProvider.ParentFactory.NameColumnHeader),
         ];
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateIndexColumn()
+    private static IColumn<ILoadOrderItemModel> CreateIndexColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Load Order",
+            header: headerName,
             cellTemplateResourceKey: "LoadOrderItemIndexColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {
@@ -84,10 +111,10 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         };
     }
 
-    private static IColumn<ILoadOrderItemModel> CreateNameColumn()
+    private static IColumn<ILoadOrderItemModel> CreateNameColumn(string headerName)
     {
         return new CustomTemplateColumn<ILoadOrderItemModel>(
-            header: "Name",
+            header: headerName,
             cellTemplateResourceKey: "LoadOrderItemNameColumnTemplate",
             options: new TemplateColumnOptions<ILoadOrderItemModel>
             {

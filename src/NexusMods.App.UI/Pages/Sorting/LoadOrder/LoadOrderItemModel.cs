@@ -13,6 +13,10 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     public ReactiveCommand<Unit, Unit> MoveDown { get; }
     public int SortIndex { get; }
     public string DisplayName { get; }
+    
+    // TODO: Populate these properly
+    public string ModName { get; } = string.Empty;
+    public bool IsActive { get; } = true;
 
     public LoadOrderItemModel(ISortableItem sortableItem)
     {

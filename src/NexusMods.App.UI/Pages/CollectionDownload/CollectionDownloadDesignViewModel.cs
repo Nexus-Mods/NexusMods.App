@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -21,7 +22,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public string AuthorName => "Lowtonotolerance";
 
     public string Summary =>
-        "Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content. Aims to improves vanilla gameplay while adding minimal additional content.";
+        "1.6.14 The story of Stardew Valley expands outside of Pelican Town with this expanded collection designed to stay true to the original game. Created with co-op in mind, perfect for experienced solo-players. Easy install, includes configuration.";
 
     public string Category => "Themed";
     public bool IsAdult => true;
@@ -35,4 +36,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";
+
+    public ReactiveCommand<Unit> DownloadAllCommand { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> InstallCollectionCommand { get; } = new ReactiveCommand();
 }

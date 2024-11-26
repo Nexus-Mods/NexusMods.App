@@ -65,7 +65,7 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                         _ => "LowRating",
                     };
                 })
-                .Subscribe(className => OverallRating.Classes.Add(className))
+                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
                 .DisposeWith(d);
         });
     }

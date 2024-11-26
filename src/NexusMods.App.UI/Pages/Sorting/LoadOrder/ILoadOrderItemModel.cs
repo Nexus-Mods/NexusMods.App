@@ -12,4 +12,7 @@ public interface ILoadOrderItemModel : ITreeDataGridItemModel<ILoadOrderItemMode
     public ReactiveCommand<Unit, Unit> MoveDown { get; }
     public int SortIndex { get; }
     public string DisplayName { get; }
+    
+    public string ModName { get; }
+    public bool IsActive { get; }
 }
