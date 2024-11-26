@@ -11,8 +11,7 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
 {
-    public CollectionDownloadTreeDataGridAdapter RequiredDownloadsAdapter { get; } = null!;
-    public CollectionDownloadTreeDataGridAdapter OptionalDownloadsAdapter { get; } = null!;
+    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; } = null!;
 
     public CollectionDownloadDesignViewModel() : base(new DesignWindowManager()) { }
 

@@ -25,6 +25,12 @@ using R3;
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
 
+public enum CollectionDownloadsFilter
+{
+    OnlyRequired,
+    OnlyOptional,
+}
+
 [UsedImplicitly]
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
@@ -38,13 +44,19 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        IObservable<CollectionDownloadsFilter> filterObservable)
     {
         return _connection
             .ObserveDatoms(CollectionDownloadEntity.CollectionRevision, revisionMetadata)
             .AsEntityIds()
             .Transform(datom => CollectionDownloadEntity.Load(_connection.Db, datom.E))
-            .Filter(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods() || downloadEntity.IsCollectionDownloadExternal())
+            .FilterOnObservable(downloadEntity => filterObservable.Select(filter => filter switch
+            {
+                CollectionDownloadsFilter.OnlyRequired => !downloadEntity.IsOptional,
+                CollectionDownloadsFilter.OnlyOptional => downloadEntity.IsOptional,
+            }))
+            .FilterImmutable(static downloadEntity => downloadEntity.IsCollectionDownloadNexusMods() || downloadEntity.IsCollectionDownloadExternal())
             .Transform(ILibraryItemModel (downloadEntity) =>
             {
                 if (downloadEntity.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
