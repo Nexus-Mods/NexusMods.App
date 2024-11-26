@@ -48,28 +48,29 @@
         </MenuFlyout>
     </reactiveUi:ReactiveUserControl.Resources>
 
-    <StackPanel x:Name="Body">
-        
+    <DockPanel x:Name="Body">
+
         <!-- first row (header) -->
-        <Border x:Name="HeaderBorderBackground">
+        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
             <Border x:Name="HeaderBorder">
-                
+
                 <StackPanel x:Name="Header">
-                    
+
                     <!-- first header row (image and metadata) -->
                     <Border x:Name="MainContentBorder">
-                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *" >
-                            
+                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+
                             <!-- left column (image) -->
                             <Border Grid.Column="0" x:Name="CollectionImageBorder">
                                 <Image x:Name="CollectionImage" />
                             </Border>
 
                             <!-- right column (metadata) -->
-                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="Auto">
+                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*"
+                                  ColumnDefinitions="Auto">
                                 <TextBlock Grid.Row="0" x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
-                                <TextBlock Grid.Row="1"  x:Name="Heading" />
-                                <Border Grid.Row="2"  x:Name="TagsPanelBorder">
+                                <TextBlock Grid.Row="1" x:Name="Heading" />
+                                <Border Grid.Row="2" x:Name="TagsPanelBorder">
                                     <StackPanel x:Name="TagsPanel">
                                         <TextBlock x:Name="Revision" />
                                         <StackPanel x:Name="AuthorStackPanel">
@@ -80,7 +81,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </Border>
-                                    <TextBlock Grid.Row="3"  x:Name="Summary" />
+                                <TextBlock Grid.Row="3" x:Name="Summary" />
                             </Grid>
 
                         </Grid>
@@ -106,7 +107,8 @@
                                 <TextBlock x:Name="TotalSize" />
                             </StackPanel>
                             <StackPanel x:Name="OverallRatingPanel">
-                                <icons:UnifiedIcon x:Name="OverallRatingIcon" Value="{x:Static icons:IconValues.CheckCircle}" />
+                                <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                   Value="{x:Static icons:IconValues.CheckCircle}" />
                                 <TextBlock x:Name="OverallRating" />
                             </StackPanel>
                         </StackPanel>
@@ -116,12 +118,13 @@
         </Border>
 
         <!-- second row (buttons) -->
-        <Border x:Name="ListHeaderRowBorder">
+        <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
             <panels:FlexPanel x:Name="ListHeaderRow">
-                <TextBlock x:Name="CollectionStatusText"/>
+                <TextBlock x:Name="CollectionStatusText" />
                 <controls:StandardButton x:Name="InstallButton" Text="Install" />
-                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All"/>
-                <controls:StandardButton x:Name="FlyoutMenuButton"  Flyout="{StaticResource CollectionMenuFlyout}" Text="..."/>
+                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All" />
+                <controls:StandardButton x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}"
+                                         Text="..." />
             </panels:FlexPanel>
         </Border>
 
@@ -136,7 +139,6 @@
                         </Border>
                     </StackPanel>
                 </TabItem.Header>
-
                 <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
             <TabItem>
@@ -151,7 +153,6 @@
                 <TreeDataGrid x:Name="OptionalDownloadsTree" />
             </TabItem>
         </TabControl>
-
-    </StackPanel>
+    </DockPanel>
 
 </reactiveUi:ReactiveUserControl>
