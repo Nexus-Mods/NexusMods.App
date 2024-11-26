@@ -61,9 +61,10 @@
     </Design.PreviewWith>
 
     <Style Selector="TabControl">
+        
         <!-- <Setter Property="ClipToBounds" Value="False" /> -->
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="8" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         <!-- <Setter Property="HorizontalAlignment" Value="Stretch" /> -->
@@ -150,11 +151,15 @@
 
         <Style Selector="^.Subtabs">
             
+            <!-- content padding -->
+            <Setter Property="Padding" Value="0,0" />
+            
+            <!-- header padding -->
             <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="Margin" Value="8,8,8,0" />
+                <Setter Property="Margin" Value="24,8" />
             </Style>
 
-
+            
             <Style Selector="^ TabItem">
                 <Setter Property="Padding" Value="12,0" />
                 <Setter Property="BorderThickness" Value="1" />
