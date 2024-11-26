@@ -127,7 +127,7 @@
 
         <!-- third row (tab control and datagrid) -->
         <TabControl x:Name="TabControl">
-            <TabItem>
+            <TabItem x:Name="RequiredTab">
                 <TabItem.Header>
                     <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
                         <TextBlock>Required</TextBlock>
@@ -139,7 +139,7 @@
 
                 <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
-            <TabItem>
+            <TabItem x:Name="OptionalTab">
                 <TabItem.Header>
                     <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
                         <TextBlock>Optional</TextBlock>
