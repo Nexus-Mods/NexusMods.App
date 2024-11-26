@@ -376,7 +376,7 @@
     
     <Style Selector="TreeDataGrid#ModFilesTreeDataGrid">
         <Style Selector="^ icons|UnifiedIcon">
-            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"/>
         </Style>
     </Style>
 
