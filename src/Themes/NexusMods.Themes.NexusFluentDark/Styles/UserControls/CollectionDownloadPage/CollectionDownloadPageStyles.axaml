@@ -3,8 +3,9 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    
     <Design.PreviewWith>
-        <Border Width="500" Height="500">
+        <Border Width="800" Height="500">
             <Border.Resources>
                 <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
             </Border.Resources>
@@ -21,27 +22,19 @@
             </LinearGradientBrush>
         </Style.Resources>
 
-        <Style Selector="^ StackPanel#Body">
-            <Setter Property="Orientation" Value="Vertical" />
-
+        <Style Selector="^ DockPanel#Body">
             <Style Selector="^ Border#HeaderBorderBackground">
-
                 <Style Selector="^ Border#HeaderBorder">
-                    <!-- <Setter Property="MaxWidth" Value="628" /> -->
                     <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="24,24,24,16" />
                     <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
-
-
-                    <Style Selector="^ StackPanel#Header">
-                        <!-- -->
-                        <!-- <Setter Property="HorizontalAlignment" Value="Left"/> -->
-
-                        <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
+                    
+                    <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
                     it's working, as things are aligned correctly, but the background is not being applied correctly. 
                     After chatting with @Al12rs, we are leaving this for now as we can't fully test this (yet) and we
                     don't want to add extra layout code for no reason -->
-
+                    
+                    <Style Selector="^ StackPanel#Header">
                         <Style Selector="^ Border#MainContentBorder">
                             <!-- <Setter Property="Background" Value="DarkGoldenrod" /> -->
                             <Setter Property="Padding" Value="0, 0, 0, 24" />
@@ -133,7 +126,7 @@
                                                 Value="{StaticResource NeutralTranslucentSubduedBrush}" />
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                        </Style>
+                                    </Style>
 
                                 </Style>
 
@@ -226,6 +219,13 @@
             <Style Selector="^ TabControl">
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
                 <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <!-- NOTE(erri120): Hide the tab strip when there's only one tab -->
+            <Style Selector="^ TabControl.SingleTab">
+                <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
             </Style>
         </Style>
     </Style>
