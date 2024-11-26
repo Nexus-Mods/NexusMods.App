@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
@@ -15,18 +16,18 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, RequiredDownloadsTree, vm => vm.RequiredDownloadsAdapter);
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, OptionalDownloadsTree, vm => vm.OptionalDownloadsAdapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, RequiredDownloadsTree, vm => vm.TreeDataGridAdapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, OptionalDownloadsTree, vm => vm.TreeDataGridAdapter);
 
         this.WhenActivated(d =>
         {
             this.BindCommand(ViewModel, vm => vm.DownloadAllCommand, view => view.DownloadAllButton)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsAdapter.Source.Value, view => view.RequiredDownloadsTree.Source)
+            this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.RequiredDownloadsTree.Source)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsAdapter.Source.Value, view => view.OptionalDownloadsTree.Source)
+            this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.OptionalDownloadsTree.Source)
                 .DisposeWith(d);
 
              this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
@@ -78,14 +79,26 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.TabControl.SelectedItem)
+                .Select(selectedItem =>
+                {
+                    if (ReferenceEquals(selectedItem, RequiredTab)) return CollectionDownloadsFilter.OnlyRequired;
+                    if (ReferenceEquals(selectedItem, OptionalTab)) return CollectionDownloadsFilter.OnlyOptional;
+                    throw new UnreachableException();
+                })
+                .Subscribe(filter =>
+                {
+                    ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
+                })
+                .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
-                .Subscribe(vm =>
+                .Where(static vm => vm.OptionalDownloadsCount == 0)
+                .Subscribe(_ =>
                 {
-                    if (vm.OptionalDownloadsCount == 0)
-                    {
-                        // TabControl.IsVisible = false;
-                    }
+                    TabControl.IsVisible = false;
+                    TabControl.SelectedItem = RequiredTab;
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.OverallRating)
