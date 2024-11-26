@@ -33,7 +33,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
     {
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
-        
+
         SortOrderName = itemProviderFactory.SortOrderName;
         InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
         InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
@@ -41,14 +41,14 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
         EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
         EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
-        
+
         // TODO: load these from settings
         SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
-        IsWinnerTop = itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins && 
-                      SortDirectionCurrent == ListSortDirection.Ascending;
         InfoAlertIsVisible = true;
-        
-        
+
+        IsWinnerTop = SortDirectionCurrent == ListSortDirection.Ascending &&
+                      itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent);
         Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable);
         Adapter.ViewHierarchical.Value = true;
@@ -58,7 +58,15 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 Adapter.Activate();
                 Disposable.Create(() => Adapter.Deactivate())
                     .DisposeWith(d);
-                
+
+                sortDirectionObservable.Subscribe(sortDirection =>
+                        {
+                            var isAscending = sortDirection == ListSortDirection.Ascending;
+                            IsWinnerTop = isAscending &&
+                                          itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                        }
+                    )
+                    .DisposeWith(d);
             }
         );
     }
@@ -79,15 +87,15 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     {
         var sortableItems = _sortableItemsProvider.SortableItems
             .ToObservableChangeSet(item => item.ItemId);
-        
+
         var ascendingSortableItems = sortableItems
             .ToSortedCollection(item => item.SortIndex, SortDirection.Ascending)
             .ToObservableChangeSet(item => item.ItemId);
-        
+
         var descendingSortableItems = sortableItems
             .ToSortedCollection(item => item.SortIndex, SortDirection.Descending)
             .ToObservableChangeSet(item => item.ItemId);
-        
+
         // Sort the items based on SortDirection
         var sortedItems = _sortDirectionObservable
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingSortableItems : descendingSortableItems)
@@ -103,10 +111,10 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-            inner: CreateIndexColumn(_sortableItemsProvider.ParentFactory.IndexColumnHeader),
-            childSelector: static model => model.Children,
-            hasChildrenSelector: static model => model.HasChildren.Value,
-            isExpandedSelector: static model => model.IsExpanded
+                inner: CreateIndexColumn(_sortableItemsProvider.ParentFactory.IndexColumnHeader),
+                childSelector: static model => model.Children,
+                hasChildrenSelector: static model => model.HasChildren.Value,
+                isExpandedSelector: static model => model.IsExpanded
             )
             {
                 Tag = "expander",
