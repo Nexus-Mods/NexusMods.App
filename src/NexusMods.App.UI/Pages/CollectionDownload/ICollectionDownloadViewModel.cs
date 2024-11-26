@@ -9,8 +9,7 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
-    CollectionDownloadTreeDataGridAdapter RequiredDownloadsAdapter { get; }
-    CollectionDownloadTreeDataGridAdapter OptionalDownloadsAdapter { get; }
+    CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     /// <inheritdoc cref="CollectionMetadata.Name"/>
     string Name { get; }
@@ -80,4 +79,14 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     /// Collection status text.
     /// </summary>
     string CollectionStatusText { get; }
+
+    /// <summary>
+    /// Command to download all downloads.
+    /// </summary>
+    R3.ReactiveCommand<R3.Unit> DownloadAllCommand { get; }
+
+    /// <summary>
+    /// Command to install the collection.
+    /// </summary>
+    R3.ReactiveCommand<R3.Unit> InstallCollectionCommand { get; }
 }

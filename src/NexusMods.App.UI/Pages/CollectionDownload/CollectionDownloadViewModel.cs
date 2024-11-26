@@ -1,10 +1,12 @@
 using System.Diagnostics;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
@@ -28,12 +30,11 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     private readonly CollectionMetadata.ReadOnly _collection;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConnection _connection;
     private readonly NexusModsDataProvider _nexusModsDataProvider;
     private readonly CollectionDownloader _collectionDownloader;
 
-    public CollectionDownloadTreeDataGridAdapter RequiredDownloadsAdapter { get; }
-
-    public CollectionDownloadTreeDataGridAdapter OptionalDownloadsAdapter { get; }
+    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public CollectionDownloadViewModel(
         IWindowManager windowManager,
@@ -41,6 +42,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
         _collectionDownloader = new CollectionDownloader(_serviceProvider);
 
@@ -54,10 +56,8 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         TabTitle = _collection.Name;
         TabIcon = IconValues.Collections;
 
-        RequiredDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
-        RequiredDownloadsAdapter.ViewHierarchical.Value = false;
-        OptionalDownloadsAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
-        OptionalDownloadsAdapter.ViewHierarchical.Value = false;
+        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
+        TreeDataGridAdapter.ViewHierarchical.Value = false;
 
         // TODO:
         CollectionStatusText = "TODO";
@@ -75,12 +75,19 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         RequiredDownloadsCount = requiredDownloadCount;
         OptionalDownloadsCount = optionalDownloadCount;
 
+        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        DownloadAllCommand = loginManager.IsPremiumObservable.ToObservable().ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken: cancellationToken),
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        InstallCollectionCommand = new ReactiveCommand<Unit>(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
         this.WhenActivated(disposables =>
         {
-            RequiredDownloadsAdapter.Activate();
-            OptionalDownloadsAdapter.Activate();
-            Disposable.Create(RequiredDownloadsAdapter, static adapter => adapter.Deactivate());
-            Disposable.Create(OptionalDownloadsAdapter, static adapter => adapter.Deactivate());
+            TreeDataGridAdapter.Activate();
+            Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate());
 
             ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
                 .ObserveOnUIThreadDispatcher()
@@ -97,24 +104,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 .Subscribe(this, static (bitmap, self) => self.AuthorAvatar = bitmap)
                 .AddTo(disposables);
 
-            _nexusModsDataProvider
-                .ObserveCollectionItems(revisionMetadata)
-                .SubscribeWithErrorLogging()
-                .AddTo(disposables);
-
-            RequiredDownloadsAdapter.MessageSubject.SubscribeAwait(
-                onNextAsync: (message, cancellationToken) =>
-                {
-                    return message.Item.Match(
-                        f0: x => _collectionDownloader.Download(x, cancellationToken),
-                        f1: x => _collectionDownloader.Download(x, cancellationToken)
-                    );
-                },
-                awaitOperation: AwaitOperation.Parallel,
-                configureAwait: false
-            ).AddTo(disposables);
-
-            OptionalDownloadsAdapter.MessageSubject.SubscribeAwait(
+            TreeDataGridAdapter.MessageSubject.SubscribeAwait(
                 onNextAsync: (message, cancellationToken) =>
                 {
                     return message.Item.Match(
@@ -148,6 +138,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     [Reactive] public Bitmap? BackgroundImage { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     [Reactive] public string CollectionStatusText { get; private set; }
+
+    public ReactiveCommand<Unit> DownloadAllCommand { get; }
+    public ReactiveCommand<Unit> InstallCollectionCommand { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);
@@ -159,11 +152,14 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
     private readonly CollectionRevisionMetadata.ReadOnly _revisionMetadata;
 
     public Subject<DownloadMessage> MessageSubject { get; } = new();
+    public R3.ReactiveProperty<CollectionDownloadsFilter> Filter { get; } = new(value: CollectionDownloadsFilter.OnlyRequired);
 
     private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
     private readonly IDisposable _activationDisposable;
 
-    public CollectionDownloadTreeDataGridAdapter(NexusModsDataProvider nexusModsDataProvider, CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    public CollectionDownloadTreeDataGridAdapter(
+        NexusModsDataProvider nexusModsDataProvider,
+        CollectionRevisionMetadata.ReadOnly revisionMetadata)
     {
         _nexusModsDataProvider = nexusModsDataProvider;
         _revisionMetadata = revisionMetadata;
@@ -214,7 +210,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata);
+        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, Filter.AsSystemObservable());
     }
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)

@@ -6,49 +6,107 @@
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+                                xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView">
-    <StackPanel Orientation="Vertical">
-        <TreeDataGrid x:Name="SortOrderTreeDataGrid"
-                      AutoDragDropRows="False"
-                      Margin="0,20"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="False"
-                      ShowColumnHeaders="True"
-                      RowDrop="OnRowDrop">
+    <Design.DataContext>
+        <sorting:LoadOrderDesignViewModel />
+    </Design.DataContext>
 
-            <TreeDataGrid.Resources>
-                
-                <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
-                              DataType="sorting:ILoadOrderItemModel">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="ItemIndex"
-                                   Text="{CompiledBinding SortIndex}" />
-                        <controls:StandardButton x:Name="UpButton"
-                                                 Command="{CompiledBinding MoveDown}"
-                                                 LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
-                        <controls:StandardButton x:Name="DownButton"
-                                                 Command="{CompiledBinding MoveUp}"
-                                                 LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                                 ShowIcon="Left"
-                                                 Text="" />
-                    </StackPanel>
-                </DataTemplate>
-                
-                <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
-                              DataType="sorting:ILoadOrderItemModel">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="ItemName"
-                                   Text="{CompiledBinding DisplayName}" />
-                    </StackPanel>
-                </DataTemplate>
-                
-            </TreeDataGrid.Resources>
-
-        </TreeDataGrid>
+    <Grid RowDefinitions="Auto, *">
+        <!-- <Border Background="Red"> -->
+        <!--     <TextBlock Text="{Binding SortOrderName}"/>             -->
+        <!-- </Border> -->
         
-    </StackPanel>
+        <StackPanel Spacing="24"
+            Grid.Row="0">
+            <alerts:Alert
+                Severity="Info"
+                Title="Load Order for REDmod files in Cyberpunk 2077 - First Loaded Wins"
+                Body="Some Cyberpunk 2077 mods use REDmod files to alter core gameplay elements. If two REDmod files modify the same part of the game, the one loaded first will take priority and overwrite changes from those loaded later.\n\nFor example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on."
+                IsVisible="True"
+                ShowDismiss="False" />
+        
+            <TextBlock Grid.Row="1" Text="Last Loaded REDmod File Wins"
+                       Theme="{StaticResource HeadingXSSemiTheme}" />
+        </StackPanel>
+        
+
+        <Grid Grid.Row="1" ColumnDefinitions="50, *" Margin="0,24,0,0">
+            
+            <Grid RowDefinitions="24, 8, *, 8, 24" Margin="0,60,0,0">
+                <icons:UnifiedIcon Grid.Row="0" Value="{x:Static icons:IconValues.Trophy}" />
+                <Border Grid.Row="2" Width="5">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#FFFFFFFF" Offset="0" />
+                            <GradientStop Color="#32FFFFFF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <icons:UnifiedIcon Grid.Row="4" Value="{x:Static icons:IconValues.ArrowDown}" Foreground="#32FFFFFF" />
+            </Grid>
+            
+            <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
+                          AutoDragDropRows="False"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="False"
+                          ShowColumnHeaders="True"
+                          RowDrop="OnRowDrop">
+
+                <TreeDataGrid.Resources>
+
+                    <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
+                                  DataType="sorting:ILoadOrderItemModel">
+
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <controls:StandardButton x:Name="UpButton"
+                                                         Command="{CompiledBinding MoveDown}"
+                                                         LeftIcon="{x:Static icons:IconValues.ArrowUp}"
+                                                         ShowIcon="IconOnly"
+                                                         Size="Medium"
+                                                         Type="Tertiary"
+                                                         Fill="None" />
+                                <Border
+                                    Background="{StaticResource SurfaceLowBrush}"
+                                    BorderThickness="1"
+                                    BorderBrush="{StaticResource StrokeTranslucentSubduedBrush}"
+                                    CornerRadius="4"
+                                    Width="52"
+                                    Height="42">
+                                    <TextBlock x:Name="ItemIndex"
+                                               Text="{CompiledBinding SortIndex}"
+                                               Foreground="{StaticResource NeutralTranslucentStrongBrush}"
+                                               Theme="{StaticResource BodyMDBoldTheme}"
+                                               HorizontalAlignment="Center" />
+                                </Border>
+                                <controls:StandardButton x:Name="DownButton"
+                                                         Command="{CompiledBinding MoveUp}"
+                                                         LeftIcon="{x:Static icons:IconValues.ArrowDown}"
+                                                         ShowIcon="IconOnly"
+                                                         Size="Medium"
+                                                         Type="Tertiary"
+                                                         Fill="None" />
+                                <Border
+                                    Background="{StaticResource SurfaceTranslucentMidBrush}"
+                                    Width="1" 
+                                    Height="42"/>
+                            </StackPanel>
+                    </DataTemplate>
+
+                    <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
+                                  DataType="sorting:ILoadOrderItemModel">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="ItemName"
+                                       Text="{CompiledBinding DisplayName}" />
+                        </StackPanel>
+                    </DataTemplate>
+
+                </TreeDataGrid.Resources>
+
+            </TreeDataGrid>
+        </Grid>
+
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>

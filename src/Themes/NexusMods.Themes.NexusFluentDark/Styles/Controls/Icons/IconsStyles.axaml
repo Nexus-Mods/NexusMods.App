@@ -517,5 +517,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.CheckCircleOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.CheckCircleOutline}"/>
+    </Style>  
+    <Style Selector="icons|UnifiedIcon.Trophy">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Trophy}"/>
     </Style>
 </Styles>

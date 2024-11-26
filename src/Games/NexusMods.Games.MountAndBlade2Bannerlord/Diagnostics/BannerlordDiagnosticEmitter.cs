@@ -40,7 +40,12 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
         foreach (var module in modulesAndMods)
         {
             var mod = module.Item1;
-            var isEnabled = mod.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
+            var loadoutItem = mod.AsLoadoutItemGroup().AsLoadoutItem();
+            
+            // Note(sewer): We create a LoadoutItemGroup for each module, which is a child of the one
+            //              used for the archive. Since in theory the item can be disabled at any level
+            //              in the tree, we need to check if the parent is disabled.
+            var isEnabled = loadoutItem.IsEnabled();
             isEnabledDict[module.Item2] = isEnabled;
         }
         
@@ -58,6 +63,9 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
         foreach (var moduleAndMod in isEnabledDict)
         {
             var moduleInfo = moduleAndMod.Key;
+            if (!moduleAndMod.Value)
+                continue;
+
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
             foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x, isBlseInstalled)))

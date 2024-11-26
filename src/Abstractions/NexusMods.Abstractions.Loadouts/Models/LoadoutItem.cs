@@ -35,4 +35,13 @@ public partial class LoadoutItem : IModelDefinition
     /// Optional parent of the item.
     /// </summary>
     public static readonly ReferenceAttribute<LoadoutItemGroup> Parent = new(Namespace, nameof(Parent)) { IsIndexed = true, IsOptional = true };
+
+    [PublicAPI]
+    public partial struct ReadOnly
+    {
+        /// <summary>
+        /// True if this item contains a parent, else false.
+        /// </summary>
+        public bool HasParent() => this.Contains(LoadoutItem.Parent);
+    }
 }
