@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -46,9 +47,10 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         IsWinnerTop = itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins && 
                       SortDirectionCurrent == ListSortDirection.Ascending;
         InfoAlertIsVisible = true;
-
         
-        Adapter = new LoadOrderTreeDataGridAdapter(provider);
+        
+        var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent);
+        Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable);
         Adapter.ViewHierarchical.Value = true;
 
         this.WhenActivated(d =>
@@ -56,6 +58,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 Adapter.Activate();
                 Disposable.Create(() => Adapter.Deactivate())
                     .DisposeWith(d);
+                
             }
         );
     }
@@ -64,17 +67,34 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemModel, Guid>
 {
     private ILoadoutSortableItemProvider _sortableItemsProvider;
+    private IObservable<ListSortDirection> _sortDirectionObservable;
 
-    public LoadOrderTreeDataGridAdapter(ILoadoutSortableItemProvider sortableItemsProvider)
+    public LoadOrderTreeDataGridAdapter(ILoadoutSortableItemProvider sortableItemsProvider, IObservable<ListSortDirection> sortDirectionObservable)
     {
         _sortableItemsProvider = sortableItemsProvider;
+        _sortDirectionObservable = sortDirectionObservable;
     }
 
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
     {
-        return _sortableItemsProvider.SortableItems
-            .ToObservableChangeSet(item => item.ItemId)
-            .Transform(item => (ILoadOrderItemModel)new LoadOrderItemModel(item));
+        var sortableItems = _sortableItemsProvider.SortableItems
+            .ToObservableChangeSet(item => item.ItemId);
+        
+        var ascendingSortableItems = sortableItems
+            .ToSortedCollection(item => item.SortIndex, SortDirection.Ascending)
+            .ToObservableChangeSet(item => item.ItemId);
+        
+        var descendingSortableItems = sortableItems
+            .ToSortedCollection(item => item.SortIndex, SortDirection.Descending)
+            .ToObservableChangeSet(item => item.ItemId);
+        
+        // Sort the items based on SortDirection
+        var sortedItems = _sortDirectionObservable
+            .Select(direction => direction == ListSortDirection.Ascending ? ascendingSortableItems : descendingSortableItems)
+            .Switch()
+            .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(item));
+
+        return sortedItems;
     }
 
     protected override IColumn<ILoadOrderItemModel>[] CreateColumns(bool viewHierarchical)
