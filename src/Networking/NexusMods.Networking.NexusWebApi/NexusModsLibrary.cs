@@ -177,9 +177,9 @@ public partial class NexusModsLibrary
     {
         var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
         var file = await GetOrAddFile(fileId, modPage, cancellationToken);
-        
+
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
-        
+
         var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
@@ -191,7 +191,12 @@ public partial class NexusModsLibrary
         NexusModsFileMetadata.ReadOnly fileMetadata,
         CancellationToken cancellationToken = default)
     {
-        return await CreateDownloadJob(destination, fileMetadata.Uid.GameId, fileMetadata.ModPage.Uid.ModId, fileMetadata.Uid.FileId, cancellationToken: cancellationToken);
+        var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
+
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, fileMetadata.ModPage.GetUri(), destination);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
+
+        return nexusJob;
     }
 
     /// <summary>

@@ -78,6 +78,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         var isInLibraryObservable = _connection
             .ObserveDatoms(NexusModsLibraryItem.FileMetadata, nexusModsDownload.FileMetadata)
             .Transform(datom => LibraryFile.Hash.IsIn(_connection.Db, datom.E))
+            .FilterImmutable(static hasHash => hasHash)
             .IsNotEmpty()
             .ToObservable()
             .Prepend((_connection, nexusModsDownload.FileMetadata), static state =>
@@ -130,7 +131,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         var isInLibraryObservable = _connection
             .ObserveDatoms(DirectDownloadLibraryFile.Md5)
             .Transform(datom => DirectDownloadLibraryFile.Md5.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver))
-            .Filter(hash => hash == externalDownload.Md5)
+            .FilterImmutable(hash => hash == externalDownload.Md5)
             .IsNotEmpty()
             .ToObservable()
             .Prepend((_connection, externalDownload.Md5), static state =>
