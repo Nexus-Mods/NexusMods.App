@@ -5,6 +5,8 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
+
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
 /// <summary>
@@ -44,10 +46,10 @@ public class BLSEInstaller : ALibraryArchiveInstaller
         LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var store = loadout.InstallationInstance.Store;
-        var installDir = store == GameStore.XboxGamePass ? "bin/Gaming.Desktop.x64_Shipping_Client" : "bin/Win64_Shipping_Client";
+        var installDir = store == GameStore.XboxGamePass ? (RelativePath)"bin/Gaming.Desktop.x64_Shipping_Client" : (RelativePath)"bin/Win64_Shipping_Client";
 
         // Check if we are BLSE, we'll do a simple file check to determine this.
-        var hasBlseLauncher = libraryArchive.Children.Any(x => x.Path.StartsWith(Path.Combine(installDir, "Bannerlord.BLSE.Launcher.exe")));
+        var hasBlseLauncher = libraryArchive.Children.Any(x => x.Path.StartsWith(installDir/"Bannerlord.BLSE.Launcher.exe"));
         if (!hasBlseLauncher) return ValueTask.FromResult((InstallerResult)(new NotSupported()));
         
         // This is the group which contains the files for BLSE.
