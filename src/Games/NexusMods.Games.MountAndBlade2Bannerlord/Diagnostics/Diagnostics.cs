@@ -869,4 +869,24 @@ Looking at `{ModName}`'s `SubModule.xml`:
             .AddValue<NamedLink>("BLSELink")
         )
         .Finish();
+    
+    [DiagnosticTemplate, UsedImplicitly]
+    internal static IDiagnosticTemplate MissingHarmonyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, 17))
+        .WithTitle("BLSE Requires Harmony which is not Installed")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("'Bannerlord Software Extender' (BLSE) requires 'Harmony' which is not installed")
+        .WithDetails("""
+'Bannerlord Software Extender' requires 'Harmony' to function, however 'Harmony' is not installed.
+
+### How to Resolve
+1. Download and install {HarmonyLink}
+2. Enable Harmony
+"""
+        )
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("HarmonyLink")
+        )
+        .Finish();
 }

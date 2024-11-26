@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
@@ -19,6 +20,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private static NamedLink _blseLink = new("Bannerlord Software Extender", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/1"));
+    private static NamedLink _harmonyLink = new("Harmony", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/2006"));
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
 
@@ -38,7 +40,7 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
         foreach (var module in modulesAndMods)
         {
             var mod = module.Item1;
-            var isEnabled = !mod.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled;
+            var isEnabled = mod.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
             isEnabledDict[module.Item2] = isEnabled;
         }
         
@@ -47,9 +49,12 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
             isEnabledDict[module] = true;
         modulesOnly = modulesOnly.Concat(Hack.GetDummyBaseGameModules()).ToArray();
         // TODO: HACK. Pretend base game modules are installed before we can properly ingest them.
-        
+
         // Emit diagnostics
         var isBlseInstalled = loadout.IsBLSEInstalled();
+        if (isBlseInstalled && !IsHarmonyAvailable(modulesOnly, isEnabledDict))
+            yield return Diagnostics.CreateMissingHarmony(_harmonyLink);
+
         foreach (var moduleAndMod in isEnabledDict)
         {
             var moduleInfo = moduleAndMod.Key;
@@ -220,5 +225,11 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
                          "which is not handled on our end in a switch statement.\n" +
                          "Issue text is below: {Issue}", issue);
         return null;
+    }
+
+    private bool IsHarmonyAvailable(ModuleInfoExtended[] modulesOnly, Dictionary<ModuleInfoExtended, bool> isEnabledDict)
+    {
+        var harmonyModule = modulesOnly.FirstOrDefault(x => x.Id == "Bannerlord.Harmony");
+        return harmonyModule != default(ModuleInfoExtended?) && isEnabledDict[harmonyModule];
     }
 }
