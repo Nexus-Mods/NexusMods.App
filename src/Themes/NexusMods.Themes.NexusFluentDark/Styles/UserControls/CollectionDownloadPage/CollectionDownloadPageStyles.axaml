@@ -3,6 +3,7 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    
     <Design.PreviewWith>
         <Border Width="800" Height="500">
             <Border.Resources>
@@ -22,22 +23,18 @@
         </Style.Resources>
 
         <Style Selector="^ DockPanel#Body">
-
             <Style Selector="^ Border#HeaderBorderBackground">
-
                 <Style Selector="^ Border#HeaderBorder">
                     <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="24,24,24,16" />
                     <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
-
-
-                    <Style Selector="^ StackPanel#Header">
-
-                        <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
+                    
+                    <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
                     it's working, as things are aligned correctly, but the background is not being applied correctly. 
                     After chatting with @Al12rs, we are leaving this for now as we can't fully test this (yet) and we
                     don't want to add extra layout code for no reason -->
-
+                    
+                    <Style Selector="^ StackPanel#Header">
                         <Style Selector="^ Border#MainContentBorder">
                             <!-- <Setter Property="Background" Value="DarkGoldenrod" /> -->
                             <Setter Property="Padding" Value="0, 0, 0, 24" />
