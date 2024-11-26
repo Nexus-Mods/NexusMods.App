@@ -14,18 +14,11 @@
     </Design.DataContext>
 
     <controls:EmptyState x:Name="EmptyState"
-                         Header="{Binding EmptyStateMessageTitle}"
-                         IsActive="True">
+                         Header="{Binding EmptyStateMessageTitle}">
 
         <controls:EmptyState.Subtitle>
             <TextBlock Text="{Binding EmptyStateMessageContents}" />
         </controls:EmptyState.Subtitle>
-
-        <controls:EmptyState.Styles>
-            <Style Selector="TextBlock#Header">
-                <Setter Property="Foreground" Value="Red" />
-            </Style>
-        </controls:EmptyState.Styles>
 
         <Grid RowDefinitions="Auto, Auto, *">
             <Border Grid.Row="0" Classes="Toolbar">
