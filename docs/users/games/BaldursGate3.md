@@ -8,16 +8,16 @@ In addition to basic mod management features, players also benefit from these de
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
 Diagnostics are shown in the following situations: 
+
 - A mod is installed and requires another mod which is not installed or enabled. This check uses the meta.lsx file inside the PAK. 
+- A mod is installed which requires BG3 Script Extender but it is not installed.
+- On Linux, BG3 Script Extender is installed via WINE but the WINE DLL Override setting is not set to allow the correct DLL file to be used.
 
 ### Selective Game Backup
 When managing Baldur's Gate 3 the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 
 ## Compatibility
-!!! warning "Launch options for the GOG version"
-    In 0.6.2 pressing the play button in the app will always launch the Vulkan version of the game. To play the DX11 version please launch the game through GOG Galaxy (Windows), Heroic Launcher (Linux) or via `bin\bg3_dx11.exe`. 
-
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
 
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
