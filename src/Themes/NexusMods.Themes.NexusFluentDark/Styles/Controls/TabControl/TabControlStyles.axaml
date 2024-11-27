@@ -18,16 +18,17 @@
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Optional" />
                                 <Border>
-                                    <TextBlock x:Name="OptionalDownloadsCount" Text="123" />
+                                    <TextBlock Text="123" />
                                 </Border>
                             </StackPanel>
                         </TabItem.Header>
                         <TextBlock Text="Content for Tab 4" />
                     </TabItem>
                 </TabControl>
+                
                 <TextBlock Text="TabControl (Subtabs)" />
                 <TabControl Classes="Subtabs">
                     <TabItem Header="Tab 1">
@@ -39,15 +40,31 @@
                     <TabItem Header="Tab 3">
                         <TextBlock Text="Content for Tab 3" />
                     </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Optional" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <TextBlock Text="Content for Tab 4" />
+                    </TabItem>
+                </TabControl>
+                
+                <TextBlock Text="TabControl (Subtabs, Single item)" />
+                <TabControl Classes="Subtabs">
+                    <TabItem Header="Tab 1">
+                        <TextBlock Text="Content for Tab 1" />
+                    </TabItem>
                 </TabControl>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <Style Selector="TabControl">
+        
         <!-- <Setter Property="ClipToBounds" Value="False" /> -->
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="8" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         <!-- <Setter Property="HorizontalAlignment" Value="Stretch" /> -->
@@ -133,16 +150,31 @@
         <!-- subtabs -->
 
         <Style Selector="^.Subtabs">
+            
+            <!-- content padding -->
+            <Setter Property="Padding" Value="0,0" />
+            
+            <!-- header padding -->
+            <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
+                <Setter Property="Margin" Value="24,8" />
+            </Style>
 
-            <!-- <Setter Property="Padding" Value="0,24,0,12" /> -->
-
+            
             <Style Selector="^ TabItem">
-                <Setter Property="Padding" Value="12,0,12,0" />
+                <Setter Property="Padding" Value="12,0" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
                 <Setter Property="CornerRadius" Value="0" />
                 <Setter Property="MinHeight" Value="28" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                
+                <!-- this is our primary way with custom header -->
+                <Style Selector="^ > StackPanel">
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                    </Style>
+                </Style>
 
                 <!-- hide the underline element -->
                 <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
@@ -163,7 +195,12 @@
                 <Style Selector="^:nth-last-child(1)">
                     <Setter Property="CornerRadius" Value="0,4,4,0" />
                 </Style>
-
+                
+                <!-- both first and last child (single item, rounded all corners) -->
+                <Style Selector="^:nth-child(1):nth-last-child(1)">
+                    <Setter Property="CornerRadius" Value="4" />
+                </Style>
+                
                 <!-- selected state -->
                 <!--  We don't use selector to PART_LayoutRoot, so developer can override selected item background with TabStripItem.Background  -->
                 <Style Selector="^:selected">
@@ -172,6 +209,13 @@
                     
                     <Style Selector="^ /template/ Border#PART_LayoutRoot">
                         <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                    </Style>
+                    
+                    <Style Selector="^ > StackPanel">
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                        <Style Selector="^ > TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                        </Style>
                     </Style>
                 </Style>
 

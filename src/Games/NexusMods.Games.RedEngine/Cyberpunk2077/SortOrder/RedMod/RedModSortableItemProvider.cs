@@ -378,7 +378,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private static bool RedModIsEnabled(RedModLoadoutGroup.ReadOnly grp)
     {
-        return !grp.AsLoadoutItemGroup().AsLoadoutItem().GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
+        return grp.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
     }
 
     private static RelativePath RedModFolder(RedModLoadoutGroup.ReadOnly group)
