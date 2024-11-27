@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
@@ -51,6 +52,18 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                 this.OneWayBind(ViewModel, 
                         vm => vm.Adapter.IsSourceEmpty.Value, 
                         view => view.EmptyState.IsActive)
+                    .DisposeWith(disposables);
+                
+                // SortDirection -> ComboBox
+                this.WhenAnyValue(view  => view.ViewModel!.SortDirectionCurrent)
+                    .Select(sortDirection => sortDirection == ListSortDirection.Ascending ? 0 : 1)
+                    .BindToView(this, view => view.SortDirectionComboBox.SelectedIndex)
+                    .DisposeWith(disposables);
+                
+                // ComboBox -> SortDirection
+                this.WhenAnyValue(view => view.SortDirectionComboBox.SelectedIndex)
+                    .Select(index => index == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending)
+                    .BindTo(ViewModel, vm => vm.SortDirectionCurrent)
                     .DisposeWith(disposables);
             }
         );

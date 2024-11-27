@@ -23,15 +23,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <Border Grid.Row="0" Classes="Toolbar">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <ComboBox SelectedIndex="0" Classes="Secondary">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sort}" Size="20" />
-                                    <TextBlock Text="Ascending (1st top)" Theme="{StaticResource BodyMDNormalTheme}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
+                    <ComboBox x:Name="SortDirectionComboBox" SelectedIndex="0" Classes="Secondary">
                         <ComboBoxItem>
                             <StackPanel Orientation="Horizontal">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortAscending}" Size="20" />
