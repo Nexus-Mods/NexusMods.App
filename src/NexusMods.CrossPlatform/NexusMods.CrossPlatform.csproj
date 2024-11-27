@@ -57,6 +57,12 @@
         <Compile Update="Process\ProtontricksFlatpakDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
         </Compile>
+        <Compile Update="Process\IProtontricksDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\AggregateProtontricksDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
         <Compile Update="Process\AggregateExecutableRuntimeDependency.cs">
             <DependentUpon>IRuntimeDependency.cs</DependentUpon>
         </Compile>

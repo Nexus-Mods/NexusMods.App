@@ -7,7 +7,7 @@ namespace NexusMods.CrossPlatform.Process;
 ///     This implementation specifically targets the Flatpak version of Protontricks,
 ///     commonly found on Steam Deck (SteamOS) and other Linux distributions.
 /// </summary>
-public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency
+public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency, IProtontricksDependency
 {
     private const string FlatpakPackageId = "com.github.Matoking.protontricks";
 
@@ -39,15 +39,12 @@ public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency
     /// Transforms an existing command into a command which invokes the Flatpak version of
     /// protontricks-launch with the original command as the target.
     /// </summary>
-    public Command MakeLaunchCommand(Command command, long appId)
+    public ValueTask<Command> MakeLaunchCommand(Command command, long appId)
     {
-        // Escape the original command and arguments for use within flatpak
-        var escapedCommand = $"\"{command.TargetFilePath}\" {command.Arguments}".Replace("\"", "\\\"");
-        var args = $"run {FlatpakPackageId} protontricks-launch --appid {appId} {escapedCommand}";
-        
-        return new Command("flatpak", args,
+        var args = $"run --command=protontricks-launch {FlatpakPackageId} --appid {appId} \"{command.TargetFilePath}\" {command.Arguments}";
+        return ValueTask.FromResult(new Command("flatpak", args,
             command.WorkingDirPath, command.Credentials, command.EnvironmentVariables,
-            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe);
+            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe));
     }
 
     /// <summary>

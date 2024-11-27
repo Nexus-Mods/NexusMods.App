@@ -12,7 +12,7 @@ namespace NexusMods.CrossPlatform.Process;
 /// it means that `protontricks` was incorrectly packaged by the package maintainer
 /// for a specific repo.
 /// </remarks>
-public class ProtontricksNativeDependency : ExecutableRuntimeDependency
+public class ProtontricksNativeDependency : ExecutableRuntimeDependency, IProtontricksDependency
 {
     /// <inheritdoc />
     public override string DisplayName => "protontricks";
@@ -78,11 +78,11 @@ public class ProtontricksNativeDependency : ExecutableRuntimeDependency
     /// Transforms an existing command into a command which invoked `protontricks-launch` with the original command
     /// as the target.
     /// </summary>
-    public Command MakeLaunchCommand(Command command, long appId)
+    public ValueTask<Command> MakeLaunchCommand(Command command, long appId)
     {
         var args = $"--appid {appId} \"{command.TargetFilePath}\" {command.Arguments}";
-        return new Command("protontricks-launch", args, 
+        return ValueTask.FromResult(new Command("protontricks-launch", args, 
             command.WorkingDirPath, command.Credentials, command.EnvironmentVariables, 
-            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe);
+            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe));
     }
 }

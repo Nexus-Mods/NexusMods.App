@@ -52,8 +52,8 @@ public static class Services
             // Running Games/Tools
             services.AddSingleton<ProtontricksNativeDependency>();
             services.AddSingleton<ProtontricksFlatpakDependency>();
-            services.AddSingleton<IRuntimeDependency, ProtontricksNativeDependency>();
-            services.AddSingleton<IRuntimeDependency, ProtontricksFlatpakDependency>();
+            services.AddSingleton<AggregateProtontricksDependency>();
+            services.AddSingleton<IRuntimeDependency, AggregateProtontricksDependency>();
         }
 
         return services.AddHostedService<RuntimeDependencyChecker>();
