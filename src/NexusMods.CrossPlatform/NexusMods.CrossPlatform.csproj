@@ -45,7 +45,7 @@
       <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
-        <Compile Update="Process\ProtontricksDependency.cs">
+        <Compile Update="Process\ProtontricksNativeDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
         </Compile>
         <Compile Update="Process\XDGOpenDependency.cs">
@@ -53,6 +53,12 @@
         </Compile>
         <Compile Update="Process\XDGSettingsDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\ProtontricksFlatpakDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\AggregateExecutableRuntimeDependency.cs">
+            <DependentUpon>IRuntimeDependency.cs</DependentUpon>
         </Compile>
         <Compile Update="Process\ExecutableRuntimeDependency.cs">
             <DependentUpon>IRuntimeDependency.cs</DependentUpon>

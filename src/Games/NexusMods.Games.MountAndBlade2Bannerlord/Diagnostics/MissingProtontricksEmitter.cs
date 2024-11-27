@@ -15,10 +15,10 @@ public partial class MissingProtontricksEmitter : ILoadoutDiagnosticEmitter
     /// <summary>
     /// This will be null on non-Linux OSes.
     /// </summary>
-    private ProtontricksDependency? _protontricksDependency;
+    private ProtontricksNativeDependency? _protontricksDependency;
     
     /// <summary/>
-    public MissingProtontricksEmitter(IServiceProvider serviceProvider) => _protontricksDependency = serviceProvider.GetService<ProtontricksDependency>();
+    public MissingProtontricksEmitter(IServiceProvider serviceProvider) => _protontricksDependency = serviceProvider.GetService<ProtontricksNativeDependency>();
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(
         Loadout.ReadOnly loadout,

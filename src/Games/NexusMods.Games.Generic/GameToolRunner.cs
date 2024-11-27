@@ -21,13 +21,13 @@ namespace NexusMods.Games.Generic;
 public class GameToolRunner
 {
     private readonly IProcessFactory _processFactory;
-    private readonly ProtontricksDependency? _protontricks;
+    private readonly ProtontricksNativeDependency? _protontricks;
 
     /// <summary/>
     public GameToolRunner(IServiceProvider provider)
     {
         _processFactory = provider.GetRequiredService<IProcessFactory>();
-        _protontricks = provider.GetService<ProtontricksDependency>();
+        _protontricks = provider.GetService<ProtontricksNativeDependency>();
     }
 
     /// <summary>

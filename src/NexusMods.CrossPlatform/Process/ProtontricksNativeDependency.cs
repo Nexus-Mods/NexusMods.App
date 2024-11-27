@@ -2,14 +2,17 @@ using System.Runtime.InteropServices;
 using CliWrap;
 namespace NexusMods.CrossPlatform.Process;
 
-/// <inheritdoc />
+/// <summary>
+///     Protontricks is a tool that helps manage Proton games and their dependencies.
+///     This works with the native version of Protontricks.
+/// </summary>
 /// <remarks>
 /// There is an implicit assumption made here that if `protontricks` is installed,
 /// then `protontricks-launch` is also available. Should it not be available, then
 /// it means that `protontricks` was incorrectly packaged by the package maintainer
 /// for a specific repo.
 /// </remarks>
-public class ProtontricksDependency : ExecutableRuntimeDependency
+public class ProtontricksNativeDependency : ExecutableRuntimeDependency
 {
     /// <inheritdoc />
     public override string DisplayName => "protontricks";
@@ -19,16 +22,21 @@ public class ProtontricksDependency : ExecutableRuntimeDependency
     public override Uri Homepage { get; } = new("https://github.com/Matoking/protontricks");
     /// <inheritdoc />
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
-    
-    public ProtontricksDependency(IProcessFactory processFactory) : base(processFactory) { }
 
+    /// <inheritdoc />
+    public ProtontricksNativeDependency(IProcessFactory processFactory) : base(processFactory) { }
+
+    /// <inheritdoc />
     protected override Command BuildQueryCommand(PipeTarget outputPipeTarget)
     {
         var command = Cli.Wrap("protontricks").WithArguments("--version").WithStandardOutputPipe(outputPipeTarget);
         return command;
     }
 
-    protected override RuntimeDependencyInformation ToInformation(ReadOnlySpan<char> output)
+    /// <inheritdoc />
+    protected override RuntimeDependencyInformation ToInformation(ReadOnlySpan<char> output) => ToInformationImpl(output);
+
+    internal static RuntimeDependencyInformation ToInformationImpl(ReadOnlySpan<char> output)
     {
         if (TryParseVersion(output, out var rawVersion, out var version))
         {
