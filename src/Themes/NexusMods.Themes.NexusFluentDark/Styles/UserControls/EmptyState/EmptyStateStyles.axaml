@@ -52,15 +52,14 @@
                     <Setter Property="Orientation" Value="Horizontal" />
                     <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                     <Setter Property="HorizontalAlignment" Value="Center" />
-
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-                        <Setter Property="HorizontalAlignment" Value="Center" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
-                        <Setter Property="TextWrapping" Value="Wrap" />
-                        <Setter Property="TextAlignment" Value="Center" />
-                    </Style>
+                </Style>
+                
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
                 </Style>
             </Style>
         </Style>

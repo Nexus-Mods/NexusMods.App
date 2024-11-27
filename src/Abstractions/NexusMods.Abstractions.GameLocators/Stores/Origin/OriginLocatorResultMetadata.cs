@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.Origin;
 
-namespace NexusMods.Abstractions.Games.Stores.Origin;
+namespace NexusMods.Abstractions.GameLocators.Stores.Origin;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="IOriginGame"/>.

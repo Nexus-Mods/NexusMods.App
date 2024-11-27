@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.App;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.Migrations.Tests;
+namespace NexusMods.DataModel.SchemaVersions.Tests;
 
 public class Startup
 {

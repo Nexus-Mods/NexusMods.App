@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

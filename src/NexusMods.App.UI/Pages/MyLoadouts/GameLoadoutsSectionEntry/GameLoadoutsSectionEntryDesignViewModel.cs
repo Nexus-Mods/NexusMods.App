@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using ReactiveUI;
 

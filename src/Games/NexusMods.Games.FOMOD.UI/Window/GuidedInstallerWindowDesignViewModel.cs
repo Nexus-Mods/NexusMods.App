@@ -1,4 +1,5 @@
 using System.Reactive;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
 using ReactiveUI;
 

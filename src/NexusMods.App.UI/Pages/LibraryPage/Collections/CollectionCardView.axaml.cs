@@ -28,19 +28,22 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
             this.OneWayBind(ViewModel, vm => vm.Summary, view => view.SummaryText.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.ModCount, view => view.ModCount.Text)
+            this.OneWayBind(ViewModel, vm => vm.NumDownloads, view => view.NumDownloads.Text)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.Downloads.Text)
+            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.OverallRating, view => view.OverallRating.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.IsAdult, view => view.AdultStackPanel.IsVisible)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.AuthorName, view => view.AuthorName.Text)
@@ -50,6 +53,19 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.OpenCollectionDownloadPageCommand, view => view.DownloadButton)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.OverallRating)
+                .Select(rating =>
+                {
+                    return rating.Value switch
+                    {
+                        >= 0.75 => "HighRating",
+                        >= 0.5 => "MidRating",
+                        _ => "LowRating",
+                    };
+                })
+                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
                 .DisposeWith(d);
         });
     }

@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.App.UI;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace Examples.TreeDataGrid.Basic.ViewModel;

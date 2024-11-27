@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `RealisticWeather` -->
+    <Id value="RealisticWeather"/>
+    <Name value="Realistic Weather"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ `Harmony` must load before this mod -->
+        <DependedModuleMetadata id="Harmony" order="LoadBeforeThis" />
+    </DependedModuleMetadatas>
+</Module>

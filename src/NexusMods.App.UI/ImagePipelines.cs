@@ -18,9 +18,11 @@ internal static class ImagePipelines
     private const byte ImagePartitionId = 10;
     private const string CollectionTileImagePipelineKey = nameof(CollectionTileImagePipelineKey);
     private const string CollectionBackgroundImagePipelineKey = nameof(CollectionBackgroundImagePipelineKey);
+    private const string UserAvatarPipelineKey = nameof(UserAvatarPipelineKey);
 
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
     private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
+    private static readonly Bitmap UserAvatarFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
 
     public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
     {
@@ -35,6 +37,12 @@ internal static class ImagePipelines
     {
         return serviceCollection
             .AddKeyedSingleton<IResourceLoader<EntityId, Bitmap>>(
+                serviceKey: UserAvatarPipelineKey,
+                implementationFactory: static (serviceProvider, _) => CreateUserAvatarPipeline(
+                    connection: serviceProvider.GetRequiredService<IConnection>()
+                )
+            )
+            .AddKeyedSingleton<IResourceLoader<EntityId, Bitmap>>(
                 serviceKey: CollectionTileImagePipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateCollectionTileImagePipeline(
                     connection: serviceProvider.GetRequiredService<IConnection>()
@@ -48,6 +56,11 @@ internal static class ImagePipelines
             );
     }
 
+    public static IResourceLoader<EntityId, Bitmap> GetUserAvatarPipeline(IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: UserAvatarPipelineKey);
+    }
+
     public static IResourceLoader<EntityId, Bitmap> GetCollectionTileImagePipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: CollectionTileImagePipelineKey);
@@ -56,6 +69,27 @@ internal static class ImagePipelines
     public static IResourceLoader<EntityId, Bitmap> GetCollectionBackgroundImagePipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: CollectionBackgroundImagePipelineKey);
+    }
+
+    private static IResourceLoader<EntityId, Bitmap> CreateUserAvatarPipeline(IConnection connection)
+    {
+        var pipeline = new HttpLoader(new HttpClient())
+            .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
+            .PersistInDb(
+                connection: connection,
+                referenceAttribute: User.AvatarResource,
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
+                partitionId: PartitionId.User(ImagePartitionId)
+            )
+            .Decode(decoderType: DecoderType.Skia)
+            .ToAvaloniaBitmap()
+            .UseFallbackValue(UserAvatarFallback)
+            .EntityIdToIdentifier(
+                connection: connection,
+                attribute: User.AvatarUri
+            );
+
+        return pipeline;
     }
 
     private static IResourceLoader<EntityId, Bitmap> CreateCollectionTileImagePipeline(

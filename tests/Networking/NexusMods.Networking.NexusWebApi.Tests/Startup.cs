@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
@@ -22,6 +23,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddSerializationAbstractions()
             .AddFileSystem()
             .AddSettingsManager()
             .AddSingleton<HttpClient>()

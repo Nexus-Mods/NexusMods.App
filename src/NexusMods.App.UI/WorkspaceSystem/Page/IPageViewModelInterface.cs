@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 using NexusMods.Icons;
 

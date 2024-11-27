@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI;
+﻿using NexusMods.Abstractions.UI;
+
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 /// <summary>
 /// View model for the Advanced Installer page containing the main body and the footer.

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using OneOf;

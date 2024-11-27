@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;

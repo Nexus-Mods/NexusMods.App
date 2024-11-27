@@ -29,6 +29,8 @@
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/SortOrderStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>

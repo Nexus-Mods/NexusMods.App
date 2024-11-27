@@ -1,10 +1,7 @@
-using System.Reactive;
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.Icons;
-using ReactiveUI;
+using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget;
 

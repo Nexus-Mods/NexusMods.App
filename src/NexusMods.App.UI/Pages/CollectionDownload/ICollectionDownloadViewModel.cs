@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -8,80 +9,84 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
-    public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
+    CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
-    /// <summary>
-    /// Name of the collection
-    /// </summary>
-    public string Name { get; }
-    
-    /// <summary>
-    /// The collection's slug
-    /// </summary>
-    public CollectionSlug Slug { get; }
-    
+    /// <inheritdoc cref="CollectionMetadata.Name"/>
+    string Name { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Summary"/>
+    string Summary { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Category"/>
+    string Category { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.Endorsements"/>
+    ulong EndorsementCount { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.TotalDownloads"/>
+    ulong TotalDownloads { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.TotalSize"/>
+    Size TotalSize { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.OverallRating"/>
+    Percent OverallRating { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.IsAdult"/>
+    bool IsAdult { get; }
+
     /// <summary>
     /// The collection's revision number
     /// </summary>
-    public RevisionNumber RevisionNumber { get; }
-    
+    RevisionNumber RevisionNumber { get; }
+
     /// <summary>
-    /// Name of the author of the collection
+    /// The name of the author of the collection.
     /// </summary>
-    public string AuthorName { get; }
-    
+    string AuthorName { get; }
+
     /// <summary>
-    /// The summary (short description) of the collection
+    /// The author's avatar.
     /// </summary>
-    public string Summary { get; }
-    
+    Bitmap? AuthorAvatar { get; }
+
     /// <summary>
-    /// Total number of mods in the collection
+    /// Download count.
     /// </summary>
-    public int ModCount { get; }
-    
+    int DownloadCount => RequiredDownloadsCount + OptionalDownloadsCount;
+
     /// <summary>
-    /// The number of required mods in the collection
+    /// The number of required downloads in the collection
     /// </summary>
-    public int RequiredModCount { get; }
-    
+    int RequiredDownloadsCount { get; }
+
     /// <summary>
-    /// The number of optional mods in the collection
+    /// The number of optional downloads in the collection
     /// </summary>
-    public int OptionalModCount { get; }
-    
+    int OptionalDownloadsCount { get; }
+
     /// <summary>
-    /// The number of endorsements the collection has
+    /// The small tile image of the collection
     /// </summary>
-    public ulong EndorsementCount { get; }
-    
-    /// <summary>
-    /// The number of downloads the collection has
-    /// </summary>
-    public ulong DownloadCount { get; }
-    
-    /// <summary>
-    /// The size of the collection including all downloads and the collection file iteself
-    /// </summary>
-    public Size TotalSize { get; }
-    
-    /// <summary>
-    /// The overall approval rating of the collection
-    /// </summary>
-    public Percent OverallRating { get; }
-    
-    /// <summary>
-    /// The small tileable image of the collection
-    /// </summary>
-    public Bitmap? TileImage { get; }
-    
+    Bitmap? TileImage { get; }
+
     /// <summary>
     /// The background banner image of the collection
     /// </summary>
-    public Bitmap? BackgroundImage { get; }
-    
+    Bitmap? BackgroundImage { get; }
+
     /// <summary>
-    /// A text representation of the collection's status, such as "Downloading", "Installing", "Ready to Play", etc.
+    /// Collection status text.
     /// </summary>
-    public string CollectionStatusText { get; }
+    string CollectionStatusText { get; }
+
+    /// <summary>
+    /// Command to download all downloads.
+    /// </summary>
+    R3.ReactiveCommand<R3.Unit> DownloadAllCommand { get; }
+
+    /// <summary>
+    /// Command to install the collection.
+    /// </summary>
+    R3.ReactiveCommand<R3.Unit> InstallCollectionCommand { get; }
 }

@@ -2,6 +2,7 @@
 using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using ReactiveUI;

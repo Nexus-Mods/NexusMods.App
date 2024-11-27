@@ -27,13 +27,19 @@ public class LoginMessageBoxViewModel : AOverlayViewModel<ILoginMessageBoxViewMo
         CancelCommand = ReactiveCommand.Create(Close);
     }
 
+    public override void Close()
+    {
+        _settingsManager.Update<LoginSettings>(settings => settings with { HasShownModal = true });
+        base.Close();
+    }
+
     public ReactiveCommand<Unit, Unit> OkCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
     
     public bool MaybeShow()
     {
-        if (_settingsManager.Get<LoginSettings>().HasShownModal) return false;
-        _settingsManager.Update<LoginSettings>(settings => settings with { HasShownModal = true });
+        if (_settingsManager.Get<LoginSettings>().HasShownModal) 
+            return false;
         
         _overlayController.Enqueue(this);
         return true;

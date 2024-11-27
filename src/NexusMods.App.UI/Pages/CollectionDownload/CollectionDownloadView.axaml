@@ -8,7 +8,8 @@
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="1620" d:DesignHeight="600"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
@@ -47,100 +48,111 @@
         </MenuFlyout>
     </reactiveUi:ReactiveUserControl.Resources>
 
-    <panels:FlexPanel x:Name="Body">
+    <DockPanel x:Name="Body">
 
-        <Border x:Name="HeaderBorderBackground">
+        <!-- first row (header) -->
+        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
             <Border x:Name="HeaderBorder">
-                <panels:FlexPanel x:Name="Header">
 
+                <StackPanel x:Name="Header">
+
+                    <!-- first header row (image and metadata) -->
                     <Border x:Name="MainContentBorder">
-                        <panels:FlexPanel x:Name="MainContent">
+                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
 
-                            <Border x:Name="CollectionImageBorder">
+                            <!-- left column (image) -->
+                            <Border Grid.Column="0" x:Name="CollectionImageBorder">
                                 <Image x:Name="CollectionImage" />
                             </Border>
 
-                            <panels:FlexPanel x:Name="CollectionDetails">
-                                <TextBlock x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
-                                <TextBlock x:Name="Heading" />
-                                <Border x:Name="TagsPanelBorder">
-                                    <panels:FlexPanel x:Name="TagsPanel">
+                            <!-- right column (metadata) -->
+                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*"
+                                  ColumnDefinitions="Auto">
+                                <TextBlock Grid.Row="0" x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
+                                <TextBlock Grid.Row="1" x:Name="Heading" />
+                                <Border Grid.Row="2" x:Name="TagsPanelBorder">
+                                    <StackPanel x:Name="TagsPanel">
                                         <TextBlock x:Name="Revision" />
-                                        <TextBlock x:Name="AuthorName" />
-                                        <Border x:Name="AuthorAvatarBorder">
-                                            <Image x:Name="AuthorAvatar" />
-                                        </Border>
-                                    </panels:FlexPanel>
+                                        <StackPanel x:Name="AuthorStackPanel">
+                                            <Border x:Name="AuthorAvatarBorder">
+                                                <Image x:Name="AuthorAvatar" />
+                                            </Border>
+                                            <TextBlock x:Name="AuthorName" />
+                                        </StackPanel>
+                                    </StackPanel>
                                 </Border>
-                                <TextBlock x:Name="Summary" />
-                            </panels:FlexPanel>
+                                <TextBlock Grid.Row="3" x:Name="Summary" />
+                            </Grid>
 
-                        </panels:FlexPanel>
+                        </Grid>
                     </Border>
 
+                    <!-- second header row (stats) -->
                     <Border x:Name="StatsBorder">
-                        <panels:FlexPanel x:Name="Stats" IsVisible="True">
-                            <panels:FlexPanel x:Name="ModsPanel">
+                        <StackPanel x:Name="Stats" IsVisible="True">
+                            <StackPanel x:Name="ModsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                                <TextBlock x:Name="ModCount" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="EndorsementsPanel">
+                                <TextBlock x:Name="NumDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="EndorsementsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
                                 <TextBlock x:Name="Endorsements" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="DownloadsPanel">
+                            </StackPanel>
+                            <StackPanel x:Name="DownloadsPanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                <TextBlock x:Name="Downloads" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="TotalSizePanel">
+                                <TextBlock x:Name="TotalDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="TotalSizePanel">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
                                 <TextBlock x:Name="TotalSize" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="OverallRatingPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}" />
+                            </StackPanel>
+                            <StackPanel x:Name="OverallRatingPanel">
+                                <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                   Value="{x:Static icons:IconValues.CheckCircle}" />
                                 <TextBlock x:Name="OverallRating" />
-                            </panels:FlexPanel>
-                        </panels:FlexPanel>
+                            </StackPanel>
+                        </StackPanel>
                     </Border>
-                </panels:FlexPanel>
+                </StackPanel>
             </Border>
         </Border>
 
-        <Border x:Name="ListHeaderRowBorder">
+        <!-- second row (buttons) -->
+        <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
             <panels:FlexPanel x:Name="ListHeaderRow">
-                <TextBlock x:Name="CollectionStatusText"></TextBlock>
-                <Button x:Name="InstallButton">Install</Button>
-                <Button x:Name="DownloadAllButton">DownloadAll</Button>
-                <Button x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}">...</Button>
+                <TextBlock x:Name="CollectionStatusText" />
+                <controls:StandardButton x:Name="InstallButton" Text="Install" />
+                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All" />
+                <controls:StandardButton x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}"
+                                         Text="..." />
             </panels:FlexPanel>
         </Border>
 
-        <TabControl>
-            <TabItem>
+        <!-- third row (tab control and datagrid) -->
+        <TabControl x:Name="TabControl">
+            <TabItem x:Name="RequiredTab">
                 <TabItem.Header>
-                    <panels:FlexPanel x:Name="RequiredModsFlexPanel">
+                    <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
                         <TextBlock>Required</TextBlock>
                         <Border>
-                            <TextBlock x:Name="RequiredModsCount" />
+                            <TextBlock x:Name="RequiredDownloadsCount" />
                         </Border>
-                    </panels:FlexPanel>
+                    </StackPanel>
                 </TabItem.Header>
-
-                <TreeDataGrid x:Name="RequiredModsTree"/>
+                <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
-            <TabItem>
+            <TabItem x:Name="OptionalTab">
                 <TabItem.Header>
-                    <panels:FlexPanel x:Name="OptionalModsFlexPanel">
+                    <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
                         <TextBlock>Optional</TextBlock>
                         <Border>
-                            <TextBlock x:Name="OptionalModsCount" />
+                            <TextBlock x:Name="OptionalDownloadsCount" />
                         </Border>
-                    </panels:FlexPanel>
+                    </StackPanel>
                 </TabItem.Header>
-                <TreeDataGrid x:Name="OptionalModsTree"/>
+                <TreeDataGrid x:Name="OptionalDownloadsTree" />
             </TabItem>
         </TabControl>
-
-    </panels:FlexPanel>
+    </DockPanel>
 
 </reactiveUi:ReactiveUserControl>

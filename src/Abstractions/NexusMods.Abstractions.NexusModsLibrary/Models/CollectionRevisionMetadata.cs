@@ -1,8 +1,6 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -12,7 +10,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class CollectionRevisionMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsCollectionRevision";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionRevisionMetadata";
     
     /// <summary>
     /// The globally unique id identifying a specific revision of a collection.
@@ -32,15 +30,15 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// All the mod files in this revision.
     /// </summary>
-    public static readonly BackReferenceAttribute<CollectionRevisionModFile> Files = new(CollectionRevisionModFile.CollectionRevision);
-    
+    public static readonly BackReferenceAttribute<CollectionDownload> Downloads = new(CollectionDownload.CollectionRevision);
+
     /// <summary>
-    /// The number of downloads this revision has.
+    /// Whether the collection contains adult mods.
     /// </summary>
-    public static readonly ULongAttribute Downloads = new(Namespace, nameof(Downloads));
-    
+    public static readonly BooleanAttribute IsAdult = new(Namespace, nameof(IsAdult));
+
     /// <summary>
-    /// Total download size of all files in this revision, including the size of the revision's files.
+    /// Total download size according to external sources.
     /// </summary>
     public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
 
@@ -52,5 +50,5 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The total number of ratings this revision has.
     /// </summary>
-    public static readonly ULongAttribute TotalRatings = new(Namespace, nameof(TotalRatings));
+    public static readonly UInt64Attribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
 }

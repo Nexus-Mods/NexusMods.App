@@ -22,7 +22,7 @@ public sealed class AlertSettingsWrapper : ReactiveObject
     public AlertSettingsWrapper(ISettingsManager settingsManager, string key)
     {
         _settingsManager = settingsManager;
-
+        
         Key = key;
         IsDismissed = settingsManager.Get<AlertSettings>().IsDismissed(key);
     }
@@ -33,7 +33,17 @@ public sealed class AlertSettingsWrapper : ReactiveObject
 
         _settingsManager?.Update<AlertSettings>(alertSettings => alertSettings with
         {
-            AlertStatus = alertSettings.AlertStatus.SetItem(Key, true),
+            AlertStatus = alertSettings.AlertStatus.SetItem(Key, IsDismissed),
+        });
+    }
+    
+    public void ShowAlert()
+    {
+        IsDismissed = false;
+
+        _settingsManager?.Update<AlertSettings>(alertSettings => alertSettings with
+        {
+            AlertStatus = alertSettings.AlertStatus.SetItem(Key, IsDismissed),
         });
     }
 }

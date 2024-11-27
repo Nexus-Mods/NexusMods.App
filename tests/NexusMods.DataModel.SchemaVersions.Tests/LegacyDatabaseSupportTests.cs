@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -10,26 +11,37 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
-using Xunit;
 
-namespace NexusMods.DataModel.Migrations.Tests;
+namespace NexusMods.DataModel.SchemaVersions.Tests;
 
 public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFileManager tempManager, IFileExtractor extractor)
 {
+    private readonly SignatureChecker _zipSignatureChecker = new(FileType.ZIP);
+    
     [Theory]
     [MemberData(nameof(DatabaseNames))]
     public async Task TestDatabase(string name)
     {
-        var path = DatabaseFolder().Combine(name);
-        path.FileExists.Should().BeTrue();
-
+        var path = DatabaseFolder().Combine(name); 
+        path.FileExists.Should().BeTrue("the database file should exist");
+        
+        await using (var stream = path.Read())
+        {
+            var isZip = await _zipSignatureChecker.MatchesAnyAsync(stream);
+            isZip.Should().BeTrue("the database file should be a ZIP archive, you may need to pull the file from LFS (`git lfs pull`)");
+        }
+        
         await using var workingFolder = tempManager.CreateFolder();
         await extractor.ExtractAllAsync(path, workingFolder.Path);
-
+        
+        var datamodelFolder = workingFolder.Path.Combine("MnemonicDB.rocksdb");
+        datamodelFolder.DirectoryExists().Should().BeTrue("the extracted database folder should exist");
+        datamodelFolder.EnumerateFiles().Should().NotBeEmpty("the extracted database folder should contain files");
+        
         using var backend = new Backend();
         var settings = new DatomStoreSettings
         {
-            Path = workingFolder.Path.Combine("MnemonicDB.rocksdb"),
+            Path = datamodelFolder,
         };
         using var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, provider.GetServices<IAnalyzer>());

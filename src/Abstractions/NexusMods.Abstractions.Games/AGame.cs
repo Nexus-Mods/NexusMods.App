@@ -44,7 +44,13 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public abstract string Name { get; }
-    
+
+    /// <inheritdoc />
+    public abstract SupportType SupportType { get; }
+
+    /// <inheritdoc />
+    public virtual HashSet<FeatureStatus> Features { get; } = [];
+
     /// <inheritdoc />
     public abstract GameId GameId { get; }
 
@@ -63,7 +69,10 @@ public abstract class AGame : IGame
     public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
-    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
+    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
+
+    /// <inheritdoc/>
+    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

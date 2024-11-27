@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -128,7 +127,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Transform(item => item.GetCreatedAt())
                     .QueryWhenChanged(query =>
                     {
-                        if (query.Count == 0) return default(DateTime);
+                        if (query.Count == 0) return DateTimeOffset.MinValue;
                         return query.Items.Max();
                     });
 

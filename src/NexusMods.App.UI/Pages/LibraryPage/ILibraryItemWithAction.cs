@@ -1,7 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
+using NexusMods.Paths;
 using OneOf;
 using R3;
 
@@ -15,6 +18,8 @@ public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibrar
         {
             (ILibraryItemWithInstallAction, ILibraryItemWithDownloadAction) => -1,
             (ILibraryItemWithDownloadAction, ILibraryItemWithInstallAction) => 1,
+            (ILibraryItemWithDownloadAction a, ILibraryItemWithDownloadAction b) => ((int)a.DownloadState.Value).CompareTo((int)b.DownloadState.Value),
+            (ILibraryItemWithInstallAction a, ILibraryItemWithInstallAction b) => a.IsInstalled.Value.CompareTo(b.IsInstalled.Value),
             _ => 0,
         };
     }
@@ -66,9 +71,9 @@ public interface ILibraryItemWithInstallAction : ILibraryItemWithAction
     }
 }
 
-public class DownloadableItem : OneOfBase<NexusModsFileMetadata.ReadOnly>
+public class DownloadableItem : OneOfBase<CollectionDownloadNexusMods.ReadOnly, CollectionDownloadExternal.ReadOnly>
 {
-    public DownloadableItem(OneOf<NexusModsFileMetadata.ReadOnly> input) : base(input) { }
+    public DownloadableItem(OneOf<CollectionDownloadNexusMods.ReadOnly, CollectionDownloadExternal.ReadOnly> input) : base(input) { }
 }
 
 public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction

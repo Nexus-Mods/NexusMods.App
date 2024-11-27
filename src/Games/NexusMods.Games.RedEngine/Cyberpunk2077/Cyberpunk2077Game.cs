@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -13,7 +14,9 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
+using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.RedEngine.ModInstallers;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -23,10 +26,18 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConnection _connection;
+    private ISortableItemProviderFactory[] _sortableItemProviderFactories;
 
-    public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
+    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
     {
         _serviceProvider = provider;
+        _connection = connection;
+        
+        _sortableItemProviderFactories =
+        [
+            _serviceProvider.GetRequiredService<RedModSortableItemProviderFactory>(),
+        ];
     }
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
@@ -34,6 +45,16 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 
     public override string Name => "Cyberpunk 2077";
     public override GameId GameId => GameIdStatic;
+    public override SupportType SupportType => SupportType.Official;
+
+    public override HashSet<FeatureStatus> Features { get; } =
+    [
+        new(BaseFeatures.GameLocatable, IsImplemented: true),
+        new(BaseFeatures.HasInstallers, IsImplemented: true),
+        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
+        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
+    ];
+
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
@@ -73,6 +94,8 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new MissingProtontricksForRedModEmitter(_serviceProvider),
         new MissingRedModEmitter(),
     ];
+
+    public override ISortableItemProviderFactory[] SortableItemProviderFactories => _sortableItemProviderFactories;
     
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>

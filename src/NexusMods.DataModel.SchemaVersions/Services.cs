@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Migrations;
-using NexusMods.DataModel.Migrations.Migrations;
+using NexusMods.DataModel.SchemaVersions.Migrations;
 
 namespace NexusMods.DataModel.SchemaVersions;
 

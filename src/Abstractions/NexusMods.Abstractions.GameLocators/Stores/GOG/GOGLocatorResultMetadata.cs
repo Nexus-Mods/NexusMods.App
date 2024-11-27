@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
 
-namespace NexusMods.Abstractions.Games.Stores.GOG;
+namespace NexusMods.Abstractions.GameLocators.Stores.GOG;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="IGogGame"/>.

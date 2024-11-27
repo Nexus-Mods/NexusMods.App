@@ -1,7 +1,6 @@
 using System.Globalization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -17,7 +16,7 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
     {
         var db = conn.Db;
         error = string.Empty;
-        if (LoadoutId.TryParseFromHex(input, out var parsedId))
+        if (EntityId.TryParseFromHex(input, out var parsedId))
         {
             var loadout = Loadout.Load(db, parsedId);
             if (loadout.IsValid())

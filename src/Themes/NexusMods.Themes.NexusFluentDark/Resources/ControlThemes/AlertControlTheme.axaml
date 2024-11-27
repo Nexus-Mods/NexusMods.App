@@ -72,7 +72,8 @@
                                                          RightIcon="{x:Static icons:IconValues.Close}"
                                                          ShowIcon="Right"
                                                          ShowLabel="False"
-                                                         Type="Tertiary" />
+                                                         Type="Tertiary"
+                                                         Fill="None"/>
                             </panels:FlexPanel>
                         </Border>
 
@@ -194,10 +195,6 @@
         <Style Selector="^[Severity=Success]">
             <Setter Property="Background" Value="{StaticResource BrandSuccess950}" />
             <Setter Property="BorderBrush" Value="{StaticResource SuccessWeak}" />
-        </Style>
-
-        <Style Selector="^[IsDismissed=True]">
-            <Setter Property="IsVisible" Value="False" />
         </Style>
     </ControlTheme>
 

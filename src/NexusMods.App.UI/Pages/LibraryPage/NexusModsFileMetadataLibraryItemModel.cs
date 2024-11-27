@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
@@ -14,9 +15,9 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
     ILibraryItemWithSize,
     ILibraryItemWithDownloadAction
 {
-    public NexusModsFileMetadataLibraryItemModel(NexusModsFileMetadata.ReadOnly fileMetadata)
+    public NexusModsFileMetadataLibraryItemModel(CollectionDownloadNexusMods.ReadOnly download)
     {
-        DownloadableItem = new DownloadableItem(fileMetadata);
+        DownloadableItem = new DownloadableItem(download);
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 

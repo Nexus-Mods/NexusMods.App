@@ -21,6 +21,9 @@ using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
 
+/// <summary>
+/// Methods for connecting the Nexus Mods API with the Library.
+/// </summary>
 [PublicAPI]
 public partial class NexusModsLibrary
 {
@@ -32,6 +35,7 @@ public partial class NexusModsLibrary
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     /// <summary>
     /// Constructor.
@@ -46,6 +50,7 @@ public partial class NexusModsLibrary
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
         _jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
+        _mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -182,11 +187,11 @@ public partial class NexusModsLibrary
     }
 
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
+        AbsolutePath destination,
         NexusModsFileMetadata.ReadOnly fileMetadata,
         CancellationToken cancellationToken = default)
     {
-        await using var tempPath = _temporaryFileManager.CreateFile();
-        return await CreateDownloadJob(tempPath, fileMetadata.Uid.GameId, fileMetadata.ModPage.Uid.ModId, fileMetadata.Uid.FileId, cancellationToken: cancellationToken);
+        return await CreateDownloadJob(destination, fileMetadata.Uid.GameId, fileMetadata.ModPage.Uid.ModId, fileMetadata.Uid.FileId, cancellationToken: cancellationToken);
     }
 
     /// <summary>
