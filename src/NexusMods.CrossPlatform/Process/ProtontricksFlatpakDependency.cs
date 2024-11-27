@@ -29,6 +29,8 @@ public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency, IProto
     /// <inheritdoc />
     protected override Command BuildQueryCommand(PipeTarget outputPipeTarget)
     {
+        // This will return a non-zero code if neither flatpak or protontricks are installed
+        // Which in turn will be recognised as a missing dependency.
         var command = Cli.Wrap("flatpak")
             .WithArguments($"run {FlatpakPackageId} --version")
             .WithStandardOutputPipe(outputPipeTarget);
@@ -45,26 +47,5 @@ public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency, IProto
         return ValueTask.FromResult(new Command("flatpak", args,
             command.WorkingDirPath, command.Credentials, command.EnvironmentVariables,
             command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe));
-    }
-
-    /// <summary>
-    /// Checks if the Protontricks Flatpak is installed on the system.
-    /// </summary>
-    /// <returns>True if the Flatpak is installed, false otherwise.</returns>
-    public async Task<bool> IsFlatpakInstalledAsync()
-    {
-        try
-        {
-            var result = await Cli.Wrap("flatpak")
-                .WithArguments($"info {FlatpakPackageId}")
-                .WithValidation(CommandResultValidation.None)
-                .ExecuteAsync();
-            
-            return result.ExitCode == 0;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }
