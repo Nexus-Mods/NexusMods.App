@@ -1,7 +1,5 @@
-using ExCSS;
 using NexusMods.App.UI.Controls;
 using R3;
-using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 

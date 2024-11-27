@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using R3;
@@ -8,7 +7,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 using Observable = System.Reactive.Linq.Observable;
-using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 

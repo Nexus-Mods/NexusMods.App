@@ -102,7 +102,7 @@
 
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <controls:StandardButton x:Name="UpButton"
-                                                         Command="{CompiledBinding MoveDown}"
+                                                         Command="{CompiledBinding MoveUp}"
                                                          LeftIcon="{x:Static icons:IconValues.ArrowUp}"
                                                          ShowIcon="IconOnly"
                                                          Size="Medium"
@@ -122,7 +122,7 @@
                                                HorizontalAlignment="Center" />
                                 </Border>
                                 <controls:StandardButton x:Name="DownButton"
-                                                         Command="{CompiledBinding MoveUp}"
+                                                         Command="{CompiledBinding MoveDown}"
                                                          LeftIcon="{x:Static icons:IconValues.ArrowDown}"
                                                          ShowIcon="IconOnly"
                                                          Size="Medium"

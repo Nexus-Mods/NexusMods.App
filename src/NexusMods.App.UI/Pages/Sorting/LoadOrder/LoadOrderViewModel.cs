@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
@@ -9,9 +8,7 @@ using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Pages.LibraryPage;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -57,14 +54,15 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                       itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
 
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
-            .Publish();
+            .Publish(SortDirectionCurrent);
 
         var lastIndexObservable = provider.SortableItems
             .ToObservableChangeSet(item => item.ItemId)
             .Maximum(item => item.SortIndex)
-            .Publish();
+            .Publish(provider.SortableItems.Count);
 
-        Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, lastIndexObservable);
+        var adapter = new LoadOrderTreeDataGridAdapter(provider,sortDirectionObservable, lastIndexObservable);
+        Adapter = adapter;
         Adapter.ViewHierarchical.Value = true;
 
         this.WhenActivated(d =>
@@ -79,11 +77,22 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 lastIndexObservable.Connect()
                     .DisposeWith(d);
 
+                // Update IsWinnerTop
                 sortDirectionObservable.Subscribe(sortDirection =>
                         {
                             var isAscending = sortDirection == ListSortDirection.Ascending;
                             IsWinnerTop = isAscending &&
                                           itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                        }
+                    )
+                    .DisposeWith(d);
+                
+                // Move up/down commands
+                adapter.MessageSubject
+                    .SubscribeAwait( async (payload, cancellationToken) =>
+                        {
+                            var (item, delta) = payload;
+                            await provider.SetRelativePosition(((LoadOrderItemModel)item).InnerItem, delta);
                         }
                     )
                     .DisposeWith(d);
