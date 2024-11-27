@@ -309,6 +309,7 @@
     
     <Style Selector="ComboBox.Compact">
         
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Padding" Value="6,0,0,0"/>
 
         <Style Selector="^ PathIcon#DropDownGlyph">
@@ -317,8 +318,17 @@
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
-            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Height" Value="28" />
+        </Style>
+        
+        <!-- pointerover -->
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHighBrush}" />
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentStrongBrush}" />
+            </Style>
         </Style>
     </Style>
 </Styles>
