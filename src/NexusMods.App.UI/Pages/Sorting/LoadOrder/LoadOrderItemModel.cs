@@ -1,10 +1,13 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
+using Observable = System.Reactive.Linq.Observable;
 using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -16,7 +19,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     private readonly IObservable<int> _lastIndexObservable;
     public ISortableItem InnerItem { get; }
 
-    public R3.ReactiveCommand<Unit, Unit> MoveUp { get; } = new(_ => Unit.Default);
+    public R3.ReactiveCommand<Unit, Unit> MoveUp { get; }
     public R3.ReactiveCommand<Unit, Unit> MoveDown { get; } = new(_ => Unit.Default);
     public int SortIndex { get; }
     public string DisplayName { get; }
@@ -27,7 +30,8 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     public LoadOrderItemModel(
         ISortableItem sortableItem,
         IObservable<ListSortDirection> sortDirectionObservable,
-        IObservable<int> lastIndexObservable)
+        IObservable<int> lastIndexObservable,
+        Subject<MoveUpDownCommandPayload> commandSubject)
     {
         InnerItem = sortableItem;
         SortIndex = sortableItem.SortIndex;
@@ -46,6 +50,24 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         this.WhenAnyValue(vm => vm.InnerItem.ModName)
             .Subscribe(value => ModName = value)
             .DisposeWith(_disposables);
+
+        var sortIndexObservable = this.WhenAnyValue(vm => vm.SortIndex);
+        var canExecuteUp =  Observable.CombineLatest(
+            sortIndexObservable, _sortDirectionObservable, _lastIndexObservable,
+                (sortIndex, sortDirection, lastIndex) =>
+                    sortDirection == ListSortDirection.Ascending ? sortIndex > 0 : sortIndex < lastIndex
+            )
+            .ToObservable();
+
+        var canExecuteDown = Observable.CombineLatest(
+                sortIndexObservable, _sortDirectionObservable, _lastIndexObservable,
+                (sortIndex, sortDirection, lastIndex) =>
+                    sortDirection == ListSortDirection.Descending ? sortIndex > 0 : sortIndex < lastIndex
+            )
+            .ToObservable();
+
+        MoveUp = canExecuteUp.ToReactiveCommand<Unit, Unit>(_ => Unit.Default);
+        MoveDown = canExecuteDown.ToReactiveCommand<Unit, Unit>(_ => Unit.Default);
     }
 
 
