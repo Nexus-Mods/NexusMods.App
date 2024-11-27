@@ -155,7 +155,7 @@
             <Setter Property="Padding" Value="0,0" />
             
             <!-- header padding -->
-            <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
+            <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
                 <Setter Property="Margin" Value="24,8" />
             </Style>
 
