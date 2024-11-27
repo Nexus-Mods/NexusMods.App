@@ -1,16 +1,23 @@
 using System.ComponentModel;
-using System.Reactive;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.LibraryPage;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Disposable = System.Reactive.Disposables.Disposable;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -21,7 +28,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string InfoAlertHeading { get; }
     public string InfoAlertMessage { get; }
     [Reactive] public bool InfoAlertIsVisible { get; set; }
-    public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
     [Reactive] public bool IsWinnerTop { get; private set; }
@@ -49,8 +56,15 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         IsWinnerTop = SortDirectionCurrent == ListSortDirection.Ascending &&
                       itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
 
-        var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent);
-        Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable);
+        var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
+            .Publish();
+        
+        var lastIndexObservable = provider.SortableItems
+            .ToObservableChangeSet(item => item.ItemId)
+            .Maximum(item => item.SortIndex)
+            .Publish();
+        
+        Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, lastIndexObservable);
         Adapter.ViewHierarchical.Value = true;
 
         this.WhenActivated(d =>
@@ -58,7 +72,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 Adapter.Activate();
                 Disposable.Create(() => Adapter.Deactivate())
                     .DisposeWith(d);
-
+                
+                sortDirectionObservable.Connect()
+                    .DisposeWith(d);
+                
+                lastIndexObservable.Connect()
+                    .DisposeWith(d);
+                
                 sortDirectionObservable.Subscribe(sortDirection =>
                         {
                             var isAscending = sortDirection == ListSortDirection.Ascending;
@@ -67,20 +87,31 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                         }
                     )
                     .DisposeWith(d);
+                
             }
         );
     }
 }
 
-public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemModel, Guid>
+public readonly record struct MoveUpDownCommandPayload(ILoadOrderItemModel Item, int Delta);
+
+public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemModel, Guid>,
+    ITreeDataGirdMessageAdapter<MoveUpDownCommandPayload>
 {
     private ILoadoutSortableItemProvider _sortableItemsProvider;
     private IObservable<ListSortDirection> _sortDirectionObservable;
+    private IObservable<int> _lastIndexObservable;
 
-    public LoadOrderTreeDataGridAdapter(ILoadoutSortableItemProvider sortableItemsProvider, IObservable<ListSortDirection> sortDirectionObservable)
+    public Subject<MoveUpDownCommandPayload> MessageSubject { get; } = new();
+
+    public LoadOrderTreeDataGridAdapter(
+        ILoadoutSortableItemProvider sortableItemsProvider,
+        IObservable<ListSortDirection> sortDirectionObservable,
+        IObservable<int> lastIndexObservable)
     {
         _sortableItemsProvider = sortableItemsProvider;
         _sortDirectionObservable = sortDirectionObservable;
+        _lastIndexObservable = lastIndexObservable;
     }
 
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
@@ -100,7 +131,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         var sortedItems = _sortDirectionObservable
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingSortableItems : descendingSortableItems)
             .Switch()
-            .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(item));
+            .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(item, _sortDirectionObservable, _lastIndexObservable));
 
         return sortedItems;
     }
@@ -153,5 +184,22 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         {
             Id = "Name",
         };
+    }
+
+    private bool _isDisposed;
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                R3.Disposable.Dispose(MessageSubject);
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
     }
 }

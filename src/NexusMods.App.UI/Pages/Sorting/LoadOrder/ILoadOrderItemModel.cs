@@ -1,6 +1,6 @@
-using System.Reactive;
 using NexusMods.App.UI.Controls;
-using ReactiveUI;
+using R3;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 

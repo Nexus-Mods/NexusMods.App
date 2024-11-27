@@ -1,15 +1,15 @@
-using System.Reactive;
-using NexusMods.Abstractions.Games;
+using ExCSS;
 using NexusMods.App.UI.Controls;
-using ReactiveUI;
+using R3;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderItemDesignModel : TreeDataGridItemModel<ILoadOrderItemModel, Guid>, ILoadOrderItemModel
 {
-    public ReactiveCommand<Unit, Unit> MoveUp { get; } = ReactiveCommand.Create(() => { });
-    public ReactiveCommand<Unit, Unit> MoveDown { get; } = ReactiveCommand.Create(() => { });
-    public int SortIndex { get; set;  }
+    public ReactiveCommand<Unit, Unit> MoveUp { get; } = new(_ => Unit.Default);
+    public ReactiveCommand<Unit, Unit> MoveDown { get; } = new(_ => Unit.Default);
+    public int SortIndex { get; set; }
     public string DisplayName { get; set; } = "Display Name";
     public string ModName { get; set; } = "Mod Name";
     public bool IsActive { get; set; }
