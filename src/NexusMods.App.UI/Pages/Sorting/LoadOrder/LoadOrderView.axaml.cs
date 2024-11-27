@@ -52,6 +52,10 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                         vm => vm.Adapter.IsSourceEmpty.Value, 
                         view => view.EmptyState.IsActive)
                     .DisposeWith(disposables);
+                
+                // alert
+                this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, view => view.LoadOrderAlert.AlertSettings)
+                    .DisposeWith(disposables);
             }
         );
     }

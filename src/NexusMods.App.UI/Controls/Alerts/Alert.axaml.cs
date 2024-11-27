@@ -200,6 +200,11 @@ public class Alert : ContentControl
             }
         }
 
+        if (change.Property == IsDismissedProperty)
+        {
+            IsVisible = !IsDismissed;
+        }
+
         base.OnPropertyChanged(change);
     }
 
@@ -224,7 +229,6 @@ public class Alert : ContentControl
 
         if (_icon == null || _dismissButton == null || _titleText == null || _bodyText == null || _bodyTextBorder == null || _actionsRowBorder == null)
             return;
-
 
         // turn off elements based on properties
         _dismissButton.IsVisible = ShowDismiss;

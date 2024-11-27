@@ -196,10 +196,6 @@
             <Setter Property="Background" Value="{StaticResource BrandSuccess950}" />
             <Setter Property="BorderBrush" Value="{StaticResource SuccessWeak}" />
         </Style>
-
-        <Style Selector="^[IsDismissed=True]">
-            <Setter Property="IsVisible" Value="False" />
-        </Style>
     </ControlTheme>
 
 </ResourceDictionary>

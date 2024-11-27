@@ -7,8 +7,11 @@ using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.App.UI.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,10 +30,12 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     [Reactive] public bool IsWinnerTop { get; private set; }
     public string EmptyStateMessageTitle { get; }
     public string EmptyStateMessageContents { get; }
+    
+    public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
     public TreeDataGridAdapter<ILoadOrderItemModel, Guid> Adapter { get; }
 
-    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory)
+    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory, ISettingsManager settingsManager)
     {
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
 
@@ -52,6 +57,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent);
         Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable);
         Adapter.ViewHierarchical.Value = true;
+        
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
+        
+        InfoAlertCommand = ReactiveCommand.Create(() =>
+        {
+            AlertSettingsWrapper.ShowAlert();
+        });
 
         this.WhenActivated(d =>
             {
