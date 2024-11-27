@@ -117,6 +117,15 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/view-carousel/
     public static readonly IconValue ViewCarousel = new ProjektankerIcon("mdi-view-carousel");
 
+    // https://pictogrammers.com/library/mdi/icon/sort/
+    public static readonly IconValue Sort = new ProjektankerIcon("mdi-sort");
+
+    // https://pictogrammers.com/library/mdi/icon/sort-ascending/
+    public static readonly IconValue SortAscending = new ProjektankerIcon("mdi-sort-ascending");
+
+    // https://pictogrammers.com/library/mdi/icon/sort-descending/
+    public static readonly IconValue SortDescending = new ProjektankerIcon("mdi-sort-descending");
+
 #endregion
 
 #region Alert
@@ -289,7 +298,13 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/menu-up/
     public static readonly IconValue ArrowDropUp = new ProjektankerIcon("mdi-menu-up");
-
+    
+    // https://pictogrammers.com/library/mdi/icon/arrow-up-thick/
+    public static readonly IconValue ArrowUpThick = new ProjektankerIcon("mdi-arrow-up-thick");
+    
+    // https://pictogrammers.com/library/mdi/icon/arrow-down-thick"/
+    public static readonly IconValue ArrowDownThick = new ProjektankerIcon("mdi-arrow-down-thick");
+    
     // https://pictogrammers.com/library/mdi/icon/chevron-left/
     public static readonly IconValue ChevronLeft = new ProjektankerIcon("mdi-chevron-left");
 
