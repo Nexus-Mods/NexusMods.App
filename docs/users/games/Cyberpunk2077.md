@@ -23,6 +23,13 @@ Diagnostics are shown in the following situations:
     - [ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) - Detected by `.xl` files in the `archives` folder. 
     - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
 
+### REDmod Load Ordering
+Some mods for Cyberpunk 2077 make use of the official REDmod format for loading content. The Load Order page allows users to decide on the order in which the game will load content from REDmods. By default, the mods at the **top** of the list will win if they have conflicting changes with another REDmod lower down in the order. 
+
+You can learn more about the REDmod format on [community wiki](https://wiki.redmodding.org/cyberpunk-2077-modding/for-mod-users/users-modding-cyberpunk-2077/redmod/usage).
+
+Changes in REDmods are always overwritten by similar changes inside archive mods.
+
 ### Automated deployment for REDmods
 
 ??? info "REDmod with Heroic Launcher (Linux)"
