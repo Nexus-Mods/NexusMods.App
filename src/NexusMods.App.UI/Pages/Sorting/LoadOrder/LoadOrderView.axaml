@@ -23,7 +23,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <Border Grid.Row="0" Classes="Toolbar">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <ComboBox SelectedIndex="0" Classes="Secondary">
+                    <ComboBox SelectedIndex="0" Classes="Secondary Compact"> 
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -52,7 +52,7 @@
                     <controls:StandardButton
                         Size="Small"
                         Text="Add to group" />
-                    <ComboBox SelectedIndex="0" Classes="Secondary">
+                    <ComboBox SelectedIndex="0" Classes="Secondary Compact">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="New group" Theme="{StaticResource BodyMDNormalTheme}" />
@@ -81,15 +81,21 @@
 
                 <!-- left column (trophy bar) -->
                 <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left">
-                    <icons:UnifiedIcon x:Name="TrophyIcon" Margin="0,8,0,8" DockPanel.Dock="Top"
-                                       Value="{x:Static icons:IconValues.Trophy}" Size="20" />
+                    <icons:UnifiedIcon x:Name="TrophyIcon"
+                                       DockPanel.Dock="Top"
+                                       Margin="0,8,0,8"
+                                       Value="{x:Static icons:IconValues.Trophy}"
+                                       Size="20"
+                                       ToolTip.Tip="{Binding TrophyToolTip}" />
 
                     <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
-                        <icons:UnifiedIcon x:Name="ArrowUpIcon" Grid.Row="0"
+                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
                                            Value="{x:Static icons:IconValues.ArrowUpThick}"
                                            Size="20" />
-                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" Width="3" Margin="0,4" />
-                        <icons:UnifiedIcon x:Name="ArrowDownIcon" Grid.Row="2"
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder"
+                                Width="3"
+                                Margin="0,4" />
+                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
                                            Value="{x:Static icons:IconValues.ArrowDownThick}"
                                            Size="20" />
                     </Grid>

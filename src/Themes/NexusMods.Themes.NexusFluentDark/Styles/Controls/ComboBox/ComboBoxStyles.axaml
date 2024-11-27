@@ -100,6 +100,23 @@
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
+                
+                <StackPanel Spacing="20" Orientation="Horizontal">
+                    <ComboBox Classes="Secondary Compact" PlaceholderText="Placeholder Text">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox Classes="Secondary Compact" SelectedIndex="0">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox Classes="Secondary Compact" IsEnabled="False" SelectedIndex="0">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -200,6 +217,8 @@
         <Style Selector="^ /template/ Border#Background">
             <Setter Property="BorderThickness" Value="0" />
         </Style>
+        
+        
 
         <!-- Hover State -->
         <Style Selector="^:pointerover">
@@ -285,6 +304,21 @@
             <Style Selector="^ /template/ PathIcon#DropDownGlyph">
                 <Setter Property="Foreground" Value="{DynamicResource NeutralWeak}" />
             </Style>
+        </Style>
+    </Style>
+    
+    <Style Selector="ComboBox.Compact">
+        
+        <Setter Property="Padding" Value="6,0,0,0"/>
+
+        <Style Selector="^ PathIcon#DropDownGlyph">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Height" Value="10"/>
+        </Style>
+
+        <Style Selector="^ /template/ Border#Background">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="28" />
         </Style>
     </Style>
 </Styles>
