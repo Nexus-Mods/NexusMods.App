@@ -22,7 +22,7 @@
 
         <Grid RowDefinitions="Auto, Auto, *">
             <Border Grid.Row="0" Classes="Toolbar">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Spacing="16">
                     <ComboBox SelectedIndex="0" Classes="Secondary Compact"> 
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -45,9 +45,7 @@
                             </StackPanel>
                         </ComboBoxItem>
                     </ComboBox>
-                    <CheckBox>
-                        <TextBlock Text="Hide Disabled Collections" Theme="{StaticResource BodyMDNormalTheme}" />
-                    </CheckBox>
+                    <CheckBox Content="Hide Disabled Collections"/>
                     <Separator Width="1" Height="32" Background="{StaticResource StrokeTranslucentWeakBrush}" />
                     <controls:StandardButton
                         Size="Small"
