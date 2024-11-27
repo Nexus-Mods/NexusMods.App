@@ -37,7 +37,7 @@ Please note, this page is currently very basic and has not yet been styled.
 * Fixed an issue where the app would prompt the user to log in to Nexus Mods when starting up, even if they are already logged in. 
 
 ## Known Issues
-* Steam Deck - Users are currently unable to launch Bannerlord on the Steam Deck due to an issue with Flatpak installations of Protontricks. A fix for this is being prepared for the next release.
+* Users may be unable to launch Bannerlord on the Steam Deck when using Flatpak installations of Protontricks as they are currently unsupported. A fix for this is being prepared for the next release.
 * The Collections feature is able to download all required files but will not install them. Mods can be manually installed from the Library but this will not import the collection configuration options. This feature will be re-implemented in the future.
 * Any non-Nexus Mods file in a collection that requires the user to browse an external website can be installed into the library manually but will not be recognised as part of the collection.
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
