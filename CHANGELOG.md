@@ -1,4 +1,4 @@
-# v0.7.0 - 2024-11-XX
+# v0.7.0 - 2024-11-27
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
 
@@ -37,11 +37,13 @@ Please note, this page is currently very basic and has not yet been styled.
 * Fixed an issue where the app would prompt the user to log in to Nexus Mods when starting up, even if they are already logged in. 
 
 ## Known Issues
+* Steam Deck - Users are currently unable to launch Bannerlord on the Steam Deck due to an issue with Flatpak installations of Protontricks. A fix for this is being prepared for the next release.
 * The Collections feature is able to download all required files but will not install them. Mods can be manually installed from the Library but this will not import the collection configuration options. This feature will be re-implemented in the future.
 * Any non-Nexus Mods file in a collection that requires the user to browse an external website can be installed into the library manually but will not be recognised as part of the collection.
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * Once a collection is added to the app, it cannot be removed.
 * The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
+* The Library and Collections (WIP) pages are not filtered by game. 
 * The "Switch View" option does not persist in the Library/Installed Mods view.
 
 
@@ -81,7 +83,6 @@ We are continuing to add features to support modding Baldur's Gate 3. In this up
 * The main window will now pop into focus when the user successfully logs in. 
 
 ## Known Issues
-* The Library and Collections (WIP) pages are not filtered by game. 
 * Installing a collection which includes mods where the user must browse an external website to obtain the file(s) will fail with no error message. This is not supported in the current build.
 * Trying to install a collection as a non-Premium user will fail with no error message. This is not supported in the current build. 
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
