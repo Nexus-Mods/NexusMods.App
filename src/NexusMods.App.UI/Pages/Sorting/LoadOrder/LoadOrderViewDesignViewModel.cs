@@ -5,8 +5,11 @@ using System.Reactive.Disposables;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.App.UI.Settings;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -19,15 +22,16 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public string InfoAlertHeading { get; set;} = "Info Alert Heading";
     public string InfoAlertMessage { get; set;} = "Info Alert Message";
     public bool InfoAlertIsVisible { get; set; } = true;
-    public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { Console.WriteLine("InfoAlertCommand"); });
+    public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; set;} = "Trophy Tool Tip";
     public ListSortDirection SortDirectionCurrent { get; set; }
     public bool IsWinnerTop { get; set;}
     public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
     public string EmptyStateMessageContents { get; } = "Empty State Message Contents";
+    public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
-    public LoadOrderDesignViewModel()
-    {            
+    public LoadOrderDesignViewModel(ISettingsManager settingsManager)
+    {
         Adapter = new LoadOrderTreeDataGridDesignAdapter();
 
         this.WhenActivated(d =>
@@ -37,6 +41,8 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
                     .DisposeWith(d);
             }
         );
+        
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
     }
 }
 

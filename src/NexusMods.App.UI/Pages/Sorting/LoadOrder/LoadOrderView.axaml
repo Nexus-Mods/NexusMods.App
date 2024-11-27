@@ -23,7 +23,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <Border Grid.Row="0" Classes="Toolbar">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <ComboBox x:Name="SortDirectionComboBox" SelectedIndex="0" Classes="Secondary">
+                    <ComboBox x:Name="SortDirectionComboBox" SelectedIndex="0" Classes="Secondary Compact">
                         <ComboBoxItem>
                             <StackPanel Orientation="Horizontal">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortAscending}" Size="20" />
@@ -37,14 +37,12 @@
                             </StackPanel>
                         </ComboBoxItem>
                     </ComboBox>
-                    <CheckBox>
-                        <TextBlock Text="Hide Disabled Collections" Theme="{StaticResource BodyMDNormalTheme}" />
-                    </CheckBox>
-                    <Separator Width="1" Height="32" Background="{StaticResource StrokeTranslucentWeakBrush}" />
+                    <CheckBox Content="Hide Disabled Collections" />
+                    <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
                     <controls:StandardButton
                         Size="Small"
                         Text="Add to group" />
-                    <ComboBox SelectedIndex="0" Classes="Secondary">
+                    <ComboBox SelectedIndex="0" Classes="Secondary Compact">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="New group" Theme="{StaticResource BodyMDNormalTheme}" />
@@ -58,30 +56,42 @@
             </Border>
 
             <StackPanel Grid.Row="1" Spacing="24" Margin="24">
-                <alerts:Alert
-                    Severity="Info"
-                    Title="Load Order for REDmod files in Cyberpunk 2077 - First Loaded Wins"
-                    Body="Some Cyberpunk 2077 mods use REDmod files to alter core gameplay elements. If two REDmod files modify the same part of the game, the one loaded first will take priority and overwrite changes from those loaded later.\n\nFor example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on."
-                    IsVisible="True"
-                    ShowDismiss="False" />
+                <alerts:Alert x:Name="LoadOrderAlert"
+                              Severity="Info"
+                              Title="{Binding InfoAlertTitle}"
+                              Body="{Binding InfoAlertMessage}"
+                              ShowDismiss="True" />
 
-                <TextBlock Text="Last Loaded REDmod File Wins"
-                           Theme="{StaticResource HeadingXSSemiTheme}" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <TextBlock Text="Last Loaded REDmod File Wins"
+                               Theme="{StaticResource HeadingXSSemiTheme}" />
+                    <controls:StandardButton ShowIcon="IconOnly"
+                                             LeftIcon="{x:Static icons:IconValues.Info}"
+                                             Type="Tertiary"
+                                             Fill="None" 
+                                             Command="{Binding InfoAlertCommand}"/>
+                </StackPanel>
             </StackPanel>
 
             <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0,24,24">
 
                 <!-- left column (trophy bar) -->
                 <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left">
-                    <icons:UnifiedIcon x:Name="TrophyIcon" Margin="0,8,0,8" DockPanel.Dock="Top"
-                                       Value="{x:Static icons:IconValues.Trophy}" Size="20" />
+                    <icons:UnifiedIcon x:Name="TrophyIcon"
+                                       DockPanel.Dock="Top"
+                                       Margin="0,8,0,8"
+                                       Value="{x:Static icons:IconValues.Trophy}"
+                                       Size="20"
+                                       ToolTip.Tip="{Binding TrophyToolTip}" />
 
                     <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
-                        <icons:UnifiedIcon x:Name="ArrowUpIcon" Grid.Row="0"
+                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
                                            Value="{x:Static icons:IconValues.ArrowUpThick}"
                                            Size="20" />
-                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" Width="3" Margin="0,4" />
-                        <icons:UnifiedIcon x:Name="ArrowDownIcon" Grid.Row="2"
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder"
+                                Width="3"
+                                Margin="0,4" />
+                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
                                            Value="{x:Static icons:IconValues.ArrowDownThick}"
                                            Size="20" />
                     </Grid>

@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Reactive;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Alerts;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -71,4 +72,9 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// Contents text for the empty state, in case there are no sortable items to display
     /// </summary>
     string EmptyStateMessageContents { get; }
+    
+    /// <summary>
+    /// AlertSettings wrapper for the Alert so it can be shown\hidden based on the settings
+    /// </summary>
+    AlertSettingsWrapper AlertSettingsWrapper { get; }
 }

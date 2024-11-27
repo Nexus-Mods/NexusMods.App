@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Helpers;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -64,6 +63,10 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                 this.WhenAnyValue(view => view.SortDirectionComboBox.SelectedIndex)
                     .Select(index => index == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending)
                     .BindTo(ViewModel, vm => vm.SortDirectionCurrent)
+                    .DisposeWith(disposables);
+                    
+                // alert
+                this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, view => view.LoadOrderAlert.AlertSettings)
                     .DisposeWith(disposables);
             }
         );
