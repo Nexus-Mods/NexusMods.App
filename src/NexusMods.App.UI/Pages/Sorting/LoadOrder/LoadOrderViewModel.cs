@@ -58,12 +58,12 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
             .Publish();
-        
+
         var lastIndexObservable = provider.SortableItems
             .ToObservableChangeSet(item => item.ItemId)
             .Maximum(item => item.SortIndex)
             .Publish();
-        
+
         Adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, lastIndexObservable);
         Adapter.ViewHierarchical.Value = true;
 
@@ -72,13 +72,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 Adapter.Activate();
                 Disposable.Create(() => Adapter.Deactivate())
                     .DisposeWith(d);
-                
+
                 sortDirectionObservable.Connect()
                     .DisposeWith(d);
-                
+
                 lastIndexObservable.Connect()
                     .DisposeWith(d);
-                
+
                 sortDirectionObservable.Subscribe(sortDirection =>
                         {
                             var isAscending = sortDirection == ListSortDirection.Ascending;
@@ -87,7 +87,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                         }
                     )
                     .DisposeWith(d);
-                
             }
         );
     }
@@ -131,7 +130,13 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         var sortedItems = _sortDirectionObservable
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingSortableItems : descendingSortableItems)
             .Switch()
-            .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(item, _sortDirectionObservable, _lastIndexObservable));
+            .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(
+                    item,
+                    _sortDirectionObservable,
+                    _lastIndexObservable,
+                    MessageSubject
+                )
+            );
 
         return sortedItems;
     }

@@ -17,10 +17,11 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     private readonly CompositeDisposable _disposables = new();
     private readonly IObservable<ListSortDirection> _sortDirectionObservable;
     private readonly IObservable<int> _lastIndexObservable;
+    private ListSortDirection _sortDirection;
     public ISortableItem InnerItem { get; }
 
     public R3.ReactiveCommand<Unit, Unit> MoveUp { get; }
-    public R3.ReactiveCommand<Unit, Unit> MoveDown { get; } = new(_ => Unit.Default);
+    public R3.ReactiveCommand<Unit, Unit> MoveDown { get; }
     public int SortIndex { get; }
     public string DisplayName { get; }
 
@@ -50,6 +51,10 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         this.WhenAnyValue(vm => vm.InnerItem.ModName)
             .Subscribe(value => ModName = value)
             .DisposeWith(_disposables);
+        
+        _sortDirectionObservable
+            .BindTo(this, vm => vm._sortDirection)
+            .DisposeWith(_disposables);
 
         var sortIndexObservable = this.WhenAnyValue(vm => vm.SortIndex);
         var canExecuteUp =  Observable.CombineLatest(
@@ -62,12 +67,24 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         var canExecuteDown = Observable.CombineLatest(
                 sortIndexObservable, _sortDirectionObservable, _lastIndexObservable,
                 (sortIndex, sortDirection, lastIndex) =>
-                    sortDirection == ListSortDirection.Descending ? sortIndex > 0 : sortIndex < lastIndex
+                    sortDirection == ListSortDirection.Ascending ? sortIndex < lastIndex : sortIndex > 0 
             )
             .ToObservable();
 
-        MoveUp = canExecuteUp.ToReactiveCommand<Unit, Unit>(_ => Unit.Default);
-        MoveDown = canExecuteDown.ToReactiveCommand<Unit, Unit>(_ => Unit.Default);
+        MoveUp = canExecuteUp.ToReactiveCommand<Unit, Unit>(_ =>
+            {
+                var delta = _sortDirection == ListSortDirection.Ascending ? -1 : +1;
+                commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
+                return Unit.Default;
+            }
+        );
+        MoveDown = canExecuteDown.ToReactiveCommand<Unit, Unit>(_ =>
+            {
+                var delta = _sortDirection == ListSortDirection.Ascending ? +1 : -1;
+                commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
+                return Unit.Default;
+            }
+        );
     }
 
 
