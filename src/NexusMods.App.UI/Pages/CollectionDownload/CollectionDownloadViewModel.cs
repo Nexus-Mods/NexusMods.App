@@ -12,6 +12,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -96,11 +97,11 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 {
                     if (count == RequiredDownloadsCount)
                     {
-                        CollectionStatusText = "Ready to install - All required mods downloaded";
+                        CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                     }
                     else
                     {
-                        CollectionStatusText = $"{count} of {RequiredDownloadsCount} required mods downloaded";
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, count, RequiredDownloadsCount);
                     }
                 })
                 .AddTo(disposables);
