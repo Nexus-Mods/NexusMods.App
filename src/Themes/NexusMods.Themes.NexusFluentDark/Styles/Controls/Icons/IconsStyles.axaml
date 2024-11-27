@@ -104,6 +104,12 @@
             <icons:UnifiedIcon Classes="Database"/>
             <icons:UnifiedIcon Classes="Size"/>
             <icons:UnifiedIcon Classes="Info"/>
+            <icons:UnifiedIcon Classes="Trophy"/>
+            <icons:UnifiedIcon Classes="ArrowUpThick"/>
+            <icons:UnifiedIcon Classes="ArrowDownThick"/>
+            <icons:UnifiedIcon Classes="Sort"/>
+            <icons:UnifiedIcon Classes="SortAscending"/>
+            <icons:UnifiedIcon Classes="SortDescending"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -521,4 +527,19 @@
     <Style Selector="icons|UnifiedIcon.Trophy">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Trophy}"/>
     </Style>
+    <Style Selector="icons|UnifiedIcon.ArrowUpThick">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowUpThick}"/>
+    </Style>    
+    <Style Selector="icons|UnifiedIcon.ArrowDownThick">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDownThick}"/>
+    </Style>    
+    <Style Selector="icons|UnifiedIcon.Sort">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Sort}"/>
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.SortAscending">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.SortAscending}"/>
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.SortDescending">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.SortDescending}"/>
+    </Style> 
 </Styles>

@@ -1,10 +1,61 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <Border Padding="16">
+        <Border Padding="0">
             <TreeDataGrid x:Name="SortOrderTreeDataGrid" Width="400" Height="200" />
         </Border>
     </Design.PreviewWith>
+
+
+    <Style Selector="sorting|LoadOrderView">
+
+        <Style Selector="^ DockPanel#TrophyBarPanel">
+
+            <Style Selector="^.IsWinnerTop">
+                <Style Selector="^ Border#TrophyGradientBorder">
+                    <Setter Property="Background">
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#FFFFFFFF" Offset="0" />
+                            <GradientStop Color="#32FFFFFF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Setter>
+                </Style>
+                <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
+                    <Setter Property="Foreground" Value="#FFFFFFFF" />
+                </Style>
+                <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
+                    <Setter Property="Foreground" Value="#32FFFFFF" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.IsWinnerBottom">
+                <Style Selector="^ Border#TrophyGradientBorder">
+                    <Setter Property="Background">
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#32FFFFFF" Offset="0" />
+                            <GradientStop Color="#FFFFFFFF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Setter>
+                </Style>
+                <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
+                    <Setter Property="Foreground" Value="#32FFFFFF" />
+                </Style>
+                <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
+                    <Setter Property="Foreground" Value="#FFFFFFFF" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.SortAsc">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+
+            <Style Selector="^.SortDesc">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+        </Style>
+    </Style>
 
     <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
 
