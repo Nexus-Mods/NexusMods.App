@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
@@ -29,13 +28,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string InfoAlertHeading { get; }
     public string InfoAlertMessage { get; }
     [Reactive] public bool InfoAlertIsVisible { get; set; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
     [Reactive] public bool IsWinnerTop { get; private set; }
     public string EmptyStateMessageTitle { get; }
     public string EmptyStateMessageContents { get; }
-    
+
     public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
     public TreeDataGridAdapter<ILoadOrderItemModel, Guid> Adapter { get; }
@@ -67,16 +66,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             .Maximum(item => item.SortIndex)
             .Publish(provider.SortableItems.Count);
 
-        var adapter = new LoadOrderTreeDataGridAdapter(provider,sortDirectionObservable, lastIndexObservable);
+        var adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, lastIndexObservable);
         Adapter = adapter;
         Adapter.ViewHierarchical.Value = true;
-        
+
         AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
-        
-        InfoAlertCommand = ReactiveCommand.Create(() =>
-        {
-            AlertSettingsWrapper.ShowAlert();
-        });
+
+        InfoAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ShowAlert(); });
 
         this.WhenActivated(d =>
             {
@@ -99,10 +95,10 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                         }
                     )
                     .DisposeWith(d);
-                
+
                 // Move up/down commands
                 adapter.MessageSubject
-                    .SubscribeAwait( async (payload, cancellationToken) =>
+                    .SubscribeAwait(async (payload, cancellationToken) =>
                         {
                             var (item, delta) = payload;
                             await provider.SetRelativePosition(((LoadOrderItemModel)item).InnerItem, delta);
@@ -119,10 +115,11 @@ public readonly record struct MoveUpDownCommandPayload(ILoadOrderItemModel Item,
 public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemModel, Guid>,
     ITreeDataGirdMessageAdapter<MoveUpDownCommandPayload>
 {
-    private ILoadoutSortableItemProvider _sortableItemsProvider;
-    private IObservable<ListSortDirection> _sortDirectionObservable;
-    private IObservable<int> _lastIndexObservable;
+    private readonly ILoadoutSortableItemProvider _sortableItemsProvider;
+    private readonly IObservable<ListSortDirection> _sortDirectionObservable;
+    private readonly IObservable<int> _lastIndexObservable;
     private readonly CompositeDisposable _disposables = new();
+    private readonly IObservable<IChangeSet<ILoadOrderItemModel, Guid>> _sortedItems;
 
     public Subject<MoveUpDownCommandPayload> MessageSubject { get; } = new();
 
@@ -135,13 +132,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
 
-        var collectionChanged = _sortableItemsProvider.SortableItems
-            .ToObservableChangeSet();
-    }
-
-    protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
-    {
-        var sortableItems = _sortableItemsProvider.SortableItems
+        var itemsChangeSet = _sortableItemsProvider.SortableItems
             .ToObservableChangeSet(item => item.ItemId)
             .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(
                     item,
@@ -151,7 +142,20 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
                 )
             );
 
-        return sortableItems;
+        _sortedItems = ObservableCacheEx.Switch(_sortDirectionObservable.Select(sortDirection =>
+                {
+                    var isAscending = sortDirection == ListSortDirection.Ascending;
+                    return isAscending
+                        ? itemsChangeSet.SortBy(item => item.SortIndex, SortDirection.Ascending)
+                        : itemsChangeSet.SortBy(item => item.SortIndex, SortDirection.Descending);
+                }
+            )
+        );
+    }
+
+    protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
+    {
+        return _sortedItems;
     }
 
     protected override IColumn<ILoadOrderItemModel>[] CreateColumns(bool viewHierarchical)
