@@ -9,12 +9,13 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
-using NexusMods.App.UI.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 using Disposable = System.Reactive.Disposables.Disposable;
 using ReactiveCommand = ReactiveUI.ReactiveCommand;
 using Unit = System.Reactive.Unit;
@@ -121,6 +122,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     private ILoadoutSortableItemProvider _sortableItemsProvider;
     private IObservable<ListSortDirection> _sortDirectionObservable;
     private IObservable<int> _lastIndexObservable;
+    private readonly CompositeDisposable _disposables = new();
 
     public Subject<MoveUpDownCommandPayload> MessageSubject { get; } = new();
 
@@ -132,25 +134,15 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         _sortableItemsProvider = sortableItemsProvider;
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
+
+        var collectionChanged = _sortableItemsProvider.SortableItems
+            .ToObservableChangeSet();
     }
 
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
     {
         var sortableItems = _sortableItemsProvider.SortableItems
-            .ToObservableChangeSet(item => item.ItemId);
-
-        var ascendingSortableItems = sortableItems
-            .ToSortedCollection(item => item.SortIndex, SortDirection.Ascending)
-            .ToObservableChangeSet(item => item.ItemId);
-
-        var descendingSortableItems = sortableItems
-            .ToSortedCollection(item => item.SortIndex, SortDirection.Descending)
-            .ToObservableChangeSet(item => item.ItemId);
-
-        // Sort the items based on SortDirection
-        var sortedItems = _sortDirectionObservable
-            .Select(direction => direction == ListSortDirection.Ascending ? ascendingSortableItems : descendingSortableItems)
-            .Switch()
+            .ToObservableChangeSet(item => item.ItemId)
             .Transform(ILoadOrderItemModel (item) => new LoadOrderItemModel(
                     item,
                     _sortDirectionObservable,
@@ -159,7 +151,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
                 )
             );
 
-        return sortedItems;
+        return sortableItems;
     }
 
     protected override IColumn<ILoadOrderItemModel>[] CreateColumns(bool viewHierarchical)
@@ -220,7 +212,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
         {
             if (disposing)
             {
-                R3.Disposable.Dispose(MessageSubject);
+                R3.Disposable.Dispose(_disposables, MessageSubject);
             }
 
             _isDisposed = true;
