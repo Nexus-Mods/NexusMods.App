@@ -12,6 +12,7 @@ Get information on potential issues in your loadout(s). [Learn more about Health
 ![An example Health Check message prompting the installation of a missing mod.](../images/0.7.0/HealthCheckExampleBannerlord.webp)
 
 Diagnostics are shown in the following situations and uses the SubModule.xml file included with mods to generate these messages: 
+!!! warning "Bannerlord Software Extender (BLSE) is not supported in 0.7.0. This is planned for a future release."
 
 - A mod is installed and requires another mod which is not installed or enabled.
 - A mod is installed and requires a specific version of another mod which is not installed or enabled.
@@ -19,6 +20,12 @@ Diagnostics are shown in the following situations and uses the SubModule.xml fil
 - The SubModule.xml file in the mod contains errors.
 - The installed mods create a "circular dependency" meaning if you follow the dependencies for each mod you get into an infinite loop. 
 - Load order items need attention. This could be that an entry should be loaded before or after another. 
+
+### Load Order
+!!! info "Work In Progress"
+    The Load Order features are incomplete. A page to visualise and manage the load order will be added soon. 
+
+Module load order is sorted automatically when starting the game. This is powered by the [Bannerlord Launcher Manager](https://github.com/BUTR/Bannerlord.LauncherManager) created by [Aragas](https://www.nexusmods.com/users/2355906). 
 
 
 ### Selective Game Backup
