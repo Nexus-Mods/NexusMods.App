@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
@@ -122,6 +123,8 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     private readonly IObservable<ISortedChangeSet<ILoadOrderItemModel, Guid>> _sortedItems;
 
     public Subject<MoveUpDownCommandPayload> MessageSubject { get; } = new();
+    
+    private System.Reactive.Subjects.Subject<IComparer<ILoadOrderItemModel>> _resortSubject = new(); 
 
     public LoadOrderTreeDataGridAdapter(
         ILoadoutSortableItemProvider sortableItemsProvider,
@@ -152,7 +155,29 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
             }
         );
         
+        // NOTE(Al12rs): Sorting is a bit of a nightmare with the Adapter at the moment.
+        // Cysharp ObservableCollections no longer have a SortedView to apply synchronized sorting to a collection.
+        // The ApplyChanges method used to populate the ObservableList from the changeSet puts new items in based on the
+        // order of the changes received, rather than using accurate indices (it doesn't take a ISortedChangeSet).
+        //
+        // By sorting as the last possible step, the passed changeset retains some sorting indices, which makes the sorting mostly accurate.
+        // This doesn't update correctly though when the sorting direction is changed.
+        // To handle that, we manually trigger a sorting of the Roots list when the sorting direction changes.
+        // Yeah, it's pretty ugly.
         _sortedItems = itemsChangeSet.Sort(comparerObservable);
+
+        var activationDisposable = this.WhenActivated( (self, disposables)  =>
+            {
+                // Sort the Roots list when the sorting direction changes, as it doesn't update correctly otherwise
+                comparerObservable
+                    .Subscribe(comparer => _resortSubject.OnNext(comparer))
+                    .AddTo(disposables);
+                
+                _resortSubject.Subscribe(comparer => Roots.Sort(comparer))
+                    .AddTo(disposables);
+            }
+        );
+        activationDisposable.DisposeWith(_disposables);
     }
 
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
