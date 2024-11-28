@@ -71,7 +71,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         Adapter = adapter;
         Adapter.ViewHierarchical.Value = true;
 
-        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
+        // We have different alerts based on the type of load order, so we key in the SortOrderTypeId
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, $"LoadOrder Alert Type:{itemProviderFactory.SortOrderTypeId}");
 
         InfoAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ShowAlert(); });
 
