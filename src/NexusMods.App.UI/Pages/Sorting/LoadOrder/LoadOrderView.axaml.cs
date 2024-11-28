@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -42,7 +43,8 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .Subscribe(isWinnerTop =>
                         {
                             DockPanel.SetDock(TrophyIcon, isWinnerTop ? Dock.Top : Dock.Bottom);
-                            TrophyBarPanel.Classes.Add(isWinnerTop ? "IsWinnerTop" : "IsWinnerBottom");
+                            TrophyBarPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
+                            TrophyBarPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
                         }
                     )
                     .DisposeWith(disposables);
