@@ -119,7 +119,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
     private readonly IObservable<ListSortDirection> _sortDirectionObservable;
     private readonly IObservable<int> _lastIndexObservable;
     private readonly CompositeDisposable _disposables = new();
-    private readonly IObservable<IChangeSet<ILoadOrderItemModel, Guid>> _sortedItems;
+    private readonly IObservable<ISortedChangeSet<ILoadOrderItemModel, Guid>> _sortedItems;
 
     public Subject<MoveUpDownCommandPayload> MessageSubject { get; } = new();
 
@@ -141,16 +141,18 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<ILoadOrderItemMo
                     MessageSubject
                 )
             );
-
-        _sortedItems = ObservableCacheEx.Switch(_sortDirectionObservable.Select(sortDirection =>
-                {
-                    var isAscending = sortDirection == ListSortDirection.Ascending;
-                    return isAscending
-                        ? itemsChangeSet.SortBy(item => item.SortIndex, SortDirection.Ascending)
-                        : itemsChangeSet.SortBy(item => item.SortIndex, SortDirection.Descending);
-                }
-            )
+        
+        var ascendingComparer = SortExpressionComparer<ILoadOrderItemModel>.Ascending(item => item.SortIndex);
+        var descendingComparer = SortExpressionComparer<ILoadOrderItemModel>.Descending(item => item.SortIndex);
+        var comparerObservable = _sortDirectionObservable.Select(sortDirection =>
+            {
+                return sortDirection == ListSortDirection.Ascending
+                    ? ascendingComparer
+                    : descendingComparer;
+            }
         );
+        
+        _sortedItems = itemsChangeSet.Sort(comparerObservable);
     }
 
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
