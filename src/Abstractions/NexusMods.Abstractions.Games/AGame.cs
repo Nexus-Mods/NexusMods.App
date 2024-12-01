@@ -3,13 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Games;
@@ -22,8 +20,7 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
-    private readonly Lazy<IStandardizedLoadoutSynchronizer> _synchronizer;
-    private readonly Lazy<IEnumerable<IModInstaller>> _installers;
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     private readonly IServiceProvider _provider;
 
     /// <summary>
@@ -34,17 +31,13 @@ public abstract class AGame : IGame
         _provider = provider;
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
-        _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => MakeSynchronizer(provider));
-        _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
     }
 
     /// <summary>
-    /// Helper method to create a <see cref="IStandardizedLoadoutSynchronizer"/>. The result of this method is cached
-    /// so that the same instance is returned every time.
+    /// Called to create the synchronizer for this game.
     /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    protected virtual IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);
     }
@@ -53,44 +46,53 @@ public abstract class AGame : IGame
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public abstract GameDomain Domain { get; }
+    public abstract SupportType SupportType { get; }
+
+    /// <inheritdoc />
+    public virtual HashSet<FeatureStatus> Features { get; } = [];
+
+    /// <inheritdoc />
+    public abstract GameId GameId { get; }
 
     /// <summary>
     /// The path to the main executable file for the game.
     /// </summary>
     public abstract GamePath GetPrimaryFile(GameStore store);
-
-    /// <summary>
-    /// Returns a list of installations for this game.
-    /// Each game can have multiple installations, e.g. different game versions.
-    /// </summary>
-    public virtual IEnumerable<GameInstallation> Installations => _installations ??= GetInstallations();
     
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 
     /// <inheritdoc />
     public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
-
+    
     /// <inheritdoc />
-    public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
+    public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
     /// <inheritdoc/>
-    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
+    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
 
-    /// <summary>
-    /// Helper method to create a list of <see cref="IModInstaller"/>s. The result of this method is cached
-    /// behind a lazy.
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    protected virtual IEnumerable<IModInstaller> MakeInstallers(IServiceProvider provider)
-    {
-        return Array.Empty<IModInstaller>();
-    }
+    /// <inheritdoc/>
+    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+
+    /// <inheritdoc />
+    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
+    {
+        var locations = GetLocations(metadata.GameFileSystem, metadata);
+        return new GameInstallation
+        {
+            Game = this,
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
+            InstallDestinations = GetInstallDestinations(locations),
+            Version = metadata.Version ?? GetVersion(metadata),
+            Store = metadata.Store,
+            LocatorResultMetadata = metadata.Metadata,
+            Locator = locator,
+            GameMetadataId = dbId,
+        };
+    }
 
     /// <summary>
     /// Returns the game version if GameLocatorResult failed to get the game version.

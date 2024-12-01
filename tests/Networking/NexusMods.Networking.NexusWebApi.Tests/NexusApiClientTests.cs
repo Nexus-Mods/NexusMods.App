@@ -1,5 +1,7 @@
 using System.Net;
 using FluentAssertions;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -14,13 +16,9 @@ public class NexusApiClientTests
     }
 
     [Fact]
-    public async Task CanGetGames()
+    public async Task CanGetCollectionDownloadLinks()
     {
-        var games = await _nexusApiClient.Games();
-
-        games.StatusCode.Should().Be(HttpStatusCode.OK);
-        games.Data.Should().NotBeEmpty();
-        games.Data.Select(g => g.Name).Should().Contain("Skyrim Special Edition");
-        games.Data.Length.Should().BeGreaterThan(2000);
+        var links = await _nexusApiClient.CollectionDownloadLinksAsync(CollectionSlug.From("iszwwe"), RevisionNumber.From(469));
+        links.Data.DownloadLinks.Should().HaveCountGreaterThan(0);
     }
 }

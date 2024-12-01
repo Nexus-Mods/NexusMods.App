@@ -16,7 +16,6 @@
     <Grid ColumnDefinitions="Auto, *, Auto">
         <Grid.Styles>
             <Style Selector="icons|UnifiedIcon.FileTypeIcon">
-                <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
 
@@ -50,7 +49,7 @@
         </StackPanel>
 
         <!-- Select Button -->
-        <Button Grid.Column="2" Classes="Rounded Primary RightElements" HorizontalAlignment="Right"
+        <Button Grid.Column="2" Classes="Standard Tertiary Weak RightElements" HorizontalAlignment="Right"
                 x:Name="SelectRoundedButton">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resources:Language.SelectButton_Select}" />

@@ -1,0 +1,107 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutCard:ILoadoutCardViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
+                                xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
+                                x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
+    <Design.DataContext>
+        <loadoutCard:LoadoutCardDesignViewModel />
+    </Design.DataContext>
+
+    <Border x:Name="ContainerBorder">
+        <Grid>
+            <Button x:Name="CardOuterButton">
+
+                <panels:FlexPanel x:Name="CardOuterFlexPanel">
+
+                    <Border x:Name="ImageSectionBorder">
+                        <Grid>
+                            <Image x:Name="GameImage" />
+                            <Rectangle x:Name="GradientLayerRectangle" />
+                            <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" Classes="CardSize" />
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="DetailsSectionBorder">
+
+                        <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
+
+                            <TextBlock x:Name="LoadoutNameTextBlock"
+                                       Classes="BodyLGBold" />
+
+                            <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
+
+                                <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
+
+                                    <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
+
+                                        <TextBlock x:Name="CurrentlyAppliedTextBlock"
+                                                   Classes="BodySMBold"
+                                                   Text="{x:Static resources:Language.LoadoutCardViewCurrentlyAppliedTextBlock}" />
+                                        <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
+                                                           Classes="CheckBox" />
+
+                                    </panels:FlexPanel>
+
+                                    <TextBlock x:Name="LastAppliedTimeTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued"
+                                               IsVisible="False" />
+
+                                    <TextBlock x:Name="CreatedTimeTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued" />
+
+                                    <TextBlock x:Name="NumberOfModsTextBlock"
+                                               Classes="BodySMNormal ForegroundSubdued" />
+
+                                </panels:FlexPanel>
+
+                                <Border x:Name="ActionsBorder">
+                                    <panels:FlexPanel x:Name="ActionsFlexPanel">
+
+                                        <Button x:Name="CreateCopyButton"
+                                                Classes="Rounded Primary">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <Button x:Name="DeleteButton"
+                                                Classes="Rounded Primary">
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
+                                            </ToolTip.Tip>
+                                            <icons:UnifiedIcon Classes="DeleteForever" />
+                                        </Button>
+                                    </panels:FlexPanel>
+                                </Border>
+
+                            </panels:FlexPanel>
+
+                        </panels:FlexPanel>
+                    </Border>
+
+                </panels:FlexPanel>
+            </Button>
+
+            <!-- Needs to be on top of the card button to avoid the disabled opacity -->
+            <panels:FlexPanel x:Name="OverlayFlexPanel" IsVisible="False">
+                <panels:FlexPanel x:Name="OverlaySpinnerFlexPanel">
+                    <spinner:Spinner x:Name="OverlaySpinner" />
+                    <TextBlock x:Name="OverlayTextBlock"
+                               Classes="BodyXLNormal ForegroundSubdued"
+                               Text="{x:Static resources:Language.LoadoutCardViewDeletingText}" />
+                </panels:FlexPanel>
+                <Border />
+            </panels:FlexPanel>
+        </Grid>
+    </Border>
+
+
+</reactiveUi:ReactiveUserControl>

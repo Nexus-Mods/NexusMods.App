@@ -1,13 +1,12 @@
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -37,7 +36,7 @@ public readonly struct DeploymentData
     public Dictionary<RelativePath, GamePath> ArchiveToOutputMap { get; init; } = new();
 
     /// <summary>
-    /// This is a reverse lookup for the _archiveToOutputMap.<br/>.
+    /// This is a reverse lookup for the _archiveToOutputMap.
     /// We use this lookup to ensure that a file has not already been mapped to a given location.
     /// </summary>
     public Dictionary<GamePath, RelativePath> OutputToArchiveMap { get; init; } = new();
@@ -101,27 +100,18 @@ public readonly struct DeploymentData
         OutputToArchiveMap.Clear();
     }
 
-    /// <summary>
-    /// Emits a series of AModFile instructions based on the current mappings.
-    /// </summary>
-    /// <param name="archiveFiles">Files from the archive.</param>
-    /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
-    public IEnumerable<TempEntity> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
+    public void CreateLoadoutItems(
+        KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
+        LoadoutId loadoutId,
+        LoadoutItemGroup.New loadoutGroup,
+        ITransaction transaction)
     {
-        // Written like this for clarity, use array in actual code.
-        // Just an example, might not compile.
-        foreach (var mapping in ArchiveToOutputMap)
+        foreach (var (src, value) in ArchiveToOutputMap)
         {
-            // find file in `files` input.
-            var src = RelativePath.FromUnsanitizedInput(mapping.Key);
-            var file = archiveFiles.FindByPathFromChild(src)!;
+            var file = archiveFiles.FindByPathFromChild(src);
+            if (file is null) throw new KeyNotFoundException($"Unable to find file `{src}` in tree!");
 
-            yield return new TempEntity
-            {
-                { StoredFile.Hash, file.Item.Hash },
-                { StoredFile.Size, file.Item.Size },
-                { File.To, mapping.Value },
-            };
+            file.ToLoadoutFile(loadoutId, loadoutGroup, transaction, value);
         }
     }
 }

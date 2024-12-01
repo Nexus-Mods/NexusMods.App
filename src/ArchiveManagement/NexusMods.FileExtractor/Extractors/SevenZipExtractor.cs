@@ -1,16 +1,12 @@
-using System.Runtime.InteropServices;
 using System.Text;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.FileExtractor.Extractors;
@@ -27,7 +23,6 @@ public class SevenZipExtractor : IExtractor
 {
     private readonly TemporaryFileManager _manager;
     private readonly ILogger<SevenZipExtractor> _logger;
-    private readonly IActivityFactory _activityFactory;
 
     private static readonly IOSInformation OSInformation = Paths.OSInformation.Shared;
 
@@ -42,21 +37,15 @@ public class SevenZipExtractor : IExtractor
     public Extension[] SupportedExtensions => SupportedExtensionsCached;
 
     /// <summary>
-    /// Creates a 7-zip based extractor.
+    /// Constructor.
     /// </summary>
-    /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
-    /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
-    /// <param name="activityFactory"></param>
-    /// <param name="fileSystem">Filesystem to use when constructing and using paths</param>
     public SevenZipExtractor(
         ILogger<SevenZipExtractor> logger,
         TemporaryFileManager fileManager,
-        IActivityFactory activityFactory,
         IFileSystem fileSystem)
     {
         _logger = logger;
         _manager = fileManager;
-        _activityFactory = activityFactory;
 
         _exePath = GetExtractorExecutable(fileSystem);
         logger.LogDebug("Using extractor at {ExtractorExecutable}", _exePath);
@@ -65,18 +54,14 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
-        using var job = _activityFactory.Create<Size>(IExtractor.Group, "Extracting {File}", sFn.Name);
-        await ExtractAllAsync_Impl(sFn, destination, token, job);
+        await ExtractAllAsync_Impl(sFn, destination, token);
     }
 
     /// <inheritdoc />
     public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
     {
-        using var job = _activityFactory.Create<Size>(IExtractor.Group, "Extracting {File}", sFn.Name);
-        job.SetMax(sFn.Size);
-
         await using var dest = _manager.CreateFolder();
-        await ExtractAllAsync_Impl(sFn, dest, token, job);
+        await ExtractAllAsync_Impl(sFn, dest, token);
 
         var results = await dest.Path.EnumerateFiles()
             .SelectAsync(async f =>
@@ -110,7 +95,7 @@ public class SevenZipExtractor : IExtractor
         return Priority.None;
     }
 
-    private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IActivitySource<Size> activity)
+    private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
         TemporaryPath? spoolFile = null;
         var processStdOutput = new StringBuilder();
@@ -137,8 +122,6 @@ public class SevenZipExtractor : IExtractor
             var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
 
-            activity.SetMax(totalSize);
-
             // NOTE: 7z.exe has a bug with long destination path with forwards `/` separators on windows,
             // as a workaround we need to change the separators to backwards '\' on windows.
             // See: https://sourceforge.net/p/sevenzip/discussion/45797/thread/a9a0f02618/
@@ -159,8 +142,6 @@ public class SevenZipExtractor : IExtractor
                     var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
                     var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
-                    if (throughput > Size.Zero)
-                        activity.AddProgress(throughput);
 
                     lastPercent = percentInt;
                 }))
@@ -183,30 +164,39 @@ public class SevenZipExtractor : IExtractor
         }
         finally
         {
-            _logger.LogDebug("Cleaning up after extraction");
             if (spoolFile.HasValue)
+            {
+                _logger.LogDebug("Cleaning up after extraction");
                 await spoolFile.Value.DisposeAsync();
+            }
         }
     }
 
     private static string GetExtractorExecutableFileName()
     {
         return OSInformation.MatchPlatform(
-            onWindows: () => "7z.exe",
-            onLinux: () => "7zz",
-            onOSX: () => "7zz"
+            onWindows: static () => "7z.exe",
+            onLinux: static () => "7zz",
+            onOSX: static () => "7zz"
         );
     }
 
     private static string GetExtractorExecutable(IFileSystem fileSystem)
     {
-        var fileName = GetExtractorExecutableFileName();
-        if (UseSystemExtractor) return fileName;
+        if (UseSystemExtractor)
+        {
+            // Depending on the user's distro and package of choice, 7z
+            // may have different names, so we'll check for the common ones.
+            return !OSInformation.IsLinux
+                ? GetExtractorExecutableFileName() :
+                FindSystem7zOnLinux();
+        }
 
+        var fileName = GetExtractorExecutableFileName();
         var directory = OSInformation.MatchPlatform(
-            onWindows: () => "runtimes/win-x64/native/",
-            onLinux: () => "runtimes/linux-x64/native/",
-            onOSX: () => "runtimes/osx-x64/native/"
+            onWindows: static () => "runtimes/win-x64/native/",
+            onLinux: static () => "runtimes/linux-x64/native/",
+            onOSX: static () => "runtimes/osx-x64/native/"
         );
 
         return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(directory + fileName).ToString();
@@ -219,9 +209,24 @@ public class SevenZipExtractor : IExtractor
     /// See https://github.com/Nexus-Mods/NexusMods.App/issues/1306 for details.
     /// </remarks>
     private const bool UseSystemExtractor =
-#if USE_SYSTEM_EXTRACTOR
+#if NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR
         true;
 #else
         false;
 #endif
+    
+    private static string FindSystem7zOnLinux()
+    {
+        string[] potentialBinaryNames = ["7z", "7zz", "7zzs"];
+        var pathDirectories = Environment.GetEnvironmentVariable("PATH")!.Split(':');
+
+        foreach (var pathDir in pathDirectories)
+        foreach (var binaryName in potentialBinaryNames)
+        {
+            if (File.Exists(Path.Combine(pathDir, binaryName)))
+                return binaryName;
+        }
+
+        throw new Exception("Cannot find system 7z binary in PATH");
+    }
 }

@@ -1,20 +1,20 @@
-using System.Collections.Immutable;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,14 +23,14 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
+    
+    public ReactiveCommand<Unit, Unit> BringWindowToFront { get; } = ReactiveCommand.Create(() => { });
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
-        IOSInformation osInformation,
         IWindowManager windowManager,
-        IDownloadService downloadService,
         IOverlayController overlayController,
-        IConnection conn)
+        ILoginManager loginManager)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -49,9 +49,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
-        // Only show controls in Windows since we can remove the chrome on that platform
-        TopBar.ShowWindowControls = osInformation.IsWindows;
-        
         this.WhenActivated(d =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
@@ -69,14 +66,25 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 updaterViewModel.MaybeShow();
             }
 
+            loginManager.IsLoggedInObservable
+                .DistinctUntilChanged()
+                .Where(isSignedIn => isSignedIn)
+                .Select(_ => Unit.Default)
+                .InvokeReactiveCommand(BringWindowToFront)
+                .DisposeWith(d);
+            
+            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
+            loginMessageVM.Controller = overlayController;
+            loginMessageVM.MaybeShow();
+
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.IsActive)
                 .Where(isActive => isActive)
-                .Select(_ => WindowId)
-                .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .Select(_ => this)
+                .BindTo(_windowManager, manager => manager.ActiveWindow)
                 .DisposeWith(d);
             
             overlayController.WhenAnyValue(oc => oc.CurrentOverlay)

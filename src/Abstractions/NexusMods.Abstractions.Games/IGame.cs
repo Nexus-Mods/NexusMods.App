@@ -1,10 +1,10 @@
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
+
 
 namespace NexusMods.Abstractions.Games;
 
@@ -14,16 +14,10 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface IGame : ILocatableGame
 {
-    /// <summary>
-    /// IEnumerable of all valid installations of this game on this machine
-    /// </summary>
-    public IEnumerable<GameInstallation> Installations { get; }
+    SupportType SupportType { get; }
+    HashSet<FeatureStatus> Features { get; }
+    GameFeatureStatus FeatureStatus => Features.ToStatus();
 
-    /// <summary>
-    /// Resets the internal cache of installations, forcing a re-scan on the next access of <see cref="Installations"/>.
-    /// </summary>
-    public void ResetInstallations();
-    
     /// <summary>
     /// Stream factory for the game's icon, must be square but need not be small.
     /// </summary>
@@ -33,21 +27,38 @@ public interface IGame : ILocatableGame
     /// Stream factory for the game's image, should be close to 16:9 aspect ratio.
     /// </summary>
     public IStreamFactory GameImage { get; }
-
+    
     /// <summary>
-    /// A collection of all <see cref="IModInstaller"/>s that this game supports. The installers
-    /// will be tested against a mod's files in the order they are returned by this property.
+    /// Gets all available installers this game supports.
     /// </summary>
-    public IEnumerable<IModInstaller> Installers { get; }
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
 
     /// <summary>
     /// An array of all instances of <see cref="IDiagnosticEmitter"/> supported
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+    
+    /// <summary>
+    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
+    /// by the game.
+    /// </summary>
+    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
 
     /// <summary>
-    /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.
+    /// The synchronizer for this game.
     /// </summary>
     public ILoadoutSynchronizer Synchronizer { get; }
+    
+    /// <summary>
+    /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,
+    /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
+    /// </summary>
+    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
+    
+    /// <summary>
+    /// Returns the primary (executable) file for the game.
+    /// </summary>
+    /// <param name="store">The store used for the game.</param>
+    public GamePath GetPrimaryFile(GameStore store);
 }

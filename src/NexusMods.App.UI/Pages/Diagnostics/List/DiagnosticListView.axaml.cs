@@ -38,8 +38,7 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
                     WarningDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
                     SuggestionDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
 
-                    NoDiagnosticsText.IsVisible = total == 0;
-                    ItemsControl.IsVisible = total != 0;
+                    EmptyState.IsActive = total == 0;
                 })
                 .DisposeWith(disposable);
 

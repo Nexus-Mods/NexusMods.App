@@ -35,7 +35,7 @@ public partial class SpineDownloadButtonView : ReactiveUserControl<ISpineDownloa
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Number)
-                .Select(n => n.ToString("###0.00"))
+                .Select(n => n.ToString("###0.0"))
                 .BindToUi(this, view => view.NumberTextBlock.Text)
                 .DisposeWith(d);
 

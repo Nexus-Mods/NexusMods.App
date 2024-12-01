@@ -1,6 +1,6 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using OneOf;
 
 namespace NexusMods.App.UI;
@@ -9,6 +9,7 @@ namespace NexusMods.App.UI;
 /// Represents an image cache.
 /// </summary>
 [PublicAPI]
+[Obsolete("To be replaced with resource pipelines")]
 public interface IImageCache : IDisposable
 {
     /// <summary>

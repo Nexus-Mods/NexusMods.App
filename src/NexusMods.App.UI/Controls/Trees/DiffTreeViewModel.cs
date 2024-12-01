@@ -3,10 +3,12 @@ using Avalonia.Controls;
 using DynamicData;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
@@ -18,7 +20,7 @@ namespace NexusMods.App.UI.Controls.Trees;
 public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private readonly LoadoutId _loadoutId;
-    private readonly IApplyService _applyService;
+    private readonly ISynchronizerService _syncService;
     private readonly IConnection _conn;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _treeSourceCache;
     private readonly ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
@@ -30,19 +32,19 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
 
-    public DiffTreeViewModel(LoadoutId loadoutId, IApplyService applyService, IConnection conn)
+    public DiffTreeViewModel(LoadoutId loadoutId, ISynchronizerService syncService, IConnection conn)
     {
         _loadoutId = loadoutId;
-        _applyService = applyService;
+        _syncService = syncService;
         _conn = conn;
 
         _treeSourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(entry => entry.Key);
         _statusBarSourceList = new SourceList<string>();
 
         _treeSourceCache.Connect()
+            .OnUI()
             .TransformToTree(model => model.ParentKey)
             .Transform(node => node.Item.Initialize(node))
-            .OnUI()
             .Bind(out _items)
             .Subscribe();
 
@@ -54,15 +56,15 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         TreeSource = CreateTreeSource(_items);
     }
 
-    public async Task Refresh()
+    public void Refresh()
     {
-        var loadout = _conn.Db.Get(_loadoutId);
-        if (loadout is null)
+        var loadout = Loadout.Load(_conn.Db, _loadoutId);
+        if (!loadout.IsValid())
         {
             throw new KeyNotFoundException($"Loadout with ID {_loadoutId} not found.");
         }
 
-        var diffTree = await _applyService.GetApplyDiffTree(loadout);
+        var diffTree = _syncService.GetApplyDiffTree(loadout);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
@@ -76,7 +78,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         ulong operationSize = 0;
 
 
-        var locationsRegister = loadout.Installation.LocationsRegister;
+        var locationsRegister = loadout.InstallationInstance.LocationsRegister;
 
         // Add the root directories
         foreach (var rootNode in diffTree.GetRoots())
@@ -91,6 +93,8 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             )
             {
                 ChangeType = FileChangeType.None,
+                // Always expand the root nodes
+                IsExpanded = true,
             };
             fileViewModelNodes.Add(rootNode.GamePath(), model);
         }
@@ -206,8 +210,8 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             {
                 FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
                 FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
                 FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
             },
         };
     }

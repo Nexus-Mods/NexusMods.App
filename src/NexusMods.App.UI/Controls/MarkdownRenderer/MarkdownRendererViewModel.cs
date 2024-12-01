@@ -2,13 +2,14 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -60,7 +61,7 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
                 .Do(ParseGitHubUri)
                 .WhereNotNull()
                 .OffUi()
-                .InvokeCommand(fetchMarkdownCommand)
+                .InvokeReactiveCommand(fetchMarkdownCommand)
                 .DisposeWith(disposables);
 
             fetchMarkdownCommand
@@ -113,11 +114,14 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
     private async Task<Stream?> FetchGitHubImage(string path, CancellationToken cancellationToken = default)
     {
         if (_gitHubBaseUri is null) return null;
-        if (path.StartsWith("./"))
-            path = path.Substring(startIndex: 2);
+        if (path.StartsWith("./")) path = path.Substring(startIndex: 2);
 
         var uri = new Uri($"{_gitHubBaseUri}{path}");
+        return await FetchRemoteImage(uri, cancellationToken);
+    }
 
+    private async Task<Stream?> FetchRemoteImage(Uri uri, CancellationToken cancellationToken = default)
+    {
         var hash = await _imageCache.Prefetch(new ImageIdentifier(uri), cancellationToken);
         var hashValue = hash.Value;
 
@@ -155,6 +159,23 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 
         public Task<Stream?>? ResolveImageResource(string relativeOrAbsolutePath)
         {
+            if (Uri.TryCreate(relativeOrAbsolutePath, UriKind.Absolute, out var uri))
+            {
+                if (uri.Scheme == "http")
+                {
+                    _parent._logger.LogWarning("Skip loading image from unsecure HTTP URL: {Uri}", uri);
+                    return null;
+                }
+
+                if (uri.Scheme != "https")
+                {
+                    _parent._logger.LogWarning("Unknown URI schema: {Uri}", uri);
+                    return null;
+                }
+
+                return _parent.FetchRemoteImage(uri);
+            }
+
             if (_parent.MarkdownUri is null) return null;
             return _parent.FetchGitHubImage(relativeOrAbsolutePath);
         }

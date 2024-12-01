@@ -16,7 +16,7 @@
 
     <!-- Dialog WithDecorations -->
     <Style Selector="Window.Dialog.WithDecorations">
-        <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}"/>
+        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}"/>
         <Setter Property="ExtendClientAreaChromeHints" Value="Default"/>
         <Setter Property="Padding" Value="0,32,0,0"/>
         <Setter Property="WindowStartupLocation" Value="CenterOwner"/>

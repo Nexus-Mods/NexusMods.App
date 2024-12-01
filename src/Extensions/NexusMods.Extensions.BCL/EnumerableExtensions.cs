@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NexusMods.Extensions.BCL;
 
@@ -13,11 +14,29 @@ public static class EnumerableExtensions
     /// in a try-get style. This is helpful for value types like structs that have a non-null default value.
     /// </summary>
     /// <returns></returns>
-    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T? value)
+    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, [NotNullWhen(true)] out T? value)
+    where T : notnull
     {
         foreach (var item in enumerable)
         {
             if (!predicate(item)) continue;
+            value = item;
+            return true;
+        }
+
+        value = default(T);
+        return false;
+    }
+    
+    /// <summary>
+    /// <see cref="Enumerable.FirstOrDefault{TSource}(System.Collections.Generic.IEnumerable{TSource})"/>
+    /// in a try-get style. This is helpful for value types like structs that have a non-null default value.
+    /// </summary>
+    /// <returns></returns>
+    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, out T? value)
+    {
+        foreach (var item in enumerable)
+        {
             value = item;
             return true;
         }

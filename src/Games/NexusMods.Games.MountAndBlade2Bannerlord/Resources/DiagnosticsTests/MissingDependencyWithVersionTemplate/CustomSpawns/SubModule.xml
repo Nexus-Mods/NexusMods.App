@@ -1,0 +1,10 @@
+<Module>
+    <!-- 👇 Current mod is `CustomSpawns` -->
+    <Id value="CustomSpawns"/>
+    <Name value="Custom Spawns"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ This dependency `UIExtenderEx` with exact version `v1.0.0` is not installed -->
+        <DependedModuleMetadata id="UIExtenderEx" version="v1.0.0" />
+    </DependedModuleMetadatas>
+</Module>
+

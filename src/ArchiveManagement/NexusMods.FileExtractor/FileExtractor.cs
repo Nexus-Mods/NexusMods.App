@@ -126,25 +126,22 @@ public class FileExtractor : IFileExtractor
         return await ForEachEntry(new NativeFileStreamFactory(file), func, token);
     }
 
-    /// <summary>
-    /// Tests if a specific file can be extracted with this extractor.
-    /// </summary>
-    /// <param name="sFn">The path to the file to test.</param>
-    /// <returns>True if the extractor can extract this file, else false.</returns>
-    public async Task<bool> CanExtract(AbsolutePath sFn)
+    /// <inheritdoc/>
+    public ValueTask<bool> CanExtract(AbsolutePath path)
     {
-        return await CanExtract(new NativeFileStreamFactory(sFn));
+        return CanExtract(new NativeFileStreamFactory(path));
     }
 
-    /// <summary>
-    /// Tests if a specific file can be extracted with this extractor.
-    /// </summary>
-    /// <param name="sFn">The stream to test.</param>
-    /// <returns>True if the extractor can extract this stream, else false.</returns>
-    public async Task<bool> CanExtract(IStreamFactory sFn)
+    /// <inheritdoc/>
+    public async ValueTask<bool> CanExtract(IStreamFactory sFn)
     {
-        await using var stream = await sFn.GetStreamAsync();
-        return (await SignatureChecker.MatchesAsync(stream)).Any();
+        return await CanExtract(await sFn.GetStreamAsync());
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<bool> CanExtract(Stream stream)
+    {
+        return await SignatureChecker.MatchesAnyAsync(stream);
     }
 
     private async ValueTask<IExtractor[]> FindExtractors(IStreamFactory sFn)

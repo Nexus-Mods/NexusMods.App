@@ -1,60 +1,117 @@
-using System.Reactive;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform;
+using NexusMods.CrossPlatform.Process;
+using NexusMods.Paths;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
-[UsedImplicitly]
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
+
+    [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
+    [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
+
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
+
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
+
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
+
+    [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
+    [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
+
+    private readonly ObservableAsPropertyHelper<IImage?> _avatar;
+    public IImage? Avatar => _avatar.Value;
+    
+    [Reactive] public string? Username { get; set; } = string.Empty;
+
+    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
+
+    [Reactive] public IPanelTabViewModel? SelectedTab { get; set; }
 
     public TopBarViewModel(
         IServiceProvider serviceProvider,
         ILogger<TopBarViewModel> logger,
         ILoginManager loginManager,
         IWindowManager windowManager,
-        IOverlayController overlayController)
+        IOverlayController overlayController,
+        IOSInterop osInterop,
+        ISettingsManager settingsManager,
+        IFileSystem fileSystem)
     {
         _logger = logger;
         _loginManager = loginManager;
 
-        if (!windowManager.TryGetActiveWindow(out var window))
-        {
-            throw new NotImplementedException();
-        }
+        var workspaceController = windowManager.ActiveWorkspaceController;
 
-        var workspaceController = window.WorkspaceController;
-
-        SettingsActionCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var page = new PageData
             {
                 Context = new SettingsPageContext(),
-                FactoryId = SettingsPageFactory.StaticId
+                FactoryId = SettingsPageFactory.StaticId,
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
+            var workspace = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => page);
+            workspaceController.OpenPage(workspace.Id, page, behavior);
         });
 
-        HelpActionCommand = ReactiveCommand.Create(() =>
+        ViewChangelogCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+            var page = new PageData
+            {
+                Context = new ChangelogPageContext
+                {
+                    TargetVersion = null,
+                },
+                FactoryId = ChangelogPageFactory.StaticId,
+            };
+
+            var behavior = workspaceController.GetOpenPageBehavior(page, info);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
+        });
+
+        ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var loggingSettings = settingsManager.Get<LoggingSettings>();
+            var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
+            await osInterop.OpenDirectory(logDirectory);
+        });
+
+        GiveFeedbackCommand = ReactiveCommand.Create(() =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = workspaceController;
@@ -62,42 +119,74 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             overlayController.Enqueue(alphaWarningViewModel);
         });
 
+        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
+        LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
+
+        var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
+        LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
+
+        _avatar = _loginManager.AvatarObservable
+            .OffUi()
+            .SelectMany(LoadImage)
+            .ToProperty(this, vm => vm.Avatar, scheduler: RxApp.MainThreadScheduler);
+
+        OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var userInfo = await _loginManager.GetUserInfoAsync();
+            if (userInfo is null) return;
+
+            var userId = userInfo.UserId.Value;
+            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
+            await osInterop.OpenUrl(uri);
+        });
+
         this.WhenActivated(d =>
         {
-            var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
-            LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin).DisposeWith(d);
-
-            var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
-            LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout).DisposeWith(d);
-
-            _loginManager.IsLoggedIn
+            _loginManager.IsLoggedInObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(logger, x => IsLoggedIn = x)
+                .BindToVM(this, vm => vm.IsLoggedIn)
                 .DisposeWith(d);
 
-            _loginManager.IsPremium
+            _loginManager.UserInfoObservable
+                .Select(u => u?.Name)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(name => Username = name ?? "");
+            
+            _loginManager.IsPremiumObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(logger, x => IsPremium = x)
+                .BindToVM(this, vm => vm.IsPremium)
                 .DisposeWith(d);
 
-            _loginManager.Avatar
-                .WhereNotNull()
-                .OffUi()
-                .SelectMany(LoadImage)
-                .WhereNotNull()
-                .OnUI()
-                .SubscribeWithErrorLogging(logger, x => Avatar = x)
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
+                .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
+                .DisposeWith(d);
+            
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Subtitle)
+                .BindToVM(this, vm => vm.ActiveWorkspaceSubtitle)
                 .DisposeWith(d);
 
-            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
-                .Select(title => title.ToUpperInvariant())
-                .BindTo(this, vm => vm.ActiveWorkspaceTitle)
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)
+                .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(d);
         });
     }
 
-    private async Task<IImage?> LoadImage(Uri uri)
+    private async Task<IImage?> LoadImage(Uri? uri)
     {
+        if (uri is null) return null;
+
         try
         {
             var client = new HttpClient();
@@ -122,39 +211,4 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger.LogInformation("Logging out of Nexus Mods");
         await _loginManager.Logout();
     }
-
-    [Reactive] public bool ShowWindowControls { get; set; } = false;
-
-    [Reactive] public bool IsLoggedIn { get; set; }
-
-    [Reactive] public bool IsPremium { get; set; }
-
-    [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
-    [Reactive] public string ActiveWorkspaceTitle { get; set; } = string.Empty;
-
-    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
-
-    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; }
 }

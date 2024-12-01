@@ -1,8 +1,12 @@
 using System.Collections.ObjectModel;
+using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface INewTabPageViewModel : IPageViewModelInterface
 {
-    public ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections { get; }
+    ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections { get; }
+
+    AlertSettingsWrapper AlertSettingsWrapper { get; }
 }

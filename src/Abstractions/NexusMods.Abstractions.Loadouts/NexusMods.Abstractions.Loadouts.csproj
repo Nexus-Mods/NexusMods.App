@@ -1,22 +1,46 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Analyzers\NexusMods.Abstractions.MnemonicDB.Analyzers.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
-      <PackageReference Include="FlatSharp.Compiler">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="FlatSharp.Runtime" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
-      <PackageReference Include="NexusMods.MnemonicDB.Storage" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Triggers\NexusMods.Abstractions.Triggers.csproj" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Models\CollectionGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutItemGroup.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutItemWithTargetPath.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutOverridesGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LibraryLinkedLoadoutItem.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\DeletedFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutGameFilesGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

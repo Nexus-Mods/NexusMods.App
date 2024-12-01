@@ -1,17 +1,18 @@
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using DynamicData.Binding;
+using Avalonia.Input.Raw;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -27,25 +28,14 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
-    /// <summary>
-    /// Allows you to subscribe to notifications of when the user information changes.
-    /// </summary>
-    public IObservable<UserInfo?> UserInfo { get; }
+    private readonly BehaviorSubject<UserInfo?> _userInfo = new(initialValue: null);
 
-    /// <summary>
-    /// True if the user is logged in
-    /// </summary>
-    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info is not null);
+    /// <inheritdoc/>
+    public Observable<UserInfo?> UserInfoObservable => _userInfo;
 
-    /// <summary>
-    /// True if the user is logged in and is a premium member
-    /// </summary>
-    public IObservable<bool> IsPremium => UserInfo.Select(info => info?.IsPremium ?? false);
+    private readonly IDisposable _observeDatomDisposable;
 
-    /// <summary>
-    /// The user's avatar
-    /// </summary>
-    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.AvatarUrl);
+    public bool IsPremium { get; private set; }
 
     /// <summary>
     /// Constructor.
@@ -55,7 +45,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IRepository<JWTToken.Model> jwtTokenRepository,
         IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
@@ -63,22 +52,34 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _jwtTokenRepository = jwtTokenRepository;
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfo = _jwtTokenRepository.Observable
-            .ToObservableChangeSet()
-            // NOTE(err120): Since IDs don't change on startup, we can insert
-            // a fake change at the start of the observable chain. This will only
-            // run once at startup and notify the subscribers.
-            .ObserveOn(TaskPoolScheduler.Default)
-            .SelectMany(async _ => await Verify(CancellationToken.None));
+        _observeDatomDisposable = _conn
+            .ObserveDatoms(JWTToken.PrimaryAttribute)
+            .IsNotEmpty()
+            .ToObservable()
+            .DistinctUntilChanged()
+            .SubscribeAwait(async (hasValue, cancellationToken) =>
+            {
+                _cachedUserInfo.Evict();
+
+                if (!hasValue)
+                {
+                    _userInfo.OnNext(value: null);
+                    IsPremium = false;
+                }
+                else
+                {
+                    var userInfo = await Verify(cancellationToken);
+                    _userInfo.OnNext(userInfo);
+                    IsPremium = userInfo?.IsPremium ?? false;
+                }
+            }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
-    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
     private readonly IConnection _conn;
 
     private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
@@ -99,15 +100,18 @@ public sealed class LoginManager : IDisposable, ILoginManager
         return userInfo;
     }
 
+    /// <inheritdoc />
+    public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
+    {
+        return await Verify(token);
+    }
+
     /// <summary>
     /// Show a browser and log into Nexus Mods
     /// </summary>
     /// <param name="token"></param>
     public async Task LoginAsync(CancellationToken token = default)
     {
-        // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        await _protocolRegistration.RegisterSelf("nxm");
-
         JwtTokenReply? jwtToken;
         try
         {
@@ -132,8 +136,8 @@ public sealed class LoginManager : IDisposable, ILoginManager
         
         using var tx = _conn.BeginTransaction();
 
-        var newTokenEntity = JWTToken.Model.Create(_conn.Db, tx, jwtToken!);
-        if (newTokenEntity is null)
+        var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken);
+        if (!newTokenEntity.HasValue)
         {
             _logger.LogError("Invalid new token data");
             return;
@@ -148,12 +152,23 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
-    }
+        var tokenEntities = JWTToken.All(_conn.Db).Select(e => e.Id).ToArray();
 
+        // Retract the entities first, so the UI updates, then excise them
+        using var tx = _conn.BeginTransaction();
+        foreach (var entity in tokenEntities)
+            tx.Delete(entity, false);
+        await tx.Commit();
+
+
+        await _conn.Excise(tokenEntities);
+    }
+    
+    
     /// <inheritdoc/>
     public void Dispose()
     {
         _verifySemaphore.Dispose();
+        _observeDatomDisposable.Dispose();
     }
 }

@@ -31,6 +31,21 @@
 
             <StackPanel Classes="HorizontalShowcase" Orientation="Horizontal">
 
+                <!-- Rounded Primary Icon only -->
+                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                    <TextBlock>Rounded Primary</TextBlock>
+                    <Button Classes="Rounded Primary">
+                        
+                            <icons:UnifiedIcon Classes="Play" />
+                        
+                    </Button>
+                    <Button Classes="Rounded Primary" IsEnabled="False">
+                        
+                            <icons:UnifiedIcon Classes="Play" />
+                        
+                    </Button>
+                </StackPanel>
+                
                 <!-- Rounded Primary -->
                 <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
                     <TextBlock>Rounded Primary</TextBlock>
@@ -174,13 +189,13 @@
 
 
     <!-- Style Definitions -->
-
+    
 
     <!-- Base Rounded Button (only use with additional qualifiers) -->
     <Style Selector="Button.Rounded">
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="Padding" Value="7,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="6,0" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
         <Setter Property="BorderThickness" Value="1" />
@@ -206,7 +221,7 @@
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
-            <Setter Property="Margin" Value="8,0" />
+            <Setter Property="Margin" Value="0,0" />
         </Style>
 
         <Style Selector="^ > StackPanel > TextBlock">
@@ -215,8 +230,8 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
-            <Setter Property="Size" Value="24" />
+        <Style Selector="^ icons|UnifiedIcon">
+            <Setter Property="Size" Value="16" />
         </Style>
 
         <Style Selector="^ > StackPanel > Button.Pill.Label">
@@ -237,14 +252,14 @@
 
     <!-- Rounded Primary -->
     <Style Selector="Button.Rounded.Primary">
-        <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMid}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight200Brush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHigh}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">

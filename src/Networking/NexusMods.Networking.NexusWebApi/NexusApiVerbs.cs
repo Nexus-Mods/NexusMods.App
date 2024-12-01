@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -11,8 +12,7 @@ internal static class NexusApiVerbs
 {
     internal static IServiceCollection AddNexusApiVerbs(this IServiceCollection collection) =>
         collection.AddVerb(() => NexusApiVerify)
-            .AddVerb(() => NexusDownloadLinks)
-            .AddVerb(() => NexusGames);
+            .AddVerb(() => NexusDownloadLinks);
 
 
     [Verb("nexus-api-verify", "Verifies the logged in account via the Nexus API")]
@@ -45,24 +45,8 @@ internal static class NexusApiVerbs
     {
         var links = await nexusApiClient.DownloadLinksAsync(gameDomain, modId, fileId, token);
 
-        await renderer.Table(new[] { "Source", "Link" },
+        await renderer.Table(["Source", "Link"],
             links.Data.Select(x => new object[] { x.ShortName, x.Uri }));
         return 0;
     }
-
-    [Verb("nexus-games", "Lists all games available on Nexus Mods")]
-    private static async Task<int> NexusGames([Injected] IRenderer renderer,
-        [Injected] NexusApiClient nexusApiClient,
-        [Injected] CancellationToken token)
-    {
-        var results = await nexusApiClient.Games(token);
-
-        await renderer.Table(new[] { "Name", "Domain", "Downloads", "Files" },
-            results.Data
-                .OrderByDescending(x => x.FileCount)
-                .Select(x => new object[] { x.Name, x.DomainName, x.Downloads, x.FileCount }));
-
-        return 0;
-    }
-
 }

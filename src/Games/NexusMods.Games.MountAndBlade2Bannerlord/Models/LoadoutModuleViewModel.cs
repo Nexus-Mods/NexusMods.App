@@ -1,14 +1,13 @@
 using Bannerlord.LauncherManager.Models;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 internal class LoadoutModuleViewModel : IModuleViewModel
 {
-    public required Mod.Model Mod { get; init; }
+    public required LoadoutItem.ReadOnly Mod { get; init; }
 
-    public required ModuleInfoExtendedWithPath ModuleInfoExtended { get; init; }
+    public required ModuleInfoExtendedWithMetadata ModuleInfoExtended { get; init; }
 
     public required bool IsValid { get; init; }
 

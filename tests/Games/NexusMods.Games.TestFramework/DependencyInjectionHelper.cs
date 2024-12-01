@@ -3,11 +3,16 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.Generic;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -38,11 +43,13 @@ public static class DependencyInjectionHelper
     /// </summary>
     /// <param name="serviceCollection"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection, AbsolutePath prefix = default(AbsolutePath))
     {
-        var prefix = FileSystem.Shared
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"DataModel.{Guid.NewGuid()}";
+        prefix = prefix == default(AbsolutePath) ? FileSystem.Shared
             .GetKnownPath(KnownPath.EntryDirectory)
-            .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
+            .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}") : prefix;
 
         return serviceCollection
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
@@ -52,12 +59,23 @@ public static class DependencyInjectionHelper
             .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
+            .AddNexusModsCollections()
+            .AddCrossPlatform()
+            .AddGenericGameSupport()
+            .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
             .AddDataModel()
+            .AddLibrary()
+            .AddLibraryModels()
+            .AddJobMonitor()
             .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
+                MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
+                ArchiveLocations = [
+                    new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
+                ],
             })
             .AddSettingsManager()
             .AddFileExtractors();

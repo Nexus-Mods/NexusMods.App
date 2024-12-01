@@ -4,10 +4,12 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -166,12 +168,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
             // GoToNext
             this.WhenAnyObservable(vm => vm.FooterStepperViewModel.GoToNextCommand)
-                .InvokeCommand(goToNextCommand)
+                .InvokeReactiveCommand(goToNextCommand)
                 .DisposeWith(disposables);
 
             // GoToPrev
             this.WhenAnyObservable(vm => vm.FooterStepperViewModel.GoToPrevCommand)
-                .InvokeCommand(goToPrevCommand)
+                .InvokeReactiveCommand(goToPrevCommand)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(vm => vm.Progress)

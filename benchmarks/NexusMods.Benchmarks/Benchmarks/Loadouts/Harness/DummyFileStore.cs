@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.IO;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
@@ -11,12 +11,17 @@ public class DummyFileStore : IFileStore
         return ValueTask.FromResult(false);
     }
 
-    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }
 
-    public Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
+    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }
@@ -31,8 +36,15 @@ public class DummyFileStore : IFileStore
         return null!;
     }
 
+    public Task<byte[]> Load(Hash hash, CancellationToken token = default)
+    {
+        return Task.FromResult(Array.Empty<byte>());
+    }
+
     public HashSet<ulong> GetFileHashes()
     {
         return [];
     }
+
+    public AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock() => throw new NotImplementedException(); // Only used by GC, so never called right now.
 }

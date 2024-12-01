@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -17,6 +18,11 @@ public interface ISpineViewModel : IViewModelInterface
     /// Gets the home button.
     /// </summary>
     public IIconButtonViewModel Home { get; }
+    
+    /// <summary>
+    /// Gets the add loadout button.
+    /// </summary>
+    public IIconButtonViewModel AddLoadout { get; }
 
     /// <summary>
     /// Gets the downloads button.

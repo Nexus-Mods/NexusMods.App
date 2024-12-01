@@ -2,9 +2,10 @@ using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
@@ -32,31 +33,22 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     public DeploymentData DeploymentData { get; }
 
     /// <summary>
-    /// Constructor for the BodyViewModel.
-    /// Drives most of the UI logic.
+    /// Constructor.
     /// </summary>
-    /// <param name="data">The deployment data used to output the final mappings.</param>
-    /// <param name="modName">The name of the mod to show in the ui.</param>
-    /// <param name="archiveFiles">A fileTree with the mod archive contents.</param>
-    /// <param name="locationRegister">The game locations register, to obtain the potential install locations.</param>
-    /// <param name="loadout">The loadout, potentially null, to obtain the folder structure of the current loadout.</param>
-    /// <param name="gameName">The name of the currently managed game.</param>
     public BodyViewModel(
         DeploymentData data,
-        string modName,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
-        IGameLocationsRegister locationRegister,
-        Loadout.Model? loadout,
-        string gameName)
+        string title,
+        KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
+        Loadout.ReadOnly loadout)
     {
         // Setup child VMs
-        ModName = modName;
+        ModName = title;
         DeploymentData = data;
         CanInstall = false;
 
         EmptyPreviewViewModel = new EmptyPreviewViewModel();
         ModContentViewModel = new ModContentViewModel(archiveFiles);
-        SelectLocationViewModel = new SelectLocationViewModel(locationRegister, loadout, gameName);
+        SelectLocationViewModel = new SelectLocationViewModel(loadout);
         PreviewViewModel = new PreviewViewModel();
         CurrentRightContentViewModel = EmptyPreviewViewModel;
 

@@ -11,6 +11,7 @@
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:viewModels="clr-namespace:NexusMods.App.UI.Pages.Downloads.ViewModels"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
     <Design.DataContext>
@@ -18,59 +19,74 @@
     </Design.DataContext>
     <Grid RowDefinitions="Auto, *">
         <!-- ToolBar -->
-        <Border Classes="Toolbar" Grid.Row="0">
-            <Grid ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="1">
-                    <Button x:Name="CancelButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="PauseButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PauseCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ResumeButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PlayCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}" />
-                        </StackPanel>
-                    </Button>
-                    <Line />
-                    <Button x:Name="ResumeAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PlayCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="PauseAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PauseCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}" />
-                        </StackPanel>
-                    </Button>
-                    <Line />
-                    <Button x:Name="ClearButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Close" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ClearAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="ClearAll" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear_completed}" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+        <Border Classes="Toolbar" Grid.Row="0" IsVisible="False">
+           <StackPanel>
+                <Button x:Name="CancelButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="PauseButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PauseCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ResumeButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlayCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}" />
+                    </StackPanel>
+                </Button>
+                <Line />
+                <Button x:Name="ResumeAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlayCircleFilled" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="PauseAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PauseCircleFilled" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}" />
+                    </StackPanel>
+                </Button>
+                <Line />
+                <Button x:Name="ClearButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Close" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ClearAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="ClearAll" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear_completed}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </Border>
 
+        <controls:EmptyState Grid.Row="1" x:Name="EmptyState" IsActive="True">
+            <controls:EmptyState.Subtitle>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView_UnderDevelopment}" />
+                    <ProgressBar Classes="DownloadBar"
+                                 Height="24"
+                                 x:Name="DownloadProgressBarNew"
+                                 Margin="24, 16"
+                                 Minimum="0" 
+                                 Maximum="1"
+                                 ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"/>
+                </StackPanel>
+            </controls:EmptyState.Subtitle>
+
+
+        </controls:EmptyState>
+        
         <!-- Page Content -->
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" IsVisible="False">
             <Grid RowDefinitions="Auto, *, 24, *, *" Margin="0, 16">
 
                 <!-- Title & Status -->
@@ -135,7 +151,7 @@
                 <TextBlock Grid.Row="3"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
-                           Margin="24"
+                           Margin="24,68,24,24"
                            Classes="HeadingXSSemi ForegroundWeak"
                            IsVisible="False"
                            Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
@@ -167,7 +183,8 @@
                                   Width="1">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_MOD_NAME}" 
-                                                        Width="*"> 
+                                                        Width="*"
+                                                        SortMemberPath="Name"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -177,7 +194,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_VERSION}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_VERSION}"
+                                                        SortMemberPath="Version"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -187,7 +205,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_GAME}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_GAME}"
+                                                        SortMemberPath="Game"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -197,7 +216,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_SIZE}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_SIZE}"
+                                                        SortMemberPath="SizeBytes"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -207,7 +227,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="{x:Static resources:Language.DownloadCompleted_COMPLETED}"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.DownloadCompleted_COMPLETED}"
+                                                        SortMemberPath="CompletedTime"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"

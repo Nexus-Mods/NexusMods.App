@@ -1,9 +1,9 @@
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -13,54 +13,34 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
-    [Reactive]
-    public bool ShowWindowControls { get; set; }
-
-    [Reactive]
-    public bool IsLoggedIn { get; set; }
-
+    [Reactive] public bool IsLoggedIn { get; set; }
     [Reactive] public bool IsPremium { get; set; } = true;
-
+    [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
+    [Reactive] public string ActiveWorkspaceTitle { get; set; } = "Home";
+    [Reactive] public string ActiveWorkspaceSubtitle { get; set; } = "Loadout A";
 
-    [Reactive] public string ActiveWorkspaceTitle { get; set; } = "HOME";
+    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
 
-    [Reactive]
-    public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
+    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand  => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
+    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand => Initializers.DisabledReactiveCommand;
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand => Initializers.DisabledReactiveCommand;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
-
-    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public IPanelTabViewModel? SelectedTab { get; set; }
 
     public TopBarDesignViewModel()
     {
-        this.WhenActivated(disposables =>
-        {
-            LogoutCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn)).DisposeWith(disposables);
-            LoginCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn).Select(x => !x)).DisposeWith(disposables);
-        });
+        LogoutCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn));
+        LoginCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn).Select(x => !x));
     }
 
-    private void ToggleLogin()
-    {
-        IsLoggedIn = !IsLoggedIn;
-    }
-
-    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { }, Observable.Return(false));
+    private void ToggleLogin() { IsLoggedIn = !IsLoggedIn; }
 }

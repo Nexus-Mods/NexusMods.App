@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `BetterSiege` -->
+    <Id value="BetterSiege"/>
+    <Name value="Better Siege"/>
+    <DependedModules>
+        <!-- ❌ Empty/invalid dependency entry -->
+        <DependedModule id="" />
+    </DependedModules>
+</Module>

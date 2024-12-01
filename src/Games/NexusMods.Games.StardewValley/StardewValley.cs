@@ -7,11 +7,12 @@ using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
@@ -21,6 +22,7 @@ namespace NexusMods.Games.StardewValley;
 [UsedImplicitly]
 public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
+    public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
     private readonly IOSInformation _osInformation;
     private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
@@ -28,9 +30,16 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public override string Name => "Stardew Valley";
+    public override GameId GameId => GameId.From(1303);
 
-    public static GameDomain GameDomain => GameDomain.From("stardewvalley");
-    public override GameDomain Domain => GameDomain;
+    public override SupportType SupportType => SupportType.Official;
+
+    public override HashSet<FeatureStatus> Features { get; } =
+    [
+        new(BaseFeatures.GameLocatable, IsImplemented: true),
+        new(BaseFeatures.HasInstallers, IsImplemented: true),
+        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
+    ];
 
     public StardewValley(
         IOSInformation osInformation,
@@ -83,11 +92,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
 
-    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
-    {
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
         _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
-    };
+    ];
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
@@ -96,11 +105,12 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),
         _serviceProvider.GetRequiredService<SMAPIModDatabaseCompatibilityDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<VersionDiagnosticEmitter>(),
+        _serviceProvider.GetRequiredService<ModOverwritesGameFilesEmitter>(),
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
-
-    protected override IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new StardewValleyLoadoutSynchronizer(provider);
     }

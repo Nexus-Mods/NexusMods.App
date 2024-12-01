@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `UIExtenderEx` -->
+    <Id value="UIExtenderEx"/>
+    <Name value="UIExtenderEx"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ This dependency `Harmony` is not installed -->
+        <DependedModuleMetadata id="Harmony" />
+    </DependedModuleMetadatas>
+</Module>

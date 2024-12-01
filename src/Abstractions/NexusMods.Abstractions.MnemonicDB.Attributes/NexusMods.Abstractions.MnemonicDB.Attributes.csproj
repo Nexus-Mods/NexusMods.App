@@ -3,17 +3,10 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-      <PackageReference Include="NexusMods.Hashing.xxHash64" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
-    </ItemGroup>
-
 </Project>

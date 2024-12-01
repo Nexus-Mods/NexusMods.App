@@ -12,12 +12,13 @@ public partial class MetricsOptInView : ReactiveUserControl<IMetricsOptInViewMod
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(v => v.ViewModel!.Allow)
-                .BindTo(this, view => view.AllowButton.Command)
+            this.BindCommand(ViewModel, vm => vm.Allow, view => view.AllowButton)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(v => v.ViewModel!.Deny)
-                .BindTo(this, view => view.DenyButton.Command)
+            this.BindCommand(ViewModel, vm => vm.Deny, view => view.DenyButton)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.MarkdownRendererViewModel, view => view.MarkdownRendererViewModelViewHost.ViewModel)
                 .DisposeWith(d);
         });
     }

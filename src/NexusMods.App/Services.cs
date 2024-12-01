@@ -1,15 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Activities;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -18,13 +19,15 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
+using NexusMods.Jobs;
+using NexusMods.Library;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -38,17 +41,32 @@ public static class Services
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
         StartupMode? startupMode = null,
-        ExperimentalSettings? experimentalSettings = null)
+        ExperimentalSettings? experimentalSettings = null,
+        GameLocatorSettings? gameLocatorSettings = null)
     {
+        services.Configure<HostOptions>(options =>
+        {
+            // Sequential execution can lead to long startup times depending on number of hostedServices.
+            options.ServicesStartConcurrently = true;
+            // If executed sequentially, one service taking a long time can trigger the timeout,
+            // preventing StopAsync of other services from being called. 
+            options.ServicesStopConcurrently = true;
+        });
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
         {
             services
+                .AddDataModel()
+                .AddLibrary()
+                .AddLibraryModels()
+                .AddJobMonitor()
+                .AddNexusModsCollections()
+
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
-                .AddSingleProcess(Mode.Main)
                 .AddDefaultRenderers()
+                .AddDefaultParsers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
@@ -62,36 +80,38 @@ public static class Services
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
-                .AddDataModel()
                 .AddSerializationAbstractions()
-                .AddInstallerTypes()
                 .AddSupportedGames(experimentalSettings)
-                .AddActivityMonitor()
                 .AddCrossPlatform()
                 .AddGames()
                 .AddGenericGameSupport()
-                .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
-                .AddReshade()
                 .AddFomod()
                 .AddNexusWebApi()
-                .AddAdvancedHttpDownloader()
+                .AddHttpDownloader()
+                // .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddFileSystem()
                 .AddDownloaders()
                 .AddCleanupVerbs();
 
+            if (!startupMode.IsAvaloniaDesigner)
+                services.AddSingleProcess(Mode.Main);
+
             if (addStandardGameLocators)
-                services.AddStandardGameLocators();
+                services.AddStandardGameLocators(settings: gameLocatorSettings);
         }
         else
         {
             services.AddFileSystem()
                 .AddCrossPlatform()
-                .AddSingleProcess(Mode.Client)
                 .AddDefaultRenderers()
-                .AddSettingsManager();
+                .AddSettingsManager()
+                .AddSettings<LoggingSettings>();
+            
+            if (!startupMode.IsAvaloniaDesigner)
+                services.AddSingleProcess(Mode.Client);
         }
 
         return services;
@@ -101,15 +121,12 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
-            Games.RedEngine.Services.AddRedEngineGames(services);
-            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
-            Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-            Games.Sifu.Services.AddSifu(services);
-            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
         }
         
+        Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
+        Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
+        Games.MountAndBlade2Bannerlord.Services.AddMountAndBlade2Bannerlord(services);
         return services;
     }
 }

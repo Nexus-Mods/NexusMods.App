@@ -47,6 +47,19 @@ public class CliServer : IHostedService, IDisposable
 
         _settings = settingsManager.Get<CliSettings>();
     }
+    
+    /// <summary>
+    /// Starts the CLI server, listening for incoming connections.
+    /// This method needs to be called explicitly to start the server.
+    /// </summary>
+    public async Task StartCliServerAsync()
+    {
+        if (!_started)
+        {
+            _started = true;
+            await StartTcpListenerAsync();
+        }
+    }
 
     private Task StartTcpListenerAsync()
     {
@@ -133,15 +146,11 @@ public class CliServer : IHostedService, IDisposable
                 _runningClients.Remove(task);
         }
     }
-
+    
     /// <inheritdoc />
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_started && _settings.StartCliBackend)
-        {
-            _started = true;
-            await StartTcpListenerAsync();
-        }
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

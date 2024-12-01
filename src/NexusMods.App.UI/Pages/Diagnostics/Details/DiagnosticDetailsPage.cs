@@ -9,6 +9,9 @@ namespace NexusMods.App.UI.Pages.Diagnostics;
 public record DiagnosticDetailsPageContext : IPageFactoryContext
 {
     public required Diagnostic Diagnostic { get; init; }
+
+    /// <inheritdoc/>
+    public bool IsEphemeral => true;
 }
 
 [UsedImplicitly]

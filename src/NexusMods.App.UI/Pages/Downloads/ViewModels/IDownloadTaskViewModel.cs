@@ -1,4 +1,6 @@
 using System.Reactive;
+using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -33,6 +35,13 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// Total size in humanized string format.
     /// </summary>
     public string HumanizedSize { get; }
+    
+    /// <summary>
+    /// The DateTime when the download was completed
+    /// Used for sorting and filtering.
+    /// </summary>
+    [UsedImplicitly]
+    public DateTime CompletedTime { get; }
     
     /// <summary>
     /// The DateTime when the download was completed in humanized string format.

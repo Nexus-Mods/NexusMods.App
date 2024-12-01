@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
+      <ProjectReference Include="..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
+      <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="CanResetToGameOriginalState.md.verified.txt" />
+      <None Update="GeneralModManagementTests.SynchronizerAddAndDisableMods.verified.md">
+        <DependentUpon>GeneralModManagementTests.cs</DependentUpon>
+      </None>
+      <None Update="GeneralFileManagementTests.SynchronizerFileManagementTest.verified.md">
+        <DependentUpon>GeneralFileManagementTests.cs</DependentUpon>
+      </None>
+    </ItemGroup>
+
+</Project>

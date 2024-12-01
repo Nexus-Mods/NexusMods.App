@@ -6,10 +6,15 @@
         <PackageReference Include="CliWrap" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.CrossPlatform.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="../NexusMods.App/com.nexusmods.app.desktop" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,5 +45,27 @@
       <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
+        <Compile Update="Process\ProtontricksDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\XDGOpenDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\XDGSettingsDependency.cs">
+            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Process\ExecutableRuntimeDependency.cs">
+            <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+      <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
+
 </Project>

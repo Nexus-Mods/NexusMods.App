@@ -1,9 +1,8 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
-using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Resources;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -24,6 +23,21 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     True if this node represents a file deletion.
     /// </summary>
     bool IsDeletion { get; }
+
+    /// <summary>
+    ///     Boolean value for FileChangeType.Added. Used for setting style classes.
+    /// </summary>
+    bool IsChangeAdded => ChangeType == FileChangeType.Added;
+    
+    /// <summary>
+    ///     Boolean value for FileChangeType.Modified. Used for setting style classes.
+    /// </summary>
+    bool IsChangeModified => ChangeType == FileChangeType.Modified;
+    
+    /// <summary>
+    ///     Boolean value for FileChangeType.Removed. Used for setting style classes.
+    /// </summary>
+    bool IsChangeRemoved => ChangeType == FileChangeType.Removed;
 
     /// <summary>
     ///     Name of the file or folder segment.
@@ -54,7 +68,16 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
         return FileCount > 0 ? FileCount.ToString() : string.Empty;
     }
 
-    string ToFormattedChangeState()
+    string FormattedChangeState => ToFormattedChangeState();
+
+    string FormattedChangeStateToolTip => ToFormattedChangeStateToolTip();
+    
+    /// <summary>
+    ///     The key to the parent of this node.
+    /// </summary>
+    GamePath ParentKey { get; }
+    
+    private string ToFormattedChangeState()
     {
         return ChangeType switch
         {
@@ -67,8 +90,17 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
         };
     }
 
-    /// <summary>
-    ///     The key to the parent of this node.
-    /// </summary>
-    GamePath ParentKey { get; }
+    private string ToFormattedChangeStateToolTip()
+    {
+        return ChangeType switch
+        {
+            FileChangeType.Added => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added,
+            FileChangeType.Modified => IsFile
+                ? Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile
+                : Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder,
+            FileChangeType.Removed => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed,
+            FileChangeType.None => string.Empty,
+        };
+    }
+    
 }

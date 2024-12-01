@@ -49,6 +49,8 @@ public partial class SettingsManagerTests
             ),
         });
 
+        serviceProvider.GetService(typeof(IEnumerable<SettingsSectionSetup>)).Returns(Array.Empty<SettingsSectionSetup>());
+
         var settingsManager = new SettingsManager(serviceProvider);
         return settingsManager;
     }

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using DynamicData;
-using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
@@ -26,7 +27,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
     public SourceCache<IModContentTreeEntryViewModel, RelativePath> ModContentEntriesCache { get; } =
         new(x => x.RelativePath);
 
-    public ModContentViewModel(KeyedBox<RelativePath, ModFileTree> archiveFiles)
+    public ModContentViewModel(KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles)
     {
         PopulateModContentEntriesCache(ModContentEntriesCache, archiveFiles);
 
@@ -78,7 +79,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
     /// <param name="node">The root node of the filetree containing the archive contents that need to be added.</param>
     private void PopulateModContentEntriesCache(
         ISourceCache<IModContentTreeEntryViewModel, RelativePath> cache,
-        KeyedBox<RelativePath, ModFileTree> node)
+        KeyedBox<RelativePath, LibraryArchiveTree> node)
     {
         var allNodes = node.GetChildrenRecursive();
 
@@ -92,7 +93,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             foreach (var curNode in allNodes)
             {
                 // All the tree leaf nodes are files, so it's a directory if it has children
-                var entry = new ModContentTreeEntryViewModel(curNode.Path(), curNode.IsDirectory());
+                var entry = new ModContentTreeEntryViewModel(curNode.Item.Path, curNode.IsDirectory());
                 updater.AddOrUpdate(entry);
             }
         });

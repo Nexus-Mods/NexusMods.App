@@ -28,10 +28,10 @@
         <value>Browse Games</value>
     </data>
     <data name="MetricsOptIn_ALLOW" xml:space="preserve">
-        <value>ALLOW</value>
+        <value>Allow</value>
     </data>
     <data name="MetricsOptIn_DENY" xml:space="preserve">
-        <value>DENY</value>
+        <value>Deny</value>
     </data>
     <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
         <value>Diagnostics and usage data</value>
@@ -43,16 +43,16 @@
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
     <data name="Updater_LATER" xml:space="preserve">
-        <value>LATER</value>
+        <value>Later</value>
     </data>
     <data name="Updater_UPDATE" xml:space="preserve">
-        <value>UPDATE</value>
+        <value>View update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
         <value>Update available</value>
     </data>
     <data name="Updater_MainMessage" xml:space="preserve">
-        <value>Keep your app updated to get the latest improvements.</value>
+        <value>Important: In order to install this version you will need to uninstall first. This will delete all your mods.</value>
     </data>
     <data name="Updater_UseSystemUpdater" xml:space="preserve">
         <value>It appears that your copy of the app was installed via a system managed package manager, please update via your operating system's update application.</value>
@@ -73,10 +73,13 @@
         <value>Unknown</value>
     </data>
     <data name="MessageBox_Button_Yes" xml:space="preserve">
-        <value>YES</value>
+        <value>Yes</value>
     </data>
     <data name="MessageBox_Button_No" xml:space="preserve">
-        <value>NO</value>
+        <value>No</value>
+    </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>Ok</value>
     </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
@@ -109,10 +112,10 @@
         <value>STATUS</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
-        <value>RUNNING...</value>
+        <value>Running...</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-        <value>PLAY</value>
+        <value>Play</value>
     </data>
     <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
         <value>{0} secs</value>
@@ -135,17 +138,20 @@
     <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
         <value>PREMIUM</value>
     </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>FREE</value>
+    </data>
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Search</value>
     </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
-        <value>LOG IN</value>
+        <value>Log In</value>
     </data>
     <data name="GameWidget__Add_game" xml:space="preserve">
         <value>Add game</value>
     </data>
     <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-        <value>DOWNLOADS</value>
+        <value>Downloads</value>
     </data>
     <data name="DownloadsView__In_Progress" xml:space="preserve">
         <value>In Progress</value>
@@ -156,26 +162,29 @@
     <data name="DownloadsView__Download_history" xml:space="preserve">
         <value>Download history</value>
     </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>PLEASE CLICK "AUTHORIZE" ON THE WEBSITE</value>
+        <value>Please click "Authorize" on the website</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
-        <value>BROWSER DIDN'T OPEN AUTOMATICALLY?</value>
+        <value>Browser didn't open automatically?</value>
     </data>
     <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
         <value>Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge.</value>
     </data>
     <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
-        <value>COMPLETED</value>
+        <value>Completed</value>
     </data>
     <data name="DownloadCompleted_Clear_All" xml:space="preserve">
         <value>Clear All</value>
     </data>
     <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
-        <value>HISTORY</value>
+        <value>History</value>
     </data>
     <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
-        <value>IN PROGRESS</value>
+        <value>In Progress</value>
     </data>
     <data name="DownloadInProgressView__Cancel" xml:space="preserve">
         <value>Cancel</value>
@@ -187,7 +196,7 @@
         <value>Pause all</value>
     </data>
     <data name="InProgressTitleTextBlock" xml:space="preserve">
-        <value>In progress</value>
+        <value>Downloads</value>
     </data>
     <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
         <value>0 mins</value>
@@ -202,16 +211,19 @@
         <value>We found games ready to mod!</value>
     </data>
     <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
-        <value>CAN'T SEE YOUR GAME</value>
+        <value>Can't see your game</value>
     </data>
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
-        <value>BROWSE ALL GAMES</value>
+        <value>Browse all games</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Add Mod</value>
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
+        <value>Delete</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-        <value>Add Mod (Advanced)</value>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
+        <value>Advanced add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -270,8 +282,8 @@
     <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
         <value>Home</value>
     </data>
-    <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
-        <value>My Mods</value>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>Installed Mods</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
         <value>Downloads</value>
@@ -283,7 +295,7 @@
         <value>Downloads</value>
     </data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>View Mod Files</value>
+        <value>View Mod files</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>View</value>
@@ -292,25 +304,25 @@
         <value>Mod Info</value>
     </data>
     <data name="ViewModFilesView_Location" xml:space="preserve">
-        <value>LOCATION:</value>
+        <value>Location:</value>
     </data>
     <data name="ViewModFilesView_Locations" xml:space="preserve">
-        <value>LOCATIONS:</value>
+        <value>Location:</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-        <value>ACTIVATE LOADOUT</value>
+        <value>Activate Loadout</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-        <value>ACTIVATE &amp; APPLY</value>
+        <value>Activate &amp; Apply</value>
     </data>
     <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-        <value>APPLY</value>
+        <value>Apply</value>
     </data>
     <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
         <value>Applying...</value>
     </data>
     <data name="Helpers_ERROR" xml:space="preserve">
-        <value>ERROR</value>
+        <value>Error</value>
     </data>
     <data name="ErrorView_Title" xml:space="preserve">
         <value>Something went wrong</value>
@@ -325,19 +337,19 @@
         <value>Mod not found</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
-        <value>SUGGESTION</value>
+        <value>Suggestion</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
-        <value>WARNING</value>
+        <value>Warning</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
-        <value>CRITICAL ERROR</value>
+        <value>Critical Error</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
-        <value>HIDDEN</value>
+        <value>Hidden</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostics</value>
+        <value>Health Check</value>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>All ({0})</value>
@@ -359,7 +371,7 @@
         <value>There are no diagnostics</value>
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
-        <value>INGEST</value>
+        <value>Ingest</value>
     </data>
     <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
         <value>Files: {0} ({1})</value>
@@ -423,10 +435,13 @@
         <value>Settings</value>
     </data>
     <data name="DialogButton_CANCEL" xml:space="preserve">
-        <value>CANCEL</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogButton_SAVE" xml:space="preserve">
-        <value>SAVE</value>
+        <value>Save</value>
+    </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Delete mod(s)</value>
     </data>
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
@@ -435,15 +450,15 @@
         <value>Add</value>
     </data>
     <data name="DialogButton_Discard" xml:space="preserve">
-        <value>DISCARD</value>
+        <value>Discard</value>
     </data>
     <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
         <value>Changelog</value>
     </data>
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostics</value>
+        <value>Health Check</value>
     </data>
-    <data name="FileOriginsPageTitle" xml:space="preserve">
+    <data name="LibraryPageTitle" xml:space="preserve">
         <value>Library</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
@@ -458,8 +473,8 @@
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
         <value>DOWNLOADED</value>
     </data>
-    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-        <value>ADDED</value>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>INSTALLED</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
         <value>ACTIONS</value>
@@ -478,5 +493,226 @@
     </data>
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Remove</value>
+    </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>To easily download mods from Nexus Mods you will need to log in with your Nexus Mods account.  To add mods manually from your drive, you do not need to log in.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Log in to get started</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Get mods:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>From drive</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>From Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>View</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Add a panel for split screen viewing</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Add tab</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>My Profile</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>View changelog</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>View App logs</value>
+    </data>
+    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+        <value>Give feedback</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Open in new tab</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Open in new panel</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Help and feedback</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Add the selected mod(s) to this loadout</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>Permanently remove this mod from your Library</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Select specific files from a mod to add to your loadout</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>View the changes that will be applied to your game folder</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Apply your changes to the game folder</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>File will be added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>File will be modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>File will be removed</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder contains modified files</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Did you know?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>You can add panels for split screen viewing by selecting the</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>button in the toolbar</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Install your downloaded mods from the</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>No mods added to {0}</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>No mods in your Library</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Download {0} mods from Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Your loadout passed the health check without issues</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Ready for gaming.</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Created {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Last applied: {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Mods {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>My Loadouts</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>{0} Loadouts</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Create new loadout</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Currently Applied</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Create Copy</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Deleting...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Creating...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>You need to add a game before using Loadouts</value>
+    </data>
+
+    <!-- Library Item Delete Confirmation Dialog -->
+    <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>Permanently delete mod(s)</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>Deleting these mods permanently removes them from the app:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>Used by {0}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>Used by {0} - {1}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>Delete mod(s)</value>
+    </data>
+
+    <data name="Updated_ViewUninstallDocs" xml:space="preserve">
+        <value>How to uninstall the Nexus Mods app</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>Never</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Applying changes to the game</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Delete Loadout</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Installed Mods</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Game is currently running</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>It looks like {0} is already running.
+To apply changes or launch the game again, please close the game first.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Switch View</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Show or hide mod page groups</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Import a mod from your computer</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Open Nexus Mods</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Forward</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Back</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Connect your Nexus Mods account</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Remove the selected mod(s) from this loadout</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value />
     </data>
 </root>

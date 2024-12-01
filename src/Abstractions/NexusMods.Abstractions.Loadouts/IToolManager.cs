@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -12,7 +12,7 @@ public interface IToolManager
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public IEnumerable<ITool> GetTools(Loadout.Model loadout);
+    public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout);
 
     /// <summary>
     /// Run a tool for a given loadout. Returns the modified loadout. Generated files will be added to the given mod,
@@ -21,8 +21,9 @@ public interface IToolManager
     /// <param name="tool"></param>
     /// <param name="loadout"></param>
     /// <param name="generatedFilesMod"></param>
+    /// <param name="monitor">The job system executor.</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<Loadout.Model> RunTool(ITool tool, Loadout.Model loadout, Mod.Model? generatedFilesMod = null,
+    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout, IJobMonitor monitor,
         CancellationToken token = default);
 }

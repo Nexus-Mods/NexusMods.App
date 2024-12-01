@@ -203,8 +203,8 @@
     <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
         <value>Archiv</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Mod hinzufügen</value>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>Hinzufügen</value>
     </data>
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Helfen Sie uns, Ihnen das beste Modding-Erlebnis zu bieten.

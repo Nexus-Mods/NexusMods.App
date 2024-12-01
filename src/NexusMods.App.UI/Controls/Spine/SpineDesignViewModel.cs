@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -11,12 +12,15 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     public ILeftMenuViewModel? LeftMenuViewModel => null;
 
     public IIconButtonViewModel Home { get; } = new IconButtonDesignViewModel();
+    public IIconButtonViewModel AddLoadout { get; } = new IconButtonDesignViewModel();
 
     public ISpineDownloadButtonViewModel Downloads { get; } = new SpineDownloadButtonDesignerViewModel();
 
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems { get; } =
         new(new ObservableCollection<IImageButtonViewModel>
     {
+        new ImageButtonDesignViewModel(),
+        new ImageButtonDesignViewModel(),
         new ImageButtonDesignViewModel(),
         new ImageButtonDesignViewModel(),
     });

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -22,6 +23,11 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// A title for the workspace to be displayed in the window.
     /// </summary>
     public string Title { get; set; }
+    
+    /// <summary>
+    /// A subtitle for the workspace to be displayed in the window.
+    /// </summary>
+    public string Subtitle { get; set; }
 
     /// <summary>
     /// Gets or sets the context of the workspace.
@@ -32,6 +38,10 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// Gets or sets whether this is the currently visible workspace in the window.
     /// </summary>
     public bool IsActive { get; set; }
+
+    public IPanelViewModel SelectedPanel { get; }
+
+    public IPanelTabViewModel SelectedTab { get; }
 
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 

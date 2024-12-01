@@ -1,8 +1,13 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.SingleProcess;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using Spectre.Console.Testing;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
@@ -37,6 +42,55 @@ public class AVerbTest(IServiceProvider provider)
         }
 
         return renderer;
+    }
+
+    /// <summary>
+    /// Verifies the last table in the given renderer against the given name.
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="name"></param>
+    protected async Task VerifyTable(LoggingRenderer renderer, string name, [CallerMemberName] string? caller = null)
+    {
+        var last = renderer.Logs.Last();
+        if (last is not Table table)
+            throw new Exception("No table was rendered");
+        
+        caller ??= "unknown";
+        var console = new TestConsole();
+        console.Profile.Width = 120;
+        var proxyRenderer = new SpectreRenderer(console);
+        
+        await proxyRenderer.RenderAsync(table);
+
+        await Verify(console.Output).UseFileName($"{name}_{caller}_table.txt");
+    }
+    
+    /// <summary>
+    /// Verifies the log output of the given renderer against the given name.
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="name"></param>
+    protected async Task VerifyLog(LoggingRenderer renderer, string name, [CallerMemberName] string? caller = null)
+    {
+        caller ??= "unknown";
+        var console = new TestConsole();
+        console.Profile.Width = 120;
+        var proxyRenderer = new SpectreRenderer(console);
+        
+        foreach (var item in renderer.Logs)
+        {
+            await proxyRenderer.RenderAsync(item);
+        }
+        await Verify(console.Output).UseFileName($"{name}_{caller}.txt");
+    }
+
+    /// <summary>
+    /// Creates a new stubbed game installation, registers it with the game registry, and returns it.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<GameInstallation> CreateInstall()
+    {
+        return await StubbedGame.Create(provider);
     }
 
     /// <summary>

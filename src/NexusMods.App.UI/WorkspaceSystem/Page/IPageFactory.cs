@@ -25,8 +25,7 @@ public interface IPageFactory
     /// </summary>
     public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext);
 
-    public Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithData { get; }
-    public Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithoutData { get; }
+    public Optional<OpenPageBehaviorType> DefaultOpenPageBehavior { get; }
 }
 
 /// <summary>
@@ -88,8 +87,5 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();
 
     /// <inheritdoc/>
-    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithData { get; } = Optional<OpenPageBehaviorType>.None;
-
-    /// <inheritdoc/>
-    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithoutData { get; } = Optional<OpenPageBehaviorType>.None;
+    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehavior { get; } = Optional<OpenPageBehaviorType>.None;
 }

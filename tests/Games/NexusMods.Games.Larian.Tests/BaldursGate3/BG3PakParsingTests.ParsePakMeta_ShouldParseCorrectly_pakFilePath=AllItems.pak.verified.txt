@@ -1,0 +1,10 @@
+﻿ModuleShortDesc:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="AllItems" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="AllItems" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="44c1adf4-9b2e-47e9-b20b-c090d837b98a" />
+  <attribute id="Version64" type="int64" value="1" />
+</node>
+Version: 1.0.0.0

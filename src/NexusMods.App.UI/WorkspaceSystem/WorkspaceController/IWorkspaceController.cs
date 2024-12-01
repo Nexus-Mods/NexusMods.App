@@ -20,9 +20,14 @@ public interface IWorkspaceController
     public WindowId WindowId { get; }
 
     /// <summary>
-    /// Gets the currently active Workspace.
+    /// Gets the currently active workspace.
     /// </summary>
-    public IWorkspaceViewModel? ActiveWorkspace { get; }
+    public IWorkspaceViewModel ActiveWorkspace { get; }
+
+    /// <summary>
+    /// Gets the ID of the currently active workspace.
+    /// </summary>
+    public WorkspaceId ActiveWorkspaceId => ActiveWorkspace.Id;
 
     /// <summary>
     /// Gets a read-only observable collection of all workspaces.
@@ -91,7 +96,8 @@ public interface IWorkspaceController
     /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
     /// <param name="behavior"></param>
     /// <param name="selectTab"> Whether to auto select the tab</param>
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true);
+    /// <param name="checkOtherPanels">Whether to check other panels and their selected tab for <paramref name="pageData"/>.</param>
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true, bool checkOtherPanels = true);
 
     /// <summary>
     /// Swaps the positions of two panels.
@@ -118,8 +124,7 @@ public interface IWorkspaceController
     /// </summary>
     public OpenPageBehavior GetOpenPageBehavior(
         PageData requestedPage,
-        NavigationInformation navigationInformation,
-        Optional<PageIdBundle> currentPage);
+        NavigationInformation navigationInformation);
 
     /// <summary>
     /// Returns the default <see cref="OpenPageBehavior"/> for the inputs.
@@ -130,6 +135,5 @@ public interface IWorkspaceController
     /// </remarks>
     public OpenPageBehavior GetDefaultOpenPageBehavior(
         PageData requestedPage,
-        NavigationInput input,
-        Optional<PageIdBundle> currentPage);
+        NavigationInput input);
 }

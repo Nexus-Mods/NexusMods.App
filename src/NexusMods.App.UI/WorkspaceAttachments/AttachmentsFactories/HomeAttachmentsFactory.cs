@@ -9,4 +9,9 @@ public class HomeAttachmentsFactory : IWorkspaceAttachmentsFactory<HomeContext>
     {
         return Language.HomeWorkspace_Title;
     }
+
+    public string CreateSubtitle(HomeContext context)
+    {
+        return string.Empty;
+    }
 }

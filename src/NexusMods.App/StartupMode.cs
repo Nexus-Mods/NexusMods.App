@@ -27,6 +27,8 @@ public class StartupMode
     /// </summary>
     public bool ShowUI { get; set; } = true;
     
+    public bool IsAvaloniaDesigner { get; set; } = false;
+    
     public static StartupMode Parse(string[] args)
     {
         var mode = new StartupMode
@@ -41,26 +43,29 @@ public class StartupMode
             mode.ShowUI = true;
             mode.RunAsMain = true;
             mode.ExecuteCli = false;
+            return mode;
         }
-        else switch (args[0])
+
+        var arg = args[0];
+        if (arg.Equals("as-main", StringComparison.OrdinalIgnoreCase))
         {
-            case "as-main":
-                mode.RunAsMain = true;
-                mode.ShowUI = false;
-                mode.Args = args[1..];
-                mode.ExecuteCli = args.Length > 1;
-                break;
-            case "as-main-ui":
-                mode.RunAsMain = true;
-                mode.ShowUI = true;
-                mode.Args = args[1..];
-                mode.ExecuteCli = args.Length > 1;
-                break;
-            default:
-                mode.RunAsMain = false;
-                mode.ShowUI = false;
-                break;
+            mode.RunAsMain = true;
+            mode.ShowUI = false;
+            mode.Args = args[1..];
+            mode.ExecuteCli = args.Length > 1;
+        } else if (arg.Equals("as-main-ui", StringComparison.OrdinalIgnoreCase))
+        {
+            mode.RunAsMain = true;
+            mode.ShowUI = true;
+            mode.Args = args[1..];
+            mode.ExecuteCli = args.Length > 1;
         }
+        else
+        {
+            mode.RunAsMain = false;
+            mode.ShowUI = false;
+        }
+
         return mode;
     }
 }

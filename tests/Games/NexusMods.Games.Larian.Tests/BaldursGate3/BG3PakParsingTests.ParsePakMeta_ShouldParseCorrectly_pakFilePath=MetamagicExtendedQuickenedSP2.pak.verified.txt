@@ -1,0 +1,10 @@
+﻿ModuleShortDesc:
+<node id="ModuleShortDesc">
+  <attribute id="Folder" type="LSString" value="MetamagicExtendedQuickened2SP" />
+  <attribute id="MD5" type="LSString" value="" />
+  <attribute id="Name" type="LSString" value="MetamagicExtendedQuickened2SP" />
+  <attribute id="PublishHandle" type="uint64" value="" />
+  <attribute id="UUID" type="guid" value="46ad1e3b-34fa-4c89-967f-296b2e7dff80" />
+  <attribute id="Version64" type="int64" value="144115188075855872" />
+</node>
+Version: 4.0.0.0

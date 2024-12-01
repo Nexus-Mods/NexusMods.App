@@ -1,0 +1,27 @@
+﻿[
+  {
+    FromPath: archive/pc/mod/foo.archive,
+    Hash: 0xA264DFF62937DB06,
+    ToGamePath: {Game}/archive/pc/mod/foo.archive
+  },
+  {
+    FromPath: bin/x64/foo.exe,
+    Hash: 0x4C1177C9185EA568,
+    ToGamePath: {Game}/bin/x64/foo.exe
+  },
+  {
+    FromPath: engine/foo.exe,
+    Hash: 0x62736F0795B31F3F,
+    ToGamePath: {Game}/engine/foo.exe
+  },
+  {
+    FromPath: r6/foo.exe,
+    Hash: 0x332D8D48B2A59917,
+    ToGamePath: {Game}/r6/foo.exe
+  },
+  {
+    FromPath: red4ext/foo.exe,
+    Hash: 0x5F678EAD4FBF7E55,
+    ToGamePath: {Game}/red4ext/foo.exe
+  }
+]

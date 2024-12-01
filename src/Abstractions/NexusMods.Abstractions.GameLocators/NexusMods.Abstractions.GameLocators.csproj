@@ -10,6 +10,6 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
-    </ItemGroup>
-
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
+    </ItemGroup>    
 </Project>

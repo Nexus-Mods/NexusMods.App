@@ -10,13 +10,16 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.SingleProcess.Exceptions;
+using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -36,29 +39,43 @@ public class Program
         TelemetrySettings telemetrySettings;
         LoggingSettings loggingSettings;
         ExperimentalSettings experimentalSettings;
+        GameLocatorSettings gameLocatorSettings;
         using (var settingsHost = BuildSettingsHost())
         {
             var settingsManager = settingsHost.Services.GetRequiredService<ISettingsManager>();
             telemetrySettings = settingsManager.Get<TelemetrySettings>();
             loggingSettings = settingsManager.Get<LoggingSettings>();
             experimentalSettings = settingsManager.Get<ExperimentalSettings>();
+            gameLocatorSettings = settingsManager.Get<GameLocatorSettings>();
         }
 
         var startupMode = StartupMode.Parse(args);
         
-        var host = BuildHost(
+        using var host = BuildHost(
             startupMode,
             telemetrySettings,
             loggingSettings,
-            experimentalSettings
+            experimentalSettings,
+            gameLocatorSettings
         );
         var services = host.Services;
+
+        if (startupMode.RunAsMain)
+        {
+            // Run the migrations
+            var migration = services.GetRequiredService<MigrationService>();
+            migration.Run().Wait();
+        }
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
+        // Start the CLI server if we are the main process.
+        var cliServer = services.GetService<CliServer>();
+        cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
+
         _logger = services.GetRequiredService<ILogger<Program>>();
-        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
+        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription, CompileConstants.InstallationMethod);
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
             LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());
@@ -177,6 +194,7 @@ public class Program
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
+                .AddSettings<GameLocatorSettings>()
             )
             .ConfigureLogging((_, builder) => builder
                 .ClearProviders()
@@ -199,25 +217,23 @@ public class Program
         TelemetrySettings telemetrySettings,
         LoggingSettings loggingSettings,
         ExperimentalSettings experimentalSettings,
-        bool isAvaloniaDesigner = false)
+        GameLocatorSettings? gameLocatorSettings = null)
     {
-        var host = new HostBuilder()
-            .ConfigureServices(services =>
-                {
-                    var s = services.AddApp(telemetrySettings, startupMode: startupMode, experimentalSettings: experimentalSettings).Validate();
+        var host = new HostBuilder().ConfigureServices(services =>
+        {
+            var s = services.AddApp(
+                telemetrySettings,
+                startupMode: startupMode,
+                experimentalSettings: experimentalSettings,
+                gameLocatorSettings: gameLocatorSettings).Validate();
 
-                    if (isAvaloniaDesigner)
-                    {
-                        s.OverrideSettingsForTests<DataModelSettings>(settings => settings with
-                            {
-                                UseInMemoryDataModel = true,
-                            }
-                        );
-                    }
-                }
-            )
-            .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
-            .Build();
+            if (startupMode.IsAvaloniaDesigner)
+            {
+                s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
+            }
+        })
+        .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
+        .Build();
 
         return host;
     }
@@ -289,14 +305,19 @@ public class Program
         {
             RunAsMain = true,
             ShowUI = false,
+            ExecuteCli = false,
+            IsAvaloniaDesigner = true,
             Args = [],
             OriginalArgs = [],
         };
+
         var host = BuildHost(startupMode, 
             telemetrySettings: new TelemetrySettings(), 
             LoggingSettings.CreateDefault(OSInformation.Shared),
-            isAvaloniaDesigner: true,
-            experimentalSettings: new ExperimentalSettings());
+            experimentalSettings: new ExperimentalSettings()
+        );
+        
+        host.StartAsync().GetAwaiter().GetResult();
         
         DesignerUtils.Activate(host.Services);
         

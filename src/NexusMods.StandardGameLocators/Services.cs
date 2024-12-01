@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using GameFinder.Common;
+using GameFinder.Launcher.Heroic;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EADesktop;
 using GameFinder.StoreHandlers.EADesktop.Crypto;
@@ -17,7 +18,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Origin;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -30,14 +32,17 @@ public static class Services
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
-    /// <param name="services">Collection to append entries into</param>
     /// <param name="registerConcreteLocators">if true, will register the concrete locators, set this to false if
     /// you plan on stubbing out these locators for testing</param>
-    /// <returns></returns>
-    public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
-        bool registerConcreteLocators = true)
+    public static IServiceCollection AddStandardGameLocators(
+        this IServiceCollection services,
+        bool registerConcreteLocators = true,
+        GameLocatorSettings? settings = null)
     {
-        services.AddGameLocatorCliVerbs();
+        services
+            .AddSettings<GameLocatorSettings>()
+            .AddGameLocatorCliVerbs()
+            .AddAttributeCollection(typeof(ManuallyAddedGame));
 
         // TODO: figure out the Proton-Wine situation
 
@@ -51,11 +56,13 @@ public static class Services
                 services.AddSingleton<IGameLocator, EpicLocator>();
                 services.AddSingleton<IGameLocator, GogLocator>();
                 services.AddSingleton<IGameLocator, OriginLocator>();
-                services.AddSingleton<IGameLocator, XboxLocator>();
+
+                if (settings is not null && settings.EnableXboxGamePass) services.AddSingleton<IGameLocator, XboxLocator>();
             },
             onLinux: () =>
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
+                services.AddSingleton<IGameLocator, HeroicGogLocator>();
 
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
@@ -87,6 +94,7 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<AHandler<SteamGame, AppId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
+                services.AddSingleton<HeroicGOGHandler>(provider => new HeroicGOGHandler(provider.GetRequiredService<IFileSystem>()));
 
                 services.AddSingleton<IWinePrefixManager<WinePrefix>>(provider => new DefaultWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
                 services.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(provider => new BottlesWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
@@ -103,15 +111,15 @@ public static class Services
                     {
                         CreateDelegateFor<GOGGame, IGogGame>(
                             (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.Path, GameStore.GOG, GogLocator.CreateMetadataCore(game))
+                            game => new GameLocatorResult(game.Path, game.Path.FileSystem, GameStore.GOG, GogLocator.CreateMetadataCore(game))
                         ),
                         CreateDelegateFor<EGSGame, IEpicGame>(
                             (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
-                            game => new GameLocatorResult(game.InstallLocation, GameStore.EGS, EpicLocator.CreateMetadataCore(game))
+                            game => new GameLocatorResult(game.InstallLocation, game.InstallLocation.FileSystem, GameStore.EGS, EpicLocator.CreateMetadataCore(game))
                         ),
                         CreateDelegateFor<OriginGame, IOriginGame>(
                             (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.InstallPath, GameStore.Origin, OriginLocator.CreateMetadataCore(game))
+                            game => new GameLocatorResult(game.InstallPath, game.InstallPath.FileSystem, GameStore.Origin, OriginLocator.CreateMetadataCore(game))
                         ),
                     }
                 ));

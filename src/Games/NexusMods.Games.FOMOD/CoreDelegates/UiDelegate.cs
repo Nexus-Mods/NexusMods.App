@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -64,7 +64,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public KeyedBox<RelativePath, ModFileTree>? CurrentArchiveFiles;
+    public KeyedBox<RelativePath, LibraryArchiveTree>? CurrentArchiveFiles;
 
     public UiDelegates(
         ILogger<UiDelegates> logger,
@@ -142,8 +142,10 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
         // Progress is computed as currentIndex + 1 /(all steps before the current step + future visible steps + 1).
         // The +1 are to avoid having the bar at 0% when we're at the first step, and to account for the extra finish screen.
-        var progress = Percent.CreateClamped(currentStepId + 1,
-            currentStepId + 1 + installSteps.Skip(currentStepId + 1).Count(step => step.visible) + 1);
+        var progress = Percent.Create(
+            current: currentStepId + 1,
+            maximum: currentStepId + 1 + installSteps.Skip(currentStepId + 1).Count(step => step.visible) + 1
+        );
 
         _guidedInstaller
             .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)
@@ -295,7 +297,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         var asPath = RelativePath.FromUnsanitizedInput(image);
         var node = CurrentArchiveFiles.FindByPathFromChild(asPath);
         if (node is not null)
-            return new OptionImage(new OptionImage.ImageStoredFile(node.Item.Hash));
+            return new OptionImage(new OptionImage.ImageStoredFile(node.Item.LibraryFile.Value.Hash));
 
         _logger.LogDebug("Image path {Path} doesn't exist in archive!", asPath);
         return null;
@@ -308,7 +310,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             "Required" => OptionType.Required,
             "NotUsable" => OptionType.Disabled,
             "Recommended" => OptionType.PreSelected,
-            _ => OptionType.Available
+            _ => OptionType.Available,
         };
 
         return state;
@@ -321,7 +323,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             "SelectAtLeastOne" => OptionGroupType.AtLeastOne,
             "SelectAtMostOne" => OptionGroupType.AtMostOne,
             "SelectExactlyOne" => OptionGroupType.ExactlyOne,
-            _ => OptionGroupType.Any
+            _ => OptionGroupType.Any,
         };
     }
 

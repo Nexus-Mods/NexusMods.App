@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -13,6 +15,8 @@ public class SettingsPageDesignViewModel : APageViewModel<ISettingsPageViewModel
     public ReactiveCommand<Unit, Unit> CancelCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> CloseCommand { get; } = ReactiveCommand.Create(() => { });
     public ReadOnlyObservableCollection<ISettingEntryViewModel> SettingEntries { get; }
+
+    public ReadOnlyObservableCollection<ISettingSectionViewModel> Sections { get; } = ReadOnlyObservableCollection<ISettingSectionViewModel>.Empty;
 
     public SettingsPageDesignViewModel() : base(new DesignWindowManager())
     {

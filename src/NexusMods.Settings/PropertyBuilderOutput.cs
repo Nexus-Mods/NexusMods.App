@@ -8,6 +8,7 @@ internal interface IPropertyBuilderOutput
     SectionId SectionId { get; }
     string DisplayName { get; }
     string Description { get; }
+    Uri? Link { get; }
     bool RequiresRestart { get; }
     string? RestartMessage { get; }
 
@@ -37,6 +38,7 @@ internal record PropertyBuilderOutput<TSettings, TProperty>(
     SectionId SectionId,
     string DisplayName,
     string Description,
+    Uri? Link,
     bool RequiresRestart,
     string? RestartMessage,
     ISettingsPropertyValueContainerFactory Factory,

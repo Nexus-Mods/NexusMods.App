@@ -1,0 +1,23 @@
+using Avalonia.Platform.Storage;
+using NexusMods.App.UI.WorkspaceSystem;
+using R3;
+
+namespace NexusMods.App.UI.Pages.LibraryPage;
+
+public interface ILibraryViewModel : IPageViewModelInterface
+{
+    LibraryTreeDataGridAdapter Adapter { get; }
+
+    string EmptyLibrarySubtitleText { get; }
+
+    ReactiveCommand<Unit> SwitchViewCommand { get; }
+
+    ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
+    ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
+    ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
+
+    ReactiveCommand<Unit> OpenFilePickerCommand { get; }
+    ReactiveCommand<Unit> OpenNexusModsCommand { get; }
+
+    IStorageProvider? StorageProvider { get; set; }
+}

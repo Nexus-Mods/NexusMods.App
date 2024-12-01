@@ -1,0 +1,10 @@
+<Module>
+    <!-- 👇 Current mod is `CustomSpawns` -->
+    <Id value="CustomSpawns"/>
+    <Name value="Custom Spawns"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ `Harmony` must load after this mod -->
+        <DependedModuleMetadata id="Harmony" order="LoadAfterThis" />
+    </DependedModuleMetadatas>
+</Module>
+

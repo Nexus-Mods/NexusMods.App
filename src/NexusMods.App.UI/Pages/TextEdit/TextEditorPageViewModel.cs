@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO.Hashing;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -7,21 +9,20 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
+using Hash = NexusMods.Hashing.xxHash3.Hash;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -49,7 +50,6 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         IWindowManager windowManager,
         IFileStore fileStore,
         IConnection connection,
-        IRepository<StoredFile.Model> repository,
         ISettingsManager settingsManager) : base(windowManager)
     {
         TabIcon = IconValues.FileEdit;
@@ -61,12 +61,11 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
-            var fileId = context.FileId;
+            var loadoutFileId = context.LoadoutFileId;
+            var loadoutFile = LoadoutFile.Load(connection.Db, loadoutFileId);
 
-            var fileHash = connection.Db.Get<StoredFile.Model>(fileId.Value).Hash;
-            logger.LogDebug("Loading file {Hash} into the Text Editor", fileHash);
-
-            await using var stream = await fileStore.GetFileStream(fileHash);
+            logger.LogDebug("Loading file `{File}` (`{Hash}`) into the Text Editor", loadoutFile.AsLoadoutItemWithTargetPath().TargetPath, loadoutFile.Hash);
+            await using var stream = await fileStore.GetFileStream(loadoutFile.Hash);
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var contents = await reader.ReadToEndAsync();
 
@@ -82,30 +81,30 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var fileId = Context!.FileId;
+            Debug.Assert(Context is not null);
+
+            var loadoutFileId = Context!.LoadoutFileId;
             var filePath = Context!.FilePath;
 
             var text = Document.Text;
 
             // hash and store the new contents
             var bytes = Encoding.UTF8.GetBytes(text);
-            var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
+            var hash = Hash.From(XxHash3.HashToUInt64(bytes));
             var size = Size.From((ulong)bytes.Length);
 
             using (var streamFactory = new MemoryStreamFactory(filePath.Path, new MemoryStream(bytes, writable: false)))
             {
-                await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
+                if (!await fileStore.HaveFile(hash))
+                    await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)], deduplicate: false);
             }
 
             // update the file
-            var db = connection.Db;
-            var storedFile = db.Get<StoredFile.Model>(fileId.Value);
-
             using (var tx = connection.BeginTransaction())
             {
-                tx.Add(storedFile.Id, StoredFile.Hash, hash);
-                tx.Add(storedFile.Id, StoredFile.Size, size);
-                storedFile.Remap<File.Model>().Mod.Revise(tx);
+                tx.Add(loadoutFileId, LoadoutFile.Hash, hash);
+                tx.Add(loadoutFileId, LoadoutFile.Size, size);
+                // TODO: Revise
                 await tx.Commit();
             }
 
@@ -114,28 +113,14 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         this.WhenActivated(disposables =>
         {
-            var serialDisposable = new SerialDisposable();
-            serialDisposable.DisposeWith(disposables);
-
-            repository.Revisions(Context!.FileId.Value);
-
             this.WhenAnyValue(vm => vm.Context)
-                .Do(context =>
-                {
-                    if (context is null)
-                    {
-                        serialDisposable.Disposable = null;
-                        return;
-                    }
-
-                    serialDisposable.Disposable = repository.Revisions(context.FileId.Value, includeCurrent: false)
-                        .Select(_ => context)
-                        .OffUi()
-                        .InvokeCommand(_loadFileCommand);
-                })
                 .WhereNotNull()
+                .Select(context => connection.ObserveDatoms(SliceDescriptor.Create(context.LoadoutFileId)) 
+                    .Select(_ => context)
+                )
+                .Switch()
                 .OffUi()
-                .InvokeCommand(_loadFileCommand)
+                .InvokeReactiveCommand(_loadFileCommand)
                 .DisposeWith(disposables);
 
             this.WhenAnyObservable(vm => vm._loadFileCommand)

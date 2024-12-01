@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="ObservableCollections.R3" />
+    </ItemGroup>
+</Project>

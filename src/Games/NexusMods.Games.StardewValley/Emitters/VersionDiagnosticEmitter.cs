@@ -4,13 +4,13 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -18,47 +18,49 @@ namespace NexusMods.Games.StardewValley.Emitters;
 public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
-    private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     public VersionDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<VersionDiagnosticEmitter> logger,
-        IFileStore fileStore,
         IOSInformation os,
         ISMAPIWebApi smapiWebApi)
     {
         _logger = logger;
-        _fileStore = fileStore;
         _os = os;
         _smapiWebApi = smapiWebApi;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         // var gameVersion = new SemanticVersion("1.5.6");
 
-        var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
-        if (!optionalSMAPIMod.HasValue) yield break;
-
-        var (_, smapiMarker) = optionalSMAPIMod.Value;
-        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
+        if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
+        if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiStrVersion, out var smapiVersion))
+        {
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiStrVersion);
+            yield break;
+        }
 
         var smapiMods = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
-        var modPageUrls = await _smapiWebApi.GetModPageUrls(
-            _os,
+        var apiMods = await _smapiWebApi.GetModDetails(
+            os: _os,
             gameVersion,
             smapiVersion,
-            smapiMods.Select(tuple => tuple.Item2.UniqueID).ToArray()
+            smapiIDs: smapiMods.Select(tuple => tuple.Item2.UniqueID).ToArray()
         );
 
         foreach (var tuple in smapiMods)
         {
-            var (mod, manifest) = tuple;
+            var (smapiMod, manifest) = tuple;
 
             var minimumApiVersion = manifest.MinimumApiVersion;
             var minimumGameVersion = manifest.MinimumGameVersion;
@@ -66,11 +68,11 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             if (minimumApiVersion is not null && smapiVersion.IsOlderThan(minimumApiVersion))
             {
                 yield return Diagnostics.CreateSMAPIVersionOlderThanMinimumAPIVersion(
-                    Mod: mod.ToReference(loadout),
-                    ModName: mod.Name,
+                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
+                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     MinimumAPIVersion: minimumApiVersion.ToString(),
                     CurrentSMAPIVersion: smapiVersion.ToString(),
-                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink),
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink),
                     SMAPINexusModsLink: Helpers.SMAPILink
                 );
             }
@@ -78,11 +80,11 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             if (minimumGameVersion is not null && gameVersion.IsOlderThan(minimumGameVersion))
             {
                 yield return Diagnostics.CreateGameVersionOlderThanModMinimumGameVersion(
-                    Mod: mod.ToReference(loadout),
-                    ModName: mod.Name,
+                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
+                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     MinimumGameVersion: minimumGameVersion.ToString(),
                     CurrentGameVersion: gameVersion.ToString(),
-                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink)
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink)
                 );
             }
         }

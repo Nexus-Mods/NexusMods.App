@@ -1,8 +1,5 @@
 using System.Collections.ObjectModel;
-using DynamicData.Kernel;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -13,12 +10,18 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 ///
 /// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
+[Obsolete(message: "To be replaced with ILibraryService")]
 public interface IDownloadService
 {
     /// <summary>
     /// Contains all downloads managed by the application.
     /// </summary>
     ReadOnlyObservableCollection<IDownloadTask> Downloads { get; }
+    
+    /// <summary>
+    /// The base directory for ongoing downloads
+    /// </summary>
+    AbsolutePath OngoingDownloadsDirectory { get; }
     
     /// <summary>
     /// Adds a task that will download from a NXM link.
@@ -36,11 +39,6 @@ public interface IDownloadService
     /// Gets the total throughput of all downloads.
     /// </summary>
     Size GetThroughput();
-    
-    /// <summary>
-    /// Gets the total progress of all downloads.
-    /// </summary>
-    Optional<Percent> GetTotalProgress();
 
     /// <summary>
     /// Sets the <see cref="CompletedDownloadState.Hidden"/> on the tasks if they are completed.

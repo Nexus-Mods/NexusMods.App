@@ -11,7 +11,7 @@
     x:Class="NexusMods.App.UI.Pages.Changelog.ChangelogPageView">
 
     <Grid RowDefinitions="Auto, *">
-        <ComboBox Grid.Row="0" HorizontalAlignment="Right" x:Name="ComboBox">
+        <ComboBox Grid.Row="0" HorizontalAlignment="Right" x:Name="ComboBox" Classes="Tertiary">
             <ComboBox.DataTemplates>
                 <DataTemplate DataType="{x:Type system:String}">
                     <TextBlock Text="{CompiledBinding}"/>

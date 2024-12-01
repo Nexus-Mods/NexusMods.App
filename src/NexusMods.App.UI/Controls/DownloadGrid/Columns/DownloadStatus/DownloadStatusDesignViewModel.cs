@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
@@ -71,7 +72,6 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
             DownloadTaskStatus.Idle => Language.DownloadStatusDesignViewModel_FormatStatus_Queued,
             DownloadTaskStatus.Paused => Language.DownloadStatusDesignViewModel_FormatStatus_Paused,
             DownloadTaskStatus.Downloading => Language.DownloadStatusDesignViewModel_FormatStatus_Downloading,
-            DownloadTaskStatus.Installing => Language.DownloadStatusDesignViewModel_FormatStatus_Installing,
             DownloadTaskStatus.Completed => Language.DownloadStatusDesignViewModel_FormatStatus_Complete,
             DownloadTaskStatus.Analyzing => Language.DownloadStatusDesignViewModel_FormatStatus_Analyzing,
             DownloadTaskStatus.Cancelled => Language.DownloadStatusDesignViewModel_FormatStatus_Cancelled,

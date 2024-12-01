@@ -13,5 +13,5 @@ public class SmapiRunGameTool : RunGameTool<StardewValley>
     {
     }
 
-    public override bool UseShell { get; set; } = true;
+    protected override bool UseShell { get; set; } = true;
 }

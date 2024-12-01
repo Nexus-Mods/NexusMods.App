@@ -1,31 +1,38 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Games.MountAndBlade2Bannerlord.Emitters;
-using NexusMods.Games.MountAndBlade2Bannerlord.Services;
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Abstractions.Settings;
+using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
+using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
+using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public static class ServicesExtensions
+public static class Services
 {
-    public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
+    public static IServiceCollection AddMountAndBlade2Bannerlord(this IServiceCollection services)
     {
-        services.AddSingleton<LauncherManagerFactory>();
+        return services
+            .AddGame<Bannerlord>()
+            .AddSingleton<ITool, BannerlordRunGameTool>()
 
-        services.AddGame<MountAndBlade2Bannerlord>()
-            .AddSingleton<ILoadoutDiagnosticEmitter, BuiltInEmitter>()
-            .AddSingleton<ITool, RunStandaloneTool>()
-            .AddSingleton<ITool, RunLauncherTool>()
-            .AddAttributeCollection(typeof(MnemonicDB.ModuleInfoExtended))
-            .AddAttributeCollection(typeof(MnemonicDB.DependentModule))
-            .AddAttributeCollection(typeof(MnemonicDB.SubModuleInfo))
-            .AddAttributeCollection(typeof(MnemonicDB.SubModuleFileMetadata))
-            .AddAttributeCollection(typeof(MnemonicDB.ModuleFileMetadata))
-            .AddAttributeCollection(typeof(MnemonicDB.DependentModuleMetadata));
+            // Installers
+            .AddSingleton<BannerlordModInstaller>()
 
-        return services;
+            // Diagnostics
+
+            // Attributes
+            .AddBannerlordModuleLoadoutItemModel()
+            .AddModuleInfoFileLoadoutFileModel()
+   
+            // Misc
+            .AddSettings<BannerlordSettings>()
+            .AddSingleton<LauncherManagerFactory>()
+            .AddSingleton<FileSystemProvider>()
+            .AddSingleton<NotificationProvider>()
+            .AddSingleton<DialogProvider>()
+            
+            // Pipelines
+            .AddPipelines();
     }
 }

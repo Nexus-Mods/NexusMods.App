@@ -8,18 +8,25 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
     xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
     xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:controls="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Controls.MarkdownRenderer.MarkdownRendererView">
 
-    <Design.PreviewWith>
-        <local:MarkdownRendererDesignViewModel/>
-    </Design.PreviewWith>
+    <Design.DataContext>
+        <local:MarkdownRendererDesignViewModel />
+    </Design.DataContext>
 
     <!--
         NOTE(erri120): This control can only be styled directly, not through classes.
         https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-customise-style
+        
+        NODE(insomnious): I've also been using this as a reference for styles. The above hasn't been updated since 2020 
+        and I'm not convinced it still works in the same way.
+        https://github.com/whistyun/Markdown.Avalonia/blob/master/Markdown.Avalonia.Tight/StyleCollections/MarkdownStyleDefaultTheme.axaml
     -->
+
     <md:MarkdownScrollViewer x:Name="MarkdownScrollViewer">
+
         <md:MarkdownScrollViewer.Styles>
             <!-- NOTE(erri120): designs from https://www.figma.com/design/NuC2DiIdnAZQQkYUSaK514/%F0%9F%93%B1Markdown-styles?node-id=10%3A12&t=mVpreGuSrLB54ms0-1 -->
             <!--
@@ -27,98 +34,203 @@
                 As a result of this, I copy-pasted our TextBlock themes, which means they can very easily get out-of-sync with the main themes.
             -->
 
-            <Style Selector="ctxt|CTextBlock.Heading1">
-                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="FontSize" Value="36" />
-                <Setter Property="LineHeight" Value="43.2" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
+            <Style Selector="StackPanel.Markdown_Avalonia_MarkdownViewer">
 
-            <Style Selector="ctxt|CTextBlock.Heading2">
-                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="FontSize" Value="24" />
-                <Setter Property="LineHeight" Value="30" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
+                <!-- will center the content but keep a fixed width column -->
+                <Setter Property="MaxWidth" Value="1000" />
+                <Setter Property="Spacing" Value="4" />
 
-            <Style Selector="ctxt|CTextBlock.Heading3">
-                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="LineHeight" Value="24.75" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-
-            <Style Selector="ctxt|CTextBlock.Heading4">
-                <Setter Property="FontFamily" Value="{StaticResource FontBodyBold}" />
-                <Setter Property="FontWeight" Value="Bold" />
-                <Setter Property="FontSize" Value="16" />
-                <Setter Property="LineHeight" Value="24" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-
-            <Style Selector="ctxt|CTextBlock.Heading5">
-                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="FontSize" Value="12" />
-                <Setter Property="LineHeight" Value="16.5" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-
-            <Style Selector="ctxt|CTextBlock.Heading6">
-                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="FontSize" Value="10" />
-                <Setter Property="LineHeight" Value="15" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-
-            <Style Selector="ctxt|CTextBlock.Paragraph">
-                <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
-                <Setter Property="FontWeight" Value="Normal" />
-                <Setter Property="FontSize" Value="14" />
-
-                <!--
-                    NOTE(erri120): LineHeight can't be used because every image gets put into a paragraph.
-                    Setting LineHeight would also force the image height to that value.
-                    The library we're using has many issues like this where the ideal solution would be to
-                    apply styles to a parent control from the child control or from the parent control by
-                    somehow checking if it has certain child controls.
-                -->
-                <!-- <Setter Property="LineHeight" Value="21" /> -->
-                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-            </Style>
-
-
-            <!-- TODO: bold -->
-            <!-- TODO: italic -->
-            <!-- TODO: bold and italic -->
-            <!-- TODO: block quote -->
-            <!-- TODO: nested block quote -->
-            <!-- TODO: numbered list -->
-            <!-- TODO: list -->
-
-            <Style Selector="ctxt|CCode ctxt|CRun">
-                <!-- TODO: use Roboto Mono -->
-                <Setter Property="FontSize" Value="13" />
-                <!-- <Setter Property="LineHeight" Value="19.5" /> -->
-                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
-            </Style>
-
-            <Style Selector="ctxt|CHyperlink">
-                <Setter Property="HoverForeground" Value="{StaticResource BrandLegacyPrimaryStrong}"/>
-
-                <Style Selector="^ ctxt|CRun">
-                    <Setter Property="Foreground" Value="{StaticResource BrandLegacyPrimaryStrong}" />
-                    <Setter Property="IsUnderline" Value="True" />
+                <Style Selector="^ ctxt|CImage">
+                    <Setter Property="LayoutHeight" Value="300" />
+                    <Setter Property="SaveAspectRatio" Value="True" />
                 </Style>
-            </Style>
 
-            <Style Selector="ctxt|CImage">
-                <Setter Property="SaveAspectRatio" Value="True"/>
+                <Style Selector="^ ctxt|CTextBlock">
+
+                    <!-- set CTextBlock defaults to paragraph -->
+                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                    <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="Margin" Value="0, 0, 0, 12" />
+                    <Setter Property="LineSpacing" Value="4" />
+                    <!-- <Setter Property="LineHeight" Value="25" /> -->
+                    <!--
+                            NOTE(erri120): LineHeight can't be used because every image gets put into a paragraph.
+                            Setting LineHeight would also force the image height to that value.
+                            The library we're using has many issues like this where the ideal solution would be to
+                            apply styles to a parent control from the child control or from the parent control by
+                            somehow checking if it has certain child controls.
+                            
+                            NOTE(insomnious): LineSpacing is getting a bit closer to what we want, it's only affecting
+                            text paragraphs and not the images inside of them.
+                    -->
+
+                    <!-- heading 1 -->
+                    <Style Selector="^.Heading1">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="36" />
+                        <Setter Property="LineHeight" Value="43.2" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                    </Style>
+
+                    <!-- heading 2 -->
+                    <Style Selector="^.Heading2">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="24" />
+                        <Setter Property="LineHeight" Value="30" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                    </Style>
+
+                    <!-- heading 3 -->
+                    <Style Selector="^.Heading3">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="18" />
+                        <Setter Property="LineHeight" Value="22.5" />
+                        <Setter Property="Margin" Value="0, 0, 0, 4" />
+                    </Style>
+
+                    <!-- heading 4 -->
+                    <Style Selector="^.Heading4">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontBodySemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="LineHeight" Value="24" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                    </Style>
+
+                    <!-- heading 5 -->
+                    <Style Selector="^.Heading5">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="12" />
+                        <Setter Property="LineHeight" Value="16.5" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                    </Style>
+
+                    <!-- heading 6 -->
+                    <Style Selector="^.Heading6">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                        <Setter Property="FontSize" Value="10" />
+                        <Setter Property="LineHeight" Value="15" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                    </Style>
+
+                    <!-- paragraph -->
+                    <Style Selector="^.Paragraph">
+
+
+                        <!-- bold -->
+                        <Style Selector="^ ctxt|CBold">
+                            <!-- <Setter Property="Background" Value="Red" /> -->
+                            <!-- <Setter Property="FontSize" Value="20" /> -->
+                        </Style>
+
+                        <!-- italic -->
+                        <Style Selector="^ ctxt|CItalic">
+                            <!-- <Setter Property="Background" Value="Blue" /> -->
+                            <!-- <Setter Property="FontSize" Value="20" /> -->
+                        </Style>
+
+                        <!-- bold and italic -->
+                        <Style Selector="^ ctxt|CBold ctxt|CItalic">
+                            <!-- <Setter Property="Background" Value="Green" /> -->
+                            <!-- <Setter Property="FontSize" Value="20" /> -->
+                        </Style>
+                    </Style>
+
+                </Style>
+
+                <!-- inline code -->
+                <Style Selector="^ ctxt|CCode">
+                    <Setter Property="MonospaceFontFamily" Value="{StaticResource FontBodyCode}" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                    <Setter Property="Padding" Value="4,2" />
+                    <Setter Property="Margin" Value="2,0" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                </Style>
+
+                <!-- links and their states -->
+                <Style Selector="^ ctxt|CHyperlink">
+                    <Setter Property="IsUnderline" Value="True" />
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryModerate}" />
+                    <Setter Property="HoverForeground" Value="{StaticResource PrimaryStrong}" />
+                    <Style Selector="^:hover">
+                        <Setter Property="IsUnderline" Value="False" />
+                    </Style>
+                </Style>
+
+                <!-- code block (separate to inline code) -->
+                <Style Selector="^ Border.CodeBlock">
+                    <Setter Property="Padding" Value="8,8" />
+                    <Setter Property="Margin" Value="8,16" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="CornerRadius" Value="4" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+
+                    <Style Selector="^ TextBlock">
+                        <Setter Property="FontFamily" Value="{StaticResource FontBodyCode}" />
+                        <Setter Property="FontSize" Value="13" />
+                        <Setter Property="LineHeight" Value="19.5" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                    </Style>
+                </Style>
+
+                <!-- blockquote -->
+                <Style Selector="^ Border.Blockquote">
+                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+                    <Setter Property="BorderThickness" Value="3,0,0,0" />
+                    <Setter Property="CornerRadius" Value="4" />
+                    <Setter Property="Padding" Value="4,8" />
+                    <Setter Property="Margin" Value="0,4,0,12" />
+
+                    <Style Selector="^ StackPanel.Blockquote">
+                        <Setter Property="Spacing" Value="16" />
+
+                        <Style Selector="^ ctxt|CTextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                            <Setter Property="TextAlignment" Value="Left" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="LineSpacing" Value="4" />
+                        </Style>
+                    </Style>
+                </Style>
+
+                <!-- lists -->
+                <Style Selector="^ Grid.List">
+                    <Setter Property="Margin" Value="4,0,4, 12" />
+
+                    <Style Selector="^ ctxt|CTextBlock">
+                        <Setter Property="TextAlignment" Value="Left" />
+                        <Setter Property="Margin" Value="4,0,4,8" />
+                        <Setter Property="LineSpacing" Value="4" />
+                    </Style>
+                </Style>
+
+                <!-- rule -->
+                <Style Selector="^ controls|Rule">
+                    <Setter Property="Background" Value="{StaticResource NeutralWeakBrush}" />
+                    <Setter Property="Margin" Value="0,0,0,12" />
+                    <Setter Property="Opacity" Value="0.1" />
+                    <Setter Property="LineMargin" Value="0" />
+                    <Setter Property="SingleLineWidth" Value="2" />
+                    <Setter Property="BoldLineWidth" Value="2" />
+                </Style>
             </Style>
 
             <!-- TODO: tables -->
@@ -127,4 +239,3 @@
     </md:MarkdownScrollViewer>
 
 </reactive:ReactiveUserControl>
-

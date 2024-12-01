@@ -8,8 +8,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
@@ -33,7 +31,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _client = client;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var smapiToGameMappings = await FetchSMAPIToGameMappings(cancellationToken);
         if (smapiToGameMappings is null) yield break;
@@ -42,13 +40,15 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (gameToSMAPIMappings is null) yield break;
 
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
-        var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
-
-        if (!optionalSmapiMod.HasValue)
+        if (!Helpers.TryGetSMAPI(loadout, out var smapi))
         {
-            var smapiModCount = loadout.CountModsWithMetadata(SMAPIModMarker.IsSMAPIMod);
+            var smapiModCount = loadout
+                .Items
+                .OfTypeLoadoutItemGroup()
+                .OfTypeSMAPIModLoadoutItem()
+                .Count();
 
             // NOTE(erri120): The MissingSMAPIEmitter will warn the user if SMAPI is required.
             // This emitter will suggest SMAPI if there are no mods yet.
@@ -59,8 +59,17 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var (smapiMod, smapiMarker) = optionalSmapiMod.Value;
-        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
+        if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiVersionString))
+        {
+            _logger.LogError("Unable to get the version of the SMAPI mod");
+            yield break;
+        }
+        
+        if (!SemanticVersion.TryParse(smapiVersionString, out var smapiVersion))
+        {
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiVersionString);
+            yield break;
+        }
 
         // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
 
@@ -73,13 +82,13 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         var diagnostic1 = GameVersionOlderThanMinimumGameVersion(
             gameToSMAPIMappings,
-            loadout, smapiMod,
+            loadout, smapi,
             gameVersion, smapiVersion, supportedGameVersions
         );
 
         var diagnostic2 = GameVersionNewerThanMaximumGameVersion(
             gameToSMAPIMappings,
-            loadout, smapiMod,
+            loadout, smapi,
             gameVersion, smapiVersion, supportedGameVersions
         );
 
@@ -104,8 +113,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionNewerThanMaximumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout.Model loadout,
-        Mod.Model smapiMod,
+        Loadout.ReadOnly loadout,
+        SMAPILoadoutItem.ReadOnly smapi,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
@@ -123,7 +132,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         return Diagnostics.CreateGameVersionNewerThanMaximumGameVersion(
-            SMAPIMod: smapiMod.ToReference(loadout),
+            SMAPI: smapi.AsLoadoutItemGroup().ToReference(loadout),
             SMAPIVersion: smapiVersion.ToString(),
             MaximumGameVersion: maximumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
@@ -134,8 +143,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionOlderThanMinimumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout.Model loadout,
-        Mod.Model smapiMod,
+        Loadout.ReadOnly loadout,
+        SMAPILoadoutItem.ReadOnly smapi,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
@@ -153,7 +162,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         return Diagnostics.CreateGameVersionOlderThanMinimumGameVersion(
-            SMAPIMod: smapiMod.ToReference(loadout),
+            SMAPI: smapi.AsLoadoutItemGroup().ToReference(loadout),
             SMAPIVersion: smapiVersion.ToString(),
             MinimumGameVersion: minimumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),

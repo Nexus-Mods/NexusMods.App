@@ -31,17 +31,21 @@ internal static class CliVerbs
     }
 
     [Verb("list-games", "List all games that are currently supported and installed.")]
-    private static async Task<int> ListGames([Injected] IRenderer renderer, [Injected] IEnumerable<IGame> games)
+    private static async Task<int> ListGames(
+        [Injected] IRenderer renderer, 
+        [Injected] IEnumerable<IGame> games,
+        [Injected] IGameRegistry registry)
     {
         var rows = from game in games
-            from install in game.Installations
+            from install in registry.Installations.Values
+            where game.GameId == install.Game.GameId
             orderby game.Name, install.Version
             select new object[]
             {
-                game.Name, install.Version, install.Store, install.LocationsRegister.GetResolvedPath(LocationId.Game)
+                game.Name, install.Game.GameId, install.Version, install.Store, install.LocationsRegister.GetResolvedPath(LocationId.Game)
             };
 
-        await renderer.Table(new[] {"Game", "Version", "Store", "Location"}, rows);
+        await renderer.Table(new[] {"Game", "GameId", "Version", "Store", "Location"}, rows);
         return 0;
     }
 }

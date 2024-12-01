@@ -1,10 +1,17 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
+using JetBrains.Annotations;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.Icons;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -15,11 +22,18 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
     private readonly ReadOnlyObservableCollection<INewTabPageSectionViewModel> _sections;
     public ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections => _sections;
 
-    public NewTabPageViewModel(IWindowManager windowManager, PageDiscoveryDetails[] discoveryDetails) : base(windowManager)
+    public AlertSettingsWrapper AlertSettingsWrapper { get; }
+
+    public NewTabPageViewModel(
+        ISettingsManager settingsManager,
+        IWindowManager windowManager,
+        PageDiscoveryDetails[] discoveryDetails) : base(windowManager)
     {
         TabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
         TabIcon = IconValues.Tab;
-        
+
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "add panels using add-panel button");
+
         _itemSource.Edit(list =>
         {
             var toAdd = discoveryDetails
@@ -37,6 +51,22 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
 
         this.WhenActivated(disposables =>
         {
+            var workspace = GetWorkspaceController().ActiveWorkspace;
+
+            if (!AlertSettingsWrapper.IsDismissed)
+            {
+                // dismiss the banner if the user adds a panel
+                workspace.Panels
+                    .ObserveCollectionChanges()
+                    .Where(_ => !AlertSettingsWrapper.IsDismissed)
+                    .Select(_ => workspace.Panels)
+                    .Prepend(workspace.Panels)
+                    .Select(x => x.Count)
+                    .Where(panelCount => panelCount > 1)
+                    .Subscribe(_ => AlertSettingsWrapper.DismissAlert())
+                    .DisposeWith(disposables);
+            }
+
             _itemSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
@@ -53,10 +83,10 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                     }
                     else
                     {
-                        behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                        behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     }
 
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
                 })
                 .DisposeWith(disposables);
         });

@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+    <Design.PreviewWith>
+        <Border Padding="20" Height="200" Width="250">
+            <panels:FlexPanel Direction="Row" 
+                              ColumnSpacing="4" 
+                              AlignContent="Center" 
+                              AlignItems="Center" 
+                              JustifyContent="SpaceEvenly">
+                <Button>
+                    <TextBlock Text="Button 1" />
+                </Button>
+                <Button>
+                    <TextBlock Text="Button 2" />
+                </Button>
+            </panels:FlexPanel>
+        </Border>
+    </Design.PreviewWith>
+    
+    <!-- FlexPanel Styles -->
+    <Style Selector="panels|FlexPanel">
+        
+        <!-- NOTE(Al12rs): FlexPanel layout doesn't work correctly if its children don't have the default alignment (Stretch). -->
+        <!-- As a notable example, Buttons have Left alignment by default set in Avalonia.Fluent theme. -->
+        <Style Selector="^ > :is(Control)">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+        
+    </Style>
+</Styles>

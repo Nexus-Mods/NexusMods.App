@@ -5,12 +5,12 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.HttpDownloads;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -18,12 +18,10 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
-using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
-using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -54,8 +52,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _inProgressTasksObservable = new([]);
     
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _completedTasksObservable = new([]);
-    
-    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; }
+
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; } 
     private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> CompletedTaskChangeSet { get; }
     
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> InProgressTasks => _inProgressTasksObservable;
@@ -93,9 +91,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive] public ReactiveCommand<Unit,Unit> ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideSelectedCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideAllCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    
+    [Reactive] public Percent NewProgress { get; private set; }
 
     private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
-    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+    private readonly ISeries _lineSeries;
+    public ReadOnlyObservableCollection<ISeries> Series { get; }
 
     private readonly ObservableCollectionExtended<double> _customSeparators = [0];
 
@@ -114,20 +115,29 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
+        IJobMonitor jobMonitor,
         IConnection conn,
         IOverlayController overlayController) : base(windowManager)
     {
         _downloadService = downloadService;
-        Series = new ReadOnlyObservableCollection<ISeries>([
-            new LineSeries<DateTimePoint>
-            {
-                Values = _throughputValues,
-                Fill = null,
-                GeometryFill = null,
-                GeometryStroke = null,
-            },
-        ]);
+        _lineSeries = new LineSeries<DateTimePoint>
+        {
+            Values = _throughputValues,
+            Fill = null,
+            GeometryFill = null,
+            GeometryStroke = null,
+        };
 
+        Series = new ReadOnlyObservableCollection<ISeries>([_lineSeries]);
+        
+        InProgressTaskChangeSet = new SourceCache<IDownloadTaskViewModel, EntityId>(x => EntityId.From(0))
+            .Connect()
+            .OnUI();
+        
+        CompletedTaskChangeSet = new SourceCache<IDownloadTaskViewModel, EntityId>(x => EntityId.From(0))
+            .Connect()
+            .OnUI();
+        
         YAxes =
         [
             new Axis
@@ -140,76 +150,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
-
-        var tasksChangeSet = _downloadService.Downloads
-            .ToObservableChangeSet(x => x.PersistentState.Id);
-        
-        InProgressTaskChangeSet = tasksChangeSet
-            .Transform(x =>
-                {
-                    var vm = new DownloadTaskViewModel(x);
-                    vm.Activator.Activate();
-                    return (IDownloadTaskViewModel)vm;
-                }
-            )
-            .FilterOnObservable((item, key) =>
-                {
-                    return item.WhenAnyValue(v => v.Status)
-                        .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed);
-                }
-            )
-            .AutoRefreshOnObservable(task =>
-                {
-                    return task.WhenAnyValue(x => x.Status);
-                }
-            )
-            .DisposeMany()
-            .OnUI();
-            
-
-        CompletedTaskChangeSet = tasksChangeSet
-            .Transform(x =>
-                {
-                    var vm = new DownloadTaskViewModel(x);
-                    vm.HideCommand = ReactiveCommand.CreateFromTask(async () => await HideTasks(true, [vm]));
-                    vm.ViewInLibraryCommand = ReactiveCommand.Create<NavigationInformation>((navInfo) =>
-                    {
-                        var controller = GetWorkspaceController();
-                        var workspaces = controller
-                            .AllWorkspaces
-                            .Where(w => w.Context is LoadoutContext loadoutContext
-                                        && conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value).Installation.Game.Domain.Equals(vm.Game)
-                            )
-                            .Select(w => (w.Id, Context: (LoadoutContext)w.Context)).ToArray();
-                        
-                        if (workspaces.Length == 0)
-                            return;
-                        
-                        var workspace = workspaces[0];
-
-                        var pageData = new PageData
-                        {
-                            FactoryId = FileOriginsPageFactory.StaticId,
-                            Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
-                        };
-                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo, Optional<PageIdBundle>.None);
-                        
-                        controller.OpenPage(workspace.Id, pageData, behavior);
-                        controller.ChangeActiveWorkspace(workspace.Id);
-                    });
-                    vm.Activator.Activate();
-                    return (IDownloadTaskViewModel)vm;
-                }
-            )
-            .FilterOnObservable((item, key) =>
-                {
-                    return item.WhenAnyValue(v => v.Status)
-                        .CombineLatest(item.WhenAnyValue(v => v.IsHidden))
-                        .Select(_ => item is { Status: DownloadTaskStatus.Completed, IsHidden: false });
-                }
-            )
-            .DisposeMany()
-            .OnUI();
         
         SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect()
             .AutoRefreshOnObservable(item =>
@@ -227,6 +167,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         this.WhenActivated(d =>
         {
             GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+            
+            jobMonitor.ObserveActiveJobs<IHttpDownloadJob>()
+                .AverageProgressPercent()
+                .OnUI()
+                .Subscribe(x => NewProgress = x)
+                .DisposeWith(d);
 
             ShowCancelDialogCommand = ReactiveCommand.CreateFromTask(async () =>
                 {
@@ -248,6 +194,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     protected InProgressViewModel() : base(new DesignWindowManager())
     {
+        _lineSeries = new LineSeries<DateTimePoint>();
+        Series = ReadOnlyObservableCollection<ISeries>.Empty;
+
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect().OnUI();
@@ -453,6 +402,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
 
+        // Graph
         if (_throughputValues.Count > 120)
         {
             _throughputValues.RemoveRange(0, count: 60);
@@ -463,6 +413,11 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         {
             _customSeparators.Add(FirstMultiple(throughput));
         }
+
+        const int delay = 5;
+        _lineSeries.IsVisible = _throughputValues
+            .TakeLast(Math.Min(delay, _throughputValues.Count))
+            .Sum(x => x.Value!.Value) > 0.0;
 
         _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }

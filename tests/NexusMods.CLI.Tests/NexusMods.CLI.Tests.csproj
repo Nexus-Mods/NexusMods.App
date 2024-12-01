@@ -20,13 +20,15 @@
         <None Update="Resources\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="xunit.runner.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main.verified.txt" />
         <None Remove="StartupModeTests.TestStartupModeParsing_input=.verified.txt" />
         <None Remove="StartupModeTests.TestStartupModeParsing_input=--help.verified.txt" />
         <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main --help.verified.txt" />
         <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main-ui.verified.txt" />
+        <None Remove="VerbTests\flatten-loadout.table.txt.verified.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Spectre.Console.Testing" />
     </ItemGroup>
 </Project>

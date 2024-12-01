@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.NexusWebApi.Types;
+using R3;
 
 namespace NexusMods.Abstractions.NexusWebApi;
 
@@ -8,36 +9,40 @@ namespace NexusMods.Abstractions.NexusWebApi;
 public interface ILoginManager
 {
     /// <summary>
-    /// Allows you to subscribe to notifications of when the user information changes.
+    /// Observable about user info.
     /// </summary>
-    IObservable<UserInfo?> UserInfo { get; }
+    Observable<UserInfo?> UserInfoObservable { get; }
+
+    bool IsPremium { get; }
 
     /// <summary>
     /// True if the user is logged in
     /// </summary>
-    IObservable<bool> IsLoggedIn { get; }
+    IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(static x => x is not null).DistinctUntilChanged().AsSystemObservable();
 
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
-    IObservable<bool> IsPremium { get; }
+    IObservable<bool> IsPremiumObservable => UserInfoObservable.WhereNotNull().Select(static x => x.IsPremium).DistinctUntilChanged().AsSystemObservable();
 
     /// <summary>
     /// The user's avatar
     /// </summary>
-    IObservable<Uri?> Avatar { get; }
+    IObservable<Uri?> AvatarObservable => UserInfoObservable.Select(static x => x?.AvatarUrl).DistinctUntilChanged().AsSystemObservable();
 
     /// <summary>
     /// Show a browser and log into Nexus Mods
     /// </summary>
     /// <param name="token"></param>
     Task LoginAsync(CancellationToken token = default);
+    
+    /// <summary>
+    /// Returns the user's information
+    /// </summary>
+    Task<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
 
     /// <summary>
     ///  Log out of Nexus Mods
     /// </summary>
     Task Logout();
-
-    /// <inheritdoc/>
-    void Dispose();
 }

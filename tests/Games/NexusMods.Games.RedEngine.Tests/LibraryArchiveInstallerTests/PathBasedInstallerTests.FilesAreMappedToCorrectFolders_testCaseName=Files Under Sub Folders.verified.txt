@@ -1,0 +1,12 @@
+﻿[
+  {
+    FromPath: mymod/archive/pc/mod/foo.archive,
+    Hash: 0xCAAEEF103C353167,
+    ToGamePath: {Game}/archive/pc/mod/foo.archive
+  },
+  {
+    FromPath: mymod/bin/x64/foo.exe,
+    Hash: 0xC453E3627977F02D,
+    ToGamePath: {Game}/bin/x64/foo.exe
+  }
+]

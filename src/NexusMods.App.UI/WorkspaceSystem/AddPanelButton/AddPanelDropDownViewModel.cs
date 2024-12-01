@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -29,13 +30,6 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
                     // clear the collection when changing workspaces to avoid having
                     // buttons for different workspaces in the collection
                     _addPanelButtonViewModels.Clear();
-
-                    if (activeWorkspace is null)
-                    {
-                        serialDisposable.Disposable = null;
-                        SelectedIndex = -1;
-                        return;
-                    }
 
                     // subscribes to changes to the observable collection and applies all
                     // changes to the observable collection

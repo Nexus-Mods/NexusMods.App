@@ -1,5 +1,8 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using Avalonia.Media;
+using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -18,4 +21,22 @@ public class ImageButtonViewModel : AViewModel<IImageButtonViewModel>, IImageBut
     [Reactive] public ReactiveCommand<Unit,Unit> Click { get; set; } = Initializers.EmptyReactiveCommand;
     
     public IWorkspaceContext? WorkspaceContext { get; set; }
+    
+    public ILoadoutBadgeViewModel? LoadoutBadgeViewModel { get; set; }
+    
+    public ImageButtonViewModel()
+    {
+        this.WhenActivated(d =>
+        {
+            this.WhenAnyValue(vm => vm.IsActive)
+                .SubscribeWithErrorLogging(isActive =>
+                {
+                    if (LoadoutBadgeViewModel != null)
+                    {
+                        LoadoutBadgeViewModel.IsLoadoutSelected = isActive;
+                    }
+                })
+                .DisposeWith(d);
+        });
+    }
 }

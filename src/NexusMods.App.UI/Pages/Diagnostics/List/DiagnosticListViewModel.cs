@@ -47,7 +47,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         IDiagnosticWriter diagnosticWriter,
         ISettingsManager settingsManager) : base(windowManager)
     {
-        TabIcon = IconValues.MonitorDiagnostics;
+        TabIcon = IconValues.Stethoscope;
         TabTitle = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics;
 
         Settings = settingsManager.Get<DiagnosticSettings>();
@@ -114,7 +114,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                 .BindToVM(this, vm => vm.DiagnosticEntries)
                 .DisposeWith(disposable);
 
-            var severityCountObservable = filteredDiagnostics
+            var severityCountObservable = this.WhenAnyValue(vm => vm.Diagnostics)
                 .Select(diagnostics => diagnostics
                     .Select(diagnostic => diagnostic.Severity)
                     .GroupBy(x => x)
@@ -168,7 +168,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                                     },
                                 };
 
-                                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                             })
                             .DisposeWith(compositeDisposable);

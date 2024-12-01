@@ -1,26 +1,15 @@
-using NexusMods.Paths;
+using System.Runtime.Versioning;
 
 namespace NexusMods.CrossPlatform.ProtocolRegistration;
 
 /// <summary>
-/// Protocol registration of OSX
+/// Protocol registration of OSX.
 /// </summary>
-public class ProtocolRegistrationOSX : IProtocolRegistration
+[SupportedOSPlatform("macos")]
+internal class ProtocolRegistrationOSX : IProtocolRegistration
 {
-    /// <inheritdoc />
-    public Task<string?> RegisterSelf(string protocol)
-    {
-        throw new NotImplementedException();
-    }
-    
-    /// <inheritdoc />
-    public Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
-    public Task<bool> IsSelfHandler(string protocol)
+    /// <inheritdoc/>
+    public Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

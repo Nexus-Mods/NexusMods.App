@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Tasks;
-using NexusMods.Networking.Downloaders.Tasks.State;
 
 namespace NexusMods.Networking.Downloaders;
 
@@ -17,13 +15,10 @@ public static class Services
     /// </summary>
     /// <param name="services">Your DI container collection builder.</param>
     public static IServiceCollection AddDownloaders(this IServiceCollection services)
-    {
-        return services.AddAllSingleton<IDownloadService, DownloadService>()
-            .AddTransient<NxmDownloadTask>()
-            .AddTransient<HttpDownloadTask>()
-            .AddAttributeCollection(typeof(DownloaderState))
-            .AddAttributeCollection(typeof(HttpDownloadState))
-            .AddAttributeCollection(typeof(NxmDownloadState))
-            .AddAttributeCollection(typeof(CompletedDownloadState));
+    {        
+        return services.AddSingleton<DownloadService>()
+            .AddSettings<DownloadSettings>()
+            .AddHostedService<DownloadService>(sp=> sp.GetRequiredService<DownloadService>())
+            .AddSingleton<IDownloadService>(sp=> sp.GetRequiredService<DownloadService>());
     }
 }

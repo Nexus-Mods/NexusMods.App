@@ -1,10 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.V1Interop;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -36,17 +39,22 @@ public static class Services
         }
         collection.AddSingleton<OAuth>();
         collection.AddSingleton<IIDGenerator, IDGenerator>();
+
+        collection.AddJWTTokenModel();
+        collection.AddApiKeyModel();
+        collection.AddGameDomainToGameIdMappingModel();
+        collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         
-        // JWToken
-        collection.AddAttributeCollection(typeof(JWTToken));
-        collection.AddRepository<JWTToken.Model>([JWTToken.AccessToken]);
-        
-        // Nexus API Key
-        collection.AddAttributeCollection(typeof(ApiKey));
-        
-        return collection
+        collection
+            .AddNexusModsLibraryModels()
+            .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
+            .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
+
+        collection.AddNexusGraphQLClient()
+            .ConfigureHttpClient(http => http.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
+        return collection;
     }
 }

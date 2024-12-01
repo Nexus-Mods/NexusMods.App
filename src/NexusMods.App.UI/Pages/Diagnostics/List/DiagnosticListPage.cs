@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -38,14 +39,14 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
+        var loadout = Loadout.Load(_conn.Db, loadoutContext.LoadoutId);
 
         yield return new PageDiscoveryDetails
         {
             // TODO: translations?
             SectionName = "Utilities",
-            ItemName = "Diagnostics",
-            Icon = IconValues.MonitorDiagnostics,
+            ItemName = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics,
+            Icon = IconValues.Stethoscope,
             PageData = new PageData
             {
                 FactoryId = StaticId,

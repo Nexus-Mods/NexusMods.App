@@ -2,32 +2,58 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:reactive="http://reactiveui.net">
+        xmlns:reactive="http://reactiveui.net"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <ui:PanelTabHeaderView />
+    </Design.PreviewWith>
 
     <!-- Add Styles Here -->
     <Style Selector="ui|PanelTabHeaderView">
 
+        <!-- unselected -->
         <Style Selector="^ Border#Container:not(.Selected)">
             <Setter Property="Background" Value="Transparent" />
 
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="Size" Value="16" />
             </Style>
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
+
+            <Style Selector="^ controls|StandardButton#CloseTabButton">
+                <Setter Property="Opacity" Value="0" />
+            </Style>
+
+            <Style Selector="^:pointerover">
+                <Style Selector="^ controls|StandardButton#CloseTabButton">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+            </Style>
+
         </Style>
 
+        <!-- selected -->
         <Style Selector="^ Border#Container.Selected">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
 
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="Size" Value="16" />
             </Style>
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
+            <Style Selector="^ controls|StandardButton#CloseTabButton">
+                <Setter Property="Opacity" Value="1" />
             </Style>
         </Style>
     </Style>

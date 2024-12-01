@@ -1,8 +1,5 @@
 using System.Text;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using StardewModdingAPI.Toolkit.Framework.ModData;
 using StardewModdingAPI.Toolkit.Serialization;
@@ -37,25 +34,28 @@ internal static class Interop
 
     public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
 
-    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.Model mod, CancellationToken cancellationToken = default)
+    public static async ValueTask<Manifest?> GetManifest(
+        IFileStore fileStore,
+        SMAPIModLoadoutItem.ReadOnly smapiMod,
+        CancellationToken cancellationToken = default)
     {
-        var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata(SMAPIManifestMetadata.SMAPIManifest));
-        if (manifestFile == null || !manifestFile.TryGetAsStoredFile(out var storedFile)) return null;
+        var manifestFile = smapiMod.Manifest;
+        if (!manifestFile.IsValid()) return null;
 
-        await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(manifestFile.AsLoadoutFile().Hash, cancellationToken);
         return await DeserializeManifest(stream);
     }
 
     public static async ValueTask<ModDatabase?> GetModDatabase(
         IFileStore fileStore,
-        Mod.Model smapi,
+        SMAPILoadoutItem.ReadOnly smapi,
         CancellationToken cancellationToken = default)
     {
-        var manifestFile = smapi.Files.FirstOrDefault(f => f.HasMetadata(SMAPIModDatabaseMarker.SMAPIModDatabase));
-        if (manifestFile == null || !manifestFile.TryGetAsStoredFile(out var storedFile)) return null;
+        var modDatabase = smapi.ModDatabase;
+        if (!modDatabase.IsValid()) return null;
 
         // https://github.com/Pathoschild/SMAPI/blob/e8a86a0b98061d322c2af89af845ed9f5fd15468/src/SMAPI.Toolkit/ModToolkit.cs#L66-L71
-        await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(modDatabase.AsLoadoutFile().Hash, cancellationToken);
         var metadata = await DeserializeWithDefaults<MetadataModel>(stream);
         if (metadata is null) return null;
 

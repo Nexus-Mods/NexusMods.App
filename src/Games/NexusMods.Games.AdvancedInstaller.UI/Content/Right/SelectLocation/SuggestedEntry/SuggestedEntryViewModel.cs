@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -37,7 +38,7 @@ public class SuggestedEntryViewModel : AViewModel<ISuggestedEntryViewModel>, ISu
         AssociatedLocation = associatedLocation;
         RelativeToTopLevelLocation = relativeToTopLevelLocation;
 
-        Title = title == string.Empty ? associatedLocation.Value : title;
+        Title = title == string.Empty ? associatedLocation.Value.ToString() : title;
         Subtitle = subtitle == string.Empty ? AbsolutePath.ToString() : subtitle;
 
         CreateMappingCommand = ReactiveCommand.Create(() => { });

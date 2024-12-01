@@ -2,6 +2,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -11,8 +12,9 @@ namespace NexusMods.StandardGameLocators;
 /// </summary>
 public class ManuallyAddedLocator : IGameLocator
 {
-    private readonly Lazy<IConnection> _store;
+    private readonly Lazy<IConnection> _conn;
     private readonly IFileSystem _fileSystem;
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// DI Constructor
@@ -20,8 +22,9 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="provider"></param>
     public ManuallyAddedLocator(IServiceProvider provider, IFileSystem fileSystem)
     {
+        _provider = provider;
         _fileSystem = fileSystem;
-        _store = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
+        _conn = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
     }
 
     /// <summary>
@@ -31,17 +34,21 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="version"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public async Task<EntityId> Add(IGame game, Version version, AbsolutePath path)
+    public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
-        using var tx = _store.Value.BeginTransaction();
-        var ent = new ManuallyAddedGame.Model(tx)
+        using var tx = _conn.Value.BeginTransaction();
+        var ent = new ManuallyAddedGame.New(tx)
         {
-            GameDomain = game.Domain,
+            GameId = game.GameId,
             Version = version.ToString(),
-            Path = path.ToString()
+            Path = path.ToString(),
         };
         var result = await tx.Commit();
-        return result[ent.Id];
+        var addedGame = result.Remap(ent);
+        var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, path.FileSystem, GameStore.ManuallyAdded, addedGame, version), this);
+        var newId = result[ent.Id];
+        return (newId, install);
     }
 
     /// <summary>
@@ -49,15 +56,13 @@ public class ManuallyAddedLocator : IGameLocator
     /// </summary>
     public async Task Remove(EntityId id)
     {
-        var ent = _store.Value.Db.Get<ManuallyAddedGame.Model>(id);
-        if (!ent.Contains(ManuallyAddedGame.GameDomain))
+        var ent = ManuallyAddedGame.Load(_conn.Value.Db, id);
+        if (!ent.Contains(ManuallyAddedGame.GameId))
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
 
-        using var tx = _store.Value.BeginTransaction();
+        using var tx = _conn.Value.BeginTransaction();
 
-        ManuallyAddedGame.GameDomain.Retract(ent);
-        ManuallyAddedGame.Path.Retract(ent);
-        ManuallyAddedGame.Version.Retract(ent);
+        tx.Delete(id, false);
         
         await tx.Commit();
     }
@@ -65,11 +70,9 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
-        var db = _store.Value.Db;
-        var allGames = db.Find(ManuallyAddedGame.GameDomain)
-            .Select(g => db.Get<ManuallyAddedGame.Model>(g));
-        var games = allGames.Where(g => g.GameDomain == game.Domain);
-        return games.Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), 
-            GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
+        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.GameId)
+            .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,
+                GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
+        return games;
     }
 }

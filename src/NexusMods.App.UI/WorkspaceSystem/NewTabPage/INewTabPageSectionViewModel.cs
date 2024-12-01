@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

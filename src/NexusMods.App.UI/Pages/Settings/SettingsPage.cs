@@ -1,9 +1,8 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Settings;
 
@@ -21,23 +20,5 @@ public class SettingsPageFactory : APageFactory<ISettingsPageViewModel, Settings
     public override ISettingsPageViewModel CreateViewModel(SettingsPageContext context)
     {
         return ServiceProvider.GetRequiredService<ISettingsPageViewModel>();
-    }
-
-    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
-    {
-        return new[]
-        {
-            new PageDiscoveryDetails
-            {
-                SectionName = Language.SettingsView_Title,
-                ItemName = Language.SettingsView_Title,
-                Icon = IconValues.Settings,
-                PageData = new PageData
-                {
-                    FactoryId = StaticId,
-                    Context = new SettingsPageContext(),
-                },
-            },
-        };
     }
 }

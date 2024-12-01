@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -8,6 +7,7 @@ using NexusMods.Generators.Diagnostics;
 
 namespace Examples.Diagnostics;
 
+// Needs to be static
 internal static partial class Diagnostics
 {
     [DiagnosticTemplate]
@@ -17,14 +17,13 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId("Examples", number: 6))
         .WithTitle("Mod is obsolete")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is obsolete")
+        .WithSummary("Mod is obsolete")
         .WithDetails("""
 Mod {Mod} has been made obsolete:
 
 > {ModName} is obsolete because {ReasonPhrase}
 """)
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
             .AddValue<string>("ModName")
             .AddValue<string>("ReasonPhrase")
         )
@@ -34,16 +33,15 @@ Mod {Mod} has been made obsolete:
 file class MyDiagnosticLoadoutEmitter : ILoadoutDiagnosticEmitter
 {
     public IAsyncEnumerable<Diagnostic> Diagnose(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
         var res = new List<Diagnostic>();
 
-        var someMod = loadout.Mods.First();
+        var someMod = loadout.Items.First();
 
         // this "Create" method was generated for you
         res.Add(Diagnostics.CreateModCompatabilityObsolete(
-                Mod: someMod.ToReference(loadout),
                 ModName: someMod.Name,
                 ReasonPhrase: "it's incompatible"
             )

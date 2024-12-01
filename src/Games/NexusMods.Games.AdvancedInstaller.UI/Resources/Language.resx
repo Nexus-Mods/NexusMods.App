@@ -19,10 +19,10 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Footer_CANCEL" xml:space="preserve">
-        <value>CANCEL</value>
+        <value>Cancel</value>
     </data>
     <data name="Footer_INSTALL" xml:space="preserve">
-        <value>INSTALL</value>
+        <value>Install</value>
     </data>
     <data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
         <value>Advanced installer</value>
@@ -106,10 +106,10 @@
         <value>If you are confident this mod is safe, and you know where the files need to be installed, you can attempt an advanced manual install.</value>
     </data>
     <data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
-        <value>ADVANCED INSTALL</value>
+        <value>Advanced Install</value>
     </data>
     <data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
-        <value>CLOSE</value>
+        <value>Close</value>
     </data>
     <data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
         <value>All mod files</value>

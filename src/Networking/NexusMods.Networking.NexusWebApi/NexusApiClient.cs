@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -17,6 +18,7 @@ public class NexusApiClient : INexusApiClient
     private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
+    private readonly NexusGraphQLClient _graphQLClient;
 
     /// <summary>
     /// Creates a <see cref="NexusApiClient"/> responsible for providing easy access to the Nexus API.
@@ -27,11 +29,12 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    This class is usually instantiated using the Microsoft DI Container.
     /// </remarks>
-    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient)
+    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient, NexusGraphQLClient graphQLClient)
     {
         _logger = logger;
         _factory = factory;
         _httpClient = httpClient;
+        _graphQLClient = graphQLClient;
     }
 
     /// <summary>
@@ -53,16 +56,6 @@ public class NexusApiClient : INexusApiClient
     {
         var msg = await _factory.Create(HttpMethod.Get, OAuthUserInfoUri);
         return await SendAsync<OAuthUserInfo>(msg, cancellationToken);
-    }
-
-    /// <summary>
-    /// Returns a list of games supported by Nexus.
-    /// </summary>
-    /// <param name="token">Can be used to cancel this task.</param>
-    public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
-        return await SendAsyncArray<GameInfo>(msg, token);
     }
 
     /// <summary>
@@ -88,6 +81,7 @@ public class NexusApiClient : INexusApiClient
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
+
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
@@ -119,6 +113,17 @@ public class NexusApiClient : INexusApiClient
     }
 
     /// <summary>
+    /// Get the download links for a collection.
+    /// </summary>
+    public async Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision, bool viewAdultContent = true, CancellationToken token = default)
+    {
+        var linksLocation = await _graphQLClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
+        
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"https://api.nexusmods.com" +linksLocation.Data!.CollectionRevision.DownloadLink));
+        return await SendAsync<CollectionDownloadLinks>(msg, token);
+    }
+
+    /// <summary>
     /// Retrieves a list of all recently updated mods within a specified time period.
     /// </summary>
     /// <param name="domain">
@@ -143,38 +148,6 @@ public class NexusApiClient : INexusApiClient
 
         return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
-
-    /// <summary>
-    /// Returns all of the downloadable files associated with a mod.
-    /// </summary>
-    /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.
-    /// </param>
-    /// <param name="modId">
-    ///    An individual identifier for the mod. Unique per game.
-    /// </param>
-    /// <param name="token">Token used to cancel the task.</param>
-    /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
-        return await SendAsync<ModFiles>(msg, token);
-    }
-    
-    
-    /// <summary>
-    /// Returns information about a specific mod.
-    /// </summary>
-    public async Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default)
-    {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}.json"));
-        return await SendAsync<ModInfo>(msg, token);
-    }
-    
-    
 
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>

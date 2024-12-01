@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
@@ -15,7 +16,7 @@ public static class Services
 {
     public static IServiceCollection AddStardewValley(this IServiceCollection services)
     {
-        services
+        return services
             .AddGame<StardewValley>()
             .AddSingleton<ITool, SmapiRunGameTool>()
 
@@ -29,16 +30,19 @@ public static class Services
             .AddSingleton<SMAPIModDatabaseCompatibilityDiagnosticEmitter>()
             .AddSingleton<SMAPIGameVersionDiagnosticEmitter>()
             .AddSingleton<VersionDiagnosticEmitter>()
+            .AddSingleton<ModOverwritesGameFilesEmitter>()
 
             // Attributes
-            .AddAttributeCollection(typeof(SMAPIMarker))
-            .AddAttributeCollection(typeof(SMAPIModMarker))
-            .AddAttributeCollection(typeof(SMAPIManifestMetadata))
-            .AddAttributeCollection(typeof(SMAPIModDatabaseMarker))
+            .AddSMAPILoadoutItemModel()
+            .AddSMAPIModDatabaseLoadoutFileModel()
+            .AddSMAPIModLoadoutItemModel()
+            .AddSMAPIManifestLoadoutFileModel()
 
             // Misc
-            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>();
+            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
+            .AddSettings<StardewValleySettings>()
 
-        return services;
+            // Pipelines
+            .AddPipelines();
     }
 }

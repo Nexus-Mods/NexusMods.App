@@ -1,14 +1,16 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.Changelog;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
-using NexusMods.App.UI.Pages.LoadoutGrid;
-using NexusMods.App.UI.Pages.ModInfo;
-using NexusMods.App.UI.Pages.ModLibrary;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -24,23 +26,25 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         // factory context
-        typeof(NewTabPageContext),
-        typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
-        typeof(ModInfoPageContext),
         typeof(DiagnosticListPageContext),
         typeof(ApplyDiffPageContext),
         typeof(SettingsPageContext),
         typeof(ChangelogPageContext),
-        typeof(FileOriginsPageContext),
         typeof(TextEditorPageContext),
+        typeof(MyLoadoutsPageContext),
+        typeof(ItemContentsFileTreePageContext),
+        typeof(LibraryPageContext),
+        typeof(LoadoutPageContext),
+        typeof(LoadOrdersWIPPageContext),
 
         // workspace context
         typeof(EmptyContext),
         typeof(HomeContext),
         typeof(LoadoutContext),
         typeof(DownloadsContext),
+        typeof(CollectionDownloadPageContext),
 
         // other
         typeof(WindowData),

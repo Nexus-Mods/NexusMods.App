@@ -4,13 +4,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Navigation;
 
 [PublicAPI]
-public class NavigationControl : Button
+public class NavigationControl : StandardButton
 {
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
@@ -47,13 +48,13 @@ public class NavigationControl : Button
             {
                 new MenuItem
                 {
-                    Header = "Open in new tab",
+                    Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
                     Command = _contextMenuCommand,
                     CommandParameter = OpenPageBehaviorType.NewTab,
                 },
                 new MenuItem
                 {
-                    Header = "Open in new panel",
+                    Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
                     Command = _contextMenuCommand,
                     CommandParameter = OpenPageBehaviorType.NewPanel,
                 },
@@ -64,7 +65,7 @@ public class NavigationControl : Button
     }
 
     /// <inheritdoc/>
-    protected override Type StyleKeyOverride => typeof(Button);
+    protected override Type StyleKeyOverride => typeof(StandardButton);
 
     private bool _wasOnPointerPressedCalled;
 

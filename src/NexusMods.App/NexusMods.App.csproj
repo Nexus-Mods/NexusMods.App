@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
+
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DefineConstants />
     </PropertyGroup>
@@ -14,15 +15,18 @@
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj"  />
+        <ProjectReference Include="..\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
-        <ProjectReference Include="..\NexusMods.Activities\NexusMods.Activities.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
+        <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\NexusMods.Jobs\NexusMods.Jobs.csproj" />
+        <ProjectReference Include="..\NexusMods.Library\NexusMods.Library.csproj" />
         <ProjectReference Include="..\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
         <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />
@@ -32,11 +36,6 @@
    
     <ItemGroup>
         <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
     </ItemGroup>
 
@@ -55,9 +54,28 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="uninstall-helper.ps1">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="uninstall-helper.ps1">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="com.nexusmods.app.desktop">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="app.manifest">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="com.nexusmods.app.metainfo.xml">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="sign.bat">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="uninstall.bat">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="icon.svg">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
     </ItemGroup>
 
     <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"

@@ -1,12 +1,14 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -20,16 +22,12 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
     private readonly IConnection _conn;
-    private readonly IApplyService _applyService;
+    private readonly ISynchronizerService _syncService;
+    private readonly IJobMonitor _jobMonitor;
 
     private readonly LoadoutId _loadoutId;
-    private readonly GameInstallation _gameInstallation;
-    
-    private bool _isFirstLoad = true;
-
-    [Reactive] private Abstractions.Loadouts.Loadout.Model NewestLoadout { get; set; }
-    [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
-    [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
+    private readonly IOverlayController _overlayController;
+    private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
@@ -40,20 +38,20 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
-    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
+    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
         _loadoutId = loadoutId;
-        _applyService = serviceProvider.GetRequiredService<IApplyService>();
+        _overlayController = overlayController;
+        _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
+        
+        _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
 
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
-
-        NewestLoadout = _conn.Db.Get(loadoutId) ?? throw new ArgumentException("Loadout not found: " + loadoutId);
-
-        _gameInstallation = NewestLoadout.Installation;
-
+        
         ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
         
@@ -68,108 +66,59 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 },
             };
 
-            if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
-            var workspaceController = activeWindow.WorkspaceController;
+            var workspaceController = windowManager.ActiveWorkspaceController;
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
-            var workspaceId = workspaceController.ActiveWorkspace!.Id;
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+            var workspaceId = workspaceController.ActiveWorkspaceId;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         });
 
         this.WhenActivated(disposables =>
             {
-                // Newest Loadout
-                _conn.Revisions(loadoutId)
-                    .OnUI()
-                    .BindToVM(this, vm => vm.NewestLoadout)
-                    .DisposeWith(disposables);
-                
-                // Last applied loadoutTxId
-                _applyService.LastAppliedRevisionFor(_gameInstallation)
-                    .OnUI()
-                    .BindToVM(this, vm => vm.LastAppliedWithTxId)
-                    .DisposeWith(disposables);
-                
-                // Last applied LoadoutId
-                this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
-                    .Select(revId =>
-                        {
-                            var loadout = _conn.AsOf(revId.Tx).Get(revId.Id);
-                            if (loadout is null)
-                                throw new ArgumentException("Loadout not found for revision: " + revId);
-                            return loadout.LoadoutId;
-                        }
-                    )
-                    .OnUI()
-                    .BindToVM(this, vm => vm.LastAppliedLoadoutId)
-                    .DisposeWith(disposables);
+                var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
+                    .Switch();
 
-                // Changes to either newest loadout or last applied loadout
-                var loadoutOrLastAppliedTxObservable = this.WhenAnyValue(
-                    vm => vm.NewestLoadout,
-                    vm => vm.LastAppliedWithTxId
-                );
+                var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
 
-                // CanApply and IsLaunchButtonEnabled
-                Observable.CombineLatest(
-                    loadoutOrLastAppliedTxObservable,
-                    ApplyCommand.IsExecuting,
-                    LaunchButtonViewModel.Command.IsExecuting,
-                    (loadoutTuple, isApplying, isToolRunning) => (
-                        IsApplying: isApplying, 
-                        IsToolRunning: isToolRunning, 
-                        LastAppliedWithTxId: loadoutTuple.Item2)
-                    )
+                // Note(sewer):
+                // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
+                // In any case, we should prevent Apply from being available while a file is in use.
+                // A file may be in use because:
+                // - The user launched the game externally (e.g. through Steam).
+                //     - Approximate this by seeing if any EXE in any of the game folders are running.
+                //     - This is done in 'Synchronize' method.
+                // - They're running a tool from within the App.
+                //     - Check running jobs.
+                loadoutStatuses.CombineLatest(gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, game, running) => (loadout, game, running))
                     .OnUI()
-                    .Subscribe(data =>
-                        {
-                            var (isApplying, isToolRunning, lastAppliedWithTxId) = data;
-                            CanApply = !isApplying &&
-                                       !isToolRunning &&
-                                       !NewestLoadout.GetLoadoutWithTxId().Equals(lastAppliedWithTxId);
-                            IsLaunchButtonEnabled = !isApplying && !CanApply;
-                        }
-                    ).DisposeWith(disposables);
-                
-                // Apply button text
-                this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
-                        vm => vm.NewestLoadout
-                    )
-                    .Select(_ =>
-                        !LastAppliedLoadoutId.Equals(_loadoutId)
-                            ? Language.ApplyControlViewModel__ACTIVATE_AND_APPLY
-                            : Language.ApplyControlViewModel__APPLY
-                    )
-                    .OnUI()
-                    .BindToVM(this, vm => vm.ApplyButtonText)
+                    .Subscribe(status =>
+                    {
+                        var (ldStatus, gameStatus, running) = status;
+
+                        CanApply = gameStatus != GameSynchronizerState.Busy
+                                   && ldStatus != LoadoutSynchronizerState.Pending
+                                   && ldStatus != LoadoutSynchronizerState.Current
+                                   && !running;
+                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy && !running;
+                    })
                     .DisposeWith(disposables);
-                
-                // Perform an ingest on first load:
-                Task.Run(FirstLoadIngest);
             }
         );
     }
 
     private async Task Apply()
     {
-        await Task.Run(async () =>
+        try
         {
-            var loadout = _conn.Db.Get(_loadoutId);
-            await _applyService.Apply(loadout);
-        });
-    }
-    
-    private async Task FirstLoadIngest()
-    {
-        if (_isFirstLoad)
-        {
-            _isFirstLoad = false;
-
-            if (LastAppliedWithTxId.Id.Equals(_loadoutId))
+            await Task.Run(async () =>
             {
-                var loadout = _conn.Db.Get(_loadoutId);
-                await _applyService.Ingest(loadout.Installation);
-            }
+                await _syncService.Synchronize(_loadoutId);
+            });
+        }
+        catch (ExecutableInUseException)
+        {
+            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
         }
     }
 }

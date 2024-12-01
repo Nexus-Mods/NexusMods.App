@@ -7,59 +7,61 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
-    <Design.DataContext>
-        <workspace:NewTabPageDesignViewModel />
-    </Design.DataContext>
+    <ScrollViewer>
+        <StackPanel Margin="24" Orientation="Vertical" Spacing="24">
 
-    <ItemsControl x:Name="Sections" Padding="24">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <WrapPanel/>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+            <alerts:Alert x:Name="InfoAlert"
+                          Title="View Pages Side by Side"
+                          Body="Add panels to view 2 or more pages at once by clicking the “add panel” button in the top bar or by right clicking a page and selecting “Open in new panel”"
+                          Severity="Info"
+                          ShowDismiss="True" />
 
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <StackPanel Classes="Spacing-3" MinWidth="160" MaxWidth="375" Margin="0 0 24 24">
-                    <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
-                               Classes="HeadingSMSemi" />
+            <ItemsControl x:Name="Sections">
 
-                    <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Classes="Spacing-2" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
+                        <StackPanel Classes="Spacing-3" MinWidth="160" MaxWidth="375" Margin="0 0 48 48">
+                            <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
+                                       Theme="{StaticResource HeadingXSSemiTheme}" />
 
-                                <Border Classes="Mid Rounded">
-                                    <navigation:NavigationControl
-                                            Height="56"
-                                            Padding="0"
-                                            Width="375"
-                                            Background="{StaticResource SurfaceMidBrush}"
-                                            Command="{CompiledBinding SelectItemCommand}">
 
-                                        <StackPanel Margin="16" Orientation="Horizontal" Classes="Spacing-1">
-                                            <icons:UnifiedIcon Size="24" Value="{CompiledBinding Icon}"/>
-                                            <TextBlock x:Name="NameTextBlock"
-                                                       Text="{CompiledBinding Name}"
-                                                       Classes="BodyLGBold" />
-                                        </StackPanel>
-                                    </navigation:NavigationControl>
-                                </Border>
+                            <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
 
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-2}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
+
+                                        <navigation:NavigationControl
+                                            ShowIcon="Left"
+                                            LeftIcon="{CompiledBinding Icon}"
+                                            Text="{CompiledBinding Name}"
+                                            Command="{CompiledBinding SelectItemCommand}" />
+
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
 
 </reactive:ReactiveUserControl>

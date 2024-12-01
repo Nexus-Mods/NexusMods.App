@@ -31,24 +31,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.OneWayBind(ViewModel, vm => vm.WorkspaceController.AllWorkspaces, view => view.WorkspacesItemsControl.ItemsSource)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.TopBar.CloseCommand.IsExecuting)
-                .SelectMany(e => e)
-                .Where(e => e)
-                .SubscribeWithErrorLogging(logger: default, _ => Close())
-                .DisposeWith(disposables);
-
-            this.WhenAnyValue(view => view.ViewModel!.TopBar.MinimizeCommand.IsExecuting)
-                .SelectMany(e => e)
-                .Where(e => e)
-                .SubscribeWithErrorLogging(logger: default, _ => WindowState = WindowState.Minimized)
-                .DisposeWith(disposables);
-
-            this.WhenAnyValue(view => view.ViewModel!.TopBar.ToggleMaximizeCommand.IsExecuting)
-                .SelectMany(e => e)
-                .Where(e => e)
-                .SubscribeWithErrorLogging(logger: default, _ => WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal)
-                .DisposeWith(disposables);
-
             this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
                 .BindTo(this, view => view.LeftMenuViewModelHost.ViewModel)
                 .DisposeWith(disposables);
@@ -65,6 +47,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.WhenAnyValue(view => view.IsActive)
                 .BindTo(this, view => view.ViewModel!.IsActive)
                 .DisposeWith(disposables);
+
+            this.WhenAnyObservable(view => view.ViewModel!.BringWindowToFront)
+                .OnUI()
+                .Subscribe(_ => {
+                    if (WindowState == WindowState.Minimized)
+                        WindowState = WindowState.Normal;
+
+                    Activate();
+                }).DisposeWith(disposables);
         });
     }
 

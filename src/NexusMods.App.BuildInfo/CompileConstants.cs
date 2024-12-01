@@ -16,8 +16,8 @@ public static class CompileConstants
         InstallationMethod.Archive;
 #elif INSTALLATION_METHOD_APPIMAGE
         InstallationMethod.AppImage;
-#elif INSTALLATION_METHOD_FLATPAK
-        InstallationMethod.Flatpak;
+#elif INSTALLATION_METHOD_PACKAGE_MANAGER
+        InstallationMethod.PackageManager;
 #elif INSTALLATION_METHOD_INNO_SETUP
         InstallationMethod.InnoSetup;
 #else
@@ -25,12 +25,13 @@ public static class CompileConstants
 #endif
 
     /// <summary>
-    /// True if the app is running with compile settings
+    /// True if the application is running in debug mode.
     /// </summary>
+    public static readonly bool IsDebug =
 #if DEBUG
-    public static readonly bool IsDebug = true;
+    true;
 #else
-    public static readonly bool IsDebug = false;
+    false;
 #endif
 }
 
@@ -41,27 +42,27 @@ public static class CompileConstants
 public enum InstallationMethod
 {
     /// <summary>
-    /// Manual.
+    /// Manual installation, or from source. This is the default value.
     /// </summary>
     Manually = 0,
 
     /// <summary>
-    /// Via the archive.
+    /// The App was packaged into an archive.
     /// </summary>
     Archive,
 
     /// <summary>
-    /// Via the AppImage.
+    /// The App was packaged into an AppImage.
     /// </summary>
     AppImage,
 
     /// <summary>
-    /// Via the Flatpak.
+    /// The App was installed using a package manager.
     /// </summary>
-    Flatpak,
+    PackageManager,
 
     /// <summary>
-    /// Via the Inno Setup.
+    /// The App was installed using the InnoSetup.
     /// </summary>
-    InnoSetup
+    InnoSetup,
 }

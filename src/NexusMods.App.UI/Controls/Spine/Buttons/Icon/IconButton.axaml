@@ -11,14 +11,13 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
     <Design.DataContext>
         <icon:IconButtonDesignViewModel />
     </Design.DataContext>
 
     <Button
-        Classes="Spine Icon Add"
-        Height="64"
-        Width="64"
+        Classes="IconButton Add"
         x:Name="Button">
         <ToolTip.Tip>
             <TextBlock x:Name="ToolTipTextBlock"/>
@@ -26,17 +25,17 @@
         <Button.Template>
             <ControlTemplate>
                 <Grid>
-                    <icons:UnifiedIcon
-                        Classes="HelpCircle"
-                        Size="20"
-                        HorizontalAlignment="Center"
-                        Margin="0"
-                        Padding="0"
-                        VerticalAlignment="Center" />
-                    <Border
-                        Classes="Rounded-full"
-                        Height="50"
-                        Width="50" />
+                    <icons:UnifiedIcon x:Name="Icon"
+                                       Classes="HelpCircle"
+                                       Size="20"
+                                       HorizontalAlignment="Center"
+                                       Margin="0"
+                                       Padding="0"
+                                       VerticalAlignment="Center" />
+                    <Border x:Name="IconButtonInnerBorder"
+                            Classes="Rounded-full"
+                            Height="48"
+                            Width="48" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>

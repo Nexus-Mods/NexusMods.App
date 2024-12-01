@@ -6,6 +6,8 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
@@ -38,9 +40,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, PanelId> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
-    [Reactive]
-    public bool IsNotAlone { get; set; }
+    [Reactive] public bool IsSelected { get; set; } = true;
 
+    [Reactive] public bool IsAlone { get; set; }
+
+    [Reactive] public IPanelTabViewModel SelectedTab { get; private set; } = null!;
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly IWorkspaceController _workspaceController;
@@ -51,7 +55,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
-        var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
+        var canExecute = this.WhenAnyValue(vm => vm.IsAlone).Select(b => !b);
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
@@ -62,6 +66,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             .Bind(out _tabs)
             .Subscribe();
 
+        this.WhenAnyValue(vm => vm.SelectedTabId)
+            .Select(selectedTabId => Tabs.FirstOrDefault(tab => tab.Id == selectedTabId))
+            .WhereNotNull()
+            .SubscribeWithErrorLogging(selectedTab => SelectedTab = selectedTab);
+        
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.LogicalBounds)
@@ -74,7 +83,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Count()
                 .Where(count => count == 0)
                 .Select(_ => Unit.Default)
-                .InvokeCommand(CloseCommand)
+                .InvokeReactiveCommand(CloseCommand)
                 .DisposeWith(disposables);
 
             // change the header when the panel only has a single tab vs multiple tabs
@@ -110,14 +119,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                     else
                         SelectedTabId = Tabs[removedIndex].Id;
                 })
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // handle the close command on tabs
             _tabsList
                 .Connect()
                 .MergeMany(item => item.Header.CloseTabCommand)
-                .Subscribe(CloseTab)
+                .SubscribeWithErrorLogging(CloseTab)
                 .DisposeWith(disposables);
 
             // handle when a tab gets selected
@@ -127,14 +136,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
                 .Select(propertyValue => propertyValue.Sender.Id)
-                // NOTE(erri120): this throws an exception, see #751
-                // .BindToVM(this, vm => vm.SelectedTabId)
-                .Subscribe(selectedTabId => SelectedTabId = selectedTabId)
+                .BindToVM(this, vm => vm.SelectedTabId)
                 .DisposeWith(disposables);
 
             // 2) update the visibility of the tabs
             this.WhenAnyValue(vm => vm.SelectedTabId)
-                .Do(selectedTabId =>
+                .SubscribeWithErrorLogging(selectedTabId =>
                 {
                     foreach (var tab in Tabs)
                     {
@@ -142,7 +149,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                         tab.Header.IsSelected = tab.Id == selectedTabId;
                     }
                 })
-                .Subscribe()
                 .DisposeWith(disposables);
         });
     }
@@ -168,7 +174,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public void AddCustomTab(PageData pageData)
     {
         var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
-        var tab = new PanelTabViewModel
+        var tab = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
         {
             Contents = newTabPage,
             Header =
@@ -192,6 +198,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void CloseTab(PanelTabId id)
     {
+        var tab = _tabs.FirstOrDefault(tab => tab.Id == id);
+        if (tab is null) return;
+
+        if (!tab.Contents.ViewModel.CanClose()) return;
+
         _tabsList.Edit(updater =>
         {
             var index = updater.LinearSearch(item => item.Id == id);
@@ -204,8 +215,8 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         return new PanelData
         {
             LogicalBounds = LogicalBounds,
-            Tabs = _tabs.Select(tab => tab.ToData()).ToArray(),
-            SelectedTabId = SelectedTabId
+            Tabs = _tabs.Select(tab => tab.ToData()).NotNull().ToArray(),
+            SelectedTabId = SelectedTabId,
         };
     }
 
@@ -219,9 +230,19 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
 
-                var vm = new PanelTabViewModel
+                Page newTabPage;
+                try
+                {
+                    newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
+                }
+                catch (Exception)
+                {
+                    // TODO: logging
+                    continue;
+                }
+
+                var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id, tab.Id)
                 {
                     Contents = newTabPage,
                     Header =
@@ -231,12 +252,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                     },
                 };
 
-                newTabPage.ViewModel.TabId = vm.Id;
-
                 updater.Add(vm);
             }
         });
 
-        SelectedTabId = data.SelectedTabId;
+        if (data.Tabs.Length == 0)
+        {
+            AddDefaultTab();
+        }
+        else
+        {
+            SelectedTabId = data.SelectedTabId;
+        }
     }
 }

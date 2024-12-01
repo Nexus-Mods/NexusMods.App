@@ -1,26 +1,24 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.Abstractions.Games;
-
 
 /// <summary>
 /// Marker interface for RunGameTool
 /// </summary>
-public interface IRunGameTool : ITool
-{
-    
-}
+public interface IRunGameTool : ITool;
 
 /// <summary>
 /// A tool that launches the game, using first found installation.
@@ -38,9 +36,8 @@ public class RunGameTool<T> : IRunGameTool
     /// Whether this tool should be started through the shell instead of directly.
     /// This allows tools to start their own console, allowing users to interact with it.
     /// </summary>
-    public virtual bool UseShell { get; set; } = false;
-    
-    
+    protected virtual bool UseShell { get; set; } = false;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -53,31 +50,40 @@ public class RunGameTool<T> : IRunGameTool
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameDomain> Domains => new[] { _game.Domain };
+    public IEnumerable<GameId> GameIds => [_game.GameId];
 
     /// <inheritdoc />
     public string Name => $"Run {_game.Name}";
 
-    /// <inheritdoc />
-    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
+    /// <summary/>
+    public virtual async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)
     {
+        commandLineArgs ??= [];
         _logger.LogInformation("Starting {Name}", Name);
         
         var program = await GetGamePath(loadout);
-        var primaryFile = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation);
+        var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.Store).CombineChecked(loadout.InstallationInstance);
 
-        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile) && loadout.Installation.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
+        if (OSInformation.Shared.IsLinux && program.Equals(primaryFile))
         {
-            await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken);
-            return;
+            var locator = loadout.InstallationInstance.LocatorResultMetadata;
+            switch (locator)
+            {
+                case SteamLocatorResultMetadata steamLocatorResultMetadata:
+                    await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken, commandLineArgs);
+                    return;
+                case HeroicGOGLocatorResultMetadata heroicGOGLocatorResultMetadata:
+                    await RunThroughHeroic("gog", heroicGOGLocatorResultMetadata.Id, cancellationToken, commandLineArgs);
+                    return;
+            }
         }
 
-        var names = new HashSet<string>()
+        var names = new HashSet<string>
         {
             program.FileName,
             program.GetFileNameWithoutExtension(),
             primaryFile.FileName,
-            primaryFile.GetFileNameWithoutExtension()
+            primaryFile.GetFileNameWithoutExtension(),
         };
 
         // In the case of a preloader, we need to wait for the actual game file to exit
@@ -97,7 +103,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         else
         {
-            var result = await RunCommand(cancellationToken, program);
+            _ = await RunCommand(cancellationToken, program);
         }
 
         // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
@@ -123,17 +129,10 @@ public class RunGameTool<T> : IRunGameTool
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
     {
-        var stdOut = new StringBuilder();
-        var stdErr = new StringBuilder();
         var command = new Command(program.ToString())
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
-            .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(program.Parent.ToString());
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
-        if (result.ExitCode != 0)
-            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
+        var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
@@ -166,7 +165,7 @@ public class RunGameTool<T> : IRunGameTool
         return process;
     }
 
-    private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
+    private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
         if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
 
@@ -176,8 +175,18 @@ public class RunGameTool<T> : IRunGameTool
         // the current starts, so we ignore every reaper process that already exists.
         var existingReaperProcesses = Process.GetProcessesByName("reaper").Select(x => x.Id).ToHashSet();
 
+        // Build the Steam URL with optional command line arguments
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
-        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
+        var steamUrl = $"steam://run/{appId.ToString(CultureInfo.InvariantCulture)}";
+        if (commandLineArgs is { Length: > 0 })
+        {
+            var encodedArgs = commandLineArgs
+                .Select(Uri.EscapeDataString)
+                .Aggregate((a, b) => $"{a} {b}");
+            steamUrl += $"//{encodedArgs}/";
+        }
+
+        await _osInterop.OpenUrl(new Uri(steamUrl), fireAndForget: true, cancellationToken: cancellationToken);
 
         var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
         if (steam is null) return;
@@ -188,6 +197,18 @@ public class RunGameTool<T> : IRunGameTool
         if (reaper is null) return;
 
         await reaper.WaitForExitAsync(cancellationToken);
+    }
+
+    private async Task RunThroughHeroic(string type, long appId, CancellationToken cancellationToken, string[] commandLineArgs)
+    {
+        Debug.Assert(OSInformation.Shared.IsLinux);
+
+        // TODO: track process
+        if (commandLineArgs.Length > 0)
+            _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
+                             $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
+
+        await _osInterop.OpenUrl(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(
@@ -240,9 +261,19 @@ public class RunGameTool<T> : IRunGameTool
     /// <param name="loadout"></param>
     /// <param name="applyPlan"></param>
     /// <returns></returns>
-    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.Model loadout)
+    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
-        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.Installation.Store)
-            .Combine(loadout.Installation.LocationsRegister[LocationId.Game]));
+        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.Store)
+            .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
+    }
+
+    /// <inheritdoc />
+    public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken)
+    {
+        return monitor.Begin<ITool, Unit>(this, async _ =>
+        {
+            await Execute(loadout, cancellationToken, []);
+            return Unit.Default;
+        });
     }
 }

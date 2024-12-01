@@ -1,6 +1,6 @@
 ﻿using NexusMods.ProxyConsole.Abstractions;
 
-namespace NexusMods.Spectre.ProxyConsole.Tests;
+namespace NexusMods.ProxyConsole.Tests;
 
 public class LoggingRenderer : IRenderer
 {

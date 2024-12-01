@@ -1,3 +1,7 @@
+using System.Reactive;
+using NexusMods.Abstractions.UI;
+using ReactiveUI;
+
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IPanelTabViewModel : IViewModelInterface
@@ -22,8 +26,12 @@ public interface IPanelTabViewModel : IViewModelInterface
     /// </summary>
     public bool IsVisible { get; set; }
 
+    public ReactiveCommand<Unit, Unit> GoBackInHistoryCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> GoForwardInHistoryCommand { get; }
+
     /// <summary>
     /// Transforms the current state of the tab into a serializable data format.
     /// </summary>
-    public TabData ToData();
+    public TabData? ToData();
 }

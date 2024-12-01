@@ -14,8 +14,11 @@ public partial class NewTabPageView : ReactiveUserControl<INewTabPageViewModel>
 
         this.WhenActivated(disposable =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Sections, view => view.Sections.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, view => view.InfoAlert.AlertSettings)
                 .DisposeWith(disposable);
+            
+            this.OneWayBind(ViewModel, vm => vm.Sections, view => view.Sections.ItemsSource)
+                 .DisposeWith(disposable);
         });
     }
 }

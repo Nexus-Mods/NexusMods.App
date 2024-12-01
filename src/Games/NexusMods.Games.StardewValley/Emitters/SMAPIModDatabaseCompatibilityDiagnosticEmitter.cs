@@ -6,8 +6,7 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -16,6 +15,7 @@ using StardewModdingAPI.Toolkit.Framework.ModData;
 using ModStatus = StardewModdingAPI.Toolkit.Framework.ModData.ModStatus;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 using SMAPIModDatabase = StardewModdingAPI.Toolkit.Framework.ModData.ModDatabase;
+
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -34,14 +34,16 @@ namespace NexusMods.Games.StardewValley.Emitters;
 /// </summary>
 public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly ILogger<SMAPIModDatabaseCompatibilityDiagnosticEmitter> _logger;
+    private readonly ILogger _logger;
     private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
+    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     private static readonly NamedLink DefaultWikiLink = new("SMAPI Wiki", new Uri("https://smapi.io/mods"));
 
     public SMAPIModDatabaseCompatibilityDiagnosticEmitter(
+        IServiceProvider serviceProvider,
         ILogger<SMAPIModDatabaseCompatibilityDiagnosticEmitter> logger,
         IFileStore fileStore,
         IOSInformation os,
@@ -51,29 +53,33 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         _fileStore = fileStore;
         _os = os;
         _smapiWebApi = smapiWebApi;
+        _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
-        var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
-        if (!optionalSMAPIMod.HasValue) yield break;
-        var (smapiMod, smapiMarker) = optionalSMAPIMod.Value;
-        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
+        if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
+        if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiStrVersion, out var smapiVersion))
+        {
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiStrVersion);
+            yield break;
+        }
 
-        var modDatabase = await GetModDatabase(smapiMod, cancellationToken);
+        var modDatabase = await GetModDatabase(smapi, cancellationToken);
         if (modDatabase is null) yield break;
 
         var smapiMods = await Helpers
-            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
+            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
-        var list = new List<(Mod.Model mod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
+        var list = new List<(SMAPIModLoadoutItem.ReadOnly smapiMod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
 
         foreach (var tuple in smapiMods)
         {
-            var (mod, manifest) = tuple;
+            var (smapiMod, manifest) = tuple;
             var uniqueId = manifest.UniqueID;
 
             var dataRecord = modDatabase.Get(uniqueId);
@@ -89,11 +95,11 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
             if (!matches) continue;
 
-            list.Add((mod, manifest, versionedFields));
+            list.Add((smapiMod, manifest, versionedFields));
         }
 
-        var modPageUrls = await _smapiWebApi.GetModPageUrls(
-            _os,
+        var apiMods = await _smapiWebApi.GetModDetails(
+            os: _os,
             gameVersion,
             smapiVersion,
             smapiIDs: list.Select(tuple => tuple.Item2.UniqueID).ToArray()
@@ -101,29 +107,30 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
         foreach (var tuple in list)
         {
-            var (mod, manifest, versionedFields) = tuple;
+            var (smapiMod, manifest, versionedFields) = tuple;
             var reasonPhrase = versionedFields.StatusReasonPhrase ?? versionedFields.StatusReasonDetails;
 
             if (versionedFields.Status == ModStatus.Obsolete)
             {
                 yield return Diagnostics.CreateModCompatabilityObsolete(
-                    Mod: mod.ToReference(loadout),
-                    ModName: mod.Name,
+                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
+                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete."
                 );
             } else if (versionedFields.Status == ModStatus.AssumeBroken)
             {
                 yield return Diagnostics.CreateModCompatabilityAssumeBroken(
-                    Mod: mod.ToReference(loadout),
+                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
+                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     ReasonPhrase: reasonPhrase ?? "it's no longer compatible",
-                    ModLink:  modPageUrls.GetValueOrDefault(manifest.UniqueID, DefaultWikiLink),
+                    ModLink:apiMods.GetLink(manifest.UniqueID, defaultValue: DefaultWikiLink),
                     ModVersion: manifest.Version.ToString()
                 );
             }
         }
     }
 
-    private async ValueTask<SMAPIModDatabase?> GetModDatabase(Mod.Model smapi, CancellationToken cancellationToken)
+    private async ValueTask<SMAPIModDatabase?> GetModDatabase(SMAPILoadoutItem.ReadOnly smapi, CancellationToken cancellationToken)
     {
         try
         {

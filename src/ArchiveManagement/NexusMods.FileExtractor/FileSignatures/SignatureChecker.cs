@@ -9,42 +9,73 @@ namespace NexusMods.FileExtractor.FileSignatures;
 public class SignatureChecker : ISignatureChecker
 {
     private readonly (FileType, byte[])[] _signatures;
-    private readonly byte[] _buffer;
+    private readonly int _bufferSize;
 
-    private static readonly Dictionary<Extension, FileType> Extensions =
-        Definitions.Extensions.ToDictionary(x => x.Item2, x => x.Item1);
+    private static readonly Dictionary<Extension, FileType> Extensions = Definitions.Extensions.ToDictionary(x => x.Item2, x => x.Item1);
 
     /// <summary>
     /// Creates a signature checker responsible for identifying file headers.
     /// </summary>
-    /// <param name="types">The file types to check.</param>
-    public SignatureChecker(params FileType[] types)
+    /// <param name="inputs">The file types to check.</param>
+    public SignatureChecker(params FileType[] inputs)
     {
-        HashSet<FileType> types1 = new(types);
-        _signatures = Definitions.Signatures.Where(row => types1.Contains(row.Item1))
-            .OrderByDescending(x => x.Item2.Length).ToArray();
+        var types = new HashSet<FileType>(inputs);
 
-        _buffer = _signatures.Length > 0 ? new byte[_signatures[0].Item2.Length]
-                                         : Array.Empty<byte>();
+        _signatures = Definitions.Signatures
+            .Where(row => types.Contains(row.Item1))
+            .OrderByDescending(row => row.Item2.Length)
+            .ToArray();
+
+        _bufferSize = _signatures.Length == 0 ? 0 : _signatures[0].Item2.Length;
     }
 
-    /// <summary>
-    /// Checks if the header of the stream matches any known signature and returns the list of matching signatures.
-    /// </summary>
-    /// <param name="stream">The stream to check the header of.</param>
-    /// <returns>List of matching signatures/files.</returns>
-    public async ValueTask<IReadOnlyList<FileType>> MatchesAsync(Stream stream)
+    /// <inheritdoc/>
+    public async ValueTask<bool> MatchesAnyAsync(Stream stream, CancellationToken cancellationToken = default)
     {
+        if (!stream.CanSeek) throw new ArgumentException(message: "Stream doesn't support seeking!", nameof(stream));
+        var buffer = GC.AllocateUninitializedArray<byte>(length: _bufferSize);
+
         var originalPos = stream.Position;
-        await stream.ReadAtLeastAsync(_buffer, _buffer.Length, false);
+        var count = await stream.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false, cancellationToken: cancellationToken);
+        if (count < 1) return false;
+
         stream.Position = originalPos;
 
-        var lst = new List<FileType>();
-        foreach (var (fileType, signature) in _signatures)
-            if (_buffer.AsSpan().StartsWith(signature))
-                lst.Add(fileType);
+        foreach (var tuple in _signatures)
+        {
+            var (_, signature) = tuple;
+            if (buffer.AsSpan(start: 0, length: count).StartsWith(signature))
+            {
+                return true;
+            }
+        }
 
-        return lst;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<FileType>> MatchesAsync(Stream stream)
+    {
+        if (!stream.CanSeek) throw new ArgumentException(message: "Stream doesn't support seeking!", nameof(stream));
+        var buffer = GC.AllocateUninitializedArray<byte>(length: _bufferSize);
+
+        var originalPos = stream.Position;
+        var count = await stream.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false, cancellationToken: default(CancellationToken));
+        if (count < 1) return [];
+
+        stream.Position = originalPos;
+
+        var result = new List<FileType>();
+        foreach (var tuple in _signatures)
+        {
+            var (fileType, signature) = tuple;
+            if (buffer.AsSpan(start: 0, length: count).StartsWith(signature))
+            {
+                result.Add(fileType);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>

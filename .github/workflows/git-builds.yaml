@@ -7,30 +7,21 @@ on:
     - cron: '17 08,14 * * 1-5'
   workflow_dispatch:
 
-jobs:
-  build:
-    name: Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+env:
+  ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
 
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest , macos-latest ]
+jobs:
+  transformInputs:
+    runs-on: ubuntu-latest
+    outputs:
+      ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: "recursive"
-
-      - name: Info
-        run: dotnet --info
-
-      - name: Build (Linux)
-        if: runner.os == 'Linux'
-        shell: sh
-        run: ./scripts/build-linux-x64.sh
-
-      - name: Build (Windows)
-        if: runner.os == 'Windows'
+      - name: Set Outputs
+        id: setOutputs
         shell: pwsh
         run: scripts\build-win-x64.ps1
       - name: Build (macOS)
@@ -45,3 +36,25 @@ jobs:
           path: ${{ github.workspace }}/bin
           if-no-files-found: error
           retention-days: 7
+        run: |
+          echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
+
+  build-linux:
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-linux-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 3
+
+  build-windows:
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-windows-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 3

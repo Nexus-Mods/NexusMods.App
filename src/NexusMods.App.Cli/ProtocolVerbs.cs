@@ -1,10 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CLI.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
@@ -26,56 +24,16 @@ public static class ProtocolVerbs
     /// <returns></returns>
     public static IServiceCollection AddProtocolVerbs(this IServiceCollection services) =>
         services.AddVerb(() => AssociateNxm)
-            .AddVerb(() => DownloadAndInstallMod)
             .AddVerb(() => ProtocolInvoke);
 
 
     [Verb("associate-nxm", "Associate the nxm:// protocol with this application")]
-    private static Task<int> AssociateNxm([Injected] IProtocolRegistration protocolRegistration)
+    private static async Task<int> AssociateNxm([Injected] IProtocolRegistration protocolRegistration)
     {
-        protocolRegistration.RegisterSelf("nxm");
-        return Task.FromResult(0);
+        await protocolRegistration.RegisterHandler("nxm");
+        return 0;
     }
-
-
-    [Verb("download-and-install-mod", "Download a mod and install it in one step")]
-    private static async Task<int> DownloadAndInstallMod([Injected] IRenderer renderer,
-        [Option("u","url", "The url of the mod to download")] Uri uri,
-        [Option("l", "loadout", "The loadout to install the mod to")] Loadout.Model loadout,
-        [Option("n", "name", "The name of the mod after installing")] string? modName,
-        [Injected] IHttpDownloader httpDownloader,
-        [Injected] TemporaryFileManager temporaryFileManager,
-        [Injected] IEnumerable<IDownloadProtocolHandler> handlers,
-        [Injected] IArchiveInstaller archiveInstaller,
-        [Injected] IFileOriginRegistry fileOriginRegistry,
-        [Injected] CancellationToken token)
-
-    {
-        await using var temporaryPath = temporaryFileManager.CreateFile();
-        return await renderer.WithProgress(token, async () =>
-        {
-            var name = (modName ?? "New Mod");
-            var handler = handlers.FirstOrDefault(x => x.Protocol == uri.Scheme);
-            if (handler != null)
-            {
-                await handler.Handle(uri, loadout, name, default);
-                return 0;
-            }
-
-            await httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
-                temporaryPath, null, null, token);
-
-            var downloadId = await fileOriginRegistry.RegisterDownload(temporaryPath,
-                (tx, id) =>
-            {
-                tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
-            }, token);
-            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId,
-                string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
-            return 0;
-        });
-    }
-
+    
     [Verb("protocol-invoke", "Handle a URL with custom protocol")]
     private static async Task<int> ProtocolInvoke([Injected] IRenderer renderer,
         [Option("u", "url", "The URL to handle")] Uri uri,

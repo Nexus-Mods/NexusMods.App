@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -41,7 +42,7 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
         IsRoot = GamePath.Path == RelativePath.Empty;
         // Use invalid parent path for root node, to avoid matching another node by accident.
         Parent = IsRoot ? ISelectableTreeEntryViewModel.RootParentGamePath : GamePath.Parent;
-        DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.Value : gamePath.FileName;
+        DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.ToString() : gamePath.FileName;
         InputText = string.Empty;
 
         CreateMappingCommand = ReactiveCommand.Create(() => { });

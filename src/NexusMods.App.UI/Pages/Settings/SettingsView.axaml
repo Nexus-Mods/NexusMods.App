@@ -6,7 +6,7 @@
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                xmlns:settingEntries="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
+                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="550"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
@@ -60,18 +60,18 @@
                         </ScrollViewer>
                     </Border>
 
-                    <Border Grid.Column="1" Margin="12 12 0 12" x:Name="ContentBorder">
+                    <Border Grid.Column="1" Margin="24 12 12 12" x:Name="ContentBorder">
                         
                         <ScrollViewer>
                             <ItemsControl x:Name="SettingEntriesItemsControl">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Classes="Spacing-1_5" />
+                                        <StackPanel Classes="Spacing-1_5" Margin="0 0 12 0" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type settingEntries:ISettingEntryViewModel}">
+                                    <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
                                         <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

@@ -1,37 +1,50 @@
+using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[PublicAPI]
 public interface IPageViewModelInterface : IViewModelInterface
 {
     /// <summary>
     /// Gets or sets the icon of this page to be shown in the tab header.
     /// </summary>
-    public IconValue TabIcon { get; }
+    IconValue TabIcon { get; }
 
     /// <summary>
-    /// Gets or sets the title of this page in the tab header.
+    /// Gets the title of this page in the tab header.
     /// </summary>
-    public string TabTitle { get; }
+    string TabTitle { get; }
 
     /// <summary>
     /// Gets or sets the ID of the window this page is in.
     /// </summary>
-    public WindowId WindowId { get; set; }
+    WindowId WindowId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the workspace this page is in.
     /// </summary>
-    public WorkspaceId WorkspaceId { get; set; }
+    WorkspaceId WorkspaceId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the panel this page is in.
     /// </summary>
-    public PanelId PanelId { get; set; }
+    PanelId PanelId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the tab this page is in.
     /// </summary>
-    public PanelTabId TabId { get; set; }
+    PanelTabId TabId { get; set; }
+
+    /// <summary>
+    /// Called before the tab is closed.
+    /// </summary>
+    /// <remarks>
+    /// Use this method for pages that might contain unsaved data or need to run
+    /// logic on close.
+    /// </remarks>
+    /// <returns><c>true</c> if the tab can be closed, <c>false</c> if not.</returns>
+    bool CanClose();
 }

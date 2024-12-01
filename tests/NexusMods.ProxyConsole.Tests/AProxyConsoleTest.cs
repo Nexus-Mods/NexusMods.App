@@ -1,10 +1,8 @@
 ﻿using Nerdbank.Streams;
-using NexusMods.ProxyConsole;
 using NexusMods.ProxyConsole.Abstractions;
-
 using Xunit.Sdk;
 
-namespace NexusMods.Spectre.ProxyConsole.Tests;
+namespace NexusMods.ProxyConsole.Tests;
 
 public class AProxyConsoleTest : IAsyncLifetime
 {

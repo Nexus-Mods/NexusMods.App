@@ -1,7 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -14,7 +12,7 @@ public static class ReferenceExtensions
     /// <summary>
     /// Creates a new <see cref="LoadoutReference"/> for the given <see cref="Loadout"/>.
     /// </summary>
-    public static LoadoutReference ToReference(this Loadout.Model loadout)
+    public static LoadoutReference ToReference(this Loadout.ReadOnly loadout)
     {
         return new LoadoutReference
         {
@@ -22,28 +20,16 @@ public static class ReferenceExtensions
             TxId = loadout.Db.BasisTxId,
         };
     }
-
+    
     /// <summary>
-    /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
+    /// Creates a new <see cref="LoadoutItemGroupReference"/> for the given <see cref="LoadoutItemGroup.ReadOnly"/>.
     /// </summary>
-    public static ModReference ToReference(this Mod.Model mod, Loadout.Model loadout)
+    public static LoadoutItemGroupReference ToReference(this LoadoutItemGroup.ReadOnly group, Loadout.ReadOnly loadout)
     {
-        return new ModReference
+        return new LoadoutItemGroupReference
         {
-            DataId = mod.ModId,
-            TxId = mod.Db.BasisTxId,
-        };
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="ModFileReference"/> for the given <see cref="AModFile"/>.
-    /// </summary>
-    public static ModFileReference ToReference(this File.Model modFile)
-    {
-        return new ModFileReference
-        {
-            DataId = modFile.FileId,
-            TxId = modFile.Db.BasisTxId,
+            DataId = group.LoadoutItemGroupId,
+            TxId = group.Db.BasisTxId,
         };
     }
 }

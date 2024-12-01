@@ -3,7 +3,6 @@ using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -23,7 +22,21 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
     protected override IEnumerable<AppId> Ids(ISteamGame game) => game.SteamIds.Select(AppId.From);
 
     /// <inheritdoc />
-    protected override AbsolutePath Path(SteamGame record) => record.Path;
+    protected override AbsolutePath Path(SteamGame game)
+    {
+        return game.Path;
+    }
+
+    /// <inheritdoc />
+    protected override IFileSystem GetMappedFileSystem(SteamGame game)
+    {
+        if (!OSInformation.Shared.IsLinux) return base.GetMappedFileSystem(game);
+
+        var protonPrefix = game.GetProtonPrefix();
+        if (protonPrefix is null) return base.GetMappedFileSystem(game);
+
+        return protonPrefix.CreateOverlayFileSystem(FileSystem.Shared);
+    }
 
     /// <inheritdoc />
     protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game)

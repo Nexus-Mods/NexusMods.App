@@ -17,4 +17,4 @@ and [Using Workspaces](https://nexus-mods.github.io/NexusMods.App/development-gu
 - [TreeDataGrid](./TreeDataGrid/README.md)
   - [Basic TreeDataGrid](./TreeDataGrid/Basic)
   - [TreeDataGrid With Single Custom Column](./TreeDataGrid/SingleColumn)
-  - Further explained in [UI Coding Guidelines](../../docs/development-guidelines/UICodingGuidelines.md#trees-with-columns-treedatagrid).
+  - Further explained in [UI Coding Guidelines](../../docs/developers/development-guidelines/UICodingGuidelines.md#trees-with-columns-treedatagrid).

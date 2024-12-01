@@ -1,0 +1,149 @@
+<reactiveUi:ReactiveUserControl
+    x:Class="NexusMods.App.UI.Overlays.LibraryDeleteConfirmation.LibraryItemDeleteConfirmationView"
+    x:TypeArguments="deleteConf:ILibraryItemDeleteConfirmationViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:rsrc="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:deleteConf="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:library="clr-namespace:NexusMods.App.UI.Pages.Library"
+    mc:Ignorable="d"
+    d:DesignWidth="1280"
+    d:DesignHeight="800"
+    d:DataContext="{x:Static deleteConf:LibraryItemDeleteConfirmationDesignViewModels.InLoadoutsInMultipleStardewValleyLoadout}">
+    <!-- 👆 Design ViewModel, Since `Design.DataContext` can't bind -->
+    <!-- For design width/height. We set the design width/height to 1280x800.
+         This matches the Steam Deck. At runtime, the actual modal will scale to content. -->
+
+    <reactiveUi:ReactiveUserControl.Styles>
+        <!-- Title Bar Panel -->
+        <Style Selector="DockPanel#ModalTitlePanel">
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- Title Icon -->
+        <Style Selector="icons|UnifiedIcon#HeadingIcon">
+            <Setter Property="Margin" Value="0,0,8, 0"/>
+        </Style>
+
+        <!-- Modal Contents -->
+        <Style Selector="StackPanel.CommonPanel">
+            <Setter Property="Spacing" Value="8"/>
+        </Style>
+        
+        <!-- Loadout Separator -->
+        <Style Selector="Separator.LoadoutSeparator">
+            <Setter Property="Margin" Value="0,16,0,8"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}"/>
+        </Style>
+
+        <!-- Mod Listing -->
+        <Style Selector="ItemsControl.ModsList">
+            <Setter Property="ItemsPanel">
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="4"/>
+                </ItemsPanelTemplate>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <!-- Note(sewer) ReSharper is wrong here, it is used. -->
+                <!-- ReSharper disable once Xaml.RedundantResource -->
+                <DataTemplate>
+                    <TextBlock Classes="BodyMDNormal" Text="{Binding}"/>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        
+        <!-- Loadout Listing -->
+        <Style Selector="ItemsControl.LoadoutNameList">
+            <Setter Property="ItemsPanel">
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="4"/>
+                </ItemsPanelTemplate>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <!-- Note(sewer) ReSharper is wrong here, it is used. -->
+                <!-- ReSharper disable once Xaml.RedundantResource -->
+                <DataTemplate>
+                    <TextBlock Classes="BodyMDNormal">
+                        <Run Text="•" BaselineAlignment="Center"/>
+                        <Run Text="{Binding}" BaselineAlignment="Center"/>
+                    </TextBlock>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        
+        <Style Selector="ItemsControl.LoadoutsList">
+            <Setter Property="ItemTemplate">
+                <DataTemplate DataType="library:LibraryItemUsedLoadoutInfo">
+                    <StackPanel Classes="CommonPanel">
+                        <Separator Classes="LoadoutSeparator"/>
+                        
+                        <!-- 'Used by' Title -->
+                        <TextBlock Classes="BodyMDBold" Margin="0" Text="{CompiledBinding UsedInLoadoutString}" />
+                        <ItemsControl x:Name="SourceLoadoutsList" Classes="LoadoutNameList" ItemsSource="{CompiledBinding CollectionNames}" />
+                    </StackPanel>
+                </DataTemplate>
+            </Setter>
+        </Style>
+    </reactiveUi:ReactiveUserControl.Styles>
+    
+    <base:MessageBoxBackground MinWidth="700" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="24">
+                <!-- Title -->
+                <DockPanel x:Name="ModalTitlePanel">
+                    <icons:UnifiedIcon Classes="Alert" x:Name="HeadingIcon" />
+                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
+
+                    <!-- 'Cross' button. -->
+                    <Button
+                        x:Name="CloseButton"
+                        DockPanel.Dock="Right"
+                        Classes="BareIcon WindowClose"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+                </DockPanel>
+
+                <ScrollViewer MaxHeight="300">
+                    <StackPanel x:Name="ModalContentsPanel" Classes="CommonPanel">
+                        <!-- 'Deleting these mods removes them from the App' -->
+                        <TextBlock Classes="BodyMDBold" x:Name="QuestionTitle" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_HeaderQuestion}"/>
+                
+                        <!-- Items -->
+                        <ItemsControl x:Name="RemovedItemsList" Classes="ModsList"/>
+                
+                        <!-- Loadout List (when added to a number of loadouts -->
+                        <StackPanel x:Name="LoadoutsPanel">
+                            <ItemsControl x:Name="SourceLoadoutsList" Classes="LoadoutsList"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+            <!-- Yes / No Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-2_5">
+                <Button x:Name="NoButton"
+                        Classes="Standard SecondaryOutlined"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static rsrc:Language.DialogButton_CANCEL}" Foreground="{StaticResource NeutralModerateBrush}" />
+                </Button>
+                <Button x:Name="DeleteButton"
+                        Classes="Standard SecondaryOutlined"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:UnifiedIcon Classes="DeleteForever" Foreground="{StaticResource DangerStrongBrush}" />
+                        <TextBlock Classes="BodyLGNormal" Text="{x:Static rsrc:Language.DialogButton_DELETE_MODS}"  Foreground="{StaticResource DangerStrongBrush}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+</reactiveUi:ReactiveUserControl>

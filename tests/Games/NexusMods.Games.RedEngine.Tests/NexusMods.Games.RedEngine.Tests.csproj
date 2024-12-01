@@ -5,15 +5,29 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
         <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Games.RedEngine.Tests" />
+    </ItemGroup>
+
 
     <ItemGroup>
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LibraryArchiveInstallerTests\Resources\several_red_mods.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LibraryArchiveInstallerTests\Resources\one_mod.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Remove="LibraryArchiveInstallerTests\RedModInstallerTests.CanInstallRedMod.verified.txt" />
+      <None Update="RedModDeployToolTests.MovingModsRelativelyResultsInCorrectOrdering_name=Driver_Shotguns_delta=-11.verified.txt">
+        <DependentUpon>RedModDeployToolTests.cs</DependentUpon>
       </None>
     </ItemGroup>
 

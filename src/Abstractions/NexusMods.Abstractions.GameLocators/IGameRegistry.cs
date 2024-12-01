@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.Hosting;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -10,22 +9,23 @@ namespace NexusMods.Abstractions.GameLocators;
 public interface IGameRegistry
 {
     /// <summary>
-    /// Get all installed games.
-    /// </summary>
-    public IEnumerable<GameInstallation> AllInstalledGames { get; }
-    
-    /// <summary>
     /// Get an Observable of all installed games.
     /// </summary>
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames { get; }
     
     /// <summary>
-    /// Get a game installation by its id.
+    /// Get an array of all supported games.
     /// </summary>
-    public GameInstallation Get(EntityId id);
+    public ILocatableGame[] SupportedGames { get; }    
     
     /// <summary>
-    /// Get the id for a game installation.
+    /// All the installations indexed by their ID.
     /// </summary>
-    public EntityId GetId(GameInstallation installation);
+    public IDictionary<EntityId, GameInstallation> Installations { get; }
+
+    /// <summary>
+    /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
+    /// from an arbitrary source.
+    /// </summary>
+    public Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator);
 }

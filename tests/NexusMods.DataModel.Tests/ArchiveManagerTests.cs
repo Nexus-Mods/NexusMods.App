@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -39,7 +39,7 @@ public class ArchiveManagerTests
         }).ToArray();
 
         // Calculate the hashes
-        var hashes = datas.Select(d => d.AsSpan().XxHash64()).ToArray();
+        var hashes = datas.Select(d => d.AsSpan().xxHash3()).ToArray();
 
         // Create the tuples for compression
         var records = Enumerable.Range(0, fileCount).Select(idx => (

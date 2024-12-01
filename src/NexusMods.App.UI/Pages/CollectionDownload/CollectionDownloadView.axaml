@@ -1,0 +1,158 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="collectionDownload:ICollectionDownloadViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+    x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
+    <Design.DataContext>
+        <collectionDownload:CollectionDownloadDesignViewModel />
+    </Design.DataContext>
+
+    <reactiveUi:ReactiveUserControl.Resources>
+        <MenuFlyout x:Key="CollectionMenuFlyout">
+            <MenuItem>
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>View on Nexus Mods</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>View in Library</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>Delete all downloads</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>Delete Collection</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+        </MenuFlyout>
+    </reactiveUi:ReactiveUserControl.Resources>
+
+    <DockPanel x:Name="Body">
+
+        <!-- first row (header) -->
+        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
+            <Border x:Name="HeaderBorder">
+
+                <StackPanel x:Name="Header">
+
+                    <!-- first header row (image and metadata) -->
+                    <Border x:Name="MainContentBorder">
+                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+
+                            <!-- left column (image) -->
+                            <Border Grid.Column="0" x:Name="CollectionImageBorder">
+                                <Image x:Name="CollectionImage" />
+                            </Border>
+
+                            <!-- right column (metadata) -->
+                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*"
+                                  ColumnDefinitions="Auto">
+                                <TextBlock Grid.Row="0" x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
+                                <TextBlock Grid.Row="1" x:Name="Heading" />
+                                <Border Grid.Row="2" x:Name="TagsPanelBorder">
+                                    <StackPanel x:Name="TagsPanel">
+                                        <TextBlock x:Name="Revision" />
+                                        <StackPanel x:Name="AuthorStackPanel">
+                                            <Border x:Name="AuthorAvatarBorder">
+                                                <Image x:Name="AuthorAvatar" />
+                                            </Border>
+                                            <TextBlock x:Name="AuthorName" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Grid.Row="3" x:Name="Summary" />
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+
+                    <!-- second header row (stats) -->
+                    <Border x:Name="StatsBorder">
+                        <StackPanel x:Name="Stats" IsVisible="True">
+                            <StackPanel x:Name="ModsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
+                                <TextBlock x:Name="NumDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="EndorsementsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
+                                <TextBlock x:Name="Endorsements" />
+                            </StackPanel>
+                            <StackPanel x:Name="DownloadsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                <TextBlock x:Name="TotalDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="TotalSizePanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
+                                <TextBlock x:Name="TotalSize" />
+                            </StackPanel>
+                            <StackPanel x:Name="OverallRatingPanel">
+                                <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                   Value="{x:Static icons:IconValues.CheckCircle}" />
+                                <TextBlock x:Name="OverallRating" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- second row (buttons) -->
+        <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
+            <panels:FlexPanel x:Name="ListHeaderRow">
+                <TextBlock x:Name="CollectionStatusText" />
+                <controls:StandardButton x:Name="InstallButton" Text="Install" />
+                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All" />
+                <controls:StandardButton x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}"
+                                         Text="..." />
+            </panels:FlexPanel>
+        </Border>
+
+        <!-- third row (tab control and datagrid) -->
+        <TabControl x:Name="TabControl">
+            <TabItem x:Name="RequiredTab">
+                <TabItem.Header>
+                    <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
+                        <TextBlock>Required</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="RequiredDownloadsCount" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+                <TreeDataGrid x:Name="RequiredDownloadsTree" />
+            </TabItem>
+            <TabItem x:Name="OptionalTab">
+                <TabItem.Header>
+                    <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
+                        <TextBlock>Optional</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="OptionalDownloadsCount" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+                <TreeDataGrid x:Name="OptionalDownloadsTree" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+
+</reactiveUi:ReactiveUserControl>

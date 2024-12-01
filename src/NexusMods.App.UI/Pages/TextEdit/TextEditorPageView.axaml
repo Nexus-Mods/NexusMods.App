@@ -14,48 +14,47 @@
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar" BorderThickness="0 0 0 1" BorderBrush="{StaticResource StrokeTranslucentWeakBrush}">
-            <Grid ColumnDefinitions="*, Auto" Margin="24 0">
-                <StackPanel Grid.Column="1">
-                    <TextBlock x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center"/>
+            <StackPanel>
+                <TextBlock x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center"/>
 
-                    <Line/>
+                <Line/>
 
-                    <ComboBox x:Name="ThemeSelector">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type grammars:ThemeName}">
-                                <ComboBoxItem>
-                                    <TextBlock Text="{CompiledBinding}"/>
-                                </ComboBoxItem>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                <ComboBox x:Name="ThemeSelector" Classes="Tertiary" VerticalAlignment="Center" Height="32" >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type grammars:ThemeName}">
+                            <StackPanel Orientation="Horizontal" Classes="Spacing-1">
+                                <icons:UnifiedIcon Classes="ColorLens" Size="20"/>
+                                <TextBlock Text="{CompiledBinding}" Classes="BodyMDNormal"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
 
-                    <Line/>
+                <Line/>
 
-                    <Button x:Name="CopyButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Copy" />
-                            <TextBlock Text="Copy"/>
-                        </StackPanel>
-                    </Button>
+                <Button x:Name="CopyButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Copy" />
+                        <TextBlock Text="Copy"/>
+                    </StackPanel>
+                </Button>
 
-                    <Button x:Name="PasteButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Paste" />
-                            <TextBlock Text="Paste"/>
-                        </StackPanel>
-                    </Button>
+                <Button x:Name="PasteButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Paste" />
+                        <TextBlock Text="Paste"/>
+                    </StackPanel>
+                </Button>
 
-                    <Line/>
+                <Line/>
 
-                    <Button x:Name="SaveButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Save" />
-                            <TextBlock Text="Save"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+                <Button x:Name="SaveButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Save" />
+                        <TextBlock Text="Save"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </Border>
 
         <avaloniaEdit:TextEditor Grid.Row="1" x:Name="TextEditor"

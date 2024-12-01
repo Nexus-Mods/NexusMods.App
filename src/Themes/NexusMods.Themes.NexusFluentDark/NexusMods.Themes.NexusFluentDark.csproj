@@ -12,13 +12,11 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\DesignTime\cyberpunk_game.png" />
         <AvaloniaResource Include="Assets\DesignTime\fantasy_game.png" />
-        <AvaloniaResource Include="Assets\Fonts\Bold\Montserrat-Bold.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Bold\Roboto-Bold.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Regular\Montserrat-Regular.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Regular\Roboto-Regular.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\SemiBold\Montserrat-SemiBold.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\Regular\RobotoMono-Regular.ttf" />
         <AvaloniaResource Include="Styles\Controls\Border\Toolbar.xaml" />
         <AvaloniaResource Include="Styles\Controls\Button\PillStyles.xaml" />
+        <AvaloniaResource Include="Assets\Fonts\Regular\Inter-Regular.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\SemiBold\Inter-SemiBold.ttf" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +24,7 @@
       <UpToDateCheckInput Remove="Palette\Spacing\PrimitiveSpacings.axaml" />
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -49,12 +48,23 @@
       <AdditionalFiles Include="Styles\Controls\TextBox\TextBoxStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\TreeDataGrid\TreeDataGridStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
+      <AdditionalFiles Include="Styles\UserControls\LoadoutBadge\LoadoutBadgeStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
       <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
       <ProjectReference Include="..\..\NexusMods.Icons\NexusMods.Icons.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBoxStyles.addPanelDropDown.axaml">
+        <DependentUpon>ComboBoxStyles.axaml</DependentUpon>
+      </AvaloniaXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\Fonts\Bold\" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `EnhancedBattle` -->
+    <Id value="EnhancedBattle"/>
+    <Name value="Enhanced Battle"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ `BetterFormations` requests to load before `EnhancedBattle` -->
+        <DependedModuleMetadata id="BetterFormations" order="LoadBeforeThis" />
+    </DependedModuleMetadatas>
+</Module>

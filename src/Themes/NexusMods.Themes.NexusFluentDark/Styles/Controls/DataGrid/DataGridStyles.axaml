@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20" Classes="Low">
+            
             <DataGrid CanUserReorderColumns="True"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True">
@@ -23,7 +24,17 @@
     <!-- Add Styles Here -->
 
     <Style Selector="DataGrid">
+        <Style.Resources>
+            <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="{DynamicResource StrokeTranslucentWeak}" />
+        </Style.Resources>
+        
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+    </Style>
+    
+    <Style Selector="DataGrid.NoTopBorder">
+        <Style Selector="^ DataGridColumnHeader">
+            <Setter Property="BorderThickness" Value="0,0,0,0" />
+        </Style>
     </Style>
     
     <Style Selector="DataGridCell:nth-child(1)">
@@ -62,12 +73,6 @@
         <Setter Property="Fill" Value="{StaticResource SurfaceMidBrush}" />
     </Style>
 
-    <Style Selector="DataGridCell">
-        <Setter Property="Height" Value="44" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="16, 0, 0, 0" />
-    </Style>
-    
     <Style Selector="DataGridCell">
         <Setter Property="Height" Value="44" />
         <Setter Property="Margin" Value="0" />

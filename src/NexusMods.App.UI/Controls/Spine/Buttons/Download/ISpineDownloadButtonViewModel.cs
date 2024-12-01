@@ -1,6 +1,5 @@
-using System.Windows.Input;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 

@@ -1,0 +1,108 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:ILibraryViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Classes="Toolbar">
+            <StackPanel Orientation="Horizontal">
+                
+                <controls:StandardButton x:Name="SwitchView"
+                                         Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginPage_SwitchView_ToolTip}" />
+                <Line />
+                
+                <controls:StandardButton x:Name="RemoveModButton"
+                                         Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                
+                <controls:StandardButton x:Name="AddModButton"
+                                         Text="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.PlaylistAdd}"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
+                
+                <controls:StandardButton x:Name="AddModAdvancedButton"
+                                         Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.PlaylistAdd}"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
+
+                <Line />
+
+                <!-- Get Mods Section -->
+                <TextBlock Classes="NotTitle" Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+                
+                <controls:StandardButton x:Name="GetModsFromDriveButton"
+                                         Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
+                
+                <controls:StandardButton x:Name="GetModsFromNexusButton"
+                                         Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
+                
+            </StackPanel>
+        </Border>
+
+        <!-- Empty State -->
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+            <controls:EmptyState.Subtitle>
+                <StackPanel>
+                    <Button Classes="Hyperlink Secondary"
+                            x:Name="EmptyLibraryLinkButton">
+                        <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                                   x:Name="EmptyLibrarySubtitleTextBlock" />
+                    </Button>
+                    <Button Classes="BareIcon OpenInNew ForegroundSubdued"
+                            Height="18"
+                            Width="18"
+                            x:Name="OpenLinkBareIconButton" />
+                </StackPanel>
+            </controls:EmptyState.Subtitle>
+
+            <Grid>
+                <TreeDataGrid x:Name="TreeDataGrid"
+                              ShowColumnHeaders="True"
+                              CanUserResizeColumns="True"
+                              CanUserSortColumns="True"
+                              HorizontalAlignment="Stretch"/>
+            </Grid>
+
+        </controls:EmptyState>
+    </Grid>
+
+</reactive:ReactiveUserControl>

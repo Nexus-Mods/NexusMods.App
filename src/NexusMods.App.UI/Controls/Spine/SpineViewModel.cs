@@ -4,20 +4,22 @@ using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Pages.Downloads;
-using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -35,10 +37,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
+    private readonly ISynchronizerService _syncService;
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
+    private static readonly LoadoutSpineEntriesComparer LoadoutComparerInstance = new();
     public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
+    public IIconButtonViewModel AddLoadout { get; }
     public ISpineDownloadButtonViewModel Downloads { get; }
     private IList<ISpineItemViewModel> _specialSpineItems = new List<ISpineItemViewModel>();
 
@@ -56,13 +61,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
-        IRepository<Loadout.Model> loadoutRepository)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _windowManager = windowManager;
         _conn = conn;
+        _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
 
         // Setup the special spine items
         Home = homeButtonViewModel;
@@ -70,35 +75,43 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home.WorkspaceContext = new HomeContext();
         _specialSpineItems.Add(Home);
         Home.Click = ReactiveCommand.Create(NavigateToHome);
+        
+        AddLoadout = addButtonViewModel;
+        AddLoadout.Name = "Add";
+        AddLoadout.WorkspaceContext = new HomeContext();
+        _specialSpineItems.Add(AddLoadout);
+        AddLoadout.Click = ReactiveCommand.Create(NavigateToMyGames);
 
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
         
-        if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
-        var workspaceController = currentWindow.WorkspaceController;
-
+        var workspaceController = windowManager.ActiveWorkspaceController;
         
         this.WhenActivated(disposables =>
             {
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                var loadouts = Loadout.ObserveAll(_conn);
+                
+                    loadouts
                     .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
                             
-                            await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
+                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.Name;
+                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
+                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
+                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
                             vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
                             vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                             return vm;
                         }
                     )
+                    .Sort(LoadoutComparerInstance)
                     .OnUI()
                     .Bind(out _loadoutSpineItems)
                     .SubscribeWithErrorLogging()
@@ -108,27 +121,33 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 workspaceController.AllWorkspaces
                     .ToObservableChangeSet()
                     .Transform(workspace =>
+                    {
+                        try
                         {
                             var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
                                 workspace.Context,
                                 workspace.Id,
                                 workspaceController
                             );
-                            // This should never be null, since there should be a factory for each context type, but in case
-                            return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
+
+                            return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id, message: $"Missing {workspace.Context.GetType()}");
                         }
-                    )
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
+                            return new EmptyLeftMenuViewModel(workspace.Id, message: $"Error for {workspace.Context.GetType()}");
+                        }
+                    })
                     .Bind(out _leftMenus)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 
                 // Navigate away from the Loadout workspace if the Loadout is removed
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                loadouts
                     .OnUI()
                     .OnItemRemoved(loadout =>
                     {
-                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                        if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                             activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
                             workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
@@ -143,7 +162,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Id)
+                    .Select(workspace => workspace.Id)
                     .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
@@ -151,7 +170,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 // Update the active spine item when the active workspace changes
                 workspaceController
                     .WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Context)
+                    .Select(workspace => workspace.Context)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(context =>
                         {
@@ -209,8 +228,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public void NavigateToHome()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
             {
@@ -222,17 +240,17 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
-
+        var workspaceController = _windowManager.ActiveWorkspaceController;
+        
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
             () => new PageData
             {
-                FactoryId = LoadoutGridPageFactory.StaticId,
-                Context = new LoadoutGridContext
+                FactoryId = LoadoutPageFactory.StaticId,
+                Context = new LoadoutPageContext
                 {
-                    LoadoutId = loadoutId
+                    LoadoutId = loadoutId,
+                    GroupScope = Optional<LoadoutItemGroupId>.None,
                 }
             },
             () => new LoadoutContext
@@ -244,14 +262,45 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToDownloads()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {
                 FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext()
+                Context = new InProgressPageContext(),
             }
         );
+    }
+    
+    private void NavigateToMyGames()
+    {
+        var workspaceController = _windowManager.ActiveWorkspaceController;
+
+        var pageData = new PageData
+        {
+            FactoryId = MyGamesPageFactory.StaticId,
+            Context = new MyGamesPageContext(),
+        };
+        
+        var ws = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => pageData);
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(NavigationInput.Default));
+        workspaceController.OpenPage(ws.Id, pageData, behavior);
+    }
+    
+    private class LoadoutSpineEntriesComparer : IComparer<IImageButtonViewModel>
+    {
+        public int Compare(IImageButtonViewModel? x, IImageButtonViewModel? y)
+        {
+            var xloadout = x?.LoadoutBadgeViewModel?.LoadoutValue;
+            var yloadout = y?.LoadoutBadgeViewModel?.LoadoutValue;
+            
+            if (xloadout == null) return yloadout == null ? 0 : -1;
+            if (yloadout == null) return 1;
+            
+            if (xloadout.Value.Value.Installation.Path != yloadout.Value.Value.Installation.Path)
+                return DateTimeOffset.Compare( xloadout.Value.Value.Installation.GetCreatedAt(), yloadout.Value.Value.Installation.GetCreatedAt());
+            
+            return DateTimeOffset.Compare(xloadout.Value.Value.GetCreatedAt(), yloadout.Value.Value.GetCreatedAt());
+        }
     }
 }

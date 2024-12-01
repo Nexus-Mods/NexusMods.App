@@ -13,10 +13,10 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="Footer_CANCEL" xml:space="preserve">
-		<value>ANULUJ</value>
+		<value>Anuluj</value>
 	</data>
 	<data name="Footer_INSTALL" xml:space="preserve">
-		<value>ZAINSTALUJ</value>
+		<value>Zainstaluj</value>
 	</data>
 	<data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
 		<value>Zaawansowany instalator</value>
@@ -37,13 +37,13 @@
 		<value>Utwórz nowy folder</value>
 	</data>
 	<data name="NewFilePill_NEW" xml:space="preserve">
-		<value>NOWY</value>
+		<value>Nowy</value>
 	</data>
 	<data name="Pill_DUPE_FOLDER" xml:space="preserve">
-		<value>DUPLIKAT FOLDERU</value>
+		<value>Duplikat folderu</value>
 	</data>
 	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
-		<value>FOLDER SCALONY</value>
+		<value>Folder scalony</value>
 	</data>
 	<data name="SelectLocationButton_Select_location" xml:space="preserve">
 		<value>Wybierz ścieżkę</value>
@@ -94,16 +94,16 @@
 		<value>Mod nie jest wspierany</value>
 	</data>
 	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
-		<value>Mod ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
+		<value>Mod ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowany automatycznie.</value>
 	</data>
 	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
 		<value>Jeśli masz pewność, że pliki moda są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
-		<value>ZAAWANSOWANA INSTALACJA</value>
+		<value>Zaawansowana instalacja</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
-		<value>ZAMKNIJ</value>
+		<value>Zamknij</value>
 	</data>
 	<data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
 		<value>Wszystkie pliki moda</value>
