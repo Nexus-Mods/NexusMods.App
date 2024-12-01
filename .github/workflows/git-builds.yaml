@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest , macos-latest ]
 
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +33,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: scripts\build-win-x64.ps1
-
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        shell: sh
+        run: ./scripts/build-macos.sh
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
