@@ -36,6 +36,11 @@ on:
         description: "Build an Archive?"
         required: false
         default: true
+      BuildApp:
+        type: boolean
+        description: "Build a .app bundle?"
+        required: false
+        default: false
     outputs:
       ArtifactNameMacOSArchive:
         description: "Name of the Artifact that contains the macOS Archive"
@@ -43,6 +48,12 @@ on:
       ArtifactUrlMacOSArchive:
         description: "URL to download the macOS Archive artifact"
         value: ${{ jobs.build-archive.outputs.artifactUrl }}
+      ArtifactNameMacOSApp:
+        description: "Name of the Artifact that contains the macOS .app bundle"
+        value: ${{ jobs.build-app.outputs.artifactName }}
+      ArtifactUrlMacOSApp:
+        description: "URL to download the macOS .app bundle artifact"
+        value: ${{ jobs.build-app.outputs.artifactUrl }}
 
 jobs:
   build-archive:
@@ -105,5 +116,70 @@ jobs:
         with:
           name: ${{ steps.setOutputs.outputs.artifactName }}
           path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
+
+  build-app:
+    if: inputs.BuildApp
+    runs-on: macos-latest
+    outputs:
+      artifactName: ${{ steps.setOutputs.outputs.artifactName }}
+      artifactUrl: ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.Target || github.sha }}
+          submodules: "recursive"
+          
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        id: stepid
+        with:
+          dotnet-version: '9.x'
+          
+      - name: Print debug info
+        run: dotnet --info          
+
+      - name: Transform inputs
+        id: transformInputs
+        shell: pwsh
+        env:
+          ProjectFile: ${{ inputs.ProjectFile }}
+        run: |
+          $projectDir = [System.IO.Path]::GetDirectoryName("$env:ProjectFile")
+          $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
+          echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
+          echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+
+      - name: Build & Install PupNet
+        run: |
+          # Our use of central package management may cause PupNet to fail build
+          # so we lift it out to a separate directory and build it there
+          mkdir ../PupNet
+          cd ../PupNet
+          git clone ${{ inputs.PupNetRepo }} .
+          git checkout ${{ inputs.PupNetBranch }}
+          dotnet pack -c Release -o . -p:Version=0.0.0-nma
+          dotnet tool install --global --add-source . KuiperZone.PupNet --version 0.0.0-nma
+
+      - name: Create .app Bundle
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k app -p DefineConstants=INSTALLATION_METHOD_APP
+
+      - name: Copy Contents to .app Bundle
+        run: cp -R build/macOS/structure/Contents ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.app/Contents
+      - name: Set outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-MacOS-App" >> $env:GITHUB_OUTPUT
+     
+      - name: Upload
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactName }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.app
           if-no-files-found: error
           retention-days: ${{ inputs.RetentionDays }}
