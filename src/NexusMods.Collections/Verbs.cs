@@ -41,11 +41,12 @@ internal static class Verbs
         var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
         
         var libraryFile = await libraryService.AddDownload(downloadJob);
-        
+
         if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
             throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
 
-        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile);
+        var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
+        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata);
 
         return 0;
     }

@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -11,7 +10,6 @@ namespace NexusMods.Collections.Tests;
 [Trait("RequiresNetworking", "True")]
 public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<CollectionInstallTests>(helper)
 {
-
     [Theory]
     // Includes a basic collection
     [InlineData("jjctqn", 1)]
@@ -36,7 +34,9 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
             throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
 
         var loadout = await CreateLoadout();
-        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile);
+
+        var revisionMetadata = await NexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revisionNumber), CancellationToken.None);
+        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata);
 
         loadout = loadout.Rebase();
 
