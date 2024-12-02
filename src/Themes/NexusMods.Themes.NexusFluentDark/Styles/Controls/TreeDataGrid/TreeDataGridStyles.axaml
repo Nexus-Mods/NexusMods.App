@@ -40,17 +40,17 @@
             <Style Selector="^:checked /template/ icons|UnifiedIcon#ChevronIcon">
                 <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronDown}" />
             </Style>
-            
+
             <Style Selector="^:pointerover">
                 <Style Selector="^ /template/ Border">
                     <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                </Style>  
-            
+                </Style>
+
                 <Style Selector="^ /template/ icons|UnifiedIcon#ChevronIcon">
                     <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                </Style>    
-            </Style>  
-            
+                </Style>
+            </Style>
+
         </ControlTheme>
     </Styles.Resources>
 
@@ -71,10 +71,10 @@
             <Setter Property="Height" Value="36" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
-        
+
         <!-- NOTE (insomnious): I think it makes sense to go with 'Compact' class at the parent TreeDataGrid level
-        so that we can keep the styles here in a single place to change what we need --> 
-        
+        so that we can keep the styles here in a single place to change what we need -->
+
         <Style Selector="^.Compact">
             <Style Selector="^ TreeDataGridRow">
                 <Setter Property="Height" Value="32"></Setter>
@@ -90,8 +90,9 @@
     </Style>
 
     <!-- No backgrounds for the advanced installer TreeDataGrid's -->
-    
-    <Style Selector="TreeDataGrid#SelectTreeDataGrid, 
+
+    <Style
+        Selector="TreeDataGrid#SelectTreeDataGrid, 
         TreeDataGrid#ModContentTreeDataGrid, 
         TreeDataGrid#LocationPreviewTreeDataGrid">
         <Setter Property="Background" Value="{x:Null}" />
@@ -230,7 +231,7 @@
         <!-- all cells -->
         <Style Selector="^ :is(TreeDataGridCell)">
             <Setter Property="Padding" Value="8,0" />
-            
+
             <Style Selector="^ Border#CellBorder > TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             </Style>
@@ -239,11 +240,11 @@
         <!-- first cell  -->
         <Style Selector="^ :is(TreeDataGridCell):nth-child(1)">
             <Setter Property="Padding" Value="12,0,0,0" />
-            
+
             <Style Selector="^ Border#CellBorder > TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
-            
+
             <Style Selector="^ files|FileTreeNodeView /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
@@ -251,18 +252,18 @@
 
         <!-- last cell -->
         <Style Selector="^ :is(TreeDataGridCell):nth-last-child(1):not(:nth-child(1))">
-            
+
             <Setter Property="Padding" Value="8,0,26,0" />
-            
+
             <Style Selector="^ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="HorizontalContentAlignment" Value="Right" />
-                
+                <!-- <Setter Property="HorizontalContentAlignment" Value="Right" /> -->
+
                 <!-- TODO (insomnious): this will be replaced when we have our button component ready to go -->
                 <!-- for now we're just using overriding the button style so we don't have to change implementation -->
-                
+
                 <Style Selector="^ Button">
-                    <Setter Property="Height" Value="28"/>
-                
+                    <Setter Property="Height" Value="28" />
+
                     <Style Selector="^.Standard.Tertiary">
                         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
@@ -310,7 +311,7 @@
         </Style>
 
     </Style>
-    
+
     <!-- TreeDataGridExpanderCell -->
 
     <Style Selector="TreeDataGridTemplateCell">
@@ -373,11 +374,77 @@
             <Setter Property="Padding" Value="4,0,0,0" />
         </Style>
     </Style>
-    
+
     <Style Selector="TreeDataGrid#ModFilesTreeDataGrid">
         <Style Selector="^ icons|UnifiedIcon">
-            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
+    </Style>
+
+    <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
+
+        <Setter Property="Background" Value="{x:Null}" />
+
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Height" Value="62" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="8" />
+
+            <Style Selector="^ > Border">
+                <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
+            </Style>
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            </Style>
+
+            <Style Selector="^:selected">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+            </Style>
+
+            <!-- all rows are root row at the moment and this is overriding the Background above -->
+            <Style Selector="^.RootRow">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ /template/ ScrollViewer#PART_ScrollViewer">
+            <!-- <Setter Property="Background" Value="ForestGreen" /> -->
+            <Setter Property="Padding" Value="0,8,0,0" />
+        </Style>
+
+        <Style Selector="^ TreeDataGridColumnHeader">
+
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+
+            <!-- <Style Selector="^ /template/ Thumb#PART_Resizer"> -->
+            <!--     <Setter Property="IsVisible" Value="False" /> -->
+            <!-- </Style> -->
+
+            <!-- <Style Selector="^ /template/ DockPanel#DataGridDockPanel"> -->
+            <!--     <Setter Property="HorizontalAlignment" Value="Right" /> -->
+            <!-- </Style> -->
+
+        </Style>
+
+
+        <Style Selector="^ TreeDataGridExpanderCell">
+            <!-- <Setter Property="Padding" Value="0" /> -->
+            <!-- <Setter Property="Margin" Value="0" /> -->
+            <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+        </Style>
+
+        <Style Selector="^ TreeDataGridTemplateCell.Name">
+            <!-- <Setter Property="Padding" Value="0" /> -->
+            <!-- <Setter Property="Margin" Value="0" /> -->
+            <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
+            <!-- <Setter Property="HorizontalAlignment" Value="Left" /> -->
+        </Style>
+
     </Style>
 
 
