@@ -12,6 +12,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -21,6 +22,7 @@ using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -59,9 +61,6 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
-        // TODO:
-        CollectionStatusText = "TODO";
-
         var requiredDownloadCount = 0;
         var optionalDownloadCount = 0;
         foreach (var file in _revision.Downloads)
@@ -88,6 +87,24 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         {
             TreeDataGridAdapter.Activate();
             Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate());
+
+            Observable
+                .Return(_revision)
+                .OffUi()
+                .SelectMany(revision => _collectionDownloader.RequiredDownloadedCountObservable(revision))
+                .OnUI()
+                .Subscribe(count =>
+                {
+                    if (count == RequiredDownloadsCount)
+                    {
+                        CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
+                    }
+                    else
+                    {
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, count, RequiredDownloadsCount);
+                    }
+                })
+                .AddTo(disposables);
 
             ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
                 .ObserveOnUIThreadDispatcher()
@@ -137,7 +154,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     [Reactive] public Bitmap? TileImage { get; private set; }
     [Reactive] public Bitmap? BackgroundImage { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
-    [Reactive] public string CollectionStatusText { get; private set; }
+    [Reactive] public string CollectionStatusText { get; private set; } = "";
 
     public ReactiveCommand<Unit> DownloadAllCommand { get; }
     public ReactiveCommand<Unit> InstallCollectionCommand { get; }

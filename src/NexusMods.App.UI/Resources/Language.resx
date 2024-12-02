@@ -715,4 +715,10 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
         <value />
     </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>Ready to install - All required mods downloaded</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>{0} of {1} required mods downloaded</value>
+    </data>
 </root>
