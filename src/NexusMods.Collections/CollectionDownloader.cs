@@ -255,6 +255,39 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Checks whether the items in the collection were downloaded.
+    /// </summary>
+    public static bool IsFullyDownloaded(CollectionRevisionMetadata.ReadOnly revisionMetadata, bool onlyRequired, IDb db)
+    {
+        foreach (var download in revisionMetadata.Downloads)
+        {
+            if (onlyRequired && download.IsOptional) continue;
+            if (!IsDownloaded(download, db)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks whether the item was already downloaded.
+    /// </summary>
+    public static bool IsDownloaded(CollectionDownload.ReadOnly download, IDb db)
+    {
+        if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+        {
+            return IsDownloaded(nexusModsDownload, db);
+        }
+
+        if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+        {
+            return IsDownloaded(externalDownload, db);
+        }
+
+        if (download.IsCollectionDownloadBundled()) return true;
+        return false;
+    }
+
+    /// <summary>
     /// Downloads everything in the revision.
     /// </summary>
     public async ValueTask DownloadAll(

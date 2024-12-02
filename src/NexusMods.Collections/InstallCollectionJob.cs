@@ -67,12 +67,15 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
     }
-    
+
     /// <summary>
     /// Installs the collection.
     /// </summary>
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)
     {
+        var isReady = CollectionDownloader.IsFullyDownloaded(RevisionMetadata, onlyRequired: true, db: Connection.Db);
+        if (!isReady) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
+
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
         var modsAndDownloads = GatherDownloads(root);
 
@@ -129,6 +132,10 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         for (var i = 0; i < root.Mods.Length; i++)
         {
             var mod = root.Mods[i];
+
+            // TODO: figure out what to do with optional mods
+            if (mod.Optional) continue;
+
             if (!map.TryGetValue(i, out var download)) throw new NotImplementedException();
             list.Add((mod, download));
         }
@@ -157,7 +164,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             return await InstallFomodWithPredefinedChoices(loadoutId, modAndDownload, group);
         }
 
-        var libraryFile = GetLibraryFile(download);
+        var libraryFile = GetLibraryFile(download, Connection.Db);
         return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: group.LoadoutItemGroupId);
     }
 
@@ -224,7 +231,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         var (mod, download) = modAndDownload;
 
-        var libraryFile = GetLibraryFile(download);
+        var libraryFile = GetLibraryFile(download, Connection.Db);
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
             throw new NotImplementedException();
 
@@ -267,7 +274,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         // We don't do this during indexing into the library because this is the only case where we need MD5 hashes.
         ConcurrentDictionary<Md5HashValue, HashMapping> hashes = new();
 
-        var libraryFile = GetLibraryFile(download);
+        var libraryFile = GetLibraryFile(download, Connection.Db);
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
             throw new NotImplementedException();
 
@@ -412,11 +419,11 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return children;
     }
 
-    private static LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download)
+    private static LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download, IDb db)
     {
         if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
         {
-            if (!CollectionDownloader.TryGetDownloadedItem(nexusModsDownload, out var item))
+            if (!CollectionDownloader.TryGetDownloadedItem(nexusModsDownload, db, out var item))
                 throw new NotImplementedException();
 
             var libraryFile = LibraryFile.Load(item.Db, item.Id);
@@ -426,7 +433,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
         {
-            if (!CollectionDownloader.TryGetDownloadedItem(externalDownload, out var item))
+            if (!CollectionDownloader.TryGetDownloadedItem(externalDownload, db, out var item))
                 throw new NotImplementedException();
 
             return item;
