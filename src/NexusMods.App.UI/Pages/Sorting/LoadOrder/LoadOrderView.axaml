@@ -8,7 +8,8 @@
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                                 xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-                                x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView">
+                                x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
+                                x:DataType="sorting:ILoadOrderViewModel">
     <Design.DataContext>
         <sorting:LoadOrderDesignViewModel />
     </Design.DataContext>
@@ -57,11 +58,12 @@
             <StackPanel Grid.Row="1" Spacing="24" Margin="24">
                 <alerts:Alert x:Name="LoadOrderAlert"
                               Severity="Info"
-                              ShowDismiss="True" />
+                              ShowDismiss="True"
+                              Title="{CompiledBinding InfoAlertHeading}"
+                              Body="{CompiledBinding InfoAlertMessage }"/>
 
                 <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="Last Loaded REDmod File Wins"
-                               Theme="{StaticResource HeadingXSSemiTheme}" />
+                    <TextBlock x:Name="TitleTextBlock" Theme="{StaticResource HeadingXSSemiTheme}" />
                     <controls:StandardButton x:Name="InfoAlertButton" 
                                              ShowIcon="IconOnly"
                                              LeftIcon="{x:Static icons:IconValues.Info}"

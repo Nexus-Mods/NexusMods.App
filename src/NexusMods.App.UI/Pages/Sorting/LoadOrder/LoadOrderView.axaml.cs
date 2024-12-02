@@ -82,24 +82,19 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .BindTo(ViewModel, vm => vm.SortDirectionCurrent)
                     .DisposeWith(disposables);
                     
+                // Title
+                this.OneWayBind(ViewModel, vm => vm.InfoAlertTitle, 
+                        view => view.TitleTextBlock.Text)
+                    .DisposeWith(disposables);
+                
                 // Alert settings
                 this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, 
                         view => view.LoadOrderAlert.AlertSettings)
                     .DisposeWith(disposables);
                 
-                // Alert Title
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertTitle, 
-                        view => view.LoadOrderAlert.Title)
-                    .DisposeWith(disposables);
-                
-                // Alert Body
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertMessage, 
-                        view => view.LoadOrderAlert.Body)
-                    .DisposeWith(disposables);
-                
                 // Alert Command
                 this.OneWayBind(ViewModel, vm => vm.InfoAlertCommand, 
-                        view => view.InfoAlertButton)
+                        view => view.InfoAlertButton.Command)
                     .DisposeWith(disposables);
             }
         );
