@@ -273,7 +273,10 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
-    private async ValueTask<CollectionRoot> ParseCollectionJsonFile(
+    /// <summary>
+    /// Parses the collection json file.
+    /// </summary>
+    public async ValueTask<CollectionRoot> ParseCollectionJsonFile(
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {
