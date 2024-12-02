@@ -14,6 +14,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
@@ -135,15 +136,43 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null)
+    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null) => TryGetDownloadedItem(download, out _, db);
+
+    /// <summary>
+    /// Tries to get the downloaded item.
+    /// </summary>
+    public static bool TryGetDownloadedItem(CollectionDownloadExternal.ReadOnly download, out LibraryFile.ReadOnly item, IDb? db = null)
     {
         db ??= download.Db;
         var directDownloadDatoms = db.Datoms(DirectDownloadLibraryFile.Md5, download.Md5);
-        if (directDownloadDatoms.Count > 0) return true;
+        if (directDownloadDatoms.Count > 0)
+        {
+            foreach (var datom in directDownloadDatoms)
+            {
+                var file = DirectDownloadLibraryFile.Load(db, datom.E);
+                if (file.IsValid())
+                {
+                    item = file.AsLibraryFile();
+                    return true;
+                }
+            }
+        }
 
         var locallyAddedDatoms = db.Datoms(LocalFile.Md5, download.Md5);
-        if (locallyAddedDatoms.Count > 0) return true;
+        if (locallyAddedDatoms.Count > 0)
+        {
+            foreach (var datom in directDownloadDatoms)
+            {
+                var file = LocalFile.Load(db, datom.E);
+                if (file.IsValid())
+                {
+                    item = file.AsLibraryFile();
+                    return true;
+                }
+            }
+        }
 
+        item = default(LibraryFile.ReadOnly);
         return false;
     }
 
@@ -161,11 +190,29 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null)
+    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null) => TryGetDownloadedItem(download, out _, db);
+
+    /// <summary>
+    /// Tries to get the downloaded item.
+    /// </summary>
+    public static bool TryGetDownloadedItem(CollectionDownloadNexusMods.ReadOnly download, out NexusModsLibraryItem.ReadOnly item, IDb? db = null)
     {
         db ??= download.Db;
         var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
-        return datoms.Count > 0;
+        if (datoms.Count > 0)
+        {
+            item = default(NexusModsLibraryItem.ReadOnly);
+            return false;
+        }
+
+        foreach (var datom in datoms)
+        {
+            item = NexusModsLibraryItem.Load(db, datom.E);
+            if (item.IsValid()) return true;
+        }
+
+        item = default(NexusModsLibraryItem.ReadOnly);
+        return false;
     }
 
     /// <summary>
