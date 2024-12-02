@@ -73,7 +73,7 @@
                 </StackPanel>
             </StackPanel>
 
-            <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0">
+            <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0, 24, 24">
 
                 <!-- left column (trophy bar) -->
                 <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left" Margin="0,0,0,0">
@@ -156,7 +156,7 @@
                                     BorderThickness="1"
                                     BorderBrush="{StaticResource StrokeTranslucentSubduedBrush}"
                                     CornerRadius="4">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" 
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}"
                                                        Foreground="{StaticResource NeutralSubduedBrush}" />
                                 </Border>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
