@@ -85,7 +85,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
-        Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
+        //Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
         
         var workspaceController = windowManager.ActiveWorkspaceController;
         
