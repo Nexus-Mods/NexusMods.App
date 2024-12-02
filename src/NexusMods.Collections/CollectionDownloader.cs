@@ -14,7 +14,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
@@ -199,7 +198,7 @@ public class CollectionDownloader
     {
         db ??= download.Db;
         var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
-        if (datoms.Count > 0)
+        if (datoms.Count == 0)
         {
             item = default(NexusModsLibraryItem.ReadOnly);
             return false;
