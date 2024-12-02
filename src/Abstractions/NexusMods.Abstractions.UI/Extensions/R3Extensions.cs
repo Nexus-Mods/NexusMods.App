@@ -151,7 +151,8 @@ public static class R3Extensions
             switch (change.Reason)
             {
                 case ChangeReason.Add:
-                    list.Add(change.Current);
+                    var insertIndex = Math.Clamp(change.CurrentIndex, 0, list.Count);
+                    list.Insert(insertIndex, change.Current);
                     break;
                 case ChangeReason.Remove:
                     list.Remove(change.Current);

@@ -24,8 +24,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
 
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
-
-    private ObservableList<TModel> Roots { get; set; } = [];
+    protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
