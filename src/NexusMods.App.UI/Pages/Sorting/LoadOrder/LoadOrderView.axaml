@@ -42,7 +42,7 @@
                     <controls:StandardButton
                         Size="Small"
                         Text="Add to group"
-                        IsEnabled="False"/>
+                        IsEnabled="False" />
                     <ComboBox SelectedIndex="0" Classes="Secondary Compact" IsEnabled="False">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -73,10 +73,10 @@
                 </StackPanel>
             </StackPanel>
 
-            <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0,24,24">
+            <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0">
 
                 <!-- left column (trophy bar) -->
-                <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left" Margin="0,60,0,0">
+                <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left" Margin="0,0,0,0">
                     <icons:UnifiedIcon x:Name="TrophyIcon"
                                        DockPanel.Dock="Top"
                                        Margin="0,8,0,8"
@@ -148,19 +148,22 @@
                         <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
                                       DataType="sorting:ILoadOrderItemModel">
                             <StackPanel Orientation="Horizontal" Spacing="12">
-                                
+
                                 <Border
                                     Background="{StaticResource SurfaceTranslucentMidBrush}"
                                     Width="68"
                                     Height="42"
                                     BorderThickness="1"
                                     BorderBrush="{StaticResource StrokeTranslucentSubduedBrush}"
-                                    CornerRadius="4" />
+                                    CornerRadius="4">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" 
+                                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </Border>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                     <TextBlock x:Name="ItemName"
                                                Text="{CompiledBinding ModName}"
                                                Theme="{StaticResource BodySMNormalTheme}"
-                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"/>
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
                                     <TextBlock x:Name="ItemName2"
                                                Text="{CompiledBinding DisplayName}" />
                                 </StackPanel>
