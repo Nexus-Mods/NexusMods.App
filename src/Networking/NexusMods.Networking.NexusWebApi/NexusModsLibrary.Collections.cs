@@ -206,7 +206,7 @@ public partial class NexusModsLibrary
     {
         var source = collectionMod.Source;
 
-        _ = new ColletionDownloadBundled.New(tx, downloadEntity.Id)
+        _ = new CollectionDownloadBundled.New(tx, downloadEntity.Id)
         {
             CollectionDownload = downloadEntity,
             BundledPath = source.FileExpression,
