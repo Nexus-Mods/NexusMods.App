@@ -57,18 +57,16 @@
             <StackPanel Grid.Row="1" Spacing="24" Margin="24">
                 <alerts:Alert x:Name="LoadOrderAlert"
                               Severity="Info"
-                              Title="{Binding InfoAlertTitle}"
-                              Body="{Binding InfoAlertMessage}"
                               ShowDismiss="True" />
 
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <TextBlock Text="Last Loaded REDmod File Wins"
                                Theme="{StaticResource HeadingXSSemiTheme}" />
-                    <controls:StandardButton ShowIcon="IconOnly"
+                    <controls:StandardButton x:Name="InfoAlertButton" 
+                                             ShowIcon="IconOnly"
                                              LeftIcon="{x:Static icons:IconValues.Info}"
                                              Type="Tertiary"
-                                             Fill="None" 
-                                             Command="{Binding InfoAlertCommand}"/>
+                                             Fill="None" />
                 </StackPanel>
             </StackPanel>
 
