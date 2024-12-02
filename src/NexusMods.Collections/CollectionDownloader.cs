@@ -135,14 +135,13 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null) => TryGetDownloadedItem(download, out _, db);
+    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb db) => TryGetDownloadedItem(download, db, out _);
 
     /// <summary>
     /// Tries to get the downloaded item.
     /// </summary>
-    public static bool TryGetDownloadedItem(CollectionDownloadExternal.ReadOnly download, out LibraryFile.ReadOnly item, IDb? db = null)
+    public static bool TryGetDownloadedItem(CollectionDownloadExternal.ReadOnly download, IDb db, out LibraryFile.ReadOnly item)
     {
-        db ??= download.Db;
         var directDownloadDatoms = db.Datoms(DirectDownloadLibraryFile.Md5, download.Md5);
         if (directDownloadDatoms.Count > 0)
         {
@@ -189,14 +188,13 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null) => TryGetDownloadedItem(download, out _, db);
+    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb db) => TryGetDownloadedItem(download, db, out _);
 
     /// <summary>
     /// Tries to get the downloaded item.
     /// </summary>
-    public static bool TryGetDownloadedItem(CollectionDownloadNexusMods.ReadOnly download, out NexusModsLibraryItem.ReadOnly item, IDb? db = null)
+    public static bool TryGetDownloadedItem(CollectionDownloadNexusMods.ReadOnly download, IDb db, out NexusModsLibraryItem.ReadOnly item)
     {
-        db ??= download.Db;
         var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
         if (datoms.Count == 0)
         {
@@ -262,7 +260,7 @@ public class CollectionDownloader
     public async ValueTask DownloadAll(
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         bool onlyRequired,
-        IDb? db = null,
+        IDb db,
         int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
     {
