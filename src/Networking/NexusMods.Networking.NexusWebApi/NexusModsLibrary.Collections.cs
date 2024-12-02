@@ -126,10 +126,13 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        foreach (var collectionMod in collectionRoot.Mods)
+        for (var i = 0; i < collectionRoot.Mods.Length; i++)
         {
+            var collectionMod = collectionRoot.Mods[i];
+
             var downloadEntity = new CollectionDownload.New(tx)
             {
+                ArrayIndex = i,
                 CollectionRevisionId = collectionRevisionEntityId,
                 IsOptional = collectionMod.Optional,
                 Name = collectionMod.Name,
