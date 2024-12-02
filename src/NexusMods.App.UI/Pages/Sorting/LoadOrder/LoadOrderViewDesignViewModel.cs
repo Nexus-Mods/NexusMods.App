@@ -25,7 +25,7 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; set;} = "Trophy Tool Tip";
     public ListSortDirection SortDirectionCurrent { get; set; }
-    public bool IsWinnerTop { get; set;}
+    public bool IsWinnerTop { get; set; } = true;
     public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
     public string EmptyStateMessageContents { get; } = "Empty State Message Contents";
     public AlertSettingsWrapper AlertSettingsWrapper { get; }
@@ -44,6 +44,21 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
         
         AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
     }
+
+    public LoadOrderDesignViewModel()
+    {
+       Adapter = new LoadOrderTreeDataGridDesignAdapter();
+
+       this.WhenActivated(d =>
+           {
+               Adapter.Activate();
+               Disposable.Create(() => Adapter.Deactivate())
+                   .DisposeWith(d);
+           }
+       );
+
+       AlertSettingsWrapper = null!;
+    }
 }
 
 
@@ -55,6 +70,10 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
         var items = new ObservableCollection<ILoadOrderItemModel>([
                 new LoadOrderItemDesignModel() { DisplayName = "Item 1", Guid = Guid.NewGuid(), SortIndex = 0 },
                 new LoadOrderItemDesignModel() { DisplayName = "Item 2", Guid = Guid.NewGuid(), SortIndex = 1 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 3", Guid = Guid.NewGuid(), SortIndex = 2 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 4", Guid = Guid.NewGuid(), SortIndex = 3 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 5", Guid = Guid.NewGuid(), SortIndex = 4 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 6", Guid = Guid.NewGuid(), SortIndex = 5 },
             ]
         );
         
