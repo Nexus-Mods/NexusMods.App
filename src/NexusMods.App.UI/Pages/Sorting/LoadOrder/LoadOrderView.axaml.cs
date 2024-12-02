@@ -22,23 +22,15 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     SortOrderTreeDataGrid,
                     vm => vm.Adapter
                 );
-
+                
+                // TreeDataGrid Source
                 this.OneWayBind(ViewModel,
                         vm => vm.Adapter.Source.Value,
                         view => view.SortOrderTreeDataGrid.Source
                     )
                     .DisposeWith(disposables);
                 
-                this.WhenAnyValue(view => view.ViewModel!.SortDirectionCurrent)
-                    .Subscribe(sortCurrentDirection =>
-                        {
-                            var isAscending = sortCurrentDirection == ListSortDirection.Ascending;
-                            ArrowUpIcon.IsVisible = !isAscending;
-                            ArrowDownIcon.IsVisible = isAscending;
-                        }
-                    )
-                    .DisposeWith(disposables);
-                
+                // Trophy bar
                 this.WhenAnyValue(view => view.ViewModel!.IsWinnerTop)
                     .Subscribe(isWinnerTop =>
                         {
@@ -49,10 +41,33 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     )
                     .DisposeWith(disposables);
                 
-                // empty state
+                // Trophy bar arrow
+                this.WhenAnyValue(view => view.ViewModel!.SortDirectionCurrent)
+                    .Subscribe(sortCurrentDirection =>
+                        {
+                            var isAscending = sortCurrentDirection == ListSortDirection.Ascending;
+                            ArrowUpIcon.IsVisible = !isAscending;
+                            ArrowDownIcon.IsVisible = isAscending;
+                        }
+                    )
+                    .DisposeWith(disposables);
+                
+                // Empty state
                 this.OneWayBind(ViewModel, 
                         vm => vm.Adapter.IsSourceEmpty.Value, 
                         view => view.EmptyState.IsActive)
+                    .DisposeWith(disposables);
+                
+                // Empty state Header
+                this.OneWayBind(ViewModel, 
+                        vm => vm.EmptyStateMessageTitle, 
+                        view => view.EmptyState.Header)
+                    .DisposeWith(disposables);
+                
+                // Empty state Message
+                this.OneWayBind(ViewModel, 
+                        vm => vm.EmptyStateMessageContents, 
+                        view => view.EmptySpaceMessageTextBlock.Text)
                     .DisposeWith(disposables);
                 
                 // SortDirection -> ComboBox
@@ -67,7 +82,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .BindTo(ViewModel, vm => vm.SortDirectionCurrent)
                     .DisposeWith(disposables);
                     
-                // alert
+                // Alert
                 this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, view => view.LoadOrderAlert.AlertSettings)
                     .DisposeWith(disposables);
             }

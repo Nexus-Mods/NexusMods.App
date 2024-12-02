@@ -13,11 +13,10 @@
         <sorting:LoadOrderDesignViewModel />
     </Design.DataContext>
 
-    <controls:EmptyState x:Name="EmptyState"
-                         Header="{Binding EmptyStateMessageTitle}">
+    <controls:EmptyState x:Name="EmptyState">
 
         <controls:EmptyState.Subtitle>
-            <TextBlock Text="{Binding EmptyStateMessageContents}" />
+            <TextBlock x:Name="EmptySpaceMessageTextBlock"/>
         </controls:EmptyState.Subtitle>
 
         <Grid RowDefinitions="Auto, Auto, *">
