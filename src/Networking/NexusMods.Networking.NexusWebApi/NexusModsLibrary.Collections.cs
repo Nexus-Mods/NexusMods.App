@@ -172,7 +172,7 @@ public partial class NexusModsLibrary
 
         var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 
-        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files ealier");
+        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
 
         _ = new CollectionDownloadNexusMods.New(tx, downloadEntity.Id)
