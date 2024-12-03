@@ -31,7 +31,8 @@ public readonly partial struct Md5HashValue
     /// <summary>
     /// Parse this from a hexadecimal string.
     /// </summary>
-    public static Md5HashValue Parse(string value) => From(UInt128.Parse(value, NumberStyles.HexNumber));
+    public static Md5HashValue Parse(string value) => 
+        From(UInt128.Parse(value, NumberStyles.HexNumber));
 
     /// <summary>
     /// Make a MD5 hash from a byte array.
