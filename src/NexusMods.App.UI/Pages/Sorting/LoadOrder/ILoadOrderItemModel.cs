@@ -20,7 +20,7 @@ public interface ILoadOrderItemModel : ITreeDataGridItemModel<ILoadOrderItemMode
     /// </summary>
     /// <param name="sortIndex">The zero-based index to convert</param>
     /// <returns>A string representing the ordinal number with the appropriate suffix.</returns>
-    internal static string ConvertZeroIndexToOrdinalNumber(int sortIndex)
+    protected static string ConvertZeroIndexToOrdinalNumber(int sortIndex)
     {
         var displayIndex = sortIndex + 1;
         var suffix = displayIndex switch
