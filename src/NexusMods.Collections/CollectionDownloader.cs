@@ -1,3 +1,8 @@
+using System.Diagnostics;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Aggregation;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
@@ -8,6 +13,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
@@ -16,10 +22,12 @@ namespace NexusMods.Collections;
 /// <summary>
 /// Methods for collection downloads.
 /// </summary>
+[PublicAPI]
 public class CollectionDownloader
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
+    private readonly IConnection _connection;
     private readonly ILoginManager _loginManager;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly NexusModsLibrary _nexusModsLibrary;
@@ -34,6 +42,7 @@ public class CollectionDownloader
     {
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<CollectionDownloader>>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
@@ -80,6 +89,7 @@ public class CollectionDownloader
             return false;
         }
     }
+
     private async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
     {
         if (await CanDirectDownload(download, cancellationToken))
@@ -106,6 +116,23 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Downloads a file from nexus mods for premium users or opens the download page in the browser.
+    /// </summary>
+    public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken)
+    {
+        if (_loginManager.IsPremium)
+        {
+            await using var tempPath = _temporaryFileManager.CreateFile();
+            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);
+            await _libraryService.AddDownload(job);
+        }
+        else
+        {
+            await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+        }
+    }
+
+    /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
     public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null)
@@ -121,6 +148,17 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Returns an observable with values whether the external file has been downloaded.
+    /// </summary>
+    public static IObservable<bool> IsDownloadedObservable(IConnection connection, CollectionDownloadExternal.ReadOnly download)
+    {
+        var hasDirectDownloads = connection.ObserveDatoms(SliceDescriptor.Create(DirectDownloadLibraryFile.Md5, download.Md5, connection.AttributeCache)).IsNotEmpty();
+        var hasLocallyAdded = connection.ObserveDatoms(SliceDescriptor.Create(LocalFile.Md5, download.Md5, connection.AttributeCache)).IsNotEmpty();
+
+        return hasDirectDownloads.CombineLatest(hasLocallyAdded, (a, b) => a || b);
+    }
+
+    /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
     public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null)
@@ -131,20 +169,45 @@ public class CollectionDownloader
     }
 
     /// <summary>
-    /// Downloads a file from nexus mods for premium users or opens the download page in the browser.
+    /// Returns an observable with values whether the Nexus Mods file has been downloaded.
     /// </summary>
-    public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken)
+    public static IObservable<bool> IsDownloadedObservable(IConnection connection, CollectionDownloadNexusMods.ReadOnly download)
     {
-        if (_loginManager.IsPremium)
+        return connection.ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata).IsNotEmpty();
+    }
+
+    /// <summary>
+    /// Returns an observable with values whether the file has been downloaded.
+    /// </summary>
+    public static IObservable<bool> IsDownloadedObservable(IConnection connection, CollectionDownload.ReadOnly download)
+    {
+        if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
         {
-            await using var tempPath = _temporaryFileManager.CreateFile();
-            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);
-            await _libraryService.AddDownload(job);
+            return IsDownloadedObservable(connection, nexusModsDownload);
         }
-        else
+
+        if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
         {
-            await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            return IsDownloadedObservable(connection, externalDownload);
         }
+
+        throw new UnreachableException();
+    }
+
+    /// <summary>
+    /// Returns an observable with the number of downloaded items.
+    /// </summary>
+    public IObservable<int> RequiredDownloadedCountObservable(CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        return _connection
+            .ObserveDatoms(CollectionDownload.CollectionRevision, revisionMetadata)
+            .AsEntityIds()
+            .Transform(datom => CollectionDownload.Load(_connection.Db, datom.E))
+            .FilterImmutable(static download => !download.IsOptional)
+            .FilterImmutable(static download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal())
+            .TransformOnObservable(download => IsDownloadedObservable(_connection, download))
+            .FilterImmutable(static isDownloaded => isDownloaded)
+            .Count();
     }
 
     /// <summary>

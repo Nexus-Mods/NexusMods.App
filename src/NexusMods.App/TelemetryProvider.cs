@@ -3,7 +3,6 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
@@ -66,13 +65,16 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
     private Counters.LoadoutModCount[] GetModsPerLoadout()
     {
-        return Loadout.All(_connection.Db)
-            .Where(x => x.IsVisible())
-            .Select(x =>
-            {
-                var count = x.Items.Count();
-                return new Counters.LoadoutModCount(x.Installation.Name, count);
-            })
+        var db = _connection.Db;
+        var dict = db
+            .Datoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
+            .Select(datom => LoadoutItem.Load(db, datom.E))
+            .GroupBy(static item => item.LoadoutId)
+            .ToDictionary(static grouping => grouping.Key, static grouping => grouping.Count());
+
+        return Loadout.All(db)
+            .Where(static loadout => loadout.IsVisible())
+            .Select(loadout => new Counters.LoadoutModCount(loadout.Installation.Name, dict[loadout.LoadoutId]))
             .ToArray();
     }
 
