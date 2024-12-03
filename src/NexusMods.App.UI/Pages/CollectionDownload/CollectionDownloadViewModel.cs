@@ -31,11 +31,6 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     private readonly CollectionRevisionMetadata.ReadOnly _revision;
     private readonly CollectionMetadata.ReadOnly _collection;
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IConnection _connection;
-    private readonly NexusModsDataProvider _nexusModsDataProvider;
-    private readonly CollectionDownloader _collectionDownloader;
-
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public CollectionDownloadViewModel(
@@ -43,10 +38,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
     {
-        _serviceProvider = serviceProvider;
-        _connection = serviceProvider.GetRequiredService<IConnection>();
-        _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
-        _collectionDownloader = new CollectionDownloader(_serviceProvider);
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+        var nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -58,7 +52,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         TabTitle = _collection.Name;
         TabIcon = IconValues.Collections;
 
-        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
+        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
         var requiredDownloadCount = 0;
@@ -76,7 +70,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         DownloadAllCommand = loginManager.IsPremiumObservable.ToObservable().ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken: cancellationToken),
+            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
@@ -91,7 +85,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
             Observable
                 .Return(_revision)
                 .OffUi()
-                .SelectMany(revision => _collectionDownloader.RequiredDownloadedCountObservable(revision))
+                .SelectMany(revision => collectionDownloader.RequiredDownloadedCountObservable(revision))
                 .OnUI()
                 .Subscribe(count =>
                 {
@@ -125,8 +119,8 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 onNextAsync: (message, cancellationToken) =>
                 {
                     return message.Item.Match(
-                        f0: x => _collectionDownloader.Download(x, cancellationToken),
-                        f1: x => _collectionDownloader.Download(x, cancellationToken)
+                        f0: x => collectionDownloader.Download(x, cancellationToken),
+                        f1: x => collectionDownloader.Download(x, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
