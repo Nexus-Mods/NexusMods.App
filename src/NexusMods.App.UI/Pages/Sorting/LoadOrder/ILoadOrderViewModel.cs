@@ -51,6 +51,11 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string TrophyToolTip { get; }
     
     /// <summary>
+    /// Tooltip message contents for opposite the trophy
+    /// </summary>
+    string LoserToolTip { get; }
+    
+    /// <summary>
     /// The current ascending/descending direction in which the SortIndexes are sorted and displayed
     /// </summary>
     ListSortDirection SortDirectionCurrent { get; set; }

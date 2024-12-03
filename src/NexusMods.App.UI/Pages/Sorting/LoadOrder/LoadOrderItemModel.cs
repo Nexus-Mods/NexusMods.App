@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using R3;
@@ -27,6 +28,8 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     [Reactive] public string ModName { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
 
+    [Reactive] public string SortIndexWithSuffix { get; private set; }
+
     public LoadOrderItemModel(
         ISortableItem sortableItem,
         IObservable<ListSortDirection> sortDirectionObservable,
@@ -39,6 +42,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
 
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
+        SortIndexWithSuffix = SortIndex.ToString();
 
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
@@ -87,6 +91,25 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
             },
             canExecuteDown
         );
+        
+        sortIndexObservable
+            .Select(GetSortIndexWithSuffix)
+            .BindTo(this, vm => vm.SortIndexWithSuffix)
+            .DisposeWith(_disposables);
+    }    
+    
+    private string GetSortIndexWithSuffix(int sortIndex)
+    {
+        var displayIndex = sortIndex + 1;
+        var suffix = displayIndex switch
+        {
+            11 or 12 or 13 => "th",
+            _ when displayIndex % 10 == 1 => "st",
+            _ when displayIndex % 10 == 2 => "nd",
+            _ when displayIndex % 10 == 3 => "rd",
+            _ => "th"
+        };
+        return $"{displayIndex}{suffix}";
     }
 
 
