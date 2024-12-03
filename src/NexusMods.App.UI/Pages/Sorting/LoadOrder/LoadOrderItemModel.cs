@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using R3;
@@ -27,6 +28,8 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     [Reactive] public string ModName { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
 
+    [Reactive] public string DisplaySortIndex { get; private set; }
+
     public LoadOrderItemModel(
         ISortableItem sortableItem,
         IObservable<ListSortDirection> sortDirectionObservable,
@@ -39,6 +42,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
 
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
+        DisplaySortIndex = SortIndex.ToString();
 
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
@@ -90,9 +94,13 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
             },
             canExecuteDown
         );
-    }
-
-
+        
+        sortIndexObservable
+            .Select(ILoadOrderItemModel.ConvertZeroIndexToOrdinalNumber)
+            .BindTo(this, vm => vm.DisplaySortIndex)
+            .DisposeWith(_disposables);
+    }    
+    
     private bool _isDisposed;
 
     protected override void Dispose(bool disposing)
