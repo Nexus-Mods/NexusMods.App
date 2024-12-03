@@ -131,7 +131,7 @@
                                     Width="52"
                                     Height="42">
                                     <TextBlock x:Name="ItemIndex"
-                                               Text="{CompiledBinding SortIndexWithSuffix}"
+                                               Text="{CompiledBinding SortOrdinalNumber}"
                                                Foreground="{StaticResource NeutralTranslucentStrongBrush}"
                                                Theme="{StaticResource BodyMDBoldTheme}"
                                                HorizontalAlignment="Center" />
