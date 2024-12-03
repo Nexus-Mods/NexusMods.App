@@ -79,26 +79,27 @@
             <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0, 24, 24">
 
                 <!-- left column (trophy bar) -->
-                <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left" Margin="0,56,0,0">
+                <!-- Transparent Background so the tooltip hit box covers the whole control -->
+                <DockPanel x:Name="TrophyBarPanel"
+                           Background="{StaticResource SurfaceTransparentBrush}"
+                           HorizontalAlignment="Left" 
+                           Margin="0,56,0,0" 
+                           ToolTip.Tip="{CompiledBinding TrophyToolTip}">
                     <icons:UnifiedIcon x:Name="TrophyIcon"
                                        DockPanel.Dock="Top"
                                        Margin="0,8,0,8"
                                        Value="{x:Static icons:IconValues.Trophy}"
-                                       Size="20"
-                                       ToolTip.Tip="{CompiledBinding TrophyToolTip}" />
-
+                                       Size="20"/>
                     <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
                         <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
                                            Value="{x:Static icons:IconValues.ArrowUpThick}"
-                                           Size="20"
-                                           ToolTip.Tip="{CompiledBinding LoserToolTip}"/>
+                                           Size="20"/>
                         <Border Grid.Row="1" x:Name="TrophyGradientBorder"
                                 Width="3"
                                 Margin="0,4" />
                         <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
                                            Value="{x:Static icons:IconValues.ArrowDownThick}"
-                                           Size="20"
-                                           ToolTip.Tip="{CompiledBinding LoserToolTip}"/>
+                                           Size="20"/>
                     </Grid>
                 </DockPanel>
 

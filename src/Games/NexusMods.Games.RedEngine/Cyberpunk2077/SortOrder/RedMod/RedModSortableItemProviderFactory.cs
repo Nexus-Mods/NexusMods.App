@@ -27,10 +27,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                                          
                                          For example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on.
                                          """;
-
-    public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them.";    
-    public string LoserIndexToolTip => "Last Loaded RedMOD Loses: Items that load last will be overwritten by changes from items loaded before them.";
-
+    public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them."; 
 
     public string IndexColumnHeader => "LOAD ORDER";
 

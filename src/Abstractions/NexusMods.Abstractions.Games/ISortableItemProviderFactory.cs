@@ -56,11 +56,6 @@ public interface ISortableItemProviderFactory
     string WinnerIndexToolTip { get; }
     
     /// <summary>
-    /// Short tooltip message to explain the losing index number in the load order
-    /// </summary>
-    string LoserIndexToolTip { get; }
-    
-    /// <summary>
     /// Header text for the index column
     /// </summary>
     string IndexColumnHeader { get; }

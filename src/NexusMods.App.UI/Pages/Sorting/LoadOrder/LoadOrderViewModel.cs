@@ -31,7 +31,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     [Reactive] public bool InfoAlertIsVisible { get; set; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     public string TrophyToolTip { get; }
-    public string LoserToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
     [Reactive] public bool IsWinnerTop { get; private set; }
     public string EmptyStateMessageTitle { get; }
@@ -50,7 +49,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
         InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
-        LoserToolTip = itemProviderFactory.LoserIndexToolTip;
         EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
         EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
 

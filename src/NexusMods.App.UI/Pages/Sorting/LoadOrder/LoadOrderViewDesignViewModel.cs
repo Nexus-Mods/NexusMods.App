@@ -24,7 +24,6 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public bool InfoAlertIsVisible { get; set; } = true;
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "Winner Tooltip";
-    public string LoserToolTip { get; } = "Loser Tooltip";
     public ListSortDirection SortDirectionCurrent { get; set; }
     public bool IsWinnerTop { get; set; } = true;
     public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
