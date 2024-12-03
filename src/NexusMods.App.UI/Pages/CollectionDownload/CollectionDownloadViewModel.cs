@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -36,7 +37,8 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
     public CollectionDownloadViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        LoadoutId targetLoadout) : base(windowManager)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();

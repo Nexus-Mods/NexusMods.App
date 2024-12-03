@@ -7,6 +7,7 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
@@ -15,7 +16,8 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
     public CollectionsViewModel(
         IServiceProvider serviceProvider,
         IConnection conn,
-        IWindowManager windowManager) : base(windowManager)
+        IWindowManager windowManager,
+        LoadoutId targetLoadout) : base(windowManager)
     {
         TabIcon = IconValues.ModLibrary;
         TabTitle = "Collections (WIP)";
@@ -32,7 +34,8 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
                     windowManager: WindowManager,
                     workspaceId: WorkspaceId,
                     connection: conn,
-                    revision: coll.Revisions.First().RevisionId)
+                    revision: coll.Revisions.First().RevisionId,
+                    targetLoadout: targetLoadout)
                 )
                 .Bind(out _collections)
                 .Subscribe()
