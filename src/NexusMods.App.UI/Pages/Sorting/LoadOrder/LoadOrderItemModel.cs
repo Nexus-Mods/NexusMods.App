@@ -28,7 +28,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     [Reactive] public string ModName { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
 
-    [Reactive] public string SortIndexWithSuffix { get; private set; }
+    [Reactive] public string SortOrdinalNumber { get; private set; }
 
     public LoadOrderItemModel(
         ISortableItem sortableItem,
@@ -42,7 +42,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
 
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
-        SortIndexWithSuffix = SortIndex.ToString();
+        SortOrdinalNumber = SortIndex.ToString();
 
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
@@ -93,12 +93,12 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         );
         
         sortIndexObservable
-            .Select(GetSortIndexWithSuffix)
-            .BindTo(this, vm => vm.SortIndexWithSuffix)
+            .Select(ConvertZeroIndexToOrdinalNumber)
+            .BindTo(this, vm => vm.SortOrdinalNumber)
             .DisposeWith(_disposables);
     }    
     
-    private string GetSortIndexWithSuffix(int sortIndex)
+    private string ConvertZeroIndexToOrdinalNumber(int sortIndex)
     {
         var displayIndex = sortIndex + 1;
         var suffix = displayIndex switch

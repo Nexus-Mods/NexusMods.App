@@ -13,5 +13,5 @@ public interface ILoadOrderItemModel : ITreeDataGridItemModel<ILoadOrderItemMode
     
     public string ModName { get; }
     public bool IsActive { get; }
-    public string SortIndexWithSuffix { get; }
+    public string SortOrdinalNumber { get; }
 }

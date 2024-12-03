@@ -13,9 +13,9 @@ public class LoadOrderItemDesignModel : TreeDataGridItemModel<ILoadOrderItemMode
     public string ModName { get; set; } = "Mod Name";
     public bool IsActive { get; set; }
     public Guid Guid { get; set; }
-    public string SortIndexWithSuffix => GetSortIndexWithSuffix(SortIndex);
+    public string SortOrdinalNumber => ConvertZeroIndexToOrdinalNumber(SortIndex);
     
-    public string GetSortIndexWithSuffix(int sortIndex)
+    private string ConvertZeroIndexToOrdinalNumber(int sortIndex)
     {
         var displayIndex = sortIndex + 1;
         var suffix = displayIndex switch
