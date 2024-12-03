@@ -28,7 +28,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     [Reactive] public string ModName { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
 
-    [Reactive] public string SortOrdinalNumber { get; private set; }
+    [Reactive] public string DisplaySortIndex { get; private set; }
 
     public LoadOrderItemModel(
         ISortableItem sortableItem,
@@ -42,7 +42,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
 
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
-        SortOrdinalNumber = SortIndex.ToString();
+        DisplaySortIndex = SortIndex.ToString();
 
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
@@ -96,26 +96,11 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         );
         
         sortIndexObservable
-            .Select(ConvertZeroIndexToOrdinalNumber)
-            .BindTo(this, vm => vm.SortOrdinalNumber)
+            .Select(ILoadOrderItemModel.ConvertZeroIndexToOrdinalNumber)
+            .BindTo(this, vm => vm.DisplaySortIndex)
             .DisposeWith(_disposables);
     }    
     
-    private string ConvertZeroIndexToOrdinalNumber(int sortIndex)
-    {
-        var displayIndex = sortIndex + 1;
-        var suffix = displayIndex switch
-        {
-            11 or 12 or 13 => "th",
-            _ when displayIndex % 10 == 1 => "st",
-            _ when displayIndex % 10 == 2 => "nd",
-            _ when displayIndex % 10 == 3 => "rd",
-            _ => "th"
-        };
-        return $"{displayIndex}{suffix}";
-    }
-
-
     private bool _isDisposed;
 
     protected override void Dispose(bool disposing)
