@@ -28,14 +28,16 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                                          For example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on.
                                          """;
 
-    public string WinnerIndexToolTip => "The REDmod that will overwrite all others";
+    public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them.";    
+    public string LoserIndexToolTip => "Last Loaded RedMOD Loses: Items that load last will be overwritten by changes from items loaded before them.";
 
-    public string IndexColumnHeader => "Load Order";
 
-    public string NameColumnHeader => "REDmod Name";
+    public string IndexColumnHeader => "LOAD ORDER";
+
+    public string NameColumnHeader => "REDMOD NAME";
     
     public string EmptyStateMessageTitle => "No REDmods detected";
-    public string EmptyStateMessageContents => "Some mods contain REDmods modules that can alter core gameplay elements. When detected they will appear here for load order configuration.";
+    public string EmptyStateMessageContents => "Some mods contain REDmod items that alter core gameplay elements. When detected, they will appear here for load order configuration.";
 
     public ListSortDirection SortDirectionDefault => ListSortDirection.Ascending;
 
