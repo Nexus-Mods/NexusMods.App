@@ -44,14 +44,17 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         _lastIndexObservable = lastIndexObservable;
 
         this.WhenAnyValue(vm => vm.InnerItem.IsActive)
+            .OnUI()
             .Subscribe(value => IsActive = value)
             .DisposeWith(_disposables);
 
         this.WhenAnyValue(vm => vm.InnerItem.ModName)
+            .OnUI()
             .Subscribe(value => ModName = value)
             .DisposeWith(_disposables);
 
         _sortDirectionObservable
+            .OnUI()
             .BindTo(this, vm => vm._sortDirection)
             .DisposeWith(_disposables);
 
@@ -62,7 +65,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
             _lastIndexObservable,
             (sortIndex, sortDirection, lastIndex) =>
                 sortDirection == ListSortDirection.Ascending ? sortIndex > 0 : sortIndex < lastIndex
-        );
+        ).OnUI();
 
         var canExecuteDown = Observable.CombineLatest(
                 sortIndexObservable,
@@ -70,7 +73,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
                 _lastIndexObservable,
                 (sortIndex, sortDirection, lastIndex) =>
                     sortDirection == ListSortDirection.Ascending ? sortIndex < lastIndex : sortIndex > 0
-            );
+            ).OnUI();
 
         MoveUp = ReactiveUI.ReactiveCommand.Create(() =>
             {
