@@ -1,12 +1,10 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 

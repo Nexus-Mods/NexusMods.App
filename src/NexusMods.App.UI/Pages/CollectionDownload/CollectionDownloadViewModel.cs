@@ -24,10 +24,11 @@ using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Observable = System.Reactive.Linq.Observable;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
-public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
+public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
 {
     private readonly CollectionRevisionMetadata.ReadOnly _revision;
     private readonly CollectionMetadata.ReadOnly _collection;
@@ -77,7 +78,14 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
             configureAwait: false
         );
 
-        InstallCollectionCommand = new ReactiveCommand<Unit>(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+        InstallCollectionCommand = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata);
+            },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
 
         this.WhenActivated(disposables =>
         {

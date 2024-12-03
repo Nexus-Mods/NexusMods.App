@@ -18,6 +18,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -62,6 +63,39 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             FileStore = provider.GetRequiredService<IFileStore>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
             Connection = provider.GetRequiredService<IConnection>(),
+            NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
+        };
+
+        return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
+    }
+
+    /// <summary>
+    /// Factory.
+    /// </summary>
+    public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(
+        IServiceProvider provider,
+        LoadoutId target,
+        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        var connection = provider.GetRequiredService<IConnection>();
+        var datoms = connection.Db.Datoms(
+            (NexusModsCollectionLibraryFile.CollectionSlug, revisionMetadata.Collection.Slug),
+            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revisionMetadata.RevisionNumber)
+        );
+
+        if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
+        var source = NexusModsCollectionLibraryFile.Load(connection.Db, datoms[0]);
+
+        var monitor = provider.GetRequiredService<IJobMonitor>();
+        var job = new InstallCollectionJob
+        {
+            TargetLoadout = target,
+            SourceCollection = source,
+            RevisionMetadata = revisionMetadata,
+            ServiceProvider = provider,
+            FileStore = provider.GetRequiredService<IFileStore>(),
+            Connection = connection,
+            LibraryService = provider.GetRequiredService<ILibraryService>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
         };
 
