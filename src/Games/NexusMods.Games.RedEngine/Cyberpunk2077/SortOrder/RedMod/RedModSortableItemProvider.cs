@@ -383,9 +383,10 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             SortOrderTypeId = parentFactory.SortOrderTypeId,
         };
 
-        var newRedModSortOrder = new RedModSortOrder.New(ts, newSortOrder.SortOrderId)
+        var newRedModSortOrder = new RedModSortOrder.New(ts, newSortOrder)
         {
             SortOrder = newSortOrder,
+            IsMarker = true,
         };
 
         var commitResult = await ts.Commit();
