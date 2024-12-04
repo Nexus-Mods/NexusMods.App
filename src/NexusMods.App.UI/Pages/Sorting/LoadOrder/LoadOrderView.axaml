@@ -59,7 +59,7 @@
                 </StackPanel>
             </Border>
 
-            <StackPanel Grid.Row="1" Spacing="24" Margin="24">
+            <StackPanel Grid.Row="1" Spacing="24" Margin="24,24,24,12">
                 <alerts:Alert x:Name="LoadOrderAlert"
                               Severity="Info"
                               ShowDismiss="True"

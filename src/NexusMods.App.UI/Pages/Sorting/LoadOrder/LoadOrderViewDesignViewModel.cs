@@ -68,12 +68,12 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
     {
         var items = new ObservableCollection<ILoadOrderItemModel>([
-                new LoadOrderItemDesignModel() { DisplayName = "Item 1", Guid = Guid.NewGuid(), SortIndex = 0 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 2", Guid = Guid.NewGuid(), SortIndex = 1 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 3", Guid = Guid.NewGuid(), SortIndex = 2 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 4", Guid = Guid.NewGuid(), SortIndex = 3 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 5", Guid = Guid.NewGuid(), SortIndex = 4 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 6", Guid = Guid.NewGuid(), SortIndex = 5 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 1", Guid = Guid.NewGuid(), SortIndex = 0, IsActive = false},
+                new LoadOrderItemDesignModel() { DisplayName = "Item 2", Guid = Guid.NewGuid(), SortIndex = 1, IsActive = true },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 3", Guid = Guid.NewGuid(), SortIndex = 2, IsActive = true },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 4", Guid = Guid.NewGuid(), SortIndex = 3, IsActive = false },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 5", Guid = Guid.NewGuid(), SortIndex = 4, IsActive = false },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 6", Guid = Guid.NewGuid(), SortIndex = 5, IsActive = true },
             ]
         );
         
@@ -86,7 +86,7 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-                inner: LoadOrderTreeDataGridAdapter.CreateIndexColumn("Index"),
+                inner: LoadOrderTreeDataGridAdapter.CreateIndexColumn("LOAD ORDER"),
                 childSelector: static model => model.Children,
                 hasChildrenSelector: static model => model.HasChildren.Value,
                 isExpandedSelector: static model => model.IsExpanded
@@ -94,7 +94,7 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
             {
                 Tag = "expander",
             },
-            LoadOrderTreeDataGridAdapter.CreateNameColumn("Name"),
+            LoadOrderTreeDataGridAdapter.CreateNameColumn("REDMOD NAME"),
         ];
     }
 }
