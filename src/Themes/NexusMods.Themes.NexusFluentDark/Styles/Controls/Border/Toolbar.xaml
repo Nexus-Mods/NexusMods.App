@@ -101,7 +101,7 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Height" Value="52" />
         <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
-        <Setter Property="BorderThickness" Value="0, 1, 0, 1" />
+        <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
     </Style>
 

@@ -385,6 +385,12 @@
         </Style>
     </Style>
 
+    
+    
+    
+    
+    
+    
     <!-- SORT \ LOAD ORDER TREEDATAGRID -->
 
     <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
@@ -402,7 +408,7 @@
 
         <Style Selector="^ /template/ TreeDataGridRowsPresenter#PART_RowsPresenter">
             <!-- 4px left and right to account for rows needing to show shadows -->
-            <Setter Property="Margin" Value="4,0" />
+            <Setter Property="Margin" Value="4,0,8,0" />
         </Style>
 
         <Style Selector="^ TreeDataGridColumnHeader">
@@ -492,6 +498,22 @@
                         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
                         <Setter Property="BorderThickness" Value="2" />
                         <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Style>
+            </Style>
+            
+            <!-- pointerover and selected -->
+            <Style Selector="^:selected:pointerover">
+
+                <!-- Default -->
+                <Style Selector="^ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                </Style>
+
+                <!-- IsActive -->
+                <Style Selector="^ Border#RowBorder.IsActive">
+                    <Style Selector="^ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                     </Style>
                 </Style>
             </Style>
