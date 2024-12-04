@@ -964,16 +964,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     var gamePath = installation.LocationsRegister.ToGamePath(file);
                     if (IsIgnoredPath(gamePath))
-                    {
                         return;
-                    }
 
-                    Hash newHash = Hash.Zero;
+                    // Try to optimize the calculation speed by performing a minimal hash and matching on that first
+                    
+                    var newHash = Hash.Zero;
+                    // Look for any existing game hashes we've recorded for this path
                     var matches = hashes[gamePath];
                     if (matches.Any())
                     {
                         await using var stream = file.Read();
-                        var minimalHash = await MinimalHashExtensions.MinimalHash(stream, token);
+                        // Get the minimal hash
+                        var minimalHash = await stream.MinimalHash(token);
                         
                         var fullHash = Hash.Zero;
                         foreach (var matching in matches)
@@ -981,6 +983,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             if (matching.MinimalHash != minimalHash)
                                 continue;
 
+                            // Make sure we never have a collision between a minimal hash and multiple full hashes
                             if (fullHash != Hash.Zero || matching.XxHash3 != fullHash)
                             {
                                 newHash = Hash.Zero;
@@ -989,6 +992,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             fullHash = matching.XxHash3;
                         }
                     }
+                    
+                    // If the optimization path failed, calculate the full hash
                     if (newHash == Hash.Zero)
                     {
                         newHash = await file.XxHash3Async(token: token);
