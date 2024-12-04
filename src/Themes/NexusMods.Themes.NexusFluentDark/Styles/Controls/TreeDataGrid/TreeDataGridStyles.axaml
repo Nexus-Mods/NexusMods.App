@@ -34,9 +34,7 @@
                     CornerRadius="{TemplateBinding CornerRadius}"
                     Classes.IsActive="{CompiledBinding IsActive}">
                 <TreeDataGridCellsPresenter Name="PART_CellsPresenter"
-
                                             CornerRadius="{TemplateBinding CornerRadius}"
-
                                             ElementFactory="{TemplateBinding ElementFactory}"
                                             Items="{TemplateBinding Columns}"
                                             Rows="{TemplateBinding Rows}" />
@@ -385,12 +383,7 @@
         </Style>
     </Style>
 
-    
-    
-    
-    
-    
-    
+
     <!-- SORT \ LOAD ORDER TREEDATAGRID -->
 
     <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
@@ -501,7 +494,7 @@
                     </Style>
                 </Style>
             </Style>
-            
+
             <!-- pointerover and selected -->
             <Style Selector="^:selected:pointerover">
 
