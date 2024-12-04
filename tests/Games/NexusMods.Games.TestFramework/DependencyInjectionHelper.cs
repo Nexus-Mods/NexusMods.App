@@ -56,7 +56,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddSingleton<HttpClient>()
+            .AddDefaultHttpClient()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddNexusModsCollections()

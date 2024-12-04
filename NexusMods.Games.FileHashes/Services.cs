@@ -17,6 +17,7 @@ public static class Services
     public static IServiceCollection AddFileHashes(this IServiceCollection services)
     {
         services.AddFileHashesVerbs();
+        services.AddSingleton<FileHashProvider>();
         services.AddSingleton<JsonConverter, HashJsonConverter>();
         return services;
     }

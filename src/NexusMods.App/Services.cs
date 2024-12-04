@@ -92,7 +92,7 @@ public static class Services
                 .AddHttpDownloader()
                 // .AddAdvancedHttpDownloader()
                 .AddTestHarness()
-                .AddSingleton<HttpClient>()
+                .AddDefaultHttpClient()
                 .AddFileSystem()
                 .AddDownloaders()
                 .AddCleanupVerbs()
