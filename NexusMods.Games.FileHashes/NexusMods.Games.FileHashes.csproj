@@ -9,14 +9,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="NexusMods.Archives.Nx" />
       <PackageReference Include="NexusMods.Hashing.xxHash3" />
+      <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
       <PackageReference Include="System.IO.Hashing" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\src\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
       <ProjectReference Include="..\src\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
-      <ProjectReference Include="..\src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\src\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 

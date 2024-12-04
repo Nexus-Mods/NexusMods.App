@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
-using NexusMods.Hashing.xxHash3;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Hashing.xxHash3.Paths;
 
 namespace NexusMods.Games.FileHashes.Tests;
 
@@ -17,8 +18,17 @@ public class DownloadTests
     {
         var latestHash = await _provider.GetCurrentGithubVersion();
 
-        var downloaded = await _provider.DownloadLatestHashesRelease();
+        var (hash, path) = await _provider.DownloadLatestHashesRelease();
 
-        downloaded.Hash.Should().Be(latestHash.Hash);
+        hash.Should().Be(latestHash.Hash);
+        (await path.XxHash3Async()).Should().Be(hash);
+    }
+
+    [Fact]
+    public async Task CanReadEntries()
+    {
+        await _provider.DownloadLatestHashesRelease();
+        var hashes = await _provider.GetHashes(GameId.From(1303));
+        hashes.Should().NotBeEmpty();
     }
 }

@@ -1,29 +1,35 @@
 using System.Globalization;
+using System.IO.Compression;
 using System.Net.Http.Json;
-using NexusMods.Abstractions.Settings;
+using System.Text.Json;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.FileHashes.DTO;
 using NexusMods.Games.FileHashes.GithubDTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.FileHashes;
 
 public class FileHashProvider
 {
-    private readonly ISettingsManager _settingsManager;
     private readonly HttpClient _client;
     private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fileSystem;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     private static readonly Uri ReleaseUri = new("https://api.github.com/repos/Nexus-Mods/game-hashes/releases/latest");
     
     
-    public FileHashProvider(ISettingsManager settingsManager, HttpClient client, IOSInformation osInformation, IFileSystem fileSystem)
+    public FileHashProvider(HttpClient client, IOSInformation osInformation, IFileSystem fileSystem, JsonSerializerOptions jsonSerializerOptions)
     {
-        _settingsManager = settingsManager;
         _client = client;
         _osInformation = osInformation;
         _fileSystem = fileSystem;
+        _jsonSerializerOptions = jsonSerializerOptions;
         GetBaseFolder().CreateDirectory();
 
     }
@@ -31,6 +37,44 @@ public class FileHashProvider
     private AbsolutePath GetBaseFolder() 
         =>_fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) /  
           (_osInformation.IsOSX ? "NexusMods_App/FileHashes" : "NexusMods.App/FileHashes");
+
+    public async Task<List<GameFileHashes>> GetHashes(GameId gameId)
+    {
+        var latestPath = LatestHashPath;
+        if (!latestPath.HasValue)
+        {
+            await DownloadLatestHashesRelease();
+            latestPath = LatestHashPath;
+        }
+
+        await using var archiveStream = latestPath.Value.Read();
+        using var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+        
+        List<GameFileHashes> entries = new();
+        var gameIdString = gameId.ToString();
+        foreach (var entry in zipArchive.Entries)
+        {
+            if (entry.Length == 0)
+                continue;
+            
+            var relativePath = entry.FullName.ToRelativePath();
+            if (relativePath.Parent.FileName != gameIdString)
+                continue;
+            
+            await using var entryStream = entry.Open();
+            var hashes = await JsonSerializer.DeserializeAsync<GameFileHashes[]>(entryStream, _jsonSerializerOptions);
+            if (hashes is null)
+                continue;
+            
+            entries.AddRange(hashes);
+        }
+        
+        return entries;
+    }
+
+    private Optional<AbsolutePath> LatestHashPath => GetBaseFolder().EnumerateFiles()
+        .OrderByDescending(f => f.FileInfo.LastWriteTime)
+        .FirstOrOptional(f => true);
 
     /// <summary>
     /// Attempt to get the most recent game hash release version from GitHub.
@@ -44,11 +88,11 @@ public class FileHashProvider
             throw new InvalidOperationException("Failed to get the latest release information from GitHub.");
         try
         {
-            var asset = release.Assets.FirstOrDefault(a => a.Name == "minimal_hashes.nx");
+            var asset = release.Assets.FirstOrDefault(a => a.Name == "minimal_hashes.zip");
             if (asset is null)
-                throw new InvalidOperationException("Failed to find the minimal_hashes.nx asset in the latest release information.");
+                throw new InvalidOperationException("Failed to find the minimal_hashes.zip asset in the latest release information.");
             
-            var hash = release.Name.Split(" ")[1];
+            var hash = release.Name.Split(" ")[1].Trim('v');
             if (ulong.TryParse(hash, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var result))
                 return (Hash.From(result), asset.BrowserDownloadUrl);
             throw new InvalidOperationException("Failed to parse the hash from the latest release information.");

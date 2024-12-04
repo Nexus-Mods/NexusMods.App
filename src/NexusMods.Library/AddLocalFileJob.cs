@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -35,15 +36,15 @@ internal class AddLocalFileJob : IJobDefinitionWithStart<AddLocalFileJob, LocalF
         var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, FilePath, doCommit: true, doBackup: false);
 
         // TODO: for perf, read the file once and compute both hashes
-        Md5HashValue md5HashValue;
+        Md5Hash md5HashValue;
         await using (var fileStream = FilePath.Read())
         {
             var algo = MD5.Create();
             var hash = await algo.ComputeHashAsync(fileStream);
-            md5HashValue = Md5HashValue.From(hash);
+            md5HashValue = Md5Hash.From(hash);
         }
 
-        Debug.Assert(!md5HashValue.Equals(default(Md5HashValue)));
+        Debug.Assert(!md5HashValue.Equals(default(Md5Hash)));
         var localFile = new LocalFile.New(tx, libraryFile.LibraryFileId)
         {
             LibraryFile = libraryFile,

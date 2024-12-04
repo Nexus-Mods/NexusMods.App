@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Games.FileHashes.CLI;
 using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -18,7 +19,7 @@ public static class Services
     {
         services.AddFileHashesVerbs();
         services.AddSingleton<FileHashProvider>();
-        services.AddSingleton<JsonConverter, HashJsonConverter>();
+        services.AddHashSerializers();
         return services;
     }
     
