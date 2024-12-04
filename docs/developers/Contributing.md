@@ -12,12 +12,10 @@ helping you make things like new 'Windows' and 'Controls' easier.
 
 ### Running the project
 
-- Make a fork of the project and clone it
-- Go to `NexusMods.App/src/NexusMods.App` and run `dotnet run` to run the executable file `NexusMods.App.csproj`
-  - The app should open and run if you are using JetBrains Rider
-  - If you are using Visual Studio, you may come across build error CS0579 in which you can try running `git submodule update --init --recursive` to update the SMAPI API
-    - If the command doesn't work then you can alternatively get the project running by cloning in either Git Bash or Command Prompt and using the same above commands (first update the submodule, then run the executable)
-
+- Clone the repository (optionally make a fork first)
+- Ensure submodules have been cloned as well, you may use `git submodule update --init --recursive` to do so
+- Build and run the `NexusMods.App` project from your IDE to start the app, or use
+  `dotnet run --project src/NexusMods.App/NexusMods.App.csproj `
 
 ### Writing code
 
