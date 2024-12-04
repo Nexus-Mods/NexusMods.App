@@ -18,7 +18,6 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
@@ -256,18 +255,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             () => new LoadoutContext
             {
                 LoadoutId = loadoutId
-            }
-        );
-    }
-
-    private void NavigateToDownloads()
-    {
-        var workspaceController = _windowManager.ActiveWorkspaceController;
-
-        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
-            {
-                FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext(),
             }
         );
     }

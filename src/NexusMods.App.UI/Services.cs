@@ -27,7 +27,6 @@ using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
@@ -45,7 +44,6 @@ using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
-using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
@@ -59,7 +57,6 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
@@ -103,14 +100,12 @@ public static class Services
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
-            .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
-            //.AddViewModel<InProgressViewModel, IInProgressViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
@@ -136,14 +131,12 @@ public static class Services
             // Views
             .AddView<CollectionCardView, ICollectionCardViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
-            .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
-            //.AddView<InProgressView, IInProgressViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
@@ -245,7 +238,6 @@ public static class Services
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
-            //.AddSingleton<IPageFactory, InProgressPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
@@ -261,7 +253,6 @@ public static class Services
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
 
             // LeftMenu factories
-            .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
             .AddSingleton<ILeftMenuFactory, LoadoutLeftMenuFactory>()
 
