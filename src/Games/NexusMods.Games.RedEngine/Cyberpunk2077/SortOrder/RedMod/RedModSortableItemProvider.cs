@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -9,7 +8,6 @@ using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using R3;
@@ -27,11 +25,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
-    // private readonly ReadOnlyObservableCollection<RedModLoadoutGroup.ReadOnly> _redModsGroups;
     private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
-    private readonly ReadOnlyObservableCollection<RedModWithState> _redModStates;
     public ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
 
 
@@ -89,10 +85,10 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                 }
             )
             .SortBy(tuple => tuple.RedModFolder.ToString())
-            .Bind(out _redModStates)
+            .Bind(out var redModStates)
             .ToObservable()
             .SubscribeAwait(
-                async (changes, _) => { await UpdateOrderCache(_redModStates); },
+                async (changes, _) => { await UpdateOrderCache(redModStates); },
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
