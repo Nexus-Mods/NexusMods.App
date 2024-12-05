@@ -128,12 +128,6 @@
         <Compile Update="RightContent\Downloads\InProgressViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuDesignViewModel.cs">
-            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuViewModel.cs">
-            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
         </Compile>
@@ -499,12 +493,6 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleViewModel.cs">
           <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Downloads\InProgressDesignViewModel.cs">
-          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Downloads\InProgressViewModel.cs">
-          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
           <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
         </Compile>
@@ -740,7 +728,6 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
-      <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
       <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 
