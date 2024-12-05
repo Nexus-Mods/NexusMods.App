@@ -10,6 +10,13 @@
 There are also some [Item Templates](https://github.com/AvaloniaUI/avalonia-dotnet-templates) for Avalonia that can be very useful to have,
 helping you make things like new 'Windows' and 'Controls' easier.
 
+### Running the project
+
+- Clone the repository (optionally make a fork first)
+- Ensure submodules have been cloned as well, you may use `git submodule update --init --recursive` to do so
+- Build and run the `NexusMods.App` project from your IDE to start the app, or use
+  `dotnet run --project src/NexusMods.App/NexusMods.App.csproj `
+
 ### Writing code
 
 Make sure to follow our [Development Guidelines](./development-guidelines/UICodingGuidelines.md).
