@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using R3;
@@ -27,6 +28,8 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
     [Reactive] public string ModName { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
 
+    [Reactive] public string DisplaySortIndex { get; private set; }
+
     public LoadOrderItemModel(
         ISortableItem sortableItem,
         IObservable<ListSortDirection> sortDirectionObservable,
@@ -39,19 +42,23 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
 
         IsActive = sortableItem.IsActive;
         ModName = sortableItem.ModName;
+        DisplaySortIndex = SortIndex.ToString();
 
         _sortDirectionObservable = sortDirectionObservable;
         _lastIndexObservable = lastIndexObservable;
 
         this.WhenAnyValue(vm => vm.InnerItem.IsActive)
+            .OnUI()
             .Subscribe(value => IsActive = value)
             .DisposeWith(_disposables);
 
         this.WhenAnyValue(vm => vm.InnerItem.ModName)
+            .OnUI()
             .Subscribe(value => ModName = value)
             .DisposeWith(_disposables);
 
         _sortDirectionObservable
+            .OnUI()
             .BindTo(this, vm => vm._sortDirection)
             .DisposeWith(_disposables);
 
@@ -62,7 +69,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
             _lastIndexObservable,
             (sortIndex, sortDirection, lastIndex) =>
                 sortDirection == ListSortDirection.Ascending ? sortIndex > 0 : sortIndex < lastIndex
-        );
+        ).OnUI();
 
         var canExecuteDown = Observable.CombineLatest(
                 sortIndexObservable,
@@ -70,7 +77,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
                 _lastIndexObservable,
                 (sortIndex, sortDirection, lastIndex) =>
                     sortDirection == ListSortDirection.Ascending ? sortIndex < lastIndex : sortIndex > 0
-            );
+            ).OnUI();
 
         MoveUp = ReactiveUI.ReactiveCommand.Create(() =>
             {
@@ -87,9 +94,13 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
             },
             canExecuteDown
         );
-    }
-
-
+        
+        sortIndexObservable
+            .Select(ILoadOrderItemModel.ConvertZeroIndexToOrdinalNumber)
+            .BindTo(this, vm => vm.DisplaySortIndex)
+            .DisposeWith(_disposables);
+    }    
+    
     private bool _isDisposed;
 
     protected override void Dispose(bool disposing)

@@ -13,4 +13,5 @@ public class LoadOrderItemDesignModel : TreeDataGridItemModel<ILoadOrderItemMode
     public string ModName { get; set; } = "Mod Name";
     public bool IsActive { get; set; }
     public Guid Guid { get; set; }
+    public string DisplaySortIndex => ILoadOrderItemModel.ConvertZeroIndexToOrdinalNumber(SortIndex);
 }

@@ -23,9 +23,9 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public string InfoAlertMessage { get; set;} = "Info Alert Message";
     public bool InfoAlertIsVisible { get; set; } = true;
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
-    public string TrophyToolTip { get; set;} = "Trophy Tool Tip";
+    public string TrophyToolTip { get; } = "Winner Tooltip";
     public ListSortDirection SortDirectionCurrent { get; set; }
-    public bool IsWinnerTop { get; set;}
+    public bool IsWinnerTop { get; set; } = true;
     public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
     public string EmptyStateMessageContents { get; } = "Empty State Message Contents";
     public AlertSettingsWrapper AlertSettingsWrapper { get; }
@@ -44,6 +44,21 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
         
         AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
     }
+
+    public LoadOrderDesignViewModel()
+    {
+       Adapter = new LoadOrderTreeDataGridDesignAdapter();
+
+       this.WhenActivated(d =>
+           {
+               Adapter.Activate();
+               Disposable.Create(() => Adapter.Deactivate())
+                   .DisposeWith(d);
+           }
+       );
+
+       AlertSettingsWrapper = null!;
+    }
 }
 
 
@@ -53,8 +68,12 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
     protected override IObservable<IChangeSet<ILoadOrderItemModel, Guid>> GetRootsObservable(bool viewHierarchical)
     {
         var items = new ObservableCollection<ILoadOrderItemModel>([
-                new LoadOrderItemDesignModel() { DisplayName = "Item 1", Guid = Guid.NewGuid(), SortIndex = 0 },
-                new LoadOrderItemDesignModel() { DisplayName = "Item 2", Guid = Guid.NewGuid(), SortIndex = 1 },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 1", Guid = Guid.NewGuid(), SortIndex = 0, IsActive = false},
+                new LoadOrderItemDesignModel() { DisplayName = "Item 2", Guid = Guid.NewGuid(), SortIndex = 1, IsActive = true },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 3", Guid = Guid.NewGuid(), SortIndex = 2, IsActive = true },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 4", Guid = Guid.NewGuid(), SortIndex = 3, IsActive = false },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 5", Guid = Guid.NewGuid(), SortIndex = 4, IsActive = false },
+                new LoadOrderItemDesignModel() { DisplayName = "Item 6", Guid = Guid.NewGuid(), SortIndex = 5, IsActive = true },
             ]
         );
         
@@ -67,7 +86,7 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
         [
             // TODO: Use <see cref="ColumnCreator"/> to create the columns using interfaces
             new HierarchicalExpanderColumn<ILoadOrderItemModel>(
-                inner: LoadOrderTreeDataGridAdapter.CreateIndexColumn("Index"),
+                inner: LoadOrderTreeDataGridAdapter.CreateIndexColumn("LOAD ORDER"),
                 childSelector: static model => model.Children,
                 hasChildrenSelector: static model => model.HasChildren.Value,
                 isExpandedSelector: static model => model.IsExpanded
@@ -75,7 +94,7 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<ILoadOrder
             {
                 Tag = "expander",
             },
-            LoadOrderTreeDataGridAdapter.CreateNameColumn("Name"),
+            LoadOrderTreeDataGridAdapter.CreateNameColumn("REDMOD NAME"),
         ];
     }
 }
