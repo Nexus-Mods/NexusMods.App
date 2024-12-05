@@ -56,6 +56,16 @@ public interface ILoadOrderViewModel : IViewModelInterface
     ListSortDirection SortDirectionCurrent { get; set; }
     
     /// <summary>
+    /// Switch the current sort direction to the inverse
+    /// </summary>
+    ReactiveCommand<Unit, Unit> SwitchSortDirectionCommand { get; }
+    
+    /// <summary>
+    /// True if current sort direction is ascending, false if descending
+    /// </summary>
+    bool IsAscending { get; }
+    
+    /// <summary>
     /// Whether the winning item is at the top or bottom of the list
     /// </summary>
     /// <remarks>

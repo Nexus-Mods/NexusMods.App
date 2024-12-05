@@ -15,12 +15,11 @@
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
-                <navigation:NavigationControl x:Name="OpenEditorMenuItem">
-                    <StackPanel>
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
-                        <TextBlock Text="Edit file" />
-                    </StackPanel>
-                </navigation:NavigationControl>
+                <navigation:NavigationControl x:Name="OpenEditorMenuItem"
+                                              Text="Edit File"
+                                              LeftIcon="{x:Static icons:IconValues.FileEdit}"
+                                              ShowIcon="Left"
+                                              Size="Small"/>
             </StackPanel>
         </Border>
 
