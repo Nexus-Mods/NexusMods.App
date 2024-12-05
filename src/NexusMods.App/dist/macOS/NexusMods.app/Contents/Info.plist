@@ -14,5 +14,7 @@
 	<string>APPL</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.13</string>
+    <key>CFBundleIconFile</key>
+    <string>Nexus-Icon</string>
 </dict>
 </plist>
