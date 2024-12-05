@@ -25,6 +25,7 @@ public class App : Application
     {
         _provider = provider;
         _settingsManager = provider.GetRequiredService<ISettingsManager>();
+        Name = "Nexus Mods";
     }
 
     public App()
