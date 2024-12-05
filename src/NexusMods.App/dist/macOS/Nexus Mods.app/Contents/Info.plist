@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>NexusMods</string>
+	<string>Nexus Mods</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.nexusmods.nexusmodsapp</string>
 	<key>CFBundleVersion</key>
@@ -16,5 +16,17 @@
 	<string>10.13</string>
     <key>CFBundleIconFile</key>
     <string>Nexus-Icon</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.nexusmods.nexusmodsapp</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>nxm</string>
+            </array>
+        </dict>
+    </array>
+    
 </dict>
 </plist>
