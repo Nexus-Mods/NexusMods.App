@@ -10,6 +10,7 @@ using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.FileHashes;
 using NexusMods.Games.Generic;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -54,6 +55,7 @@ public static class DependencyInjectionHelper
         return serviceCollection
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddSingleton<JsonConverter, GameInstallationConverter>()
+            .AddFileHashes()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddDefaultHttpClient()

@@ -21,7 +21,6 @@ public class Startup
         };
         
         collection
-            .AddFileHashes()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<StardewValley.StardewValley>(new Version(1, 0), gameFiles)
             .AddStardewValley()
