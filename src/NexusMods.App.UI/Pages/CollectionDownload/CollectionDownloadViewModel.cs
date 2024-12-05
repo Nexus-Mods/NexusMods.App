@@ -87,6 +87,10 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
+        CommandDeleteCollection = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+        CommandDeleteAllDownloads = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+        CommandViewOnNexusMods = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
         this.WhenActivated(disposables =>
         {
             TreeDataGridAdapter.Activate();
@@ -162,6 +166,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     public ReactiveCommand<Unit> DownloadAllCommand { get; }
     public ReactiveCommand<Unit> InstallCollectionCommand { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
+    public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);

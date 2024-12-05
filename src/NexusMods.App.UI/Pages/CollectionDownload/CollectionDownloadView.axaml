@@ -17,28 +17,28 @@
 
     <reactiveUi:ReactiveUserControl.Resources>
         <MenuFlyout x:Key="CollectionMenuFlyout">
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewOnNexusMods">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View on Nexus Mods</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewInLibrary">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View in Library</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemDeleteAllDownloads">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete all downloads</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemDeleteCollection">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete Collection</TextBlock>
