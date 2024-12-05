@@ -60,7 +60,8 @@
                         VerticalAlignment="Stretch">
                     <DockPanel Name="DataGridDockPanel" VerticalAlignment="Stretch">
                         <Panel DockPanel.Dock="Right"
-                               TabIndex="2">
+                               TabIndex="2"
+                               IsVisible="False">
                             <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
                                        HorizontalAlignment="Center"
                                        Width="1"
