@@ -33,8 +33,6 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
         return SortIndex.CompareTo(other.SortIndex);
     }
 
-
-
     public int CompareTo(ISortableItem? other)
     {
         if (ReferenceEquals(this, other)) return 0;

@@ -284,7 +284,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
                 new RedModSortableItem(provider,
                     idx,
                     redMod.RedModFolder.ToString(),
-                    redMod.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    redMod.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     isActive: redMod.IsEnabled
                 )
             )
@@ -303,7 +303,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             }
 
             item.IsActive = redModMatch.IsEnabled;
-            item.ModName = redModMatch.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Name;
+            item.ModName = redModMatch.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name;
         }
 
 
