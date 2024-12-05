@@ -22,12 +22,20 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
         TabIcon = IconValues.ModLibrary;
         TabTitle = "Collections (WIP)";
 
+        var loadout = Loadout.Load(conn.Db, targetLoadout);
+        var gameId = loadout.Installation.GameId;
+
         this.WhenActivated(d =>
         {
             var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
             var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
             CollectionMetadata.ObserveAll(conn)
+                .FilterImmutable(collection =>
+                {
+                    if (!CollectionMetadata.GameId.TryGetValue(collection, out var collectionGameId)) return true;
+                    return collectionGameId == gameId;
+                })
                 .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
