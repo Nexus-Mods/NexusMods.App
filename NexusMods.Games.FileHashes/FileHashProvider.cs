@@ -14,6 +14,9 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.FileHashes;
 
+/// <summary>
+/// Provides access to the game file hashes. Will download hashes from GitHub as needed.
+/// </summary>
 public class FileHashProvider
 {
     private readonly HttpClient _client;
@@ -23,7 +26,9 @@ public class FileHashProvider
 
     private static readonly Uri ReleaseUri = new("https://api.github.com/repos/Nexus-Mods/game-hashes/releases/latest");
     
-    
+    /// <summary>
+    /// DI constructor
+    /// </summary>
     public FileHashProvider(HttpClient client, IOSInformation osInformation, IFileSystem fileSystem, JsonSerializerOptions jsonSerializerOptions)
     {
         _client = client;
@@ -38,6 +43,11 @@ public class FileHashProvider
         =>_fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) /  
           (_osInformation.IsOSX ? "NexusMods_App/FileHashes" : "NexusMods.App/FileHashes");
 
+    /// <summary>
+    /// Get the known hashes for a given gameId. This will return all hashes for all versions. This data
+    /// is not cached or stored in memory, so don't request it inside a loop or other performance critical
+    /// code.
+    /// </summary>
     public async Task<List<GameFileHashes>> GetHashes(GameId gameId)
     {
         var latestPath = LatestHashPath;
