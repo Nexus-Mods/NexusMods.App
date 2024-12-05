@@ -41,6 +41,82 @@
             </Border>
         </ControlTemplate>
 
+        <!-- this template is solely used for the load order index column which can't use built in sort functionality
+        as it is disabled when drag and drop is enabled. This is the same template as our default 
+        TreeDataGridColumnHeader one with the only change being the addition of a button to switch the sort direction 
+        while mimicking the default header styles -->
+        <ControlTemplate x:Key="LoadOrderIndexTreeDataGridColumnHeaderTemplate"
+                         TargetType="TreeDataGridColumnHeader"
+                         x:DataType="sorting:ILoadOrderViewModel">
+            <Border Name="DataGridBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
+                <!-- added button so we can fake a column header click-->
+                <Button x:Name="FakeSortButton"
+                        Command="{CompiledBinding SwitchSortDirectionCommand }"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <DockPanel Name="DataGridDockPanel" VerticalAlignment="Stretch">
+                        <Panel DockPanel.Dock="Right"
+                               TabIndex="2">
+                            <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
+                                       HorizontalAlignment="Center"
+                                       Width="1"
+                                       Height="24"
+                                       Margin="0,0,0,0" />
+                            <!-- negative margin to bump the vertical line to the right -->
+                            <Thumb Name="PART_Resizer"
+                                   DockPanel.Dock="Right"
+                                   Background="Transparent"
+                                   Cursor="SizeWestEast"
+                                   IsVisible="{TemplateBinding CanUserResize}"
+                                   Width="5">
+                                <Thumb.Template>
+                                    <ControlTemplate>
+                                        <Border Background="{TemplateBinding Background}"
+                                                VerticalAlignment="Stretch" />
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </Panel>
+                        <Border Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Content="{TemplateBinding Header}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  TabIndex="0">
+                                    <ContentPresenter.DataTemplates>
+                                        <DataTemplate DataType="x:String">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ContentPresenter.DataTemplates>
+                                </ContentPresenter>
+                                <Border
+                                    Padding="0,0,0,0"
+                                    Background="Transparent"
+                                    Height="20"
+                                    Width="20"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TabIndex="1">
+                                    <icons:UnifiedIcon Name="SortIcon"
+                                                       Foreground="{TemplateBinding Foreground}"
+                                                       Value="{x:Null}"
+                                                       Classes.IsAscending="{CompiledBinding IsAscending}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                </Button>
+            </Border>
+        </ControlTemplate>
+
         <!-- if we have this control theme here, we can override styles properly -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
             <Setter Property="Margin" Value="0" />
@@ -405,11 +481,47 @@
         </Style>
 
         <Style Selector="^ TreeDataGridColumnHeader">
-            <!-- First column header -->
+
+            <!-- Index column header -->
+            <!-- TODO: change this selector to always get the index column even if it isn't the first one -->
             <Style Selector="^:nth-child(1)">
                 <!-- reset padding -->
                 <Setter Property="Padding" Value="8,0,0,0" />
+                <Setter Property="Template" Value="{DynamicResource LoadOrderIndexTreeDataGridColumnHeaderTemplate}" />
+
+                <Style Selector="^ icons|UnifiedIcon#SortIcon.IsAscending">
+                    <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropDown}" />
+                </Style>
+                <Style Selector="^ icons|UnifiedIcon#SortIcon:not(.IsAscending)">
+                    <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowDropUp}" />
+                </Style>
             </Style>
+
+            <!-- Everything but the index column as we want to disable styles and not look clickable -->
+            <Style Selector="^:not(:nth-child(1))">
+                <!-- reset padding -->
+                <Setter Property="IsEnabled" Value="False" />
+            </Style>
+
+            <Style Selector="^ Button#FakeSortButton">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Padding" Value="0" />
+
+                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter"> 
+                    <Setter Property="Background" 
+                            Value="{StaticResource TreeDataGridHeaderBackgroundPointerOverBrush}" />
+                    <Setter Property="BorderBrush" 
+                            Value="{StaticResource TreeDataGridHeaderBorderBrushPointerOverBrush}" />
+                </Style>
+
+                <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" 
+                            Value="{StaticResource TreeDataGridHeaderBackgroundPressedBrush}" />
+                    <Setter Property="BorderBrush" 
+                            Value="{StaticResource TreeDataGridHeaderBorderBrushPressedBrush}" />
+                </Style>
+            </Style>
+
         </Style>
 
         <!-- NOTES:

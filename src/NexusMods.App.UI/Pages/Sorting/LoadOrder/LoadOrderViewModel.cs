@@ -32,6 +32,10 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
+    
+    public ReactiveUI.ReactiveCommand<Unit, Unit> SwitchSortDirectionCommand { get; }
+    
+    [Reactive] public bool IsAscending { get; private set; }
     [Reactive] public bool IsWinnerTop { get; private set; }
     public string EmptyStateMessageTitle { get; }
     public string EmptyStateMessageContents { get; }
@@ -54,6 +58,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         // TODO: load these from settings
         SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
+        IsAscending = SortDirectionCurrent == ListSortDirection.Ascending;
         InfoAlertIsVisible = true;
 
         IsWinnerTop = SortDirectionCurrent == ListSortDirection.Ascending &&
@@ -76,6 +81,14 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         InfoAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ShowAlert(); });
 
+        SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
+            {
+                SortDirectionCurrent = IsAscending
+                    ? ListSortDirection.Descending 
+                    : ListSortDirection.Ascending;
+            }
+        );
+
         this.WhenActivated(d =>
             {
                 Adapter.Activate();
@@ -91,8 +104,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 // Update IsWinnerTop
                 sortDirectionObservable.Subscribe(sortDirection =>
                         {
-                            var isAscending = sortDirection == ListSortDirection.Ascending;
-                            IsWinnerTop = isAscending &&
+                            IsAscending = sortDirection == ListSortDirection.Ascending;
+                            IsWinnerTop = IsAscending &&
                                           itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
                         }
                     )
