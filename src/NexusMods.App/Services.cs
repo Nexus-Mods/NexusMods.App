@@ -121,6 +121,7 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
+            Games.UnrealEngine.Services.AddUnrealEngineGames(services);
         }
         
         Games.RedEngine.Services.AddRedEngineGames(services);
