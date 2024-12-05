@@ -40,6 +40,9 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var loadout = await CreateLoadout();
 
         var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
+        // Wait for the factory to pick up the loadouts
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
 
         var tsc1 = new TaskCompletionSource<Unit>();

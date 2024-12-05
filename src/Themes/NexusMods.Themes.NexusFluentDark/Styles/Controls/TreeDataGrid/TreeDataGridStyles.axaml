@@ -558,8 +558,8 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             </Style>
 
-            <!-- IsActive -->
-            <Style Selector="^ Border#RowBorder.IsActive">
+            <!-- is not active -->
+            <Style Selector="^ Border#RowBorder:not(.IsActive)">
                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
             </Style>
 
@@ -573,8 +573,8 @@
                     <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                 </Style>
 
-                <!-- IsActive -->
-                <Style Selector="^ Border#RowBorder.IsActive">
+                <!-- is not active -->
+                <Style Selector="^ Border#RowBorder:not(.IsActive)">
                     <Style Selector="^ TreeDataGridCellsPresenter#PART_CellsPresenter">
                         <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                     </Style>
@@ -594,8 +594,8 @@
                     <Setter Property="CornerRadius" Value="8" />
                 </Style>
 
-                <!-- IsActive -->
-                <Style Selector="^ Border#RowBorder.IsActive">
+                <!-- is not active -->
+                <Style Selector="^ Border#RowBorder:not(.IsActive)">
                     <Style Selector="^ TreeDataGridCellsPresenter#PART_CellsPresenter">
                         <!-- same background as unselected but if we use the same background it will layer 
                         transparencies and appear darker as the states are on a different element to the row background -->
@@ -615,8 +615,8 @@
                     <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                 </Style>
 
-                <!-- IsActive -->
-                <Style Selector="^ Border#RowBorder.IsActive">
+                <!-- is not active -->
+                <Style Selector="^ Border#RowBorder:not(.IsActive)">
                     <Style Selector="^ TreeDataGridCellsPresenter#PART_CellsPresenter">
                         <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                     </Style>
