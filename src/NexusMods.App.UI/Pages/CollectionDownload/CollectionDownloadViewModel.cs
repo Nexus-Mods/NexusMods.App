@@ -17,6 +17,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -43,6 +44,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
+        var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
@@ -89,7 +92,19 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         CommandDeleteCollection = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
         CommandDeleteAllDownloads = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
-        CommandViewOnNexusMods = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
+        CommandViewOnNexusMods = new ReactiveCommand(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = await mappingCache.TryGetDomainAsync(_collection.GameId, cancellationToken);
+                if (!gameDomain.HasValue) throw new NotSupportedException($"Expected a valid game domain for `{_collection.GameId}`");
+
+                var uri = _collection.GetUri(gameDomain.Value);
+                await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            },
+            awaitOperation: AwaitOperation.Sequential,
+            configureAwait: false
+        );
 
         this.WhenActivated(disposables =>
         {
