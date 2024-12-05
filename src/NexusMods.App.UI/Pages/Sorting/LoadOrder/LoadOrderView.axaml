@@ -166,12 +166,12 @@
                                                        Foreground="{StaticResource NeutralSubduedBrush}" />
                                 </Border>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock x:Name="ItemName"
+                                    <TextBlock x:Name="ModName"
                                                Text="{CompiledBinding ModName}"
                                                Theme="{StaticResource BodySMNormalTheme}"
-                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
-                                    <TextBlock x:Name="ItemName2"
-                                               Text="{CompiledBinding DisplayName}" />
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"/>
+                                    <TextBlock x:Name="DisplayName"
+                                               Text="{CompiledBinding DisplayName}"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
