@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -33,7 +32,7 @@ using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 
-namespace NexusMods.App;
+namespace NexusMods.App.Common;
 
 public static class Services
 {
@@ -75,7 +74,7 @@ public static class Services
                 .AddCLI()
                 .AddUI()
                 .AddSettingsManager()
-                .AddSingleton<App>()
+                .AddSingleton<Common.App>()
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()

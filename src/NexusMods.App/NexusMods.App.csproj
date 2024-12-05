@@ -9,49 +9,6 @@
         <DefineConstants />
     </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
-        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
-        <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
-        <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
-        <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-        <ProjectReference Include="..\NexusMods.Jobs\NexusMods.Jobs.csproj" />
-        <ProjectReference Include="..\NexusMods.Library\NexusMods.Library.csproj" />
-        <ProjectReference Include="..\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
-        <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
-        <ProjectReference Include="..\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />
-        <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
-        <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
-    </ItemGroup>
-   
-    <ItemGroup>
-        <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
-        <PackageReference Include="NLog.Extensions.Logging" />
-        <PackageReference Include="Spectre.Console" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="App.axaml.cs">
-        <DependentUpon>App.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
 
     <ItemGroup>
         <None Update="uninstall-helper.ps1">
@@ -76,6 +33,11 @@
         <None Update="icon.svg">
             <DependentUpon>app.pupnet.conf</DependentUpon>
         </None>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.App.Common\NexusMods.App.Common.csproj" />
     </ItemGroup>
 
     <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"

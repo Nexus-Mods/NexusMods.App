@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App;
+using NexusMods.App.Common;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests;

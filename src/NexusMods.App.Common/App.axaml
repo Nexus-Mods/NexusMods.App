@@ -1,5 +1,5 @@
 <Application
-    x:Class="NexusMods.App.App"
+    x:Class="NexusMods.App.Common.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:ui="using:NexusMods.App.UI"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

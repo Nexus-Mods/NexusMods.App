@@ -13,7 +13,7 @@ using Projektanker.Icons.Avalonia.MaterialDesign;
 using ReactiveUI;
 using Splat;
 
-namespace NexusMods.App;
+namespace NexusMods.App.Common;
 
 
 
@@ -96,7 +96,7 @@ public class Startup
             .Register<MaterialDesignIconProvider>();
 
         var app = AppBuilder
-            .Configure(serviceProvider.GetRequiredService<App>)
+            .Configure(serviceProvider.GetRequiredService<Common.App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseR3()

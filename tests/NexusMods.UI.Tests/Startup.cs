@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.Common;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Paths;

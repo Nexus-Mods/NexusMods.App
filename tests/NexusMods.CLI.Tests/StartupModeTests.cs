@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.App;
+using NexusMods.App.Common;
 
 namespace NexusMods.CLI.Tests;
 
