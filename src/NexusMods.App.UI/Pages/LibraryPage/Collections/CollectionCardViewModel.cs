@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
@@ -28,7 +29,8 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
         IWindowManager windowManager,
         WorkspaceId workspaceId,
         IConnection connection,
-        RevisionId revision)
+        RevisionId revision,
+        LoadoutId targetLoadout)
     {
         _revision = CollectionRevisionMetadata.FindByRevisionId(connection.Db, revision).First();
         _collection = _revision.Collection;
@@ -41,6 +43,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
             {
                 Context = new CollectionDownloadPageContext
                 {
+                    TargetLoadout = targetLoadout,
                     CollectionRevisionMetadataId = _revision,
                 },
                 FactoryId = CollectionDownloadPageFactory.StaticId,

@@ -97,6 +97,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var userInfo = await _msgFactory.Verify(_nexusApiClient, cancellationToken);
         _cachedUserInfo.Store(userInfo);
 
+        IsPremium = userInfo?.IsPremium ?? false;
         return userInfo;
     }
 

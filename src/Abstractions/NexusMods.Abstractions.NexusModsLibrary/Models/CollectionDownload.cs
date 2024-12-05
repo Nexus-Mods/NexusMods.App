@@ -27,4 +27,9 @@ public partial class CollectionDownload : IModelDefinition
     /// Whether the download is optional.
     /// </summary>
     public static readonly BooleanAttribute IsOptional = new(Namespace, nameof(IsOptional));
+
+    /// <summary>
+    /// Index into the source array.
+    /// </summary>
+    public static readonly Int32Attribute ArrayIndex = new(Namespace, nameof(ArrayIndex)) { IsIndexed = true };
 }

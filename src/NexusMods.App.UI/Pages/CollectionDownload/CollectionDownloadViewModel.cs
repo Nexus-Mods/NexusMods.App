@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -12,41 +13,43 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Observable = System.Reactive.Linq.Observable;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
-public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
+public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadViewModel>, ICollectionDownloadViewModel
 {
     private readonly CollectionRevisionMetadata.ReadOnly _revision;
     private readonly CollectionMetadata.ReadOnly _collection;
-
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IConnection _connection;
-    private readonly NexusModsDataProvider _nexusModsDataProvider;
-    private readonly CollectionDownloader _collectionDownloader;
 
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public CollectionDownloadViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata) : base(windowManager)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        LoadoutId targetLoadout) : base(windowManager)
     {
-        _serviceProvider = serviceProvider;
-        _connection = serviceProvider.GetRequiredService<IConnection>();
-        _nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
-        _collectionDownloader = new CollectionDownloader(_serviceProvider);
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+        var nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
+        var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -58,7 +61,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
         TabTitle = _collection.Name;
         TabIcon = IconValues.Collections;
 
-        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(_nexusModsDataProvider, revisionMetadata);
+        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
         var requiredDownloadCount = 0;
@@ -76,12 +79,57 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         DownloadAllCommand = loginManager.IsPremiumObservable.ToObservable().ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => _collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: _connection.Db, cancellationToken: cancellationToken),
+            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
-        InstallCollectionCommand = new ReactiveCommand<Unit>(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+        InstallCollectionCommand = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata);
+            },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        CommandDeleteCollection = new ReactiveCommand(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionsPageFactory.StaticId,
+                    Context = new CollectionsPageContext
+                    {
+                        LoadoutId = targetLoadout,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+
+                await nexusModsLibrary.DeleteCollection(_collection, cancellationToken);
+            },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false,
+            cancelOnCompleted: false
+        );
+
+        CommandDeleteAllDownloads = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
+        CommandViewOnNexusMods = new ReactiveCommand(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = await mappingCache.TryGetDomainAsync(_collection.GameId, cancellationToken);
+                if (!gameDomain.HasValue) throw new NotSupportedException($"Expected a valid game domain for `{_collection.GameId}`");
+
+                var uri = _collection.GetUri(gameDomain.Value);
+                await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            },
+            awaitOperation: AwaitOperation.Sequential,
+            configureAwait: false
+        );
 
         this.WhenActivated(disposables =>
         {
@@ -91,7 +139,7 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
             Observable
                 .Return(_revision)
                 .OffUi()
-                .SelectMany(revision => _collectionDownloader.RequiredDownloadedCountObservable(revision))
+                .SelectMany(revision => collectionDownloader.RequiredDownloadedCountObservable(revision))
                 .OnUI()
                 .Subscribe(count =>
                 {
@@ -125,8 +173,8 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
                 onNextAsync: (message, cancellationToken) =>
                 {
                     return message.Item.Match(
-                        f0: x => _collectionDownloader.Download(x, cancellationToken),
-                        f1: x => _collectionDownloader.Download(x, cancellationToken)
+                        f0: x => collectionDownloader.Download(x, cancellationToken),
+                        f1: x => collectionDownloader.Download(x, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -158,6 +206,9 @@ public class CollectionDownloadViewModel : APageViewModel<ICollectionDownloadVie
 
     public ReactiveCommand<Unit> DownloadAllCommand { get; }
     public ReactiveCommand<Unit> InstallCollectionCommand { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
+    public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);

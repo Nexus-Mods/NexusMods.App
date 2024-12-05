@@ -24,7 +24,7 @@ public static class Services
             .AddCollectionDownloadModel()
             .AddCollectionDownloadExternalModel()
             .AddCollectionDownloadNexusModsModel()
-            .AddColletionDownloadBundledModel()
+            .AddCollectionDownloadBundledModel()
             .AddCollectionCategoryModel()
             .AddUserModel()
             .AddNexusModsCollectionLibraryFileModel();

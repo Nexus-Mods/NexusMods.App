@@ -38,4 +38,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
 
     public ReactiveCommand<Unit> DownloadAllCommand { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> InstallCollectionCommand { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandViewOnNexusMods { get; } = new ReactiveCommand();
 }

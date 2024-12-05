@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
+using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Abstractions.Telemetry;
 
@@ -46,7 +47,7 @@ public static class NexusModsUrlBuilder
     /// </remarks>
     public static Uri CreateGenericUri(string baseUrl) => CreateUri(baseUrl);
 
-    public static Uri CreateCollectionsUri(string baseUrl) => CreateUri(baseUrl, campaign: "collections");
+    public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
     /// <summary>
     /// Creates a new URI pointing to a mod on Nexus Mods. This should only be used

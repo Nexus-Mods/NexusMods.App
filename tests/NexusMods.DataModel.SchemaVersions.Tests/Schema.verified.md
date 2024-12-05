@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x1A0740A80D5D60A9
-   - Total attributes: 143
+   - Fingerprint: 0x60C019D68BA4BF2F
+   - Total attributes: 145
    - Total namespaces: 58
    
 ## Attributes
@@ -90,6 +90,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Networking.NexusWebApi.Auth.JWTToken/RefreshToken                        | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionCategory/Name                                 | Utf8                    | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionCategory/NexusId                              | UInt64                  | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownload/ArrayIndex                           | Int32                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/CollectionRevision                   | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/IsOptional                           | UInt8                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/Name                                 | Utf8                    | False   | False | False     | 
@@ -105,6 +106,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageUri                   | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Category                             | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Slug                                 | Ascii                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Summary                              | Utf8                    | False   | False | False     | 

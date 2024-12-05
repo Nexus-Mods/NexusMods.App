@@ -7,6 +7,7 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 
@@ -15,10 +16,14 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
     public CollectionsViewModel(
         IServiceProvider serviceProvider,
         IConnection conn,
-        IWindowManager windowManager) : base(windowManager)
+        IWindowManager windowManager,
+        LoadoutId targetLoadout) : base(windowManager)
     {
         TabIcon = IconValues.ModLibrary;
         TabTitle = "Collections (WIP)";
+
+        var loadout = Loadout.Load(conn.Db, targetLoadout);
+        var gameId = loadout.Installation.GameId;
 
         this.WhenActivated(d =>
         {
@@ -26,13 +31,19 @@ public class CollectionsViewModel : APageViewModel<ICollectionsViewModel>, IColl
             var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
             CollectionMetadata.ObserveAll(conn)
+                .FilterImmutable(collection =>
+                {
+                    if (!CollectionMetadata.GameId.TryGetValue(collection, out var collectionGameId)) return true;
+                    return collectionGameId == gameId;
+                })
                 .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,
                     workspaceId: WorkspaceId,
                     connection: conn,
-                    revision: coll.Revisions.First().RevisionId)
+                    revision: coll.Revisions.First().RevisionId,
+                    targetLoadout: targetLoadout)
                 )
                 .Bind(out _collections)
                 .Subscribe()

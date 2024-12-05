@@ -21,8 +21,23 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
         this.WhenActivated(d =>
         {
+            this.BindCommand(ViewModel, vm => vm.InstallCollectionCommand, view => view.InstallButton)
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.DownloadAllCommand, view => view.DownloadAllButton)
                 .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.MenuItemDeleteCollection)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteAllDownloads, view => view.MenuItemDeleteAllDownloads)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandViewOnNexusMods, view => view.MenuItemViewOnNexusMods)
+                .DisposeWith(d);
+
+            // TODO:
+            MenuItemViewInLibrary.IsEnabled = false;
 
             this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.RequiredDownloadsTree.Source)
                 .DisposeWith(d);

@@ -89,4 +89,10 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     /// Command to install the collection.
     /// </summary>
     R3.ReactiveCommand<R3.Unit> InstallCollectionCommand { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandDeleteCollection { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandDeleteAllDownloads { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandViewOnNexusMods { get; }
 }

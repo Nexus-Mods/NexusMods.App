@@ -145,7 +145,8 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    private async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
+    /// <inheritdoc/>
+    public async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
     {
         // Note(sewer): In theory, there's a race condition in here if multiple threads
         //              try to insert at once. However that should not be a concern here,

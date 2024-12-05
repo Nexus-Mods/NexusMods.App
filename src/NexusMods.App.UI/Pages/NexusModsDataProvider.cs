@@ -5,9 +5,7 @@ using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -78,7 +76,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var isInLibraryObservable = CollectionDownloader.IsDownloadedObservable(_connection, nexusModsDownload)
             .ToObservable()
-            .Prepend(nexusModsDownload, static download => CollectionDownloader.IsDownloaded(download));
+            .Prepend(nexusModsDownload, static download => CollectionDownloader.IsDownloaded(download, download.Db));
 
         var downloadJobObservable = _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
             .FilterImmutable(job =>
@@ -116,7 +114,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var isInLibraryObservable = CollectionDownloader.IsDownloadedObservable(_connection, externalDownload)
             .ToObservable()
-            .Prepend(externalDownload, static download => CollectionDownloader.IsDownloaded(download));
+            .Prepend(externalDownload, static download => CollectionDownloader.IsDownloaded(download, download.Db));
 
         var downloadJobObservable = _jobMonitor.GetObservableChangeSet<ExternalDownloadJob>()
             .FilterImmutable(job =>
