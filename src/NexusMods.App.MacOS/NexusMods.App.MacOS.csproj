@@ -4,9 +4,10 @@
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
-    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
     <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
     <UseMacOSAppBundle>true</UseMacOSAppBundle>
+    <AssemblyName>Nexus Mods</AssemblyName>  
 
     <!--
       Enable full trimming in Release mode.
