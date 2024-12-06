@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.FileHashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
@@ -41,6 +42,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
     private readonly IServiceProvider _serviceProvider;
+    private readonly FileHashProvider _fileHashProvider;
 
     /// <summary>
     /// Connection.
@@ -59,6 +61,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ISorter sorter,
         IConnection conn,
         IOSInformation os,
+        FileHashProvider fileHashProvider,
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
@@ -70,6 +73,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         Connection = conn;
         _os = os;
         _garbageCollectorRunner = garbageCollectorRunner;
+        _fileHashProvider = fileHashProvider;
     }
 
     /// <summary>
@@ -83,6 +87,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>(),
+        provider.GetRequiredService<FileHashProvider>(),
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
@@ -946,6 +951,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task IndexNewState(GameInstallation installation, ITransaction tx)
     {
         var metaDataId = installation.GameMetadataId;
+
+        var hashes = (await _fileHashProvider.GetHashes(installation.Game.GameId))
+            .ToLookup(p => new GamePath(LocationId.Game, p.Path)); 
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
@@ -956,11 +964,42 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     var gamePath = installation.LocationsRegister.ToGamePath(file);
                     if (IsIgnoredPath(gamePath))
-                    {
                         return;
+
+                    // Try to optimize the calculation speed by performing a minimal hash and matching on that first
+                    
+                    var newHash = Hash.Zero;
+                    // Look for any existing game hashes we've recorded for this path
+                    var matches = hashes[gamePath];
+                    if (matches.Any())
+                    {
+                        await using var stream = file.Read();
+                        // Get the minimal hash
+                        var minimalHash = await stream.MinimalHash(token);
+                        
+                        var fullHash = Hash.Zero;
+                        foreach (var matching in matches)
+                        {
+                            if (matching.MinimalHash != minimalHash)
+                                continue;
+
+                            // Make sure we never have a collision between a minimal hash and multiple full hashes
+                            if (fullHash != Hash.Zero || matching.XxHash3 != fullHash)
+                            {
+                                newHash = Hash.Zero;
+                                break;
+                            }
+                            fullHash = matching.XxHash3;
+                        }
+                    }
+                    
+                    // If the optimization path failed, calculate the full hash
+                    if (newHash == Hash.Zero)
+                    {
+                        newHash = await file.XxHash3Async(token: token);
                     }
 
-                    var newHash = await file.XxHash3Async(token: token);
+
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = gamePath.ToGamePathParentTuple(metaDataId),

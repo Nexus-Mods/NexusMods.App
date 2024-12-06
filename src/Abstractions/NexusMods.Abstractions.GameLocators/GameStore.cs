@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -14,6 +16,7 @@ namespace NexusMods.Abstractions.GameLocators;
 [ValueObject<string>]
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[JsonConverter(typeof(GameStoreJsonConverter))]
 public readonly partial struct GameStore
 {
     /// <summary>
@@ -55,6 +58,19 @@ public readonly partial struct GameStore
     /// Manually added.
     /// </summary>
     public static readonly GameStore ManuallyAdded = From("Manually Added");
+}
+
+internal class GameStoreJsonConverter : JsonConverter<GameStore>
+{
+    public override GameStore Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return GameStore.From(reader.GetString()!);
+    }
+
+    public override void Write(Utf8JsonWriter writer, GameStore value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.Value);
+    }
 }
 
 /// <summary>

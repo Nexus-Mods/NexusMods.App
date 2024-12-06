@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <XunitStartupAssembly>NexusMods.Games.FileHashes.Tests</XunitStartupAssembly>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageReference Include="xunit" Version="2.9.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
+      <ProjectReference Include="..\..\src\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
+      <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+    </ItemGroup>
+
+</Project>

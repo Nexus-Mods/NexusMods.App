@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.Paths;
 // ReSharper disable InconsistentNaming
 
@@ -21,5 +22,5 @@ public class PathAndHash
     /// The MD5 hash of the file to put in that location.
     /// </summary>
     [JsonPropertyName("md5")]
-    public required Md5HashValue MD5 { get; init; }
+    public required Md5Hash MD5 { get; init; }
 }

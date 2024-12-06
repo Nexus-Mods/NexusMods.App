@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
@@ -19,7 +20,7 @@ public record ExternalDownloadJob : HttpDownloadJob
     /// <summary>
     /// The expected MD5 hash value of the downloaded file.
     /// </summary>
-    public required Md5HashValue ExpectedMd5 { get; init; }
+    public required Md5Hash ExpectedMd5 { get; init; }
 
     /// <summary>
     /// The user-friendly name of the file.
@@ -31,7 +32,7 @@ public record ExternalDownloadJob : HttpDownloadJob
     /// match the expected MD5 hash.
     /// </summary>
     public static IJobTask<ExternalDownloadJob, AbsolutePath> Create(IServiceProvider provider, Uri uri,
-        Md5HashValue expectedMd5, string logicalFileName)
+        Md5Hash expectedMd5, string logicalFileName)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var tempFileManager = provider.GetRequiredService<TemporaryFileManager>();
@@ -56,7 +57,7 @@ public record ExternalDownloadJob : HttpDownloadJob
         {
             var algo = MD5.Create();
             var hash = await algo.ComputeHashAsync(fileStream);
-            var md5Actual = Md5HashValue.From(hash);
+            var md5Actual = Md5Hash.From(hash);
             if (md5Actual != ExpectedMd5)
                 throw new InvalidOperationException($"MD5 hash mismatch. Expected: {ExpectedMd5}, Actual: {md5Actual}");
         }

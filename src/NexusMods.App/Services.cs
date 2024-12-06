@@ -16,6 +16,7 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
+using NexusMods.Games.FileHashes;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
@@ -91,10 +92,11 @@ public static class Services
                 .AddHttpDownloader()
                 // .AddAdvancedHttpDownloader()
                 .AddTestHarness()
-                .AddSingleton<HttpClient>()
+                .AddDefaultHttpClient()
                 .AddFileSystem()
                 .AddDownloaders()
-                .AddCleanupVerbs();
+                .AddCleanupVerbs()
+                .AddFileHashes();
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);
