@@ -13,7 +13,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using OneOf;
 
-namespace NexusMods.App;
+namespace NexusMods.App.Common;
 
 internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 {

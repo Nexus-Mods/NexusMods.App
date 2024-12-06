@@ -1,4 +1,4 @@
-namespace NexusMods.App;
+namespace NexusMods.App.Common;
 
 public class StartupMode
 {

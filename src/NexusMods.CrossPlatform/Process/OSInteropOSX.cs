@@ -20,7 +20,8 @@ internal class OSInteropOSX : AOSInterop
     /// <inheritdoc/>
     protected override Command CreateCommand(Uri uri)
     {
-        return Cli.Wrap("open").WithArguments(uri.ToString());
+        var uriString = uri.ToString().Replace(" ", "%20");
+        return Cli.Wrap("open").WithArguments(uriString);
     }
 
 
