@@ -1,5 +1,3 @@
-using System.Reactive.Linq;
-using Avalonia.Input.Raw;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -33,9 +31,10 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <inheritdoc/>
     public Observable<UserInfo?> UserInfoObservable => _userInfo;
 
-    private readonly IDisposable _observeDatomDisposable;
+    /// <inheritdoc/>
+    public UserInfo? UserInfo { get; private set; }
 
-    public bool IsPremium { get; private set; }
+    private readonly IDisposable _observeDatomDisposable;
 
     /// <summary>
     /// Constructor.
@@ -67,13 +66,13 @@ public sealed class LoginManager : IDisposable, ILoginManager
                 if (!hasValue)
                 {
                     _userInfo.OnNext(value: null);
-                    IsPremium = false;
+                    UserInfo = null;
                 }
                 else
                 {
                     var userInfo = await Verify(cancellationToken);
                     _userInfo.OnNext(userInfo);
-                    IsPremium = userInfo?.IsPremium ?? false;
+                    UserInfo = userInfo;
                 }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
@@ -97,7 +96,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var userInfo = await _msgFactory.Verify(_nexusApiClient, cancellationToken);
         _cachedUserInfo.Store(userInfo);
 
-        IsPremium = userInfo?.IsPremium ?? false;
         return userInfo;
     }
 
