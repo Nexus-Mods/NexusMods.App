@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.FileHashes.DTO;
 using NexusMods.Games.FileHashes.HashValues;
@@ -18,15 +19,27 @@ internal static class Verbs
         collection.AddVerb(() => HashGameFolders);
 
 
+    /// <summary>
+    /// Hashes the files in a game folder and saves the hashes to files. The files are assumed to be in a folder structure of
+    /// `inputFolder/{store}/{os}/{version}/` where `store` is the store the game was purchased from, `os` is the operating system
+    ///  and `version` is the game version. Not all variants of all these are required, but the folder structure must be consistent.
+    ///  Files will be stored in the format of `{store}_{version}_{os}.json` in the `outputFolder`.
+    /// </summary>
     [Verb("hash-game-folders", "Hashes the files in a game folder and saves the hashes to a file.")]
     private static async Task<int> HashGameFolders([Injected] IRenderer renderer,
         [Injected] IGameRegistry gameRegistry,
         [Injected] JsonSerializerOptions jsonOptions,
         [Option("i", "inputFolder", "Games to index in the format of {inputFolder}/{os}/{version}/")] AbsolutePath inputFolder,
-        [Option("g", "gameDomain", "The domain of the game")] string gameDomainName,
+        [Option("g", "gameName", "The name of the game")] string gameName,
         [Option("o", "outputFolder", "The folder to save the hashes to")] AbsolutePath outputFolder)
     {
-        var gameDomain = GameDomain.From(gameDomainName);
+        var game = gameRegistry.SupportedGames.FirstOrDefault(g => g.Name.Equals(gameName, StringComparison.OrdinalIgnoreCase));
+        if (game is null)
+        {
+            await renderer.RenderAsync(Renderable.Text($"Game {gameName} not found."));
+            return 1;
+        }
+        
         foreach (var store in inputFolder.EnumerateDirectories(recursive: false))
         {
             var storeName = GameStore.From(store.FileName);
@@ -34,7 +47,7 @@ internal static class Verbs
             {
                 var osEnum = Enum.Parse<OSType>(os.FileName, ignoreCase: true);
                 await HashGameFiles(renderer, jsonOptions, storeName, outputFolder,
-                    os, gameDomain, storeName,
+                    os, game.GameId, storeName,
                     osEnum
                 );
             }
@@ -42,7 +55,7 @@ internal static class Verbs
         return 0;
     }
 
-    private static async Task HashGameFiles(IRenderer renderer, JsonSerializerOptions jsonOptions, GameStore gameStore, AbsolutePath outputFolder, AbsolutePath os, GameDomain gameDomain, GameStore storeName, OSType osEnum)
+    private static async Task HashGameFiles(IRenderer renderer, JsonSerializerOptions jsonOptions, GameStore gameStore, AbsolutePath outputFolder, AbsolutePath os, GameId gameId, GameStore storeName, OSType osEnum)
     {
         foreach (var version in os.EnumerateDirectories(recursive: false))
         {
@@ -59,7 +72,7 @@ internal static class Verbs
                     MinimalHash = await fileStream.MinimalHash(CancellationToken.None),
                     Sha1 = await fileStream.Sha1HashAsync(),
                     Md5 = await fileStream.Md5HashAsync(),
-                    Domain = gameDomain,
+                    GameId = gameId,
                     Store = gameStore,
                     Version = versionParsed,
                     OS = osEnum,
@@ -68,7 +81,7 @@ internal static class Verbs
                 hashes.Add(record);
             }
 
-            var outputFile = outputFolder / $"{gameDomain}_{storeName}_{version.FileName}_{os.FileName}.json";
+            var outputFile = outputFolder / $"{storeName}_{version.FileName}_{os.FileName}.json";
             outputFile.Parent.CreateDirectory();
             await using var outputStream = outputFile.Create();
             var indentedOptions = new JsonSerializerOptions(jsonOptions)

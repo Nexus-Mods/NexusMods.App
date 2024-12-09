@@ -1,7 +1,5 @@
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
@@ -16,7 +14,7 @@ public class GameFileHashes
     /// <summary>
     /// The (string) identifier of the game
     /// </summary>
-    public required GameDomain Domain { get; init; }
+    public required GameId GameId { get; init; }
     
     /// <summary>
     /// The (string) identifier of the strore the game came from

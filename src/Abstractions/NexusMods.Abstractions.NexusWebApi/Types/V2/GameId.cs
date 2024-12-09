@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -9,10 +11,27 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 /// Unique identifier for an individual game hosted on Nexus.
 /// </summary>
 [ValueObject<uint>] // Matches backend. Do not change.
+[JsonConverter(typeof(GameIdJsonConverter))]
 public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
     public static GameId DefaultValue => From(default(uint));
+}
+
+internal class GameIdJsonConverter : JsonConverter<GameId>
+{
+    public override GameId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.Number)
+            throw new JsonException();
+
+        return GameId.From(reader.GetUInt32());
+    }
+
+    public override void Write(Utf8JsonWriter writer, GameId value, JsonSerializerOptions options)
+    {
+        writer.WriteNumberValue(value.Value);
+    }
 }
 
 /// <summary>

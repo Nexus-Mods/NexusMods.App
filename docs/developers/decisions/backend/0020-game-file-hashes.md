@@ -22,7 +22,7 @@ scripts
 json/
     ids.json
     game_domain/
-         gamedomain_store_version_os.json
+         store_version_os.json
 ```
         
 
@@ -30,7 +30,7 @@ The game domain is an easily used id for contributors, but is not used in the ap
 by `rename_folders.py` to rename the folders from `game_domain` to `game_id`. The `game_id` is a unique Nexus Mods id used to identify
 the game. 
 
-The `gamedomain_store_version_os.json` file is an array of game hash objects. Each object contains the following fields:
+The `store_version_os.json` file is an array of game hash objects. Each object contains the following fields:
 
 - `Domain`: The domain of the game
 - `Store`: The store the game file is from (e.g. Steam, GOG, etc.)
