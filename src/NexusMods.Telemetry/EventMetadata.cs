@@ -34,7 +34,7 @@ public readonly struct EventMetadata
     public EventMetadata(string? name, TimeProvider? timeProvider = null)
     {
         Name = name;
-        CurrentTime = TimeOnly.FromDateTime((timeProvider ?? TimeProvider.System).GetLocalNow().LocalDateTime);
+        CurrentTime = TimeOnly.FromDateTime((timeProvider ?? TimeProvider.System).GetLocalNow().DateTime);
     }
 
     /// <summary>

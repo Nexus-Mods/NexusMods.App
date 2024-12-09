@@ -41,7 +41,7 @@ public class EventSenderTests
                 using var stream = content!.ReadAsStream();
                 using var textReader = new StreamReader(stream, Encoding.UTF8);
                 var res = textReader.ReadToEnd();
-                ExpectJson("""{ "requests": ["?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add Game&e_n=stardewvalley&h=1&m=0&s=0","?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create Loadout&e_n=stardewvalley&h=1&m=0&s=1"] }""", res);
+                ExpectJson("""{ "requests": ["?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add Game&e_n=stardewvalley&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create Loadout&e_n=stardewvalley&h=0&m=0&s=1"] }""", res);
             });
 
         var sender = new EventSender(loginManager, new HttpClient(messageHandler));
@@ -57,7 +57,7 @@ public class EventSenderTests
 
     private static void ExpectJson([LanguageInjection(InjectedLanguage.JSON)] string expected, string actual)
     {
-        expected.Should().Be(actual);
+        actual.Should().Be(expected);
     }
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
