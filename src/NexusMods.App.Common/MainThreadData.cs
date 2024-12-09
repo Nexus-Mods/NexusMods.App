@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace NexusMods.App;
+namespace NexusMods.App.Common;
 
 /// <summary>
 /// Holds global information about the application.

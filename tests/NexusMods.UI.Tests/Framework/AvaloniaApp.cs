@@ -44,7 +44,7 @@ public class AvaloniaApp : IDisposable
 
     private AppBuilder BuildAvaloniaApp()
     {
-        return App.Startup.BuildAvaloniaApp(_provider)
+        return App.Common.Startup.BuildAvaloniaApp(_provider)
             .UseHeadless(new AvaloniaHeadlessPlatformOptions())
             .UseSkia();
     }
