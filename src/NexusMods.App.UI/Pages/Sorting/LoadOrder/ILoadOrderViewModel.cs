@@ -27,12 +27,12 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// <summary>
     /// The title of the alert message, only visible if the alert is visible
     /// </summary>
-    string InfoAlertHeading { get; }
+    string InfoAlertTitle { get; }
     
     /// <summary>
     /// The contents of the alert message, only visible if the alert is visible
     /// </summary>
-    string InfoAlertMessage { get; }
+    string InfoAlertBody { get; }
     
     /// <summary>
     /// Command to invoke when the info alert icon is pressed (either to show or hide the alert)

@@ -26,8 +26,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 {
     public string SortOrderName { get; }
     public string SortOrderHeading { get; }
-    public string InfoAlertHeading { get; }
-    public string InfoAlertMessage { get; }
+    public string InfoAlertTitle { get; }
+    public string InfoAlertBody { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
@@ -49,8 +49,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         SortOrderName = itemProviderFactory.SortOrderName;
         SortOrderHeading = itemProviderFactory.SortOrderHeading;
-        InfoAlertHeading = itemProviderFactory.OverrideInfoTitle;
-        InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
+        InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
+        InfoAlertBody = itemProviderFactory.OverrideInfoMessage;
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
         EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
         EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
