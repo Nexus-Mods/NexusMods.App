@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Collections.Json;
@@ -19,7 +20,7 @@ public class ModSource
     /// MD5 hash a direct download
     /// </summary>
     [JsonPropertyName("md5")]
-    public Md5HashValue Md5 { get; init; }
+    public Md5Hash Md5 { get; init; }
     
     /// <summary>
     /// If this is a direct download, this is the URL to download the mod from

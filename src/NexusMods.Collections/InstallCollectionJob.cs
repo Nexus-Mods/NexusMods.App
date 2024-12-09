@@ -22,6 +22,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.FileHashes.HashValues;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
@@ -263,7 +264,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     {
         // So collections hash everything by MD5, so we'll have to collect MD5 information for the files in the archive.
         // We don't do this during indexing into the library because this is the only case where we need MD5 hashes.
-        ConcurrentDictionary<Md5HashValue, HashMapping> hashes = new();
+        ConcurrentDictionary<Md5Hash, HashMapping> hashes = new();
         
         // Get the archive from the library file
         if (!file.LibraryFile!.Value.TryGetAsLibraryArchive(out var archive))
@@ -279,7 +280,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 await using var stream = await FileStore.GetFileStream(child.AsLibraryFile().Hash, token);
                 using var hasher = MD5.Create();
                 var hash = await hasher.ComputeHashAsync(stream, token);
-                var md5 = Md5HashValue.From(hash);
+                var md5 = Md5Hash.From(hash);
 
                 var libraryFile = child.AsLibraryFile();
                 hashes[md5] = new HashMapping()
@@ -348,7 +349,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// This will go through and generate all the patch files for the given archive based on the mod's patches.
     /// </summary>
     private async Task PatchFiles(Mod modInfo, LibraryArchive.ReadOnly modArchive, LibraryArchive.ReadOnly collectionArchive, 
-        ConcurrentDictionary<Md5HashValue, HashMapping> hashes)
+        ConcurrentDictionary<Md5Hash, HashMapping> hashes)
     {
         // Index all the files in the collection zip file and the mod archive by their paths so we can find them easily.
         var modChildren = IndexChildren(modArchive);
@@ -389,7 +390,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 // Hash the patched file and add it to the patched files list
                 using var md5 = MD5.Create();
                 md5.ComputeHash(patchedArray);
-                var md5Hash = Md5HashValue.From(md5.Hash!);
+                var md5Hash = Md5Hash.From(md5.Hash!);
                 var xxHash = patchedArray.xxHash3();
                 
                 patchedFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(srcPath, patchedFile), xxHash, Size.FromLong(patchedFile.Length)));
