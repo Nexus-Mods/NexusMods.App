@@ -18,10 +18,9 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
 {
     public TreeDataGridAdapter<ILoadOrderItemModel, Guid> Adapter { get; set; }
     public string SortOrderName { get; set; } = "Sort Order Name";
-    public string InfoAlertTitle { get; set;} = "Info Alert Title";
+    public string SortOrderHeading { get; set;} = "Sort Order Heading";
     public string InfoAlertHeading { get; set;} = "Info Alert Heading";
     public string InfoAlertMessage { get; set;} = "Info Alert Message";
-    public bool InfoAlertIsVisible { get; set; } = true;
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "Winner Tooltip";
     public ListSortDirection SortDirectionCurrent { get; set; }

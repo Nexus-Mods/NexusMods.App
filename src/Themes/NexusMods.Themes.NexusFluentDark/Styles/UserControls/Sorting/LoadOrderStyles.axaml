@@ -4,7 +4,7 @@
         xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Classes="Low" Width="800" Height="500">
+        <Border Classes="Low" Width="800" Height="600">
             <Border.Resources>
                 <sorting:LoadOrderDesignViewModel x:Key="LoadOrderDesignViewModel" />
             </Border.Resources>

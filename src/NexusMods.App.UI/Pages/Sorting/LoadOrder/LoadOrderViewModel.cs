@@ -25,10 +25,9 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
-    public string InfoAlertTitle { get; }
+    public string SortOrderHeading { get; }
     public string InfoAlertHeading { get; }
     public string InfoAlertMessage { get; }
-    [Reactive] public bool InfoAlertIsVisible { get; set; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
@@ -49,8 +48,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
 
         SortOrderName = itemProviderFactory.SortOrderName;
-        InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
-        InfoAlertHeading = itemProviderFactory.OverrideInfoHeading;
+        SortOrderHeading = itemProviderFactory.SortOrderHeading;
+        InfoAlertHeading = itemProviderFactory.OverrideInfoTitle;
         InfoAlertMessage = itemProviderFactory.OverrideInfoMessage;
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
         EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
@@ -59,7 +58,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         // TODO: load these from settings
         SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
         IsAscending = SortDirectionCurrent == ListSortDirection.Ascending;
-        InfoAlertIsVisible = true;
 
         IsWinnerTop = SortDirectionCurrent == ListSortDirection.Ascending &&
                       itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;

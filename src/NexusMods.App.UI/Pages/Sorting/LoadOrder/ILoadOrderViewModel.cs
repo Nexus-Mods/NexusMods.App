@@ -20,10 +20,9 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string SortOrderName { get; }
     
     /// <summary>
-    /// The always visible First/Last wins heading text
-    /// Also used for trophy tooltip heading
+    /// Heading displayed above data grid. Commonly used to describe the sort order behavior i.e. "First Loaded Wins"
     /// </summary>
-    string InfoAlertTitle { get; }
+    string SortOrderHeading { get; }
     
     /// <summary>
     /// The title of the alert message, only visible if the alert is visible
@@ -34,11 +33,6 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// The contents of the alert message, only visible if the alert is visible
     /// </summary>
     string InfoAlertMessage { get; }
-    
-    /// <summary>
-    /// Whether the alert message should be visible or not
-    /// </summary>
-    bool InfoAlertIsVisible { get; set; }
     
     /// <summary>
     /// Command to invoke when the info alert icon is pressed (either to show or hide the alert)

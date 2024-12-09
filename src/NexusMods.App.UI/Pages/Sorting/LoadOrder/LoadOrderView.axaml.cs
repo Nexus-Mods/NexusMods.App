@@ -83,7 +83,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .DisposeWith(disposables);
                     
                 // Title
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertTitle, 
+                this.OneWayBind(ViewModel, vm => vm.SortOrderHeading, 
                         view => view.TitleTextBlock.Text)
                     .DisposeWith(disposables);
                 
