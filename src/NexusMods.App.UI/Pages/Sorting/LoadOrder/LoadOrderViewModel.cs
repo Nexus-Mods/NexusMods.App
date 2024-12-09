@@ -68,7 +68,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var lastIndexObservable = provider.SortableItems
             .ToObservableChangeSet(item => item.ItemId)
             .QueryWhenChanged(query => !query.Items.Any() ? 0 : query.Items.Max(item => item.SortIndex))
-            .Publish(provider.SortableItems.Max(item => item.SortIndex));
+            .Publish(!provider.SortableItems.Any() ? 0 : provider.SortableItems.Max(item => item.SortIndex));
 
         var adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, lastIndexObservable);
         Adapter = adapter;
