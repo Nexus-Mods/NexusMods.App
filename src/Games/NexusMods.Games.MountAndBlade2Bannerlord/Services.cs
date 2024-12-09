@@ -17,6 +17,7 @@ public static class Services
             .AddSingleton<ITool, BannerlordRunGameTool>()
 
             // Installers
+            .AddSingleton<BLSEInstaller>()
             .AddSingleton<BannerlordModInstaller>()
 
             // Diagnostics
