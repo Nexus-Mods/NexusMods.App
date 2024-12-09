@@ -83,16 +83,25 @@ public class AggregateExecutableRuntimeDependencyTests
     [Fact]
     public async Task QueryInstallationInformation_ShouldReturnFirstAvailableDependency()
     {
+        var dep1 = new FakeExecutableDependency(_processFactory, [OSPlatform.Windows, OSPlatform.Linux, OSPlatform.OSX]);
+        var dep2 = new FakeExecutableDependency(_processFactory, [OSPlatform.Windows, OSPlatform.Linux, OSPlatform.OSX]);
+
+        var aggregate = new AggregateExecutableRuntimeDependency(
+            TestDisplayName,
+            TestDescription,
+            TestUri,
+            [dep1, dep2]);
+        
         var expectedInfo = new RuntimeDependencyInformation 
         { 
             RawVersion = "1.0.0",
             Version = new Version(1, 0, 0),
         };
         
-        _dependency1.SetAvailable(false);
-        _dependency2.SetAvailable(true, expectedInfo);
+        dep1.SetAvailable(false);
+        dep2.SetAvailable(true, expectedInfo);
 
-        var result = await _sut.QueryInstallationInformation(CancellationToken.None);
+        var result = await aggregate.QueryInstallationInformation(CancellationToken.None);
 
         result.HasValue.Should().BeTrue();
         result.Value.Should().BeEquivalentTo(expectedInfo);
