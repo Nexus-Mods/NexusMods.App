@@ -9,6 +9,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 
@@ -57,6 +58,33 @@ public partial class NexusModsLibrary
 
         var results = await tx.Commit();
         return CollectionRevisionMetadata.Load(results.Db, results[collectionRevisionEntityId]);
+    }
+
+    /// <summary>
+    /// Deletes a collection, all revisions, and all download entities of all revisions.
+    /// </summary>
+    public async ValueTask DeleteCollection(
+        CollectionMetadataId collectionMetadataId,
+        CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
+        foreach (var revisionId in revisionIds)
+        {
+            var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId.E);
+            foreach (var downloadId in downloadIds)
+            {
+                tx.Delete(downloadId.E, recursive: false);
+            }
+
+            tx.Delete(revisionId.E, recursive: false);
+        }
+
+        tx.Delete(collectionMetadataId, recursive: false);
+
+        await tx.Commit();
     }
 
     private static ResolvedEntitiesLookup ResolveModFiles(
@@ -126,10 +154,13 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        foreach (var collectionMod in collectionRoot.Mods)
+        for (var i = 0; i < collectionRoot.Mods.Length; i++)
         {
+            var collectionMod = collectionRoot.Mods[i];
+
             var downloadEntity = new CollectionDownload.New(tx)
             {
+                ArrayIndex = i,
                 CollectionRevisionId = collectionRevisionEntityId,
                 IsOptional = collectionMod.Optional,
                 Name = collectionMod.Name,
@@ -169,7 +200,7 @@ public partial class NexusModsLibrary
 
         var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 
-        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files ealier");
+        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
 
         _ = new CollectionDownloadNexusMods.New(tx, downloadEntity.Id)
@@ -206,7 +237,7 @@ public partial class NexusModsLibrary
     {
         var source = collectionMod.Source;
 
-        _ = new ColletionDownloadBundled.New(tx, downloadEntity.Id)
+        _ = new CollectionDownloadBundled.New(tx, downloadEntity.Id)
         {
             CollectionDownload = downloadEntity,
             BundledPath = source.FileExpression,
@@ -250,9 +281,9 @@ public partial class NexusModsLibrary
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
+        resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
 
         if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
@@ -270,7 +301,10 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
-    private async ValueTask<CollectionRoot> ParseCollectionJsonFile(
+    /// <summary>
+    /// Parses the collection json file.
+    /// </summary>
+    public async ValueTask<CollectionRoot> ParseCollectionJsonFile(
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {

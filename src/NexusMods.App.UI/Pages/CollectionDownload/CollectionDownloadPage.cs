@@ -1,17 +1,17 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 [JsonName(nameof(CollectionDownloadPageContext))]
 public record CollectionDownloadPageContext : IPageFactoryContext
 {
+    public required LoadoutId TargetLoadout { get; init; }
     public required CollectionRevisionMetadataId CollectionRevisionMetadataId { get; init; }
 }
 
@@ -35,8 +35,9 @@ public class CollectionDownloadPageFactory : APageFactory<ICollectionDownloadVie
 
         return new CollectionDownloadViewModel(
             windowManager: WindowManager,
-            ServiceProvider,
-            revisionMetadata: metadata
+            serviceProvider: ServiceProvider,
+            revisionMetadata: metadata,
+            targetLoadout: context.TargetLoadout
         );
     }
 }

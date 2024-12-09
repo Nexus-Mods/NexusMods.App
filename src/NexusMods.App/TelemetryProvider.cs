@@ -74,7 +74,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
         return Loadout.All(db)
             .Where(static loadout => loadout.IsVisible())
-            .Select(loadout => new Counters.LoadoutModCount(loadout.Installation.Name, dict[loadout.LoadoutId]))
+            .Select(loadout => new Counters.LoadoutModCount(loadout.Installation.Name, dict.GetValueOrDefault(loadout.LoadoutId, 0)))
             .ToArray();
     }
 
