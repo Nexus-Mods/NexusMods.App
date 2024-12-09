@@ -56,7 +56,7 @@ public partial class NexusModsFileMetadata : IModelDefinition
             // NOTE(erri120): This URI shows a single download button for the exact file
             // The nmm=1 turns the button into a nxm:// link, without nmm=1 the button will download the file through the browser
             // Example: https://www.nexusmods.com/stardewvalley/mods/29140?tab=files&file_id=115276&nmm=1
-            return NexusModsUrlBuilder.CreateCollectionsUri($"{ModPage.GetBaseUrl()}?tab=files&file_id={Uid.FileId}&nmm=1");
+            return NexusModsUrlBuilder.CreateGenericUri($"{ModPage.GetBaseUrl()}?tab=files&file_id={Uid.FileId}&nmm=1");
         }
     }
 }

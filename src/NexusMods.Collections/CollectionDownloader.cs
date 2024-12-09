@@ -135,15 +135,42 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb? db = null)
+    public static bool IsDownloaded(CollectionDownloadExternal.ReadOnly download, IDb db) => TryGetDownloadedItem(download, db, out _);
+
+    /// <summary>
+    /// Tries to get the downloaded item.
+    /// </summary>
+    public static bool TryGetDownloadedItem(CollectionDownloadExternal.ReadOnly download, IDb db, out LibraryFile.ReadOnly item)
     {
-        db ??= download.Db;
         var directDownloadDatoms = db.Datoms(DirectDownloadLibraryFile.Md5, download.Md5);
-        if (directDownloadDatoms.Count > 0) return true;
+        if (directDownloadDatoms.Count > 0)
+        {
+            foreach (var datom in directDownloadDatoms)
+            {
+                var file = DirectDownloadLibraryFile.Load(db, datom.E);
+                if (file.IsValid())
+                {
+                    item = file.AsLibraryFile();
+                    return true;
+                }
+            }
+        }
 
         var locallyAddedDatoms = db.Datoms(LocalFile.Md5, download.Md5);
-        if (locallyAddedDatoms.Count > 0) return true;
+        if (locallyAddedDatoms.Count > 0)
+        {
+            foreach (var datom in directDownloadDatoms)
+            {
+                var file = LocalFile.Load(db, datom.E);
+                if (file.IsValid())
+                {
+                    item = file.AsLibraryFile();
+                    return true;
+                }
+            }
+        }
 
+        item = default(LibraryFile.ReadOnly);
         return false;
     }
 
@@ -161,11 +188,28 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the item was already downloaded.
     /// </summary>
-    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb? db = null)
+    public static bool IsDownloaded(CollectionDownloadNexusMods.ReadOnly download, IDb db) => TryGetDownloadedItem(download, db, out _);
+
+    /// <summary>
+    /// Tries to get the downloaded item.
+    /// </summary>
+    public static bool TryGetDownloadedItem(CollectionDownloadNexusMods.ReadOnly download, IDb db, out NexusModsLibraryItem.ReadOnly item)
     {
-        db ??= download.Db;
         var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
-        return datoms.Count > 0;
+        if (datoms.Count == 0)
+        {
+            item = default(NexusModsLibraryItem.ReadOnly);
+            return false;
+        }
+
+        foreach (var datom in datoms)
+        {
+            item = NexusModsLibraryItem.Load(db, datom.E);
+            if (item.IsValid()) return true;
+        }
+
+        item = default(NexusModsLibraryItem.ReadOnly);
+        return false;
     }
 
     /// <summary>
@@ -211,12 +255,45 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Checks whether the items in the collection were downloaded.
+    /// </summary>
+    public static bool IsFullyDownloaded(CollectionRevisionMetadata.ReadOnly revisionMetadata, bool onlyRequired, IDb db)
+    {
+        foreach (var download in revisionMetadata.Downloads)
+        {
+            if (onlyRequired && download.IsOptional) continue;
+            if (!IsDownloaded(download, db)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks whether the item was already downloaded.
+    /// </summary>
+    public static bool IsDownloaded(CollectionDownload.ReadOnly download, IDb db)
+    {
+        if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+        {
+            return IsDownloaded(nexusModsDownload, db);
+        }
+
+        if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+        {
+            return IsDownloaded(externalDownload, db);
+        }
+
+        if (download.IsCollectionDownloadBundled()) return true;
+        return false;
+    }
+
+    /// <summary>
     /// Downloads everything in the revision.
     /// </summary>
     public async ValueTask DownloadAll(
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         bool onlyRequired,
-        IDb? db = null,
+        IDb db,
         int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
     {
