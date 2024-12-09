@@ -25,7 +25,7 @@
             <!-- toolbar -->
             <Border Grid.Row="0" Classes="Toolbar">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <ComboBox x:Name="SortDirectionComboBox" SelectedIndex="0" Classes="Secondary Compact">
+                    <ComboBox x:Name="SortDirectionComboBox" SelectedIndex="0" Classes="Secondary Compact" IsVisible="False">
                         <ComboBoxItem>
                             <StackPanel Orientation="Horizontal">
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortAscending}" Size="20" />
@@ -39,7 +39,7 @@
                             </StackPanel>
                         </ComboBoxItem>
                     </ComboBox>
-                    <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
+                    <!-- <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" /> -->
                     <CheckBox Content="Hide Disabled Collections" IsEnabled="False" />
                     <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
                     <controls:StandardButton
@@ -106,7 +106,7 @@
                 <!-- right column (tree data grid) -->
                 <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
                               AutoDragDropRows="False"
-                              CanUserResizeColumns="True"
+                              CanUserResizeColumns="False"
                               CanUserSortColumns="False"
                               ShowColumnHeaders="True"
                               RowDrop="OnRowDrop">
@@ -166,12 +166,12 @@
                                                        Foreground="{StaticResource NeutralSubduedBrush}" />
                                 </Border>
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock x:Name="ItemName"
+                                    <TextBlock x:Name="ModName"
                                                Text="{CompiledBinding ModName}"
                                                Theme="{StaticResource BodySMNormalTheme}"
-                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
-                                    <TextBlock x:Name="ItemName2"
-                                               Text="{CompiledBinding DisplayName}" />
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"/>
+                                    <TextBlock x:Name="DisplayName"
+                                               Text="{CompiledBinding DisplayName}"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>

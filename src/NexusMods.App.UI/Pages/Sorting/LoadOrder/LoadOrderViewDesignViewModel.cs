@@ -25,28 +25,17 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public ReactiveCommand<Unit, Unit> InfoAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "Winner Tooltip";
     public ListSortDirection SortDirectionCurrent { get; set; }
+    public ReactiveCommand<Unit, Unit> SwitchSortDirectionCommand { get; }
+    public bool IsAscending { get; set;  } = true;
     public bool IsWinnerTop { get; set; } = true;
     public string EmptyStateMessageTitle { get; } = "Empty State Message Title";
     public string EmptyStateMessageContents { get; } = "Empty State Message Contents";
     public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
-    public LoadOrderDesignViewModel(ISettingsManager settingsManager)
-    {
-        Adapter = new LoadOrderTreeDataGridDesignAdapter();
-
-        this.WhenActivated(d =>
-            {
-                Adapter.Activate();
-                Disposable.Create(() => Adapter.Deactivate())
-                    .DisposeWith(d);
-            }
-        );
-        
-        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, "cyberpunk2077 redmod load-order first-loaded-wins");
-    }
-
     public LoadOrderDesignViewModel()
     {
+        SwitchSortDirectionCommand = ReactiveCommand.Create(() => { IsAscending = !IsAscending; });
+        
        Adapter = new LoadOrderTreeDataGridDesignAdapter();
 
        this.WhenActivated(d =>
