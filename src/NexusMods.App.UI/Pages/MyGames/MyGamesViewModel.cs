@@ -117,7 +117,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: installation.Game.Name));
                             });
 
-                            vm.ViewGameCommand = ReactiveCommand.Create(() => { NavigateToFirstLoadout(conn, installation); });
+                            vm.ViewGameCommand = ReactiveCommand.Create(() =>
+                            {
+                                NavigateToFirstLoadout(conn, installation);
+                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: installation.Game.Name));
+                            });
 
                             vm.IsManagedObservable = Loadout.ObserveAll(conn)
                                 .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)

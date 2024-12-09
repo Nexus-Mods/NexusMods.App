@@ -166,8 +166,12 @@ internal class EventSender : IEventSender
         sb.Append(definition.Category);
         sb.Append("&e_a="); // Event action
         sb.Append(definition.Action);
-        sb.Append("&e_n="); // Event name
-        sb.Append(metadata.Name);
+
+        if (metadata.Name is not null)
+        {
+            sb.Append("&e_n="); // Event name
+            sb.Append(metadata.Name);
+        }
 
         sb.Append("&h="); // The current hour (local time)
         sb.Append(metadata.CurrentTime.Hour);

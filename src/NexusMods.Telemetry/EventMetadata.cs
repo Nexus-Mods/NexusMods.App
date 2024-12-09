@@ -17,7 +17,7 @@ public readonly struct EventMetadata
     /// <summary>
     /// Name of the event.
     /// </summary>
-    public readonly string Name;
+    public readonly string? Name;
 
     /// <summary>
     /// Constructor.
@@ -31,7 +31,7 @@ public readonly struct EventMetadata
     /// <summary>
     /// Constructor.
     /// </summary>
-    public EventMetadata(string name, TimeProvider? timeProvider = null)
+    public EventMetadata(string? name, TimeProvider? timeProvider = null)
     {
         Name = name;
         CurrentTime = TimeOnly.FromDateTime((timeProvider ?? TimeProvider.System).GetLocalNow().LocalDateTime);
@@ -40,5 +40,5 @@ public readonly struct EventMetadata
     /// <summary>
     /// Checks whether the struct wasn't default initialized.
     /// </summary>
-    public bool IsValid() => Name is not null;
+    public bool IsValid() => Name is not null || CurrentTime != default(TimeOnly);
 }
