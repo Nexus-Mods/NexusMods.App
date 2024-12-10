@@ -84,55 +84,7 @@
                               CanUserResizeColumns="False"
                               CanUserSortColumns="False"
                               ShowColumnHeaders="True"
-                              RowDrop="OnRowDrop">
-
-                    <TreeDataGrid.Resources>
-                        
-                        <!-- these bindings stay as it's a template for the whole column -->
-                        
-                        <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
-                                      DataType="sorting:ILoadOrderItemModel">
-
-                            <StackPanel x:Name="LoadOrderItemIndexColumnStack" Orientation="Horizontal" Spacing="12">
-                                <controls:StandardButton x:Name="UpButton"
-                                                         Command="{CompiledBinding MoveUp}"
-                                                         LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                                         ShowIcon="IconOnly"
-                                                         Size="Medium"
-                                                         Type="Tertiary"
-                                                         Fill="None" />
-                                <Border x:Name="ItemIndexBorder">
-                                    <TextBlock x:Name="ItemIndex" Text="{CompiledBinding DisplaySortIndex}" />
-                                </Border>
-                                <controls:StandardButton x:Name="DownButton"
-                                                         Command="{CompiledBinding MoveDown}"
-                                                         LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                                         ShowIcon="IconOnly"
-                                                         Size="Medium"
-                                                         Type="Tertiary"
-                                                         Fill="None" />
-                                <Border x:Name="ItemIndexSeparator" />
-                            </StackPanel>
-                        </DataTemplate>
-
-                        <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
-                                      DataType="sorting:ILoadOrderItemModel">
-
-                            <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="12">
-
-                                <Border x:Name="ItemModImageBorder">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
-                                </Border>
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock x:Name="ModName" Text="{CompiledBinding ModName}" />
-                                    <TextBlock x:Name="DisplayName" Text="{CompiledBinding DisplayName}" />
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-
-                    </TreeDataGrid.Resources>
-
-                </TreeDataGrid>
+                              RowDrop="OnRowDrop" />
             </Grid>
         </Grid>
     </controls:EmptyState>
