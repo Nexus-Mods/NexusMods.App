@@ -320,4 +320,12 @@ public class CollectionDownloader
             }
         });
     }
+
+    /// <summary>
+    /// Checks whether the collection is installed.
+    /// </summary>
+    public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision)
+    {
+        return _connection.ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision).IsNotEmpty();
+    }
 }
