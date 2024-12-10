@@ -830,4 +830,63 @@ Refer to the {ProtontricksUri} for installation instructions.
             .AddValue<NamedLink>("ProtontricksUri")
         )
         .Finish();
+    
+    [DiagnosticTemplate, UsedImplicitly]
+    internal static IDiagnosticTemplate MissingBLSETemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, 16))
+        .WithTitle("'{ModName}' Requires Bannerlord Software Extender (BLSE)")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("'{ModName}' Requires Bannerlord Software Extender (BLSE) which is not installed")
+        .WithDetails("""
+'{ModName}' Requires Bannerlord Software Extender (BLSE) which is not installed.
+
+### How to Resolve
+1. Download and install {BLSELink}.
+2. Enable BLSE.
+
+### Technical Details
+Looking at `{ModName}`'s `SubModule.xml`:
+
+```xml
+<Module>
+    <!-- 👇 Current mod is `{ModName}` with id `{ModId}` -->
+    <Id value="{ModId}"/>
+    <Name value="{ModName}"/>
+    <DependedModules>
+        <!-- 💡 This mod requires `{DependencyId}` which is provided by BLSE -->
+        <DependedModule Id="{DependencyId}" />
+        <!-- ❌ BLSE is not installed -->
+    </DependedModules>
+</Module>
+```
+"""
+        )
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("ModId")
+            .AddValue<string>("ModName")
+            .AddValue<string>("DependencyId")
+            .AddValue<NamedLink>("BLSELink")
+        )
+        .Finish();
+    
+    [DiagnosticTemplate, UsedImplicitly]
+    internal static IDiagnosticTemplate MissingHarmonyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, 17))
+        .WithTitle("BLSE Requires Harmony which is not Installed")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("'Bannerlord Software Extender' (BLSE) requires 'Harmony' which is not installed")
+        .WithDetails("""
+'Bannerlord Software Extender' requires 'Harmony' to function, however 'Harmony' is not installed.
+
+### How to Resolve
+1. Download and install {HarmonyLink}
+2. Enable Harmony
+"""
+        )
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<NamedLink>("HarmonyLink")
+        )
+        .Finish();
 }

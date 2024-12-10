@@ -142,21 +142,11 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
         return new Success();
     }
 
-    private static bool StoreEquals(GameStore bannerlordStore, Abstractions.GameLocators.GameStore nexusModsAppStore)
-    {
-        var isXbox = bannerlordStore == GameStore.Xbox && nexusModsAppStore == Abstractions.GameLocators.GameStore.XboxGamePass;
-        var isGog = bannerlordStore == GameStore.GOG && nexusModsAppStore == Abstractions.GameLocators.GameStore.GOG;
-        var isEpic = bannerlordStore == GameStore.Epic && nexusModsAppStore == Abstractions.GameLocators.GameStore.EGS;
-        var isSteam = bannerlordStore == GameStore.Steam && nexusModsAppStore == Abstractions.GameLocators.GameStore.Steam;
-        return isXbox || isGog || isEpic || isSteam;
-    }
-
     private static Optional<EntityId> AddFileFromFilesToCopy(
         LibraryArchive.ReadOnly libraryArchive, ITransaction transaction, Loadout.ReadOnly loadout, RelativePath source, RelativePath destination, LoadoutItemGroup.New modGroup, LibraryArchiveFileEntry.ReadOnly moduleInfoFile, Optional<EntityId> moduleInfoLoadoutItemId)
     {
         var fileEntry = libraryArchive.Children.First(x => x.Path.Equals(source));
         var to = new GamePath(LocationId.Game, destination);
-
         var loadoutFile = new LoadoutFile.New(transaction, out var entityId)
         {
             Hash = fileEntry.AsLibraryFile().Hash,
