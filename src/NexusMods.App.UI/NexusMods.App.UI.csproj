@@ -101,6 +101,7 @@
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
+        <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
     </ItemGroup>
 
     <ItemGroup>
