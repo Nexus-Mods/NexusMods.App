@@ -341,7 +341,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         if (Tracking.IsEnabled && pageData.HasValue)
         {
-            var pageType = pageData.Value.Context.GetType().Name;
+            var pageType = pageData.Value.Context.TrackingName;
             var eventDefinition = behavior.Match(
                 f0: _ => Events.Page.ReplaceTab,
                 f1: _ => Events.Page.NewTab,
