@@ -118,6 +118,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         {
             var group = new NexusCollectionLoadoutGroup.New(tx, out var id)
             {
+                CollectionId = RevisionMetadata.Collection,
+                RevisionId = RevisionMetadata,
                 LibraryFileId = SourceCollection,
                 CollectionGroup = new CollectionGroup.New(tx, id)
                 {
