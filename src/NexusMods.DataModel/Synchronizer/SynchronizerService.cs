@@ -189,14 +189,13 @@ public class SynchronizerService : ISynchronizerService
 
                     // Potentially long operation, run on thread pool
                     var diffFound = await Task.Run(() =>
-                        {
-                            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
-                            var diffTree = GetApplyDiffTree(loadoutId);
-                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
-                            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
-                            return diffFound;
-                        }
-                    );
+                    {
+                        _logger.LogDebug("Checking for changes in loadout {LoadoutId}", loadoutId);
+                        var diffTree = GetApplyDiffTree(loadoutId);
+                        var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                        _logger.LogDebug("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
+                        return diffFound;
+                    });
 
                     return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
                 }
