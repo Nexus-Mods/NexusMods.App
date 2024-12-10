@@ -13,6 +13,11 @@ public static class Tracking
     internal static IEventSender? EventSender { get; set; }
 
     /// <summary>
+    /// Check whether tracking is enabled to gate computational expensive operations.
+    /// </summary>
+    public static bool IsEnabled => EventSender is not null;
+
+    /// <summary>
     /// Track an event.
     /// </summary>
     public static void AddEvent(EventDefinition definition, EventMetadata metadata)

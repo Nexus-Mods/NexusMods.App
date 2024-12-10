@@ -39,6 +39,16 @@ public static class Events
     public static class Page
     {
         private const string Category = "Page";
+        public static readonly EventDefinition ReplaceTab = new(Category, Action: "Replace Tab");
+        public static readonly EventDefinition NewTab = new(Category, Action: "New Tab");
+        public static readonly EventDefinition NewPanel = new(Category, Action: "New Panel");
+    }
+
+    public static class PageHistory
+    {
+        private const string Category = "Page History";
+        public static readonly EventDefinition Back = new(Category, Action: "Back");
+        public static readonly EventDefinition Forward = new(Category, Action: "Forward");
     }
 
     public static class Help
