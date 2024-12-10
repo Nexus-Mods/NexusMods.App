@@ -314,7 +314,7 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <value>Ort:</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-        <value>Modaufstellung aktivieren</value>
+        <value>Loadout aktivieren</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
         <value>Aktivieren &amp; Übernehmen</value>
@@ -418,7 +418,7 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <value>Entfernt</value>
     </data>
     <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
-        <value>Dateien: Modaufstellung {0} ({1})  Datenträger {2} ({3})</value>
+        <value>Dateien: Loadout {0} ({1})  Datenträger {2} ({3})</value>
         <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
     </data>
     <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
@@ -550,13 +550,13 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <value>Hilfe und Feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Ausgewählte(r) Mod(s) zu dieser Modaufstellung hinzufügen</value>
+        <value>Ausgewählte(r) Mod(s) zu diesem Loadout hinzufügen</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
         <value>Dieser Mod wird dauerhaft von deiner Bibliothek entfernt</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Wähle bestimmte Dateien aus einer Mod aus. um sie zu deiner Modaufstellung hinzuzufügen</value>
+        <value>Wähle bestimmte Dateien aus einer Mod aus. um sie zu deinem Loadout hinzuzufügen</value>
     </data>
     <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
         <value>Zeigt die Änderungen an, die auf deinem Spielordner angewendet werden</value>
@@ -600,7 +600,7 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <comment>{0} is the name of the currently managed game</comment>
     </data>
     <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
-        <value>Deine Modaufstellung hat die Zustandsüberprüfung ohne Probleme bestanden</value>
+        <value>Dein Loadout hat die Zustandsüberprüfung ohne Probleme bestanden</value>
     </data>
     <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
         <value>Bereit zum Spielen.</value>
@@ -618,17 +618,17 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <comment>Where {0} is the number of mods in a loadout</comment>
     </data>
     <data name="MyLoadoutsPageTitle" xml:space="preserve">
-        <value>Meine Modaufstellungen</value>
+        <value>Mein Loadout</value>
     </data>
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Modaufstellungen ermöglichen es dir, zwischen verschiedenen Spielstilen zu wechseln, indem du sie mit verschiedenen Mods und Konfigurationen anpasst. Wähle einfach die gewünschte Modaufstellung aus und wende sie an.</value>
+        <value>Loadouts ermöglichen es dir, zwischen verschiedenen Spielstilen zu wechseln, indem du sie mit verschiedenen Mods und Konfigurationen anpasst. Wähle einfach das gewünschte Loadout aus und wende sie an.</value>
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
-        <value>{0} Modaufstellungen</value>
+        <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
     </data>
     <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-        <value>Neue Modaufstellung erstellen</value>
+        <value>Neues Loadout erstellen</value>
     </data>
     <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
         <value>Derzeit angewandt</value>
@@ -643,10 +643,10 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <value>Erstellen...</value>
     </data>
     <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
-        <value>Modaufstellungen ermöglichen es dir, zwischen verschiedenen Spielstilen zu wechseln, indem du sie mit verschiedenen Mods und Konfigurationen anpasst.</value>
+        <value>Loadouts ermöglichen es dir, zwischen verschiedenen Spielstilen zu wechseln, indem du sie mit verschiedenen Mods und Konfigurationen anpasst.</value>
     </data>
     <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
-        <value>Du musst ein Spiel hinzufügen, bevor du Modaufstellungen nutzen kannst</value>
+        <value>Du musst ein Spiel hinzufügen, bevor du Loadouts nutzen kannst</value>
     </data>
 
     <!-- Library Item Delete Confirmation Dialog -->
@@ -680,7 +680,7 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
         <value>Änderungen am Spiel werden angewendet</value>
     </data>
     <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
-        <value>Modaufstellung löschen</value>
+        <value>Loadout löschen</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
         <value>Installierte Mods</value>
@@ -715,7 +715,7 @@ Um Änderungen vorzunehmen oder das Spiel erneut zu starten, schließe das Spiel
         <value>Mit deinem Nexus Mods-Account verbinden</value>
     </data>
     <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
-        <value>Ausgewählte(r) Mod(s) von dieser Modaufstellung entfernen</value>
+        <value>Ausgewählte(r) Mod(s) von diesem Loadout entfernen</value>
     </data>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
         <value />
