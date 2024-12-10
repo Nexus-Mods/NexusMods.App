@@ -208,14 +208,12 @@ public class Alert : ContentControl
 
         if (change.Property == TitleProperty)
         {
-            var value = change.GetNewValue<string?>();
-            UpdateTitle(value);
+            UpdateTitle(change.GetNewValue<string?>());
         }
 
         if (change.Property == BodyProperty)
         {
-            var value = change.GetNewValue<string?>();
-            UpdateBody(value);
+            UpdateBody(change.GetNewValue<string?>());
         }
     }
 
@@ -242,7 +240,7 @@ public class Alert : ContentControl
         
         _bodyText = e.NameScope.Find<TextBlock>("BodyText");
         if (_bodyText != null)
-            UpdateBody(Title);
+            UpdateBody(Body);
 
         _icon = e.NameScope.Find<UnifiedIcon>("Icon");
         if (_icon != null)
