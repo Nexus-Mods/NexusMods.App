@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Classes="Low" Width="800" Height="800">
+            <Border.Resources>
+                <sorting:SortingSelectionDesignViewModel x:Key="SortingSelectionDesignViewModel" />
+            </Border.Resources>
+            <sorting:SortingSelectionView DataContext="{StaticResource SortingSelectionDesignViewModel}" />
+        </Border>
+    </Design.PreviewWith>
+
+
+    <Style Selector="sorting|SortingSelectionView">
+        <!-- nothing needed yet for this view -->
+    </Style>
+
+
+</Styles>

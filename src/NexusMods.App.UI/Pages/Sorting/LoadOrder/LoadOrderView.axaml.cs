@@ -22,14 +22,14 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     SortOrderTreeDataGrid,
                     vm => vm.Adapter
                 );
-                
+
                 // TreeDataGrid Source
                 this.OneWayBind(ViewModel,
                         vm => vm.Adapter.Source.Value,
                         view => view.SortOrderTreeDataGrid.Source
                     )
                     .DisposeWith(disposables);
-                
+
                 // Trophy bar
                 this.WhenAnyValue(view => view.ViewModel!.IsWinnerTop)
                     .Subscribe(isWinnerTop =>
@@ -40,7 +40,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                         }
                     )
                     .DisposeWith(disposables);
-                
+
                 // Trophy bar arrow
                 this.WhenAnyValue(view => view.ViewModel!.SortDirectionCurrent)
                     .Subscribe(sortCurrentDirection =>
@@ -51,50 +51,63 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                         }
                     )
                     .DisposeWith(disposables);
-                
+
+                // trophy tooltip
+                this.WhenAnyValue(view => view.ViewModel!.TrophyToolTip)
+                    .Subscribe(tooltip => { ToolTip.SetTip(TrophyBarPanel, tooltip); })
+                    .DisposeWith(disposables);
+
                 // Empty state
-                this.OneWayBind(ViewModel, 
-                        vm => vm.Adapter.IsSourceEmpty.Value, 
-                        view => view.EmptyState.IsActive)
+                this.OneWayBind(ViewModel,
+                        vm => vm.Adapter.IsSourceEmpty.Value,
+                        view => view.EmptyState.IsActive
+                    )
                     .DisposeWith(disposables);
-                
+
                 // Empty state Header
-                this.OneWayBind(ViewModel, 
-                        vm => vm.EmptyStateMessageTitle, 
-                        view => view.EmptyState.Header)
+                this.OneWayBind(ViewModel,
+                        vm => vm.EmptyStateMessageTitle,
+                        view => view.EmptyState.Header
+                    )
                     .DisposeWith(disposables);
-                
+
                 // Empty state Message
-                this.OneWayBind(ViewModel, 
-                        vm => vm.EmptyStateMessageContents, 
-                        view => view.EmptySpaceMessageTextBlock.Text)
+                this.OneWayBind(ViewModel,
+                        vm => vm.EmptyStateMessageContents,
+                        view => view.EmptySpaceMessageTextBlock.Text
+                    )
                     .DisposeWith(disposables);
-                
-                // SortDirection -> ComboBox
-                this.WhenAnyValue(view  => view.ViewModel!.SortDirectionCurrent)
-                    .Select(sortDirection => sortDirection == ListSortDirection.Ascending ? 0 : 1)
-                    .BindToView(this, view => view.SortDirectionComboBox.SelectedIndex)
-                    .DisposeWith(disposables);
-                
-                // ComboBox -> SortDirection
-                this.WhenAnyValue(view => view.SortDirectionComboBox.SelectedIndex)
-                    .Select(index => index == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending)
-                    .BindTo(ViewModel, vm => vm.SortDirectionCurrent)
-                    .DisposeWith(disposables);
-                    
+
                 // Title
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertTitle, 
-                        view => view.TitleTextBlock.Text)
+                this.OneWayBind(ViewModel, vm => vm.SortOrderHeading,
+                        view => view.TitleTextBlock.Text
+                    )
                     .DisposeWith(disposables);
-                
+
+                // alert title
+                this.OneWayBind(ViewModel,
+                        vm => vm.InfoAlertTitle,
+                        view => view.LoadOrderAlert.Title
+                    )
+                    .DisposeWith(disposables);
+
+                // alert body
+                this.OneWayBind(ViewModel,
+                        vm => vm.InfoAlertBody,
+                        view => view.LoadOrderAlert.Body
+                    )
+                    .DisposeWith(disposables);
+
                 // Alert settings
-                this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper, 
-                        view => view.LoadOrderAlert.AlertSettings)
+                this.OneWayBind(ViewModel, vm => vm.AlertSettingsWrapper,
+                        view => view.LoadOrderAlert.AlertSettings
+                    )
                     .DisposeWith(disposables);
-                
+
                 // Alert Command
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertCommand, 
-                        view => view.InfoAlertButton.Command)
+                this.OneWayBind(ViewModel, vm => vm.InfoAlertCommand,
+                        view => view.InfoAlertButton.Command
+                    )
                     .DisposeWith(disposables);
             }
         );

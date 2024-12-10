@@ -35,7 +35,7 @@ public interface ISortableItemProviderFactory
     /// Avoid using "higher" or "lower" terms, as the index numbers can be sorted both in ascending or descending order,
     /// making their meaning ambiguous.
     /// </remarks>
-    string OverrideInfoTitle { get; }
+    string SortOrderHeading { get; }
     
     /// <summary>
     /// Heading for more details load order override information
@@ -43,7 +43,7 @@ public interface ISortableItemProviderFactory
     /// <example>
     /// "Load Order for REDmods in Cyberpunk 2077 - First Loaded Wins"
     /// </example>
-    string OverrideInfoHeading { get; }
+    string OverrideInfoTitle { get; }
     
     /// <summary>
     /// Detailed description of the load order and its override behavior
@@ -51,8 +51,8 @@ public interface ISortableItemProviderFactory
     string OverrideInfoMessage { get; }
     
     /// <summary>
-    /// Short tooltip message to explain the winning index number in the load order
-    /// </summary>
+    /// Short tooltip message to explain the winning index nu order
+    /// </summary>mber in the load
     string WinnerIndexToolTip { get; }
     
     /// <summary>
