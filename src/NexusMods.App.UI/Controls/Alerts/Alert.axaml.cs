@@ -202,16 +202,15 @@ public class Alert : ContentControl
                     .Subscribe(isDismissed => IsDismissed = isDismissed);
             }
         }
-
-        if (change.Property == IsDismissedProperty)
+        else if (change.Property == IsDismissedProperty)
+        {
             IsVisible = !IsDismissed;
-
-        if (change.Property == TitleProperty)
+        }
+        else if (change.Property == TitleProperty)
         {
             UpdateTitle(change.GetNewValue<string?>());
         }
-
-        if (change.Property == BodyProperty)
+        else if (change.Property == BodyProperty)
         {
             UpdateBody(change.GetNewValue<string?>());
         }
@@ -221,23 +220,23 @@ public class Alert : ContentControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
-        if(_bodyTextBorder != null)
+        if (_bodyTextBorder != null)
             _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
 
         _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
-        if(_actionsRowBorder != null)
+        if (_actionsRowBorder != null)
             _actionsRowBorder.IsVisible = Content != null && ShowActions;
-        
+
         _dismissButton = e.NameScope.Find<Button>("DismissButton");
-        if(_dismissButton != null)
+        if (_dismissButton != null)
         {
             _dismissButton.IsVisible = ShowDismiss;
         }
-        
+
         _titleText = e.NameScope.Find<TextBlock>("TitleText");
         if (_titleText != null)
             UpdateTitle(Title);
-        
+
         _bodyText = e.NameScope.Find<TextBlock>("BodyText");
         if (_bodyText != null)
             UpdateBody(Body);
@@ -245,10 +244,10 @@ public class Alert : ContentControl
         _icon = e.NameScope.Find<UnifiedIcon>("Icon");
         if (_icon != null)
             UpdateSeverity(Severity);
-        
+
         base.OnApplyTemplate(e);
     }
-    
+
     /// <inheritdoc/>
     protected override void OnUnloaded(RoutedEventArgs e)
     {
@@ -262,7 +261,7 @@ public class Alert : ContentControl
     /// <param name="newTitle">The new title text</param>
     private void UpdateTitle(string? newTitle)
     {
-        if(_titleText != null)
+        if (_titleText != null)
             _titleText.Text = newTitle;
     }
 
@@ -273,18 +272,18 @@ public class Alert : ContentControl
     private void UpdateBody(string? newBody)
     {
         if (_bodyText == null || _bodyTextBorder == null) return;
-        
+
         _bodyText.Text = newBody;
         _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(newBody);
     }
-    
+
     /// <summary>
     /// Updates the visual severity icon of the <see cref="Alert"/>.
     /// </summary>
     /// <param name="newSeverity">The new severity option</param>
     private void UpdateSeverity(SeverityOptions? newSeverity)
     {
-        if(_icon != null)
+        if (_icon != null)
             _icon.Value = newSeverity switch
             {
                 SeverityOptions.Info => IconValues.Info,
