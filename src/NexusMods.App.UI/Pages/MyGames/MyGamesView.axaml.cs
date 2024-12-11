@@ -27,8 +27,8 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
                 this.BindCommand(ViewModel, vm => vm.OpenRoadmapCommand, view => view.OpenRoadmapButton)
                     .DisposeWith(d);
                 
-                this.WhenAnyValue(view  => view.ViewModel!.InstalledGames)
-                    .Select(games => games.Count == 0)
+                this.WhenAnyValue(view  => view.ViewModel!.InstalledGames.Count)
+                    .Select(installedCount  => installedCount == 0)
                     .Subscribe(isEmpty =>
                         {
                             NoGamesDetectedText.IsVisible = isEmpty;
