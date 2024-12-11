@@ -78,13 +78,22 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         RequiredDownloadsCount = requiredDownloadCount;
         OptionalDownloadsCount = optionalDownloadCount;
 
-        DownloadAllCommand = _canDownload.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: connection.Db, cancellationToken: cancellationToken),
+        CommandDownloadRequiredItems = _canDownloadRequiredItems.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
-        InstallCollectionCommand = _canInstall.ToReactiveCommand<Unit>(
+        CommandDownloadOptionalItems = _canDownloadOptionalItems.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken),
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        // TODO: implement this button
+        CommandInstallOptionalItems = _canInstallOptionalItems.ToReactiveCommand<Unit>();
+
+        CommandInstallRequiredItems = _canInstallRequiredItems.ToReactiveCommand<Unit>(
             executeAsync: async (_, _) => { await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -130,37 +139,57 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
+        CommandViewInLibrary = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
         this.WhenActivated(disposables =>
         {
             TreeDataGridAdapter.Activate();
             Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            var numDownloadedObservable = Observable
+            var numDownloadedRequiredItemsObservable = Observable
                 .Return(_revision)
                 .OffUi()
-                .SelectMany(revision => collectionDownloader.RequiredDownloadedCountObservable(revision));
+                .SelectMany(revision => collectionDownloader.DownloadedItemCountObservable(revision, itemType: CollectionDownloader.ItemType.Required));
+
+            var numDownloadedOptionalItemsObservable = Observable
+                .Return(_revision)
+                .OffUi()
+                .SelectMany(revision => collectionDownloader.DownloadedItemCountObservable(revision, itemType: CollectionDownloader.ItemType.Optional));
 
             var isPremiumObservable = loginManager.IsPremiumObservable;
             var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision);
 
-            numDownloadedObservable.CombineLatest(isPremiumObservable, isCollectionInstalledObservable)
+            numDownloadedRequiredItemsObservable.CombineLatest(isPremiumObservable, isCollectionInstalledObservable)
                 .OnUI()
                 .Subscribe(tuple =>
                 {
-                    var (numDownloaded, isPremium, isCollectionInstalled) = tuple;
-                    var hasDownloaded = numDownloaded == RequiredDownloadsCount;
+                    var (numDownloadedRequiredItems, isPremium, isCollectionInstalled) = tuple;
+                    var hasDownloadedAllRequiredItems = numDownloadedRequiredItems == RequiredDownloadsCount;
 
-                    _canInstall.OnNext(!isCollectionInstalled && hasDownloaded);
-                    _canDownload.OnNext(!hasDownloaded && isPremium);
+                    CountDownloadedRequiredItems = numDownloadedRequiredItems;
+                    _canInstallRequiredItems.OnNext(!isCollectionInstalled && hasDownloadedAllRequiredItems);
+                    _canDownloadRequiredItems.OnNext(!hasDownloadedAllRequiredItems && isPremium);
 
-                    if (hasDownloaded)
+                    if (hasDownloadedAllRequiredItems)
                     {
                         CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                     }
                     else
                     {
-                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloaded, RequiredDownloadsCount);
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
                     }
+                }).AddTo(disposables);
+
+            numDownloadedOptionalItemsObservable.CombineLatest(isPremiumObservable)
+                .OnUI()
+                .Subscribe(tuple =>
+                {
+                    var (numDownloadedOptionalItems, isPremium) = tuple;
+                    var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
+
+                    CountDownloadedOptionalItems = numDownloadedOptionalItems;
+                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0);
+                    _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems && isPremium);
                 }).AddTo(disposables);
 
             ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
@@ -192,8 +221,10 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         });
     }
 
-    private readonly BehaviorSubject<bool> _canDownload = new(initialValue: false);
-    private readonly BehaviorSubject<bool> _canInstall = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _canInstallRequiredItems = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _canInstallOptionalItems = new(initialValue: false);
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
@@ -210,17 +241,23 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     public int RequiredDownloadsCount { get; }
     public int OptionalDownloadsCount { get; }
+    [Reactive] public int CountDownloadedOptionalItems { get; private set; }
+    [Reactive] public int CountDownloadedRequiredItems { get; private set; }
 
     [Reactive] public Bitmap? TileImage { get; private set; }
     [Reactive] public Bitmap? BackgroundImage { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     [Reactive] public string CollectionStatusText { get; private set; } = "";
 
-    public ReactiveCommand<Unit> DownloadAllCommand { get; }
-    public ReactiveCommand<Unit> InstallCollectionCommand { get; }
-    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
-    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
+    public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
+    public ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
+    public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; }
+    public ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
+
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
+    public ReactiveCommand<Unit> CommandViewInLibrary { get; }
+    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);

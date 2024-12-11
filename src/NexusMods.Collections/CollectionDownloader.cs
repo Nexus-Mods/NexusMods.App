@@ -17,6 +17,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Collections;
 
@@ -242,17 +243,27 @@ public class CollectionDownloader
     /// <summary>
     /// Returns an observable with the number of downloaded items.
     /// </summary>
-    public IObservable<int> RequiredDownloadedCountObservable(CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    public IObservable<int> DownloadedItemCountObservable(CollectionRevisionMetadata.ReadOnly revisionMetadata, ItemType itemType)
     {
         return _connection
             .ObserveDatoms(CollectionDownload.CollectionRevision, revisionMetadata)
             .AsEntityIds()
             .Transform(datom => CollectionDownload.Load(_connection.Db, datom.E))
-            .FilterImmutable(static download => !download.IsOptional)
+            .FilterImmutable(download => DownloadMatchesItemType(download, itemType))
             .FilterImmutable(static download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal())
             .TransformOnObservable(download => IsDownloadedObservable(_connection, download))
             .FilterImmutable(static isDownloaded => isDownloaded)
             .Count();
+    }
+
+    /// <summary>
+    /// Returns whether the item matches the given item type.
+    /// </summary>
+    private static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
+    {
+        if (download.IsOptional && itemType.HasFlagFast(ItemType.Optional)) return true;
+        if (download.IsRequired && itemType.HasFlagFast(ItemType.Required)) return true;
+        return false;
     }
 
     /// <summary>
@@ -288,12 +299,19 @@ public class CollectionDownloader
         return false;
     }
 
+    [Flags, PublicAPI]
+    public enum ItemType
+    {
+        Required = 1,
+        Optional = 2,
+    };
+
     /// <summary>
     /// Downloads everything in the revision.
     /// </summary>
-    public async ValueTask DownloadAll(
+    public async ValueTask DownloadItems(
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
-        bool onlyRequired,
+        ItemType itemType,
         IDb db,
         int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
@@ -307,8 +325,7 @@ public class CollectionDownloader
         }, body: async (index, token) =>
         {
             var download = downloads[index];
-
-            if (download.IsOptional && onlyRequired) return;
+            if (!DownloadMatchesItemType(download, itemType)) return;
 
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {

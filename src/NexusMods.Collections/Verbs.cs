@@ -47,7 +47,7 @@ internal static class Verbs
         var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
 
         var collectionDownloader = new CollectionDownloader(serviceProvider);
-        await collectionDownloader.DownloadAll(revisionMetadata, onlyRequired: true, db: connection.Db, cancellationToken: token);
+        await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: token);
 
         var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata);
         return 0;

@@ -32,4 +32,9 @@ public partial class CollectionDownload : IModelDefinition
     /// Index into the source array.
     /// </summary>
     public static readonly Int32Attribute ArrayIndex = new(Namespace, nameof(ArrayIndex)) { IsIndexed = true };
+
+    public partial struct ReadOnly
+    {
+        public bool IsRequired => !IsOptional;
+    }
 }
