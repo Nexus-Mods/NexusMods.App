@@ -12,7 +12,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://NexusMods.App.UI/Pages/LibraryPage/TreeDataGridLibraryResources.axaml" />
-                <ResourceInclude Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
