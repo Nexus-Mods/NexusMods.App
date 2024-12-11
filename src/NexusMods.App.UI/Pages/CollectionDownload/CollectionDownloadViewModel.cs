@@ -102,6 +102,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     },
                 };
 
+                await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken);
+
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
