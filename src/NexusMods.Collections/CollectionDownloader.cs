@@ -253,7 +253,8 @@ public class CollectionDownloader
             .FilterImmutable(static download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal())
             .TransformOnObservable(download => IsDownloadedObservable(_connection, download))
             .FilterImmutable(static isDownloaded => isDownloaded)
-            .Count();
+            .Count()
+            .Prepend(0);
     }
 
     /// <summary>

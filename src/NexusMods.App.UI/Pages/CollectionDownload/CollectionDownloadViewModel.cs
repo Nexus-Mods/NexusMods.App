@@ -156,8 +156,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .OffUi()
                 .SelectMany(revision => collectionDownloader.DownloadedItemCountObservable(revision, itemType: CollectionDownloader.ItemType.Optional));
 
-            var isPremiumObservable = loginManager.IsPremiumObservable;
-            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision);
+            var isPremiumObservable = loginManager.IsPremiumObservable.Prepend(false);
+            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision).Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isPremiumObservable, isCollectionInstalledObservable)
                 .OnUI()
