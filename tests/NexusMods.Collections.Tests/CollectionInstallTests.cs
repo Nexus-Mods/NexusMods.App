@@ -45,7 +45,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var revisionMetadata = await NexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revisionNumber), CancellationToken.None);
 
         var collectionDownloader = new CollectionDownloader(ServiceProvider);
-        await collectionDownloader.DownloadAll(revisionMetadata, onlyRequired: true, db: Connection.Db);
+        await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: Connection.Db);
 
         var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata);
 
