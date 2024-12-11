@@ -32,6 +32,7 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
                     .Subscribe(isEmpty =>
                         {
                             NoGamesDetectedText.IsVisible = isEmpty;
+                            AddGamesToGetStartedText.IsVisible = !isEmpty;
                             DetectedGamesItemsControl.IsVisible = !isEmpty;
                         }
                     )
