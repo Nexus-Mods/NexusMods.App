@@ -46,7 +46,7 @@ public class CDNPool
     /// <summary>
     /// Get a CDN auth token for a given depot on a given server.
     /// </summary>
-    private async Task<string> GetCDNAuthTokenAsync(AppId appId, DepotId depotId, Server server)
+    internal async Task<string> GetCDNAuthTokenAsync(AppId appId, DepotId depotId, Server server)
     {
         // Check if we already have an auth token for this server
         if (_authTokens.TryGetValue((server.Host!, depotId), out var token))

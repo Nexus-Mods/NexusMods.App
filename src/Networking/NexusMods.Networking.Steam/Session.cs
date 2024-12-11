@@ -1,10 +1,12 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.DTOs;
+using NexusMods.Paths;
 using SteamKit2;
 using SteamKit2.Authentication;
 using SteamKit2.CDN;
@@ -93,6 +95,11 @@ public class Session : ISteamSession
     /// The CDN client, used for downloading game data.
     /// </summary>
     internal Client CDNClient => _cdnClient;
+    
+    /// <summary>
+    /// The CDN pool, used for downloading game data.
+    /// </summary>
+    internal CDNPool CDNPool => _cdnPool;
 
     private Task LicenseListCallback(SteamApps.LicenseListCallback arg)
     {
@@ -238,5 +245,13 @@ public class Session : ISteamSession
     {
         await ConnectedAsync(token);
         return await _cdnPool.GetManifestContents(appId, depotId, manifestId, branch, token);
+    }
+
+    public Stream GetFileStream(AppId appId, Manifest manifest, RelativePath file)
+    {
+        var chunkedProvider = new DepotChunkProvider(this, appId, manifest.DepotId,
+            manifest, file
+        );
+        return new ChunkedStream<DepotChunkProvider>(chunkedProvider);
     }
 }

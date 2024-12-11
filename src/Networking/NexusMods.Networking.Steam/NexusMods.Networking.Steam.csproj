@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Abstractions\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
     </ItemGroup>
 
 </Project>
