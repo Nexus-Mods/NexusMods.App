@@ -14,6 +14,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
@@ -327,5 +328,22 @@ public class CollectionDownloader
     public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision)
     {
         return _connection.ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision).IsNotEmpty();
+    }
+
+    /// <summary>
+    /// Deletes all associated collection loadout groups.
+    /// </summary>
+    public async ValueTask DeleteCollectionLoadoutGroup(CollectionRevisionMetadata.ReadOnly revision, CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var groupDatoms = db.Datoms(NexusCollectionLoadoutGroup.Revision, revision);
+        foreach (var datom in groupDatoms)
+        {
+            tx.Delete(datom.E, recursive: true);
+        }
+
+        await tx.Commit();
     }
 }
