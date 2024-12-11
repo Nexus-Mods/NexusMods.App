@@ -11,19 +11,9 @@
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
                                 x:DataType="sorting:ILoadOrderViewModel">
 
-    <reactiveUi:ReactiveUserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude
-                    Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </reactiveUi:ReactiveUserControl.Resources>
-
     <Design.DataContext>
         <sorting:LoadOrderDesignViewModel />
     </Design.DataContext>
-
 
     <controls:EmptyState x:Name="EmptyState">
 
@@ -96,6 +86,7 @@
                               CanUserSortColumns="False"
                               ShowColumnHeaders="True"
                               RowDrop="OnRowDrop">
+
                     <TreeDataGrid.Resources>
                         <ResourceDictionary>
                             <ResourceDictionary.MergedDictionaries>
