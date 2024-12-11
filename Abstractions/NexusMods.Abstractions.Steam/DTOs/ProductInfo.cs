@@ -8,6 +8,11 @@ namespace NexusMods.Abstractions.Steam.DTOs;
 public class ProductInfo
 {
     /// <summary>
+    /// The revision number of this product info.
+    /// </summary>
+    public required uint ChangeNumber { get; init; }
+    
+    /// <summary>
     /// The app id of the product.
     /// </summary>
     public AppId AppId { get; init; }

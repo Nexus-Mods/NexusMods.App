@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Steam.Values;
 /// A globally unique identifier for a depot, a reference to a collection of files on the Steam CDN.
 /// </summary>
 [ValueObject<uint>]
-public partial struct DepotId
+public readonly partial struct DepotId
 {
     
 }

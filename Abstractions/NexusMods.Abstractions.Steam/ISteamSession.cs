@@ -12,4 +12,9 @@ public interface ISteamSession
     /// Get the product info for the specified app ID
     /// </summary>
     public Task<ProductInfo> GetProductInfoAsync(AppId appId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get the manifest data for a specific manifest
+    /// </summary>
+    public Task<Manifest> GetManifestContents(AppId appId, DepotId depotId, ManifestId manifestId, string branch, CancellationToken token = default);
 }

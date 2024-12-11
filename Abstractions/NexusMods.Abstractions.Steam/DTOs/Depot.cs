@@ -8,14 +8,9 @@ namespace NexusMods.Abstractions.Steam.DTOs;
 public class Depot
 {
     /// <summary>
-    /// The name of the depot.
+    /// The OSes that the depot is available on.
     /// </summary>
-    public required string Name { get; init; }
-    
-    /// <summary>
-    /// The app id associated with the depot.
-    /// </summary>
-    public required AppId AppId { get; init; }
+    public required string[] OsList { get; init; }
     
     /// <summary>
     /// The id of the depot.
@@ -23,7 +18,7 @@ public class Depot
     public required DepotId DepotId { get; init; }
     
     /// <summary>
-    /// The Current ManifestId of the depot.
+    /// The manifests associated with the depot, with a key for each available branch
     /// </summary>
-    public required ManifestId CurrentManifestId { get; init; }
+    public required Dictionary<string, ManifestInfo> Manifests { get; init; }
 }

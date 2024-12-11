@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
@@ -51,7 +53,11 @@ public class Session : ISteamSession
 
     private readonly CallbackManager _callbacks;
     private readonly IAuthStorage _authStorage;
+    private readonly CDNPool _cdnPool;
 
+    private ConcurrentDictionary<(AppId, DepotId), byte[]> _depotKeys = new();
+    private ConcurrentDictionary<(AppId, DepotId, ManifestId, string Branch), ulong> _manifestRequestCodes = new();
+    
     public Session(ILogger<Session> logger, IAuthInterventionHandler handler, IAuthStorage storage, HttpClient httpClient)
     {
         
@@ -61,13 +67,14 @@ public class Session : ISteamSession
 
         _steamConfiguration = SteamConfiguration.Create(configurator =>
         {
-            configurator.WithHttpClientFactory(() => httpClient);
+            configurator.WithHttpClientFactory(() => new HttpClient());
         });
         _steamClient = new SteamClient(_steamConfiguration);
         _steamUser = _steamClient.GetHandler<SteamUser>()!;
         _steamApps = _steamClient.GetHandler<SteamApps>()!;
         _steamContent = _steamClient.GetHandler<SteamContent>()!;
         _cdnClient = new Client(_steamClient);
+        _cdnPool = new CDNPool(this);
         
         
         _callbacks = new CallbackManager(_steamClient);
@@ -76,6 +83,16 @@ public class Session : ISteamSession
         _callbacks.Subscribe(WrapAsync<SteamUser.LoggedOnCallback>(LoggedOnCallback));
         _callbacks.Subscribe(WrapAsync<SteamApps.LicenseListCallback>(LicenseListCallback));
     }
+
+    /// <summary>
+    /// The Steam Content module
+    /// </summary>
+    internal SteamContent Content => _steamContent;
+    
+    /// <summary>
+    /// The CDN client, used for downloading game data.
+    /// </summary>
+    internal Client CDNClient => _cdnClient;
 
     private Task LicenseListCallback(SteamApps.LicenseListCallback arg)
     {
@@ -172,5 +189,54 @@ public class Session : ISteamSession
         {
             await _callbacks.RunWaitCallbackAsync(cancellationToken);
         }
+    }
+
+    public async Task<ulong> GetManifestRequestCodeAsync(AppId appId, DepotId depotId, ManifestId manifestId, string branch)
+    {
+        if (_manifestRequestCodes.TryGetValue((appId, depotId, manifestId, branch), out var found))
+            return found;
+        await ConnectedAsync(CancellationToken.None);
+        
+        var requestCodeResult = await _steamContent.GetManifestRequestCode(depotId.Value, appId.Value, manifestId.Value, branch);
+        if (requestCodeResult == 0)
+        {
+            _logger.LogWarning("Failed to get request code for depot {0} manifest {1}", depotId.Value, manifestId.Value);
+            throw new Exception("Failed to get request code for depot " + depotId.Value + " manifest " + manifestId.Value);
+        }
+
+        _logger.LogInformation("Got request code depot {1} manifest {2}", depotId.Value, manifestId.Value);
+
+        _manifestRequestCodes.TryAdd((appId, depotId, manifestId, branch), requestCodeResult);
+        return requestCodeResult;
+    }
+    
+    /// <summary>
+    /// Get a depot decryption key for a given depot.
+    /// </summary>
+    public async Task<byte[]> GetDepotKey(AppId appId, DepotId depotId)
+    {
+        // Try to get the cached key first
+        
+        if (_depotKeys.TryGetValue((appId, depotId), out var keyBytes))
+            return keyBytes;
+        await ConnectedAsync(CancellationToken.None);
+        
+        var key = await _steamApps.GetDepotDecryptionKey(depotId.Value, appId.Value);
+        if (key.Result != EResult.OK)
+        {
+            _logger.LogWarning("Failed to get depot key for depot {0}", depotId.Value);
+            throw new Exception("Failed to get depot key for depot " + depotId.Value);
+        }
+        _logger.LogInformation("Got depot key for depot {0}", depotId.Value);
+
+        _depotKeys.TryAdd((appId, depotId), key.DepotKey);
+        
+        return key.DepotKey;
+    }
+
+    public async Task<Manifest> GetManifestContents(AppId appId, DepotId depotId, ManifestId manifestId, string branch, CancellationToken token = default)
+    {
+        await ConnectedAsync(token);
+        return await _cdnPool.GetManifestContents(appId, depotId, manifestId, branch, token);
     }
 }

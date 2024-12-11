@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using FluentAssertions;
-using NexusMods.DataModel.ChunkedStreams;
+using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Reloaded.Memory.Extensions;
 
-namespace NexusMods.DataModel.ChunkedStreams;
+namespace NexusMods.Abstractions.IO.ChunkedStreams;
 
 /// <summary>
 /// A stream that reads data in chunks, caching the chunks in a cache and allowing

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.Values;
@@ -13,7 +14,12 @@ public class BasicApiTests(ILogger<BasicApiTests> logger, ISteamSession session)
     public async Task CanGetProductInfo()
     {
         var info = await session.GetProductInfoAsync(SdvAppId);
-        Assert.NotNull(info);
+        info.Depots.Should().HaveCountGreaterOrEqualTo(3, "SDV has one depot for each major OS");
+
+        var depot = info.Depots.First(d => d.OsList.Contains("windows"));
+        var manifest = await session.GetManifestContents(SdvAppId, depot.DepotId, depot.Manifests["public"].ManifestId, "public");
+        
+        manifest.Should().NotBeNull();
     }
     
 }
