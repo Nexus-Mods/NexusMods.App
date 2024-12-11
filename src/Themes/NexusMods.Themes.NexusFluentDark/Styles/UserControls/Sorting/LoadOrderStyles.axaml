@@ -37,7 +37,7 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
                 <Setter Property="Margin" Value="0,56,0,0" />
-
+                
                 <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
                     <Setter Property="Size" Value="20" />
                 </Style>

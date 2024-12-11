@@ -70,7 +70,7 @@
                     <icons:UnifiedIcon x:Name="TrophyIcon"
                                        DockPanel.Dock="Top"
                                        Value="{x:Static icons:IconValues.Trophy}" />
-                    <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
+                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
                         <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
                                            Value="{x:Static icons:IconValues.ArrowUpThick}" />
                         <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
