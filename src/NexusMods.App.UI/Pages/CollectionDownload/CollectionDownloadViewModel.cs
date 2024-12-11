@@ -50,6 +50,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
+        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -77,18 +78,14 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         RequiredDownloadsCount = requiredDownloadCount;
         OptionalDownloadsCount = optionalDownloadCount;
 
-        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
-        DownloadAllCommand = loginManager.IsPremiumObservable.ToObservable().ToReactiveCommand<Unit>(
+        DownloadAllCommand = _canDownload.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => collectionDownloader.DownloadAll(_revision, onlyRequired: true, db: connection.Db, cancellationToken: cancellationToken),
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
-        InstallCollectionCommand = new ReactiveCommand(
-            executeAsync: async (_, _) =>
-            {
-                await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata);
-            },
+        InstallCollectionCommand = _canInstall.ToReactiveCommand<Unit>(
+            executeAsync: async (_, _) => { await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
@@ -104,6 +101,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                         LoadoutId = targetLoadout,
                     },
                 };
+
+                await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken);
 
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
@@ -134,25 +133,35 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         this.WhenActivated(disposables =>
         {
             TreeDataGridAdapter.Activate();
-            Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate());
+            Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate()).AddTo(disposables);
 
-            Observable
+            var numDownloadedObservable = Observable
                 .Return(_revision)
                 .OffUi()
-                .SelectMany(revision => collectionDownloader.RequiredDownloadedCountObservable(revision))
+                .SelectMany(revision => collectionDownloader.RequiredDownloadedCountObservable(revision));
+
+            var isPremiumObservable = loginManager.IsPremiumObservable;
+            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision);
+
+            numDownloadedObservable.CombineLatest(isPremiumObservable, isCollectionInstalledObservable)
                 .OnUI()
-                .Subscribe(count =>
+                .Subscribe(tuple =>
                 {
-                    if (count == RequiredDownloadsCount)
+                    var (numDownloaded, isPremium, isCollectionInstalled) = tuple;
+                    var hasDownloaded = numDownloaded == RequiredDownloadsCount;
+
+                    _canInstall.OnNext(!isCollectionInstalled && hasDownloaded);
+                    _canDownload.OnNext(!hasDownloaded && isPremium);
+
+                    if (hasDownloaded)
                     {
                         CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                     }
                     else
                     {
-                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, count, RequiredDownloadsCount);
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloaded, RequiredDownloadsCount);
                     }
-                })
-                .AddTo(disposables);
+                }).AddTo(disposables);
 
             ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
                 .ObserveOnUIThreadDispatcher()
@@ -182,6 +191,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             ).AddTo(disposables);
         });
     }
+
+    private readonly BehaviorSubject<bool> _canDownload = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _canInstall = new(initialValue: false);
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
