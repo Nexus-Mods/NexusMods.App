@@ -10,19 +10,20 @@
                                 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
                                 x:DataType="sorting:ILoadOrderViewModel">
-    
+
     <reactiveUi:ReactiveUserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
+                <ResourceInclude
+                    Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </reactiveUi:ReactiveUserControl.Resources>
-    
+
     <Design.DataContext>
         <sorting:LoadOrderDesignViewModel />
     </Design.DataContext>
-    
+
 
     <controls:EmptyState x:Name="EmptyState">
 
@@ -81,10 +82,10 @@
                                        Value="{x:Static icons:IconValues.Trophy}" />
                     <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
                         <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
-                                           Value="{x:Static icons:IconValues.ArrowUpThick}"/>
+                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
                         <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
                         <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
-                                           Value="{x:Static icons:IconValues.ArrowDownThick}"/>
+                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
                     </Grid>
                 </DockPanel>
 
@@ -94,7 +95,16 @@
                               CanUserResizeColumns="False"
                               CanUserSortColumns="False"
                               ShowColumnHeaders="True"
-                              RowDrop="OnRowDrop" />
+                              RowDrop="OnRowDrop">
+                    <TreeDataGrid.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceInclude
+                                    Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </TreeDataGrid.Resources>
+                </TreeDataGrid>
             </Grid>
         </Grid>
     </controls:EmptyState>
