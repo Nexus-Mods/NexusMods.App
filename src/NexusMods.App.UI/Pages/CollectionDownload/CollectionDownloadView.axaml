@@ -47,7 +47,7 @@
             </MenuItem>
         </MenuFlyout>
 
-        <StackPanel x:Key="TabItemContent" Orientation="Vertical" Spacing="0">
+        <DockPanel x:Key="TabItemContent" >
             <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
                 <panels:FlexPanel x:Name="ListHeaderRow">
                     <TextBlock x:Name="TextCollectionStatus"/>
@@ -60,8 +60,8 @@
                 </panels:FlexPanel>
             </Border>
 
-            <TreeDataGrid x:Name="DownloadsTree" />
-        </StackPanel>
+            <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom"/>
+        </DockPanel>
     </reactiveUi:ReactiveUserControl.Resources>
 
     <DockPanel x:Name="Body">
