@@ -39,7 +39,7 @@
                         Theme="{StaticResource BodyMDNormalTheme}"
                         Foreground="{StaticResource NeutralSubduedBrush}" />
                     <ItemsControl
-                        x:Name="DetectedGamesItemsControl" IsVisible="False">
+                        x:Name="DetectedGamesItemsControl">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <panels:FlexPanel 
