@@ -51,8 +51,8 @@ public interface ISortableItemProviderFactory
     string OverrideInfoMessage { get; }
     
     /// <summary>
-    /// Short tooltip message to explain the winning index nu order
-    /// </summary>mber in the load
+    /// Short tooltip message to explain the winning index number in the load order
+    /// </summary>
     string WinnerIndexToolTip { get; }
     
     /// <summary>
