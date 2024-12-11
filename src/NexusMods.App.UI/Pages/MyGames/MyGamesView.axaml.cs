@@ -12,21 +12,31 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
         InitializeComponent();
 
         this.WhenActivated(d =>
-        {
-            this.WhenAnyValue(view => view.ViewModel!.InstalledGames)
-                .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
-                .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.SupportedGames)
-                .BindToView(this, view => view.SupportedGamesItemsControl.ItemsSource)
-                .DisposeWith(d);
-            
-            this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
-                .DisposeWith(d);
-            
-            this.BindCommand(ViewModel, vm => vm.OpenRoadmapCommand, view => view.OpenRoadmapButton)
-                .DisposeWith(d);
-        });
+            {
+                this.WhenAnyValue(view => view.ViewModel!.InstalledGames)
+                    .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
+                    .DisposeWith(d);
+
+                this.WhenAnyValue(view => view.ViewModel!.SupportedGames)
+                    .BindToView(this, view => view.SupportedGamesItemsControl.ItemsSource)
+                    .DisposeWith(d);
+
+                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
+                    .DisposeWith(d);
+
+                this.BindCommand(ViewModel, vm => vm.OpenRoadmapCommand, view => view.OpenRoadmapButton)
+                    .DisposeWith(d);
+                
+                this.WhenAnyValue(view  => view.ViewModel!.InstalledGames)
+                    .Select(games => games.Count == 0)
+                    .Subscribe(isEmpty =>
+                        {
+                            NoGamesDetectedText.IsVisible = isEmpty;
+                            DetectedGamesItemsControl.IsVisible = !isEmpty;
+                        }
+                    )
+                    .DisposeWith(d);
+            }
+        );
     }
 }
-

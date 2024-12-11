@@ -34,8 +34,12 @@
                     <TextBlock Text="Add games to get started"
                                Theme="{StaticResource HeadingXSSemiTheme}"
                                Foreground="{StaticResource NeutralStrongBrush}" />
+                    <TextBlock x:Name="NoGamesDetectedText"
+                        Text="No games detected"
+                        Theme="{StaticResource BodyMDNormalTheme}"
+                        Foreground="{StaticResource NeutralSubduedBrush}" />
                     <ItemsControl
-                        x:Name="DetectedGamesItemsControl">
+                        x:Name="DetectedGamesItemsControl" IsVisible="False">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <panels:FlexPanel 

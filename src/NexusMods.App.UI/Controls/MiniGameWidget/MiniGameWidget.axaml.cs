@@ -41,7 +41,10 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                 this.WhenAnyValue(view => view.ViewModel!.GameInstallations)
                     .Subscribe(installations =>
                         {
-                            var tooltip = string.Join(", ", installations!.Select(installation => installation.Store.ToString()));
+                            if(installations is null)
+                                return;
+                            
+                            var tooltip = string.Join(", ", installations.Select(installation => installation.Store.ToString()));
                             ToolTip.SetTip(IsFoundTextBlock, tooltip);
                         }
                     )
