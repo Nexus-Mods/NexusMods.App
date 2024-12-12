@@ -367,6 +367,16 @@ public class NxFileStore : IFileStore
         public Size Size => Size.From(_entry.DecompressedSize);
         public Size ChunkSize => Size.From((ulong)_header.Header.ChunkSizeBytes);
         public ulong ChunkCount => (ulong)_entry.GetChunkCount(_header.Header.ChunkSizeBytes);
+        
+        public ulong GetOffset(ulong chunkIndex)
+        {
+            return (ulong)_header.Header.ChunkSizeBytes * chunkIndex;
+        }
+
+        public int GetChunkSize(ulong chunkIndex)
+        {
+            return _header.Header.ChunkSizeBytes;
+        }
 
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong localIndex, CancellationToken token = default)
         {

@@ -34,7 +34,7 @@ public class MultiHasher
         _minimalHash = new XxHash3();
         _crc32 = new System.IO.Hashing.Crc32();
         _sha1 = SHA1.Create();
-        _buffer = new byte[4096];
+        _buffer = new byte[1024 * 128];
     }
 
     /// <summary>

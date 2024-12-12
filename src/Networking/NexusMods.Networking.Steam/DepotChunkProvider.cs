@@ -32,7 +32,16 @@ public class DepotChunkProvider : IChunkedStreamSource
     public Size ChunkSize => Size.MB;
 
     public ulong ChunkCount => (ulong)_fileData.Chunks.Length;
-    
+    public ulong GetOffset(ulong chunkIndex)
+    {
+        return _chunksSorted[chunkIndex].Offset;
+    }
+
+    public int GetChunkSize(ulong chunkIndex)
+    {
+        return (int)_chunksSorted[chunkIndex].UncompressedSize.Value;
+    }
+
     public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
     {
         var chunk = _chunksSorted[chunkIndex];

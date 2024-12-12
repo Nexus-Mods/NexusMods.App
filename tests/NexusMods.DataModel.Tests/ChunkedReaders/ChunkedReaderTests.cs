@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Hashing.xxHash3;
@@ -131,29 +132,50 @@ public class ChunkedReaderTests
     {
         private readonly MemoryStream _ms;
         private readonly int _chunkSize;
+        private (ulong Offset, byte[] Data)[] _chunks;
 
         public ChunkedMemoryStream(MemoryStream ms, int chunkSize)
         {
             _chunkSize = chunkSize;
             _ms = ms;
 
+            
+            List<(ulong Offset, byte[] Data)> chunks = [];
+            var offset = 0;
+            var done = false;
+            while (!done)
+            {
+                var size = Random.Shared.Next(128, 1024);
+                if (offset + size > ms.Length)
+                {
+                    size = (int)(ms.Length - offset);
+                    done = true;
+                }
+                _ms.Position = offset;
+                var buffer = new byte[size];
+                _ms.ReadExactly(buffer);
+                chunks.Add(((ulong)offset, buffer));
+                offset += size;
+            }
+            _chunks = chunks.ToArray();
         }
 
         public Size Size => Size.FromLong(_ms.Length);
-        public Size ChunkSize => Size.FromLong(_chunkSize);
-        public ulong ChunkCount => (ulong)Math.Ceiling(_ms.Length / (double)_chunkSize);
+        public ulong ChunkCount => (ulong)_chunks.Length;
+        public ulong GetOffset(ulong chunkIndex) => _chunks[chunkIndex].Offset;
+        public int GetChunkSize(ulong chunkIndex) => _chunks[chunkIndex].Data.Length;
+
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
         {
-            var offset = chunkIndex * (ulong)_chunkSize;
-            _ms.Position = (long)offset;
-            await _ms.ReadAsync(buffer, token);
+            await Task.Yield();
+            Debug.Assert(buffer.Length == _chunks[chunkIndex].Data.Length);
+            _chunks[chunkIndex].Data.CopyTo(buffer.Span);
         }
 
         public void ReadChunk(Span<byte> buffer, ulong chunkIndex)
         {
-            var offset = chunkIndex * (ulong)_chunkSize;
-            _ms.Position = (long)offset;
-            _ms.Read(buffer);
+            Debug.Assert(buffer.Length == _chunks[chunkIndex].Data.Length);
+            _chunks[chunkIndex].Data.CopyTo(buffer);
         }
     }
 }

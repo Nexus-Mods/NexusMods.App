@@ -42,27 +42,18 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
             return 0;
         }
 
-        var chunkIdx = _position / _source.ChunkSize.Value;
-        var chunkOffset = _position % _source.ChunkSize.Value;
-        var isLastChunk = chunkIdx == _source.ChunkCount - 1;
-        var chunk = GetChunk(chunkIdx);
+        var chunkIdx = FindChunkIndex(_position);
+        var chunkOffset = _position - _source.GetOffset(chunkIdx);
+        var chunkSize = _source.GetChunkSize(chunkIdx);
+        var chunk = GetChunk(chunkIdx)[..chunkSize];
         var readToEnd = Math.Clamp(_source.Size.Value - _position, 0, Int32.MaxValue);
 
-        var toRead = Math.Min(buffer.Length, (int)(_source.ChunkSize.Value - chunkOffset));
+        var toRead = Math.Min(buffer.Length, chunk.Length - (int)chunkOffset);
         toRead = Math.Min(toRead, (int)readToEnd);
-        
-        if (isLastChunk)
-        {
-            var lastChunkExtraSize = _source.Size.Value % _source.ChunkSize.Value;
-            if (lastChunkExtraSize > 0)
-            {
-                toRead = Math.Min(toRead, (int)lastChunkExtraSize);
-            }
-        }
 
         chunk.Slice((int)chunkOffset, toRead)
             .Span
-            .CopyTo(buffer.SliceFast(0, toRead));
+            .CopyTo(buffer);
         _position += (ulong)toRead;
         
         Debug.Assert(_position <= _source.Size.Value, "Read more than the size of the stream");
@@ -85,26 +76,18 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
             return 0;
         }
 
-        var chunkIdx = _position / _source.ChunkSize.Value;
-        var chunkOffset = _position % _source.ChunkSize.Value;
-        var isLastChunk = chunkIdx == _source.ChunkCount - 1;
-        var chunk = await GetChunkAsync(chunkIdx, cancellationToken);
+        var chunkIdx = FindChunkIndex(_position);
+        var chunkOffset = _position - _source.GetOffset(chunkIdx);
+        var chunkSize = _source.GetChunkSize(chunkIdx);
+        var chunk = (await GetChunkAsync(chunkIdx, cancellationToken))[..chunkSize];
         var readToEnd = Math.Clamp(_source.Size.Value - _position, 0, Int32.MaxValue);
 
-        var toRead = Math.Min(buffer.Length, (int)(_source.ChunkSize.Value - chunkOffset));
+        var toRead = Math.Min(buffer.Length, chunk.Length - (int)chunkOffset);
         toRead = Math.Min(toRead, (int)readToEnd);
-        if (isLastChunk)
-        {
-            var lastChunkExtraSize = _source.Size.Value % _source.ChunkSize.Value;
-            if (lastChunkExtraSize > 0)
-            {
-                toRead = Math.Min(toRead, (int)lastChunkExtraSize);
-            }
-        }
 
         chunk.Slice((int)chunkOffset, toRead)
             .Span
-            .CopyTo(buffer.Span.SliceFast(0, toRead));
+            .CopyTo(buffer.Span);
         _position += (ulong)toRead;
         Debug.Assert(_position <= _source.Size.Value, "Read more than the size of the stream");
         return toRead;
@@ -117,8 +100,9 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
             return memory!.Memory;
         }
 
-        var memoryOwner = _pool.Rent((int)_source.ChunkSize.Value);
-        await _source.ReadChunkAsync(memoryOwner.Memory, index, token);
+        var chunkSize = _source.GetChunkSize(index);
+        var memoryOwner = _pool.Rent(chunkSize);
+        await _source.ReadChunkAsync(memoryOwner.Memory[..chunkSize], index, token);
         _cache.Add(index, memoryOwner);
         return memoryOwner.Memory;
     }
@@ -130,12 +114,39 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
             return memory!.Memory;
         }
 
-        var memoryOwner = _pool.Rent((int)_source.ChunkSize.Value);
-        _source.ReadChunk(memoryOwner.Memory.Span, index);
+        var chunkSize = _source.GetChunkSize(index);
+        var memoryOwner = _pool.Rent(chunkSize);
+        var chunkMemory = memoryOwner.Memory[..chunkSize];
+        _source.ReadChunk(chunkMemory.Span, index);
         _cache.Add(index, memoryOwner);
-        return memoryOwner.Memory;
+        return chunkMemory;
     }
 
+    private ulong FindChunkIndex(ulong position)
+    {
+        ulong low = 0, high = _source.ChunkCount - 1;
+        while (low <= high)
+        {
+            var mid = (low + high) / 2;
+            var startOffset = _source.GetOffset(mid);
+            var nextOffset = mid + 1 < _source.ChunkCount ? _source.GetOffset(mid + 1) : _source.Size.Value;
+
+            if (position >= startOffset && position < nextOffset)
+            {
+                return mid;
+            }
+
+            if (position < startOffset)
+            {
+                high = mid - 1;
+            }
+            else
+            {
+                low = mid + 1;
+            }
+        }
+        throw new InvalidOperationException("Position out of range.");
+    }
 
     /// <inheritdoc />
     public override long Seek(long offset, SeekOrigin origin)
@@ -165,7 +176,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     /// <exception cref="NotImplementedException"></exception>
     public override void SetLength(long value)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     /// <summary>
@@ -177,7 +188,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     /// <exception cref="NotImplementedException"></exception>
     public override void Write(byte[] buffer, int offset, int count)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     /// <inheritdoc />

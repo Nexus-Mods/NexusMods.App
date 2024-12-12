@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Hashing.xxHash3;
@@ -22,10 +23,11 @@ public class BasicApiTests(ILogger<BasicApiTests> logger, ISteamSession session)
         
         var largestFile = manifest.Files.OrderByDescending(f => f.Size).First();
         await using var stream = session.GetFileStream(SdvAppId, manifest, largestFile.Path);
-        var hash = await stream.xxHash3Async();
-        stream.Length.Should().Be((long)largestFile.Size.Value);
+        var multiHash = new MultiHasher();
+        var result = await multiHash.HashStream(stream, CancellationToken.None);
         
-        manifest.Should().NotBeNull();
+        stream.Length.Should().Be((long)largestFile.Size.Value);
+        result.Sha1.Should().Be(largestFile.Hash);
     }
     
 }
