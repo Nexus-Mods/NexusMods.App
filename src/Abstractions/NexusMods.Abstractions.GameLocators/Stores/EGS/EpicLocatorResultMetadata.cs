@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators.Stores.EGS;
 
-namespace NexusMods.Abstractions.Games.Stores.EGS;
+namespace NexusMods.Abstractions.GameLocators.Stores.EGS;
 
 /// <summary>
 /// Metadata for games found that implement <see cref="IEpicGame"/>.

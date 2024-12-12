@@ -10,4 +10,9 @@ public interface IPageFactoryContext
     /// persisted.
     /// </summary>
     bool IsEphemeral => false;
+
+    /// <summary>
+    /// Gets the tracking name.
+    /// </summary>
+    string TrackingName => GetType().Name;
 }

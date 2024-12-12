@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators;

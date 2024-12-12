@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
 using DynamicData;
+using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;
@@ -22,8 +24,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
 
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
-
-    private ObservableList<TModel> Roots { get; set; } = [];
+    protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 

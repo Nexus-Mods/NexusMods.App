@@ -16,8 +16,13 @@ public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibrar
     {
         return (this, other) switch
         {
-            (ILibraryItemWithInstallAction, ILibraryItemWithDownloadAction) => -1,
-            (ILibraryItemWithDownloadAction, ILibraryItemWithInstallAction) => 1,
+            (ILibraryItemWithInstallAction, ILibraryItemWithDownloadAction) => 1, // install after download
+            (ILibraryItemWithDownloadAction, ILibraryItemWithInstallAction) => -1, // download before install
+
+            // should sort by job status, completed comes after running and none is at the top
+            (ILibraryItemWithDownloadAction a, ILibraryItemWithDownloadAction b) => ((int)a.DownloadState.Value).CompareTo((int)b.DownloadState.Value),
+
+            (ILibraryItemWithInstallAction a, ILibraryItemWithInstallAction b) => a.IsInstalled.Value.CompareTo(b.IsInstalled.Value),
             _ => 0,
         };
     }

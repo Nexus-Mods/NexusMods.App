@@ -1,0 +1,103 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="sorting:ILoadOrderViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+                                xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
+                                mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+                                x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
+                                x:DataType="sorting:ILoadOrderViewModel">
+
+    <Design.DataContext>
+        <sorting:LoadOrderDesignViewModel />
+    </Design.DataContext>
+
+    <controls:EmptyState x:Name="EmptyState">
+
+        <controls:EmptyState.Subtitle>
+            <TextBlock x:Name="EmptySpaceMessageTextBlock" />
+        </controls:EmptyState.Subtitle>
+
+        <Grid RowDefinitions="Auto, Auto, *">
+
+            <!-- toolbar -->
+            <!-- NOTE(insomnious): I've not stripped these styles into a styles file
+            as this toolbar is only temporary and mostly for show -->
+            <Border x:Name="ToolbarBorder" Grid.Row="0" Classes="Toolbar">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <CheckBox Content="Hide Disabled Collections" IsEnabled="False" />
+                    <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
+                    <controls:StandardButton
+                        Size="Small"
+                        Text="Add to group"
+                        IsEnabled="False" />
+                    <ComboBox SelectedIndex="0" Classes="Secondary Compact" IsEnabled="False">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="New group" Theme="{StaticResource BodyMDNormalTheme}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem Content="Item 1" />
+                        <ComboBoxItem Content="Item 2" />
+                        <ComboBoxItem Content="Item 3" />
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <StackPanel x:Name="LoadOrderAlertStackPanel" Grid.Row="1">
+                <alerts:Alert x:Name="LoadOrderAlert"
+                              Severity="Info"
+                              ShowDismiss="True" />
+
+                <StackPanel x:Name="TitleStackPanel">
+                    <TextBlock x:Name="TitleTextBlock" />
+                    <controls:StandardButton x:Name="InfoAlertButton"
+                                             ShowIcon="IconOnly"
+                                             LeftIcon="{x:Static icons:IconValues.Info}"
+                                             Type="Tertiary"
+                                             Fill="None" />
+                </StackPanel>
+            </StackPanel>
+
+            <Grid x:Name="MainGrid" Grid.Row="2" ColumnDefinitions="32, *">
+
+                <!-- left column (trophy bar) -->
+                <!-- Transparent Background so the tooltip hit box covers the whole control -->
+                <DockPanel x:Name="TrophyBarPanel">
+                    <icons:UnifiedIcon x:Name="TrophyIcon"
+                                       DockPanel.Dock="Top"
+                                       Value="{x:Static icons:IconValues.Trophy}" />
+                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
+                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
+                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
+                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
+                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                    </Grid>
+                </DockPanel>
+
+                <!-- right column (tree data grid) -->
+                <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
+                              AutoDragDropRows="False"
+                              CanUserResizeColumns="False"
+                              CanUserSortColumns="False"
+                              ShowColumnHeaders="True"
+                              RowDrop="OnRowDrop">
+
+                    <TreeDataGrid.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceInclude
+                                    Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </TreeDataGrid.Resources>
+                </TreeDataGrid>
+            </Grid>
+        </Grid>
+    </controls:EmptyState>
+
+</reactiveUi:ReactiveUserControl>

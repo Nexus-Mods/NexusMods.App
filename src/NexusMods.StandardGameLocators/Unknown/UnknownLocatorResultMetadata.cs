@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.GameLocators;
 
-namespace NexusMods.Abstractions.Games.Stores.Unknown;
+namespace NexusMods.StandardGameLocators.Unknown;
 
 /// <summary>
 /// <see cref="IGameLocatorResultMetadata"/> implementation for nothing.

@@ -93,6 +93,7 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
@@ -100,6 +101,7 @@
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
+        <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -126,12 +128,6 @@
         </Compile>
         <Compile Update="RightContent\Downloads\InProgressViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuDesignViewModel.cs">
-            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuViewModel.cs">
-            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
@@ -498,12 +494,6 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleViewModel.cs">
           <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Downloads\InProgressDesignViewModel.cs">
-          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Downloads\InProgressViewModel.cs">
-          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
           <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
         </Compile>
@@ -662,6 +652,15 @@
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageDesignViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\LoadOrdersPageViewModel.cs">
+          <DependentUpon>ILoadOrdersPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadOrder\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\MiniGameWidget\MiniGameWidget.axaml.cs">
           <DependentUpon>MiniGameWidget.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -677,6 +676,37 @@
         </Compile>
         <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
           <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\Prototype\LoadOrderItemModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrdersWipPageViewModel.cs">
+          <DependentUpon>ILoadOrdersWIPPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelectionView\SortingSelectionView.axaml.cs">
+          <DependentUpon>SortingSelectionView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionViewModel.cs">
+          <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewDesignViewModel.cs">
+          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
+          <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
+          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
@@ -699,7 +729,6 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
-      <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
       <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 

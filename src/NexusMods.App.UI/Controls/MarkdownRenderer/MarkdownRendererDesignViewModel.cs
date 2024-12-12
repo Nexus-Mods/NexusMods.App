@@ -2,6 +2,7 @@ using System.Reactive;
 using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MarkdownRenderer;

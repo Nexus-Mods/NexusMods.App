@@ -1,12 +1,11 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -57,8 +56,9 @@ public class RunGameTool<T> : IRunGameTool
     public string Name => $"Run {_game.Name}";
 
     /// <summary/>
-    public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public virtual async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)
     {
+        commandLineArgs ??= [];
         _logger.LogInformation("Starting {Name}", Name);
         
         var program = await GetGamePath(loadout);
@@ -70,10 +70,10 @@ public class RunGameTool<T> : IRunGameTool
             switch (locator)
             {
                 case SteamLocatorResultMetadata steamLocatorResultMetadata:
-                    await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken);
+                    await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken, commandLineArgs);
                     return;
                 case HeroicGOGLocatorResultMetadata heroicGOGLocatorResultMetadata:
-                    await RunThroughHeroic("gog", heroicGOGLocatorResultMetadata.Id, cancellationToken);
+                    await RunThroughHeroic("gog", heroicGOGLocatorResultMetadata.Id, cancellationToken, commandLineArgs);
                     return;
             }
         }
@@ -165,7 +165,7 @@ public class RunGameTool<T> : IRunGameTool
         return process;
     }
 
-    private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
+    private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
         if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
 
@@ -175,8 +175,18 @@ public class RunGameTool<T> : IRunGameTool
         // the current starts, so we ignore every reaper process that already exists.
         var existingReaperProcesses = Process.GetProcessesByName("reaper").Select(x => x.Id).ToHashSet();
 
+        // Build the Steam URL with optional command line arguments
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
-        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
+        var steamUrl = $"steam://run/{appId.ToString(CultureInfo.InvariantCulture)}";
+        if (commandLineArgs is { Length: > 0 })
+        {
+            var encodedArgs = commandLineArgs
+                .Select(Uri.EscapeDataString)
+                .Aggregate((a, b) => $"{a} {b}");
+            steamUrl += $"//{encodedArgs}/";
+        }
+
+        await _osInterop.OpenUrl(new Uri(steamUrl), fireAndForget: true, cancellationToken: cancellationToken);
 
         var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
         if (steam is null) return;
@@ -189,11 +199,15 @@ public class RunGameTool<T> : IRunGameTool
         await reaper.WaitForExitAsync(cancellationToken);
     }
 
-    private async Task RunThroughHeroic(string type, long appId, CancellationToken cancellationToken)
+    private async Task RunThroughHeroic(string type, long appId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
         Debug.Assert(OSInformation.Shared.IsLinux);
 
         // TODO: track process
+        if (commandLineArgs.Length > 0)
+            _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
+                             $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
+
         await _osInterop.OpenUrl(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
     }
 
@@ -258,7 +272,7 @@ public class RunGameTool<T> : IRunGameTool
     {
         return monitor.Begin<ITool, Unit>(this, async _ =>
         {
-            await Execute(loadout, cancellationToken);
+            await Execute(loadout, cancellationToken, []);
             return Unit.Default;
         });
     }

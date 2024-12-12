@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 [PublicAPI]
 public partial class CollectionDownload : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.CollectionDownload";
+    private const string Namespace = "NexusMods.NexusModsLibrary.CollectionDownload";
 
     /// <summary>
     /// The revision this download is a part of.
@@ -27,4 +27,14 @@ public partial class CollectionDownload : IModelDefinition
     /// Whether the download is optional.
     /// </summary>
     public static readonly BooleanAttribute IsOptional = new(Namespace, nameof(IsOptional));
+
+    /// <summary>
+    /// Index into the source array.
+    /// </summary>
+    public static readonly Int32Attribute ArrayIndex = new(Namespace, nameof(ArrayIndex)) { IsIndexed = true };
+
+    public partial struct ReadOnly
+    {
+        public bool IsRequired => !IsOptional;
+    }
 }

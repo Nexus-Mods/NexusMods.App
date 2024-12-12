@@ -2,8 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Spacing="10" Height="400">
+        <StackPanel Orientation="Vertical" Spacing="10" Height="400" Width="400">
             <controls:EmptyState Header="You've got nothing" IsActive="True">
                 <controls:EmptyState.Subtitle>
                     <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
@@ -60,6 +61,7 @@
                     <Setter Property="VerticalAlignment" Value="Center" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="TextAlignment" Value="Center" />
                 </Style>
             </Style>
         </Style>

@@ -1,4 +1,5 @@
 using System.Reactive;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.LoadoutCard;

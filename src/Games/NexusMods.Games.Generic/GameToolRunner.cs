@@ -2,7 +2,7 @@ using System.Text;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
@@ -21,13 +21,13 @@ namespace NexusMods.Games.Generic;
 public class GameToolRunner
 {
     private readonly IProcessFactory _processFactory;
-    private readonly ProtontricksDependency? _protontricks;
+    private readonly AggregateProtontricksDependency? _protontricks;
 
     /// <summary/>
     public GameToolRunner(IServiceProvider provider)
     {
         _processFactory = provider.GetRequiredService<IProcessFactory>();
-        _protontricks = provider.GetService<ProtontricksDependency>();
+        _protontricks = provider.GetService<AggregateProtontricksDependency>();
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class GameToolRunner
             && install.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
         {
             var appId = steamLocatorResultMetadata.AppId;
-            command = _protontricks.MakeLaunchCommand(command, appId);
+            command = await _protontricks.MakeLaunchCommand(command, appId);
             return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken);
         }
 

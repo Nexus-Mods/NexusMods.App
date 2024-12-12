@@ -1,5 +1,3 @@
-using System.Reactive.Linq;
-using Avalonia.Input.Raw;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -33,9 +31,10 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <inheritdoc/>
     public Observable<UserInfo?> UserInfoObservable => _userInfo;
 
-    private readonly IDisposable _observeDatomDisposable;
+    /// <inheritdoc/>
+    public UserInfo? UserInfo { get; private set; }
 
-    public bool IsPremium { get; private set; }
+    private readonly IDisposable _observeDatomDisposable;
 
     /// <summary>
     /// Constructor.
@@ -67,13 +66,13 @@ public sealed class LoginManager : IDisposable, ILoginManager
                 if (!hasValue)
                 {
                     _userInfo.OnNext(value: null);
-                    IsPremium = false;
+                    UserInfo = null;
                 }
                 else
                 {
                     var userInfo = await Verify(cancellationToken);
                     _userInfo.OnNext(userInfo);
-                    IsPremium = userInfo?.IsPremium ?? false;
+                    UserInfo = userInfo;
                 }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
@@ -152,7 +151,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        await _conn.Excise(JWTToken.All(_conn.Db).Select(e => e.Id).ToArray());
+        var tokenEntities = JWTToken.All(_conn.Db).Select(e => e.Id).ToArray();
+
+        // Retract the entities first, so the UI updates, then excise them
+        using var tx = _conn.BeginTransaction();
+        foreach (var entity in tokenEntities)
+            tx.Delete(entity, false);
+        await tx.Commit();
+
+
+        await _conn.Excise(tokenEntities);
     }
     
     

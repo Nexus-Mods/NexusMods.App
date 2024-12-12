@@ -1,6 +1,4 @@
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
-
-namespace NexusMods.Abstractions.Games.Loadouts.Sorting;
+namespace NexusMods.Abstractions.Loadouts.Sorting;
 
 /// <summary>
 ///     Provides sorting capabilities for mods.

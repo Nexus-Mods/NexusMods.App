@@ -2,7 +2,6 @@ using GameFinder.StoreHandlers.EADesktop;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EADesktop;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Stores.EADesktop;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

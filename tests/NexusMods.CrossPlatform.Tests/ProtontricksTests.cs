@@ -10,7 +10,7 @@ public class ProtontricksTests
     [InlineData("protontricks", null)]
     public void TestTryParseVersion(string input, string? expectedRawVersion)
     {
-        _ = ProtontricksDependency.TryParseVersion(input, out var rawVersion, out _);
+        _ = ProtontricksNativeDependency.TryParseVersion(input, out var rawVersion, out _);
         rawVersion.Should().Be(expectedRawVersion);
     }
 }

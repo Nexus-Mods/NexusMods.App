@@ -43,13 +43,13 @@ public sealed class LauncherManagerFactory
             static (installationPath, tuple) => ValueFactory(tuple._serviceProvider, installationPath, tuple.store), (_serviceProvider, store));
     }
 
-    public LauncherManagerNexusModsApp Get(string installationPath, Bannerlord.LauncherManager.Models.GameStore store)
+    public LauncherManagerNexusModsApp Get(string installationPath, global::Bannerlord.LauncherManager.Models.GameStore store)
     {
         return _instances.GetOrAdd(installationPath,
             static (installationPath, tuple) => ValueFactory(tuple._serviceProvider, installationPath, tuple.store), (_serviceProvider, store));
     }
 
-    private static LauncherManagerNexusModsApp ValueFactory(IServiceProvider serviceProvider, string installationPath, Bannerlord.LauncherManager.Models.GameStore store)
+    private static LauncherManagerNexusModsApp ValueFactory(IServiceProvider serviceProvider, string installationPath, global::Bannerlord.LauncherManager.Models.GameStore store)
     {
         return new LauncherManagerNexusModsApp(serviceProvider, installationPath, store);
     }

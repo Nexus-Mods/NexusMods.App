@@ -1,5 +1,4 @@
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 
 namespace NexusMods.Games.FOMOD;
 

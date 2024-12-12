@@ -1,7 +1,7 @@
 ﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 
 namespace NexusMods.Abstractions.Loadouts;
 

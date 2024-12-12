@@ -1,9 +1,12 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -26,7 +29,8 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
         IWindowManager windowManager,
         WorkspaceId workspaceId,
         IConnection connection,
-        RevisionId revision)
+        RevisionId revision,
+        LoadoutId targetLoadout)
     {
         _revision = CollectionRevisionMetadata.FindByRevisionId(connection.Db, revision).First();
         _collection = _revision.Collection;
@@ -39,6 +43,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
             {
                 Context = new CollectionDownloadPageContext
                 {
+                    TargetLoadout = targetLoadout,
                     CollectionRevisionMetadataId = _revision,
                 },
                 FactoryId = CollectionDownloadPageFactory.StaticId,
@@ -66,12 +71,14 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     [Reactive] public Bitmap? Image { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     public string Summary => _collection.Summary;
-    public string Category => string.Join(" \u2022 ", _collection.Tags.Select(t => t.Name));
-    public int ModCount => _revision.Downloads.Count;
+    public string Category => _collection.Category.Name;
+    public int NumDownloads => _revision.Downloads.Count;
     public ulong EndorsementCount => _collection.Endorsements;
-    public ulong DownloadCount => (ulong)_revision.Downloads.Count;
+    public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating);
+    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating.ValueOr(0));
+
+    public bool IsAdult => _revision.IsAdult;
     public string AuthorName => _collection.Author.Name;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 }
