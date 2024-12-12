@@ -29,7 +29,7 @@
                 Value="{x:Static icons:IconValues.ChevronRight}"/>
             
             <StackPanel Margin="16,0">
-                <TextBlock x:Name="NameText" 
+                <TextBlock x:Name="TitleText" 
                            Text="Name"
                            Theme="{StaticResource BodyMDNormalTheme}"
                            Foreground="{StaticResource NeutralStrongBrush}"

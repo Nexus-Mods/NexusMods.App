@@ -10,11 +10,15 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
-    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
     <!-- TODO: anymore work on this and it should be moved to a separate style file -->
 
+    <Design.DataContext>
+        <local:DiagnosticListDesignViewModel />
+    </Design.DataContext>
+    
     <reactive:ReactiveUserControl.Styles>
         <Style Selector="ScrollViewer">
             <Setter Property="ClipToBounds" Value="False" />
@@ -34,7 +38,7 @@
             </Style>
         </controls:EmptyState.Styles>
 
-        <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="12,24,12,24">
+        <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24">
             
             <StackPanel Spacing="24">
                 

@@ -9,6 +9,8 @@ public interface IDiagnosticEntryViewModel : IViewModelInterface
 {
     Diagnostic Diagnostic { get; }
 
+    string Title { get; }
+    
     string Summary { get; }
     
     DiagnosticSeverity Severity { get; }

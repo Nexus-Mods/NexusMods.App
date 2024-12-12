@@ -53,6 +53,11 @@ public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPage
 
     private string _tabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
 
+    protected APageViewModel()
+    {
+        WindowManager = null!;
+    }
+
     /// <inheritdoc/>
     public string TabTitle
     {
