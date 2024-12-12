@@ -692,8 +692,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
                     return 0;
                 
-                // return a placeholder priority based on creation time of the LoadoutGroup.
-                // This allows for some degree of control and predictability in the selection process
+                // Return a placeholder priority based on creation time of the LoadoutGroup, newest wins.
+                // This allows for some degree of control and predictability in the selection process.
                 return group.GetCreatedAt().ToUnixTimeSeconds();
             }
     
