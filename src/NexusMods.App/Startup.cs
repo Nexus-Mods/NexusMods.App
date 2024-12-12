@@ -100,7 +100,8 @@ public class Startup
             .UsePlatformDetect()
             .LogToTrace()
             .UseR3()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .With(new SkiaOptions { UseOpacitySaveLayer = true });
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));
