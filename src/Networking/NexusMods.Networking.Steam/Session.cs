@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam;
@@ -26,8 +25,7 @@ public class Session : ISteamSession
     
     private readonly ILogger<Session> _logger;
     private readonly IAuthInterventionHandler _handler;
-    private readonly SteamConfiguration _steamConfiguration;
-    
+
     /// <summary>
     /// Base steam component, this is used for communicating with the Steam network.
     /// </summary>
@@ -60,25 +58,26 @@ public class Session : ISteamSession
     private ConcurrentDictionary<(AppId, DepotId), byte[]> _depotKeys = new();
     private ConcurrentDictionary<(AppId, DepotId, ManifestId, string Branch), ulong> _manifestRequestCodes = new();
     
-    public Session(ILogger<Session> logger, IAuthInterventionHandler handler, IAuthStorage storage, HttpClient httpClient)
+    public Session(ILogger<Session> logger, IAuthInterventionHandler handler, IAuthStorage storage)
     {
-        
         _logger = logger;
         _handler = handler;
         _authStorage = storage;
 
-        _steamConfiguration = SteamConfiguration.Create(configurator =>
+        var steamConfiguration = SteamConfiguration.Create(configurator =>
         {
+            // The client will dispose of these on its own
             configurator.WithHttpClientFactory(() => new HttpClient());
         });
-        _steamClient = new SteamClient(_steamConfiguration);
+        _steamClient = new SteamClient(steamConfiguration);
         _steamUser = _steamClient.GetHandler<SteamUser>()!;
         _steamApps = _steamClient.GetHandler<SteamApps>()!;
         _steamContent = _steamClient.GetHandler<SteamContent>()!;
         _cdnClient = new Client(_steamClient);
         _cdnPool = new CDNPool(this);
         
-        
+        // Some parts of this interface use callbacks instead of more natural async methods. So we need to register
+        // those callbacks here.
         _callbacks = new CallbackManager(_steamClient);
         _callbacks.Subscribe(WrapAsync<SteamClient.ConnectedCallback>(ConnectedCallback));
         _callbacks.Subscribe(WrapAsync<SteamClient.DisconnectedCallback>(DisconnectedCallback));
@@ -105,12 +104,7 @@ public class Session : ISteamSession
     {
         return Task.CompletedTask;
     }
-
-    private async Task PICSProductInfoCallback(SteamApps.PICSProductInfoCallback callback)
-    {
-        _logger.LogInformation("Received PICSProductInfoCallback");
-    }
-
+    
     private async Task LoggedOnCallback(SteamUser.LoggedOnCallback callback)
     {
         _isLoggedOn = true;
@@ -170,8 +164,7 @@ public class Session : ISteamSession
     {
         return arg => Task.Run(async () => await action(arg));
     }
-
-
+    
     public async Task<ProductInfo> GetProductInfoAsync(AppId appId, CancellationToken cancellationToken = default)
     {
         await ConnectedAsync(cancellationToken);
