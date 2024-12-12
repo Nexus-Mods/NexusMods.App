@@ -308,15 +308,24 @@ public partial class NexusModsLibrary
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {
-        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
-            throw new InvalidOperationException("The source collection is not a library archive");
-
-        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        var jsonFileEntity = GetCollectionJsonFile(collectionLibraryFile);
 
         await using var data = await _fileStore.GetFileStream(jsonFileEntity.AsLibraryFile().Hash, token: cancellationToken);
         var root = await JsonSerializer.DeserializeAsync<CollectionRoot>(data, _jsonSerializerOptions, cancellationToken: cancellationToken);
 
         if (root is null) throw new InvalidOperationException("Unable to deserialize collection JSON file");
         return root;
+    }
+
+    /// <summary>
+    /// Gets the collection JSON file.
+    /// </summary>
+    public LibraryArchiveFileEntry.ReadOnly GetCollectionJsonFile(NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile)
+    {
+        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The source collection is not a library archive");
+
+        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        return jsonFileEntity;
     }
 }
