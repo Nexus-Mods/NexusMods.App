@@ -6,12 +6,12 @@ using System.Text.Json.Serialization;
 namespace NexusMods.Abstractions.Hashes;
 
 /// <summary>
-/// A SHA-1 hash, 20 bytes long.
+/// A MD5 hash, 16 bytes long.
 /// </summary>
-[JsonConverter(typeof(Sha1JsonConverter))]
-public unsafe struct Sha1 : IEquatable<Sha1>
+[JsonConverter(typeof(Md5JsonConverter))]
+public unsafe struct Md5 : IEquatable<Md5>
 {
-    public bool Equals(Sha1 other)
+    public bool Equals(Md5 other)
     {
         return WritableSpan.SequenceEqual(other.WritableSpan);
     }
@@ -26,20 +26,20 @@ public unsafe struct Sha1 : IEquatable<Sha1>
         return MemoryMarshal.Read<int>(WritableSpan);
     }
 
-    private fixed byte _value[20];
+    private fixed byte _value[16];
     
     /// <summary>
     /// Get the hash as a byte span.
     /// </summary>
-    public static Sha1 From(ReadOnlySpan<byte> value)
+    public static Md5 From(ReadOnlySpan<byte> value)
     {
-        if (value.Length != 20)
-            throw new ArgumentException("The value must be 20 bytes long.", nameof(value));
+        if (value.Length != 16)
+            throw new ArgumentException("The value must be 16 bytes long.", nameof(value));
         
-        var sha = new Sha1();
-        value.CopyTo(sha.WritableSpan);
+        var md5 = new Md5();
+        value.CopyTo(md5.WritableSpan);
         
-        return sha;
+        return md5;
     }
     
     /// <summary>
@@ -47,7 +47,7 @@ public unsafe struct Sha1 : IEquatable<Sha1>
     /// </summary>
     public byte[] ToArray()
     {
-        var array = new byte[20];
+        var array = new byte[16];
         WritableSpan.CopyTo(array);
         return array;
     }
@@ -55,12 +55,12 @@ public unsafe struct Sha1 : IEquatable<Sha1>
     /// <summary>
     /// Allocation free parsing of a SHA-1 hash from a hex string.
     /// </summary>
-    public static Sha1 ParseFromHex(string hex)
+    public static Md5 ParseFromHex(string hex)
     {
-        if (hex.Length != 40)
+        if (hex.Length != 32)
             throw new ArgumentException("The hex string must be 40 characters long.", nameof(hex));
         
-        var sha = new Sha1();
+        var sha = new Md5();
         Convert.FromHexString(hex, sha.WritableSpan, out _, out _);
         return sha;
     }
@@ -70,7 +70,7 @@ public unsafe struct Sha1 : IEquatable<Sha1>
     /// </summary>
     public bool TryToHex(Span<char> hex)
     {
-        Debug.Assert(hex.Length >= 40);
+        Debug.Assert(hex.Length >= 16);
         return Convert.TryToHexString(WritableSpan, hex, out _);
     }
     
@@ -91,22 +91,22 @@ public unsafe struct Sha1 : IEquatable<Sha1>
         {
             fixed(byte* pValue = _value)
             {
-                return new(pValue, 20);
+                return new(pValue, 16);
             }
         }
     }
 }
 
-internal class Sha1JsonConverter : JsonConverter<Sha1>
+internal class Md5JsonConverter : JsonConverter<Md5>
 {
-    public override Sha1 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Md5 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return Sha1.ParseFromHex(reader.GetString()!);
+        return Md5.ParseFromHex(reader.GetString()!);
     }
 
-    public override void Write(Utf8JsonWriter writer, Sha1 value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Md5 value, JsonSerializerOptions options)
     {
-        Span<char> hex = stackalloc char[40];
+        Span<char> hex = stackalloc char[32];
         value.TryToHex(hex);
         writer.WriteStringValue(hex);
     }

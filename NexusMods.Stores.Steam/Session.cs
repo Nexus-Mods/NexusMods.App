@@ -147,9 +147,7 @@ public class Session
     {
         var requestCode = await _steamContent.GetManifestRequestCode(depotId, appId, manifestId, branch);
         if (requestCode == 0)
-            Console.WriteLine("Failed to get request code for depot {0} manifest {1}", depotId, manifestId);
-        else
-            Console.WriteLine("Got request code {0} for depot {1} manifest {2}", requestCode, depotId, manifestId);
+            throw new Exception("Unable to get request code for depot " + depotId + " manifest " + manifestId);
         return requestCode;
     }
 

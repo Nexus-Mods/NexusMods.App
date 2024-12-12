@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Steam.Values;
 /// A globally unique identifier for an application on Steam.
 /// </summary>
 [ValueObject<uint>]
-public readonly partial struct AppId
+public readonly partial struct AppId : IAugmentWith<JsonAugment>
 {
     
 }

@@ -1,5 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Steam;
+using NexusMods.Abstractions.Steam.Values;
+using NexusMods.Networking.Steam.CLI;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.Networking.Steam;
 
@@ -8,7 +11,7 @@ public static class Services
     /// <summary>
     /// Add the steam store DI systems to the container
     /// </summary>
-    public static IServiceCollection AddSteamStore(this IServiceCollection services)
+    public static IServiceCollection AddSteam(this IServiceCollection services)
     {
         services.AddSingleton<ISteamSession, Session>();
         return services;
@@ -29,6 +32,22 @@ public static class Services
     public static IServiceCollection AddLocalAuthFileStorage(this IServiceCollection services)
     {
         services.AddSingleton<IAuthStorage, AppDirectoryAuthStorage>();
+        return services;
+    }
+    
+    public static IServiceCollection AddSteamCli(this IServiceCollection services)
+    {
+        services.AddOptionParser(s =>
+            {
+                if (uint.TryParse(s, out var parsed))
+                    return (AppId.From(parsed), null);
+                return (default(AppId), "Invalid AppId");
+            }
+        );
+        services.AddSteam();
+        services.AddSingleton<IAuthInterventionHandler, LoggingAuthInterventionHandler>();
+        services.AddLocalAuthFileStorage();
+        services.AddSteamVerbs();
         return services;
     }
     

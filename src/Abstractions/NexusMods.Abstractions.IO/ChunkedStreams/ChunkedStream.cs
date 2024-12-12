@@ -30,7 +30,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
     /// <inheritdoc />
     public override void Flush() { }
-    
+
     /// <inheritdoc />
     public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
 
@@ -69,7 +69,13 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         return toRead;
     }
 
-
+    /// <inheritdoc />
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        var memory = new Memory<byte>(buffer, offset, count);
+        return ReadAsync(memory, cancellationToken).AsTask();
+    }
+    
     /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
         CancellationToken cancellationToken = new())

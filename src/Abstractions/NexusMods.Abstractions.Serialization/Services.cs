@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.Abstractions.Settings;
 
@@ -25,6 +26,7 @@ public static class Services
         {
             var opts = new JsonSerializerOptions();
             opts.Converters.Add(new JsonStringEnumConverter());
+            opts.Converters.Add(new HashJsonConverter());
             foreach (var converter in s.GetServices<JsonConverter>())
                 opts.Converters.Add(converter);
             return opts;
