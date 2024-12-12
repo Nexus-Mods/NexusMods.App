@@ -488,6 +488,11 @@ public static class IconValues
     #region Brand Pictograms
     
     /// <summary>
+    /// Brand pictogram for Health
+    /// </summary>
+    public static readonly IconValue PictogramHealth = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg"));
+    
+    /// <summary>
     /// Brand pictogram for Games in 3D
     /// </summary>
     public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
