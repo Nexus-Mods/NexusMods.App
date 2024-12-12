@@ -1,3 +1,19 @@
+# v0.7.1 - 2024-12-XX
+This release includes styling for the Load Order panel, the ability to install and remove collections for all users and several improvements to the analytics we collect that will help inform our design decisions. 
+
+- Load order styling.
+- Collections can now be installed by both free and Premium users.
+- Collections can now be deleted from the app.
+- Collections can now handle off-site files.
+- The app can be updated without a full reset.
+- Event logging/analytics.
+- Added a placeholder when the app hasn't found any games.
+- Added support for running Protontricks via Flatpak (Linux)
+- Fixed counting mods
+- Game Pass support toggle now requires a restart
+- Fixed an issue 
+
+
 # v0.7.0 - 2024-11-27
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
