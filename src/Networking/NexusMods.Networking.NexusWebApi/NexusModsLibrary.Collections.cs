@@ -114,7 +114,7 @@ public partial class NexusModsLibrary
 
         foreach (var collectionMod in collectionRoot.Mods)
         {
-            if (collectionMod.Source.Type != ModSourceType.nexus) continue;
+            if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
             var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
@@ -169,13 +169,13 @@ public partial class NexusModsLibrary
             var source = collectionMod.Source;
             switch (source.Type)
             {
-                case ModSourceType.nexus:
+                case ModSourceType.NexusMods:
                     HandleNexusModsDownload(db, tx, downloadEntity, collectionMod, gameIds, resolvedEntitiesLookup);
                     break;
-                case ModSourceType.direct or ModSourceType.browse:
+                case ModSourceType.Direct or ModSourceType.Browse:
                     HandleExternalDownload(tx, downloadEntity, collectionMod);
                     break;
-                case ModSourceType.bundle:
+                case ModSourceType.Bundle:
                     HandleBundledFiles(tx, downloadEntity, collectionMod);
                     break;
                 default:
