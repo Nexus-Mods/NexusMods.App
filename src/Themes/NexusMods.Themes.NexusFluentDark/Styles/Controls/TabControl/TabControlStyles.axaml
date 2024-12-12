@@ -156,7 +156,7 @@
             
             <!-- header padding -->
             <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="Margin" Value="0,12" />
+                <Setter Property="Margin" Value="0,0" />
             </Style>
             
             <Style Selector="^ TabItem">

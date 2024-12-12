@@ -10,7 +10,7 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
-    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
     <!-- TODO: anymore work on this and it should be moved to a separate style file -->
@@ -35,14 +35,30 @@
         </controls:EmptyState.Styles>
 
         <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="12,24,12,24">
-            <StackPanel>
+            
+            <StackPanel Spacing="24">
+                
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Width="48" Height="48">
+                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramHealth}" />
+                        </Border>
+                        <TextBlock Text="Health Check"
+                                   Theme="{StaticResource HeadingSMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
 
-                <TextBlock Text="Health Check" Theme="{StaticResource HeadingSMSemiTheme}" />
+                    <TextBlock
+                               Text="Review your Loadout for any issues and learn how to resolve them if needed."
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralStrongBrush}" />
+                </StackPanel>
 
-                <TextBlock Text="Review your Loadout for any issues and learn how to resolve them if needed."
-                           Theme="{StaticResource BodyMDNormalTheme}" />
-
-                <TabControl x:Name="HealthCheckTabControl" Classes="Subtabs" Margin="0,24,0,0">
+                <TabControl x:Name="HealthCheckTabControl" 
+                            Classes="Subtabs" 
+                            Margin="0"
+                            Padding="0,24,0,0">
                     <TabItem Header="All (12)" x:Name="AllDiagnosticsTab">
 
                         <ItemsControl x:Name="ItemsControl" ClipToBounds="False">
