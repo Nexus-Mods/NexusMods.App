@@ -34,11 +34,7 @@
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Border Width="48" Height="48">
-                                <icons:UnifiedIcon Size="48">
-                                    <icons:UnifiedIcon.Value>
-                                        <icons:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/brand-game-3d.svg"/>
-                                    </icons:UnifiedIcon.Value>
-                                </icons:UnifiedIcon>
+                                <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
                             </Border>
                             <TextBlock Text="My Games"
                                        Theme="{StaticResource HeadingSMSemiTheme}"
