@@ -71,18 +71,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
-        var requiredDownloadCount = 0;
-        var optionalDownloadCount = 0;
-        foreach (var file in _revision.Downloads)
-        {
-            var isOptional = file.IsOptional;
-
-            requiredDownloadCount += isOptional ? 0 : 1;
-            optionalDownloadCount += isOptional ? 1 : 0;
-        }
-
-        RequiredDownloadsCount = requiredDownloadCount;
-        OptionalDownloadsCount = optionalDownloadCount;
+        RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
+        OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
         CommandDownloadRequiredItems = _canDownloadRequiredItems.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken),

@@ -259,6 +259,16 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Counts the items.
+    /// </summary>
+    public int CountItems(CollectionRevisionMetadata.ReadOnly revisionMetadata, ItemType itemType)
+    {
+        return revisionMetadata.Downloads
+            .Where(download => DownloadMatchesItemType(download, itemType))
+            .Count(download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal());
+    }
+
+    /// <summary>
     /// Returns whether the item matches the given item type.
     /// </summary>
     private static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
