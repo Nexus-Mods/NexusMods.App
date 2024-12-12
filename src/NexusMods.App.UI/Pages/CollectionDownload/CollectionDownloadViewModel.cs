@@ -3,7 +3,9 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -94,7 +96,13 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandInstallOptionalItems = _canInstallOptionalItems.ToReactiveCommand<Unit>();
 
         CommandInstallRequiredItems = _canInstallRequiredItems.ToReactiveCommand<Unit>(
-            executeAsync: async (_, _) => { await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata); },
+            executeAsync: async (_, _) => { await InstallCollectionJob.Create(
+                serviceProvider,
+                targetLoadout,
+                revisionMetadata,
+                items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
+                group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
+            ); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );

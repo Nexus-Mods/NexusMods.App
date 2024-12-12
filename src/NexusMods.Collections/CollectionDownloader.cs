@@ -270,15 +270,9 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the items in the collection were downloaded.
     /// </summary>
-    public static bool IsFullyDownloaded(CollectionRevisionMetadata.ReadOnly revisionMetadata, bool onlyRequired, IDb db)
+    public static bool IsFullyDownloaded(CollectionDownload.ReadOnly[] items, IDb db)
     {
-        foreach (var download in revisionMetadata.Downloads)
-        {
-            if (onlyRequired && download.IsOptional) continue;
-            if (!IsDownloaded(download, db)) return false;
-        }
-
-        return true;
+        return items.All(download => IsDownloaded(download, db));
     }
 
     /// <summary>
@@ -363,5 +357,23 @@ public class CollectionDownloader
         }
 
         await tx.Commit();
+    }
+
+    /// <summary>
+    /// Returns all required items.
+    /// </summary>
+    public CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
+    {
+        var res = new CollectionDownload.ReadOnly[revision.Downloads.Count];
+
+        var i = 0;
+        foreach (var download in revision.Downloads)
+        {
+            if (!DownloadMatchesItemType(download, itemType)) continue;
+            res[i++] = download;
+        }
+
+        Array.Resize(ref res, newSize: i);
+        return res;
     }
 }

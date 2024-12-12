@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
@@ -24,6 +25,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public required NexusModsCollectionLibraryFile.ReadOnly SourceCollection { get; init; }
     public required CollectionRevisionMetadata.ReadOnly RevisionMetadata { get; init; }
+    public required CollectionDownload.ReadOnly[] Items { get; init; }
+    public required Optional<NexusCollectionLoadoutGroup.ReadOnly> Group { get; init; }
 
     public required IServiceProvider ServiceProvider { get; init; }
     public required IFileStore FileStore { get; init; }
@@ -40,11 +43,15 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         IServiceProvider provider,
         LoadoutId target,
         NexusModsCollectionLibraryFile.ReadOnly source,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        CollectionDownload.ReadOnly[] items,
+        Optional<NexusCollectionLoadoutGroup.ReadOnly> group)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new InstallCollectionJob
         {
+            Items = items,
+            Group = group,
             TargetLoadout = target,
             SourceCollection = source,
             RevisionMetadata = revisionMetadata,
@@ -64,7 +71,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(
         IServiceProvider provider,
         LoadoutId target,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        CollectionDownload.ReadOnly[] items,
+        Optional<NexusCollectionLoadoutGroup.ReadOnly> group)
     {
         var connection = provider.GetRequiredService<IConnection>();
         var datoms = connection.Db.Datoms(
@@ -78,6 +87,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new InstallCollectionJob
         {
+            Items = items,
+            Group = group,
             TargetLoadout = target,
             SourceCollection = source,
             RevisionMetadata = revisionMetadata,
@@ -96,15 +107,20 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// </summary>
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)
     {
-        var isReady = CollectionDownloader.IsFullyDownloaded(RevisionMetadata, onlyRequired: true, db: Connection.Db);
+        var isReady = CollectionDownloader.IsFullyDownloaded(Items, db: Connection.Db);
         if (!isReady) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
 
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
         var modsAndDownloads = GatherDownloads(root);
 
         NexusCollectionLoadoutGroup.ReadOnly collectionGroup;
-        using (var tx = Connection.BeginTransaction())
+        if (Group.HasValue)
         {
+            collectionGroup = Group.Value;
+        }
+        else
+        {
+            using var tx = Connection.BeginTransaction() ;
             var group = new NexusCollectionLoadoutGroup.New(tx, out var id)
             {
                 CollectionId = RevisionMetadata.Collection,
@@ -172,17 +188,14 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
     private List<ModAndDownload> GatherDownloads(CollectionRoot root)
     {
-        var map = RevisionMetadata.Downloads.ToDictionary(static download => download.ArrayIndex, static download => download);
+        var map = Items.ToDictionary(static download => download.ArrayIndex, static download => download);
         var list = new List<ModAndDownload>();
 
-        for (var i = 0; i < root.Mods.Length; i++)
+        foreach (var kv in map)
         {
-            var mod = root.Mods[i];
+            var (index, download) = kv;
+            var mod = root.Mods[index];
 
-            // TODO: figure out what to do with optional mods
-            if (mod.Optional) continue;
-
-            if (!map.TryGetValue(i, out var download)) throw new NotImplementedException();
             list.Add((mod, download));
         }
 
