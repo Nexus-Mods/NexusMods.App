@@ -19,7 +19,7 @@ public interface IChunkedStreamSource
     public ulong ChunkCount { get; }
 
     /// <summary>
-    /// Gets the starting offset of the given chunk index.
+    /// Gets the starting offset (relative to the start of the file) of the given chunk index.
     /// </summary>
     public ulong GetOffset(ulong chunkIndex);
 

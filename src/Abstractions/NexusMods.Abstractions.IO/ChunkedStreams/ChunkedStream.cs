@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.IO.ChunkedStreams;
 
@@ -18,8 +17,6 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     /// <summary>
     /// Main constructor, creates a new Chunked stream from the given source, and with a LRU cache of the given size
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="capacity"></param>
     public ChunkedStream(T source, int capacity = 16)
     {
         _position = 0;
@@ -46,7 +43,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         var chunkOffset = _position - _source.GetOffset(chunkIdx);
         var chunkSize = _source.GetChunkSize(chunkIdx);
         var chunk = GetChunk(chunkIdx)[..chunkSize];
-        var readToEnd = Math.Clamp(_source.Size.Value - _position, 0, Int32.MaxValue);
+        var readToEnd = Math.Clamp(_source.Size.Value - _position, 0, int.MaxValue);
 
         var toRead = Math.Min(buffer.Length, chunk.Length - (int)chunkOffset);
         toRead = Math.Min(toRead, (int)readToEnd);
@@ -122,6 +119,9 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         return chunkMemory;
     }
 
+    /// <summary>
+    /// Performs a binary search of the chunks to find the chunk index that contains the given position.
+    /// </summary>
     private ulong FindChunkIndex(ulong position)
     {
         ulong low = 0, high = _source.ChunkCount - 1;
@@ -129,21 +129,20 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         {
             var mid = (low + high) / 2;
             var startOffset = _source.GetOffset(mid);
-            var nextOffset = mid + 1 < _source.ChunkCount ? _source.GetOffset(mid + 1) : _source.Size.Value;
+            
+            ulong nextOffset;
+            if (mid + 1 < _source.ChunkCount)
+                nextOffset = _source.GetOffset(mid + 1);
+            else
+                nextOffset = _source.Size.Value;
 
             if (position >= startOffset && position < nextOffset)
-            {
                 return mid;
-            }
 
             if (position < startOffset)
-            {
                 high = mid - 1;
-            }
             else
-            {
                 low = mid + 1;
-            }
         }
         throw new InvalidOperationException("Position out of range.");
     }

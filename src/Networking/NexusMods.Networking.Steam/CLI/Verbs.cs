@@ -47,15 +47,11 @@ public static class Verbs
             await JsonSerializer.SerializeAsync(outputStream, productInfo, indentedOptions, token);
         }
 
-        //await renderer.RenderAsync(Renderable.TextLine("Product info written to: " + productFile));
+        // For each depot and each manifest, download the manifest and index the files
         foreach (var depot in productInfo.Depots)
         {
-            //await renderer.RenderAsync(Renderable.TextLine("Depot: " + depot.DepotId));
             foreach (var (branch, manifestInfo) in depot.Manifests)
             {
-                //await renderer.RenderAsync(Renderable.TextLine("Branch: " + branch));
-                //await renderer.RenderAsync(Renderable.TextLine("Manifest: " + manifestInfo.ManifestId));
-                
                 var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestInfo.ManifestId, branch, token);
                 
                 var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
