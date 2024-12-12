@@ -680,18 +680,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return files.MaxBy(GetPriority);
 
-        int GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
+        // Placeholder for a more advanced selection algorithm
+        long GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
         {
             foreach (var parent in item.AsLoadoutItem().GetThisAndParents())
             {
                 if (!parent.TryGetAsLoadoutItemGroup(out var group))
                     continue;
-
+                
+                // GameFiles always lose
                 if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
                     return 0;
+                
+                // return a placeholder priority based on creation time of the LoadoutGroup.
+                // This allows for some degree of control and predictability in the selection process
+                return group.GetCreatedAt().ToUnixTimeSeconds();
             }
-
-            return 50;
+    
+            return int.MaxValue;
         }
     }
 
