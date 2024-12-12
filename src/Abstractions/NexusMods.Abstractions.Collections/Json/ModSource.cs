@@ -21,6 +21,13 @@ public class ModSource
     public required ModSourceType Type { get; init; } 
 
     /// <summary>
+    /// Update policy.
+    /// </summary>
+    [JsonPropertyName("updatePolicy")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public UpdatePolicy UpdatePolicy { get; init; }
+
+    /// <summary>
     /// For <see cref="ModSourceType.NexusMods"/>: Nexus Mods Mod ID.
     /// </summary>
     [JsonPropertyName("modId")]
