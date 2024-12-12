@@ -1,131 +1,140 @@
 <Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
+        <Border Padding="16">
 
-        <StackPanel Orientation="Vertical" Width="400" Spacing="16">
-            <StackPanel.Styles>
-                <Style Selector="icons|UnifiedIcon">
-                    <Setter Property="Size" Value="24" />
-                    <Setter Property="Margin" Value="2" />
-                </Style>
-            </StackPanel.Styles>
-            <WrapPanel>
-                <icons:UnifiedIcon Classes="Alert" />
-                <icons:UnifiedIcon Classes="AlertOutline" />
-                <icons:UnifiedIcon Classes="Bell" />
-                <icons:UnifiedIcon Classes="CheckUnderline" />
-                <icons:UnifiedIcon Classes="ClearAll" />
-                <icons:UnifiedIcon Classes="Cog" />
-                <icons:UnifiedIcon Classes="Download" />
-                <icons:UnifiedIcon Classes="HelpCircle" />
-                <icons:UnifiedIcon Classes="Help" />
-                <icons:UnifiedIcon Classes="History" />
-                <icons:UnifiedIcon Classes="Play" />
-                <icons:UnifiedIcon Classes="PlusCircleOutline" />
-                <icons:UnifiedIcon Classes="ProgressDownload" />
-                <icons:UnifiedIcon Classes="PauseCircleOutline" />
-                <icons:UnifiedIcon Classes="PauseCircleFilled" />
-                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                <icons:UnifiedIcon Classes="Star" />
-                <icons:UnifiedIcon Classes="TrashCanOutline" />
-                <icons:UnifiedIcon Classes="PlayCircleOutline" />
-                <icons:UnifiedIcon Classes="PlayCircleFilled" />
-                <icons:UnifiedIcon Classes="Image" />
-                <icons:UnifiedIcon Classes="Description" />
-                <icons:UnifiedIcon Classes="Tune" />
-                <icons:UnifiedIcon Classes="ArrowLeft" />
-                <icons:UnifiedIcon Classes="ArrowRight" />
-                <icons:UnifiedIcon Classes="ArrowDown" />
-                <icons:UnifiedIcon Classes="ArrowUp" />
-                <icons:UnifiedIcon Classes="Plus" />
-                <icons:UnifiedIcon Classes="MenuDown" />
-                <icons:UnifiedIcon Classes="MenuUp" />
-                <icons:UnifiedIcon Classes="Close" />
-                <icons:UnifiedIcon Classes="OpenInNew" />
-                <icons:UnifiedIcon Classes="Tab" />
-                <icons:UnifiedIcon Classes="ChevronLeft" />
-                <icons:UnifiedIcon Classes="ChevronRight" />
-                <icons:UnifiedIcon Classes="FolderOutline" />
-                <icons:UnifiedIcon Classes="FolderOpenOutline" />
-                <icons:UnifiedIcon Classes="File" />
-                <icons:UnifiedIcon Classes="Check" />
-                <icons:UnifiedIcon Classes="CheckCircle" />
-                <icons:UnifiedIcon Classes="CheckCircleOutline" />
-                <icons:UnifiedIcon Classes="DeleteOutline" />
-                <icons:UnifiedIcon Classes="DragHorizontal" />
-                <icons:UnifiedIcon Classes="DragVertical" />
-                <icons:UnifiedIcon Classes="Search" />
-                <icons:UnifiedIcon Classes="Home" />
-                <icons:UnifiedIcon Classes="ToggleSwitch" />
-                <icons:UnifiedIcon Classes="ToggleSwitchOff" />
-                <icons:UnifiedIcon Classes="Game" />
-                <icons:UnifiedIcon Classes="Undo" />
-                <icons:UnifiedIcon Classes="Redo" />
-                <icons:UnifiedIcon Classes="Save" />
-                <icons:UnifiedIcon Classes="Copy" />
-                <icons:UnifiedIcon Classes="Paste" />
-                <icons:UnifiedIcon Classes="AddCircle" />
-                <icons:UnifiedIcon Classes="AlertCircle" />
-                <icons:UnifiedIcon Classes="AlertOctagon" />
-                <icons:UnifiedIcon Classes="FileDocumentOutline" />
-                <icons:UnifiedIcon Classes="MusicNote" />
-                <icons:UnifiedIcon Classes="VideoOutline" />
-                <icons:UnifiedIcon Classes="Refresh" />
-                <icons:UnifiedIcon Classes="Collections" />
-                <icons:UnifiedIcon Classes="Add" />
-                <icons:UnifiedIcon Classes="DeleteForever" />
-                <icons:UnifiedIcon Classes="Mods" />
-                <icons:UnifiedIcon Classes="ModLibrary" />
-                <icons:UnifiedIcon Classes="ListFilled" />
-                <icons:UnifiedIcon Classes="FileEdit" />
-                <icons:UnifiedIcon Classes="Code" />
-                <icons:UnifiedIcon Classes="Discord" />
-                <icons:UnifiedIcon Classes="Forum" />
-                <icons:UnifiedIcon Classes="Sync" />
-                <icons:UnifiedIcon Classes="Visibility" />
-                <icons:UnifiedIcon Classes="PlaylistAdd" />
-                <icons:UnifiedIcon Classes="PlaylistRemove" />
-                <icons:UnifiedIcon Classes="HardDrive" />
-                <icons:UnifiedIcon Classes="ColorLens" />
-                <icons:UnifiedIcon Classes="CheckBox" />
-                <icons:UnifiedIcon Classes="ViewCarousel" />
-                <icons:UnifiedIcon Classes="Lightbulb" />
-                <icons:UnifiedIcon Classes="ThumbUp" />
-                <icons:UnifiedIcon Classes="Database" />
-                <icons:UnifiedIcon Classes="Size" />
-                <icons:UnifiedIcon Classes="Info" />
-                <icons:UnifiedIcon Classes="Trophy" />
-                <icons:UnifiedIcon Classes="ArrowUpThick" />
-                <icons:UnifiedIcon Classes="ArrowDownThick" />
-                <icons:UnifiedIcon Classes="Sort" />
-                <icons:UnifiedIcon Classes="SortAscending" />
-                <icons:UnifiedIcon Classes="SortDescending" />
-            </WrapPanel>
-            <WrapPanel>
-                <icons:UnifiedIcon Classes="Nexus" />
-                <icons:UnifiedIcon Classes="Steam" />
-                <icons:UnifiedIcon Classes="EA" />
-                <icons:UnifiedIcon Classes="Ubisoft" />
-                <icons:UnifiedIcon Classes="GOG" />
-                <icons:UnifiedIcon Classes="Xbox" />
-                <icons:UnifiedIcon Classes="Epic" />
-            </WrapPanel>
-            <WrapPanel>
-                <icons:UnifiedIcon Classes="PictogramGame3D" />
-                <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
-                <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
-            </WrapPanel>
-        </StackPanel>
+            <StackPanel Orientation="Vertical" Width="400" Spacing="16">
+                <StackPanel.Styles>
+                    <Style Selector="icons|UnifiedIcon">
+                        <Setter Property="Size" Value="24" />
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                </StackPanel.Styles>
+                <WrapPanel>
+                    <icons:UnifiedIcon Classes="Alert" />
+                    <icons:UnifiedIcon Classes="AlertOutline" />
+                    <icons:UnifiedIcon Classes="Bell" />
+                    <icons:UnifiedIcon Classes="CheckUnderline" />
+                    <icons:UnifiedIcon Classes="ClearAll" />
+                    <icons:UnifiedIcon Classes="Cog" />
+                    <icons:UnifiedIcon Classes="Download" />
+                    <icons:UnifiedIcon Classes="HelpCircle" />
+                    <icons:UnifiedIcon Classes="Help" />
+                    <icons:UnifiedIcon Classes="History" />
+                    <icons:UnifiedIcon Classes="Play" />
+                    <icons:UnifiedIcon Classes="PlusCircleOutline" />
+                    <icons:UnifiedIcon Classes="ProgressDownload" />
+                    <icons:UnifiedIcon Classes="PauseCircleOutline" />
+                    <icons:UnifiedIcon Classes="PauseCircleFilled" />
+                    <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                    <icons:UnifiedIcon Classes="Star" />
+                    <icons:UnifiedIcon Classes="TrashCanOutline" />
+                    <icons:UnifiedIcon Classes="PlayCircleOutline" />
+                    <icons:UnifiedIcon Classes="PlayCircleFilled" />
+                    <icons:UnifiedIcon Classes="Image" />
+                    <icons:UnifiedIcon Classes="Description" />
+                    <icons:UnifiedIcon Classes="Tune" />
+                    <icons:UnifiedIcon Classes="ArrowLeft" />
+                    <icons:UnifiedIcon Classes="ArrowRight" />
+                    <icons:UnifiedIcon Classes="ArrowDown" />
+                    <icons:UnifiedIcon Classes="ArrowUp" />
+                    <icons:UnifiedIcon Classes="Plus" />
+                    <icons:UnifiedIcon Classes="MenuDown" />
+                    <icons:UnifiedIcon Classes="MenuUp" />
+                    <icons:UnifiedIcon Classes="Close" />
+                    <icons:UnifiedIcon Classes="OpenInNew" />
+                    <icons:UnifiedIcon Classes="Tab" />
+                    <icons:UnifiedIcon Classes="ChevronLeft" />
+                    <icons:UnifiedIcon Classes="ChevronRight" />
+                    <icons:UnifiedIcon Classes="FolderOutline" />
+                    <icons:UnifiedIcon Classes="FolderOpenOutline" />
+                    <icons:UnifiedIcon Classes="File" />
+                    <icons:UnifiedIcon Classes="Check" />
+                    <icons:UnifiedIcon Classes="CheckCircle" />
+                    <icons:UnifiedIcon Classes="CheckCircleOutline" />
+                    <icons:UnifiedIcon Classes="DeleteOutline" />
+                    <icons:UnifiedIcon Classes="DragHorizontal" />
+                    <icons:UnifiedIcon Classes="DragVertical" />
+                    <icons:UnifiedIcon Classes="Search" />
+                    <icons:UnifiedIcon Classes="Home" />
+                    <icons:UnifiedIcon Classes="ToggleSwitch" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
+                    <icons:UnifiedIcon Classes="Game" />
+                    <icons:UnifiedIcon Classes="Undo" />
+                    <icons:UnifiedIcon Classes="Redo" />
+                    <icons:UnifiedIcon Classes="Save" />
+                    <icons:UnifiedIcon Classes="Copy" />
+                    <icons:UnifiedIcon Classes="Paste" />
+                    <icons:UnifiedIcon Classes="AddCircle" />
+                    <icons:UnifiedIcon Classes="AlertCircle" />
+                    <icons:UnifiedIcon Classes="AlertOctagon" />
+                    <icons:UnifiedIcon Classes="FileDocumentOutline" />
+                    <icons:UnifiedIcon Classes="MusicNote" />
+                    <icons:UnifiedIcon Classes="VideoOutline" />
+                    <icons:UnifiedIcon Classes="Refresh" />
+                    <icons:UnifiedIcon Classes="Collections" />
+                    <icons:UnifiedIcon Classes="Add" />
+                    <icons:UnifiedIcon Classes="DeleteForever" />
+                    <icons:UnifiedIcon Classes="Mods" />
+                    <icons:UnifiedIcon Classes="ModLibrary" />
+                    <icons:UnifiedIcon Classes="ListFilled" />
+                    <icons:UnifiedIcon Classes="FileEdit" />
+                    <icons:UnifiedIcon Classes="Code" />
+                    <icons:UnifiedIcon Classes="Discord" />
+                    <icons:UnifiedIcon Classes="Forum" />
+                    <icons:UnifiedIcon Classes="Sync" />
+                    <icons:UnifiedIcon Classes="Visibility" />
+                    <icons:UnifiedIcon Classes="PlaylistAdd" />
+                    <icons:UnifiedIcon Classes="PlaylistRemove" />
+                    <icons:UnifiedIcon Classes="HardDrive" />
+                    <icons:UnifiedIcon Classes="ColorLens" />
+                    <icons:UnifiedIcon Classes="CheckBox" />
+                    <icons:UnifiedIcon Classes="ViewCarousel" />
+                    <icons:UnifiedIcon Classes="Lightbulb" />
+                    <icons:UnifiedIcon Classes="ThumbUp" />
+                    <icons:UnifiedIcon Classes="Database" />
+                    <icons:UnifiedIcon Classes="Size" />
+                    <icons:UnifiedIcon Classes="Info" />
+                    <icons:UnifiedIcon Classes="Trophy" />
+                    <icons:UnifiedIcon Classes="ArrowUpThick" />
+                    <icons:UnifiedIcon Classes="ArrowDownThick" />
+                    <icons:UnifiedIcon Classes="Sort" />
+                    <icons:UnifiedIcon Classes="SortAscending" />
+                    <icons:UnifiedIcon Classes="SortDescending" />
+                </WrapPanel>
+                <WrapPanel>
+                    <icons:UnifiedIcon Classes="Nexus" />
+                    <icons:UnifiedIcon Classes="Nexus" />
+                    <icons:UnifiedIcon Classes="Steam" />
+                    <icons:UnifiedIcon Classes="EA" />
+                    <icons:UnifiedIcon Classes="Ubisoft" />
+                    <icons:UnifiedIcon Classes="GOG" />
+                    <icons:UnifiedIcon Classes="Xbox" />
+                    <icons:UnifiedIcon Classes="Epic" />
+                </WrapPanel>
+                <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramGame3D" />
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False" />
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" Opacity="0.4" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <!-- Style Definitions -->
     <Style Selector="icons|UnifiedIcon">
         <Setter Property="Theme" Value="{StaticResource UnifiedIconTheme}" />
 
+        <Style Selector="^[IsEnabled=False]">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
     </Style>
 
     <!-- Foreground color classes -->
@@ -169,6 +178,7 @@
 
     <!-- NOTE: Material icon names are not standardized well, use this site to look them up:  -->
     <!-- https://pictogrammers.com/library/mdi/ -->
+
     <Style Selector="icons|UnifiedIcon.Alert">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Warning}" />
     </Style>
