@@ -360,7 +360,7 @@ public class CollectionDownloader
     }
 
     /// <summary>
-    /// Returns all required items.
+    /// Returns all items of the desired type (required/optional).
     /// </summary>
     public CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
     {
