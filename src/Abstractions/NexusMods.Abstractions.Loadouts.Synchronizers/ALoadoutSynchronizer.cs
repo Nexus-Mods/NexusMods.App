@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -692,12 +693,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
                     return 0;
                 
+                // Overrides should always win
+                if (group.TryGetAsLoadoutOverridesGroup(out var overridesGroup))
+                    return long.MaxValue;
+                
                 // Return a placeholder priority based on creation time of the LoadoutGroup, newest wins.
                 // This allows for some degree of control and predictability in the selection process.
                 return group.GetCreatedAt().ToUnixTimeSeconds();
             }
-    
-            return int.MaxValue;
+            
+            // Should not happen
+            Debug.Assert(false, "LoadoutItem is not part of a LoadoutItemGroup");
+            return 0;
         }
     }
 
