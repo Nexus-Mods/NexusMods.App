@@ -31,9 +31,7 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
                     .Select(installedCount  => installedCount == 0)
                     .Subscribe(isEmpty =>
                         {
-                            NoGamesDetectedText.IsVisible = isEmpty;
-                            AddGamesToGetStartedText.IsVisible = !isEmpty;
-                            DetectedGamesItemsControl.IsVisible = !isEmpty;
+                            DetectedGamesEmptyState.IsActive = isEmpty;
                         }
                     )
                     .DisposeWith(d);

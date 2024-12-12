@@ -4,15 +4,20 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Spacing="10" Height="400" Width="400">
+        <Border Padding="16" Width="600">
+        <StackPanel Orientation="Vertical">
+            
             <controls:EmptyState Header="You've got nothing" IsActive="True">
+                
                 <controls:EmptyState.Subtitle>
                     <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
                 </controls:EmptyState.Subtitle>
+                
                 <TextBlock>There is something here</TextBlock>
             </controls:EmptyState>
 
             <controls:EmptyState Icon="{x:Static icons:IconValues.Alert}" Header="You've got nothing" IsActive="True">
+                
                 <controls:EmptyState.Subtitle>
                     <StackPanel>
                         <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
@@ -20,18 +25,23 @@
                         <TextBlock>More text</TextBlock>
                     </StackPanel>
                 </controls:EmptyState.Subtitle>
+                
                 <TextBlock>There is something here</TextBlock>
             </controls:EmptyState>
+            
         </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <Style Selector="controls|EmptyState">
+        
         <Style Selector="^ /template/ Border#EmptyStateBorder">
-            <Setter Property="IsVisible" Value="False" />
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="Margin" Value="0" />
 
             <Style Selector="^ StackPanel#Panel">
                 <Setter Property="Orientation" Value="Vertical" />
-                <Setter Property="Margin" Value="16 64 16 0" />
+                <Setter Property="Margin" Value="0" />
                 <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             </Style>
 
@@ -52,16 +62,17 @@
                 <Style Selector="^ > StackPanel">
                     <Setter Property="Orientation" Value="Horizontal" />
                     <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
                 </Style>
                 
                 <Style Selector="^ TextBlock">
+                    <Setter Property="Margin" Value="0" />
                     <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
-                    <Setter Property="TextAlignment" Value="Center" />
+                    <Setter Property="TextAlignment" Value="Left" />
                 </Style>
             </Style>
         </Style>
