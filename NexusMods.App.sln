@@ -292,6 +292,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.OAut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.UI.WebBrowser", "src\NexusMods.App.UI.WebBrowser\NexusMods.App.UI.WebBrowser.csproj", "{1BC4C394-A8DC-4877-B6C4-0AE7F36A683A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GOG", "src\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj", "{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -770,6 +772,10 @@ Global
 		{1BC4C394-A8DC-4877-B6C4-0AE7F36A683A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BC4C394-A8DC-4877-B6C4-0AE7F36A683A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BC4C394-A8DC-4877-B6C4-0AE7F36A683A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -906,6 +912,7 @@ Global
 		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
 		{A302B440-4623-4BCB-B068-BE2468B47EBA} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{1BC4C394-A8DC-4877-B6C4-0AE7F36A683A} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
