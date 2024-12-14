@@ -13,7 +13,7 @@ public static class OptionalExtensions
     /// <param name="optional">The source.</param>
     /// <param name="alternativeValue">The alternative value.</param>
     /// <typeparam name="T">The Type of the item.</typeparam>
-    public static T ValueOr<T>(this Optional<T> optional, T alternativeValue) where T : struct
+    public static T ValueOr<T>(this Optional<T> optional, T alternativeValue) where T : notnull
     {
         return optional.HasValue ? optional.Value : alternativeValue;
     }
