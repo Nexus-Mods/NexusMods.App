@@ -181,8 +181,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         this.WhenActivated(disposables =>
         {
-            TreeDataGridAdapter.Activate();
-            Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            TreeDataGridAdapter.Activate().AddTo(disposables);
 
             var numDownloadedRequiredItemsObservable = Observable
                 .Return(_revision)

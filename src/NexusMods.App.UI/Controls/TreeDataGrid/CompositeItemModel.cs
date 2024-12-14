@@ -25,7 +25,7 @@ public class CompositeItemModel<TKey> :
             {
                 var (_, component) = kv;
                 if (component is not IReactiveR3Object reactiveR3Object) continue;
-                reactiveR3Object.BetterActivate().AddTo(disposables);
+                reactiveR3Object.Activate().AddTo(disposables);
             }
 
             self._components.ObserveChanged().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
@@ -34,7 +34,7 @@ public class CompositeItemModel<TKey> :
                 if (change.Action == NotifyCollectionChangedAction.Add)
                 {
                     if (change.NewItem.Value is not IReactiveR3Object reactiveR3Object) return;
-                    reactiveR3Object.BetterActivate().AddTo(disposables);
+                    reactiveR3Object.Activate().AddTo(disposables);
                 } else if (change.Action == NotifyCollectionChangedAction.Remove)
                 {
                     if (change.OldItem.Value is not IReactiveR3Object reactiveR3Object) return;

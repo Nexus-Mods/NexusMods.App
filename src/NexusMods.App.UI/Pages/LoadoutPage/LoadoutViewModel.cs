@@ -140,8 +140,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         this.WhenActivated(disposables =>
             {
-                Adapter.Activate();
-                Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+                Adapter.Activate().AddTo(disposables);
 
                 // TODO: can be optimized with chunking or debounce
                 Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>

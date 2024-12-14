@@ -166,9 +166,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             disposables.Add(gameObservable.Connect());
 
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
-
-            Adapter.Activate();
-            Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            Adapter.Activate().AddTo(disposables);
 
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
