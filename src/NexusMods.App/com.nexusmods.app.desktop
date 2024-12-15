@@ -6,6 +6,7 @@ GenericName=Mod Manager
 Comment=Mod Manager for your games
 Categories=Game
 Terminal=false
+SingleMainWindow=true
 StartupWMClass=NexusMods.App
 MimeType=x-scheme-handler/nxm
 Icon=com.nexusmods.app
