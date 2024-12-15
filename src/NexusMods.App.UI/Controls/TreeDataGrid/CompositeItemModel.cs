@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
@@ -13,6 +14,7 @@ public class CompositeItemModel<TKey> :
     TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
     where TKey : notnull
 {
+    private readonly Dictionary<string, IDisposable> _observableSubscriptions = new();
     private readonly ObservableDictionary<string, IItemModelComponent> _components = new();
     public IReadOnlyObservableDictionary<string, IItemModelComponent> Components => _components;
 
@@ -52,15 +54,90 @@ public class CompositeItemModel<TKey> :
         _components.Add(key, component);
     }
 
-    public bool Remove(string key)
+    public delegate IItemModelComponent ComponentFactory<T>(Observable<T> valueObservable, T initialValue);
+
+    public void AddObservable<T>(
+        string key,
+        IObservable<Optional<T>> observable,
+        ComponentFactory<T> componentFactory,
+        bool subscribeImmediately = false) where T : notnull
     {
-        if (!_components.Remove(key, out var value)) return false;
-        if (value is IDisposable disposable)
+        AddObservable(key, observable.ToObservable(), componentFactory, subscribeImmediately);
+    }
+
+    public void AddObservable<T>(
+        string key,
+        Observable<Optional<T>> observable,
+        ComponentFactory<T> componentFactory,
+        bool subscribeImmediately = false) where T : notnull
+    {
+        IDisposable disposable;
+        if (subscribeImmediately)
         {
-            disposable.Dispose();
+            disposable = SubscribeToObservable(this, key, observable, componentFactory);
+        }
+        else
+        {
+            // ReSharper disable once NotDisposedResource
+            disposable = this.WhenActivated((key, observable, componentFactory), static (self, tuple, disposables) =>
+            {
+                var (key, observable, componentFactory) = tuple;
+                SubscribeToObservable(self, key, observable, componentFactory).AddTo(disposables);
+            });
         }
 
-        return true;
+        if (_observableSubscriptions.TryGetValue(key, out var existingDisposable))
+        {
+            existingDisposable.Dispose();
+        } else {
+            _observableSubscriptions.Add(key, disposable);
+        }
+    }
+
+    private static IDisposable SubscribeToObservable<T>(
+        CompositeItemModel<TKey> self,
+        string key,
+        Observable<Optional<T>> observable,
+        ComponentFactory<T> componentFactory) where T : notnull
+    {
+        return observable.Subscribe((self, key, observable, componentFactory), static (optionalValue, tuple) =>
+        {
+            var (self, key, observable, componentFactory) = tuple;
+            if (self._components.ContainsKey(key))
+            {
+                if (optionalValue.HasValue) return;
+                self.Remove(key: key);
+            }
+            else
+            {
+                if (!optionalValue.HasValue) return;
+                var component = componentFactory(
+                    observable
+                        .ObserveOnUIThreadDispatcher()
+                        .Where(static optionalValue => optionalValue.HasValue)
+                        .Select(static optionalValue => optionalValue.Value),
+                    optionalValue.Value
+                );
+
+                self.Add(key, component);
+            }
+        });
+    }
+
+    public void Remove(string key)
+    {
+        if (_components.Remove(key, out var value))
+        {
+            if (value is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+
+        if (_observableSubscriptions.Remove(key, out var observableSubscription))
+        {
+            observableSubscription.Dispose();
+        }
     }
 
     public bool TryGet<TComponent>(string key, [NotNullWhen(true)] out TComponent? component)
@@ -89,6 +166,19 @@ public class CompositeItemModel<TKey> :
             if (disposing)
             {
                 _activationDisposable.Dispose();
+
+                foreach (var kv in _observableSubscriptions)
+                {
+                    kv.Value.Dispose();
+                }
+
+                foreach (var kv in _components)
+                {
+                    if (kv.Value is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
             }
 
             _isDisposed = true;

@@ -11,21 +11,21 @@ using R3;
 namespace NexusMods.App.UI.Controls;
 
 [PublicAPI]
-public sealed class Size2Component : AFormattedValueComponent<Size>
+public sealed class SizeComponent : AFormattedValueComponent<Size>
 {
-    public Size2Component(
+    public SizeComponent(
         IObservable<Size> valueObservable,
         bool subscribeWhenCreated = false,
         Optional<Size> initialValue = default,
         Optional<string> initialFormattedValue = default) : base(defaultValue: Size.Zero, valueObservable, subscribeWhenCreated, initialValue, initialFormattedValue) { }
 
-    public Size2Component(
+    public SizeComponent(
         Observable<Size> valueObservable,
         bool subscribeWhenCreated = false,
         Optional<Size> initialValue = default,
         Optional<string> initialFormattedValue = default) : base(defaultValue: Size.Zero, valueObservable, subscribeWhenCreated, initialValue, initialFormattedValue) { }
 
-    public Size2Component(Size value) : base(value, _FormatValue(value)) { }
+    public SizeComponent(Size value) : base(value, _FormatValue(value)) { }
 
     private static string _FormatValue(Size value) => ByteSize.FromBytes(value.Value).Humanize();
     protected override string FormatValue(Size value) => _FormatValue(value);

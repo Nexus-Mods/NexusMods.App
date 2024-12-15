@@ -6,9 +6,11 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Observable = System.Reactive.Linq.Observable;
@@ -55,6 +57,38 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         model.ItemSize.Value = libraryFile.Size;
 
         return model;
+    }
+
+    private CompositeItemModel<EntityId> ToCompositeItemModel(LibraryFile.ReadOnly libraryFile, LibraryFilter libraryFilter)
+    {
+        var itemModel = new CompositeItemModel<EntityId>();
+
+        itemModel.Add(key: "WIP_name", new StringComponent(value: libraryFile.AsLibraryItem().Name));
+        itemModel.Add(key: "WIP_downloadedDate", new DateComponent(value: libraryFile.GetCreatedAt()));
+        itemModel.Add(key: "WIP_size", new SizeComponent(value: libraryFile.Size));
+
+        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
+        var installedDateObservable = linkedLoadoutItemsObservable
+            .QueryWhenChanged(static query =>
+            {
+                var enumerable = query.Items
+                    .Select(static item => item.GetCreatedAt())
+                    .OrderDescending();
+
+                if (enumerable.TryGetFirst(out var installationDate)) return installationDate;
+                return Optional<DateTimeOffset>.None;
+            });
+
+        itemModel.AddObservable(
+            key: "WIP_installDate",
+            observable: installedDateObservable,
+            componentFactory: static (observable, value) => new DateComponent(
+                valueObservable: observable,
+                initialValue: value
+            )
+        );
+
+        return itemModel;
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
