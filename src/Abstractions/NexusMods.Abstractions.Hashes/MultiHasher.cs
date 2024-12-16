@@ -108,8 +108,8 @@ public class MultiHasher
         await stream.ReadExactlyAsync(buffer, cancellationToken);
         hasher.Append(buffer.Span);
 
-        // Add the length of the file to the hash (as a ulong)
-        Span<byte> lengthBuffer = stackalloc byte[sizeof(long)];
+        // Add the length of the file to the hash (as an ulong)
+        Span<byte> lengthBuffer = stackalloc byte[sizeof(ulong)];
         MemoryMarshal.Write(lengthBuffer, (ulong)stream.Length);
         hasher.Append(lengthBuffer);
     }
