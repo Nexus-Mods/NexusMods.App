@@ -63,16 +63,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             {
                 try
                 {
-                    if (optionImage.TryPickT0(out var uri, out var imageStoredFile))
-                    {
-                        return await remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None);
-                    }
-                    else
-                    {
-                        return await fileImagePipeline.LoadResourceAsync(imageStoredFile.FileHash, CancellationToken.None);
-                    }
+                    return await optionImage.Match(
+                        f0: uri => remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None),
+                        f1: imageHash => fileImagePipeline.LoadResourceAsync(imageHash.FileHash, CancellationToken.None)
+                    );
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return null;
                 }
