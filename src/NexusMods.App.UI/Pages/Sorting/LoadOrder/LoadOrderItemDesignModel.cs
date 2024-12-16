@@ -1,5 +1,4 @@
 using System.Reactive;
-using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
 
@@ -9,9 +8,10 @@ public class LoadOrderItemDesignModel : TreeDataGridItemModel<ILoadOrderItemMode
 {
     public ReactiveCommand<Unit, Unit> MoveUp { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> MoveDown { get; } = ReactiveCommand.Create(() => { });
-    public int SortIndex { get; set;  }
+    public int SortIndex { get; set; }
     public string DisplayName { get; set; } = "Display Name";
     public string ModName { get; set; } = "Mod Name";
     public bool IsActive { get; set; }
     public Guid Guid { get; set; }
+    public string DisplaySortIndex => ILoadOrderItemModel.ConvertZeroIndexToOrdinalNumber(SortIndex);
 }

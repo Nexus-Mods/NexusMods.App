@@ -47,6 +47,11 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
             user {
                 ...UserFragment
             }
+            game {
+                id
+                name
+                domainName
+            }
         }
     }
 }

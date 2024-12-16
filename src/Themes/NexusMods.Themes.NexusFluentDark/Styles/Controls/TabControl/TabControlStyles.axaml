@@ -155,10 +155,9 @@
             <Setter Property="Padding" Value="0,0" />
             
             <!-- header padding -->
-            <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="Margin" Value="24,8" />
+            <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
+                <Setter Property="Margin" Value="24,12" />
             </Style>
-
             
             <Style Selector="^ TabItem">
                 <Setter Property="Padding" Value="12,0" />
@@ -233,7 +232,12 @@
                         <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
                     </Style>
                 </Style>
-
+            </Style>
+            
+            <!-- roundabout way to bottom border tab items as no Border exists to style -->
+            <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost">
+                <Setter Property="BorderThickness" Value="0, 1 0, 0" />
+                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             </Style>
 
 

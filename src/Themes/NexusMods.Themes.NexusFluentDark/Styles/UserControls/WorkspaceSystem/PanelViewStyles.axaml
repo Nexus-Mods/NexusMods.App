@@ -2,12 +2,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
     
+    <Design.PreviewWith>
+        <Border Padding="12" Width="500" Height="200">
+            <ui:PanelView />
+        </Border>
+    </Design.PreviewWith>
+    
     <Style Selector="ui|PanelView">
+        
+        <Style Selector="^ Border#PanelBorder">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+    
         <Style Selector="^ ItemsControl#TabContents">
             <Setter Property="Padding" Value="0" />
         </Style>
 
         <Style Selector="^ Border#TabHeaderBorder">
+            <Setter Property="CornerRadius" Value="8,8,0,0" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="Transparent"/>
 
@@ -50,6 +65,7 @@
         <!-- one tab -->
         <Style Selector="^:one-tab">
             <Style Selector="^ Border#TabHeaderBorder">
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
                 <Setter Property="BorderThickness" Value="0 0 0 1" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
 

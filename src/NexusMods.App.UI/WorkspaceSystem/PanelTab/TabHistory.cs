@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using NexusMods.Telemetry;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -10,7 +11,6 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 /// </summary>
 internal class TabHistory : ReactiveObject
 {
-
     /// <summary>
     /// Arbitrarily chosen limit.
     /// </summary>
@@ -65,11 +65,12 @@ internal class TabHistory : ReactiveObject
 
     private void TraverseHistory(int offset)
     {
-        var next = Position + offset;
-        var index = next % Limit;
+        var currentPosition = Position;
+        var nextPosition = currentPosition+ offset;
+        var index = nextPosition % Limit;
         var pageData = _history[index];
 
-        Position = next;
+        Position = nextPosition;
 
         try
         {
@@ -79,6 +80,13 @@ internal class TabHistory : ReactiveObject
         finally
         {
             IsTraversing = false;
+        }
+
+        if (Tracking.IsEnabled)
+        {
+            var current = _history[currentPosition % Limit];
+            var eventDefinition = offset > 0 ? Events.PageHistory.Forward : Events.PageHistory.Back;
+            Tracking.AddEvent(eventDefinition, new EventMetadata(name: current.Context.TrackingName));
         }
     }
 

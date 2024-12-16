@@ -151,7 +151,14 @@ public static class R3Extensions
             switch (change.Reason)
             {
                 case ChangeReason.Add:
-                    list.Add(change.Current);
+                    if (change.CurrentIndex < 0)
+                    {
+                        list.Add(change.Current);
+                    }
+                    else
+                    {
+                        list.Insert(change.CurrentIndex, change.Current);
+                    }
                     break;
                 case ChangeReason.Remove:
                     list.Remove(change.Current);

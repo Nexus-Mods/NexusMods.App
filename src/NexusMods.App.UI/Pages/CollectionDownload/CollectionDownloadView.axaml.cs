@@ -6,6 +6,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -16,18 +17,36 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, RequiredDownloadsTree, vm => vm.TreeDataGridAdapter);
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, OptionalDownloadsTree, vm => vm.TreeDataGridAdapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, DownloadsTree, vm => vm.TreeDataGridAdapter);
 
         this.WhenActivated(d =>
         {
-            this.BindCommand(ViewModel, vm => vm.DownloadAllCommand, view => view.DownloadAllButton)
+            this.BindCommand(ViewModel, vm => vm.CommandViewOnNexusMods, view => view.MenuItemViewOnNexusMods)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.RequiredDownloadsTree.Source)
+            this.BindCommand(ViewModel, vm => vm.CommandViewInLibrary, view => view.MenuItemViewInLibrary)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.OptionalDownloadsTree.Source)
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteAllDownloads, view => view.MenuItemDeleteAllDownloads)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.MenuItemDeleteCollection)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.TextCollectionStatus.Text)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandDownloadRequiredItems, view => view.ButtonDownloadRequiredItems)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CommandInstallRequiredItems, view => view.ButtonInstallRequiredItems)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandDownloadOptionalItems, view => view.ButtonDownloadOptionalItems)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CommandInstallOptionalItems, view => view.ButtonInstallOptionalItems)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.DownloadsTree.Source)
                 .DisposeWith(d);
 
              this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
@@ -73,9 +92,6 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsCount, view => view.OptionalDownloadsCount.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.CollectionStatusText.Text)
-                .DisposeWith(d);
-
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
 
@@ -91,6 +107,24 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 })
                 .DisposeWith(d);
+
+            this.WhenAnyValue(
+                view => view.ViewModel!.CountDownloadedRequiredItems,
+                view => view.ViewModel!.CountDownloadedOptionalItems)
+                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, b))
+                .Subscribe(tuple =>
+                {
+                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, filter) = tuple;
+                    var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
+                    var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
+
+                    ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
+                    ButtonInstallRequiredItems.IsVisible = hasDownloadedAllRequiredItems;
+
+                    ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
+                    ButtonInstallOptionalItems.IsVisible = false; // TODO: implement this button
+                    // ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional;
+                }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()

@@ -15,6 +15,7 @@ public partial class RedModSortOrder : IModelDefinition
     
     /// <summary>
     /// Marker attribute for querying the model, while waiting for advanced db queries
+    /// Needs to be explicitly set to true on new model creation
     /// </summary>
     public static readonly MarkerAttribute Marker = new(Namespace, nameof(Marker)); 
 }

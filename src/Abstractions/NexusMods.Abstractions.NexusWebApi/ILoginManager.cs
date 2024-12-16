@@ -13,7 +13,9 @@ public interface ILoginManager
     /// </summary>
     Observable<UserInfo?> UserInfoObservable { get; }
 
-    bool IsPremium { get; }
+    bool IsPremium => UserInfo?.IsPremium ?? false;
+
+    UserInfo? UserInfo { get; }
 
     /// <summary>
     /// True if the user is logged in
