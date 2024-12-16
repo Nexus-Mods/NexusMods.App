@@ -9,11 +9,14 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.OAuth;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.GOG;
 
@@ -35,6 +38,8 @@ public class Client
     
     private static Uri _tokenUri = new("https://auth.gog.com/token");
     
+    private Dictionary<ProductId, SecureUrl[]> _secureUrls = new();
+    
 
     public Client(ILogger<Client> logger, IConnection connection, IOAuthUserInterventionHandler oAuthUserInterventionHandler, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
     {
@@ -50,6 +55,11 @@ public class Client
         };
         
     }
+    
+    /// <summary>
+    /// Getter for the HttpClient, used by chunked stream sources
+    /// </summary>
+    internal HttpClient HttpClient => _client;
 
 
     public async Task Login(CancellationToken token)
@@ -113,7 +123,6 @@ public class Client
         if (!TryGetAuthInfo(out var authInfo))
             throw new InvalidOperationException("No authentication information found.");
 
-        Console.WriteLine(authInfo.AccessToken);
         if (NeedsRefresh(authInfo))
             authInfo = await RefreshToken(token);
         
@@ -130,7 +139,7 @@ public class Client
     private async Task<AuthInfo.ReadOnly> RefreshToken(CancellationToken token)
     {
         // Lock so we don't refresh multiple times
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync(token);
         try
         {
             if (!TryGetAuthInfo(out var authInfo))
@@ -220,13 +229,22 @@ public class Client
         await tx.Commit();
     }
 
-    public async Task<object> GetManifest(Build build)
+    private class DepotResponse
     {
-        using var result = await _client.GetAsync(build.Link);
+        [JsonPropertyName("depot")]
+        public required DepotInfo Depot { get; init; }
+        
+        [JsonPropertyName("version")]
+        public required int Version { get; init; }
+    }
+
+    public async Task<DepotInfo> GetDepot(Build build, CancellationToken token)
+    {
+        using var result = await _client.GetAsync(build.Link, token);
         if (!result.IsSuccessStatusCode)
             throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
         
-        await using var responseStream = await result.Content.ReadAsStreamAsync();
+        await using var responseStream = await result.Content.ReadAsStreamAsync(token);
         await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
         //var streamReader = (new StreamReader(deflateStream)).ReadToEnd();
         var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
@@ -234,15 +252,91 @@ public class Client
         var firstDepot = buildDetails!.Depots.First();
 
         var id = firstDepot.Manifest.ToString();
-        using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id));
+        using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id), token);
         if (!depotResult.IsSuccessStatusCode)
             throw new Exception($"Failed to get the depot for {build.BuildId}. {depotResult.StatusCode}");
         
-        await using var depotStream = await depotResult.Content.ReadAsStreamAsync();
+        await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
         await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
 
-        var depotAll = (new StreamReader(depotDeflateStream)).ReadToEnd();
+        var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
+        return depot!.Depot;
+    }
 
-        throw new NotImplementedException();
+    public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
+    {
+        var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
+        if (itemInfo == null)
+            throw new KeyNotFoundException($"The path {path} was not found in the depot.");
+        
+        var secureUrl = await GetSecureUrl(build.ProductId, token);
+
+        if (itemInfo.SfcRef == null)
+        {
+            var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
+            var source = new ChunkedStreamSource(this, itemInfo.Chunks, size, secureUrl);
+            return new ChunkedStream<ChunkedStreamSource>(source);
+        }
+        else
+        {
+            var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
+            var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, size, secureUrl);
+            var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
+            var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
+            return subStream;
+        }
+    }
+
+    private class SecureUrlResponse
+    {
+        /// <summary>
+        /// The product ID for the secure URLs.
+        /// </summary>
+        [JsonPropertyName("product_id")]
+        public required ProductId ProductId { get; init; }
+        
+        /// <summary>
+        /// The type of URLs in this response, normally this is `depot` but could be `patch` or something similar
+        /// </summary>
+        [JsonPropertyName("type")]
+        public required string Type { get; init; }
+        
+        /// <summary>
+        /// The URLs for the product.
+        /// </summary>
+        [JsonPropertyName("urls")]
+        public required SecureUrl[] Urls { get; init; }
+    }
+    
+    private async Task<SecureUrl> GetSecureUrl(ProductId productId, CancellationToken token)
+    {
+        if (_secureUrls.TryGetValue(productId, out var found))
+        {
+            // Later we can make this more advanced, but for now just return the first one
+            var server = found.FirstOrDefault();
+            if (server != null)
+            {
+                var expiresAt = server.Parameters.ExpiresAt;
+                if (expiresAt == null)
+                    return server;
+                if (expiresAt > DateTimeOffset.UtcNow + TimeSpan.FromHours(3)) 
+                    return server;
+            }
+        }
+        
+        var request = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId.Value}/secure_link?generation=2&_version=2&path=/"), token);
+        
+        using var response = await _client.SendAsync(request, token);
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Failed to get the secure URLs for {productId}. {response.StatusCode}");
+        
+        await using var responseStream = await response.Content.ReadAsStreamAsync(token);
+        var urls = await JsonSerializer.DeserializeAsync<SecureUrlResponse>(responseStream, cancellationToken: token);
+        if (urls == null)
+            throw new Exception("Failed to deserialize the secure URLs response.");
+        
+        var sorted = urls.Urls.OrderBy(s => s.Priority).ToArray();
+        _secureUrls[productId] = sorted;
+        return sorted.First();
     }
 }

@@ -30,9 +30,9 @@ public class BuildDetailsDepot
     
     [JsonPropertyName("manifest")]
     public required string Manifest { get; init; }
-    
-    [JsonPropertyName("osBitness")]
-    public required int[] OSBitness { get; init; }
+
+    [JsonPropertyName("osBitness")] 
+    public int[] OSBitness { get; init; } = [];
     
     [JsonPropertyName("productId")]
     public required ProductId ProductId { get; init; }

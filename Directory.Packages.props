@@ -35,6 +35,7 @@
     <PackageVersion Include="R3" Version="1.2.9" />
     <PackageVersion Include="R3Extensions.Avalonia" Version="1.2.9" />
     <PackageVersion Include="ReactiveUI" Version="20.1.63" />
+    <PackageVersion Include="SmartFormat" Version="3.5.1" />
     <PackageVersion Include="Spectre.Console.Testing" Version="0.49.1" />
     <PackageVersion Include="SteamKit2" Version="3.0.0" />
     <PackageVersion Include="StrawberryShake.Server" Version="14.1.0" />
