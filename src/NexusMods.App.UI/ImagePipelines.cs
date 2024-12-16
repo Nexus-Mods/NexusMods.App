@@ -25,6 +25,7 @@ public static class ImagePipelines
     private const string UserAvatarPipelineKey = nameof(UserAvatarPipelineKey);
     private const string GuidedInstallerRemoteImagePipelineKey = nameof(GuidedInstallerRemoteImagePipelineKey);
     private const string GuidedInstallerFileImagePipelineKey = nameof(GuidedInstallerFileImagePipelineKey);
+    private const string MarkdownRendererRemoteImagePipelineKey = nameof(MarkdownRendererRemoteImagePipelineKey);
 
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
     private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
@@ -74,6 +75,12 @@ public static class ImagePipelines
                 implementationFactory: static (serviceProvider, _) => CreateGuidedInstallerFileImagePipeline(
                     fileStore: serviceProvider.GetRequiredService<IFileStore>()
                 )
+            )
+            .AddKeyedSingleton<IResourceLoader<Uri, Bitmap>>(
+                serviceKey: MarkdownRendererRemoteImagePipelineKey,
+                implementationFactory: static (serviceProvider, _) => CreateMarkdownRendererRemoteImagePipeline(
+                    httpClient: serviceProvider.GetRequiredService<HttpClient>()
+                )
             );
     }
 
@@ -100,6 +107,11 @@ public static class ImagePipelines
     public static IResourceLoader<Hash, Lifetime<Bitmap>> GetGuidedInstallerFileImagePipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<Hash, Lifetime<Bitmap>>>(serviceKey: GuidedInstallerFileImagePipelineKey);
+    }
+
+    public static IResourceLoader<Uri, Bitmap> GetMarkdownRendererRemoteImagePipeline(IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Uri, Bitmap>>(serviceKey: MarkdownRendererRemoteImagePipelineKey);
     }
 
     private static IResourceLoader<EntityId, Bitmap> CreateUserAvatarPipeline(
@@ -181,6 +193,15 @@ public static class ImagePipelines
                 keyComparer: EqualityComparer<Uri>.Default,
                 capacityPartition: new FavorWarmPartition(totalCapacity: 10)
             );
+
+        return pipeline;
+    }
+
+    private static IResourceLoader<Uri, Bitmap> CreateMarkdownRendererRemoteImagePipeline(HttpClient httpClient)
+    {
+        var pipeline = new HttpLoader(httpClient)
+            .Decode(decoderType: DecoderType.Skia)
+            .ToAvaloniaBitmap();
 
         return pipeline;
     }
