@@ -25,7 +25,6 @@
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
-      <UpToDateCheckInput Remove="Styles\UserControls\MyGamesView\MyGamesViewStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>

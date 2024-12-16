@@ -18,7 +18,7 @@ public class MyGamesDesignViewModel : APageViewModel<IMyGamesViewModel>, IMyGame
 
     public MyGamesDesignViewModel() : base(new DesignWindowManager())
     {
-        var detectedGames = Enumerable.Range(0, 0)
+        var detectedGames = Enumerable.Range(0, 2)
             .Select(_ => new GameWidgetDesignViewModel())
             .ToArray();
         
