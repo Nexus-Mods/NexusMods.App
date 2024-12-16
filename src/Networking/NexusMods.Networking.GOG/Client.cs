@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -218,5 +219,30 @@ public class Client
         }
         await tx.Commit();
     }
-    
+
+    public async Task<object> GetManifest(Build build)
+    {
+        using var result = await _client.GetAsync(build.Link);
+        if (!result.IsSuccessStatusCode)
+            throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
+        
+        await using var responseStream = await result.Content.ReadAsStreamAsync();
+        await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
+        //var streamReader = (new StreamReader(deflateStream)).ReadToEnd();
+        var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
+
+        var firstDepot = buildDetails!.Depots.First();
+
+        var id = firstDepot.Manifest.ToString();
+        using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id));
+        if (!depotResult.IsSuccessStatusCode)
+            throw new Exception($"Failed to get the depot for {build.BuildId}. {depotResult.StatusCode}");
+        
+        await using var depotStream = await depotResult.Content.ReadAsStreamAsync();
+        await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
+
+        var depotAll = (new StreamReader(depotDeflateStream)).ReadToEnd();
+
+        throw new NotImplementedException();
+    }
 }

@@ -25,7 +25,10 @@ public static class Verbs
         [Option("p", "productId", "The GOG product ID to get the product info of")] ProductId productId,
         [Injected] CancellationToken token)
     {
-        await client.GetBuilds(productId, OS.windows, token);
+        var builds = await client.GetBuilds(productId, OS.windows, token);
+
+        var manifest = await client.GetManifest(builds.First());
+        
         return 0;
     }
 }

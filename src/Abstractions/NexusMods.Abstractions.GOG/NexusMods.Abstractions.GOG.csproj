@@ -5,4 +5,8 @@
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj" />
+    </ItemGroup>
 </Project>
