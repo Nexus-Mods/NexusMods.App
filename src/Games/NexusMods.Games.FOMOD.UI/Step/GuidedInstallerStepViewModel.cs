@@ -29,6 +29,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive] public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
+    private IDisposable? _imageDisposable;
     private readonly ObservableAsPropertyHelper<IImage?> _highlightedOptionImage;
     public IImage? HighlightedOptionImage => _highlightedOptionImage.Value;
 
@@ -41,8 +42,11 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     private Percent _previousProgress = Percent.Zero;
 
-    public GuidedInstallerStepViewModel(IImageCache imageCache)
+    public GuidedInstallerStepViewModel(IServiceProvider serviceProvider)
     {
+        var remoteImagePipeline = ImagePipelines.GetGuidedInstallerRemoteImagePipeline(serviceProvider);
+        var fileImagePipeline = ImagePipelines.GetGuidedInstallerFileImagePipeline(serviceProvider);
+
         _groupsSource
             .Connect()
             .Bind(out _groups)
@@ -54,21 +58,41 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             .WhereNotNull()
             .Select(optionVM => optionVM.Option.Image)
             .WhereNotNull()
-            .Select(optionImage =>
-            {
-                return optionImage.Match(
-                    f0: uri => new ImageIdentifier(uri),
-                    f1: imageStoredFile => new ImageIdentifier(imageStoredFile.FileHash)
-                );
-            })
             .OffUi()
-            .SelectMany(imageCache.GetImage)
+            .SelectMany(async optionImage =>
+            {
+                try
+                {
+                    if (optionImage.TryPickT0(out var uri, out var imageStoredFile))
+                    {
+                        return await remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None);
+                    }
+                    else
+                    {
+                        return await fileImagePipeline.LoadResourceAsync(imageStoredFile.FileHash, CancellationToken.None);
+                    }
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            })
+            .Select(static resource => resource?.Data)
+            .Do(lifetime =>
+            {
+                _imageDisposable?.Dispose();
+                _imageDisposable = lifetime;
+            })
+            .Select(static lifetime => lifetime?.Value)
             .WhereNotNull()
             .OnUI()
             .ToProperty(this, vm => vm.HighlightedOptionImage);
 
         var goToNextCommand = ReactiveCommand.Create(() =>
         {
+            _imageDisposable?.Dispose();
+            _imageDisposable = null;
+
             // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
             if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
             {
@@ -85,6 +109,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
         var goToPrevCommand = ReactiveCommand.Create(() =>
         {
+            _imageDisposable?.Dispose();
+            _imageDisposable = null;
+
             if (ShowInstallationCompleteScreen)
             {
                 ShowInstallationCompleteScreen = false;
@@ -180,7 +207,11 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 .BindToVM(this, vm => vm.FooterStepperViewModel.Progress)
                 .DisposeWith(disposables);
 
-            Disposable.Create(() => _highlightedOptionImage.Dispose()).DisposeWith(disposables);
+            Disposable.Create(() =>
+            {
+                _imageDisposable?.Dispose();
+                _highlightedOptionImage.Dispose();
+            }).DisposeWith(disposables);
         });
     }
 
