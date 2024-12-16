@@ -66,43 +66,6 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     }
 
     /// <summary>
-    /// Factory.
-    /// </summary>
-    public static IJobTask<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly> Create(
-        IServiceProvider provider,
-        LoadoutId target,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata,
-        CollectionDownload.ReadOnly[] items,
-        Optional<NexusCollectionLoadoutGroup.ReadOnly> group)
-    {
-        var connection = provider.GetRequiredService<IConnection>();
-        var datoms = connection.Db.Datoms(
-            (NexusModsCollectionLibraryFile.CollectionSlug, revisionMetadata.Collection.Slug),
-            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revisionMetadata.RevisionNumber)
-        );
-
-        if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
-        var source = NexusModsCollectionLibraryFile.Load(connection.Db, datoms[0]);
-
-        var monitor = provider.GetRequiredService<IJobMonitor>();
-        var job = new InstallCollectionJob
-        {
-            Items = items,
-            Group = group,
-            TargetLoadout = target,
-            SourceCollection = source,
-            RevisionMetadata = revisionMetadata,
-            ServiceProvider = provider,
-            FileStore = provider.GetRequiredService<IFileStore>(),
-            Connection = connection,
-            LibraryService = provider.GetRequiredService<ILibraryService>(),
-            NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
-        };
-
-        return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
-    }
-
-    /// <summary>
     /// Installs the collection.
     /// </summary>
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)

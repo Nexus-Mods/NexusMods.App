@@ -13,6 +13,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
@@ -258,6 +259,16 @@ public class CollectionDownloader
     }
 
     /// <summary>
+    /// Counts the items.
+    /// </summary>
+    public int CountItems(CollectionRevisionMetadata.ReadOnly revisionMetadata, ItemType itemType)
+    {
+        return revisionMetadata.Downloads
+            .Where(download => DownloadMatchesItemType(download, itemType))
+            .Count(download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal());
+    }
+
+    /// <summary>
     /// Returns whether the item matches the given item type.
     /// </summary>
     private static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
@@ -375,5 +386,17 @@ public class CollectionDownloader
 
         Array.Resize(ref res, newSize: i);
         return res;
+    }
+
+    public NexusModsCollectionLibraryFile.ReadOnly GetLibraryFile(CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        var datoms = _connection.Db.Datoms(
+            (NexusModsCollectionLibraryFile.CollectionSlug, revisionMetadata.Collection.Slug),
+            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revisionMetadata.RevisionNumber)
+        );
+
+        if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
+        var source = NexusModsCollectionLibraryFile.Load(_connection.Db, datoms[0]);
+        return source;
     }
 }
