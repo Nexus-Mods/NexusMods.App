@@ -168,11 +168,14 @@ public class Session : ISteamSession
     public async Task<ProductInfo> GetProductInfoAsync(AppId appId, CancellationToken cancellationToken = default)
     {
         await ConnectedAsync(cancellationToken);
-        var jobs = await _steamApps.PICSGetProductInfo(new SteamApps.PICSRequest(appId.Value), null);
-        if (jobs.Failed)
-            throw new Exception("Failed to get product info for app " + appId.Value);
 
-        return ProductInfoParser.Parse(jobs.Results![0]);
+        var jobs = await _steamApps.PICSGetProductInfo(new SteamApps.PICSRequest(appId.Value), null);
+        if (jobs.Failed) throw new Exception($"Failed to get product info for app `{appId}`");
+
+        var results = jobs.Results;
+        if (results is null || results.Count == 0) throw new Exception($"Found no product info for app `{appId}`");
+
+        return ProductInfoParser.Parse(results[0]);
     }
 
     /// <summary>
