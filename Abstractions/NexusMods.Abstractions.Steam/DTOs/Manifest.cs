@@ -54,12 +54,12 @@ public class Manifest
         /// <summary>
         /// The Sha1 hash of the file
         /// </summary>
-        public Sha1 Hash { get; init; }
+        public required Sha1 Hash { get; init; }
         
         /// <summary>
         /// The chunks of the file
         /// </summary>
-        public Chunk[] Chunks { get; init; }
+        public required Chunk[] Chunks { get; init; }
     }
 
     public class Chunk
