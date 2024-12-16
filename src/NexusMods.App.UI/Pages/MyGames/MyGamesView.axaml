@@ -16,9 +16,11 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+    
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
+    
     <ScrollViewer>
         <StackPanel Margin="24"
                     Orientation="Vertical"
@@ -43,27 +45,16 @@
                     </StackPanel>
 
                     <controls:EmptyState x:Name="DetectedGamesEmptyState">
-                        
-                        <controls:EmptyState.Styles>
-                            <Style Selector="controls|EmptyState#DetectedGamesEmptyState">
-                                <Style Selector="^ icons|UnifiedIcon#Icon">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                </Style>
-                                <Style Selector="^ TextBlock#HeaderTextBlock">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                </Style>
-                            </Style>
-                        </controls:EmptyState.Styles>
-
+                            
                         <controls:EmptyState.Subtitle>
                             <TextBlock Text="No games detected"
                                        Theme="{StaticResource BodyMDNormalTheme}"
-                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                                       Foreground="{StaticResource NeutralSubduedBrush}"
+                                       TextAlignment="Left"/>
                         </controls:EmptyState.Subtitle>
 
                         <StackPanel Spacing="24">
-                            <TextBlock x:Name="AddGamesToGetStartedText"
-                                       Text="Add games to get started"
+                            <TextBlock Text="Add games to get started"
                                        Theme="{StaticResource BodyMDNormalTheme}"
                                        Foreground="{StaticResource NeutralStrongBrush}" />
                             <ItemsControl
