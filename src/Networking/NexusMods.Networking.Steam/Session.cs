@@ -224,11 +224,11 @@ public class Session : ISteamSession
         var key = await _steamApps.GetDepotDecryptionKey(depotId.Value, appId.Value);
         if (key.Result != EResult.OK)
         {
-            _logger.LogWarning("Failed to get depot key for depot {0}", depotId.Value);
-            throw new Exception("Failed to get depot key for depot " + depotId.Value);
+            _logger.LogWarning("Failed to get depot key for depot `{DepotId}`", depotId.Value);
+            throw new Exception($"Failed to get depot key for depot `{depotId.Value}`");
         }
-        _logger.LogInformation("Got depot key for depot {0}", depotId.Value);
 
+        _logger.LogInformation("Got depot key for depot `{DepotId}`", depotId.Value);
         _depotKeys.TryAdd((appId, depotId), key.DepotKey);
         
         return key.DepotKey;
