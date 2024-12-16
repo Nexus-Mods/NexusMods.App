@@ -47,7 +47,7 @@ public class MultiHasher
         while (true)
         {
             token.ThrowIfCancellationRequested();
-            var read = await stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+            var read = await stream.ReadAsync(_buffer, token);
             if (read == 0)
                 break;
             var span = _buffer.AsSpan(0, read);
