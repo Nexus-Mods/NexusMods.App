@@ -47,11 +47,11 @@ public static class Verbs
         foreach (var os in Enum.GetValues<OS>())
         {
 
-            var builds = await client.GetBuilds(productId, OS.windows, token);
+            var builds = await client.GetBuilds(productId, os, token);
 
             foreach (var build in builds)
             {
-                var buildPath = output / "stores" / "GOG" / "builds" / (build.BuildId + ".json");
+                var buildPath = output / "stores" / "gog" / "builds" / (build.BuildId + ".json");
                 buildPath.Parent.CreateDirectory();
                 {
                     buildPath.Parent.CreateDirectory();
@@ -61,7 +61,7 @@ public static class Verbs
                 
                 var depot = await client.GetDepot(build, token);
                 
-                var depotPath = output / "stores" / "GOG" / "depots" / (build.BuildId + ".json");
+                var depotPath = output / "stores" / "gog" / "depots" / (build.BuildId + ".json");
                 
                 if (depotPath.FileExists)
                     continue;
@@ -130,7 +130,7 @@ public static class Verbs
                     }
                 );
                 
-                var foundHashPath = output / "stores" / "GOG" / "found_hashes" / (build.BuildId + ".json");
+                var foundHashPath = output / "stores" / "gog" / "found_hashes" / (build.BuildId + ".json");
                 foundHashPath.Parent.CreateDirectory();
                 await using var foundHashStream = foundHashPath.Create();
                 await JsonSerializer.SerializeAsync(foundHashStream, foundHashes, indentedOptions, token);
