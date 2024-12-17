@@ -1,14 +1,14 @@
 using System.IO.Compression;
-using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
-using DynamicData.Kernel;
+using Jitbit.Utils;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
+using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.OAuth;
@@ -20,7 +20,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.GOG;
 
-public class Client
+internal class Client
 {
     private readonly IOAuthUserInterventionHandler _oAuthUserInterventionHandler;
     private readonly ILogger<Client> _logger;
@@ -28,18 +28,22 @@ public class Client
     private readonly HttpClient _client;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private const string _clientId = "46899977096215655";
-    private const string _clientSecret = "9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9";
+    private const string ClientId = "46899977096215655";
+    private const string ClientSecret = "9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9";
 
-    private static Uri _authorizationUri =
+    private static readonly Uri AuthorizationUri =
         new("https://auth.gog.com/auth?client_id=46899977096215655&redirect_uri=https://embed.gog.com/on_login_success?origin=client&response_type=code&layout=galaxy");
 
-    private static Uri _callbackPrefix = new("https://embed.gog.com/on_login_success");
+    private static readonly Uri CallbackPrefix = new("https://embed.gog.com/on_login_success");
     
-    private static Uri _tokenUri = new("https://auth.gog.com/token");
+    private static readonly Uri TokenUri = new("https://auth.gog.com/token");
     
-    private Dictionary<ProductId, SecureUrl[]> _secureUrls = new();
+    private readonly Dictionary<ProductId, SecureUrl[]> _secureUrls = new();
     
+    private readonly SemaphoreSlim _secureUrlLock = new(1, 1);
+    
+    private readonly FastCache<Md5, Memory<byte>> _blockCache;
+    private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
 
     public Client(ILogger<Client> logger, IConnection connection, IOAuthUserInterventionHandler oAuthUserInterventionHandler, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
     {
@@ -53,7 +57,8 @@ public class Client
             PropertyNameCaseInsensitive = true,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
-        
+
+        _blockCache = new FastCache<Md5, Memory<byte>>();
     }
     
     /// <summary>
@@ -66,9 +71,9 @@ public class Client
     {
         var request = await _oAuthUserInterventionHandler.HandleOAuthRequest(new OAuthLoginRequest
             {
-                AuthorizationUrl = _authorizationUri,
+                AuthorizationUrl = AuthorizationUri,
                 CallbackType = CallbackType.Capture,
-                CallbackPrefix = _callbackPrefix,
+                CallbackPrefix = CallbackPrefix,
             }
         , token);
         if (request == null)
@@ -87,14 +92,14 @@ public class Client
 
         var tokenQuery = new Dictionary<string, string?>()
         {
-            { "client_id", _clientId },
-            { "client_secret", _clientSecret },
+            { "client_id", ClientId },
+            { "client_secret", ClientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
             { "redirect_uri", "https://embed.gog.com/on_login_success?origin=client" },
         };
         
-        var uri = new Uri(QueryHelpers.AddQueryString(_tokenUri.ToString(), tokenQuery));
+        var uri = new Uri(QueryHelpers.AddQueryString(TokenUri.ToString(), tokenQuery));
         
         var tokenResponse = await _client.GetFromJsonAsync<TokenResponse>(uri, token);
         
@@ -150,13 +155,13 @@ public class Client
 
             var tokenQuery = new Dictionary<string, string?>
             {
-                { "client_id", _clientId },
-                { "client_secret", _clientSecret },
+                { "client_id", ClientId },
+                { "client_secret", ClientSecret },
                 { "grant_type", "refresh_token" },
                 { "refresh_token", authInfo.RefreshToken },
             };
         
-            var uri = new Uri(QueryHelpers.AddQueryString(_tokenUri.ToString(), tokenQuery));
+            var uri = new Uri(QueryHelpers.AddQueryString(TokenUri.ToString(), tokenQuery));
         
             var tokenResponse = await _client.GetFromJsonAsync<TokenResponse>(uri, token);
             if (tokenResponse == null)
@@ -228,16 +233,7 @@ public class Client
         }
         await tx.Commit();
     }
-
-    private class DepotResponse
-    {
-        [JsonPropertyName("depot")]
-        public required DepotInfo Depot { get; init; }
-        
-        [JsonPropertyName("version")]
-        public required int Version { get; init; }
-    }
-
+    
     public async Task<DepotInfo> GetDepot(Build build, CancellationToken token)
     {
         using var result = await _client.GetAsync(build.Link, token);
@@ -279,64 +275,62 @@ public class Client
         }
         else
         {
-            var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
-            var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, size, secureUrl);
+            var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
+            var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize, secureUrl);
             var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
             var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
             return subStream;
         }
     }
 
-    private class SecureUrlResponse
-    {
-        /// <summary>
-        /// The product ID for the secure URLs.
-        /// </summary>
-        [JsonPropertyName("product_id")]
-        public required ProductId ProductId { get; init; }
-        
-        /// <summary>
-        /// The type of URLs in this response, normally this is `depot` but could be `patch` or something similar
-        /// </summary>
-        [JsonPropertyName("type")]
-        public required string Type { get; init; }
-        
-        /// <summary>
-        /// The URLs for the product.
-        /// </summary>
-        [JsonPropertyName("urls")]
-        public required SecureUrl[] Urls { get; init; }
-    }
-    
+
     private async Task<SecureUrl> GetSecureUrl(ProductId productId, CancellationToken token)
     {
-        if (_secureUrls.TryGetValue(productId, out var found))
+        try
         {
-            // Later we can make this more advanced, but for now just return the first one
-            var server = found.FirstOrDefault();
-            if (server != null)
+            await _secureUrlLock.WaitAsync(token);
+            if (_secureUrls.TryGetValue(productId, out var found))
             {
-                var expiresAt = server.Parameters.ExpiresAt;
-                if (expiresAt == null)
-                    return server;
-                if (expiresAt > DateTimeOffset.UtcNow + TimeSpan.FromHours(3)) 
-                    return server;
+                // Later we can make this more advanced, but for now just return the first one
+                var server = found.FirstOrDefault();
+                if (server != null)
+                {
+                    var expiresAt = server.Parameters.ExpiresAt;
+                    if (expiresAt == null)
+                        return server;
+                    if (expiresAt > DateTimeOffset.UtcNow + TimeSpan.FromHours(3))
+                        return server;
+                }
             }
+
+            var request = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId.Value}/secure_link?generation=2&_version=2&path=/"), token);
+
+            using var response = await _client.SendAsync(request, token);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Failed to get the secure URLs for {productId}. {response.StatusCode}");
+
+            await using var responseStream = await response.Content.ReadAsStreamAsync(token);
+            var urls = await JsonSerializer.DeserializeAsync<SecureUrlResponse>(responseStream, cancellationToken: token);
+            if (urls == null)
+                throw new Exception("Failed to deserialize the secure URLs response.");
+
+            var sorted = urls.Urls.OrderBy(s => s.Priority).ToArray();
+            _secureUrls[productId] = sorted;
+            return sorted.First();
         }
-        
-        var request = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId.Value}/secure_link?generation=2&_version=2&path=/"), token);
-        
-        using var response = await _client.SendAsync(request, token);
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Failed to get the secure URLs for {productId}. {response.StatusCode}");
-        
-        await using var responseStream = await response.Content.ReadAsStreamAsync(token);
-        var urls = await JsonSerializer.DeserializeAsync<SecureUrlResponse>(responseStream, cancellationToken: token);
-        if (urls == null)
-            throw new Exception("Failed to deserialize the secure URLs response.");
-        
-        var sorted = urls.Urls.OrderBy(s => s.Priority).ToArray();
-        _secureUrls[productId] = sorted;
-        return sorted.First();
+        finally
+        {
+            _secureUrlLock.Release();
+        }
+    }
+
+    internal bool TryGetCachedBlock(Md5 md5, out Memory<byte> o)
+    {
+        return _blockCache.TryGet(md5, out o);
+    }
+
+    public void AddCachedBlock(Md5 md5, Memory<byte> buffer)
+    {
+        _blockCache.AddOrUpdate(md5, buffer, CacheTime);
     }
 }

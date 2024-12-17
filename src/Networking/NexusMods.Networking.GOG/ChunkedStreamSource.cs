@@ -9,7 +9,7 @@ using SmartFormat;
 
 namespace NexusMods.Networking.GOG;
 
-public class ChunkedStreamSource : IChunkedStreamSource
+internal class ChunkedStreamSource : IChunkedStreamSource
 {
     private readonly Client _client;
     private readonly Chunk[] _chunks;
@@ -50,7 +50,14 @@ public class ChunkedStreamSource : IChunkedStreamSource
     {
         if (chunkIndex >= (ulong)_chunks.Length)
             throw new ArgumentOutOfRangeException(nameof(chunkIndex));
+
         var chunk = _chunks[chunkIndex];
+        if (_client.TryGetCachedBlock(chunk.CompressedMd5, out var blockData))
+        {
+            blockData.Span.CopyTo(buffer.Span);
+            return;
+        }
+        
         var parameters = _secureUrl.Parameters;
         var md5s = chunk.CompressedMd5.ToString().ToLower();
         parameters = parameters with {path = parameters.path + $"/{md5s[..2]}/{md5s[2..4]}/{md5s}"};
@@ -64,7 +71,10 @@ public class ChunkedStreamSource : IChunkedStreamSource
         var md5 = Md5.From(System.Security.Cryptography.MD5.HashData(buffer.Span));
         Debug.Assert(md5.Equals(chunk.Md5));
         #endif
+        
+        _client.AddCachedBlock(chunk.CompressedMd5, buffer.ToArray());
     }
+    
 
     public void ReadChunk(Span<byte> buffer, ulong chunkIndex)
     {

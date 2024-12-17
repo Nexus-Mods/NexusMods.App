@@ -1,9 +1,13 @@
+using System.Buffers;
+using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.OAuth;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -30,6 +34,7 @@ public static class Verbs
         [Injected] Client client, 
         [Option("p", "productId", "The GOG product ID to get the product info of")] ProductId productId,
         [Option("o", "output", "The output folder to write the index to")] AbsolutePath output,
+        [Option("v", "verify", "Verify the files are hashed properly. This takes longer to execute but ensures the files are downloaded correctly.")] bool verify,
         [Injected] CancellationToken token)
     {
         
@@ -57,6 +62,10 @@ public static class Verbs
                 var depot = await client.GetDepot(build, token);
                 
                 var depotPath = output / "stores" / "GOG" / "depots" / (build.BuildId + ".json");
+                
+                if (depotPath.FileExists)
+                    continue;
+                
                 depotPath.Parent.CreateDirectory();
                 {
                     depotPath.Parent.CreateDirectory();
@@ -69,7 +78,9 @@ public static class Verbs
                 
                 var hashLock = new SemaphoreSlim(1, 1);
                 
-                await Parallel.ForEachAsync(depot.Items, token, async (item, cancellationToken) =>
+                ConcurrentDictionary<string, Hash> foundHashes = new();
+                
+                await Parallel.ForEachAsync(depot.Items, token, async (item, token) =>
                     {
                         Console.WriteLine($"  {item.Path}");
 
@@ -79,31 +90,51 @@ public static class Verbs
                         var multiHash = await multiHasher.HashStream(stream, token);
 
                         var hashStr = multiHash.XxHash3.ToString()[2..];
+                        
+                        foundHashes.TryAdd(item.Path, multiHash.XxHash3);
+                        
                         var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr.ToRelativePath() + ".json");
-                        
                         path.Parent.CreateDirectory();
-                        await hashLock.WaitAsync(token);
-                        
-                        try {
-                            await using var outputStream = path.Create(); 
-                            await JsonSerializer.SerializeAsync(outputStream, multiHash, indentedOptions, token);
-                        } finally {
-                            hashLock.Release();
+
+                        if (!path.FileExists)
+                        {
+                            try
+                            {
+                                await hashLock.WaitAsync(token);
+                                await using var outputStream = path.Create();
+                                await JsonSerializer.SerializeAsync(outputStream, multiHash, indentedOptions, token);
+                            }
+                            finally
+                            {
+                                hashLock.Release();
+                            }
+                        }
+
+                        if (verify)
+                        {
+                            var offset = Size.Zero;
+                            foreach (var chunk in item.Chunks)
+                            {
+                                stream.Position = (long)offset.Value;
+                                
+                                using var rented = MemoryPool<byte>.Shared.Rent((int)chunk.Size.Value);
+                                var sized = rented.Memory[..(int)chunk.Size.Value];
+                                await stream.ReadExactlyAsync(sized, token);
+                                
+                                var md5 = Md5.From(MD5.HashData(sized.Span));
+                                if (!md5.Equals(chunk.Md5))
+                                    throw new InvalidOperationException("MD5 mismatch");
+                                offset += chunk.Size;
+                            }
                         }
                     }
                 );
+                
+                var foundHashPath = output / "stores" / "GOG" / "found_hashes" / (build.BuildId + ".json");
+                foundHashPath.Parent.CreateDirectory();
+                await using var foundHashStream = foundHashPath.Create();
+                await JsonSerializer.SerializeAsync(foundHashStream, foundHashes, indentedOptions, token);
             }
-            
-            /*
-            var build = builds.First();
-            var depot = await client.GetDepot(builds.First(), token);
-
-            await using var stream = await client.GetFileStream(build, depot, "System.Formats.Asn1.dll",
-                token
-            );
-            var multiHash = new MultiHasher();
-            var hash = await multiHash.HashStream(stream, token);
-            */
         }
 
         return 0;

@@ -1,6 +1,7 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.GOG.JsonConverters;
+// ReSharper disable InconsistentNaming
 
 namespace NexusMods.Abstractions.GOG.DTOs;
 
@@ -8,6 +9,7 @@ namespace NexusMods.Abstractions.GOG.DTOs;
 /// A secure URL for a GOG endpoint. These are tempoarary URLs, that are combined with a given
 /// MD5 hash to get a chunk of data for a depot.
 /// </summary>
+[UsedImplicitly]
 public class SecureUrl
 {
     /// <summary>
@@ -57,6 +59,7 @@ public class SecureUrl
 /// Parameters for the secure URL format template. Some of the members of this class use JS style naming conventions
 /// because they are part of the URL pattern and cannot be changed.
 /// </summary>
+[UsedImplicitly]
 public record SecureUrlParameters
 {
     

@@ -27,22 +27,24 @@ public class SubStream : Stream
             count = (int)(_length - Position);
         }
         
-        _parent.Seek(_offset + Position, SeekOrigin.Begin);
+        _parent.Position = _offset + Position;
         var read = _parent.Read(buffer, offset, count);
         Position += read;
         return read;
     }
 
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         if (count > _length - Position)
         {
             count = (int)(_length - Position);
         }
-        
-        _parent.Seek(_offset + Position, SeekOrigin.Begin);
-        var read = _parent.ReadAsync(buffer, offset, count, cancellationToken);
-        Position += read.Result;
+
+        if (count == 0)
+            return 0;
+        _parent.Position = _offset + Position;
+        var read = await _parent.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        Position += read;
         return read;
     }
 
@@ -53,7 +55,7 @@ public class SubStream : Stream
             SeekOrigin.Begin => Position = offset,
             SeekOrigin.Current => Position += offset,
             SeekOrigin.End => Position = _length + offset,
-            _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null),
         };
     }
 
