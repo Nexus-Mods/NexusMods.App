@@ -55,7 +55,7 @@ The issue can arise in these scenarios:
     internal static IDiagnosticTemplate MissingVersionRangeTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 1))
-        .WithTitle("Missing Version Range")
+        .WithTitle("Missing Dependency")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' which is not installed")
         .WithDetails("""
@@ -102,7 +102,7 @@ If you cannot find a compatible version:
     internal static IDiagnosticTemplate ModVersionRangeTooLowTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 2))
-        .WithTitle("Mod Version Range Too Low")
+        .WithTitle("Outdated Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' but found older version '{InstalledVersion}'")
         .WithDetails("""
@@ -147,7 +147,7 @@ Common scenarios:
     internal static IDiagnosticTemplate ModVersionRangeTooHighTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 3))
-        .WithTitle("Mod Version Range Too High")
+        .WithTitle("Dependency too new")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{ModName}' requires '{DependencyId}' version '{VersionRange}' but found newer version '{InstalledVersion}'")
         .WithDetails("""
@@ -286,7 +286,7 @@ Common reasons for incompatibility:
     internal static IDiagnosticTemplate ModVersionTooLowTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 6))
-        .WithTitle("Mod Version Too Low")
+        .WithTitle("Outdated Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{ModName}' requires '{DependencyName}' version '{Version}' or newer but found older version '{InstalledVersion}'")
         .WithDetails("""
@@ -337,7 +337,7 @@ If you cannot find the right mod or version:
     internal static IDiagnosticTemplate BothRequiredAndIncompatibleTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 7))
-        .WithTitle("Both Required And Incompatible")
+        .WithTitle("Configuration Error")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' has conflicting configuration: '{ConflictingId}' is marked as both required and incompatible")
         .WithDetails("""
@@ -422,7 +422,7 @@ Looking at `{ModName}`'s `SubModule.xml`:
     internal static IDiagnosticTemplate CircularDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 9))
-        .WithTitle("Circular Dependency")
+        .WithTitle("Circular Dependency Conflict")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("Mods Are Stuck In a Loop: '{ModName}' and '{CircularDependencyName}'")
         .WithDetails("""
@@ -519,7 +519,7 @@ And put all of these features in `ModC`, this way both mods can interoperate.
     internal static IDiagnosticTemplate ModMustLoadAfterTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 10))
-        .WithTitle("Mod Must Load After")
+        .WithTitle("Load Order Conflict")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{DependencyId}' should be loaded after '{ModName}'")
         .WithDetails("""
@@ -569,7 +569,7 @@ Should be:
     internal static IDiagnosticTemplate ModMustLoadBeforeTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 11))
-        .WithTitle("Mod Must Load Before")
+        .WithTitle("Load Order Conflict")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{DependencyId}' should be loaded before '{ModName}'")
         .WithDetails("""
@@ -619,7 +619,7 @@ Should be:
     internal static IDiagnosticTemplate ModBadConfigMissingIdTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 12))
-        .WithTitle("Mod Bad Config Missing ID")
+        .WithTitle("Configuration Error")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("Mod with name '{ModName}' is missing its 'Id' field")
         .WithDetails("""
@@ -669,7 +669,7 @@ The Id field is required for:
     internal static IDiagnosticTemplate ModBadConfigMissingNameTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 13))
-        .WithTitle("Mod Bad Config Missing Name")
+        .WithTitle("Configuration Error")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("Mod with Id '{ModId}' is missing its 'Name' field")
         .WithDetails("""
@@ -716,7 +716,7 @@ The Name field is required for:
     internal static IDiagnosticTemplate ModBadConfigNullDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 14))
-        .WithTitle("Mod Bad Config Null Dependency")
+        .WithTitle("Configuration Error")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' has an empty dependency entry")
         .WithDetails("""
@@ -767,7 +767,7 @@ All dependency entries must include an Id to properly identify the required mod.
     internal static IDiagnosticTemplate ModBadConfigDependencyMissingIdTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, 15))
-        .WithTitle("Mod Bad Config Dependency Missing ID")
+        .WithTitle("Configuration Error")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("'{ModName}' has a dependency entry missing its 'id' field")
         .WithDetails("""
