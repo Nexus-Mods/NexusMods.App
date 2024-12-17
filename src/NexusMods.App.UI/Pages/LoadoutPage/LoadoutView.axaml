@@ -46,14 +46,18 @@
         </Border>
 
 
-        <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
+                             Header="Header"
+                             IsActive="True">
+            
             <controls:EmptyState.Subtitle>
-                <StackPanel>
+                <StackPanel  Orientation="Vertical" Spacing="16">
                     <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
                     <navigation:NavigationControl x:Name="ViewLibraryButton"
                                                   Text="Library"
                                                   ShowIcon="Left"
-                                                  LeftIcon="{x:Static icons:IconValues.ModLibrary}"/>
+                                                  LeftIcon="{x:Static icons:IconValues.ModLibrary}"
+                                                  HorizontalAlignment="Center"/>
                 </StackPanel>
             </controls:EmptyState.Subtitle>
 

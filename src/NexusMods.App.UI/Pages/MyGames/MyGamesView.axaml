@@ -44,8 +44,16 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
 
-                    <controls:EmptyState x:Name="DetectedGamesEmptyState">
-                            
+                    <controls:EmptyState x:Name="DetectedGamesEmptyState"
+                                         Margin="0"
+                                         HorizontalAlignment="Left">
+                        
+                        <controls:EmptyState.Styles>
+                            <Style Selector="Border#EmptyStateBorder">
+                                <Setter Property="Margin" Value="0" />
+                            </Style>
+                        </controls:EmptyState.Styles>
+                        
                         <controls:EmptyState.Subtitle>
                             <TextBlock Text="No games detected"
                                        Theme="{StaticResource BodyMDNormalTheme}"
