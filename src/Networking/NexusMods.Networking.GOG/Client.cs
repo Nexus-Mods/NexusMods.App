@@ -245,6 +245,9 @@ internal class Client
         await tx.Commit();
     }
     
+    /// <summary>
+    /// Get the depot information for a build.
+    /// </summary>
     public async Task<DepotInfo> GetDepot(Build build, CancellationToken token)
     {
         using var result = await _client.GetAsync(build.Link, token);
@@ -270,6 +273,9 @@ internal class Client
         return depot!.Depot;
     }
 
+    /// <summary>
+    /// Given a depot, a build, and a path, return a stream to the file.
+    /// </summary>
     public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
     {
         var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
@@ -280,12 +286,14 @@ internal class Client
 
         if (itemInfo.SfcRef == null)
         {
+            // No small file container, just return a stream to the chunks
             var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
             var source = new ChunkedStreamSource(this, itemInfo.Chunks, size, secureUrl);
             return new ChunkedStream<ChunkedStreamSource>(source);
         }
         else
         {
+            // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
             var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
             var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize, secureUrl);
             var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
@@ -295,6 +303,9 @@ internal class Client
     }
 
 
+    /// <summary>
+    /// Returns a (possibly cached) secure URL for a product.
+    /// </summary>
     private async Task<SecureUrl> GetSecureUrl(ProductId productId, CancellationToken token)
     {
         try
@@ -335,11 +346,17 @@ internal class Client
         }
     }
 
-    internal bool TryGetCachedBlock(Md5 md5, out Memory<byte> o)
+    /// <summary>
+    /// Try to get a cached block.
+    /// </summary>
+    internal bool TryGetCachedBlock(Md5 md5, out Memory<byte> found)
     {
-        return _blockCache.TryGet(md5, out o);
+        return _blockCache.TryGet(md5, out found);
     }
 
+    /// <summary>
+    /// Add a block to the global cache.
+    /// </summary>
     public void AddCachedBlock(Md5 md5, Memory<byte> buffer)
     {
         _blockCache.AddOrUpdate(md5, buffer, CacheTime);
