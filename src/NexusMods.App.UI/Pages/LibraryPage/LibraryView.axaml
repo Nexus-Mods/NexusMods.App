@@ -81,8 +81,7 @@
 
         <!-- Empty State -->
         <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
-                             Header="{x:Static resources:Language.EmptyLibraryTitleText}" 
-                             IsActive="True">
+                             Header="{x:Static resources:Language.EmptyLibraryTitleText}">
             <controls:EmptyState.Subtitle>
                 <StackPanel Orientation="Vertical" Spacing="16">
                     <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle"/>

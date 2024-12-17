@@ -47,8 +47,7 @@
 
 
         <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
-                             Header="Header"
-                             IsActive="True">
+                             Header="Header">
             
             <controls:EmptyState.Subtitle>
                 <StackPanel  Orientation="Vertical" Spacing="16">
