@@ -114,7 +114,7 @@ public partial class NexusModsLibrary
 
         foreach (var collectionMod in collectionRoot.Mods)
         {
-            if (collectionMod.Source.Type != ModSourceType.nexus) continue;
+            if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
             var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
@@ -169,13 +169,13 @@ public partial class NexusModsLibrary
             var source = collectionMod.Source;
             switch (source.Type)
             {
-                case ModSourceType.nexus:
+                case ModSourceType.NexusMods:
                     HandleNexusModsDownload(db, tx, downloadEntity, collectionMod, gameIds, resolvedEntitiesLookup);
                     break;
-                case ModSourceType.direct or ModSourceType.browse:
+                case ModSourceType.Direct or ModSourceType.Browse:
                     HandleExternalDownload(tx, downloadEntity, collectionMod);
                     break;
-                case ModSourceType.bundle:
+                case ModSourceType.Bundle:
                     HandleBundledFiles(tx, downloadEntity, collectionMod);
                     break;
                 default:
@@ -308,15 +308,24 @@ public partial class NexusModsLibrary
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {
-        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
-            throw new InvalidOperationException("The source collection is not a library archive");
-
-        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        var jsonFileEntity = GetCollectionJsonFile(collectionLibraryFile);
 
         await using var data = await _fileStore.GetFileStream(jsonFileEntity.AsLibraryFile().Hash, token: cancellationToken);
         var root = await JsonSerializer.DeserializeAsync<CollectionRoot>(data, _jsonSerializerOptions, cancellationToken: cancellationToken);
 
         if (root is null) throw new InvalidOperationException("Unable to deserialize collection JSON file");
         return root;
+    }
+
+    /// <summary>
+    /// Gets the collection JSON file.
+    /// </summary>
+    public LibraryArchiveFileEntry.ReadOnly GetCollectionJsonFile(NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile)
+    {
+        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The source collection is not a library archive");
+
+        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        return jsonFileEntity;
     }
 }

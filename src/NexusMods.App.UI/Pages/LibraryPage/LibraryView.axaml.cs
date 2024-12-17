@@ -52,13 +52,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibrarySubtitleTextBlock.Text)
+            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibraryTextBlock.Text)
                 .AddTo(disposables);
-
+            
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.EmptyLibraryLinkButton)
-                .AddTo(disposables);
-
-            this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.OpenLinkBareIconButton)
                 .AddTo(disposables);
         });
     }
