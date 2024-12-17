@@ -15,12 +15,12 @@ public class ManifestInfo
     public required ManifestId ManifestId { get; init; }
     
     /// <summary>
-    /// The size of the downloaded files
+    /// The size of the downloaded files, decompressed
     /// </summary>
     public required Size Size { get; init; }
     
     /// <summary>
-    /// The size of the files on the CDN
+    /// The size of the files, compressed
     /// </summary>
     public required Size DownloadSize { get; init; }
 }

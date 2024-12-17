@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,17 +25,27 @@ internal class Crc32JsonConverter : JsonConverter<Crc32>
 {
     public override Crc32 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        Span<byte> chars = stackalloc byte[4];
-        Convert.FromHexString(reader.GetString()!, chars, out _, out _);
-        return Crc32.From(MemoryMarshal.Read<uint>(chars));
+        var input = reader.GetString();
+        if (input is null) throw new JsonException();
+
+        Span<byte> bytes = stackalloc byte[sizeof(uint)];
+
+        var status = Convert.FromHexString(input, bytes, out _, out _);
+        Debug.Assert(status == OperationStatus.Done);
+
+        var value = MemoryMarshal.Read<uint>(bytes);
+        return Crc32.From(value);
     }
 
     public override void Write(Utf8JsonWriter writer, Crc32 value, JsonSerializerOptions options)
     {
-        Span<char> span = stackalloc char[8];
-        Span<byte> bytes = stackalloc byte[4];
+        Span<char> span = stackalloc char[sizeof(uint) * 2];
+        Span<byte> bytes = stackalloc byte[sizeof(uint)];
         MemoryMarshal.Write(bytes, value.Value);
-        Convert.TryToHexString(bytes, span, out _);
+
+        var success = Convert.TryToHexString(bytes, span, out _);
+        Debug.Assert(success);
+
         writer.WriteStringValue(span);
     }
 }

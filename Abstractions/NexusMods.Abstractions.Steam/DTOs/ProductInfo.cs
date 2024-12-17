@@ -15,10 +15,10 @@ public class ProductInfo
     /// <summary>
     /// The app id of the product.
     /// </summary>
-    public AppId AppId { get; init; }
+    public required AppId AppId { get; init; }
     
     /// <summary>
     /// The depots of the product.
     /// </summary>
-    public Depot[] Depots { get; init; }
+    public required Depot[] Depots { get; init; }
 }

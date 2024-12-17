@@ -34,32 +34,32 @@ public static class ProductInfoParser
         return productInfo;
     }
 
-    public static bool TryParseDownloadableDepot(AppId appId, KeyValue depot, out Depot result)
+    private static bool TryParseDownloadableDepot(AppId appId, KeyValue depot, [NotNullWhen(true)] out Depot? result)
     {
         if (!uint.TryParse(depot.Name, out var parsedDepotId))
         {
-            result = default(Depot)!;
+            result = null;
             return false;
         }
-        
+
         var configSection = depot.Children.FirstOrDefault(c => c.Name == "config");
         var osList = configSection?.Children.FirstOrDefault(c => c.Name == "oslist")?.Value ?? "";
 
         var depotId = DepotId.From(parsedDepotId);
-        
+
         var manifestsKey = depot.Children.FirstOrDefault(c => c.Name == "manifests");
         if (manifestsKey == null)
         {
-            result = default(Depot)!;
+            result = null;
             return false;
         }
         
         Dictionary<string, ManifestInfo> manifestInfos = new();
         foreach (var branch in manifestsKey.Children)
         {
-            var manifestId = ManifestId.From(ulong.Parse(branch.Children.First(f => f.Name == "gid").Value!));
-            var sizeOnDisk = Size.From(ulong.Parse(branch.Children.First(f => f.Name == "size").Value!));
-            var downloadSize = Size.From(ulong.Parse(branch.Children.First(f => f.Name == "download").Value!));
+            var manifestId = ManifestId.From(ulong.Parse(branch["gid"].Value!));
+            var sizeOnDisk = Size.From(ulong.Parse(branch["size"].Value!));
+            var downloadSize = Size.From(ulong.Parse(branch["download"].Value!));
 
             var manifestInfo = new ManifestInfo
             {
@@ -67,16 +67,17 @@ public static class ProductInfoParser
                 Size = sizeOnDisk,
                 DownloadSize = downloadSize,
             };
-            manifestInfos.Add(branch.Name!, manifestInfo);
+
+            manifestInfos[branch.Name!] = manifestInfo;
         }
 
-        
         result = new Depot
         {
             DepotId = depotId,
             OsList = osList.Split(',', ' '),
             Manifests = manifestInfos,
         };
+
         return true;
     }
     
