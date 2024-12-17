@@ -32,11 +32,12 @@
                          Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}"
                          IsActive="False">
 
-        <controls:EmptyState.Styles>
-            <Style Selector="icons|UnifiedIcon#Icon">
-                <Setter Property="Foreground" Value="{StaticResource SuccessStrong}" />
-            </Style>
-        </controls:EmptyState.Styles>
+        <controls:EmptyState x:Name="EmptyState"
+                             Grid.Row="1"
+                             Icon="{x:Static icons:IconValues.CheckCircle}"
+                             Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
+                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}"
+                             IsActive="True">
 
         <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24">
             

@@ -93,6 +93,7 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
     ReactiveCommand<Unit> CommandViewInLibrary { get; }
+    ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
     ReactiveCommand<Unit> CommandDeleteCollection { get; }
 }

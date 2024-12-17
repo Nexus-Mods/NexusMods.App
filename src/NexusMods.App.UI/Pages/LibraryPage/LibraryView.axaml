@@ -9,6 +9,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
@@ -79,18 +80,17 @@
         </Border>
 
         <!-- Empty State -->
-        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
+                             Header="{x:Static resources:Language.EmptyLibraryTitleText}" 
+                             IsActive="True">
             <controls:EmptyState.Subtitle>
-                <StackPanel>
-                    <Button Classes="Hyperlink Secondary"
-                            x:Name="EmptyLibraryLinkButton">
-                        <TextBlock Classes="BodyLGNormal ForegroundSubdued"
-                                   x:Name="EmptyLibrarySubtitleTextBlock" />
-                    </Button>
-                    <Button Classes="BareIcon OpenInNew ForegroundSubdued"
-                            Height="18"
-                            Width="18"
-                            x:Name="OpenLinkBareIconButton" />
+                <StackPanel Orientation="Vertical" Spacing="16">
+                    <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle"/>
+                    <controls:StandardButton x:Name="EmptyLibraryLinkButton"
+                                             Text="Open Nexus Mods"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Nexus}" 
+                                             HorizontalAlignment="Center"/>
                 </StackPanel>
             </controls:EmptyState.Subtitle>
 

@@ -16,9 +16,11 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+    
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
+    
     <ScrollViewer>
         <StackPanel Margin="24"
                     Orientation="Vertical"
@@ -30,46 +32,62 @@
                     BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
                     CornerRadius="8">
 
-                <StackPanel Spacing="24">
-                    <StackPanel Spacing="8">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Border Width="48" Height="48">
-                                <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
-                            </Border>
-                            <TextBlock Text="My Games"
-                                       Theme="{StaticResource HeadingSMSemiTheme}"
-                                       Foreground="{StaticResource NeutralStrongBrush}"
-                                       VerticalAlignment="Center" />
-                        </StackPanel>
-
-                        <TextBlock x:Name="AddGamesToGetStartedText"
-                                   Text="Add games to get started"
-                                   Theme="{StaticResource BodyMDNormalTheme}"
-                                   Foreground="{StaticResource NeutralStrongBrush}" />
-                        <TextBlock x:Name="NoGamesDetectedText"
-                                   Text="No games detected"
-                                   Theme="{StaticResource BodyMDNormalTheme}"
-                                   Foreground="{StaticResource NeutralSubduedBrush}" />
+                <StackPanel Spacing="8">
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Width="48" Height="48">
+                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
+                        </Border>
+                        <TextBlock Text="My Games"
+                                   Theme="{StaticResource HeadingSMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
-                    <ItemsControl
-                        x:Name="DetectedGamesItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <panels:FlexPanel
-                                    RowSpacing="24"
-                                    ColumnSpacing="24"
-                                    Wrap="Wrap" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
-                                <reactiveUi:ViewModelViewHost
-                                    ViewModel="{CompiledBinding .}"
-                                    Width="184"
-                                    Height="293" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+
+                    <controls:EmptyState x:Name="DetectedGamesEmptyState"
+                                         Margin="0"
+                                         HorizontalAlignment="Left">
+                        
+                        <controls:EmptyState.Styles>
+                            <Style Selector="Border#EmptyStateBorder">
+                                <Setter Property="Margin" Value="0" />
+                            </Style>
+                        </controls:EmptyState.Styles>
+                        
+                        <controls:EmptyState.Subtitle>
+                            <TextBlock Text="No games detected"
+                                       Theme="{StaticResource BodyMDNormalTheme}"
+                                       Foreground="{StaticResource NeutralSubduedBrush}"
+                                       TextAlignment="Left"/>
+                        </controls:EmptyState.Subtitle>
+
+                        <StackPanel Spacing="24">
+                            <TextBlock Text="Add games to get started"
+                                       Theme="{StaticResource BodyMDNormalTheme}"
+                                       Foreground="{StaticResource NeutralStrongBrush}" />
+                            <ItemsControl
+                                x:Name="DetectedGamesItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <panels:FlexPanel
+                                            RowSpacing="24"
+                                            ColumnSpacing="24"
+                                            Wrap="Wrap" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
+                                        <reactiveUi:ViewModelViewHost
+                                            ViewModel="{CompiledBinding .}"
+                                            Width="184"
+                                            Height="293" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        
+                    </controls:EmptyState>
+
                 </StackPanel>
             </Border>
 

@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Metadata;
@@ -9,6 +10,9 @@ namespace NexusMods.App.UI.Controls;
 [PseudoClasses(":active", ":icon")]
 public class EmptyState : TemplatedControl
 {
+    private TextBlock? _header;
+    private UnifiedIcon? _icon;
+    
     public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<EmptyState, bool>(nameof(IsActive));
 
     public static readonly StyledProperty<IconValue?> IconProperty = AvaloniaProperty.Register<EmptyState, IconValue?>(nameof(Icon));
@@ -60,7 +64,8 @@ public class EmptyState : TemplatedControl
             {
                 PseudoClasses.Add(":active");
             }
-        } else if (change.Property == IconProperty)
+        } 
+        else if (change.Property == IconProperty)
         {
             PseudoClasses.Remove(":icon");
 
@@ -68,8 +73,40 @@ public class EmptyState : TemplatedControl
             {
                 PseudoClasses.Add(":icon");
             }
+            
+            UpdateIconVisibility();
+        }
+        else if (change.Property == HeaderProperty)
+        {
+            UpdateHeaderVisibility();
         }
 
         base.OnPropertyChanged(change);
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        _header = e.NameScope.Find<TextBlock>("HeaderTextBlock");
+        _icon = e.NameScope.Find<UnifiedIcon>("Icon");
+        
+        if (_header is not null)
+            UpdateHeaderVisibility();
+
+        if (_icon is not null)
+            UpdateIconVisibility();
+        
+        base.OnApplyTemplate(e);
+    }
+    
+    private void UpdateHeaderVisibility()
+    {
+        if (_header is not null)
+            _header.IsVisible = !string.IsNullOrEmpty(Header);
+    }
+    
+    private void UpdateIconVisibility()
+    {
+        if (_icon is not null)
+            _icon.IsVisible = Icon is not null;
     }
 }

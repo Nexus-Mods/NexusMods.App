@@ -2,36 +2,55 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
-    
-    <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Spacing="10" Height="400" Width="400">
-            <controls:EmptyState Header="You've got nothing" IsActive="True">
-                <controls:EmptyState.Subtitle>
-                    <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
-                </controls:EmptyState.Subtitle>
-                <TextBlock>There is something here</TextBlock>
-            </controls:EmptyState>
 
-            <controls:EmptyState Icon="{x:Static icons:IconValues.Alert}" Header="You've got nothing" IsActive="True">
-                <controls:EmptyState.Subtitle>
-                    <StackPanel>
+    <Design.PreviewWith>
+        <Border Padding="16" Width="600">
+            
+            <StackPanel Orientation="Vertical" Spacing="16">
+                
+                <controls:EmptyState Header="You've got nothing" IsActive="True">
+                    
+                    <controls:EmptyState.Subtitle>
                         <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
-                        <Button>Cool button</Button>
-                        <TextBlock>More text</TextBlock>
-                    </StackPanel>
-                </controls:EmptyState.Subtitle>
-                <TextBlock>There is something here</TextBlock>
-            </controls:EmptyState>
-        </StackPanel>
+                    </controls:EmptyState.Subtitle>
+                    
+                    <TextBlock>There is something here</TextBlock>
+                </controls:EmptyState>
+                
+                <controls:EmptyState Header="You've got nothing" Subtitle="Subtitle" IsActive="True">
+                    <TextBlock>There is something here</TextBlock>
+                </controls:EmptyState>
+                
+                <controls:EmptyState Icon="{x:Static icons:IconValues.Alert}" 
+                                     Header="You've got nothing"
+                                     IsActive="True">
+
+                    <controls:EmptyState.Subtitle>
+                        <StackPanel>
+                            <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
+                            <Button>Cool button</Button>
+                            <TextBlock>More text</TextBlock>
+                        </StackPanel>
+                    </controls:EmptyState.Subtitle>
+
+                    <TextBlock>There is something here</TextBlock>
+                </controls:EmptyState>
+
+            </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <Style Selector="controls|EmptyState">
+        <Setter Property="Padding" Value="0,64" />
+
         <Style Selector="^ /template/ Border#EmptyStateBorder">
             <Setter Property="IsVisible" Value="False" />
-
+            <Setter Property="Margin" Value="0,64" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            
             <Style Selector="^ StackPanel#Panel">
                 <Setter Property="Orientation" Value="Vertical" />
-                <Setter Property="Margin" Value="16 64 16 0" />
+                <Setter Property="Margin" Value="0" />
                 <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             </Style>
 
@@ -45,24 +64,31 @@
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                 <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="TextAlignment" Value="Center" />
             </Style>
 
             <Style Selector="^ ContentPresenter#SubtitleContentPresenter">
-
-                <Style Selector="^ > StackPanel">
-                    <Setter Property="Orientation" Value="Horizontal" />
-                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                </Style>
                 
-                <Style Selector="^ TextBlock">
+                <!-- used when Subtitle property is just a string -->
+                <Style Selector="^ > TextBlock">
+                    <Setter Property="Margin" Value="0" />
                     <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
                     <Setter Property="TextAlignment" Value="Center" />
                 </Style>
+                
+                <!-- commonly used when Subtitle property is set with content controls -->
+                <Style Selector="^ > StackPanel">
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
+                        <Setter Property="TextAlignment" Value="Center" />
+                    </Style>
+                </Style>
+                
             </Style>
         </Style>
 
