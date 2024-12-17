@@ -14,7 +14,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests;
 
-public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFileManager tempManager, IFileExtractor extractor)
+public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtractor extractor)
 {
     private readonly SignatureChecker _zipSignatureChecker = new(FileType.ZIP);
     
@@ -30,14 +30,20 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, TemporaryFile
             var isZip = await _zipSignatureChecker.MatchesAnyAsync(stream);
             isZip.Should().BeTrue("the database file should be a ZIP archive, you may need to pull the file from LFS (`git lfs pull`)");
         }
-        
-        await using var workingFolder = tempManager.CreateFolder();
+
+        var basePath = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("Temp").Combine($"Test-{Guid.NewGuid()}");
+        basePath.CreateDirectory();
+        basePath.DirectoryExists().Should().BeTrue();
+
+        using var temporaryFileManager = new TemporaryFileManager(FileSystem.Shared, basePath: basePath);
+
+        await using var workingFolder = temporaryFileManager.CreateFolder();
         await extractor.ExtractAllAsync(path, workingFolder.Path);
-        
+
         var datamodelFolder = workingFolder.Path.Combine("MnemonicDB.rocksdb");
         datamodelFolder.DirectoryExists().Should().BeTrue("the extracted database folder should exist");
         datamodelFolder.EnumerateFiles().Should().NotBeEmpty("the extracted database folder should contain files");
-        
+
         using var backend = new Backend();
         var settings = new DatomStoreSettings
         {
