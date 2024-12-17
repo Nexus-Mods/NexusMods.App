@@ -53,8 +53,8 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 FactoryId = TextEditorPageFactory.StaticId,
                 Context = new TextEditorPageContext
                 {
-                    LoadoutFileId = loadoutFile,
-                    FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath,
+                    FileId = loadoutFile.LoadoutFileId,
+                    FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
                 },
             };
 

@@ -115,7 +115,7 @@ public class CommandLineConfigurator
 
         try
         {
-            _logger.LogInformation("Using handler {Handler} for `{Uri}`", handler.GetType(), uri);
+            _logger.LogInformation("Using handler {Handler} for `{Scheme}`", handler.GetType(), uri.Scheme);
             await handler.Handle(uri.ToString(), cancellationToken);
         }
         catch (Exception e)
@@ -136,6 +136,7 @@ public class CommandLineConfigurator
     public async Task<int> RunAsync(string[] args, IRenderer renderer, CancellationToken token)
     {
         if (await RunLink(args, token)) return 0;
+        if (_logger.IsEnabled(LogLevel.Debug)) _logger.LogDebug("Received command `{Command}`", string.Join(" ", args));
 
         var parser = new CommandLineBuilder(_rootCommand)
             .UseHelp()

@@ -13,9 +13,12 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Collections;
 
@@ -241,31 +244,46 @@ public class CollectionDownloader
     /// <summary>
     /// Returns an observable with the number of downloaded items.
     /// </summary>
-    public IObservable<int> RequiredDownloadedCountObservable(CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    public IObservable<int> DownloadedItemCountObservable(CollectionRevisionMetadata.ReadOnly revisionMetadata, ItemType itemType)
     {
         return _connection
             .ObserveDatoms(CollectionDownload.CollectionRevision, revisionMetadata)
             .AsEntityIds()
             .Transform(datom => CollectionDownload.Load(_connection.Db, datom.E))
-            .FilterImmutable(static download => !download.IsOptional)
+            .FilterImmutable(download => DownloadMatchesItemType(download, itemType))
             .FilterImmutable(static download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal())
             .TransformOnObservable(download => IsDownloadedObservable(_connection, download))
             .FilterImmutable(static isDownloaded => isDownloaded)
-            .Count();
+            .Count()
+            .Prepend(0);
+    }
+
+    /// <summary>
+    /// Counts the items.
+    /// </summary>
+    public int CountItems(CollectionRevisionMetadata.ReadOnly revisionMetadata, ItemType itemType)
+    {
+        return revisionMetadata.Downloads
+            .Where(download => DownloadMatchesItemType(download, itemType))
+            .Count(download => download.IsCollectionDownloadNexusMods() || download.IsCollectionDownloadExternal());
+    }
+
+    /// <summary>
+    /// Returns whether the item matches the given item type.
+    /// </summary>
+    private static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
+    {
+        if (download.IsOptional && itemType.HasFlagFast(ItemType.Optional)) return true;
+        if (download.IsRequired && itemType.HasFlagFast(ItemType.Required)) return true;
+        return false;
     }
 
     /// <summary>
     /// Checks whether the items in the collection were downloaded.
     /// </summary>
-    public static bool IsFullyDownloaded(CollectionRevisionMetadata.ReadOnly revisionMetadata, bool onlyRequired, IDb db)
+    public static bool IsFullyDownloaded(CollectionDownload.ReadOnly[] items, IDb db)
     {
-        foreach (var download in revisionMetadata.Downloads)
-        {
-            if (onlyRequired && download.IsOptional) continue;
-            if (!IsDownloaded(download, db)) return false;
-        }
-
-        return true;
+        return items.All(download => IsDownloaded(download, db));
     }
 
     /// <summary>
@@ -287,12 +305,19 @@ public class CollectionDownloader
         return false;
     }
 
+    [Flags, PublicAPI]
+    public enum ItemType
+    {
+        Required = 1,
+        Optional = 2,
+    };
+
     /// <summary>
     /// Downloads everything in the revision.
     /// </summary>
-    public async ValueTask DownloadAll(
+    public async ValueTask DownloadItems(
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
-        bool onlyRequired,
+        ItemType itemType,
         IDb db,
         int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
@@ -306,8 +331,7 @@ public class CollectionDownloader
         }, body: async (index, token) =>
         {
             var download = downloads[index];
-
-            if (download.IsOptional && onlyRequired) return;
+            if (!DownloadMatchesItemType(download, itemType)) return;
 
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {
@@ -319,5 +343,60 @@ public class CollectionDownloader
                 await Download(externalDownload, onlyDirectDownloads: true, token);
             }
         });
+    }
+
+    /// <summary>
+    /// Checks whether the collection is installed.
+    /// </summary>
+    public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision)
+    {
+        return _connection.ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision).IsNotEmpty();
+    }
+
+    /// <summary>
+    /// Deletes all associated collection loadout groups.
+    /// </summary>
+    public async ValueTask DeleteCollectionLoadoutGroup(CollectionRevisionMetadata.ReadOnly revision, CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var groupDatoms = db.Datoms(NexusCollectionLoadoutGroup.Revision, revision);
+        foreach (var datom in groupDatoms)
+        {
+            tx.Delete(datom.E, recursive: true);
+        }
+
+        await tx.Commit();
+    }
+
+    /// <summary>
+    /// Returns all items of the desired type (required/optional).
+    /// </summary>
+    public CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
+    {
+        var res = new CollectionDownload.ReadOnly[revision.Downloads.Count];
+
+        var i = 0;
+        foreach (var download in revision.Downloads)
+        {
+            if (!DownloadMatchesItemType(download, itemType)) continue;
+            res[i++] = download;
+        }
+
+        Array.Resize(ref res, newSize: i);
+        return res;
+    }
+
+    public NexusModsCollectionLibraryFile.ReadOnly GetLibraryFile(CollectionRevisionMetadata.ReadOnly revisionMetadata)
+    {
+        var datoms = _connection.Db.Datoms(
+            (NexusModsCollectionLibraryFile.CollectionSlug, revisionMetadata.Collection.Slug),
+            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revisionMetadata.RevisionNumber)
+        );
+
+        if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
+        var source = NexusModsCollectionLibraryFile.Load(_connection.Db, datoms[0]);
+        return source;
     }
 }

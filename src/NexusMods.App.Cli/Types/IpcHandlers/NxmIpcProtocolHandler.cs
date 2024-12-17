@@ -57,7 +57,11 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     public async Task Handle(string url, CancellationToken cancel)
     {
         var parsed = NXMUrl.Parse(url);
-        _logger.LogDebug("Received NXM URL: {Url}", parsed);
+
+        // NOTE(erri120): don't log OAuth callbacks, they contain sensitive information
+        if (parsed is not NXMOAuthUrl) _logger.LogDebug("Received NXM URL: {Url}", parsed.ToString());
+        else _logger.LogDebug("Received NXM OAuth URL");
+
         var userInfo = await _loginManager.GetUserInfoAsync(cancel);
         switch (parsed)
         {
@@ -143,10 +147,6 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cache, cancellationToken: cancel);
 
         var libraryJob = await library.AddDownload(downloadJob);
-        _logger.LogInformation("{Result}", libraryJob);
-
-        // var task = await _downloadService.AddTask(modUrl);
-        // _ = task.StartAsync();
     }
 }
 

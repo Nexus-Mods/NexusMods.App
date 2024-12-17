@@ -181,6 +181,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     {
         var uniqueIdToVersion = loadoutItemIdToManifest
             .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
+            .DistinctBy(kv => kv.UniqueID)
             .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
 
         var collect = loadoutItemIdToManifest.SelectMany(kv =>

@@ -369,8 +369,6 @@ public static class IconValues
 
 #region Custom Icons
     
-    
-
     // https://pictogrammers.com/library/mdi/icon/alert-octagon/
     public static readonly IconValue Alert = new ProjektankerIcon("mdi-alert-octagon");
 
@@ -486,4 +484,14 @@ public static class IconValues
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion
+    
+    #region Brand Pictograms
+    
+    /// <summary>
+    /// Brand pictogram for Games in 3D
+    /// </summary>
+    public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
+    
+    #endregion
+    
 }

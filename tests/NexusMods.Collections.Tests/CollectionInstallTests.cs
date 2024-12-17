@@ -1,5 +1,7 @@
+using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -30,6 +32,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();
         _ = await loginManager.GetUserInfoAsync();
 
+        loginManager.UserInfo.Should().NotBeNull(because: "this test requires a logged in user");
         loginManager.IsPremium.Should().BeTrue(because: "this test requires premium to automatically download mods");
 
         await using var destination = TemporaryFileManager.CreateFile();
@@ -45,9 +48,10 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var revisionMetadata = await NexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revisionNumber), CancellationToken.None);
 
         var collectionDownloader = new CollectionDownloader(ServiceProvider);
-        await collectionDownloader.DownloadAll(revisionMetadata, onlyRequired: true, db: Connection.Db);
+        await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: Connection.Db);
 
-        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata);
+        var items = collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items, Optional<NexusCollectionLoadoutGroup.ReadOnly>.None);
 
         loadout = loadout.Rebase();
 
