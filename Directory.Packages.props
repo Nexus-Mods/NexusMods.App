@@ -6,7 +6,7 @@
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
     <PackageVersion Include="Jitbit.FastCache" Version="1.1.0" />
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.8" />
-    <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.242" />
+    <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.246" />
     <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
@@ -25,7 +25,7 @@
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
-    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.138" />
+    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.140" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.46" />
     <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="Noggog.CSharpExt" Version="2.67.3" />

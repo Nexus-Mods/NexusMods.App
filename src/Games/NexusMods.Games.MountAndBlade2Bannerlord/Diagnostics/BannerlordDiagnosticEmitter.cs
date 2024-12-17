@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
@@ -18,6 +19,8 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 /// </summary>
 internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
+    private static NamedLink _blseLink = new("Bannerlord Software Extender", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/1"));
+    private static NamedLink _harmonyLink = new("Harmony", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/2006"));
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
 
@@ -51,8 +54,12 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
             isEnabledDict[module] = true;
         modulesOnly = modulesOnly.Concat(Hack.GetDummyBaseGameModules()).ToArray();
         // TODO: HACK. Pretend base game modules are installed before we can properly ingest them.
-        
+
         // Emit diagnostics
+        var isBlseInstalled = loadout.IsBLSEInstalled();
+        if (isBlseInstalled && !IsHarmonyAvailable(modulesOnly, isEnabledDict))
+            yield return Diagnostics.CreateMissingHarmony(_harmonyLink);
+
         foreach (var moduleAndMod in isEnabledDict)
         {
             var moduleInfo = moduleAndMod.Key;
@@ -61,17 +68,15 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
             // Note(sewer): All modules are valid by definition
             //              All modules are selected by definition.
-            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModuleEx(modulesOnly, moduleInfo, module => isEnabledDict.ContainsKey(module), _ => true, false).Select(x => CreateDiagnostic(x, isBlseInstalled)))
             {
                 if (diagnostic != null)
                     yield return diagnostic;
             }
         }
     }
-    
-    
 
-    private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue)
+    private Diagnostic? CreateDiagnostic(ModuleIssueV2 issue, bool isBlseInstalled)
     {
         return issue switch
         {
@@ -86,6 +91,14 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
             // Note(sewer): We emit this from the dependency mod itself.
             ModuleDependencyValidationIssue dependencyValidation => null,
 
+            // Missing BLSE Dependency
+            ModuleMissingBLSEDependencyIssue missingUnversioned when !isBlseInstalled => Diagnostics.CreateMissingBLSE(
+                ModId: missingUnversioned.Module.Id,
+                ModName: missingUnversioned.Module.Name,
+                DependencyId: missingUnversioned.Dependency.Id,
+                BLSELink: _blseLink
+            ),
+            
             // Missing Unversioned Dependency
             ModuleMissingUnversionedDependencyIssue missingUnversioned => Diagnostics.CreateMissingDependency(
                 ModId: missingUnversioned.Module.Id,
@@ -220,5 +233,11 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
                          "which is not handled on our end in a switch statement.\n" +
                          "Issue text is below: {Issue}", issue);
         return null;
+    }
+
+    private bool IsHarmonyAvailable(ModuleInfoExtended[] modulesOnly, Dictionary<ModuleInfoExtended, bool> isEnabledDict)
+    {
+        var harmonyModule = modulesOnly.FirstOrDefault(x => x.Id == "Bannerlord.Harmony");
+        return harmonyModule != default(ModuleInfoExtended?) && isEnabledDict[harmonyModule];
     }
 }
