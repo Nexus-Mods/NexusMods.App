@@ -28,7 +28,7 @@ We've made it possible to update the app without completely removing all your mo
 
 ## Technical Changes
 - Protontricks running via Flatpak is now supported (Linux).
-- The (optional) analytics we collection from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
+- The (optional) analytics we collect from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
 
 ## Bugfixes
 - Fixed an issue counting the mods a user has installed when sending analytics.
@@ -37,7 +37,7 @@ We've made it possible to update the app without completely removing all your mo
 
 # Known Issues
 - When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
-- Bundled mods for collections do not appear in the UI but are still applied to your game. 
+- Bundled mods included with collections do not appear in the UI but are still applied to your game. 
 - The success rating for collections is not showing the correct value. 
 - The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 - The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
