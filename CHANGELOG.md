@@ -24,7 +24,7 @@ Try it out by opening a new tab and selecting the "Collections (WIP)" page, then
 In our testing the app is up to 25x faster than Vortex at installing collections (depending on your internet speed and hardware) - which is amazing! 
 
 ## App Updates
-We've made it possible to update the app without completely removing all your mods and games. You can update from 0.7.0 to 0.7.1 and keep you mods, games and other settings. This means that if you want to be an early adopter, you can keep you mod list intact as we release new versions! 
+We've made it possible to update the app without completely removing all your mods and games. You can update from 0.7.0 to 0.7.1 and keep your mods, games and other settings. This means that if you want to be an early adopter, you can keep your mod list intact as we release new versions! 
 
 ## Technical Changes
 * Protontricks running via Flatpak is now supported (Linux).
