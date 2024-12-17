@@ -27,23 +27,23 @@ In our testing the app is up to 25x faster than Vortex at installing collections
 We've made it possible to update the app without completely removing all your mods and games. You can update from 0.7.0 to 0.7.1 and keep you mods, games and other settings. This means that if you want to be an early adopter, you can keep you mod list intact as we release new versions! 
 
 ## Technical Changes
-- Protontricks running via Flatpak is now supported (Linux).
-- The (optional) analytics we collect from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
+* Protontricks running via Flatpak is now supported (Linux).
+* The (optional) analytics we collect from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
 
 ## Bugfixes
-- Fixed an issue counting the mods a user has installed when sending analytics.
-- Added a placeholder to the Games view when no games have been detected.
-- When enabling the Xbox Game Pass support option in settings, the app now correctly prompts a restart. 
-- Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
+* Fixed an issue counting the mods a user has installed when sending analytics.
+* Added a placeholder to the Games view when no games have been detected.
+* When enabling the Xbox Game Pass support option in settings, the app now correctly prompts a restart. 
+* Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
 
 # Known Issues
-- When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
-- Bundled mods included with collections do not appear in the UI but are still applied to your game. 
-- The success rating for collections is not showing the correct value. 
-- The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-- The Library and Collections (WIP) pages are not filtered by game. 
-- The "Switch View" option does not persist in the Library/Installed Mods view.
-- The "Load Order" heading toggle does not persist in the Load Order view. 
+* When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
+* Bundled mods included with collections do not appear in the UI but are still applied to your game. 
+* The success rating for collections is not showing the correct value. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The Library and Collections (WIP) pages are not filtered by game. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
+* The "Load Order" heading toggle does not persist in the Load Order view. 
 
 
 # v0.7.0 - 2024-11-27
