@@ -357,6 +357,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
     {
         return
         [
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnail>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithVersion>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithSize>(),

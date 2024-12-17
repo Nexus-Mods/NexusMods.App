@@ -3,6 +3,19 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
+    <!-- Thumbnail column -->
+    <DataTemplate x:Key="{x:Static local:ILibraryItemWithThumbnail.ColumnTemplateResourceKey}"
+                  DataType="local:ILibraryItemModel">
+        <ContentControl Content="{CompiledBinding}">
+            <ContentControl.DataTemplates>
+                <!-- with thumbnail -->
+                <DataTemplate DataType="{x:Type local:ILibraryItemWithThumbnail}">
+                    <Image Source="{CompiledBinding Thumbnail.Value}" />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </DataTemplate>
+    
     <!-- Name column -->
     <DataTemplate x:Key="{x:Static local:ILibraryItemWithName.ColumnTemplateResourceKey}"
                   DataType="local:ILibraryItemModel">

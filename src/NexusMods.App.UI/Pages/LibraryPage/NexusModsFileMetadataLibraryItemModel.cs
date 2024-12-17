@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -9,17 +10,26 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+/// <summary>
+///     This is used for downloadable collection items.
+/// </summary>
 public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
+    ILibraryItemWithThumbnail,
     ILibraryItemWithName,
     ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDownloadAction
 {
-    public NexusModsFileMetadataLibraryItemModel(CollectionDownloadNexusMods.ReadOnly download)
+    public NexusModsFileMetadataLibraryItemModel(CollectionDownloadNexusMods.ReadOnly download, IServiceProvider serviceProvider)
     {
         DownloadableItem = new DownloadableItem(download);
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
+        
+        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        var thumbnailDisposable = ImagePipelines.CreateObservable(download.FileMetadata.ModPage.Id, modPageThumbnailPipeline)
+            .ObserveOnUIThreadDispatcher()
+            .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
 
         // ReSharper disable once NotDisposedResource
         var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
@@ -44,13 +54,15 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
             FormattedSize,
             DownloadItemCommand,
             DownloadState,
-            DownloadButtonText
+            DownloadButtonText,
+            thumbnailDisposable
         );
     }
 
     public required Observable<bool> IsInLibraryObservable { get; init; }
     public required Observable<IJob> DownloadJobObservable { get; init; }
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 

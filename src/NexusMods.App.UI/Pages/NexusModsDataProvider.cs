@@ -35,11 +35,13 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IJobMonitor _jobMonitor;
+    private readonly IServiceProvider _serviceProvider;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _serviceProvider = serviceProvider;
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
@@ -96,7 +98,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             })
             .WhereNotNull();
 
-        var model = new NexusModsFileMetadataLibraryItemModel(nexusModsDownload)
+        var model = new NexusModsFileMetadataLibraryItemModel(nexusModsDownload, _serviceProvider)
         {
             IsInLibraryObservable = isInLibraryObservable,
             DownloadJobObservable = downloadJobObservable,
