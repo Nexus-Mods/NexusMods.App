@@ -18,30 +18,24 @@
     <Design.DataContext>
         <local:DiagnosticListDesignViewModel />
     </Design.DataContext>
-    
+
     <reactive:ReactiveUserControl.Styles>
         <Style Selector="ScrollViewer">
             <Setter Property="ClipToBounds" Value="False" />
         </Style>
     </reactive:ReactiveUserControl.Styles>
 
+
     <controls:EmptyState x:Name="EmptyState"
                          Grid.Row="1"
                          Icon="{x:Static icons:IconValues.CheckCircle}"
                          Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
-                         Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}"
-                         IsActive="False">
-
-        <controls:EmptyState x:Name="EmptyState"
-                             Grid.Row="1"
-                             Icon="{x:Static icons:IconValues.CheckCircle}"
-                             Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
-                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
+                         Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
         <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24">
-            
+
             <StackPanel Spacing="24">
-                
+
                 <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Width="48" Height="48">
@@ -54,13 +48,13 @@
                     </StackPanel>
 
                     <TextBlock
-                               Text="Review your Loadout for any issues and learn how to resolve them if needed."
-                               Theme="{StaticResource BodyMDNormalTheme}"
-                               Foreground="{StaticResource NeutralStrongBrush}" />
+                        Text="Review your Loadout for any issues and learn how to resolve them if needed."
+                        Theme="{StaticResource BodyMDNormalTheme}"
+                        Foreground="{StaticResource NeutralStrongBrush}" />
                 </StackPanel>
 
-                <TabControl x:Name="HealthCheckTabControl" 
-                            Classes="Subtabs" 
+                <TabControl x:Name="HealthCheckTabControl"
+                            Classes="Subtabs"
                             Margin="0"
                             Padding="0,24,0,0">
                     <TabItem Header="All (12)" x:Name="AllDiagnosticsTab">
