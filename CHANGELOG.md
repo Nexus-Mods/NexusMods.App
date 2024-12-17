@@ -4,7 +4,7 @@ This release includes styling for the Load Order view, the ability to install an
 ## Load Order Styling 
 We've given the load order page for Cyberpunk 2077 REDmods a facelift and it's now much closer to the designs we're working towards.
 
-![Cyberpunk 2077 REDmod load order (left) and Installed Mods (right).](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1734021711-1676107399.png)
+![Cyberpunk 2077 REDmod load order (left) and Installed Mods (right).](./docs/changelog-assets/7d5552ab9efd548748e76e32396eb885.webp)
 
 You can re-order entries with the up and down arrows (no drag and drop yet!) and see which REDmods have been disabled in the Installed Mods view. You can also flip the load order using the table header to have the winning REDmod at the top of the list rather than the bottom. 
 
@@ -19,7 +19,7 @@ We've also fixed up downloading off-site files for Collections. When you add the
 
 Try it out by opening a new tab and selecting the "Collections (WIP)" page, then download a collection from the website.
 
-![A Stardew Valley Collection fully installed into the app.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1734021711-1912110791.png)
+![A Stardew Valley Collection fully installed into the app.](./docs/changelog-assets/1c924e8b2aaa5fb95a315f8b3fe7cf9c.webp)
 
 In our testing the app is up to 25x faster than Vortex at installing collections (depending on your internet speed and hardware) - which is amazing! 
 
@@ -56,7 +56,7 @@ This release includes initial support for Mount & Blade II: Bannerlord, a basic 
 ## Mount & Blade II: Bannerlord 
 This version adds basic support for Bannerlord. All modules can be easily installed and managed. We've also added several advanced [Health Check diagnostics](https://nexus-mods.github.io/NexusMods.App/users/games/Bannerlord/#loadout-health-check) to allow players to understand common issues in their setup, with more planned for the future when we add load order support!
 
-![An example of the "Missing Dependency" and "Incompatible Mods" diagnostics for Bannerlord.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732536855-1001051460.png)
+![An example of the "Missing Dependency" and "Incompatible Mods" diagnostics for Bannerlord.](./docs/changelog-assets/60be60c0771f15d67127e114e5fc0437.webp)
 
 A huge thank you to [Aragas](https://www.nexusmods.com/mountandblade2bannerlord/users/2355906) for all his help during development of this feature!
 
@@ -65,7 +65,7 @@ A huge thank you to [Aragas](https://www.nexusmods.com/mountandblade2bannerlord/
 
 We've further refined the Collections download page which unlocks the ability for non-Premium users to use the Collections feature and provides Premium users with the ability to see the list of mods included in a collection before downloading. As this page is still a work in progress, some of the UI buttons may not work as expected yet. 
 
-![The Collection Download Page showing a Stardew Valley collection.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732544476-32114395.png)
+![The Collection Download Page showing a Stardew Valley collection.](./docs/changelog-assets/fda0056583d8434addbc433ff345d810.webp)
 
 ## EXPERIMENTAL - Cyberpunk 2077 REDmod Load Order
 Users can now manage the order of REDmods installed for Cyberpunk 2077 through the new "Load Orders (WIP)" page that can be accessed from the New Tab menu. 
