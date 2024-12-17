@@ -20,14 +20,11 @@
         <local:DiagnosticListDesignViewModel />
     </Design.DataContext>
 
-    <reactive:ReactiveUserControl.Styles>
-        <!-- <Style Selector="ScrollViewer"> -->
-        <!--     <Setter Property="ClipToBounds" Value="False" /> -->
-        <!-- </Style> -->
+    <Design.DesignStyle>
         <Style Selector="Border">
-            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Background" Value="DarkRed" />
         </Style>
-    </reactive:ReactiveUserControl.Styles>
+    </Design.DesignStyle>
 
 
     <controls:EmptyState x:Name="EmptyState"
@@ -64,9 +61,8 @@
                             Margin="0,24,0,0"
                             Padding="0,24,0,0">
                     <TabItem Header="All (12)" x:Name="AllDiagnosticsTab">
-
                         <ScrollViewer>
-                            <ItemsControl x:Name="ItemsControl">
+                            <ItemsControl x:Name="AllItemsControl">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Spacing="{StaticResource Spacing-2}"/>
@@ -83,13 +79,58 @@
                         </ScrollViewer> 
                     </TabItem>
                     <TabItem Header="Suggestions (2)" x:Name="SuggestionDiagnosticsTab">
-                        <TextBlock Text="Content for Tab 2" />
+                        <ScrollViewer>
+                            <ItemsControl x:Name="SuggestionItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-2}"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <!-- Do not replace with ReactiveUI, the generated component and kills shadows -->
+                                <!-- due to enforced ClipToBounds that can't be overwritten by styles -->
+                                <ItemsControl.DataTemplates>
+                                    <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                        <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>  
+                        </ScrollViewer> 
                     </TabItem>
                     <TabItem Header="Warnings (4)" x:Name="WarningDiagnosticsTab">
-                        <TextBlock Text="Content for Tab 3" />
+                        <ScrollViewer>
+                            <ItemsControl x:Name="WarningItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-2}"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <!-- Do not replace with ReactiveUI, the generated component and kills shadows -->
+                                <!-- due to enforced ClipToBounds that can't be overwritten by styles -->
+                                <ItemsControl.DataTemplates>
+                                    <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                        <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>  
+                        </ScrollViewer> 
                     </TabItem>
                     <TabItem Header="Critical (6)" x:Name="CriticalDiagnosticsTab">
-                        <TextBlock Text="Content for Tab 4" />
+                        <ScrollViewer>
+                            <ItemsControl x:Name="CriticalItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-2}"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <!-- Do not replace with ReactiveUI, the generated component and kills shadows -->
+                                <!-- due to enforced ClipToBounds that can't be overwritten by styles -->
+                                <ItemsControl.DataTemplates>
+                                    <DataTemplate DataType="{x:Type diagnostics:IDiagnosticEntryViewModel}">
+                                        <diagnostics:DiagnosticEntryView DataContext="{CompiledBinding .}" />
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>  
+                        </ScrollViewer> 
                     </TabItem>
                 </TabControl>
             </DockPanel>
