@@ -32,7 +32,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public Observable<UserInfo?> UserInfoObservable => _userInfo;
 
     /// <inheritdoc/>
-    public UserInfo? UserInfo { get; private set; }
+    public UserInfo? UserInfo => _cachedUserInfo.Get();
 
     private readonly IDisposable _observeDatomDisposable;
 
@@ -61,18 +61,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
             .DistinctUntilChanged()
             .SubscribeAwait(async (hasValue, cancellationToken) =>
             {
-                _cachedUserInfo.Evict();
-
                 if (!hasValue)
                 {
+                    _cachedUserInfo.Evict();
                     _userInfo.OnNext(value: null);
-                    UserInfo = null;
                 }
                 else
                 {
                     var userInfo = await Verify(cancellationToken);
+                    _cachedUserInfo.Store(userInfo);
                     _userInfo.OnNext(userInfo);
-                    UserInfo = userInfo;
                 }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
