@@ -32,6 +32,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();
         _ = await loginManager.GetUserInfoAsync();
 
+        loginManager.UserInfo.Should().NotBeNull(because: "this test requires a logged in user");
         loginManager.IsPremium.Should().BeTrue(because: "this test requires premium to automatically download mods");
 
         await using var destination = TemporaryFileManager.CreateFile();

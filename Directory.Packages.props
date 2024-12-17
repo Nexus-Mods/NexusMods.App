@@ -105,7 +105,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
       <PrivateAssets>all</PrivateAssets>
@@ -128,7 +128,7 @@
     <PackageVersion Include="BitFaster.Caching" Version="2.5.2" />
     <PackageVersion Include="CliWrap" Version="3.6.7" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="GameFinder" Version="4.3.3" />
+    <PackageVersion Include="GameFinder" Version="4.4.0" />
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.44.0" />
