@@ -3,7 +3,9 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -14,6 +16,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
+using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -59,24 +62,17 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         _revision = revisionMetadata;
         _collection = revisionMetadata.Collection;
 
+        var libraryFile = collectionDownloader.GetLibraryFile(revisionMetadata);
+        var collectionJsonFile = nexusModsLibrary.GetCollectionJsonFile(libraryFile);
+
         TabTitle = _collection.Name;
         TabIcon = IconValues.Collections;
 
         TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
-        var requiredDownloadCount = 0;
-        var optionalDownloadCount = 0;
-        foreach (var file in _revision.Downloads)
-        {
-            var isOptional = file.IsOptional;
-
-            requiredDownloadCount += isOptional ? 0 : 1;
-            optionalDownloadCount += isOptional ? 1 : 0;
-        }
-
-        RequiredDownloadsCount = requiredDownloadCount;
-        OptionalDownloadsCount = optionalDownloadCount;
+        RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
+        OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
         CommandDownloadRequiredItems = _canDownloadRequiredItems.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken),
@@ -94,7 +90,14 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandInstallOptionalItems = _canInstallOptionalItems.ToReactiveCommand<Unit>();
 
         CommandInstallRequiredItems = _canInstallRequiredItems.ToReactiveCommand<Unit>(
-            executeAsync: async (_, _) => { await InstallCollectionJob.Create(serviceProvider, targetLoadout, revisionMetadata); },
+            executeAsync: async (_, _) => { await InstallCollectionJob.Create(
+                serviceProvider,
+                targetLoadout,
+                source: libraryFile,
+                revisionMetadata,
+                items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
+                group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
+            ); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
@@ -140,6 +143,25 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         );
 
         CommandViewInLibrary = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
+
+        CommandOpenJsonFile = new ReactiveCommand(
+            execute: _ =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = TextEditorPageFactory.StaticId,
+                    Context = new TextEditorPageContext
+                    {
+                        FileId = collectionJsonFile.AsLibraryFile().LibraryFileId,
+                        FilePath = collectionJsonFile.AsLibraryFile().FileName,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = new OpenPageBehavior.NewTab(PanelId);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }
+        );
 
         this.WhenActivated(disposables =>
         {
@@ -256,6 +278,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
     public ReactiveCommand<Unit> CommandViewInLibrary { get; }
+    public ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
 }

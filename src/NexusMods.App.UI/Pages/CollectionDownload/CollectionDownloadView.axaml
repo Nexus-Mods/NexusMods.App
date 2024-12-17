@@ -31,6 +31,13 @@
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
+            <MenuItem x:Name="MenuItemOpenJsonFile">
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>Open JSON file</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem x:Name="MenuItemDeleteAllDownloads">
                 <MenuItem.Header>
                     <panels:FlexPanel>
