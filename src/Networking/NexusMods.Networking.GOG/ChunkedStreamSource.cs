@@ -9,6 +9,9 @@ using SmartFormat;
 
 namespace NexusMods.Networking.GOG;
 
+/// <summary>
+/// Chunked stream loader for GOG data
+/// </summary>
 internal class ChunkedStreamSource : IChunkedStreamSource
 {
     private readonly Client _client;

@@ -69,6 +69,7 @@ internal class Client
 
     public async Task Login(CancellationToken token)
     {
+        // Ask the OAuth handler to handle the login request
         var request = await _oAuthUserInterventionHandler.HandleOAuthRequest(new OAuthLoginRequest
             {
                 AuthorizationUrl = AuthorizationUri,
@@ -82,6 +83,7 @@ internal class Client
             return;
         }
         
+        // Parse the code from the query
         var parsed = HttpUtility.ParseQueryString(request.Query);
         var code = parsed["code"];
         if (code == null)
@@ -90,6 +92,7 @@ internal class Client
             return;
         }
 
+        // Request the token
         var tokenQuery = new Dictionary<string, string?>()
         {
             { "client_id", ClientId },
@@ -109,6 +112,7 @@ internal class Client
             return;
         }
         
+        // Save the login information
         using var tx = _connection.BeginTransaction();
         var e = tx.TempId();
         if (TryGetAuthInfo(out var found))
@@ -122,7 +126,11 @@ internal class Client
         await tx.Commit();
         _logger.LogInformation("Logged in successfully to GOG.");
     }
+    
 
+    /// <summary>
+    /// Create a new HttpRequestMessage with the OAuth token.
+    /// </summary>
     private async ValueTask<HttpRequestMessage> CreateMessage(Uri uri, CancellationToken token)
     {
         if (!TryGetAuthInfo(out var authInfo))
@@ -136,11 +144,17 @@ internal class Client
         return message;
     }
     
+    /// <summary>
+    /// Returns true if the OAuth token needs to be refreshed.
+    /// </summary>
     private bool NeedsRefresh(AuthInfo.ReadOnly authInfo)
     {
         return authInfo.ExpriesAt < DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1);
     }
 
+    /// <summary>
+    /// Refresh the OAuth token.
+    /// </summary>
     private async Task<AuthInfo.ReadOnly> RefreshToken(CancellationToken token)
     {
         // Lock so we don't refresh multiple times
@@ -198,13 +212,10 @@ internal class Client
         authInfo = default(AuthInfo.ReadOnly);
         return false;
     }
-
-    private class BuildList
-    {
-        [JsonPropertyName("items")]
-        public required Build[] Items { get; init; }
-    }
     
+    /// <summary>
+    /// Get all the builds for a given product and OS.
+    /// </summary>
     public async Task<Build[]> GetBuilds(ProductId productId, OS os, CancellationToken token)
     {
         var msg = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId}/os/{os}/builds?generation=2"), CancellationToken.None);
@@ -213,7 +224,7 @@ internal class Client
             throw new Exception($"Failed to get builds for {productId} on {os}. {response.StatusCode}");
 
         await using var responseStream = await response.Content.ReadAsStreamAsync(token);
-        var content = await JsonSerializer.DeserializeAsync<BuildList>(responseStream, _jsonSerializerOptions, token);
+        var content = await JsonSerializer.DeserializeAsync<BuildListResponse>(responseStream, _jsonSerializerOptions, token);
         
         if (content == null)
             throw new Exception("Failed to deserialize the builds response.");

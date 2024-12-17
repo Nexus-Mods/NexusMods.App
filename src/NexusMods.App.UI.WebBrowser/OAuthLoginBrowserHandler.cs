@@ -5,7 +5,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.WebBrowser;
 
-public class OAuthLoginBrowserHandler : IOAuthUserInterventionHandler
+internal class OAuthLoginBrowserHandler : IOAuthUserInterventionHandler
 {
     private readonly IWindowManager _windowManager;
 
