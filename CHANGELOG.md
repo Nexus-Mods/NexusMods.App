@@ -1,3 +1,52 @@
+# v0.7.1 - 2024-12-17
+This release includes styling for the Load Order view, the ability to install and remove collections for all users and several improvements to the analytics we collect that will help inform our design decisions. 
+
+## Load Order Styling 
+We've given the load order page for Cyberpunk 2077 REDmods a facelift and it's now much closer to the designs we're working towards.
+
+![Cyberpunk 2077 REDmod load order (left) and Installed Mods (right).](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1734021711-1676107399.png)
+
+You can re-order entries with the up and down arrows (no drag and drop yet!) and see which REDmods have been disabled in the Installed Mods view. You can also flip the load order using the table header to have the winning REDmod at the top of the list rather than the bottom. 
+
+We'd love to hear what you think of this design! 
+
+## Collections - Basic User Flow
+**Important: Any collections you have added to the app in version 0.7.0 or earlier should be removed as they may not install properly.**
+
+The Collections experience in the app is starting to take shape! While it's still very much a work in progress, both free and Premium users can now download and install collections for all supported games. 
+
+We've also fixed up downloading off-site files for Collections. When you add these files to the library, the Collection will now automatically mark them as installed (provided you pick the exact file the curator used!).
+
+Try it out by opening a new tab and selecting the "Collections (WIP)" page, then download a collection from the website.
+
+![A Stardew Valley Collection fully installed into the app.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1734021711-1912110791.png)
+
+In our testing the app is up to 25x faster than Vortex at installing collections (depending on your internet speed and hardware) - which is amazing! 
+
+## App Updates
+We've made it possible to update the app without completely removing all your mods and games. You can update from 0.7.0 to 0.7.1 and keep you mods, games and other settings. This means that if you want to be an early adopter, you can keep you mod list intact as we release new versions! 
+
+## Technical Changes
+* Protontricks running via Flatpak is now supported (Linux).
+* The (optional) analytics we collect from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
+
+## Bugfixes
+* Fixed an issue counting the mods a user has installed when sending analytics.
+* Added a placeholder to the Games view when no games have been detected.
+* When enabling the Xbox Game Pass support option in settings, the app now correctly prompts a restart. 
+* Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
+
+# Known Issues
+* Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
+* When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
+* Bundled mods included with collections do not appear in the UI but are still applied to your game. 
+* The success rating for collections is not showing the correct value. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The Library and Collections (WIP) pages are not filtered by game. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
+* The "Load Order" heading toggle does not persist in the Load Order view. 
+
+
 # v0.7.0 - 2024-11-27
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
