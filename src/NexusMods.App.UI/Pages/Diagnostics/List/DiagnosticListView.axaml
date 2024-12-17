@@ -44,8 +44,7 @@
                              Grid.Row="1"
                              Icon="{x:Static icons:IconValues.CheckCircle}"
                              Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
-                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}"
-                             IsActive="True">
+                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
             <controls:EmptyState.Styles>
                 <Style Selector="icons|UnifiedIcon#Icon">
