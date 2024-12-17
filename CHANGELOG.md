@@ -34,13 +34,13 @@ We've made it possible to update the app without completely removing all your mo
 - Fixed an issue counting the mods a user has installed when sending analytics.
 - Added a placeholder to the Games view when no games have been detected.
 - When enabling the Xbox Game Pass support option in settings, the app now correctly prompts a restart. 
+- Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
 
 # Known Issues
 - When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
 - Bundled mods included with collections do not appear in the UI but are still applied to your game. 
 - The success rating for collections is not showing the correct value. 
 - The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-- The first row of the My Mods or Library tables will sometimes be misaligned with the headers. Scrolling or adjusting any column width will correct this. 
 - The Library and Collections (WIP) pages are not filtered by game. 
 - The "Switch View" option does not persist in the Library/Installed Mods view.
 - The "Load Order" heading toggle does not persist in the Load Order view. 
