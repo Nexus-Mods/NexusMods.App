@@ -20,13 +20,6 @@
         <local:DiagnosticListDesignViewModel />
     </Design.DataContext>
 
-    <Design.DesignStyle>
-        <Style Selector="Border">
-            <Setter Property="Background" Value="DarkRed" />
-        </Style>
-    </Design.DesignStyle>
-
-
     <controls:EmptyState x:Name="EmptyState"
                          Icon="{x:Static icons:IconValues.CheckCircle}"
                          Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
@@ -34,8 +27,7 @@
 
         <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24">
 
-            <!-- need dockpanel to make the tabcontrol fill the available space, needed for 
-            scrollviewer to calculate height properly -->
+            <!-- need DockPanel to make the TabControl fill the available space, needed for ScrollViewer to calculate height properly -->
             <DockPanel>
 
                 <StackPanel Spacing="8"
