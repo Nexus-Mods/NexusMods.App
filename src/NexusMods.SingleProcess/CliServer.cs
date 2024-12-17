@@ -80,7 +80,7 @@ public class CliServer : IHostedService, IDisposable
 
     private async Task StartListeningAsync()
     {
-        while (!_cancellationTokenSource.IsCancellationRequested)
+        while (_started && !_cancellationTokenSource.IsCancellationRequested)
         {
             try
             {
