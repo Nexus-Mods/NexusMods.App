@@ -136,7 +136,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             })
             .WhereNotNull();
 
-        var model = new ExternalDownloadItemModel(externalDownload)
+        var model = new ExternalDownloadItemModel(externalDownload, _serviceProvider)
         {
             IsInLibraryObservable = isInLibraryObservable,
             DownloadJobObservable = downloadJobObservable,
@@ -178,7 +178,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem)
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };

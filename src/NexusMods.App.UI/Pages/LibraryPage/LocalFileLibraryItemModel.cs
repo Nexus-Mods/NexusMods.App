@@ -13,8 +13,7 @@ using R3;
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithThumbnail,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,

@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -13,7 +14,7 @@ using R3;
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,
@@ -102,6 +103,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();

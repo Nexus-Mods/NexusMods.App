@@ -79,7 +79,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
-                var model = new LocalFileParentLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id))
+                var model = new LocalFileParentLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id), _serviceProvider)
                 {
                     HasChildrenObservable = Observable.Return(true),
                     ChildrenObservable = childrenObservable,

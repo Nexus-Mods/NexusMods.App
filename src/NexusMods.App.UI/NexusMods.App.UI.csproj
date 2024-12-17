@@ -630,9 +630,6 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithName.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LibraryPage\ILibraryItemWithVersion.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
@@ -708,7 +705,7 @@
         <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
           <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnail.cs">
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnailAndName.cs">
           <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>

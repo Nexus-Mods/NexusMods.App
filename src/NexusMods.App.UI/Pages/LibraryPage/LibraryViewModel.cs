@@ -375,12 +375,11 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
     {
-        var thumbnailColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnail>();
+        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnailAndName>();
 
         return
         [
-            viewHierarchical ? ILibraryItemModel.CreateExpanderColumn(thumbnailColumn) : thumbnailColumn,
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>(),
+            viewHierarchical ? ILibraryItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithVersion>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithSize>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithDownloadedDate>(),

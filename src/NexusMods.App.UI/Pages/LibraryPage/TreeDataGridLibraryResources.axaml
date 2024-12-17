@@ -3,27 +3,17 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <!-- Thumbnail column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithThumbnail.ColumnTemplateResourceKey}"
-                  DataType="local:ILibraryItemModel">
-        <ContentControl Content="{CompiledBinding}">
-            <ContentControl.DataTemplates>
-                <!-- with thumbnail -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithThumbnail}">
-                    <Image Source="{CompiledBinding Thumbnail.Value}" />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-    </DataTemplate>
-    
-    <!-- Name column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithName.ColumnTemplateResourceKey}"
+    <!-- Thumbnail + Name column -->
+    <DataTemplate x:Key="{x:Static local:ILibraryItemWithThumbnailAndName.ColumnTemplateResourceKey}"
                   DataType="local:ILibraryItemModel">
         <ContentControl Content="{CompiledBinding}">
             <ContentControl.DataTemplates>
                 <!-- with name -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithName}">
-                    <TextBlock Text="{CompiledBinding Name.Value}" />
+                <DataTemplate DataType="{x:Type local:ILibraryItemWithThumbnailAndName}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{CompiledBinding Thumbnail.Value}" />
+                        <TextBlock Text="{CompiledBinding Name.Value}" />
+                    </StackPanel>
                 </DataTemplate>
 
                 <!-- fallback -->

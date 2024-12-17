@@ -14,8 +14,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 ///     This is used for downloadable collection items.
 /// </summary>
 public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithThumbnail,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDownloadAction
