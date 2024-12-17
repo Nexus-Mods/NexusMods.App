@@ -63,8 +63,11 @@ def convert_to_webp(image_data):
         return None
 
 def hash_webp(webp_data):
-    """Hash the WebP data using BLAKE2b and return the hexadecimal digest."""
-    blake2b_hash = hashlib.blake2b(webp_data).hexdigest()
+    """
+    Hash the WebP data using BLAKE2b with a digest size of 128 bits (16 bytes)
+    to match `b2sum --length=128`.
+    """
+    blake2b_hash = hashlib.blake2b(webp_data, digest_size=16).hexdigest()
     print(f"Hashed WebP data to {blake2b_hash}")
     return blake2b_hash
 
@@ -99,7 +102,13 @@ def process_images(urls):
         # Store the relative path for replacement
         relative_path = os.path.relpath(saved_path, start=os.path.dirname(CHANGELOG_PATH))
         relative_path = relative_path.replace(os.sep, '/')
+
+        # Ensure the path starts with './'
+        if not relative_path.startswith(('.', '/')):
+            relative_path = f'./{relative_path}'
+
         url_to_new_path[url] = relative_path
+        print(f"Updated path for {url}: {relative_path}")
     return url_to_new_path
 
 def update_changelog(content, url_mapping):
@@ -127,3 +136,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
