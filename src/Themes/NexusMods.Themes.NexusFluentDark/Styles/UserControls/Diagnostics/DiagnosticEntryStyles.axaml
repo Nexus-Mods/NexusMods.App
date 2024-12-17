@@ -25,6 +25,7 @@
         <Style Selector="^ controls|StandardButton#EntryButton">
             <Setter Property="Type" Value="Tertiary" />
             <Setter Property="Fill" Value="Weak" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
