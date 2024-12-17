@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <XunitStartupAssembly>NexusMods.Networking.Steam.Tests</XunitStartupAssembly>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Abstractions\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
+      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
+    </ItemGroup>
+
+</Project>
