@@ -1,4 +1,4 @@
-# v0.7.1 - 2024-12-XX
+# v0.7.1 - 2024-12-17
 This release includes styling for the Load Order view, the ability to install and remove collections for all users and several improvements to the analytics we collect that will help inform our design decisions. 
 
 ## Load Order Styling 
