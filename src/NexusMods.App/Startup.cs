@@ -100,7 +100,11 @@ public class Startup
             .UsePlatformDetect()
             .LogToTrace()
             .UseR3()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .With(new SkiaOptions { UseOpacitySaveLayer = true });
+        
+            // NOTE(insomnious): Opacity doesn't work on SVGs without this SkiaOptions set. It's needed for when we want to disable\fade SVG icons.
+            // See https://github.com/AvaloniaUI/Avalonia/pull/9964 for more details.
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));

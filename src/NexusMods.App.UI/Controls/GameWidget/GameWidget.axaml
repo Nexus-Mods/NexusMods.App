@@ -76,7 +76,7 @@
                                              Text="{x:Static resources:Language.GameWidget__Add_game}"
                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                              ShowIcon="Left"
-                                             Type="Secondary"
+                                             Type="Primary"
                                              Fill="Strong" />
                 </StackPanel>
 
