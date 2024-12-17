@@ -37,6 +37,7 @@ We've made it possible to update the app without completely removing all your mo
 * Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
 
 # Known Issues
+* Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
 * When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
 * Bundled mods included with collections do not appear in the UI but are still applied to your game. 
 * The success rating for collections is not showing the correct value. 
