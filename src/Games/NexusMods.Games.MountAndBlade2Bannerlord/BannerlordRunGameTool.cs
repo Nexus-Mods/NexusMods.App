@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Games.Generic;
+using NexusMods.Paths;
 using static Bannerlord.LauncherManager.Constants;
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -19,12 +21,14 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
     private readonly ILogger<BannerlordRunGameTool> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly GameToolRunner _runner;
+    private readonly IOSInformation _os;
 
-    public BannerlordRunGameTool(IServiceProvider serviceProvider, Bannerlord game, GameToolRunner runner)
+    public BannerlordRunGameTool(IServiceProvider serviceProvider, Bannerlord game, GameToolRunner runner, IOSInformation os)
         : base(serviceProvider, game)
     {
         _serviceProvider = serviceProvider;
         _runner = runner;
+        _os = os;
         _logger = serviceProvider.GetRequiredService<ILogger<BannerlordRunGameTool>>();
     }
 
@@ -39,8 +43,25 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         var args = await GetBannerlordExeCommandlineArgs(loadout, commandLineArgs, cancellationToken);
         var install = loadout.InstallationInstance;
         var exe = install.LocationsRegister[LocationId.Game];
-        if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
-        else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
+
+        if (loadout.LocateBLSE(out var blseRelativePath))
+        {
+            exe = exe/blseRelativePath;
+            
+            // Note(sewer): If the user is on Linux, there is no guarantee they
+            // have .NET Framework installed; instead, Framework stuff may be run on
+            // Mono. Because BLSE interacts with low level components of the runtime,
+            // we will instead use a 'hidden' BLSE feature to use the .NET Runtime
+            // stored in the game folder. In this case, that's .NET 6 at the time of
+            // writing.
+            if (_os.IsLinux)
+                args = [..args, "/forcenetcore"];
+        }
+        else
+        {
+            if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
+            else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
+        }
 
         var command = Cli.Wrap(exe.ToString())
             .WithArguments(args)
@@ -61,23 +82,11 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         var manifestPipeline = Pipelines.GetManifestPipeline(_serviceProvider);
         var modules = (await Helpers.GetAllManifestsAsync(_logger, loadout, manifestPipeline, cancellationToken).ToArrayAsync(cancellationToken))
             .Select(x => x.Item2);
-        var sortedModules = AutoSort(Hack.GetDummyBaseGameModules()
+        var sortedModules = SortHelper.AutoSort(Hack.GetDummyBaseGameModules()
             .Concat(modules)).Select(x => x.Id).ToArray();
         var loadOrderCli = sortedModules.Length > 0 ? $"_MODULES_*{string.Join("*", sortedModules)}*_MODULES_" : string.Empty;
 
         // Add the new arguments
         return commandLineArgs.Concat(["/singleplayer", loadOrderCli]).ToArray();
-    }
-    
-    // Copied from Bannerlord.LauncherManager
-    // needs upstream changes, will do those changes tomorrow (21st Nov 2024)
-    private static IEnumerable<ModuleInfoExtended> AutoSort(IEnumerable<ModuleInfoExtended> source)
-    {
-        var orderedModules = source
-            .OrderByDescending(x => x.IsOfficial)
-            .ThenBy(x => x.Id, new AlphanumComparatorFast())
-            .ToArray();
-
-        return ModuleSorter.TopologySort(orderedModules, module => ModuleUtilities.GetDependencies(orderedModules, module));
     }
 }
