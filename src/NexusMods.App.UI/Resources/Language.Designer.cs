@@ -231,6 +231,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
+        /// </summary>
+        public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Num_required_mods_downloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to install - All required mods downloaded.
+        /// </summary>
+        public static string CollectionDownloadViewModel_Ready_to_install {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Ready_to_install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new loadout.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
@@ -1402,7 +1420,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install your downloaded mods from the.
+        ///   Looks up a localized string similar to Install your mods from the Library.
         /// </summary>
         public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
             get {

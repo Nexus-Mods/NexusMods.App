@@ -572,6 +572,122 @@ controls, but this is not a strict requirement.
 Some functionality properties of controls can and should be defined directly on the control, e.g.
 `Command`, `IsEnabled` or `Grid.Row`, `Grid.Column`.
 
+
+### Styling TreeDataGrid
+TreeDataGrid rows are not actual views, but rather a collection of column `DataTemplates` bound to an item model.
+This poses a number of challenges when it comes to styling the TreeDataGrid.
+
+#### Different column content:
+If two rows need to have significant differences in what is displayed inside the same column,
+different `DataTemplates` can be used for those rows.
+To select the correct `DataTemplate` for a row, the easiest way is to do so by model type/interface:
+
+```xml
+<!-- Action column -->
+    <DataTemplate x:Key="{x:Static local:ILibraryItemWithAction.ColumnTemplateResourceKey}"
+                  DataType="local:ILibraryItemModel">
+        <ContentControl Content="{CompiledBinding}">
+            <ContentControl.DataTemplates>
+                <!-- Install action -->
+                <DataTemplate DataType="{x:Type local:ILibraryItemWithInstallAction}">
+                    <Button Command="{CompiledBinding InstallItemCommand}"
+                            Classes="Standard"
+                            Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                            Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                            HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                               IsVisible="{CompiledBinding IsInstalled.Value}" />
+                            <TextBlock Text="{CompiledBinding InstallButtonText.Value}" />
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+
+                <!-- Download action -->
+                <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadAction}">
+                    <Button Command="{CompiledBinding DownloadItemCommand}"
+                            Classes="Standard"
+                            HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{CompiledBinding DownloadButtonText.Value}" />
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+
+                <!-- fallback -->
+                <DataTemplate DataType="{x:Type local:ILibraryItemModel}" />
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </DataTemplate>
+```
+In the above example a different `DataTemplate` is used depending on the interface implemented by the model.
+
+There are ways to select a `DataTemplate` based on more advanced criterion (e.g. property values on the item model rather than type),
+see the Avalonia documentation on [Data Template Selector](https://docs.avaloniaui.net/docs/get-started/wpf/datatemplates#data-template-selector) for more information.
+
+#### Styling entire rows:
+Since we only define the Column `DataTemplates`, we only control the contents and styling of each individual cell,
+while we often want to change the styling of an entire row based on some state of the item model.
+
+The state of the item model can actually be accessed from a style by setting the `x:DataType` attribute on row style to
+be the type of the item model.
+```xml
+<TreeDataGrid.Styles>
+    <Style Selector="TreeDataGridRow" x:DataType="sorting:ILoadOrderItemModel">
+        <Style Selector="^ Border#RowBorder">
+            <Setter Property="IsVisible" Value="{CompiledBinding IsActive}"/>
+        </Style>
+    </Style>
+</TreeDataGrid.Styles>
+```
+It is then possible to use `CompiledBinding` access the model properties inside the setters of the style.
+
+!!! Warning "If a Style with `x:DataType` is used on an item with a different type, you could get a runtime error. Scope the styles appropriately."
+
+We can only access the model in the setters though, not in the `Selector`, meaning that do implement some complex styling 
+based on a bool value, we would need to implement value converters for every property we would want to set.
+E.g. one for Background, one for Foreground, one for BorderBrush, etc... This is undesirable.
+
+What we need is a way to select based on state of the item model, but selectors can only access the control properties and classes.
+So we want to set a classes on the row based on the model state, and then select based on those classes.
+
+In avalonia it is not possible to set Classes in a `Style` or in a `ControlTheme`.
+But it is possible to set them in a `ControlTemplate`:
+
+```xml
+<TreeDataGrid.Resources>
+    <ControlTemplate x:Key="TreeRowTemplate" TargetType="TreeDataGridRow" x:DataType="sorting:ILoadOrderItemModel">
+
+        <Border x:Name="RowBorder"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Classes.IsActiveClass="{CompiledBinding IsActive}">
+            <TreeDataGridCellsPresenter Name="PART_CellsPresenter"
+                                        ElementFactory="{TemplateBinding ElementFactory}"
+                                        Items="{TemplateBinding Columns}"
+                                        Rows="{TemplateBinding Rows}" />
+        </Border>
+    </ControlTemplate>
+</TreeDataGrid.Resources>
+```
+The `Classes.IsActiveClass` syntax will set or unset the `IsActiveClass` class on the `Border` based on the `IsActive` property of the model.
+
+Then it is possible to set the `ControlTemplate` to the `TreeDataGridRow` in a style:
+```xml
+<TreeDataGrid.Styles>
+    <Style Selector="TreeDataGridRow">
+        <Setter Property="Template" Value="{DynamicResource TreeRowTemplate}" />
+    </Style>
+
+    <Style Selector="^ Border.IsActiveClass">
+        <Setter Property="Background" Value="Blue"/>
+    </Style>
+</TreeDataGrid.Styles>
+```
+This way, it is then possible to select the Border based on the `IsActiveClass`, allowing complex styling based on the model state. 
+
 ### Naming Conventions
 
 - Style Classes should follow PascalCase naming convention.

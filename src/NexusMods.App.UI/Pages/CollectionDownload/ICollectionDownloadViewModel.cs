@@ -4,6 +4,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -60,10 +61,14 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     /// </summary>
     int RequiredDownloadsCount { get; }
 
+    int CountDownloadedRequiredItems { get; }
+
     /// <summary>
     /// The number of optional downloads in the collection
     /// </summary>
     int OptionalDownloadsCount { get; }
+
+    int CountDownloadedOptionalItems { get; }
 
     /// <summary>
     /// The small tile image of the collection
@@ -80,13 +85,15 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     /// </summary>
     string CollectionStatusText { get; }
 
-    /// <summary>
-    /// Command to download all downloads.
-    /// </summary>
-    R3.ReactiveCommand<R3.Unit> DownloadAllCommand { get; }
+    ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
+    ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
 
-    /// <summary>
-    /// Command to install the collection.
-    /// </summary>
-    R3.ReactiveCommand<R3.Unit> InstallCollectionCommand { get; }
+    ReactiveCommand<Unit> CommandDownloadOptionalItems { get; }
+    ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
+
+    ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
+    ReactiveCommand<Unit> CommandViewInLibrary { get; }
+    ReactiveCommand<Unit> CommandOpenJsonFile { get; }
+    ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
+    ReactiveCommand<Unit> CommandDeleteCollection { get; }
 }

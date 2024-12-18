@@ -40,4 +40,9 @@ public interface IGameDomainToGameIdMappingCache
     ///     cache hit unless the translation is being done for the first time ever.
     /// </remarks>
     Optional<GameDomain> TryGetDomain(GameId gameId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Puts the values into the cache.
+    /// </summary>
+    ValueTask InsertAsync(GameDomain gameDomain, GameId gameId);
 }

@@ -17,28 +17,35 @@
 
     <reactiveUi:ReactiveUserControl.Resources>
         <MenuFlyout x:Key="CollectionMenuFlyout">
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewOnNexusMods">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View on Nexus Mods</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewInLibrary">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View in Library</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemOpenJsonFile">
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>Open JSON file</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem x:Name="MenuItemDeleteAllDownloads">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete all downloads</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemDeleteCollection">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete Collection</TextBlock>
@@ -46,6 +53,22 @@
                 </MenuItem.Header>
             </MenuItem>
         </MenuFlyout>
+
+        <DockPanel x:Key="TabItemContent" >
+            <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
+                <panels:FlexPanel x:Name="ListHeaderRow">
+                    <TextBlock x:Name="TextCollectionStatus"/>
+                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems" Text="Download all required mods" />
+                    <controls:StandardButton x:Name="ButtonInstallRequiredItems" Text="Install Collection" />
+
+                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems" Text="Download all optional mods" />
+                    <controls:StandardButton x:Name="ButtonInstallOptionalItems" Text="Install downloaded optional mods" />
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..." />
+                </panels:FlexPanel>
+            </Border>
+
+            <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom"/>
+        </DockPanel>
     </reactiveUi:ReactiveUserControl.Resources>
 
     <DockPanel x:Name="Body">
@@ -117,20 +140,9 @@
             </Border>
         </Border>
 
-        <!-- second row (buttons) -->
-        <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
-            <panels:FlexPanel x:Name="ListHeaderRow">
-                <TextBlock x:Name="CollectionStatusText" />
-                <controls:StandardButton x:Name="InstallButton" Text="Install" />
-                <controls:StandardButton x:Name="DownloadAllButton" Text="Download All" />
-                <controls:StandardButton x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}"
-                                         Text="..." />
-            </panels:FlexPanel>
-        </Border>
-
-        <!-- third row (tab control and datagrid) -->
+        <!-- second row (tab control and datagrid) -->
         <TabControl x:Name="TabControl">
-            <TabItem x:Name="RequiredTab">
+            <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
                 <TabItem.Header>
                     <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
                         <TextBlock>Required</TextBlock>
@@ -139,9 +151,8 @@
                         </Border>
                     </StackPanel>
                 </TabItem.Header>
-                <TreeDataGrid x:Name="RequiredDownloadsTree" />
             </TabItem>
-            <TabItem x:Name="OptionalTab">
+            <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
                 <TabItem.Header>
                     <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
                         <TextBlock>Optional</TextBlock>
@@ -150,7 +161,6 @@
                         </Border>
                     </StackPanel>
                 </TabItem.Header>
-                <TreeDataGrid x:Name="OptionalDownloadsTree" />
             </TabItem>
         </TabControl>
     </DockPanel>

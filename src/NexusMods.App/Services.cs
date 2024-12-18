@@ -25,6 +25,7 @@ using NexusMods.Library;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.Steam;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -70,6 +71,7 @@ public static class Services
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
+                .AddTracking(telemetrySettings ?? new TelemetrySettings())
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
@@ -94,7 +96,8 @@ public static class Services
                 .AddSingleton<HttpClient>()
                 .AddFileSystem()
                 .AddDownloaders()
-                .AddCleanupVerbs();
+                .AddCleanupVerbs()
+                .AddSteamCli();
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);

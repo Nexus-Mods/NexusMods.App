@@ -9,6 +9,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 
@@ -59,6 +60,33 @@ public partial class NexusModsLibrary
         return CollectionRevisionMetadata.Load(results.Db, results[collectionRevisionEntityId]);
     }
 
+    /// <summary>
+    /// Deletes a collection, all revisions, and all download entities of all revisions.
+    /// </summary>
+    public async ValueTask DeleteCollection(
+        CollectionMetadataId collectionMetadataId,
+        CancellationToken cancellationToken)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
+        foreach (var revisionId in revisionIds)
+        {
+            var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId.E);
+            foreach (var downloadId in downloadIds)
+            {
+                tx.Delete(downloadId.E, recursive: false);
+            }
+
+            tx.Delete(revisionId.E, recursive: false);
+        }
+
+        tx.Delete(collectionMetadataId, recursive: false);
+
+        await tx.Commit();
+    }
+
     private static ResolvedEntitiesLookup ResolveModFiles(
         IDb db,
         ITransaction tx,
@@ -86,7 +114,7 @@ public partial class NexusModsLibrary
 
         foreach (var collectionMod in collectionRoot.Mods)
         {
-            if (collectionMod.Source.Type != ModSourceType.nexus) continue;
+            if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
             var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
@@ -126,10 +154,13 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        foreach (var collectionMod in collectionRoot.Mods)
+        for (var i = 0; i < collectionRoot.Mods.Length; i++)
         {
+            var collectionMod = collectionRoot.Mods[i];
+
             var downloadEntity = new CollectionDownload.New(tx)
             {
+                ArrayIndex = i,
                 CollectionRevisionId = collectionRevisionEntityId,
                 IsOptional = collectionMod.Optional,
                 Name = collectionMod.Name,
@@ -138,13 +169,13 @@ public partial class NexusModsLibrary
             var source = collectionMod.Source;
             switch (source.Type)
             {
-                case ModSourceType.nexus:
+                case ModSourceType.NexusMods:
                     HandleNexusModsDownload(db, tx, downloadEntity, collectionMod, gameIds, resolvedEntitiesLookup);
                     break;
-                case ModSourceType.direct or ModSourceType.browse:
+                case ModSourceType.Direct or ModSourceType.Browse:
                     HandleExternalDownload(tx, downloadEntity, collectionMod);
                     break;
-                case ModSourceType.bundle:
+                case ModSourceType.Bundle:
                     HandleBundledFiles(tx, downloadEntity, collectionMod);
                     break;
                 default:
@@ -169,7 +200,7 @@ public partial class NexusModsLibrary
 
         var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 
-        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files ealier");
+        Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
 
         _ = new CollectionDownloadNexusMods.New(tx, downloadEntity.Id)
@@ -206,7 +237,7 @@ public partial class NexusModsLibrary
     {
         var source = collectionMod.Source;
 
-        _ = new ColletionDownloadBundled.New(tx, downloadEntity.Id)
+        _ = new CollectionDownloadBundled.New(tx, downloadEntity.Id)
         {
             CollectionDownload = downloadEntity,
             BundledPath = source.FileExpression,
@@ -250,9 +281,9 @@ public partial class NexusModsLibrary
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
+        resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
 
         if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
@@ -270,19 +301,31 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
-    private async ValueTask<CollectionRoot> ParseCollectionJsonFile(
+    /// <summary>
+    /// Parses the collection json file.
+    /// </summary>
+    public async ValueTask<CollectionRoot> ParseCollectionJsonFile(
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {
-        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
-            throw new InvalidOperationException("The source collection is not a library archive");
-
-        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        var jsonFileEntity = GetCollectionJsonFile(collectionLibraryFile);
 
         await using var data = await _fileStore.GetFileStream(jsonFileEntity.AsLibraryFile().Hash, token: cancellationToken);
         var root = await JsonSerializer.DeserializeAsync<CollectionRoot>(data, _jsonSerializerOptions, cancellationToken: cancellationToken);
 
         if (root is null) throw new InvalidOperationException("Unable to deserialize collection JSON file");
         return root;
+    }
+
+    /// <summary>
+    /// Gets the collection JSON file.
+    /// </summary>
+    public LibraryArchiveFileEntry.ReadOnly GetCollectionJsonFile(NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile)
+    {
+        if (!collectionLibraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The source collection is not a library archive");
+
+        var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
+        return jsonFileEntity;
     }
 }

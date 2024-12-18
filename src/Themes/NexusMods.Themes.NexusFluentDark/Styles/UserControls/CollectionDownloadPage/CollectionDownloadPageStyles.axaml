@@ -208,7 +208,7 @@
                     <Setter Property="AlignItems" Value="Center" />
                     <Setter Property="ColumnSpacing" Value="8" />
 
-                    <Style Selector="^ TextBlock#CollectionStatusText">
+                    <Style Selector="^ TextBlock#TextCollectionStatus">
                         <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
                         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                     </Style>

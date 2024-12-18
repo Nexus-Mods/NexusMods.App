@@ -135,9 +135,10 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     
     private static string FormatLastAppliedTime(DateTimeOffset lastAppliedTime)
     {
-        var stringTime = lastAppliedTime == DateTime.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
+        var stringTime = lastAppliedTime == DateTimeOffset.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
         return string.Format(Language.LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_, stringTime);
     }
+
     private async Task<Bitmap?> LoadImage(GameInstallation source)
     {
         return await Task.Run(async () =>

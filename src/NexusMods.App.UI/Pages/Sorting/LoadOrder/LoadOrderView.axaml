@@ -7,50 +7,34 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                                 xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-                                x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView">
+                                mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+                                x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
+                                x:DataType="sorting:ILoadOrderViewModel">
+
     <Design.DataContext>
         <sorting:LoadOrderDesignViewModel />
     </Design.DataContext>
 
-    <controls:EmptyState x:Name="EmptyState"
-                         Header="{Binding EmptyStateMessageTitle}">
+    <controls:EmptyState x:Name="EmptyState">
 
         <controls:EmptyState.Subtitle>
-            <TextBlock Text="{Binding EmptyStateMessageContents}" />
+            <TextBlock x:Name="EmptySpaceMessageTextBlock" />
         </controls:EmptyState.Subtitle>
 
         <Grid RowDefinitions="Auto, Auto, *">
-            <Border Grid.Row="0" Classes="Toolbar">
+
+            <!-- toolbar -->
+            <!-- NOTE(insomnious): I've not stripped these styles into a styles file
+            as this toolbar is only temporary and mostly for show -->
+            <Border x:Name="ToolbarBorder" Grid.Row="0" Classes="Toolbar">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <ComboBox SelectedIndex="0" Classes="Secondary Compact">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sort}" Size="20" />
-                                    <TextBlock Text="Ascending (1st top)" Theme="{StaticResource BodyMDNormalTheme}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <ComboBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortAscending}" Size="20" />
-                                <TextBlock Text="Ascending (1st top)" Theme="{StaticResource BodyMDNormalTheme}" />
-                            </StackPanel>
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortDescending}" Size="20" />
-                                <TextBlock Text="Descending (1st bottom)" Theme="{StaticResource BodyMDNormalTheme}" />
-                            </StackPanel>
-                        </ComboBoxItem>
-                    </ComboBox>
-                    <CheckBox Content="Hide Disabled Collections" />
+                    <CheckBox Content="Hide Disabled Collections" IsEnabled="False" />
                     <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
                     <controls:StandardButton
                         Size="Small"
-                        Text="Add to group" />
-                    <ComboBox SelectedIndex="0" Classes="Secondary Compact">
+                        Text="Add to group"
+                        IsEnabled="False" />
+                    <ComboBox SelectedIndex="0" Classes="Secondary Compact" IsEnabled="False">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="New group" Theme="{StaticResource BodyMDNormalTheme}" />
@@ -63,106 +47,54 @@
                 </StackPanel>
             </Border>
 
-            <StackPanel Grid.Row="1" Spacing="24" Margin="24">
+            <StackPanel x:Name="LoadOrderAlertStackPanel" Grid.Row="1">
                 <alerts:Alert x:Name="LoadOrderAlert"
                               Severity="Info"
-                              Title="{Binding InfoAlertTitle}"
-                              Body="{Binding InfoAlertMessage}"
                               ShowDismiss="True" />
 
-                <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="Last Loaded REDmod File Wins"
-                               Theme="{StaticResource HeadingXSSemiTheme}" />
-                    <controls:StandardButton ShowIcon="IconOnly"
+                <StackPanel x:Name="TitleStackPanel">
+                    <TextBlock x:Name="TitleTextBlock" />
+                    <controls:StandardButton x:Name="InfoAlertButton"
+                                             ShowIcon="IconOnly"
                                              LeftIcon="{x:Static icons:IconValues.Info}"
                                              Type="Tertiary"
-                                             Fill="None" 
-                                             Command="{Binding InfoAlertCommand}"/>
+                                             Fill="None" />
                 </StackPanel>
             </StackPanel>
 
-            <Grid Grid.Row="2" ColumnDefinitions="32, *" Margin="24,0,24,24">
+            <Grid x:Name="MainGrid" Grid.Row="2" ColumnDefinitions="32, *">
 
                 <!-- left column (trophy bar) -->
-                <DockPanel x:Name="TrophyBarPanel" HorizontalAlignment="Left">
+                <!-- Transparent Background so the tooltip hit box covers the whole control -->
+                <DockPanel x:Name="TrophyBarPanel">
                     <icons:UnifiedIcon x:Name="TrophyIcon"
                                        DockPanel.Dock="Top"
-                                       Margin="0,8,0,8"
-                                       Value="{x:Static icons:IconValues.Trophy}"
-                                       Size="20"
-                                       ToolTip.Tip="{Binding TrophyToolTip}" />
-
-                    <Grid RowDefinitions="Auto, *, Auto" HorizontalAlignment="Center">
+                                       Value="{x:Static icons:IconValues.Trophy}" />
+                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
                         <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
-                                           Value="{x:Static icons:IconValues.ArrowUpThick}"
-                                           Size="20" />
-                        <Border Grid.Row="1" x:Name="TrophyGradientBorder"
-                                Width="3"
-                                Margin="0,4" />
+                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
                         <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
-                                           Value="{x:Static icons:IconValues.ArrowDownThick}"
-                                           Size="20" />
+                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
                     </Grid>
                 </DockPanel>
 
                 <!-- right column (tree data grid) -->
                 <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
                               AutoDragDropRows="False"
-                              CanUserResizeColumns="True"
+                              CanUserResizeColumns="False"
                               CanUserSortColumns="False"
                               ShowColumnHeaders="True"
                               RowDrop="OnRowDrop">
 
                     <TreeDataGrid.Resources>
-
-                        <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate"
-                                      DataType="sorting:ILoadOrderItemModel">
-
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <controls:StandardButton x:Name="UpButton"
-                                                         Command="{CompiledBinding MoveDown}"
-                                                         LeftIcon="{x:Static icons:IconValues.ArrowUp}"
-                                                         ShowIcon="IconOnly"
-                                                         Size="Medium"
-                                                         Type="Tertiary"
-                                                         Fill="None" />
-                                <Border
-                                    Background="{StaticResource SurfaceLowBrush}"
-                                    BorderThickness="1"
-                                    BorderBrush="{StaticResource StrokeTranslucentSubduedBrush}"
-                                    CornerRadius="4"
-                                    Width="52"
-                                    Height="42">
-                                    <TextBlock x:Name="ItemIndex"
-                                               Text="{CompiledBinding SortIndex}"
-                                               Foreground="{StaticResource NeutralTranslucentStrongBrush}"
-                                               Theme="{StaticResource BodyMDBoldTheme}"
-                                               HorizontalAlignment="Center" />
-                                </Border>
-                                <controls:StandardButton x:Name="DownButton"
-                                                         Command="{CompiledBinding MoveUp}"
-                                                         LeftIcon="{x:Static icons:IconValues.ArrowDown}"
-                                                         ShowIcon="IconOnly"
-                                                         Size="Medium"
-                                                         Type="Tertiary"
-                                                         Fill="None" />
-                                <Border
-                                    Background="{StaticResource SurfaceTranslucentMidBrush}"
-                                    Width="1"
-                                    Height="42" />
-                            </StackPanel>
-                        </DataTemplate>
-
-                        <DataTemplate x:Key="LoadOrderItemNameColumnTemplate"
-                                      DataType="sorting:ILoadOrderItemModel">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="ItemName"
-                                           Text="{CompiledBinding DisplayName}" />
-                            </StackPanel>
-                        </DataTemplate>
-
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceInclude
+                                    Source="avares://NexusMods.App.UI/Pages/Sorting/LoadOrder/TreeDataGridLoadOrderResources.axaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
                     </TreeDataGrid.Resources>
-
                 </TreeDataGrid>
             </Grid>
         </Grid>

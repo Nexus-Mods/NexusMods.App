@@ -66,8 +66,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     private static string FormatDate(DateTimeOffset now, DateTimeOffset date)
     {
-        if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
-        return date.Humanize(dateToCompareAgainst: now > date ? now : DateTime.Now);
+        if (date == DateTimeOffset.UnixEpoch || date == default(DateTimeOffset)) return "-";
+        return date.Humanize(dateToCompareAgainst: now > date ? now : TimeProvider.System.GetLocalNow());
     }
 
     private bool _isDisposed;

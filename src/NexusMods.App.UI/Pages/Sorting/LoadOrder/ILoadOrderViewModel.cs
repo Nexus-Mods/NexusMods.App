@@ -20,25 +20,19 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string SortOrderName { get; }
     
     /// <summary>
-    /// The always visible First/Last wins heading text
-    /// Also used for trophy tooltip heading
+    /// Heading displayed above data grid. Commonly used to describe the sort order behavior i.e. "First Loaded Wins"
     /// </summary>
-    string InfoAlertTitle { get; }
+    string SortOrderHeading { get; }
     
     /// <summary>
     /// The title of the alert message, only visible if the alert is visible
     /// </summary>
-    string InfoAlertHeading { get; }
+    string InfoAlertTitle { get; }
     
     /// <summary>
     /// The contents of the alert message, only visible if the alert is visible
     /// </summary>
-    string InfoAlertMessage { get; }
-    
-    /// <summary>
-    /// Whether the alert message should be visible or not
-    /// </summary>
-    bool InfoAlertIsVisible { get; set; }
+    string InfoAlertBody { get; }
     
     /// <summary>
     /// Command to invoke when the info alert icon is pressed (either to show or hide the alert)
@@ -54,6 +48,16 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// The current ascending/descending direction in which the SortIndexes are sorted and displayed
     /// </summary>
     ListSortDirection SortDirectionCurrent { get; set; }
+    
+    /// <summary>
+    /// Switch the current sort direction to the inverse
+    /// </summary>
+    ReactiveCommand<Unit, Unit> SwitchSortDirectionCommand { get; }
+    
+    /// <summary>
+    /// True if current sort direction is ascending, false if descending
+    /// </summary>
+    bool IsAscending { get; }
     
     /// <summary>
     /// Whether the winning item is at the top or bottom of the list

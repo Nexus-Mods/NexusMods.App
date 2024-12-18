@@ -186,8 +186,11 @@ public class Alert : ContentControl
 
     private readonly SerialDisposable _serialDisposable = new();
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
+        base.OnPropertyChanged(change);
+
         if (change.Property == AlertSettingsProperty)
         {
             _serialDisposable.Disposable = null;
@@ -199,54 +202,95 @@ public class Alert : ContentControl
                     .Subscribe(isDismissed => IsDismissed = isDismissed);
             }
         }
-
-        if (change.Property == IsDismissedProperty)
+        else if (change.Property == IsDismissedProperty)
         {
             IsVisible = !IsDismissed;
         }
-
-        base.OnPropertyChanged(change);
+        else if (change.Property == TitleProperty)
+        {
+            UpdateTitle(change.GetNewValue<string?>());
+        }
+        else if (change.Property == BodyProperty)
+        {
+            UpdateBody(change.GetNewValue<string?>());
+        }
     }
 
+    /// <inheritdoc/>
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
+        if (_bodyTextBorder != null)
+            _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
+
+        _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
+        if (_actionsRowBorder != null)
+            _actionsRowBorder.IsVisible = Content != null && ShowActions;
+
+        _dismissButton = e.NameScope.Find<Button>("DismissButton");
+        if (_dismissButton != null)
+        {
+            _dismissButton.IsVisible = ShowDismiss;
+        }
+
+        _titleText = e.NameScope.Find<TextBlock>("TitleText");
+        if (_titleText != null)
+            UpdateTitle(Title);
+
+        _bodyText = e.NameScope.Find<TextBlock>("BodyText");
+        if (_bodyText != null)
+            UpdateBody(Body);
+
+        _icon = e.NameScope.Find<UnifiedIcon>("Icon");
+        if (_icon != null)
+            UpdateSeverity(Severity);
+
+        base.OnApplyTemplate(e);
+    }
+
+    /// <inheritdoc/>
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         _serialDisposable.Disposable = null;
         base.OnUnloaded(e);
     }
 
-
-    /// <inheritdoc/>
-    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    /// <summary>
+    /// Updates the visual title text of the <see cref="Alert"/>.
+    /// </summary>
+    /// <param name="newTitle">The new title text</param>
+    private void UpdateTitle(string? newTitle)
     {
-        base.OnApplyTemplate(e);
+        if (_titleText != null)
+            _titleText.Text = newTitle;
+    }
 
-        _icon = e.NameScope.Find<UnifiedIcon>("Icon");
-        _dismissButton = e.NameScope.Find<Button>("DismissButton");
-        _titleText = e.NameScope.Find<TextBlock>("TitleText");
-        _bodyText = e.NameScope.Find<TextBlock>("BodyText");
-        _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
-        _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
+    /// <summary>
+    /// Updates the visual body text of the <see cref="Alert"/>.
+    /// </summary>
+    /// <param name="newBody">The new body text</param>
+    private void UpdateBody(string? newBody)
+    {
+        if (_bodyText == null || _bodyTextBorder == null) return;
 
-        if (_icon == null || _dismissButton == null || _titleText == null || _bodyText == null || _bodyTextBorder == null || _actionsRowBorder == null)
-            return;
+        _bodyText.Text = newBody;
+        _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(newBody);
+    }
 
-        // turn off elements based on properties
-        _dismissButton.IsVisible = ShowDismiss;
-        _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
-        _actionsRowBorder.IsVisible = Content != null && ShowActions;
-
-        // set the text
-        _titleText.Text = Title;
-        _bodyText.Text = Body;
-
-        // set icon based on severity
-        _icon.Value = Severity switch
-        {
-            SeverityOptions.Info => IconValues.Info,
-            SeverityOptions.Success => IconValues.CheckCircleOutline,
-            SeverityOptions.Warning => IconValues.WarningAmber,
-            SeverityOptions.Error => IconValues.Warning,
-            _ => IconValues.Info,
-        };
+    /// <summary>
+    /// Updates the visual severity icon of the <see cref="Alert"/>.
+    /// </summary>
+    /// <param name="newSeverity">The new severity option</param>
+    private void UpdateSeverity(SeverityOptions? newSeverity)
+    {
+        if (_icon != null)
+            _icon.Value = newSeverity switch
+            {
+                SeverityOptions.Info => IconValues.Info,
+                SeverityOptions.Success => IconValues.CheckCircleOutline,
+                SeverityOptions.Warning => IconValues.WarningAmber,
+                SeverityOptions.Error => IconValues.Warning,
+                _ => IconValues.Info,
+            };
     }
 }

@@ -1,3 +1,52 @@
+# v0.7.1 - 2024-12-17
+This release includes styling for the Load Order view, the ability to install and remove collections for all users and several improvements to the analytics we collect that will help inform our design decisions. 
+
+## Load Order Styling 
+We've given the load order page for Cyberpunk 2077 REDmods a facelift and it's now much closer to the designs we're working towards.
+
+![Cyberpunk 2077 REDmod load order (left) and Installed Mods (right).](./docs/changelog-assets/7d5552ab9efd548748e76e32396eb885.webp)
+
+You can re-order entries with the up and down arrows (no drag and drop yet!) and see which REDmods have been disabled in the Installed Mods view. You can also flip the load order using the table header to have the winning REDmod at the top of the list rather than the bottom. 
+
+We'd love to hear what you think of this design! 
+
+## Collections - Basic User Flow
+**Important: Any collections you have added to the app in version 0.7.0 or earlier should be removed as they may not install properly.**
+
+The Collections experience in the app is starting to take shape! While it's still very much a work in progress, both free and Premium users can now download and install collections for all supported games. 
+
+We've also fixed up downloading off-site files for Collections. When you add these files to the library, the Collection will now automatically mark them as installed (provided you pick the exact file the curator used!).
+
+Try it out by opening a new tab and selecting the "Collections (WIP)" page, then download a collection from the website.
+
+![A Stardew Valley Collection fully installed into the app.](./docs/changelog-assets/1c924e8b2aaa5fb95a315f8b3fe7cf9c.webp)
+
+In our testing the app is up to 25x faster than Vortex at installing collections (depending on your internet speed and hardware) - which is amazing! 
+
+## App Updates
+We've made it possible to update the app without completely removing all your mods and games. You can update from 0.7.0 to 0.7.1 and keep your mods, games and other settings. This means that if you want to be an early adopter, you can keep your mod list intact as we release new versions! 
+
+## Technical Changes
+* Protontricks running via Flatpak is now supported (Linux).
+* The (optional) analytics we collect from within the app have been improved to give us a better idea of how you use the app, with you having to tell us directly.
+
+## Bugfixes
+* Fixed an issue counting the mods a user has installed when sending analytics.
+* Added a placeholder to the Games view when no games have been detected.
+* When enabling the Xbox Game Pass support option in settings, the app now correctly prompts a restart. 
+* Fixed an issue where the first row of the Library/Installed Mods would sometimes be misaligned with the table headers (this was part of an Avalonia update).
+
+# Known Issues
+* Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
+* When installing Collections that include bundled mods, it is not possible to fully download the collection due to a counting error. A fix for this is planned for the next release.   
+* Bundled mods included with collections do not appear in the UI but are still applied to your game. 
+* The success rating for collections is not showing the correct value. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The Library and Collections (WIP) pages are not filtered by game. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
+* The "Load Order" heading toggle does not persist in the Load Order view. 
+
+
 # v0.7.0 - 2024-11-27
 
 **Important: To update the app, you must completely uninstall the old version, including all mods.** [Why do I have to uninstall everything to update the app?](https://nexus-mods.github.io/NexusMods.App/users/faq/#why-do-i-have-to-uninstall-everything-to-update-the-app)
@@ -7,7 +56,7 @@ This release includes initial support for Mount & Blade II: Bannerlord, a basic 
 ## Mount & Blade II: Bannerlord 
 This version adds basic support for Bannerlord. All modules can be easily installed and managed. We've also added several advanced [Health Check diagnostics](https://nexus-mods.github.io/NexusMods.App/users/games/Bannerlord/#loadout-health-check) to allow players to understand common issues in their setup, with more planned for the future when we add load order support!
 
-![An example of the "Missing Dependency" and "Incompatible Mods" diagnostics for Bannerlord.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732536855-1001051460.png)
+![An example of the "Missing Dependency" and "Incompatible Mods" diagnostics for Bannerlord.](./docs/changelog-assets/60be60c0771f15d67127e114e5fc0437.webp)
 
 A huge thank you to [Aragas](https://www.nexusmods.com/mountandblade2bannerlord/users/2355906) for all his help during development of this feature!
 
@@ -16,7 +65,7 @@ A huge thank you to [Aragas](https://www.nexusmods.com/mountandblade2bannerlord/
 
 We've further refined the Collections download page which unlocks the ability for non-Premium users to use the Collections feature and provides Premium users with the ability to see the list of mods included in a collection before downloading. As this page is still a work in progress, some of the UI buttons may not work as expected yet. 
 
-![The Collection Download Page showing a Stardew Valley collection.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1732544476-32114395.png)
+![The Collection Download Page showing a Stardew Valley collection.](./docs/changelog-assets/fda0056583d8434addbc433ff345d810.webp)
 
 ## EXPERIMENTAL - Cyberpunk 2077 REDmod Load Order
 Users can now manage the order of REDmods installed for Cyberpunk 2077 through the new "Load Orders (WIP)" page that can be accessed from the New Tab menu. 

@@ -20,6 +20,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Telemetry;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -102,6 +103,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
+
+            Tracking.AddEvent(Events.Help.ViewChangelog, metadata: new EventMetadata(name: null));
         });
 
         ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -109,6 +112,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var loggingSettings = settingsManager.Get<LoggingSettings>();
             var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
             await osInterop.OpenDirectory(logDirectory);
+
+            Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
         });
 
         GiveFeedbackCommand = ReactiveCommand.Create(() =>
@@ -117,6 +122,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             alphaWarningViewModel.WorkspaceController = workspaceController;
 
             overlayController.Enqueue(alphaWarningViewModel);
+            Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
 
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);

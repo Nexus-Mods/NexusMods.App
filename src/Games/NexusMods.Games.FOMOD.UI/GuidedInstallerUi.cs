@@ -120,7 +120,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
         Percent progress)
     {
         var viewModel = window.ViewModel!;
-        viewModel.ActiveStepViewModel ??= currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
+        viewModel.ActiveStepViewModel ??= new GuidedInstallerStepViewModel(currentScope.ServiceProvider);
 
         var activeStepViewModel = viewModel.ActiveStepViewModel;
         activeStepViewModel.ModName = viewModel.WindowName;

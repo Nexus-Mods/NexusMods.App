@@ -36,6 +36,16 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";
 
-    public ReactiveCommand<Unit> DownloadAllCommand { get; } = new ReactiveCommand();
-    public ReactiveCommand<Unit> InstallCollectionCommand { get; } = new ReactiveCommand();
+    public int CountDownloadedOptionalItems { get; } = 0;
+    public int CountDownloadedRequiredItems { get; } = 1;
+    public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandInstallOptionalItems { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandInstallRequiredItems { get; } = new ReactiveCommand();
+
+    public ReactiveCommand<Unit> CommandViewOnNexusMods { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandViewInLibrary { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandOpenJsonFile { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; } = new ReactiveCommand();
 }

@@ -1,4 +1,7 @@
+using System.Reactive.Linq;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.Abstractions.Loadouts.Extensions;
 
@@ -20,6 +23,31 @@ public static class LoadoutItemExtensions
             if (item.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGetValue(item, out var parent))
             {
                 item = LoadoutItem.Load(item.Db, parent);
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Returns an IEnumerable of the LoadoutItem Id and all its parents Ids, in a child-to-parent order.
+    /// </summary>
+    public static IEnumerable<LoadoutItemId> GetThisAndParentIds(this LoadoutItem.ReadOnly model)
+    {
+        var db = model.Db;
+        var itemId = model.LoadoutItemId;
+        
+        while (true)
+        {
+            yield return itemId;
+            
+            if (model.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGetValue(model, out var parent))
+            {
+                itemId = parent;
+                model = LoadoutItem.Load(db, itemId);
             }
             else
             {
@@ -61,5 +89,15 @@ public static class LoadoutItemExtensions
     public static bool IsEnabled(this LoadoutItem.ReadOnly item)
     {
         return !item.GetThisAndParents().Any(i => i.IsDisabled);
+    }
+    
+    /// <summary>
+    /// Returns an observable that emits true if the LoadoutItem and all its parents are enabled.
+    /// </summary>
+    public static IObservable<bool> IsEnabledObservable(this LoadoutItem.ReadOnly item, IConnection connection)
+    {
+        return item.GetThisAndParentIds()
+            .Select(itemId => LoadoutItem.Observe(connection, itemId).Select(i => !i.IsDisabled))
+            .CombineLatest(list => list.All(b => b));
     }
 }
