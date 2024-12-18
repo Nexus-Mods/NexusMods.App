@@ -624,7 +624,7 @@
         <comment>Where {0} is the name of the game</comment>
     </data>
     <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-        <value>Create new loadout</value>
+        <value>Create new</value>
     </data>
     <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
         <value>Currently Applied</value>

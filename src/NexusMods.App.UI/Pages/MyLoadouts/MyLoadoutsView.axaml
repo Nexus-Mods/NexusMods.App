@@ -27,10 +27,10 @@
                         Orientation="Vertical"
                         Spacing="24">
 
-                <StackPanel>
+                <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Width="48" Height="48">
-                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
+                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramBox2}" />
                         </Border>
                         <TextBlock Text="My Loadouts"
                                    Theme="{StaticResource HeadingSMSemiTheme}"
@@ -42,10 +42,6 @@
                                Theme="{StaticResource BodyMDNormalTheme}"
                                Foreground="{StaticResource NeutralStrongBrush}" />
                 </StackPanel>
-                
-                <Separator
-                    Background="{StaticResource StrokeTranslucentWeakBrush}"
-                    Margin="0" />
 
                 <ItemsControl x:Name="GameSectionsItemsControl">
                     <ItemsControl.ItemsPanel>

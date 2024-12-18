@@ -485,13 +485,18 @@ public static class IconValues
 
 #endregion
     
-    #region Brand Pictograms
+#region Brand Pictograms
     
     /// <summary>
     /// Brand pictogram for Games in 3D
     /// </summary>
     public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
     
-    #endregion
+    /// <summary>
+    /// Brand pictogram for Games in 3D
+    /// </summary>
+    public static readonly IconValue PictogramBox2 = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg"));
+
+#endregion
     
 }

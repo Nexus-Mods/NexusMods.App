@@ -249,7 +249,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new loadout.
+        ///   Looks up a localized string similar to Create new.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
             get {
