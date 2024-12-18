@@ -493,7 +493,7 @@ public static class IconValues
     public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
     
     /// <summary>
-    /// Brand pictogram for Games in 3D
+    /// Brand pictogram for Loadouts
     /// </summary>
     public static readonly IconValue PictogramBox2 = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg"));
 
