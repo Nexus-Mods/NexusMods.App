@@ -1,4 +1,5 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="sorting:ISortingSelectionViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="sorting:ISortingSelectionViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,29 +7,37 @@
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.SortingSelectionView">
-    
+
     <Design.DataContext>
         <sorting:SortingSelectionDesignViewModel />
     </Design.DataContext>
-    
-        <TabControl x:Name="SortOrdersTabControl" Classes="Subtabs">
-            
-            <TabControl.ItemTemplate>
-                <DataTemplate DataType="sorting:ILoadOrderViewModel">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{CompiledBinding SortOrderName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-        
-            <TabControl.ContentTemplate>
-                <DataTemplate DataType="sorting:ILoadOrderViewModel">
-                    <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
 
-        </TabControl>  
-    
-    
+    <TabControl x:Name="SortOrdersTabControl" Classes="Subtabs">
+
+        <TabControl.Styles>
+            <Style Selector="TabControl#SortOrdersTabControl.Subtabs">
+                <!-- header padding -->
+                <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Margin" Value="24,12" />
+                </Style>
+            </Style>
+        </TabControl.Styles>
+
+        <TabControl.ItemTemplate>
+            <DataTemplate DataType="sorting:ILoadOrderViewModel">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{CompiledBinding SortOrderName}" />
+                </StackPanel>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="sorting:ILoadOrderViewModel">
+                <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+
+    </TabControl>
+
+
 </reactiveUi:ReactiveUserControl>
-
