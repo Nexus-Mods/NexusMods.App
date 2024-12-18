@@ -106,9 +106,10 @@
                     <icons:UnifiedIcon Classes="Sort" />
                     <icons:UnifiedIcon Classes="SortAscending" />
                     <icons:UnifiedIcon Classes="SortDescending" />
+                    <icons:UnifiedIcon Classes="GamepadOutline" />
+                    <icons:UnifiedIcon Classes="Package" />
                 </WrapPanel>
                 <WrapPanel>
-                    <icons:UnifiedIcon Classes="Nexus" />
                     <icons:UnifiedIcon Classes="Nexus" />
                     <icons:UnifiedIcon Classes="Steam" />
                     <icons:UnifiedIcon Classes="EA" />
@@ -568,5 +569,13 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramBox2">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramBox2}" />
+    <Style Selector="icons|UnifiedIcon.PictogramHealth">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramHealth}" />
+    </Style>    
+    <Style Selector="icons|UnifiedIcon.GamepadOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.GamepadOutline}" />
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.Package">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Package}" />
     </Style>
 </Styles>
