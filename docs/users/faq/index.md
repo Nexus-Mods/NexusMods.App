@@ -9,13 +9,6 @@ Adding support for a wide range of games it not a practical decision at this sta
 
 Our plan is to go game-by-game and work with the modding community at each step to ensure we're building something great. To see which games are supported, coming next and planned for the future please see the [roadmap](https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap).
 
-## Why do I have to uninstall everything to update the app?
-The Nexus Mods app is still in the very early stages of development. This means that some of the core backend functionality of the app may still change significantly between releases. When this changes all existing data becomes incompatible with the new versions and users who wish to update will need to start over. 
-
-In future releases we plan to offer an automated migration (where possible) to allow for seamless updating.
-
-We have provided a guide on [how to uninstall the app](../Uninstall.md) on both Windows and Linux. 
-
 ## How do I find my log files?
 To find your log files, please see [this guide](./LogFiles.md). 
 
