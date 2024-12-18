@@ -122,7 +122,7 @@
                     <icons:UnifiedIcon Classes="PictogramGame3D" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False"/>
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" Opacity="0.4" />
                 </WrapPanel>
                 <WrapPanel>
@@ -569,12 +569,10 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramBox2">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramBox2}" />
-    <Style Selector="icons|UnifiedIcon.PictogramHealth">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramHealth}" />
-    </Style>    
+    </Style>
     <Style Selector="icons|UnifiedIcon.GamepadOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.GamepadOutline}" />
-    </Style> 
+    </Style>
     <Style Selector="icons|UnifiedIcon.Package">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Package}" />
     </Style>
