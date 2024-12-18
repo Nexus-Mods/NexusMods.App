@@ -3,15 +3,17 @@
         xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard;assembly=NexusMods.App.UI"
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:element="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
+        xmlns:element="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
         <Border Classes="Low">
-            <panels:FlexPanel Background="{StaticResource SurfaceLow}"
+            <panels:FlexPanel Background="{StaticResource SurfaceLowBrush}"
                               ColumnSpacing="8"
                               Wrap="Wrap"
                               RowSpacing="8"
-                              Margin="30">
+                              Margin="24">
+
                 <panels:FlexPanel.Resources>
                     <loadoutCard:LoadoutCardDesignViewModel x:Key="LoadoutCardDesignViewModel" />
                 </panels:FlexPanel.Resources>
@@ -24,10 +26,11 @@
                 <loadoutCard:CreateNewLoadoutCardView IsEnabled="False" />
             </panels:FlexPanel>
         </Border>
-        
+
     </Design.PreviewWith>
 
     <!-- Standard loadout card -->
+
     <Style Selector="loadoutCard|LoadoutCardView">
         <Setter Property="Width" Value="208" />
         <Setter Property="Height" Value="347" />
@@ -38,8 +41,9 @@
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="4,4,4,0" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,12,12,0" />
             <Setter Property="ClipToBounds" Value="False" />
 
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -49,6 +53,7 @@
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowMD}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
             </Style>
 
             <Style Selector="^:pointerover Rectangle#GradientLayerRectangle">
@@ -67,90 +72,91 @@
             </Style>
         </Style>
 
-        <Style Selector="^ panels|FlexPanel#CardOuterFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="FlexStart" />
+        <Style Selector="^ DockPanel#ActionsDock">
+            <Setter Property="Margin" Value="0,0,0,12" />
+
+            <Style Selector="^ controls|StandardButton#DeleteButton">
+                <Setter Property="Margin" Value="8,0,0,0" />
+            </Style>
         </Style>
 
-        <Style Selector="^ Border#ImageSectionBorder">
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-            <Setter Property="ClipToBounds" Value="True" />
-            <Setter Property="Height" Value="184" />
-            <Setter Property="Width" Value="184" />
-            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-        </Style>
-        
-        <Style Selector="^ Image#GameImage">
-            <Setter Property="Height" Value="184" />
-            <Setter Property="Width" Value="184" />
+        <Style Selector="^ StackPanel#CardOuterStack">
+            <Setter Property="Orientation" Value="Vertical" />
+
+            <Style Selector="^ Border#ImageSectionBorder">
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+                <Setter Property="ClipToBounds" Value="True" />
+                <Setter Property="Height" Value="184" />
+                <Setter Property="Width" Value="184" />
+
+                <Style Selector="^ Image#GameImage">
+                    <Setter Property="Stretch" Value="UniformToFill" />
+                </Style>
+            </Style>
+
+
+            <Style Selector="^ StackPanel#DetailsSectionStack">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Spacing" Value="4" />
+                <Setter Property="Margin" Value="0,12,0,0" />
+
+                <Style Selector="^ TextBlock#LoadoutNameTextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                </Style>
+
+                <Style Selector="^ StackPanel#DetailsBodyStack">
+                    <Setter Property="Orientation" Value="Vertical" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}" />
+
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                    </Style>
+
+                    <Style Selector="^ StackPanel#CurrentlyAppliedStack">
+                        <Setter Property="Orientation" Value="Horizontal" />
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+
+                        <Style Selector="^ TextBlock#CurrentlyAppliedTextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                            <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
+                        </Style>
+                        <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
+                            <Setter Property="Size" Value="16" />
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
         </Style>
 
-        <Style Selector="^ Border#DetailsSectionBorder">
-            <Setter Property="Padding" Value="8,12" />
-            <Setter Property="Width" Value="184" />
+
+        <Style Selector="^ StackPanel#OverlayStack">
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+
+            <Style Selector="^ StackPanel#OverlaySpinnerStack">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+
+                <Style Selector="^ element|Spinner#OverlaySpinner">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                    <Setter Property="Height" Value="60" />
+                    <Setter Property="Width" Value="60" />
+                </Style>
+
+                <Style Selector="^ > TextBlock#OverlayTextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                    <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
+                </Style>
+            </Style>
         </Style>
 
-        <Style Selector="^ panels|FlexPanel#DetailsSectionFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch" />
-            <Setter Property="RowSpacing" Value="4" />
-        </Style>
 
-        <Style Selector="^ panels|FlexPanel#BodyAndActionsGroupFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="AlignItems" Value="Stretch" />
-            <Setter Property="RowSpacing" Value="12" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#DetailsBodyFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="RowSpacing" Value="2" />
-            <Setter Property="AlignItems" Value="Stretch" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#CurrentlyAppliedFlexPanel">
-            <Setter Property="ColumnSpacing" Value="4" />
-            <Setter Property="AlignItems" Value="FlexStart" />
-        </Style>
-
-        <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
-            <Setter Property="Size" Value="16" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#ActionsFlexPanel">
-            <Setter Property="Direction" Value="Row" />
-            <Setter Property="JustifyContent" Value="SpaceBetween" />
-            <Setter Property="AlignItems" Value="FlexStart" />
-            <Setter Property="AlignContent" Value="Stretch" />
-            <Setter Property="ColumnSpacing" Value="8" />
-        </Style>
-
-        <Style Selector="^ Button#CreateCopyButton">
-            <Setter Property="Padding" Value="12,0,8,0" />
-            <Setter Property="panels:Flex.Grow" Value="1" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#OverlayFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="JustifyContent" Value="SpaceAround" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#OverlaySpinnerFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="JustifyContent" Value="Center" />
-            <Setter Property="AlignItems" Value="Center" />
-            <Setter Property="RowSpacing" Value="{StaticResource Spacing-2}" />
-        </Style>
-
-        <Style Selector="^ element|Spinner#OverlaySpinner">
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Height" Value="60" />
-            <Setter Property="Width" Value="60" />
-        </Style>
     </Style>
 
     <!-- Add loadout card -->
-    
+
     <Style Selector="loadoutCard|CreateNewLoadoutCardView">
         <Setter Property="Width" Value="208" />
         <Setter Property="Height" Value="347" />
@@ -161,16 +167,16 @@
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
-            <Setter Property="Padding" Value="12" />
-            
+            <Setter Property="Padding" Value="0,0,0,0" />
+
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
             </Style>
-            
+
             <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
@@ -179,20 +185,18 @@
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
         </Style>
-        
-        <Style Selector="^ panels|FlexPanel#CreateNewLoadoutFlexPanel">
-            <Setter Property="Direction" Value="Column" />
-            <Setter Property="JustifyContent" Value="Center" />
-            <Setter Property="AlignItems" Value="Center" />
-            <Setter Property="RowSpacing" Value="{StaticResource Spacing-2}" />
+
+        <Style Selector="^ StackPanel#CreateNewLoadoutStack">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
         </Style>
-        
+
         <Style Selector="^ TextBlock#CreateNewLoadoutTextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
             <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
         </Style>
-        
+
         <Style Selector="^ icons|UnifiedIcon#AddIcon">
             <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
             <Setter Property="Size" Value="24" />
