@@ -605,14 +605,14 @@
 		<value>Moje zestawy</value>
 	</data>
 	<data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-		<value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najlepiej odpowiada twoim preferencjom, aby rozpocząć przygodę z modowaniem.</value>
+		<value>Twórz zestawy gier, które będą zawierały indywidualne preferencje oraz ustawienia modów.&#xA;Przełączaj się między zestawami i zastosuj swój ulubiony zestaw, aby z nim zagrać.</value>
 	</data>
 	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
 		<value>Zestawy {0}</value>
 		<comment>Where {0} is the name of the game</comment>
 	</data>
 	<data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-		<value>Utwórz nowy zestaw</value>
+		<value>Utwórz nowy</value>
 	</data>
 	<data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
 		<value>Aktualnie zastosowany</value>
