@@ -93,6 +93,10 @@ internal static class ImagePipelines
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: CollectionBackgroundImagePipelineKey);
     }
     
+    /// <summary>
+    /// Input: ModPageMetadataId
+    /// Output: Image (cached)
+    /// </summary>
     public static IResourceLoader<EntityId, Lifetime<Bitmap>> GetModPageThumbnailPipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Lifetime<Bitmap>>>(serviceKey: ModPageThumbnailPipelineKey);
@@ -163,6 +167,10 @@ internal static class ImagePipelines
         return pipeline;
     }
     
+    /// <summary>
+    /// Input: ModPageMetadataId
+    /// Output: Image (cached)
+    /// </summary>
     private static IResourceLoader<EntityId, Lifetime<Bitmap>> CreateModPageThumbnailPipeline(
         IConnection connection)
     {

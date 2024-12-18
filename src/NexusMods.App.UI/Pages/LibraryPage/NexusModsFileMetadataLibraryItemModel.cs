@@ -26,7 +26,7 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
         
         var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
-        var thumbnailDisposable = ImagePipelines.CreateObservable(download.FileMetadata.ModPage.Id, modPageThumbnailPipeline)
+        var thumbnailDisposable = ImagePipelines.CreateObservable(download.FileMetadata.ModPageId, modPageThumbnailPipeline)
             .ObserveOnUIThreadDispatcher()
             .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
 

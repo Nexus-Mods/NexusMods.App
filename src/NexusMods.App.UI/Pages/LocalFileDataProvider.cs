@@ -123,7 +123,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
                     .SubscribeWithErrorLogging();
 
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider));
 
                 var installedAtObservable = cache.Connect()
                     .Transform(item => item.GetCreatedAt())
@@ -155,7 +155,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider)
                 {
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
                     InstalledAtObservable = installedAtObservable,

@@ -1,4 +1,5 @@
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
@@ -20,7 +21,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     private readonly IDisposable _modelActivationDisposable;
     private readonly IDisposable _loadoutItemIdsDisposable;
 
-    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable) : base(default(LoadoutItemId))
+    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, IServiceProvider provider) : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>())
     {
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));

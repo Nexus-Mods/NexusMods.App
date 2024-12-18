@@ -33,7 +33,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
 
         // Note: Because this is a local file, this always hits the fallback.
         var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
-        var imageDisposable = ImagePipelines.CreateObservable(nexusModsLibraryItem.ModPageMetadata.Id, modPageThumbnailPipeline)
+        var imageDisposable = ImagePipelines.CreateObservable(nexusModsLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
             .ObserveOnUIThreadDispatcher()
             .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
         

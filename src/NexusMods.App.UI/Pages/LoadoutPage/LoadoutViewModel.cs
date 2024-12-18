@@ -191,6 +191,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly ConnectableObservable<DateTime> _ticker;
     private readonly IConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
     private readonly LoadoutFilter _loadoutFilter;
 
     public Subject<ToggleEnableState> MessageSubject { get; } = new();
@@ -199,6 +200,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
     private readonly IDisposable _activationDisposable;
     public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, ConnectableObservable<DateTime> ticker, LoadoutFilter loadoutFilter)
     {
+        _serviceProvider = serviceProvider;
         _loadoutFilter = loadoutFilter;
         _ticker = ticker;
 
@@ -260,12 +262,12 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
         if (_loadoutFilter.CollectionGroupId.HasValue)
             baseObservable = baseObservable.Filter(item => item.AsLoadoutItemGroup().AsLoadoutItem().IsChildOf(_loadoutFilter.CollectionGroupId.Value));
                 
-        return baseObservable.Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
+        return baseObservable.Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider));
     }
 
     protected override IColumn<LoadoutItemModel>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = LoadoutItemModel.CreateNameColumn();
+        var nameColumn = LoadoutItemModel.CreateThumbnailAndNameColumn();
 
         return
         [

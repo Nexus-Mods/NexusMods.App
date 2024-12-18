@@ -1,8 +1,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Media.Imaging;
 using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -14,6 +17,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 {
     public ReactiveProperty<DateTimeOffset> InstalledAt { get; } = new(DateTime.UnixEpoch);
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Name { get; } = new("-");
 
@@ -35,7 +40,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     public BindableReactiveProperty<string> FormattedInstalledAt { get; } = new("-");
 
     private readonly IDisposable _modelActivationDisposable;
-    public LoadoutItemModel(LoadoutItemId loadoutItemId)
+    public LoadoutItemModel(LoadoutItemId loadoutItemId, IServiceProvider serviceProvider, IConnection connection)
     {
         _fixedId = [loadoutItemId];
         ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)>>(_ =>
@@ -47,8 +52,19 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             return ids.Select(id => (Id: id, ShouldEnable: shouldEnable)).ToArray();
         });
 
-        _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
+        _modelActivationDisposable = WhenModelActivated(this, (model, disposables) =>
         {
+            // Note: Because this is an external file with no known image, this always hits the fallback.
+            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+            var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(connection.Db, loadoutItemId);
+            if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
+            {
+                ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
+                    .ObserveOnUIThreadDispatcher()
+                    .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap)
+                    .AddTo(disposables);
+            }
+            
             Debug.Assert(model.Ticker is not null, "should've been set before activation");
             model.Ticker.Subscribe(model, static (now, model) =>
             {
@@ -97,12 +113,12 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     public override string ToString() => Name.Value;
 
-    public static IColumn<LoadoutItemModel> CreateNameColumn()
+    public static IColumn<LoadoutItemModel> CreateThumbnailAndNameColumn()
     {
-        return new CustomTextColumn<LoadoutItemModel, string>(
+        return new CustomTemplateColumn<LoadoutItemModel>(
             header: "NAME",
-            getter: model => model.Name.Value,
-            options: new TextColumnOptions<LoadoutItemModel>
+            cellTemplateResourceKey: "DisplayThumbnailAndNameColumnTemplate",
+            options: new TemplateColumnOptions<LoadoutItemModel>
             {
                 CompareAscending = static (a, b) => string.Compare(a?.Name.Value, b?.Name.Value, StringComparison.OrdinalIgnoreCase),
                 CompareDescending = static (a, b) => string.Compare(b?.Name.Value, a?.Name.Value, StringComparison.OrdinalIgnoreCase),

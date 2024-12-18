@@ -273,7 +273,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItemDatom =>
                 {
                     var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
-                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem);
+                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider);
                 });
 
                 var installedAtObservable = cache.Connect()
@@ -306,7 +306,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider)
                 {
                     NameObservable = System.Reactive.Linq.Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
