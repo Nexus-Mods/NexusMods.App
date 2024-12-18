@@ -9,16 +9,6 @@ Adding support for a wide range of games it not a practical decision at this sta
 
 Our plan is to go game-by-game and work with the modding community at each step to ensure we're building something great. To see which games are supported, coming next and planned for the future please see the [roadmap](https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap).
 
-## Why do I have to uninstall everything to update the app?
-The Nexus Mods app is still in the very early stages of development. This means that some of the core backend functionality of the app may still change significantly between releases. When this changes all existing data becomes incompatible with the new versions and users who wish to update will need to start over. 
-
-In future releases we plan to offer an automated migration (where possible) to allow for seamless updating.
-
-We have provided a guide on [how to uninstall the app](../Uninstall.md) on both Windows and Linux. 
-
-## How do I find my log files?
-To find your log files, please see [this guide](./LogFiles.md). 
-
 ## Why can't I log into the app or download from Nexus Mods?
 
 These issues most often occur when your PC is not correctly handling Nexus Mods `nxm://` links. These links are used for communication between your web browser and the app. To reset the connection, follow the instructions below.
@@ -37,7 +27,7 @@ On a Linux PC, you can check the default app for `nxm://` downloads and reset it
 ### Browsers
 Depending on your choice of browser, there may be additional considerations when troubleshooting this issue. 
 
-??? info ":fontawesome-brands-firefox: Setting the default protcol in Firefox"
+??? info ":fontawesome-brands-firefox: Setting the default protocol in Firefox"
     Mozilla browsers (such as Firefox) include their own protocol handler settings, which override those set by your operating system. 
 
     To access these settings click the menu button to the right of the address bar and select "Settings". Under the "General" category locate the section entitled "Files and Applications". 
@@ -45,3 +35,6 @@ Depending on your choice of browser, there may be additional considerations when
     ![The settings page in Mozilla Firefox 127.0.1 showing the Files and Applications section](../images/FirefoxProtocols.webp)
 
     Here you will see the `nxm` protocol and the default app which will be used to open it. Using the drop-down you can select the default application for Firefox to use. Setting it to whichever option is set as "Default" will use the application specified by your operating system. 
+
+## How do I find my log files?
+To find your log files, please see [this guide](./LogFiles.md). 
