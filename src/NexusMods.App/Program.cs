@@ -289,6 +289,9 @@ public class Program
             RemoveLoggerFactoryFilter = false,
         };
 
+        loggingBuilder.AddFilter("Microsoft", LogLevel.Warning);
+        loggingBuilder.AddFilter("System", LogLevel.Warning);
+
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(settings.MinimumLevel);
         loggingBuilder.AddNLog(config, options);

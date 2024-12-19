@@ -249,7 +249,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new loadout.
+        ///   Looks up a localized string similar to Create new.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
             get {
@@ -1703,7 +1703,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use..
+        ///   Looks up a localized string similar to Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play..
         /// </summary>
         public static string MyLoadoutsPageDescriptionText {
             get {

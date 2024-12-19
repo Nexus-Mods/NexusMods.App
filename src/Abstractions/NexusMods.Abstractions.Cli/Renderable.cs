@@ -20,5 +20,10 @@ public static class Renderable
     /// <param name="template"></param>
     /// <returns></returns>
     public static Text Text(string template, string[] args) => new Text { Template = template, Arguments = args};
+    
+    /// <summary>
+    /// Creates a new <see cref="Text"/> renderable with a new line at the end.
+    /// </summary>
+    public static Text TextLine(string template) => new Text { Template = template + "\n" };
 
 }

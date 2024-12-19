@@ -24,12 +24,12 @@ public enum ModSourceType
     /// <summary>
     /// Downloaded externally via an URL.
     /// </summary>
-    [JsonStringEnumMemberName("Browse")]
+    [JsonStringEnumMemberName("browse")]
     Browse,
 
     /// <summary>
     /// Downloaded externally via an URL.
     /// </summary>
-    [JsonStringEnumMemberName("Direct")]
+    [JsonStringEnumMemberName("direct")]
     Direct,
 }

@@ -35,7 +35,7 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                 // Currently applied visibility
                 this.OneWayBind(ViewModel,
                         vm => vm.IsLoadoutApplied,
-                        view => view.CurrentlyAppliedFlexPanel.IsVisible)
+                        view => view.CurrentlyAppliedStack.IsVisible)
                     .DisposeWith(d);
                 
                 // Last applied visibility
@@ -81,8 +81,8 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                         if (isDeleting) 
                             OverlayTextBlock.Text = Language.LoadoutCardViewDeletingText;
                         IsEnabled = !isDeleting;
-                        OverlayFlexPanel.IsVisible = isDeleting;
-                        ActionsBorder.IsVisible = !isDeleting;
+                        OverlayStack.IsVisible = isDeleting;
+                        ActionsDock.IsVisible = !isDeleting;
                     })
                     .DisposeWith(d);
                 
@@ -94,8 +94,8 @@ public partial class LoadoutCardView : ReactiveUserControl<ILoadoutCardViewModel
                         if (isSkeleton) 
                             OverlayTextBlock.Text = Language.LoadoutCardViewCreatingText;
                         IsEnabled = !isSkeleton;
-                        OverlayFlexPanel.IsVisible = isSkeleton;
-                        BodyAndActionsGroupFlexPanel.IsVisible = !isSkeleton;
+                        OverlayStack.IsVisible = isSkeleton;
+                        DetailsSectionStack.IsVisible = !isSkeleton;
                     })
                     .DisposeWith(d);
 

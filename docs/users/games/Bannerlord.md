@@ -12,6 +12,7 @@ Get information on potential issues in your loadout(s). [Learn more about Health
 ![An example Health Check message prompting the installation of a missing mod.](../images/0.7.0/HealthCheckExampleBannerlord.webp)
 
 Diagnostics are shown in the following situations and uses the SubModule.xml file included with mods to generate these messages: 
+!!! warning "Bannerlord Software Extender (BLSE) is not supported in 0.7.1. This is planned for a future release."
 
 - A mod is installed and requires another mod which is not installed or enabled.
 - A mod is installed and requires a specific version of another mod which is not installed or enabled.

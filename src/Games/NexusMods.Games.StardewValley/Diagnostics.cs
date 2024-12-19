@@ -200,7 +200,7 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
     internal static IDiagnosticTemplate SuggestSMAPIVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 10))
-        .WithTitle("Install SMAPI to get started with modding Stardew Valley")
+        .WithTitle("Stardew Modding API (SMAPI) is not installed")
         .WithSeverity(DiagnosticSeverity.Suggestion)
         .WithSummary("Install SMAPI to get started with modding Stardew Valley")
         .WithDetails("""
