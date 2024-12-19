@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
@@ -315,6 +316,31 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     HasChildrenObservable = hasChildrenObservable,
                     ChildrenObservable = childrenObservable,
                 };
+
+                // Inherit the icon from the first child
+                model.ChildrenObservable.FirstAsync().Subscribe(set =>
+                {
+                    foreach (var item in set)
+                    {
+                        if (item.Reason != ChangeReason.Add) continue;
+                        
+                        // Note(sewer):
+                        // The child may not be activated, so we can't just copy the thumbnail, from it as it may
+                        // not have been loaded yet. We need to manually load it.
+                        var current = item.Current;
+                        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(_serviceProvider);
+                        var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(_connection.Db, current.GetLoadoutItemIds().First());
+                        if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
+                        {
+                            ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
+                                .Take(1)
+                                .ObserveOnUIThreadDispatcher()
+                                .Subscribe(this, (bitmap, _) => model.Thumbnail.Value = bitmap);
+                        }
+                        
+                        return;
+                    }
+                });
 
                 return model;
             });

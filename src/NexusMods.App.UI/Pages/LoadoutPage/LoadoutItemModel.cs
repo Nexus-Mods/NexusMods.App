@@ -54,7 +54,6 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, (model, disposables) =>
         {
-            // Note: Because this is an external file with no known image, this always hits the fallback.
             var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
             var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(connection.Db, loadoutItemId);
             if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))

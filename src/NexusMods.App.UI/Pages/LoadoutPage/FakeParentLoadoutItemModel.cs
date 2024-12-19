@@ -26,6 +26,8 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));
         
+        
+        
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
             model.InstalledAtObservable.OnUI().Subscribe(date => model.InstalledAt.Value = date).AddTo(disposables);
