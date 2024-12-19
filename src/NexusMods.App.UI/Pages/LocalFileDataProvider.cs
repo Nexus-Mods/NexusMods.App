@@ -123,7 +123,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
                     .SubscribeWithErrorLogging();
 
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider));
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false));
 
                 var installedAtObservable = cache.Connect()
                     .Transform(item => item.GetCreatedAt())

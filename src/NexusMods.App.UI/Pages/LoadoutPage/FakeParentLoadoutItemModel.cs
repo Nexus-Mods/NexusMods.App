@@ -21,7 +21,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     private readonly IDisposable _modelActivationDisposable;
     private readonly IDisposable _loadoutItemIdsDisposable;
 
-    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, IServiceProvider provider) : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>())
+    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, IServiceProvider provider) : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), false)
     {
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));

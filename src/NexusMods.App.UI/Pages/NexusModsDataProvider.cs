@@ -274,7 +274,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItemDatom =>
                 {
                     var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
-                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider);
+                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false);
                 });
 
                 var installedAtObservable = cache.Connect()

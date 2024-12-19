@@ -40,7 +40,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     public BindableReactiveProperty<string> FormattedInstalledAt { get; } = new("-");
 
     private readonly IDisposable _modelActivationDisposable;
-    public LoadoutItemModel(LoadoutItemId loadoutItemId, IServiceProvider serviceProvider, IConnection connection)
+    public LoadoutItemModel(LoadoutItemId loadoutItemId, IServiceProvider serviceProvider, IConnection connection, bool loadThumbnail)
     {
         _fixedId = [loadoutItemId];
         ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)>>(_ =>
@@ -54,14 +54,17 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, (model, disposables) =>
         {
-            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
-            var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(connection.Db, loadoutItemId);
-            if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
+            if (loadThumbnail)
             {
-                ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
-                    .ObserveOnUIThreadDispatcher()
-                    .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap)
-                    .AddTo(disposables);
+                var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+                var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(connection.Db, loadoutItemId);
+                if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
+                {
+                    ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
+                        .ObserveOnUIThreadDispatcher()
+                        .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap)
+                        .AddTo(disposables);
+                }
             }
             
             Debug.Assert(model.Ticker is not null, "should've been set before activation");

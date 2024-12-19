@@ -262,7 +262,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
         if (_loadoutFilter.CollectionGroupId.HasValue)
             baseObservable = baseObservable.Filter(item => item.AsLoadoutItemGroup().AsLoadoutItem().IsChildOf(_loadoutFilter.CollectionGroupId.Value));
                 
-        return baseObservable.Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider));
+        return baseObservable.Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, true));
     }
 
     protected override IColumn<LoadoutItemModel>[] CreateColumns(bool viewHierarchical)
