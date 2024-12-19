@@ -106,9 +106,10 @@
                     <icons:UnifiedIcon Classes="Sort" />
                     <icons:UnifiedIcon Classes="SortAscending" />
                     <icons:UnifiedIcon Classes="SortDescending" />
+                    <icons:UnifiedIcon Classes="GamepadOutline" />
+                    <icons:UnifiedIcon Classes="Package" />
                 </WrapPanel>
                 <WrapPanel>
-                    <icons:UnifiedIcon Classes="Nexus" />
                     <icons:UnifiedIcon Classes="Nexus" />
                     <icons:UnifiedIcon Classes="Steam" />
                     <icons:UnifiedIcon Classes="EA" />
@@ -121,8 +122,13 @@
                     <icons:UnifiedIcon Classes="PictogramGame3D" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False"/>
+                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" Opacity="0.4" />
+                </WrapPanel>
+                <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramBox2" />
+                    <icons:UnifiedIcon Classes="PictogramBox2" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramBox2" Size="48" />
                 </WrapPanel>
             </StackPanel>
         </Border>
@@ -560,5 +566,14 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramGame3D">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramGame3D}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramBox2">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramBox2}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.GamepadOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.GamepadOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Package">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Package}" />
     </Style>
 </Styles>
