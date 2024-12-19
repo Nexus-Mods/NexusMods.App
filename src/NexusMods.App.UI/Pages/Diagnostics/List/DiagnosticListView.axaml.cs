@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
@@ -29,37 +30,35 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
                         {
                             var (numCritical, numWarnings, numSuggestions) = counts;
                             var total = numCritical + numWarnings + numSuggestions;
-
+                
                             // set tab headers
-                            AllDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
-                            SuggestionDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
-                            WarningDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
-                            CriticalDiagnosticsTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
-
+                            AllTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
+                            SuggestionTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
+                            WarningTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
+                            CriticalTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
+                
                             EmptyState.IsActive = total == 0;
                         }
                     )
                     .DisposeWith(disposable);
-
-                // bind all DiagnosticEntries to the AllItemsControl
-                this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.AllItemsControl.ItemsSource)
+                
+                // // bind all DiagnosticEntries to the AllItemsControl
+                this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.HealthCheckItemsControl.ItemsSource)
                     .DisposeWith(disposable);
-
-                // need to filter DiagnosticEntries and Bind them to the correct ItemsControl
-
-                this.WhenAnyValue(view => view.ViewModel!.DiagnosticEntries)
-                    .Select(entries => entries.Where(e => e.Severity == DiagnosticSeverity.Critical))
-                    .BindTo(this, view => view.CriticalItemsControl.ItemsSource)
-                    .DisposeWith(disposable);
-
-                this.WhenAnyValue(view => view.ViewModel!.DiagnosticEntries)
-                    .Select(entries => entries.Where(e => e.Severity == DiagnosticSeverity.Warning))
-                    .BindTo(this, view => view.WarningItemsControl.ItemsSource)
-                    .DisposeWith(disposable);
-
-                this.WhenAnyValue(view => view.ViewModel!.DiagnosticEntries)
-                    .Select(entries => entries.Where(e => e.Severity == DiagnosticSeverity.Suggestion))
-                    .BindTo(this, view => view.SuggestionItemsControl.ItemsSource)
+                
+                this.WhenAnyValue(view => view.TabControl.SelectedItem)
+                    .Select(selectedItem =>
+                    {
+                        if (ReferenceEquals(selectedItem, AllTab)) return DiagnosticFilter.Suggestions | DiagnosticFilter.Warnings | DiagnosticFilter.Critical;
+                        if (ReferenceEquals(selectedItem, SuggestionTab)) return DiagnosticFilter.Suggestions;
+                        if (ReferenceEquals(selectedItem, WarningTab)) return DiagnosticFilter.Warnings;
+                        if (ReferenceEquals(selectedItem, CriticalTab)) return DiagnosticFilter.Critical;
+                        throw new UnreachableException();
+                    })
+                    .Subscribe(filter =>
+                    {
+                        ViewModel!.Filter = filter;
+                    })
                     .DisposeWith(disposable);
             }
         );

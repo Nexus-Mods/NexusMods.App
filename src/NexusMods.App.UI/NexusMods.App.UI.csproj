@@ -705,7 +705,7 @@
         <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
           <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs">
+        <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
