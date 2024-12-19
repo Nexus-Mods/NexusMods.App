@@ -97,7 +97,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
         TabTitle = Language.LibraryPageTitle;
-        TabIcon = IconValues.ModLibrary;
+        TabIcon = IconValues.LibraryOutline;
 
         ticker.Connect();
 

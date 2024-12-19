@@ -20,7 +20,7 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
         IMarkdownRendererViewModel markdownRendererViewModel,
         Diagnostic diagnostic) : base(windowManager)
     {
-        TabIcon = IconValues.Stethoscope;
+        TabIcon = IconValues.Cardiology;
         TabTitle = diagnostic.Title;
         Severity = diagnostic.Severity;
 

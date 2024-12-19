@@ -6,6 +6,8 @@ namespace NexusMods.App.UI.Controls.Diagnostics;
 public class DiagnosticEntryDesignViewModel : DiagnosticEntryViewModel
 {
     public DiagnosticEntryDesignViewModel() : base(Data, Writer) { }
+    
+    public DiagnosticEntryDesignViewModel(Diagnostic diagnostic) : base(diagnostic, Writer) { }
 
     private static readonly Diagnostic Data = new()
     {

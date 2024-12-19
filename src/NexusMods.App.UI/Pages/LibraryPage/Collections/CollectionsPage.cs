@@ -49,7 +49,7 @@ public class CollectionsPageFactory : APageFactory<ICollectionsViewModel, Collec
         {
             SectionName = "Mods",
             ItemName = "Collections (WIP)",
-            Icon = IconValues.ModLibrary,
+            Icon = IconValues.Collections,
             PageData = new PageData
             {
                 FactoryId = Id,

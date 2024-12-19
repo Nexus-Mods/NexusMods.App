@@ -79,7 +79,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LibraryPageTitle,
             RelativeOrder = 3,
-            Icon = IconValues.ModLibrary,
+            Icon = IconValues.LibraryOutline,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 NewDownloadModelCount = 0;
@@ -102,7 +102,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
             RelativeOrder = 4,
-            Icon = IconValues.Stethoscope,
+            Icon = IconValues.Cardiology,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData

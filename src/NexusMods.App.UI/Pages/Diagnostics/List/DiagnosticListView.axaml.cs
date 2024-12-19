@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
@@ -18,79 +19,48 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
         InitializeComponent();
 
         this.WhenActivated(disposable =>
-        {
-            this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.ItemsControl.ItemsSource)
-                .DisposeWith(disposable);
-
-            // use counts
-            this.WhenAnyValue(
-                view => view.ViewModel!.NumCritical,
-                view => view.ViewModel!.NumWarnings,
-                view => view.ViewModel!.NumSuggestions)
-                .Subscribe(counts =>
-                {
-                    var (numCritical, numWarnings, numSuggestions) = counts;
-                    var total = numCritical + numWarnings + numSuggestions;
-
-                    // set button texts
-                    AllDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
-                    CriticalDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
-                    WarningDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
-                    SuggestionDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
-
-                    EmptyState.IsActive = total == 0;
-                })
-                .DisposeWith(disposable);
-
-            // toggle commands
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.CriticalDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Critical))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.WarningDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Warning))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel,
-                    vm => vm.ToggleSeverityCommand,
-                    view => view.SuggestionDiagnosticsButton,
-                    withParameter: Observable.Return(DiagnosticSeverity.Suggestion))
-                .DisposeWith(disposable);
-
-            this.BindCommand(ViewModel, vm => vm.ShowAllCommand, view => view.AllDiagnosticsButton)
-                .DisposeWith(disposable);
-
-            // filter changes
-            this.WhenAnyValue(view => view.ViewModel!.Filter)
-                .Subscribe(filter =>
-                {
-                    var showCritical = filter.HasFlagFast(DiagnosticFilter.Critical);
-                    var showWarnings = filter.HasFlagFast(DiagnosticFilter.Warnings);
-                    var showSuggestions = filter.HasFlagFast(DiagnosticFilter.Suggestions);
-
-                    const string selectedClass = "Selected";
-
-                    if (showCritical && showWarnings && showSuggestions)
+            {
+                // update headers whenever the counts change
+                this.WhenAnyValue(
+                        view => view.ViewModel!.NumCritical,
+                        view => view.ViewModel!.NumWarnings,
+                        view => view.ViewModel!.NumSuggestions
+                    )
+                    .Subscribe(counts =>
+                        {
+                            var (numCritical, numWarnings, numSuggestions) = counts;
+                            var total = numCritical + numWarnings + numSuggestions;
+                
+                            // set tab headers
+                            AllTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
+                            SuggestionTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
+                            WarningTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
+                            CriticalTab.Header = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
+                
+                            EmptyState.IsActive = total == 0;
+                        }
+                    )
+                    .DisposeWith(disposable);
+                
+                // // bind all DiagnosticEntries to the AllItemsControl
+                this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.HealthCheckItemsControl.ItemsSource)
+                    .DisposeWith(disposable);
+                
+                this.WhenAnyValue(view => view.TabControl.SelectedItem)
+                    .Select(selectedItem =>
                     {
-                        AllDiagnosticsButton.Classes.Add(selectedClass);
-                        CriticalDiagnosticsButton.Classes.Remove(selectedClass);
-                        WarningDiagnosticsButton.Classes.Remove(selectedClass);
-                        SuggestionDiagnosticsButton.Classes.Remove(selectedClass);
-                    }
-                    else
+                        if (ReferenceEquals(selectedItem, AllTab)) return DiagnosticFilter.Suggestions | DiagnosticFilter.Warnings | DiagnosticFilter.Critical;
+                        if (ReferenceEquals(selectedItem, SuggestionTab)) return DiagnosticFilter.Suggestions;
+                        if (ReferenceEquals(selectedItem, WarningTab)) return DiagnosticFilter.Warnings;
+                        if (ReferenceEquals(selectedItem, CriticalTab)) return DiagnosticFilter.Critical;
+                        throw new UnreachableException();
+                    })
+                    .Subscribe(filter =>
                     {
-                        AllDiagnosticsButton.Classes.Remove(selectedClass);
-                        CriticalDiagnosticsButton.Classes.ToggleIf(selectedClass, showCritical);
-                        WarningDiagnosticsButton.Classes.ToggleIf(selectedClass, showWarnings);
-                        SuggestionDiagnosticsButton.Classes.ToggleIf(selectedClass, showSuggestions);
-                    }
-                })
-                .DisposeWith(disposable);
-        });
+                        ViewModel!.Filter = filter;
+                    })
+                    .DisposeWith(disposable);
+            }
+        );
     }
 }
-
