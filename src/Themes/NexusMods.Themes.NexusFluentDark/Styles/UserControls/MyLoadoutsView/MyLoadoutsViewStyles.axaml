@@ -19,7 +19,7 @@
     <Style Selector="myLoadouts|MyLoadoutsView">
         
         <Style Selector="^ controls|EmptyState#MyLoadoutsEmptyState">
-            <Setter Property="Icon" Value="{x:Static icons:IconValues.ViewCarousel}" />
+            <Setter Property="Icon" Value="{x:Static icons:IconValues.Package}" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#MyLoadoutsOuterFlexPanel">
