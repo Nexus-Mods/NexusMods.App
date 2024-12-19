@@ -227,7 +227,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable)
+        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, _serviceProvider)
         {
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,

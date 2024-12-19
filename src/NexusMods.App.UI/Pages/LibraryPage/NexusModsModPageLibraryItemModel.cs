@@ -13,6 +13,9 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+/// <summary>
+///     When in the library, and using tree view, this shows the top level item that represents the top page.
+/// </summary>
 public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
@@ -24,7 +27,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public required IObservable<int> NumInstalledObservable { get; init; }
     private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
-    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
+    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IServiceProvider serviceProvider)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
@@ -33,10 +36,26 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
+        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
 
         // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
         // until the entire model gets disposed. Without this, selection would break for off-screen items.
-        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LibraryItems.ApplyChanges(changeSet));
+        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet =>
+        {
+            LibraryItems.ApplyChanges(changeSet);
+            
+            // Note(sewer): Update the thumbnail of the header to be the thumbnail of the first child item.
+            // By definition, all the sub items belong to this page, so the thumbnail of the child item
+            // is the thumbnail of this page.
+            //
+            // SAFETY: This can't have race condition, code is executed on UI, so can't be executed in parallel.
+            var first = LibraryItems.FirstOrDefault();
+            if (first.IsValid())
+            {
+                var thumbNail = Task.Run(async () => await modPageThumbnailPipeline.LoadResourceAsync(first.ModPageMetadataId, CancellationToken.None)).Result;
+                Thumbnail.Value = thumbNail.Data.Value;
+            }
+        });
 
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
