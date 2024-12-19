@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Net;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Telemetry;
@@ -41,4 +43,12 @@ public readonly struct EventMetadata
     /// Checks whether the struct wasn't default initialized.
     /// </summary>
     public bool IsValid() => Name is not null || CurrentTime != default(TimeOnly);
+
+    internal byte[] SafeName => Name is null ? [] : Encode(Name);
+
+    private static byte[] Encode(string value)
+    {
+        var bytes = Encoding.UTF8.GetBytes(value);
+        return WebUtility.UrlEncodeToBytes(bytes, offset: 0, count: bytes.Length);
+    }
 }

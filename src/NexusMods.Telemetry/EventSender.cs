@@ -163,14 +163,29 @@ internal class EventSender : IEventSender
         }
 
         sb.Append("&e_c="); // Event category
-        sb.Append(definition.Category);
+        {
+            var input = definition.SafeCategory.AsSpan();
+            var destination = sb.GetSpan(sizeHint: input.Length);
+            input.CopyTo(destination);
+            sb.Advance(input.Length);
+        }
+
         sb.Append("&e_a="); // Event action
-        sb.Append(definition.Action);
+        {
+            var input = definition.SafeAction.AsSpan();
+            var destination = sb.GetSpan(sizeHint: input.Length);
+            input.CopyTo(destination);
+            sb.Advance(input.Length);
+
+        }
 
         if (metadata.Name is not null)
         {
             sb.Append("&e_n="); // Event name
-            sb.Append(metadata.Name);
+            var input = metadata.SafeName.AsSpan();
+            var destination = sb.GetSpan(sizeHint: input.Length);
+            input.CopyTo(destination);
+            sb.Advance(input.Length);
         }
 
         sb.Append("&h="); // The current hour (local time)
