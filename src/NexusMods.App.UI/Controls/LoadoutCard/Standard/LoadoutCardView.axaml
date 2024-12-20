@@ -1,4 +1,5 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutCard:ILoadoutCardViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadoutCard:ILoadoutCardViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,6 +10,7 @@
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
     <Design.DataContext>
@@ -16,91 +18,66 @@
     </Design.DataContext>
 
     <Border x:Name="ContainerBorder">
-        <Grid>
+        <Panel>
             <Button x:Name="CardOuterButton">
 
-                <panels:FlexPanel x:Name="CardOuterFlexPanel">
+                <DockPanel>
 
-                    <Border x:Name="ImageSectionBorder">
-                        <Grid>
-                            <Image x:Name="GameImage" />
-                            <Rectangle x:Name="GradientLayerRectangle" />
-                            <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" Classes="CardSize" />
-                        </Grid>
-                    </Border>
+                    <DockPanel x:Name="ActionsDock"
+                               DockPanel.Dock="Bottom">
 
-                    <Border x:Name="DetailsSectionBorder">
+                        <controls:StandardButton x:Name="DeleteButton"
+                                                 DockPanel.Dock="Right"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                                 ToolTip.Tip="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
 
-                        <panels:FlexPanel x:Name="DetailsSectionFlexPanel">
+                        <controls:StandardButton x:Name="CreateCopyButton"
+                                                 Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}"
+                                                 HorizontalAlignment="Stretch" />
+                    </DockPanel>
 
-                            <TextBlock x:Name="LoadoutNameTextBlock"
-                                       Classes="BodyLGBold" />
+                    <StackPanel x:Name="CardOuterStack">
+                        <Border x:Name="ImageSectionBorder">
+                            <Panel>
+                                <Image x:Name="GameImage" />
+                                <Rectangle x:Name="GradientLayerRectangle" />
+                                <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" Classes="CardSize" />
+                            </Panel>
+                        </Border>
 
-                            <panels:FlexPanel x:Name="BodyAndActionsGroupFlexPanel">
+                        <StackPanel x:Name="DetailsSectionStack">
+                            <TextBlock x:Name="LoadoutNameTextBlock" />
 
-                                <panels:FlexPanel x:Name="DetailsBodyFlexPanel">
+                            <StackPanel x:Name="DetailsBodyStack">
+                                <StackPanel x:Name="CurrentlyAppliedStack">
+                                    <TextBlock x:Name="CurrentlyAppliedTextBlock"
+                                               Text="{x:Static resources:Language.LoadoutCardViewCurrentlyAppliedTextBlock}" />
+                                    <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
+                                                       Value="{x:Static icons:IconValues.CheckBox}" />
+                                </StackPanel>
+                                <TextBlock x:Name="LastAppliedTimeTextBlock" IsVisible="False" />
+                                <TextBlock x:Name="CreatedTimeTextBlock" />
+                                <TextBlock x:Name="NumberOfModsTextBlock" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
 
-                                    <panels:FlexPanel x:Name="CurrentlyAppliedFlexPanel">
 
-                                        <TextBlock x:Name="CurrentlyAppliedTextBlock"
-                                                   Classes="BodySMBold"
-                                                   Text="{x:Static resources:Language.LoadoutCardViewCurrentlyAppliedTextBlock}" />
-                                        <icons:UnifiedIcon x:Name="AppliedCheckBoxIcon"
-                                                           Classes="CheckBox" />
-
-                                    </panels:FlexPanel>
-
-                                    <TextBlock x:Name="LastAppliedTimeTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued"
-                                               IsVisible="False" />
-
-                                    <TextBlock x:Name="CreatedTimeTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued" />
-
-                                    <TextBlock x:Name="NumberOfModsTextBlock"
-                                               Classes="BodySMNormal ForegroundSubdued" />
-
-                                </panels:FlexPanel>
-
-                                <Border x:Name="ActionsBorder">
-                                    <panels:FlexPanel x:Name="ActionsFlexPanel">
-
-                                        <Button x:Name="CreateCopyButton"
-                                                Classes="Rounded Primary">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock Classes="BodySMBold" Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}" />
-                                            </StackPanel>
-                                        </Button>
-
-                                        <Button x:Name="DeleteButton"
-                                                Classes="Rounded Primary">
-                                            <ToolTip.Tip>
-                                                <TextBlock Text="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
-                                            </ToolTip.Tip>
-                                            <icons:UnifiedIcon Classes="DeleteForever" />
-                                        </Button>
-                                    </panels:FlexPanel>
-                                </Border>
-
-                            </panels:FlexPanel>
-
-                        </panels:FlexPanel>
-                    </Border>
-
-                </panels:FlexPanel>
+                </DockPanel>
             </Button>
 
             <!-- Needs to be on top of the card button to avoid the disabled opacity -->
-            <panels:FlexPanel x:Name="OverlayFlexPanel" IsVisible="False">
-                <panels:FlexPanel x:Name="OverlaySpinnerFlexPanel">
+            <StackPanel x:Name="OverlayStack" IsVisible="False">
+                <StackPanel x:Name="OverlaySpinnerStack">
                     <spinner:Spinner x:Name="OverlaySpinner" />
                     <TextBlock x:Name="OverlayTextBlock"
-                               Classes="BodyXLNormal ForegroundSubdued"
                                Text="{x:Static resources:Language.LoadoutCardViewDeletingText}" />
-                </panels:FlexPanel>
+                </StackPanel>
                 <Border />
-            </panels:FlexPanel>
-        </Grid>
+            </StackPanel>
+        </Panel>
     </Border>
 
 

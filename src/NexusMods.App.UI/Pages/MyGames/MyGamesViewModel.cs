@@ -62,7 +62,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         TabTitle = Language.MyGames;
-        TabIcon = IconValues.Game;
+        TabIcon = IconValues.GamepadOutline;
 
         var provider = serviceProvider;
         _windowManager = windowManager;

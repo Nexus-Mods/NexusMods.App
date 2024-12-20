@@ -11,9 +11,9 @@
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.CreateNewLoadoutCardView">
 
     <Button x:Name="CreateNewLoadoutButton">
-        <panels:FlexPanel x:Name="CreateNewLoadoutFlexPanel">
-            <TextBlock x:Name="CreateNewLoadoutTexBlock" Text="{x:Static resources:Language.CreateNewLoadoutCarViewTexBlock}" />
-            <icons:UnifiedIcon x:Name="AddIcon" Classes="Add" />
-        </panels:FlexPanel>
+        <StackPanel x:Name="CreateNewLoadoutStack">
+            <icons:UnifiedIcon x:Name="AddIcon" Value="{x:Static icons:IconValues.Add}" />
+            <TextBlock x:Name="CreateNewLoadoutTextBlock" Text="{x:Static resources:Language.CreateNewLoadoutCarViewTexBlock}" />
+        </StackPanel>
     </Button>
 </reactiveUi:ReactiveUserControl>
