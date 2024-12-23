@@ -10,7 +10,7 @@ public partial class AuthInfo : IModelDefinition
     /// <summary>
     /// The time at which the token expires.
     /// </summary>
-    public static readonly TimestampAttribute ExpriesAt = new(Namespace, nameof(ExpriesAt));
+    public static readonly TimestampAttribute ExpiresAt = new(Namespace, nameof(ExpiresAt));
     
     /// <summary>
     /// The access token.

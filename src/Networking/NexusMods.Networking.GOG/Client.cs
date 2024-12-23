@@ -120,7 +120,7 @@ internal class Client
         
         tx.Add(e, AuthInfo.AccessToken, tokenResponse.AccessToken);
         tx.Add(e, AuthInfo.RefreshToken, tokenResponse.RefreshToken);
-        tx.Add(e, AuthInfo.ExpriesAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
+        tx.Add(e, AuthInfo.ExpiresAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
         tx.Add(e, AuthInfo.SessionId, tokenResponse.SessionId);
         tx.Add(e, AuthInfo.UserId, ulong.Parse(tokenResponse.UserId));
         await tx.Commit();
@@ -149,7 +149,7 @@ internal class Client
     /// </summary>
     private bool NeedsRefresh(AuthInfo.ReadOnly authInfo)
     {
-        return authInfo.ExpriesAt < DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1);
+        return authInfo.ExpiresAt < DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1);
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ internal class Client
             var e = authInfo.Id;
             tx.Add(e, AuthInfo.AccessToken, tokenResponse.AccessToken);
             tx.Add(e, AuthInfo.RefreshToken, tokenResponse.RefreshToken);
-            tx.Add(e, AuthInfo.ExpriesAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
+            tx.Add(e, AuthInfo.ExpiresAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
             tx.Add(e, AuthInfo.SessionId, tokenResponse.SessionId);
             tx.Add(e, AuthInfo.UserId, ulong.Parse(tokenResponse.UserId));
             var result = await tx.Commit();
