@@ -1,6 +1,4 @@
-using System.Globalization;
 using System.IO.Compression;
-using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,7 +13,6 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
-using RocksDbSharp;
 using static NexusMods.Paths.Utilities.KnownExtensions;
 
 namespace NexusMods.Games.GameHashes;
@@ -42,9 +39,6 @@ public static class Verbs
         };
         var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var conn = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, []);
-
-        var field = backend.GetType().GetField("Db", BindingFlags.NonPublic | BindingFlags.Instance);
-        var rocksDb = (RocksDb)field?.GetValue(backend);
         
         try
         {
@@ -61,11 +55,6 @@ public static class Verbs
             Console.WriteLine($"Wrote {SteamManifestEntry.All(db).Count} steam manifest entries");
             Console.WriteLine($"Wrote {GOGBuildEntry.All(db).Count} GOG build entries");
             
-            
-            Native.Instance.rocksdb_backup_engine_o
-            
-            rocksDb!.Cr
-            rocksDb!.Flush(new FlushOptions().SetWaitForFlush(true));
             // Shut down the connection
             datomStore.Dispose();
             backend.Dispose();
