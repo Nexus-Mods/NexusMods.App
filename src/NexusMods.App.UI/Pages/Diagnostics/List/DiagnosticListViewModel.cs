@@ -32,7 +32,6 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
 
     [Reactive] public DiagnosticFilter Filter { get; set; }
 
-    //public ReactiveCommand<DiagnosticSeverity, Unit> ToggleSeverityCommand { get; }
 
 
     private const DiagnosticFilter AllFilter = DiagnosticFilter.Critical | DiagnosticFilter.Warnings | DiagnosticFilter.Suggestions;
