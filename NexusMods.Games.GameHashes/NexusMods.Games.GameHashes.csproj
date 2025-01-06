@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NexusMods.MnemonicDB" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
+      <ProjectReference Include="..\src\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
+      <ProjectReference Include="..\src\Abstractions\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+      <ProjectReference Include="..\src\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

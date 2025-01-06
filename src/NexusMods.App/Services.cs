@@ -19,6 +19,7 @@ using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
+using NexusMods.Games.GameHashes;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
@@ -60,6 +61,7 @@ public static class Services
         {
             services
                 .AddDataModel()
+                .AddGameHashes()
                 .AddLibrary()
                 .AddLibraryModels()
                 .AddJobMonitor()
