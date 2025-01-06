@@ -1,7 +1,10 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO.Hashing;
 using System.Security.Cryptography;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
@@ -17,6 +20,8 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -38,6 +43,43 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     public required IConnection Connection { get; init; }
     public required IFileStore FileStore { get; init; }
     public required ILibraryService LibraryService { get; init; }
+
+    public static async ValueTask<InstallCollectionDownloadJob> Create(
+        IServiceProvider serviceProvider,
+        LoadoutId targetLoadout,
+        CollectionDownload.ReadOnly download,
+        CancellationToken cancellationToken)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var collectionGroupIds = connection.Db.Datoms(
+            (NexusCollectionLoadoutGroup.Revision, download.CollectionRevision),
+            (LoadoutItem.LoadoutId, targetLoadout)
+        );
+
+        Debug.Assert(collectionGroupIds.Count > 0, "collection needs to exist");
+        var collectionGroup = CollectionGroup.Load(connection.Db, collectionGroupIds[0]);
+
+        var sourceCollection = new CollectionDownloader(serviceProvider).GetLibraryFile(download.CollectionRevision);
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+
+        var root = await nexusModsLibrary.ParseCollectionJsonFile(sourceCollection, cancellationToken);
+        var collectionMod = root.Mods[download.ArrayIndex];
+
+        return new InstallCollectionDownloadJob
+        {
+            Item = download,
+            CollectionMod = collectionMod,
+            Group = collectionGroup,
+            TargetLoadout = targetLoadout,
+            SourceCollection = sourceCollection,
+
+            ServiceProvider = serviceProvider,
+            Connection = connection,
+            FileStore = serviceProvider.GetRequiredService<IFileStore>(),
+            LibraryService = serviceProvider.GetRequiredService<ILibraryService>(),
+        };
+    }
 
     /// <inheritdoc/>
     public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionDownloadJob> context)

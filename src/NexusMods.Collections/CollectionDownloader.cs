@@ -388,6 +388,9 @@ public class CollectionDownloader
         return res;
     }
 
+    /// <summary>
+    /// Gets the library file for the collection.
+    /// </summary>
     public NexusModsCollectionLibraryFile.ReadOnly GetLibraryFile(CollectionRevisionMetadata.ReadOnly revisionMetadata)
     {
         var datoms = _connection.Db.Datoms(

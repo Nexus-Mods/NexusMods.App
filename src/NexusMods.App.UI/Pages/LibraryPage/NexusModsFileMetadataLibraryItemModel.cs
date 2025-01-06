@@ -9,24 +9,27 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
-public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
-    ILibraryItemWithVersion,
-    ILibraryItemWithSize,
-    ILibraryItemWithDownloadAction
+public static class NexusModsFileMetadataLibraryItemModel
 {
-    public NexusModsFileMetadataLibraryItemModel(CollectionDownloadNexusMods.ReadOnly download)
+    public class Downloadable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
+        ILibraryItemWithName,
+        ILibraryItemWithVersion,
+        ILibraryItemWithSize,
+        ILibraryItemWithDownloadAction
     {
-        DownloadableItem = new DownloadableItem(download);
-        FormattedSize = ItemSize.ToFormattedProperty();
-        DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
-
-        // ReSharper disable once NotDisposedResource
-        var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
+        public Downloadable(CollectionDownloadNexusMods.ReadOnly download)
         {
-            self.IsInLibraryObservable.CombineLatest(
-                source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
-                resultSelector: static (a, b) => (a, b))
+            DownloadableItem = new DownloadableItem(download);
+            FormattedSize = ItemSize.ToFormattedProperty();
+            DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
+
+            // ReSharper disable once NotDisposedResource
+            var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
+            {
+                self.IsInLibraryObservable.CombineLatest(
+                    source2: self.DownloadJobObservable.SelectMany(job => job.ObservableStatus.ToObservable()).Prepend(JobStatus.None),
+                    resultSelector: static (a, b) => (a, b)
+                )
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(self, static (tuple, self) =>
                 {
@@ -34,55 +37,125 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
                     self.DownloadState.Value = inLibrary ? JobStatus.Completed : status;
                     self.DownloadButtonText.Value = ILibraryItemWithDownloadAction.GetButtonText(status: self.DownloadState.Value);
                 }).AddTo(disposables);
-        });
+            });
 
-        _modelDisposable = Disposable.Combine(
-            modelActivationDisposable,
-            Name,
-            Version,
-            ItemSize,
-            FormattedSize,
-            DownloadItemCommand,
-            DownloadState,
-            DownloadButtonText
-        );
-    }
-
-    public required Observable<bool> IsInLibraryObservable { get; init; }
-    public required Observable<IJob> DownloadJobObservable { get; init; }
-
-    public BindableReactiveProperty<string> Name { get; } = new(value: "-");
-    public BindableReactiveProperty<string> Version { get; } = new(value: "-");
-
-    public ReactiveProperty<Size> ItemSize { get; } = new();
-    public BindableReactiveProperty<string> FormattedSize { get; }
-
-    public DownloadableItem DownloadableItem { get; }
-
-    public ReactiveCommand<Unit, DownloadableItem> DownloadItemCommand { get; }
-
-    public BindableReactiveProperty<JobStatus> DownloadState { get; } = new();
-
-    public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(status: JobStatus.None));
-
-    private bool _isDisposed;
-    private readonly IDisposable _modelDisposable;
-
-    protected override void Dispose(bool disposing)
-    {
-        if (!_isDisposed)
-        {
-            if (disposing)
-            {
-                _modelDisposable.Dispose();
-            }
-
-            _isDisposed = true;
+            _modelDisposable = Disposable.Combine(
+                modelActivationDisposable,
+                Name,
+                Version,
+                ItemSize,
+                FormattedSize,
+                DownloadItemCommand,
+                DownloadState,
+                DownloadButtonText
+            );
         }
 
-        base.Dispose(disposing);
+        public required Observable<bool> IsInLibraryObservable { get; init; }
+        public required Observable<IJob> DownloadJobObservable { get; init; }
+
+        public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+        public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+
+        public ReactiveProperty<Size> ItemSize { get; } = new();
+        public BindableReactiveProperty<string> FormattedSize { get; }
+
+        public DownloadableItem DownloadableItem { get; }
+
+        public ReactiveCommand<Unit, DownloadableItem> DownloadItemCommand { get; }
+
+        public BindableReactiveProperty<JobStatus> DownloadState { get; } = new();
+
+        public BindableReactiveProperty<string> DownloadButtonText { get; } = new(value: ILibraryItemWithDownloadAction.GetButtonText(status: JobStatus.None));
+
+        private bool _isDisposed;
+        private readonly IDisposable _modelDisposable;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    _modelDisposable.Dispose();
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public override string ToString() => $"Nexus Mods File Metadata: {Name.Value}";
     }
 
-    public override string ToString() => $"Nexus Mods File Metadata: {Name.Value}";
+    public class Installable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
+        ILibraryItemWithName,
+        ILibraryItemWithVersion,
+        ILibraryItemWithSize,
+        ILibraryItemWithInstallAction
+    {
+        public Installable(CollectionDownloadNexusMods.ReadOnly download)
+        {
+            Download = download;
+            FormattedSize = ItemSize.ToFormattedProperty();
+            InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
+
+            // ReSharper disable once NotDisposedResource
+            var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
+            {
+                self.IsInstalledObservable
+                    .ObserveOnCurrentSynchronizationContext()
+                    .Subscribe(self, static (isInstalled, self) =>
+                    {
+                        self.IsInstalled.Value = isInstalled;
+                        self.InstallButtonText.Value = ILibraryItemWithInstallAction.GetButtonText(isInstalled: isInstalled);
+                    }).AddTo(disposables);
+            });
+
+            _modelDisposable = Disposable.Combine(
+                modelActivationDisposable,
+                Name,
+                Version,
+                ItemSize,
+                FormattedSize,
+                IsInstalled,
+                InstallButtonText
+            );
+        }
+
+        public required Observable<bool> IsInstalledObservable { get; init; }
+
+        public CollectionDownloadNexusMods.ReadOnly Download { get; }
+        public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+        public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+
+        public ReactiveProperty<Size> ItemSize { get; } = new();
+        public BindableReactiveProperty<string> FormattedSize { get; }
+
+        public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
+        public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
+        public ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
+
+        private bool _isDisposed;
+        private readonly IDisposable _modelDisposable;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    _modelDisposable.Dispose();
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public override string ToString() => $"Nexus Mods File Metadata: {Name.Value}";
+    }
 }
 
