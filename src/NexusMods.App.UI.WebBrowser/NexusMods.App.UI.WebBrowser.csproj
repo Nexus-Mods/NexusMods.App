@@ -10,6 +10,12 @@
       <PackageReference Include="WebViewControl-Avalonia" />
     </ItemGroup>
 
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <PackageSuffix>-ARM64</PackageSuffix>
+        <CefGluePackageSuffix>.ARM64</CefGluePackageSuffix>
+        <CefGlueTargetPlatform>osx-arm64</CefGlueTargetPlatform>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.OAuth\NexusMods.Abstractions.OAuth.csproj" />
       <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
