@@ -74,30 +74,76 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
         OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
-        CommandDownloadRequiredItems = _canDownloadRequiredItems.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken),
+        CommandDownloadRequiredItems = _isDownloading.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                _isDownloading.OnNext(true);
+
+                try
+                {
+                    await collectionDownloader.DownloadItems(
+                        _revision,
+                        itemType: CollectionDownloader.ItemType.Required,
+                        db: connection.Db,
+                        cancellationToken: cancellationToken
+                    );
+                }
+                finally
+                {
+                    _isDownloading.OnNext(false);
+                }
+            },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
-        CommandDownloadOptionalItems = _canDownloadOptionalItems.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken),
+        CommandDownloadOptionalItems = _isDownloading.CombineLatest(_canDownloadOptionalItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                _isDownloading.OnNext(true);
+
+                try
+                {
+                    await collectionDownloader.DownloadItems(
+                        _revision,
+                        itemType: CollectionDownloader.ItemType.Optional,
+                        db: connection.Db,
+                        cancellationToken: cancellationToken
+                    );
+                }
+                finally
+                {
+                    _isDownloading.OnNext(false);
+                }
+            },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
         // TODO: implement this button
-        CommandInstallOptionalItems = _canInstallOptionalItems.ToReactiveCommand<Unit>();
+        CommandInstallOptionalItems = _isInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>();
 
-        CommandInstallRequiredItems = _canInstallRequiredItems.ToReactiveCommand<Unit>(
-            executeAsync: async (_, _) => { await InstallCollectionJob.Create(
-                serviceProvider,
-                targetLoadout,
-                source: libraryFile,
-                revisionMetadata,
-                items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
-                group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
-            ); },
+        CommandInstallRequiredItems = _isInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
+            executeAsync: async (_, _) =>
+            {
+                _isInstalling.OnNext(true);
+
+                try
+                {
+                    await InstallCollectionJob.Create(
+                        serviceProvider,
+                        targetLoadout,
+                        source: libraryFile,
+                        revisionMetadata,
+                        items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
+                        group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
+                    );
+                }
+                finally
+                {
+                    _isInstalling.OnNext(false);
+                }
+            },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
@@ -242,6 +288,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             ).AddTo(disposables);
         });
     }
+
+    private readonly BehaviorSubject<bool> _isDownloading = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _isInstalling = new(initialValue: false);
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
