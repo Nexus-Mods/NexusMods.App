@@ -48,5 +48,6 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         }
                 
         DescriptionText.Text = vm.Summary;
+        TitleText.Text = vm.Title;
     }
 }

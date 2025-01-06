@@ -104,10 +104,13 @@
                     <icons:UnifiedIcon Classes="ArrowUpThick" />
                     <icons:UnifiedIcon Classes="ArrowDownThick" />
                     <icons:UnifiedIcon Classes="Sort" />
+                    <icons:UnifiedIcon Classes="Swap" />
                     <icons:UnifiedIcon Classes="SortAscending" />
                     <icons:UnifiedIcon Classes="SortDescending" />
                     <icons:UnifiedIcon Classes="GamepadOutline" />
                     <icons:UnifiedIcon Classes="Package" />
+                    <icons:UnifiedIcon Classes="Cardiology" />
+                    <icons:UnifiedIcon Classes="LibraryOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -119,6 +122,9 @@
                     <icons:UnifiedIcon Classes="Epic" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramHealth" />
+                    <icons:UnifiedIcon Classes="PictogramHealth" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramHealth" Size="48" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
@@ -575,5 +581,17 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Package">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Package}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramHealth">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramHealth}" />
+    </Style>    
+    <Style Selector="icons|UnifiedIcon.Cardiology">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Cardiology}" />
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.LibraryOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.LibraryOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Swap">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Swap}" />
     </Style>
 </Styles>

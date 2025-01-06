@@ -38,7 +38,7 @@ public class LoadOrdersWIPPageFactory : APageFactory<ILoadOrdersWIPPageViewModel
         {
             SectionName = "Mods",
             ItemName = "Load Orders (WIP)",
-            Icon = IconValues.Collections,
+            Icon = IconValues.Swap,
             PageData = new PageData
             {
                 FactoryId = Id,

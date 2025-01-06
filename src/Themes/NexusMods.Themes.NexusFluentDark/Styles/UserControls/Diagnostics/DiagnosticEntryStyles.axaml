@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Classes="Low" Width="800" Height="100" Padding="8">
+        <Border Classes="Low" Width="800" Height="100" Padding="0">
             <ui:DiagnosticEntryView>
                 <ui:DiagnosticEntryView.DataContext>
                     <ui:DiagnosticEntryDesignViewModel />
@@ -20,42 +20,21 @@
     <Style Selector="ui|DiagnosticEntryView">
 
         <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="Height" Value="52" />
+        <!-- <Setter Property="Height" Value="52" /> -->
 
-        <Style Selector="^ Border#DropShadowBorder">
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
-
-            <Style Selector="^:pointerover">
-                <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
-            </Style>
-        </Style>
-    
         <Style Selector="^ controls|StandardButton#EntryButton">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Type" Value="Tertiary" />
             <Setter Property="Fill" Value="Weak" />
-            <Setter Property="Padding" Value="12,4" />
-        </Style>
-
-        <Style Selector="^ panels|FlexPanel#EntryFlexPanel">
-            <Setter Property="ColumnSpacing" Value="8" />
-            <Setter Property="Direction" Value="Row" />
-            <Setter Property="AlignItems" Value="Center" />
-
-            <Style Selector="^ icons|UnifiedIcon">
-                <Setter Property="panels:Flex.Shrink" Value="0" />
-                <Setter Property="Size" Value="24" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
+            
+                <Style Selector="^:pointerover">
+                    <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
+                </Style>
             </Style>
-
-            <Style Selector="^ TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                <Setter Property="TextWrapping" Value="NoWrap" />
-                <Setter Property="panels:Flex.Grow" Value="1" />
-            </Style>
-
         </Style>
 
     </Style>
