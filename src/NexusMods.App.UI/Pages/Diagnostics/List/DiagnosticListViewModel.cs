@@ -53,20 +53,6 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         Settings = settingsManager.Get<DiagnosticSettings>();
         settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
 
-        // ToggleSeverityCommand = ReactiveCommand.Create<DiagnosticSeverity>(severity =>
-        // {
-        //     var flag = SeverityToFilter(severity);
-        //
-        //     if (Filter == AllFilter) Filter = flag;
-        //     else Filter = flag;
-        //
-        //     if (Filter == DiagnosticFilter.None) Filter = AllFilter;
-        // });
-        //
-        // ShowAllCommand = ReactiveCommand.Create(() =>
-        // {
-        //     Filter = AllFilter;
-        // });
 
         this.WhenActivated(disposable =>
         {
