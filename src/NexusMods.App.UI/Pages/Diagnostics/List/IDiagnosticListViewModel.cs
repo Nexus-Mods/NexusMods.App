@@ -22,7 +22,6 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
     public DiagnosticFilter Filter { get; set; }
 
 
-    //ReactiveCommand<Unit, Unit> ShowAllCommand { get; }
 }
 
 [Flags]
