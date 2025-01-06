@@ -21,7 +21,6 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
 
     public DiagnosticFilter Filter { get; set; }
 
-    //ReactiveCommand<DiagnosticSeverity, Unit> ToggleSeverityCommand { get; }
 
     //ReactiveCommand<Unit, Unit> ShowAllCommand { get; }
 }
