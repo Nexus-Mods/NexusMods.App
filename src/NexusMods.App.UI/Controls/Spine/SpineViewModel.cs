@@ -88,29 +88,33 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var workspaceController = windowManager.ActiveWorkspaceController;
 
         this.WhenActivated(disposables =>
-            {
-                var loadouts = Loadout.ObserveAll(_conn);
+                {
+                    var loadouts = Loadout.ObserveAll(_conn);
 
-                loadouts
-                    .Filter(loadout => loadout.IsVisible())
-                    .TransformAsync(async loadout =>
-                        {
-                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
+                    loadouts
+                        .Filter(loadout => loadout.IsVisible())
+                        .TransformAsync(async loadout =>
+                            {
+                                await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
-                            var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
-                            vm.Image = LoadImageFromStream(iconStream);
-                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
-                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
-                            vm.IsActive = false;
-                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
-                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
-                            return vm;
-                        }
-                    )
-                    .Sort(LoadoutComparerInstance)
-                    .OnUI()
-                    .Bind(out _loadoutSpineItems)
+                                var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
+                                vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
+                                vm.Image = LoadImageFromStream(iconStream);
+                                vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
+                                vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
+                                vm.IsActive = false;
+                                vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
+                                vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
+                                return vm;
+                            }
+                        )
+                        .OnUI()
+                        .OnItemRemoved(loadoutSpineItem =>
+                            {
+                                if (loadoutSpineItem.WorkspaceContext is LoadoutContext loadoutContext)
+                                    workspaceController.UnregisterWorkspaceByContext<LoadoutContext>(context => loadoutContext == context);
+                            })
+                    .SortAndBind(out _loadoutSpineItems, LoadoutComparerInstance)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 
