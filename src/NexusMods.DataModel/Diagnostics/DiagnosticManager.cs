@@ -48,11 +48,12 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                 {
                     var db = _connection.Db;
                     var loadout = Loadout.Load(db, loadoutId);
+                    if (!loadout.IsValid()) return [];
+
                     try
                     {
                         // TODO: cancellation token
-                        // TODO: optimize this a bit so we don't load the model twice, we have the datoms above, we should
-                        // be able to use them
+                        // TODO: optimize this a bit so we don't load the model twice, we have the datoms above, we should be able to use them
 
                         var cancellationToken = CancellationToken.None;
                         return await GetLoadoutDiagnostics(loadout, cancellationToken);
@@ -70,6 +71,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             return connectableObservable;
         }
     }
+
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;
