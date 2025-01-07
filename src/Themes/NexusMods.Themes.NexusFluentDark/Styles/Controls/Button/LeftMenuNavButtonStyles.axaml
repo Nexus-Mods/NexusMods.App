@@ -1,0 +1,57 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="20" Orientation="Vertical">
+                <!-- Add Controls for Previewer Here -->
+                
+                <items:LeftMenuNavButton>
+                    <Grid ColumnDefinitions="Auto, *">
+                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="8 0 0 0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Text="Default" />
+                    </Grid>
+                </items:LeftMenuNavButton>
+                
+                <items:LeftMenuNavButton IsActive="True">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="8 0 0 0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Text="Active" />
+                    </Grid>
+                </items:LeftMenuNavButton>
+                
+                <items:LeftMenuNavButton IsSelected="True">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="8 0 0 0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Text="Selected" />
+                    </Grid>
+                </items:LeftMenuNavButton>
+                
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="items|LeftMenuNavButton">
+
+        
+        <!-- TODO: add proper styles for `:active` and `:selected` states -->
+        <Style Selector="^:active">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Red" />
+        </Style>
+    </Style>
+</Styles>

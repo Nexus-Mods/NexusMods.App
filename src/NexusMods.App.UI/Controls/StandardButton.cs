@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
-using Avalonia.Layout;
 using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Controls;

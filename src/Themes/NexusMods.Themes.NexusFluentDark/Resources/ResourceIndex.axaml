@@ -12,7 +12,6 @@
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/StandardButtonControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
