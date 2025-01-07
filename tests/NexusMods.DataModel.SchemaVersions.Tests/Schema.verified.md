@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xB261DEF39F1366EF
+   - Fingerprint: 0xA47212E5B57F8CD9
    - Total attributes: 152
    - Total namespaces: 59
    
@@ -87,7 +87,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.MountAndBlade2Bannerlord.ModLoadoutItem/ModuleInfo                       | Reference               | False   | False | False     | 
 | NexusMods.MountAndBlade2Bannerlord.ModuleInfoLoadoutFile/ModuleInfoFile            | Null                    | False   | False | False     | 
 | NexusMods.Networking.GOG.AuthInfo/AccessToken                                      | Utf8                    | False   | False | False     | 
-| NexusMods.Networking.GOG.AuthInfo/ExpriesAt                                        | Int64                   | False   | False | False     | 
+| NexusMods.Networking.GOG.AuthInfo/ExpiresAt                                        | Int64                   | False   | False | False     | 
 | NexusMods.Networking.GOG.AuthInfo/RefreshToken                                     | Utf8                    | False   | False | False     | 
 | NexusMods.Networking.GOG.AuthInfo/SessionId                                        | Utf8                    | False   | False | False     | 
 | NexusMods.Networking.GOG.AuthInfo/UserId                                           | UInt64                  | False   | False | False     | 
