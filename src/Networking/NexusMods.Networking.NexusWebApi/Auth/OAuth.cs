@@ -89,6 +89,7 @@ public class OAuth
 
         var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
         var responseString = await response.Content.ReadAsStringAsync(cancel);
+        _logger.LogDebug($"Stringified Response from {OAuthUrl}/token: {responseString}");
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
