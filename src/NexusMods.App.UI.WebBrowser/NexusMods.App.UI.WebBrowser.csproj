@@ -7,28 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="WebViewControl-Avalonia" />
-    </ItemGroup>
-    
-    <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.OAuth\NexusMods.Abstractions.OAuth.csproj" />
       <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     </ItemGroup>
 
-    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'x64'">win-x64</CefGlueTargetPlatform>
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'ARM64'">win-arm64</CefGlueTargetPlatform>
-    </PropertyGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <PackageReference Include="WebViewControl-Avalonia"/>
+    </ItemGroup>
 
-    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'x64'">linux-x64</CefGlueTargetPlatform>
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'ARM64'">linux-arm64</CefGlueTargetPlatform>
-    </PropertyGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <PackageReference Include="WebViewControl-Avalonia"/>
+    </ItemGroup>
 
-    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'x64'">osx-x64</CefGlueTargetPlatform>
-        <CefGlueTargetPlatform Condition="'$(Platform)' == 'ARM64'">osx-arm64</CefGlueTargetPlatform>
-    </PropertyGroup>
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <PackageReference Include="WebViewControl-Avalonia-ARM64" />
+    </ItemGroup>
 
     <PropertyGroup>
         <BrowserProcessDir>$(MSBuildThisFileDirectory)CefGlue.BrowserProcess\bin\$(Platform)\$(Configuration)\$(DotnetVersion)</BrowserProcessDir>

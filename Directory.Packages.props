@@ -51,6 +51,7 @@
     <PackageVersion Include="Polly" Version="8.5.0" />
     <PackageVersion Include="Verify" Version="28.2.1" />
     <PackageVersion Include="WebViewControl-Avalonia" Version="3.120.8" />
+    <PackageVersion Include="WebViewControl-Avalonia-ARM64" Version="3.120.8" />
     <PackageVersion Include="ZstdSharp.Port" Version="0.8.2" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
