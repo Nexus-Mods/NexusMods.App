@@ -1,215 +1,709 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Margin="10">
+        <StackPanel Orientation="Vertical">
 
-            <!-- Setup -->
-            <StackPanel.Styles>
-                <Style Selector="StackPanel.HorizontalShowcase">
-                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                </Style>
-
-                <Style Selector="StackPanel.VerticalTwoButtonStack">
-                    <Setter Property="VerticalAlignment" Value="Bottom" />
-                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                </Style>
-
-                <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
-                    <Setter Property="TextAlignment" Value="Center" />
-                    <Setter Property="TextWrapping" Value="Wrap" />
-                    <Setter Property="Width" Value="100" />
-                </Style>
-
-                <Style Selector="StackPanel.VerticalTwoButtonStack > Button">
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                </Style>
-            </StackPanel.Styles>
-
-            <!-- Standard Buttons -->
-            <StackPanel Classes="HorizontalShowcase" Orientation="Horizontal">
-
-                <!-- Standard Primary -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Primary + Icon</TextBlock>
-                    <Button Classes="Standard Primary">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
+            <!-- StandardButton control styles -->
+            <Border Padding="16">
+                <StackPanel Orientation="Horizontal" Spacing="36">
+                    <StackPanel Spacing="4">
+                        <Button IsEnabled="False">Test</Button>
+                        <controls:StandardButton IsEnabled="False" />
+                        <StackPanel Orientation="Horizontal">
+                            <controls:StandardButton ShowIcon="IconOnly" />
+                            <controls:StandardButton ShowIcon="IconOnly" Size="Small" />
                         </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Primary" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
+                        <StackPanel Orientation="Horizontal">
+                            <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" />
+                            <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" Size="Small" />
                         </StackPanel>
-                    </Button>
+                        <StackPanel Orientation="Horizontal">
+                            <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Fill="Strong" />
+                            <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Size="Small" />
+                        </StackPanel>
+                        <controls:StandardButton>
+                            <StackPanel>
+                                <TextBlock>Test 1</TextBlock>
+                                <StackPanel Orientation="Horizontal" Background="Chocolate">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                                </StackPanel>
+                                <TextBlock Background="DarkRed">Test 2</TextBlock>
+                                <TextBlock>Test 3</TextBlock>
+                            </StackPanel>
+                        </controls:StandardButton>
+                        <controls:StandardButton IsEnabled="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                        <controls:StandardButton IsEnabled="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
+                        <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Default"
+                                   Theme="{StaticResource TitleMDSemiTheme}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                                <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.Check}" />
+                                <controls:StandardButton IsEnabled="False" Text="Disabled" ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.Close}" />
+                                <controls:StandardButton ShowIcon="Both" />
+                                <controls:StandardButton />
+                                <controls:StandardButton ShowIcon="Left" Text="Something" HorizontalAlignment="Stretch"
+                                                         LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
+                                <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
+                                <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                                <controls:StandardButton Size="Small" />
+                                <controls:StandardButton Size="Small" />
+                                <controls:StandardButton Size="Small" ShowIcon="Both" />
+                                <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Right" />
+                                <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Both" />
+                                <controls:StandardButton Size="Small" ShowIcon="Both" ShowLabel="False" />
+                                <controls:StandardButton Size="Small" ShowIcon="Left" ShowLabel="False" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Primary"
+                                   Theme="{StaticResource TitleMDSemiTheme}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                                <controls:StandardButton Type="Primary" Text="Primary" />
+                                <controls:StandardButton Type="Primary" Text="Primary" IsEnabled="False" ShowIcon="Left" />
+                                <controls:StandardButton Type="Primary" ShowIcon="Right" />
+                                <controls:StandardButton Type="Primary" ShowIcon="Both" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton IsEnabled="True" Type="Primary" Fill="Weak" />
+                            <controls:StandardButton IsEnabled="False" Type="Primary" Fill="Weak" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                                <controls:StandardButton Type="Primary" Size="Small" />
+                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Left" />
+                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Right" />
+                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Both" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton IsEnabled="True" Type="Primary" Size="Small" Fill="Weak"
+                                                     ShowIcon="Right" />
+                            <controls:StandardButton IsEnabled="False" Type="Primary" Size="Small" Fill="Weak"
+                                                     ShowIcon="Right" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto"
+                          ShowGridLines="False">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Secondary"
+                                   Theme="{StaticResource TitleMDSemiTheme}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Secondary" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton IsEnabled="True" Type="Secondary" Fill="Weak" />
+                            <controls:StandardButton IsEnabled="False" Type="Secondary" Fill="Weak" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="7" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Secondary" Fill="Strong" Text="Play" ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Secondary" Size="Small" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Secondary" Size="Small" Fill="Weak" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="7" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Secondary" Size="Small" Fill="Strong" ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                            <controls:StandardButton Type="Secondary" IsEnabled="False" Size="Small" Fill="Strong"
+                                                     ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto"
+                          ShowGridLines="False">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Tertiary"
+                                   Theme="{StaticResource TitleMDSemiTheme}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Tertiary" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Tertiary" Fill="Weak" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
+
+                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Tertiary" Size="Small" ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
+                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
+                            <controls:StandardButton Type="Tertiary" Size="Small" Fill="Weak" ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
 
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Primary + Image</TextBlock>
-                    <Button Classes="Standard Primary">
-                        <StackPanel>
-                            <icons:UnifiedIcon>
-                                <icons:UnifiedIcon.Value>
-                                    <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
-                                </icons:UnifiedIcon.Value>
-                            </icons:UnifiedIcon>
+            </Border>
+
+            <!-- Obsolete Button.Standard class styles -->
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock Text="Obsolete Button.Standard class styles" Theme="{StaticResource TitleMDSemiTheme}" />
+                <!-- Setup -->
+                <StackPanel.Styles>
+                    <Style Selector="StackPanel.HorizontalShowcase">
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                    </Style>
+
+                    <Style Selector="StackPanel.VerticalTwoButtonStack">
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                    </Style>
+
+                    <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
+                        <Setter Property="TextAlignment" Value="Center" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
+                        <Setter Property="Width" Value="100" />
+                    </Style>
+
+                    <Style Selector="StackPanel.VerticalTwoButtonStack > Button">
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                    </Style>
+                </StackPanel.Styles>
+
+                <!-- Standard Buttons -->
+                <StackPanel Classes="HorizontalShowcase" Orientation="Horizontal">
+
+                    <!-- Standard Primary -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Primary + Icon</TextBlock>
+                        <Button Classes="Standard Primary">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Primary" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Primary + Image</TextBlock>
+                        <Button Classes="Standard Primary">
+                            <StackPanel>
+                                <icons:UnifiedIcon>
+                                    <icons:UnifiedIcon.Value>
+                                        <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                                    </icons:UnifiedIcon.Value>
+                                </icons:UnifiedIcon>
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Primary" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon>
+                                    <icons:UnifiedIcon.Value>
+                                        <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                                    </icons:UnifiedIcon.Value>
+                                </icons:UnifiedIcon>
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Primary</TextBlock>
+                        <Button Classes="Standard Primary">
                             <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Primary" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon>
-                                <icons:UnifiedIcon.Value>
-                                    <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
-                                </icons:UnifiedIcon.Value>
-                            </icons:UnifiedIcon>
+                        </Button>
+                        <Button Classes="Standard Primary" IsEnabled="False">
                             <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Primary Outline -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Primary Outline</TextBlock>
+                        <Button Classes="Standard PrimaryOutlined">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Secondary -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Secondary</TextBlock>
+                        <Button Classes="Standard Secondary">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Secondary" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard SecondaryOutlined -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Secondary Outline</TextBlock>
+                        <Button Classes="Standard SecondaryOutlined">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Tertiary -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Tertiary</TextBlock>
+                        <Button Classes="Standard Tertiary">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Tertiary" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Tertiary -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Tertiary Weak</TextBlock>
+                        <Button Classes="Standard Tertiary Weak">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Tertiary Weak" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Success -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Success</TextBlock>
+                        <Button Classes="Standard Success">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Success" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Standard Info -->
+                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                        <TextBlock>Standard Info</TextBlock>
+                        <Button Classes="Standard Info">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="Standard Info" IsEnabled="False">
+                            <StackPanel>
+                                <icons:UnifiedIcon Classes="Play" />
+                                <TextBlock Text="Button" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
                 </StackPanel>
 
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Primary</TextBlock>
-                    <Button Classes="Standard Primary">
-                            <TextBlock Text="Button" />
-                    </Button>
-                    <Button Classes="Standard Primary" IsEnabled="False">
-                            <TextBlock Text="Button" />
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard Primary Outline -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Primary Outline</TextBlock>
-                    <Button Classes="Standard PrimaryOutlined">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard Secondary -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Secondary</TextBlock>
-                    <Button Classes="Standard Secondary">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Secondary" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard SecondaryOutlined -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Secondary Outline</TextBlock>
-                    <Button Classes="Standard SecondaryOutlined">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard Tertiary -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Tertiary</TextBlock>
-                    <Button Classes="Standard Tertiary">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Tertiary" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard Tertiary -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Tertiary Weak</TextBlock>
-                    <Button Classes="Standard Tertiary Weak">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Tertiary Weak" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Standard Success -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Success</TextBlock>
-                    <Button Classes="Standard Success">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Success" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                
-                <!-- Standard Info -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard Info</TextBlock>
-                    <Button Classes="Standard Info">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Info" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="Button" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                
             </StackPanel>
-
         </StackPanel>
+
     </Design.PreviewWith>
 
 
     <!-- Style Definitions-->
+    
+    <Style Selector=":is(controls|StandardButton)">
+        <!-- Use `:is(controls|StandardButton)` to match StandardButton and all its subclasses, -->
+        <!-- otherwise all subclasses would need to have the style key override set to `StandardButton`. -->
+        <!-- If StyleKeyOverride of a subclass is set, it becomes impossible to select that specific subclass, -->
+        <!-- to add more specific styles to it.  -->
+        
+        <!-- start of default button styles to match avalonia's default
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/Button.xaml-->
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="RenderTransform" Value="none" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:.075" />
+            </Transitions>
+        </Setter>
+        <!-- end default button styles -->
 
 
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- this is only shown if Content is set -->
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}"
+                                      RecognizesAccessKey="True"
+                                      HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+
+                    <!-- this is used when Content isn't set (used for normal buttons) -->
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <icons:UnifiedIcon Name="PART_LeftIcon" />
+                            <TextBlock Name="PART_Label" Text="{TemplateBinding Text}" />
+                            <icons:UnifiedIcon Name="PART_RightIcon" />
+                        </StackPanel>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Set the default avalonia button styles -->
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPressed}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundDisabled}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+        </Style>
+        <!-- end of default button styles -->
+
+
+        <!-- start of our new default button styles -->
+        <!-- these can also be overriden in NexusMods.Themes.NexusFluentDark -->
+
+        <!-- all button states -->
+        <Style Selector="^">
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="{DynamicResource ButtonPaddingMedium}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceTransparentBrush}" />
+
+            <Style Selector="^ /template/ Border">
+                <Setter Property="Height" Value="36" />
+            </Style>
+
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
+            </Style>
+
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Size" Value="20"></Setter>
+            </Style>
+
+            <Style Selector="^ TextBlock">
+                <!-- needs a little padding to fully match figma -->
+                <Setter Property="Padding" Value="2 0" />
+                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
+            </Style>
+
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="0.4" />
+            </Style>
+
+            <!-- icon only variants -->
+            <Style Selector="^[ShowIcon=IconOnly]">
+                <Setter Property="Padding" Value="0" />
+
+                <Style Selector="^ /template/ Border">
+                    <!-- NOTE(insomnious): fixed size as we know how big the icons are -->
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="Width" Value="24" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- small variants -->
+        <Style Selector="^[Size=Small]">
+            <Setter Property="Padding" Value="{DynamicResource ButtonPaddingSmall}" />
+
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}"></Setter>
+            </Style>
+
+            <Style Selector="^ /template/ Border">
+                <Setter Property="Height" Value="28" />
+
+                <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Size" Value="16"></Setter>
+                </Style>
+
+                <Style Selector="^ TextBlock">
+                    <!-- needs a little horizontal padding to fully match figma -->
+                    <Setter Property="Padding" Value="1 0" />
+                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                </Style>
+            </Style>
+
+            <!-- icon only variants -->
+            <Style Selector="^[ShowIcon=IconOnly]">
+                <Setter Property="Padding" Value="0" />
+
+                <Style Selector="^ /template/ Border">
+                    <!-- NOTE(insomnious): fixed size as we know how big the icons are -->
+                    <Setter Property="Height" Value="20" />
+                    <Setter Property="Width" Value="20" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- primary button -->
+        <Style Selector="^[Type=Primary]">
+            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled" />
+
+            <!-- fill variants -->
+
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource InfoModerateBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource InfoStrongBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource InfoSubduedBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- secondary button -->
+        <Style Selector="^[Type=Secondary]">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled" />
+
+            <!-- fill variants -->
+
+            <Style Selector="^[Fill=Strong]">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource NeutralWeakBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled" />
+            </Style>
+
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrongBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerateBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled" />
+            </Style>
+        </Style>
+
+        <!-- tertiary button -->
+        <Style Selector="^[Type=Tertiary]">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled" />
+
+            <!-- fill variants -->
+
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+                </Style>
+
+                <Style Selector="^:disabled" />
+            </Style>
+        </Style>
+
+    </Style>
+
+    
+    
+    
+    <!-- Obsolete Button.Standard class styles, use StandardButton instead -->
     <!-- Base Standard Button (only use with additional qualifiers)-->
     <Style Selector="Button.Standard">
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
@@ -256,11 +750,11 @@
     <Style Selector="Button.Standard.Primary">
         <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        
+
         <Style Selector="^ TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
-        
+
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
@@ -275,7 +769,7 @@
             <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
-        
+
     </Style>
 
 
@@ -364,7 +858,7 @@
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
         </Style>
     </Style>
-    
+
     <!-- Standard Tertiary Weak -->
     <Style Selector="Button.Standard.Tertiary.Weak">
         <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
@@ -399,8 +893,8 @@
             <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
         </Style>
     </Style>
-    
-    
+
+
     <!-- Standard Info -->
     <Style Selector="Button.Standard.Info">
         <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
@@ -417,5 +911,5 @@
             <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
         </Style>
     </Style>
-    
+
 </Styles>
