@@ -12,13 +12,7 @@
                 <DataTemplate DataType="{x:Type local:ILibraryItemWithThumbnailAndName}">
                     <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
                         <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
-                            <!-- panel used just to layer everything on top of each other -->
-                            <Panel>
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
-                                <!-- The below image is drawn after the icon and so covers it up if a thumbnail is present. --> 
-                                <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
-                                <Image Source="{CompiledBinding Thumbnail.Value}" />
-                            </Panel>
+                            <Image Source="{CompiledBinding Thumbnail.Value}" />
                         </Border>
                         <TextBlock Text="{CompiledBinding Name.Value}" />
                     </StackPanel>

@@ -67,10 +67,18 @@
                           Classes="MainListsStyling">
                 <TreeDataGrid.Resources>
                     <DataTemplate x:Key="DisplayThumbnailAndNameColumnTemplate" DataType="local:LoadoutItemModel">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{CompiledBinding Thumbnail.Value}" />
+                        
+                        <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
+                            <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
+                                <Image Source="{CompiledBinding Thumbnail.Value}" />
+                            </Border>
                             <TextBlock Text="{CompiledBinding Name.Value}" />
                         </StackPanel>
+                        
+                        <!-- <StackPanel Orientation="Horizontal"> -->
+                        <!--     <Image Source="{CompiledBinding Thumbnail.Value}" /> -->
+                        <!--     <TextBlock Text="{CompiledBinding Name.Value}" /> -->
+                        <!-- </StackPanel> -->
                     </DataTemplate>
                     
                     <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">

@@ -19,8 +19,11 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
+    
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Name { get; } = new("-");
+    
 
     public IObservable<string> VersionObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Version { get; } = new("-");
@@ -54,6 +57,8 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
         _modelActivationDisposable = WhenModelActivated(this, (model, disposables) =>
         {
+            ShowThumbnail.Value = loadThumbnail;
+            
             if (loadThumbnail)
             {
                 var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
@@ -131,7 +136,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
         )
         {
             SortDirection = ListSortDirection.Ascending,
-            Id = "name",
+            Id = "LibraryItemNameColumn",
         };
     }
 
