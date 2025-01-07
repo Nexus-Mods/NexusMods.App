@@ -39,13 +39,14 @@
                          Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
                          Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
-        <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24">
+        <!-- <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24"> -->
 
             <!-- need DockPanel to make the TabControl fill the available space, needed for ScrollViewer to calculate height properly -->
-            <DockPanel>
+            <DockPanel Margin="24">
 
-                <StackPanel Spacing="8"
-                            DockPanel.Dock="Top">
+                <!-- header with pictogram -->
+                <StackPanel Spacing="8" DockPanel.Dock="Top">
+                    
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Width="48" Height="48">
                             <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramHealth}" />
@@ -59,7 +60,8 @@
                     <TextBlock
                         Text="Review your Loadout for any issues and learn how to resolve them if needed."
                         Theme="{StaticResource BodyMDNormalTheme}"
-                        Foreground="{StaticResource NeutralStrongBrush}" />
+                        Foreground="{StaticResource NeutralStrongBrush}" 
+                        TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <TabControl x:Name="TabControl"
@@ -73,7 +75,7 @@
                 </TabControl>
 
             </DockPanel>
-        </Border>
+        <!-- </Border> -->
 
     </controls:EmptyState>
 
