@@ -127,8 +127,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     .TransformImmutable(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
                     .TransformImmutable(item =>
                     {
-                        var parent = item.AsLoadoutItemGroup().AsLoadoutItem().Parent;
-                        return parent.ToCollectionGroup().ToNexusCollectionLoadoutGroup();
+                        if (!LoadoutItem.Parent.TryGetValue(item, out var parentId)) return default(NexusCollectionLoadoutGroup.ReadOnly);
+                        return NexusCollectionLoadoutGroup.Load(item.Db, parentId);
                     })
                     .FilterImmutable(static parent => parent.IsValid())
                     .FilterImmutable(parent => parent.RevisionId == revisionMetadata)
