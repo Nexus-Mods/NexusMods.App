@@ -155,7 +155,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .ObserveAll(_connection)
             // only show library files for the currently selected game
             .FilterOnObservable((file, _) => libraryFilter.GameObservable.Select(game => file.ModPageMetadata.Uid.GameId.Equals(game.GameId)))
-            .Transform((file, _) => ToLibraryItemModel(file, libraryFilter));
+            .Transform((file, _) => ToLibraryItemModel(file, libraryFilter, true));
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
@@ -175,11 +175,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
     }
 
-    private ILibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, LibraryFilter libraryFilter)
+    private ILibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, LibraryFilter libraryFilter, bool showThumbnails)
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider)
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider, showThumbnails)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
@@ -208,7 +208,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         var childrenObservable = cache.Connect().Transform((_, e) =>
         {
             var libraryFile = NexusModsLibraryItem.Load(_connection.Db, e);
-            return ToLibraryItemModel(libraryFile, libraryFilter);
+            return ToLibraryItemModel(libraryFile, libraryFilter, false);
         });
 
         var linkedLoadoutItemsObservable = cache.Connect()

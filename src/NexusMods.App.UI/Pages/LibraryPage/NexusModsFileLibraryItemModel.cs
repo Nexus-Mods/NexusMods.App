@@ -13,6 +13,9 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+/// <summary>
+///     This is used for individual files (archives) linked to a download page.
+/// </summary>
 public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithVersion,
@@ -22,7 +25,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
-    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider)
+    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider, bool showThumbnail = true)
     {
         LibraryItemId = nexusModsLibraryItem.Id;
 
@@ -32,10 +35,15 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
         // Note: Because this is a local file, this always hits the fallback.
-        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
-        var imageDisposable = ImagePipelines.CreateObservable(nexusModsLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
-            .ObserveOnUIThreadDispatcher()
-            .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+        var imageDisposable = Disposable.Empty;
+        ShowThumbnail.Value = showThumbnail;
+        if (showThumbnail)
+        {
+            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+            imageDisposable = ImagePipelines.CreateObservable(nexusModsLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+        }
         
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
@@ -76,6 +84,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 

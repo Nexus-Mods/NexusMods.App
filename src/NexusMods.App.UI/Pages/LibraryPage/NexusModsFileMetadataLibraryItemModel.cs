@@ -62,6 +62,7 @@ public class NexusModsFileMetadataLibraryItemModel : TreeDataGridItemModel<ILibr
     public required Observable<IJob> DownloadJobObservable { get; init; }
 
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 

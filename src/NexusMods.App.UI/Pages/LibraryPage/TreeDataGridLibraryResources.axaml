@@ -11,7 +11,7 @@
                 <!-- with name -->
                 <DataTemplate DataType="{x:Type local:ILibraryItemWithThumbnailAndName}">
                     <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
-                        <Border x:Name="LibraryItemThumbnailBorder">
+                        <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
                             <!-- panel used just to layer everything on top of each other -->
                             <Panel>
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />

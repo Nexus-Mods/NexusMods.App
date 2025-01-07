@@ -86,6 +86,7 @@ public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryIte
     
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }

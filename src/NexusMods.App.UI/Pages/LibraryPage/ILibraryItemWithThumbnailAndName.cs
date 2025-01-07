@@ -8,6 +8,7 @@ public interface ILibraryItemWithThumbnailAndName : ILibraryItemModel, IComparab
 {
     BindableReactiveProperty<Bitmap> Thumbnail { get; }
     BindableReactiveProperty<string> Name { get; }
+    BindableReactiveProperty<bool> ShowThumbnail { get; }
 
     int IComparable<ILibraryItemWithThumbnailAndName>.CompareTo(ILibraryItemWithThumbnailAndName? other) => string.CompareOrdinal(Name.Value, other?.Name.Value);
 

@@ -123,6 +123,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
