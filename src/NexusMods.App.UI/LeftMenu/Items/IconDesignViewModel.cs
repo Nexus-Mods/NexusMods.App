@@ -22,7 +22,7 @@ public class IconDesignViewModel : AViewModel<IIconViewModel>, IIconViewModel
     
     public IconDesignViewModel() : base()
     {
-        Icon = IconValues.ModLibrary;
+        Icon = IconValues.LibraryOutline;
         Name = "Sample Text";
         Badges = new[] { "82" };
     }

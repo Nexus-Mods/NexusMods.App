@@ -617,14 +617,14 @@
         <value>My Loadouts</value>
     </data>
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use.</value>
+        <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
     </data>
     <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-        <value>Create new loadout</value>
+        <value>Create new</value>
     </data>
     <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
         <value>Currently Applied</value>

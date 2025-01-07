@@ -25,7 +25,7 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
         IServiceProvider serviceProvider) : base(windowManager)
     {
         TabTitle = Language.MyLoadoutsPageTitle;
-        TabIcon = IconValues.ViewCarousel;
+        TabIcon = IconValues.Package;
         
         this.WhenActivated(d =>
         {

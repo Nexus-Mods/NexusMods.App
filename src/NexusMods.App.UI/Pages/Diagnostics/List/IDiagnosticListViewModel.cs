@@ -19,11 +19,9 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
     public int NumWarnings { get; }
     public int NumSuggestions { get; }
 
-    public DiagnosticFilter Filter { get; }
+    public DiagnosticFilter Filter { get; set; }
 
-    ReactiveCommand<DiagnosticSeverity, Unit> ToggleSeverityCommand { get; }
 
-    ReactiveCommand<Unit, Unit> ShowAllCommand { get; }
 }
 
 [Flags]
