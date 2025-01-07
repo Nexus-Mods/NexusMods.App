@@ -43,6 +43,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         var newTokenEntity = JWTToken.Create(db, tx, newToken!);
         if (!newTokenEntity.HasValue)
         {
+            _logger.LogError($"New Token: {newToken}");
             _logger.LogError("Invalid new token in OAuth2MessageFactory");
             return null;
         }

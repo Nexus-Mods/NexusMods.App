@@ -5,7 +5,7 @@ namespace NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 /// <summary>
 /// JWT Token info as provided by the OAuth server
 /// </summary>
-public class JwtTokenReply
+public record JwtTokenReply
 {
     /// <summary>
     /// the token to use for authentication
