@@ -39,8 +39,15 @@
                          Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
                          Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
-        <!-- <Border HorizontalAlignment="Stretch" MaxWidth="1000" Padding="24"> -->
-
+        <!-- NOTE(insomnious): Using a single column grid to limit the max width of the content while still letting it stretch.
+        HorizontalAlignment is ignored on a control when numerical entries are set on 
+        Width/Height/MaxWidth/MaxHeight etc.
+        -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="1024"/>
+            </Grid.ColumnDefinitions>
+        
             <!-- need DockPanel to make the TabControl fill the available space, needed for ScrollViewer to calculate height properly -->
             <DockPanel Margin="24">
 
@@ -75,7 +82,7 @@
                 </TabControl>
 
             </DockPanel>
-        <!-- </Border> -->
+        </Grid>
 
     </controls:EmptyState>
 

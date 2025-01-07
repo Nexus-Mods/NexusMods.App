@@ -16,8 +16,13 @@
 
     <!-- NOTE(insomnious): if we need any more styling than this, we should move it to a separate style file -->
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MaxWidth="1024"/>
+        </Grid.ColumnDefinitions>
+    
     <ScrollViewer>
-        <Border Padding="24" MaxWidth="1000">
+        <Border Padding="24">
 
             <StackPanel Orientation="Vertical"
                         HorizontalAlignment="Stretch"
@@ -43,5 +48,7 @@
 
         </Border>
     </ScrollViewer>
+        
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>
