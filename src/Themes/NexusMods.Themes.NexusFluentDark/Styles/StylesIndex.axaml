@@ -17,6 +17,7 @@
     <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
