@@ -220,7 +220,7 @@ public class CollectionDownloader
     /// </summary>
     public static IObservable<bool> IsDownloadedObservable(IConnection connection, CollectionDownloadNexusMods.ReadOnly download)
     {
-        return connection.ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata).IsNotEmpty();
+        return connection.ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata).IsNotEmpty().DistinctUntilChanged();
     }
 
     /// <summary>

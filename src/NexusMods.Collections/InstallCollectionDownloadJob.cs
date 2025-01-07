@@ -57,7 +57,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             (LoadoutItem.LoadoutId, targetLoadout)
         );
 
-        Debug.Assert(collectionGroupIds.Count > 0, "collection needs to exist");
+        if (collectionGroupIds.Count <= 0) throw new InvalidOperationException("Collection needs to exist");
         var collectionGroup = CollectionGroup.Load(connection.Db, collectionGroupIds[0]);
 
         var sourceCollection = new CollectionDownloader(serviceProvider).GetLibraryFile(download.CollectionRevision);
