@@ -2,21 +2,25 @@ using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
 
-public class LibraryServiceTests : AGameTest<Cyberpunk2077Game>
+public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTests>
 {
     private readonly ILibraryService _libraryService;
+    private readonly IFileStore _fileStore;
     
-    public LibraryServiceTests(IServiceProvider serviceProvider) : base(serviceProvider)
+    public LibraryServiceTests(ITestOutputHelper helper) : base(helper)
     {
-        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _libraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+        _fileStore = ServiceProvider.GetRequiredService<IFileStore>();
     }
 
     [Fact]
@@ -69,12 +73,12 @@ public class LibraryServiceTests : AGameTest<Cyberpunk2077Game>
     }
     
     
-    private static string PrintArchiveContents(LibraryArchive.ReadOnly archive)
+    private async ValueTask<string> PrintArchiveContents(LibraryArchive.ReadOnly archive)
     {
         var result = new StringBuilder();
         foreach (var entry in archive.Children.OrderBy(x => x.Path))
         {
-            result.AppendLine($"{entry.Path} - {entry.AsLibraryFile().Size} -  {entry.AsLibraryFile().Hash}");
+            result.AppendLine($"{entry.Path} - {entry.AsLibraryFile().Size} -  {entry.AsLibraryFile().Hash} - Stored : {await _fileStore.HaveFile(entry.AsLibraryFile().Hash)}");
         }
 
         return result.ToString();
