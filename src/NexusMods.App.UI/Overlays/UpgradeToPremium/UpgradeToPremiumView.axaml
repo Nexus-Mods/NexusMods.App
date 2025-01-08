@@ -1,0 +1,33 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IUpgradeToPremiumViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Overlays"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    x:Class="NexusMods.App.UI.Overlays.UpgradeToPremiumView">
+
+    <base:MessageBoxBackground>
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
+                <reactive:ViewModelViewHost x:Name="ViewModelViewHostMarkdownRenderer"/>
+            </StackPanel>
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
+                <Button x:Name="ButtonCancel" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Cancel"/>
+                </Button>
+                <Button x:Name="ButtonUpgrade" Classes="Standard Primary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Upgrade to Premium"/>
+                </Button>
+            </StackPanel>
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactive:ReactiveUserControl>
+

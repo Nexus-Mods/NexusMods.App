@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
@@ -213,7 +214,7 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="items|LeftMenuNavButton">
+    <Style Selector="navigation|LeftMenuNavButton">
 
         <Setter Property="Padding" Value="6,6" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />

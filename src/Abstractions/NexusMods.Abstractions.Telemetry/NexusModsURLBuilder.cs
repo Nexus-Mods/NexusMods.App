@@ -49,6 +49,10 @@ public static class NexusModsUrlBuilder
 
     public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
+    public static Uri LearAboutPremiumUri => CreateUri("https://next.nexusmods.com/premium");
+
+    public static Uri UpgradeToPremiumUri => CreateUri("https://users.nexusmods.com/account/billing/premium");
+
     /// <summary>
     /// Creates a new URI pointing to a mod on Nexus Mods. This should only be used
     /// by diagnostics.
