@@ -1,13 +1,14 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="20" Orientation="Vertical">
                 <!-- Add Controls for Previewer Here -->
                 
-                <items:LeftMenuNavButton>
+                <navigation:LeftMenuNavButton>
                     <Grid ColumnDefinitions="Auto, *">
                         <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
                         <TextBlock Grid.Column="1"
@@ -16,9 +17,9 @@
                                    VerticalAlignment="Center"
                                    Text="Default" />
                     </Grid>
-                </items:LeftMenuNavButton>
+                </navigation:LeftMenuNavButton>
                 
-                <items:LeftMenuNavButton IsActive="True">
+                <navigation:LeftMenuNavButton IsActive="True">
                     <Grid ColumnDefinitions="Auto, *">
                         <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
                         <TextBlock Grid.Column="1"
@@ -27,9 +28,9 @@
                                    VerticalAlignment="Center"
                                    Text="Active" />
                     </Grid>
-                </items:LeftMenuNavButton>
+                </navigation:LeftMenuNavButton>
                 
-                <items:LeftMenuNavButton IsSelected="True">
+                <navigation:LeftMenuNavButton IsSelected="True">
                     <Grid ColumnDefinitions="Auto, *">
                         <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
                         <TextBlock Grid.Column="1"
@@ -38,14 +39,14 @@
                                    VerticalAlignment="Center"
                                    Text="Selected" />
                     </Grid>
-                </items:LeftMenuNavButton>
+                </navigation:LeftMenuNavButton>
                 
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="items|LeftMenuNavButton">
+    <Style Selector="navigation|LeftMenuNavButton">
 
         
         <!-- TODO: add proper styles for `:active` and `:selected` states -->
