@@ -222,8 +222,8 @@ public static class ImagePipelines
             .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
             .Decode(decoderType: DecoderType.Skia)
             .Resize(newSize: new SKSizeI(
-                width: 120, // TODO: Replace with lausandy dimensions
-                height: 80
+                width: 90,
+                height: 56
             ))
             .Encode(encoderType: EncoderType.Qoi)
             .PersistInDb(
