@@ -46,7 +46,7 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
             // TODO: translations?
             SectionName = "Utilities",
             ItemName = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics,
-            Icon = IconValues.Stethoscope,
+            Icon = IconValues.Cardiology,
             PageData = new PageData
             {
                 FactoryId = StaticId,

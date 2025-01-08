@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
@@ -9,10 +9,9 @@
         <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/InfoBannerControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
-        
+        <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

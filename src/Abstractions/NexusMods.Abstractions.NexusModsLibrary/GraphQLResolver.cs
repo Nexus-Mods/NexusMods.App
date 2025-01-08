@@ -20,8 +20,11 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// <summary>
     /// Create a new resolver using the given primary key attribute and value.
     /// </summary>
-    public static GraphQLResolver Create<THighLevel, TLowLevel>(IDb db, ITransaction tx, ScalarAttribute<THighLevel, TLowLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
+    public static GraphQLResolver Create<THighLevel>(IDb db, ITransaction tx, 
+        IWritableAttribute<THighLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
     {
+        if (!primaryKeyAttribute.IsIndexed) throw new ArgumentException($"Attribute {primaryKeyAttribute.Id} is not indexed", nameof(primaryKeyAttribute));
+
         var existing = db.Datoms(primaryKeyAttribute, primaryKeyValue);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0].E;
@@ -33,12 +36,15 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// <summary>
     /// Create a resolver that depends on two primary key attributes and values.
     /// </summary>
-    public static GraphQLResolver Create<THighLevel1, TLowLevel1, THighLevel2, TLowLevel2>(IDb referenceDb, ITransaction tx, 
-        (ScalarAttribute<THighLevel1, TLowLevel1> A, THighLevel1 V) pair1,
-        (ScalarAttribute<THighLevel2, TLowLevel2> A, THighLevel2 V) pair2) 
+    public static GraphQLResolver Create<THighLevel1, THighLevel2>(IDb referenceDb, ITransaction tx, 
+        (IWritableAttribute<THighLevel1> A, THighLevel1 V) pair1,
+        (IWritableAttribute<THighLevel2> A, THighLevel2 V) pair2) 
         where THighLevel1 : notnull
         where THighLevel2 : notnull
     {
+        if (!pair1.A.IsIndexed) throw new ArgumentException($"Attribute {pair1.A.Id} is not indexed", nameof(pair1));
+        if (!pair2.A.IsIndexed) throw new ArgumentException($"Attribute {pair2.A.Id} is not indexed", nameof(pair2));
+
         var existing = referenceDb.Datoms(pair1, pair2);
         var exists = existing.Count > 0;
         var id = existing.Count == 0 ? tx.TempId() : existing[0];
@@ -59,15 +65,17 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// <summary>
     /// Add a value to the entity. If the value already exists, it will not be added again.
     /// </summary>
-    public void Add<THighLevel, TLowLevel>(ScalarAttribute<THighLevel, TLowLevel> attribute, THighLevel value) 
-        where THighLevel : notnull
+    public void Add<TValue>(IWritableAttribute<TValue> attribute, TValue value)
     {
-        if (attribute.TryGet(Model, out var foundValue))
+        foreach (var datom in Model)
         {
-            // Deduplicate values
-            if (foundValue.Equals(value))
+            if (datom.A != attribute)
+                continue;
+            
+            if (datom.ObjectValue.Equals(value))
                 return;
         }
+
         // Else add the value
         Tx.Add(Model.Id, attribute, value);
     }
@@ -103,7 +111,7 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
             return;
         }
         
-        if (attribute.TryGet(Model, out var foundId) && foundId.Equals(id))
+        if (attribute.TryGetValue(Model, out var foundId) && foundId.Equals(id))
             return;
         
         // Else add the value

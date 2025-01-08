@@ -32,10 +32,12 @@ public class CollectionsPageFactory : APageFactory<ICollectionsViewModel, Collec
     public override ICollectionsViewModel CreateViewModel(CollectionsPageContext context)
     {
         var vm = new CollectionsViewModel(
-            ServiceProvider,
-            ServiceProvider.GetRequiredService<IConnection>(),
-            ServiceProvider.GetRequiredService<IWindowManager>()
+            serviceProvider: ServiceProvider,
+            conn: ServiceProvider.GetRequiredService<IConnection>(),
+            windowManager: ServiceProvider.GetRequiredService<IWindowManager>(),
+            targetLoadout: context.LoadoutId
         );
+
         return vm;
     }
 
@@ -47,7 +49,7 @@ public class CollectionsPageFactory : APageFactory<ICollectionsViewModel, Collec
         {
             SectionName = "Mods",
             ItemName = "Collections (WIP)",
-            Icon = IconValues.ModLibrary,
+            Icon = IconValues.Collections,
             PageData = new PageData
             {
                 FactoryId = Id,

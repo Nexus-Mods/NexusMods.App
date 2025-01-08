@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.UI;
 using NexusMods.Paths;
 using ReactiveUI;
 

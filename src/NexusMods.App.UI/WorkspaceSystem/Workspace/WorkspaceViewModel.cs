@@ -8,6 +8,7 @@ using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
@@ -82,8 +83,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         _panelSource
             .Connect()
-            .Sort(PanelComparer.Instance)
-            .Bind(out _panels)
+            .SortAndBind(out _panels, PanelComparer.Instance)
             .Do(_ => UpdateStates())
             .Do(_ => UpdateResizers())
             .SubscribeWithErrorLogging();

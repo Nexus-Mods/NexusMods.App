@@ -16,6 +16,7 @@ using ModStatus = StardewModdingAPI.Toolkit.Framework.ModData.ModStatus;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 using SMAPIModDatabase = StardewModdingAPI.Toolkit.Framework.ModData.ModDatabase;
 
+
 namespace NexusMods.Games.StardewValley.Emitters;
 
 /// <summary>
@@ -60,9 +61,10 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
-        if (!SemanticVersion.TryParse(smapi.Version, out var smapiVersion))
+        if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiStrVersion, out var smapiVersion))
         {
-            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapi.Version);
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiStrVersion);
             yield break;
         }
 

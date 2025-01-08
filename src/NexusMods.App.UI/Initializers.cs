@@ -9,7 +9,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
@@ -27,5 +26,4 @@ public static class Initializers
     public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
     public static readonly LoadoutId LoadoutId = LoadoutId.From(EntityId.From(0xDEADBEEF));
-    public static readonly ModId ModId = ModId.From(EntityId.From(0xDEADBEAF));
 }

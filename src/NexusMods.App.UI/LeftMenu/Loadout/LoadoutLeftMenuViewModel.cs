@@ -5,9 +5,12 @@ using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -42,9 +45,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
-
+        var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
+        var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+        
         WorkspaceId = workspaceId;
-        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider, monitor, overlayController, gameRunningTracker);
         
         
         var installedModsItem = new IconViewModel
@@ -73,7 +79,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LibraryPageTitle,
             RelativeOrder = 3,
-            Icon = IconValues.ModLibrary,
+            Icon = IconValues.LibraryOutline,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 NewDownloadModelCount = 0;
@@ -96,7 +102,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
             RelativeOrder = 4,
-            Icon = IconValues.Stethoscope,
+            Icon = IconValues.Cardiology,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
@@ -28,7 +29,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel
             {
                 Name = Language.MyGames,
-                Icon = IconValues.Game,
+                Icon = IconValues.GamepadOutline,
                 NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
                 {
                     var pageData = new PageData
@@ -44,7 +45,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel
             {
                 Name = Language.MyLoadoutsPageTitle,
-                Icon = IconValues.ViewCarousel,
+                Icon = IconValues.Package,
                 NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
                 {
                     var pageData = new PageData

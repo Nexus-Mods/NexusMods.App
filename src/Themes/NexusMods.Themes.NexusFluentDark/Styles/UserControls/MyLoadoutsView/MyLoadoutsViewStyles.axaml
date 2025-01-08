@@ -3,10 +3,11 @@
         xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        >
     <Design.PreviewWith>
-        <Border Padding="20">
-            <myLoadouts:MyLoadoutsView Height="600" Width="600">
+        <Border Padding="16" Classes="Low" Width="800" Height="600">
+            <myLoadouts:MyLoadoutsView>
                 <myLoadouts:MyLoadoutsView.DataContext>
                     <myLoadouts:MyLoadoutsDesignViewModel />
                 </myLoadouts:MyLoadoutsView.DataContext>
@@ -16,10 +17,9 @@
 
     <!-- Add Styles Here -->
     <Style Selector="myLoadouts|MyLoadoutsView">
-        <Setter Property="Padding" Value="24" />
         
         <Style Selector="^ controls|EmptyState#MyLoadoutsEmptyState">
-            <Setter Property="Icon" Value="{x:Static icons:IconValues.ViewCarousel}" />
+            <Setter Property="Icon" Value="{x:Static icons:IconValues.Package}" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#MyLoadoutsOuterFlexPanel">
@@ -31,6 +31,10 @@
             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        
+        <Style Selector="^ ItemsControl#GameSectionsItemsControl">
+            <Setter Property="ClipToBounds" Value="False" />
+        </Style>
 
         <Style Selector="^ panels|FlexPanel#GameSectionsItemsFlexPanel">
             <Setter Property="Direction" Value="Column" />
@@ -38,10 +42,9 @@
         </Style>
 
         <Style Selector="^ Border#GameSectionBorder">
-            <Setter Property="Padding" Value="24" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="0,24,0,0" />
+            <Setter Property="BorderThickness" Value="0,1,0,0" />
             <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentWeakBrush}" />
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#GameSectionFlexPanel">
@@ -61,7 +64,7 @@
         </Style>
 
         <Style Selector="^ TextBlock#GameHeadingTextBlock">
-            <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
+            <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
         </Style>
         
         <Style Selector="^ panels|FlexPanel#CardsFlexPanel">

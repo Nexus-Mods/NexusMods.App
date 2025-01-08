@@ -1,5 +1,6 @@
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
@@ -9,7 +10,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class FakeParentLoadoutItemModel : LoadoutItemModel
 {
-    public required IObservable<DateTime> InstalledAtObservable { get; init; }
+    public required IObservable<DateTimeOffset> InstalledAtObservable { get; init; }
 
     public IObservable<IChangeSet<LoadoutItemId, EntityId>> LoadoutItemIdsObservable { get; }
     public ObservableHashSet<LoadoutItemId> LoadoutItemIds { get; private set; } = [];

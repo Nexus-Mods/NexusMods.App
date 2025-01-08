@@ -18,6 +18,7 @@ public record GameLocatorSettings : ISettings
                     .WithDisplayName("Enable Xbox Game Pass support")
                     .WithDescription("Allows you to manage games installed with Xbox Game Pass.")
                     .UseBooleanContainer()
+                    .RequiresRestart()
                 )
             );
     }

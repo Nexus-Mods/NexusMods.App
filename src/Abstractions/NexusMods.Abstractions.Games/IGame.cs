@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 
+
 namespace NexusMods.Abstractions.Games;
 
 /// <summary>
@@ -13,6 +14,10 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface IGame : ILocatableGame
 {
+    SupportType SupportType { get; }
+    HashSet<FeatureStatus> Features { get; }
+    GameFeatureStatus FeatureStatus => Features.ToStatus();
+
     /// <summary>
     /// Stream factory for the game's icon, must be square but need not be small.
     /// </summary>
@@ -35,6 +40,12 @@ public interface IGame : ILocatableGame
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
     
     /// <summary>
+    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
+    /// by the game.
+    /// </summary>
+    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
+
+    /// <summary>
     /// The synchronizer for this game.
     /// </summary>
     public ILoadoutSynchronizer Synchronizer { get; }
@@ -44,4 +55,10 @@ public interface IGame : ILocatableGame
     /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
     /// </summary>
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
+    
+    /// <summary>
+    /// Returns the primary (executable) file for the game.
+    /// </summary>
+    /// <param name="store">The store used for the game.</param>
+    public GamePath GetPrimaryFile(GameStore store);
 }

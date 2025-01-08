@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.UI;
 using R3;
 using ReactiveUI;
 
@@ -16,7 +17,7 @@ public static class TreeDataGridViewHelper
         Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter)
         where TView : ReactiveUserControl<TViewModel>
         where TViewModel : class, IViewModelInterface
-        where TItemModel : TreeDataGridItemModel<TItemModel, TKey>
+        where TItemModel : class, ITreeDataGridItemModel<TItemModel, TKey>
         where TKey : notnull
     {
         treeDataGrid.ElementFactory = new CustomElementFactory();

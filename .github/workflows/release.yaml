@@ -8,6 +8,10 @@ on:
         description: "The version to release (eg: 'v1.0.0')"
         required: true
         type: string
+      target:
+        description: "The git ref to base the release on (eg: '1957a8e7', default: current head of the branch the workflow is run on)"
+        required: false
+        type: string
       draft:
         description: "Create a draft release?"
         required: false
@@ -43,6 +47,7 @@ jobs:
     outputs:
       TagVersion: ${{ steps.setOutputs.outputs.tagVersion }}
       RawVersion: ${{ steps.setOutputs.outputs.rawVersion }}
+      TargetSha: ${{ steps.setOutputs.outputs.target }}
       ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
 
     steps:
@@ -51,12 +56,16 @@ jobs:
         shell: pwsh
         env:
           InputVersion: ${{ inputs.version }}
+          InputTarget: ${{ inputs.target }}
+          HeadSha: ${{ github.sha }}
         run: |
           $tagVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion : "v" + $env:InputVersion
-          $rawVersion = $env:InputVersion.StartsWith('v') ? $env:InputVersion.Substring(1) : $env:InputVersion
+          $rawVersion = $tagVersion.Substring(1)
+          $target = $env:InputTarget ? $env:InputTarget : $env:HeadSha
           $validation = [System.Version]::Parse($rawVersion)
           echo "tagVersion=$tagVersion" >> $env:GITHUB_OUTPUT
           echo "rawVersion=$rawVersion" >> $env:GITHUB_OUTPUT
+          echo "target=$target" >> $env:GITHUB_OUTPUT
           echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
 
   build-linux:
@@ -64,6 +73,7 @@ jobs:
     uses: ./.github/workflows/build-linux-pupnet.yaml
     with:
       AppVersion: ${{ needs.transformInputs.outputs.RawVersion }}
+      Target: ${{ needs.transformInputs.outputs.TargetSha }}
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
@@ -74,6 +84,7 @@ jobs:
     uses: ./.github/workflows/build-windows-pupnet.yaml
     with:
       AppVersion: ${{ needs.transformInputs.outputs.RawVersion }}
+      Target: ${{ needs.transformInputs.outputs.TargetSha }}
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
@@ -126,10 +137,11 @@ jobs:
 
       - name: Create Release
         id: create-gh-release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{ needs.transformInputs.outputs.RawVersion }}
           tag_name: ${{ needs.transformInputs.outputs.TagVersion }}
+          target_commitish: ${{ needs.transformInputs.outputs.TargetSha }}
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
           files: bin/**/*

@@ -3,7 +3,6 @@ using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;

@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
 /// <summary>
@@ -61,11 +63,11 @@ public struct UidForMod
 /// See <see cref="UidForMod"/> for more details.
 /// </summary>
 public class UidForModAttribute(string ns, string name) 
-    : ScalarAttribute<UidForMod, ulong>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<UidForMod, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForMod FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForMod.FromUlong(value);
+    protected override UidForMod FromLowLevel(ulong value, AttributeResolver resolver) => UidForMod.FromUlong(value);
 } 

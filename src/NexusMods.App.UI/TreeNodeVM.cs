@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using ReactiveUI;
 

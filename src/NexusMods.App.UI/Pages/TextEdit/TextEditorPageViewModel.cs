@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Hashing;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -8,20 +9,21 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;
+using Hash = NexusMods.Hashing.xxHash3.Hash;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -60,11 +62,12 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
-            var loadoutFileId = context.LoadoutFileId;
-            var loadoutFile = LoadoutFile.Load(connection.Db, loadoutFileId);
+            var hash = context.FileId.Match(
+                f0: loadoutFileId => LoadoutFile.Load(connection.Db, loadoutFileId).Hash,
+                f1: libraryFileId => LibraryFile.Load(connection.Db, libraryFileId).Hash
+            );
 
-            logger.LogDebug("Loading file `{File}` (`{Hash}`) into the Text Editor", loadoutFile.AsLoadoutItemWithTargetPath().TargetPath, loadoutFile.Hash);
-            await using var stream = await fileStore.GetFileStream(loadoutFile.Hash);
+            await using var stream = await fileStore.GetFileStream(hash);
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var contents = await reader.ReadToEndAsync();
 
@@ -82,17 +85,15 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         {
             Debug.Assert(Context is not null);
 
-            var loadoutFileId = Context!.LoadoutFileId;
-            var filePath = Context!.FilePath;
-
+            var loadoutFileId = Context.FileId.AsT0;
             var text = Document.Text;
 
             // hash and store the new contents
             var bytes = Encoding.UTF8.GetBytes(text);
-            var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
+            var hash = Hash.From(XxHash3.HashToUInt64(bytes));
             var size = Size.From((ulong)bytes.Length);
 
-            using (var streamFactory = new MemoryStreamFactory(filePath.Path, new MemoryStream(bytes, writable: false)))
+            using (var streamFactory = new MemoryStreamFactory(Context.FilePath, new MemoryStream(bytes, writable: false)))
             {
                 if (!await fileStore.HaveFile(hash))
                     await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)], deduplicate: false);
@@ -114,10 +115,15 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         {
             this.WhenAnyValue(vm => vm.Context)
                 .WhereNotNull()
-                .Select(context => LoadoutFile.Load(connection.Db, context.LoadoutFileId)
-                    .Revisions()
-                    .Select(_ => context)
-                )
+                .Select(context =>
+                {
+                    var sliceDescriptor = context.FileId.Match(
+                        f0: loadoutFileId => SliceDescriptor.Create(loadoutFileId),
+                        f1: libraryFileId => SliceDescriptor.Create(libraryFileId)
+                    );
+
+                    return connection.ObserveDatoms(sliceDescriptor).Select(_ => context);
+                })
                 .Switch()
                 .OffUi()
                 .InvokeReactiveCommand(_loadFileCommand)
@@ -138,7 +144,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                     };
 
                     Document = document;
-                    IsReadOnly = false;
+                    IsReadOnly = context.FileId.IsT1;
                 })
                 .DisposeWith(disposables);
 

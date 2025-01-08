@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Attributes;
-using NexusMods.Abstractions.DataModel.Entities;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel.Sorting;
 

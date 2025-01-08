@@ -8,7 +8,8 @@
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="1620" d:DesignHeight="600"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
@@ -16,28 +17,35 @@
 
     <reactiveUi:ReactiveUserControl.Resources>
         <MenuFlyout x:Key="CollectionMenuFlyout">
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewOnNexusMods">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View on Nexus Mods</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemViewInLibrary">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View in Library</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemOpenJsonFile">
+                <MenuItem.Header>
+                    <panels:FlexPanel>
+                        <TextBlock>Open JSON file</TextBlock>
+                    </panels:FlexPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem x:Name="MenuItemDeleteAllDownloads">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete all downloads</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem>
+            <MenuItem x:Name="MenuItemDeleteCollection">
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete Collection</TextBlock>
@@ -45,95 +53,116 @@
                 </MenuItem.Header>
             </MenuItem>
         </MenuFlyout>
-    </reactiveUi:ReactiveUserControl.Resources>
 
-    <panels:FlexPanel x:Name="Body">
+        <DockPanel x:Key="TabItemContent" >
+            <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
+                <panels:FlexPanel x:Name="ListHeaderRow">
+                    <TextBlock x:Name="TextCollectionStatus"/>
+                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems" Text="Download all required mods" />
+                    <controls:StandardButton x:Name="ButtonInstallRequiredItems" Text="Install Collection" />
 
-
-            <Border x:Name="HeaderBorder">
-                <panels:FlexPanel x:Name="Header">
-
-                    <Border x:Name="MainContentBorder">
-                        <panels:FlexPanel x:Name="MainContent">
-
-                            <Border x:Name="CollectionImageBorder">
-                                <Image x:Name="CollectionImage" />
-                            </Border>
-
-                            <panels:FlexPanel x:Name="CollectionDetails">
-                                <TextBlock x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
-                                <TextBlock x:Name="Heading" />
-                                <Border x:Name="TagsPanelBorder">
-                                    <panels:FlexPanel x:Name="TagsPanel">
-                                        <TextBlock x:Name="Revision" />
-                                        <TextBlock x:Name="AuthorName" />
-                                        <Border x:Name="AuthorAvatarBorder">
-                                            <Image x:Name="AuthorAvatar" />
-                                        </Border>
-                                    </panels:FlexPanel>
-                                </Border>
-                                <TextBlock x:Name="Summary" />
-                            </panels:FlexPanel>
-
-                        </panels:FlexPanel>
-                    </Border>
-
-                    <Border x:Name="StatsBorder">
-                        <panels:FlexPanel x:Name="Stats" IsVisible="True">
-                            <panels:FlexPanel x:Name="ModsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                                <TextBlock x:Name="ModCount" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="EndorsementsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
-                                <TextBlock x:Name="Endorsements" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="DownloadsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                <TextBlock x:Name="Downloads" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="TotalSizePanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
-                                <TextBlock x:Name="TotalSize" />
-                            </panels:FlexPanel>
-                            <panels:FlexPanel x:Name="OverallRatingPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}" />
-                                <TextBlock x:Name="OverallRating" />
-                            </panels:FlexPanel>
-                        </panels:FlexPanel>
-                    </Border>
+                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems" Text="Download all optional mods" />
+                    <controls:StandardButton x:Name="ButtonInstallOptionalItems" Text="Install downloaded optional mods" />
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..." />
                 </panels:FlexPanel>
             </Border>
 
-        <Border x:Name="ListHeaderRowBorder">
-            <panels:FlexPanel x:Name="ListHeaderRow">
-                <TextBlock x:Name="CollectionStatusText"></TextBlock>
-                <Button x:Name="InstallButton">Install</Button>
-                <Button x:Name="DownloadAllButton">DownloadAll</Button>
-                <Button x:Name="FlyoutMenuButton" Flyout="{StaticResource CollectionMenuFlyout}">...</Button>
-            </panels:FlexPanel>
+            <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom"/>
+        </DockPanel>
+    </reactiveUi:ReactiveUserControl.Resources>
+
+    <DockPanel x:Name="Body">
+
+        <!-- first row (header) -->
+        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
+            <Border x:Name="HeaderBorder">
+
+                <StackPanel x:Name="Header">
+
+                    <!-- first header row (image and metadata) -->
+                    <Border x:Name="MainContentBorder">
+                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+
+                            <!-- left column (image) -->
+                            <Border Grid.Column="0" x:Name="CollectionImageBorder">
+                                <Image x:Name="CollectionImage" />
+                            </Border>
+
+                            <!-- right column (metadata) -->
+                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*"
+                                  ColumnDefinitions="Auto">
+                                <TextBlock Grid.Row="0" x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
+                                <TextBlock Grid.Row="1" x:Name="Heading" />
+                                <Border Grid.Row="2" x:Name="TagsPanelBorder">
+                                    <StackPanel x:Name="TagsPanel">
+                                        <TextBlock x:Name="Revision" />
+                                        <StackPanel x:Name="AuthorStackPanel">
+                                            <Border x:Name="AuthorAvatarBorder">
+                                                <Image x:Name="AuthorAvatar" />
+                                            </Border>
+                                            <TextBlock x:Name="AuthorName" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Grid.Row="3" x:Name="Summary" />
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+
+                    <!-- second header row (stats) -->
+                    <Border x:Name="StatsBorder">
+                        <StackPanel x:Name="Stats" IsVisible="True">
+                            <StackPanel x:Name="ModsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
+                                <TextBlock x:Name="NumDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="EndorsementsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
+                                <TextBlock x:Name="Endorsements" />
+                            </StackPanel>
+                            <StackPanel x:Name="DownloadsPanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                <TextBlock x:Name="TotalDownloads" />
+                            </StackPanel>
+                            <StackPanel x:Name="TotalSizePanel">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
+                                <TextBlock x:Name="TotalSize" />
+                            </StackPanel>
+                            <StackPanel x:Name="OverallRatingPanel">
+                                <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                   Value="{x:Static icons:IconValues.CheckCircle}" />
+                                <TextBlock x:Name="OverallRating" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
         </Border>
 
-
-        <!-- not touching these for now -->
-        <Expander>
-            <Expander.Header>
-                <panels:FlexPanel>
-                    <TextBlock>Required</TextBlock>
-                    <TextBlock x:Name="RequiredModsCount" />
-                </panels:FlexPanel>
-            </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
-        </Expander>
-        <Expander>
-            <Expander.Header>
-                <panels:FlexPanel>
-                    <TextBlock>Optional</TextBlock>
-                    <TextBlock x:Name="OptionalModsCount" />
-                </panels:FlexPanel>
-            </Expander.Header>
-            <TextBlock>TODO: Grid of mods will appear here</TextBlock>
-        </Expander>
-    </panels:FlexPanel>
+        <!-- second row (tab control and datagrid) -->
+        <TabControl x:Name="TabControl">
+            <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
+                <TabItem.Header>
+                    <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
+                        <TextBlock>Required</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="RequiredDownloadsCount" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
+                <TabItem.Header>
+                    <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
+                        <TextBlock>Optional</TextBlock>
+                        <Border>
+                            <TextBlock x:Name="OptionalDownloadsCount" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 
 </reactiveUi:ReactiveUserControl>

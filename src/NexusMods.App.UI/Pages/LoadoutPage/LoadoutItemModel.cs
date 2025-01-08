@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
-    public ReactiveProperty<DateTime> InstalledAt { get; } = new(DateTime.UnixEpoch);
+    public ReactiveProperty<DateTimeOffset> InstalledAt { get; } = new(DateTime.UnixEpoch);
 
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Name { get; } = new("-");
@@ -64,10 +64,10 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
         });
     }
 
-    private static string FormatDate(DateTime now, DateTime date)
+    private static string FormatDate(DateTimeOffset now, DateTimeOffset date)
     {
-        if (date == DateTime.UnixEpoch || date == default(DateTime)) return "-";
-        return date.Humanize(dateToCompareAgainst: now > date ? now : DateTime.Now);
+        if (date == DateTimeOffset.UnixEpoch || date == default(DateTimeOffset)) return "-";
+        return date.Humanize(dateToCompareAgainst: now > date ? now : TimeProvider.System.GetLocalNow());
     }
 
     private bool _isDisposed;

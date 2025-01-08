@@ -1,0 +1,10 @@
+<Module>
+    <!-- 👇 Current mod is `Bannerlord.UIExtenderEx` -->
+    <Id value="Bannerlord.UIExtenderEx"/>
+    <Name value="UI Extender Ex"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ `RealisticWeather` is marked as incompatible -->
+        <DependedModuleMetadata id="RealisticWeather" incompatible="true" />
+    </DependedModuleMetadatas>
+</Module>
+

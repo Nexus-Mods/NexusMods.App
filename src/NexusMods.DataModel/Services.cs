@@ -2,23 +2,19 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.DiskState;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
@@ -41,6 +37,7 @@ public static class Services
     {
         coll.AddMnemonicDB();
         coll.AddAnalyzers();
+        coll.AddMigrations();
 
         // Settings
         coll.AddSettings<DataModelSettings>();
@@ -86,10 +83,12 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-        
+        coll.AddSingleton<JsonConverterFactory, OptionalConverterFactory>();
+        coll.AddSingleton<JsonConverter, OptionalConverterFactory>();
+
         // Game Registry
-        coll.AddSingleton<IGameRegistry, GameRegistry>();
-        coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
+        coll.AddSingleton<IGameRegistry, GameRegistry.GameRegistry>();
+        coll.AddHostedService(s => (GameRegistry.GameRegistry)s.GetRequiredService<IGameRegistry>());
         coll.AddAttributeCollection(typeof(GameInstallMetadata));
         
         // File Store
@@ -106,19 +105,14 @@ public static class Services
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();
         
-        // Download Analyzer
-        coll.AddAttributeCollection(typeof(DownloadAnalysis));
-        coll.AddAttributeCollection(typeof(DownloadContentEntry));
-        coll.AddAttributeCollection(typeof(FilePathMetadata));
-        coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
-        
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddSettings<DiagnosticSettings>();
         
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
-
+        
+        
         coll.AddPersistedDbResourceModel();
 
         // Verbs

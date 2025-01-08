@@ -64,7 +64,7 @@ public class UidForFileTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint fileId, ulong expectedUlong)
     {
         // Arrange
-        var uidForFile = new UidForFile { GameId = (GameId)gameId, FileId = (FileId)fileId };
+        var uidForFile = new UidForFile((FileId)fileId, (GameId)gameId);
 
         // Act
         var result = uidForFile.AsUlong;
@@ -95,7 +95,7 @@ public class UidForFileTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint fileId)
     {
         // Arrange
-        var original = new UidForFile { GameId = (GameId)gameId, FileId = (FileId)fileId };
+        var original = new UidForFile((FileId)fileId, (GameId)gameId);
 
         // Act
         var asUlong = original.AsUlong;

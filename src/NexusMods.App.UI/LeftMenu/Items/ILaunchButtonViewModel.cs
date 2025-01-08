@@ -1,7 +1,6 @@
 using System.Reactive;
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -19,9 +18,14 @@ public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
     public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     /// <summary>
+    /// Returns an observable which signals whether the game is currently running.
+    /// This signals the initials state immediately upon subscribing.
+    /// </summary>
+    public IObservable<bool> IsRunningObservable { get; }
+
+    /// <summary>
     /// Text to display on the button.
     /// </summary>
     public string Label { get; }
     public Percent? Progress { get; }
-
 }

@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Analyzers\NexusMods.Abstractions.MnemonicDB.Analyzers.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
@@ -17,32 +17,29 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="LoadoutFile.cs">
-        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutItemGroup.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutItemWithTargetPath.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="DeletedFile.cs">
-        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LibraryLinkedLoadoutItem.cs">
-        <DependentUpon>LoadoutItem.cs</DependentUpon>
-      </Compile>
-      <Compile Update="LoadoutGameFilesGroup.cs">
+      <Compile Update="Models\CollectionGroup.cs">
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
-      <Compile Update="LoadoutOverridesGroup.cs">
+      <Compile Update="Models\LoadoutItemGroup.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutItemWithTargetPath.cs">
+        <DependentUpon>LoadoutItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutOverridesGroup.cs">
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
-      <Compile Update="LoadoutObservables.cs">
-        <DependentUpon>Loadout.cs</DependentUpon>
+      <Compile Update="Models\LoadoutFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
       </Compile>
-      <Compile Update="DiskStateExtensions.cs">
-        <DependentUpon>GameInstallMetadata.cs</DependentUpon>
+      <Compile Update="Models\LibraryLinkedLoadoutItem.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\DeletedFile.cs">
+        <DependentUpon>LoadoutItemWithTargetPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\LoadoutGameFilesGroup.cs">
+        <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

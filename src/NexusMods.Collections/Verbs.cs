@@ -1,14 +1,14 @@
-using System.IO.Compression;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
@@ -35,19 +35,24 @@ internal static class Verbs
         [Injected] ILibraryService libraryService,
         [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] IServiceProvider serviceProvider,
+        [Injected] IConnection connection,
         [Injected] CancellationToken token)
     {
-
         await using var destination = temporaryFileManager.CreateFile();
         var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
         
         var libraryFile = await libraryService.AddDownload(downloadJob);
-        
+
         if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
             throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
 
-        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile);
+        var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
 
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
+        await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: token);
+
+        var items = collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata, items, Optional<NexusCollectionLoadoutGroup.ReadOnly>.None);
         return 0;
     }
     

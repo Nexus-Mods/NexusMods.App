@@ -1,9 +1,7 @@
-﻿using System.Windows.Input;
-
-namespace NexusMods.App.UI.Overlays.Login;
+﻿namespace NexusMods.App.UI.Overlays.Login;
 
 public interface INexusLoginOverlayViewModel : IOverlayViewModel
 {
-    public ICommand Cancel { get; }
-    public Uri Uri { get; }
+    public R3.ReactiveCommand Cancel { get; }
+    public Uri? Uri { get; }
 }

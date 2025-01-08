@@ -13,6 +13,7 @@ using NexusMods.App.UI;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
+using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Settings;
@@ -59,9 +60,16 @@ public class Program
         );
         var services = host.Services;
 
+        if (startupMode.RunAsMain)
+        {
+            // Run the migrations
+            var migration = services.GetRequiredService<MigrationService>();
+            migration.Run().Wait();
+        }
+
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
-        
+
         // Start the CLI server if we are the main process.
         var cliServer = services.GetService<CliServer>();
         cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
@@ -280,6 +288,9 @@ public class Program
         {
             RemoveLoggerFactoryFilter = false,
         };
+
+        loggingBuilder.AddFilter("Microsoft", LogLevel.Warning);
+        loggingBuilder.AddFilter("System", LogLevel.Warning);
 
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(settings.MinimumLevel);

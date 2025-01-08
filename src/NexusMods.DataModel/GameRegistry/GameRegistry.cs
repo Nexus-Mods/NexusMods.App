@@ -11,7 +11,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.DataModel.GameRegistry;
 
 /// <summary>
 /// Game registry for all installed games.
@@ -32,6 +32,8 @@ public class GameRegistry : IGameRegistry, IHostedService
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
+
+    public ILocatableGame[] SupportedGames => _games;
 
     /// <inheritdoc />
     public IDictionary<EntityId, GameInstallation> Installations => _byId;

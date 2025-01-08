@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
@@ -229,7 +230,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
+
+                Page newTabPage;
+                try
+                {
+                    newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
+                }
+                catch (Exception)
+                {
+                    // TODO: logging
+                    continue;
+                }
 
                 var vm = new PanelTabViewModel(_workspaceController, WorkspaceId, Id, tab.Id)
                 {

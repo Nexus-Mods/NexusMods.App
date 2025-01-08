@@ -30,7 +30,7 @@ jobs:
 
   build-and-test:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test-with-osx.yaml@9c4844439c53f8b8b9f64fb707c91b469238b15e
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test-with-osx.yaml@main
     with:
       extra-test-args: "--blame-hang-timeout 20m"
       test-filter: "RequiresNetworking!=True&FlakeyTest!=True"

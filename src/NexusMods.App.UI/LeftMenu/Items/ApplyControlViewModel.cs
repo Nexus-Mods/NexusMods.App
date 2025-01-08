@@ -1,9 +1,14 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -18,8 +23,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 {
     private readonly IConnection _conn;
     private readonly ISynchronizerService _syncService;
+    private readonly IJobMonitor _jobMonitor;
 
     private readonly LoadoutId _loadoutId;
+    private readonly IOverlayController _overlayController;
     private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
 
@@ -31,11 +38,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
-    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
+    public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
         _loadoutId = loadoutId;
+        _overlayController = overlayController;
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         
         _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
@@ -71,28 +80,45 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
 
-                Observable.CombineLatest(loadoutStatuses, gameStatuses, (loadout, game) => (loadout, game))
+                // Note(sewer):
+                // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
+                // In any case, we should prevent Apply from being available while a file is in use.
+                // A file may be in use because:
+                // - The user launched the game externally (e.g. through Steam).
+                //     - Approximate this by seeing if any EXE in any of the game folders are running.
+                //     - This is done in 'Synchronize' method.
+                // - They're running a tool from within the App.
+                //     - Check running jobs.
+                loadoutStatuses.CombineLatest(gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, game, running) => (loadout, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {
-                        var (ldStatus, gameStatus) = status;
-                        
-                        CanApply = gameStatus != GameSynchronizerState.Busy 
-                                   && ldStatus != LoadoutSynchronizerState.Pending 
-                                   && ldStatus != LoadoutSynchronizerState.Current;
-                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy;
+                        var (ldStatus, gameStatus, running) = status;
+
+                        CanApply = gameStatus != GameSynchronizerState.Busy
+                                   && ldStatus != LoadoutSynchronizerState.Pending
+                                   && ldStatus != LoadoutSynchronizerState.Current
+                                   && !running;
+                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy && !running;
                     })
                     .DisposeWith(disposables);
-                
             }
         );
     }
 
     private async Task Apply()
     {
-        await Task.Run(async () =>
+        try
         {
-            await _syncService.Synchronize(_loadoutId);
-        });
+            await Task.Run(async () =>
+            {
+                await _syncService.Synchronize(_loadoutId);
+            });
+        }
+        catch (ExecutableInUseException)
+        {
+            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
+        }
     }
 }

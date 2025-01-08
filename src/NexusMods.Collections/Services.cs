@@ -10,6 +10,7 @@ public static class Services
     public static IServiceCollection AddNexusModsCollections(this IServiceCollection services)
     {
         return services.AddNexusCollectionLoadoutGroupModel()
+            .AddDirectDownloadLibraryFileModel()
             .AddNexusCollectionBundledLoadoutGroupModel()
             .AddCollectionVerbs();
     }

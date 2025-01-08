@@ -1,7 +1,10 @@
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 using DynamicData.Kernel;
 using K4os.Compression.LZ4;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
+using NexusMods.Paths;
 using ZstdSharp;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
@@ -12,14 +15,13 @@ namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 /// </summary>
 public static class PakFileParser
 {
-
 #region Public Methods
 
     /// <summary>
     /// Parses a bg3 `.pak` file stream and extracts the metadata from the packed `meta.lsx` file.
     /// </summary>
     /// <exception cref="InvalidDataException">In case of errors during parsing</exception>
-    public static LsxXmlFormat.MetaFileData ParsePakMeta(Stream pakFileStream)
+    public static LspkPackageFormat.PakMetaData ParsePakMeta(Stream pakFileStream)
     {
         using var br = new BinaryReader(pakFileStream);
         var headerData = ParseHeaderInternal(br);
@@ -28,23 +30,54 @@ public static class PakFileParser
         var fileEntryInfo = fileList.FirstOrOptional(f => f.Name.Contains("meta.lsx"));
         if (!fileEntryInfo.HasValue)
         {
-            throw new InvalidDataException($"File meta.lsx not found in pak archive.");
+            throw new InvalidDataException($"Unable to find `meta.lsx` file in pak archive");
         }
 
-        var metaStream = ReadFileEntryData(br, fileEntryInfo.Value);
-        return MetaLsxParser.ParseMetaFile(metaStream);
+        var metaStream = GetFileEntryStream(br, fileEntryInfo.Value);
+        var metaFile = MetaLsxParser.ParseMetaFile(metaStream);
+
+        var seConfig = GetScriptExtenderConfigMetaData(fileList, br);
+
+        return new LspkPackageFormat.PakMetaData
+        {
+            MetaFileData = metaFile,
+            ScriptExtenderConfigMetadata = seConfig,
+        };
+    }
+
+    private static Optional<LspkPackageFormat.ScriptExtenderConfigMetadata> GetScriptExtenderConfigMetaData(List<LspkPackageFormat.FileEntryInfoCommon> fileList, BinaryReader br)
+    {
+        var seConfig = fileList.FirstOrOptional(
+            f => new RelativePath(f.Name).EndsWith(new RelativePath("ScriptExtender/Config.json"))
+        );
+
+        if (seConfig.HasValue)
+        {
+            var configStream = GetFileEntryBytes(br, seConfig.Value);
+            var jsonReader = new Utf8JsonReader(configStream);
+            while (jsonReader.Read())
+            {
+                if (jsonReader.TokenType != JsonTokenType.PropertyName || jsonReader.GetString() != "RequiredVersion")
+                    continue;
+
+                jsonReader.Read();
+                if (jsonReader.TokenType == JsonTokenType.Number && jsonReader.TryGetInt32(out var requiredVersion))
+                {
+                    return new LspkPackageFormat.ScriptExtenderConfigMetadata
+                    {
+                        RequiresScriptExtender = true,
+                        SeRequiredVersion = requiredVersion,
+                    };
+                }
+            }
+        }
+
+        return Optional<LspkPackageFormat.ScriptExtenderConfigMetadata>.None;
     }
 
 #endregion
 
 #region Private Methods
-
-    private static void Load(BinaryReader br)
-    {
-        var headerData = ParseHeaderInternal(br);
-
-        var fileList = ParseFileListInternal(br, (int)headerData.FileListOffset, headerData);
-    }
 
     private static LspkPackageFormat.HeaderCommon ParseHeaderInternal(BinaryReader br)
     {
@@ -53,7 +86,7 @@ public static class PakFileParser
 
         if (signature != LspkPackageFormat.HeaderCommon.SIGNATURE_STRING)
         {
-            throw new InvalidDataException($"Not a valid BG3 PAK. Magic signature {signature} does not match ({LspkPackageFormat.HeaderCommon.SIGNATURE_STRING}).");
+            throw new InvalidDataException($"Not a valid BG3 PAK. Magic signature `{signature}` does not match expected signature `{LspkPackageFormat.HeaderCommon.SIGNATURE_STRING}`");
         }
 
         var version = br.ReadUInt32();
@@ -84,7 +117,7 @@ public static class PakFileParser
                     NumParts = br.ReadUInt16(),
                 }.ToCommonHeader();
             default:
-                throw new InvalidDataException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Unrecognized Pak version: v{version}");
         }
     }
 
@@ -112,7 +145,7 @@ public static class PakFileParser
 
         if (numDecodedBytes != decompressedBytes.Length)
         {
-            throw new InvalidDataException($"Decompression failed: decompressed size {decompressedBytes.Length} does not match expected size {numDecodedBytes}.");
+            throw new InvalidDataException($"Decompression failed: decompressed size {decompressedBytes.Length} does not match expected size {numDecodedBytes}");
         }
 
         // new mem stream from decompress bytes
@@ -167,11 +200,77 @@ public static class PakFileParser
                 }.ToCommonFileEntry();
             }
             default:
-                throw new InvalidDataException($"Pak version v{version} not supported.");
+                throw new InvalidDataException($"Unrecognized Pak version: v{version}");
         }
     }
-    
-    private static Stream ReadFileEntryData(BinaryReader br, LspkPackageFormat.FileEntryInfoCommon fileMeta)
+
+
+    private static byte[] GetFileEntryBytes(BinaryReader br, LspkPackageFormat.FileEntryInfoCommon fileMeta)
+    {
+        br.BaseStream.Seek((long)fileMeta.OffsetInFile, SeekOrigin.Begin);
+
+        var rawData = br.ReadBytes((int)fileMeta.SizeOnDisk);
+
+        return fileMeta.Flags.Method() switch
+        {
+            LspkPackageFormat.CompressionMethod.None => rawData,
+            LspkPackageFormat.CompressionMethod.LZ4 => DecompressLz4(fileMeta, rawData),
+            LspkPackageFormat.CompressionMethod.Zlib => DecompressZlib(fileMeta, rawData),
+            LspkPackageFormat.CompressionMethod.Zstd => DecompressZstd(fileMeta, rawData),
+            _ => throw new InvalidDataException($"Unsupported compression method {fileMeta.Flags.Method()} for file {fileMeta.Name}")
+        };
+
+        byte[] DecompressLz4(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
+        {
+            var decompressedBytes = new byte[fileEntryInfoCommon.UncompressedSize];
+
+            var decodedSize = LZ4Codec.Decode(bytes, 0, bytes.Length,
+                decompressedBytes, 0, decompressedBytes.Length
+            );
+            if (decodedSize != decompressedBytes.Length)
+            {
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
+            }
+
+            return decompressedBytes;
+        }
+
+        byte[] DecompressZlib(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
+        {
+            using var ms = new MemoryStream(bytes);
+            using var ds = new ZLibStream(ms, CompressionMode.Decompress);
+            var decompressedBytes = new byte[fileEntryInfoCommon.UncompressedSize];
+            var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
+            if (read != decompressedBytes.Length)
+            {
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
+            }
+
+            return decompressedBytes;
+        }
+
+        byte[] DecompressZstd(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
+        {
+            using var ms = new MemoryStream(bytes);
+            using var ds = new DecompressionStream(ms);
+            var decompressedBytes = new byte[fileEntryInfoCommon.UncompressedSize];
+            var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
+            if (read != decompressedBytes.Length)
+            {
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
+            }
+
+            return decompressedBytes;
+        }
+    }
+
+    private static Stream GetFileEntryStream(BinaryReader br, LspkPackageFormat.FileEntryInfoCommon fileMeta)
     {
         br.BaseStream.Seek((long)fileMeta.OffsetInFile, SeekOrigin.Begin);
 
@@ -183,22 +282,26 @@ public static class PakFileParser
             LspkPackageFormat.CompressionMethod.LZ4 => DecompressLz4(fileMeta, rawData),
             LspkPackageFormat.CompressionMethod.Zlib => DecompressZlib(fileMeta, rawData),
             LspkPackageFormat.CompressionMethod.Zstd => DecompressZstd(fileMeta, rawData),
-            _ => throw new InvalidDataException($"Unsupported compression method {fileMeta.Flags.Method()} for file {fileMeta.Name}.")
+            _ => throw new InvalidDataException($"Unsupported compression method {fileMeta.Flags.Method()} for file {fileMeta.Name}")
         };
 
         Stream DecompressLz4(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
         {
             var decompressedBytes = new byte[fileEntryInfoCommon.UncompressedSize];
-        
-            var decodedSize = LZ4Codec.Decode(bytes, 0, bytes.Length, decompressedBytes, 0, decompressedBytes.Length);
+
+            var decodedSize = LZ4Codec.Decode(bytes, 0, bytes.Length,
+                decompressedBytes, 0, decompressedBytes.Length
+            );
             if (decodedSize != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {decodedSize} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
             }
-            
+
             return new MemoryStream(decompressedBytes);
         }
-        
+
         Stream DecompressZlib(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
         {
             using var ms = new MemoryStream(bytes);
@@ -207,12 +310,14 @@ public static class PakFileParser
             var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
             if (read != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
             }
-            
+
             return new MemoryStream(decompressedBytes);
         }
-        
+
         Stream DecompressZstd(LspkPackageFormat.FileEntryInfoCommon fileEntryInfoCommon, byte[] bytes)
         {
             using var ms = new MemoryStream(bytes);
@@ -221,14 +326,14 @@ public static class PakFileParser
             var read = ds.Read(decompressedBytes, 0, decompressedBytes.Length);
             if (read != decompressedBytes.Length)
             {
-                throw new InvalidDataException($"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}.");
+                throw new InvalidDataException(
+                    $"Failed to extract {fileEntryInfoCommon.Name} from Pak archive: decompressed size {read} does not match expected size {fileEntryInfoCommon.UncompressedSize}"
+                );
             }
-            
+
             return new MemoryStream(decompressedBytes);
         }
     }
-    
-
 
 #endregion
 }

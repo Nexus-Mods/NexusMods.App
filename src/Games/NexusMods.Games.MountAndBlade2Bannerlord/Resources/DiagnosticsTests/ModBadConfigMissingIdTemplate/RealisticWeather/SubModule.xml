@@ -1,0 +1,4 @@
+<Module>
+    <!-- 👇❌ Required `Id` element is missing here -->
+    <Name value="Realistic Weather"/>
+</Module>

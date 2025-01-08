@@ -1,6 +1,5 @@
-using System;
 using NexusMods.App.GarbageCollection.Interfaces;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 namespace NexusMods.App.GarbageCollection.Tests.Helpers;
 
 internal class MockParsedHeaderState : ICanProvideFileHashes<MockFileHash>

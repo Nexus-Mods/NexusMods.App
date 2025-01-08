@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
@@ -8,7 +7,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Activities;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -21,13 +19,13 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.Larian.BaldursGate3;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.Steam;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -73,6 +71,7 @@ public static class Services
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
+                .AddTracking(telemetrySettings ?? new TelemetrySettings())
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
@@ -85,11 +84,9 @@ public static class Services
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
                 .AddSupportedGames(experimentalSettings)
-                .AddActivityMonitor()
                 .AddCrossPlatform()
                 .AddGames()
                 .AddGenericGameSupport()
-                .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddFomod()
                 .AddNexusWebApi()
@@ -99,7 +96,8 @@ public static class Services
                 .AddSingleton<HttpClient>()
                 .AddFileSystem()
                 .AddDownloaders()
-                .AddCleanupVerbs();
+                .AddCleanupVerbs()
+                .AddSteamCli();
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);
@@ -131,6 +129,7 @@ public static class Services
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
+        Games.MountAndBlade2Bannerlord.Services.AddMountAndBlade2Bannerlord(services);
         return services;
     }
 }

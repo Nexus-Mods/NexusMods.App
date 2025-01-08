@@ -1,24 +1,18 @@
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// Stores a <see cref="Hash"/> as a <see cref="ulong"/>.
 /// </summary>
-public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong>(ValueTags.UInt64, ns, name)
+public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(Hash value)
-    {
-        return value.Value;
-    }
-    
+    protected override ulong ToLowLevel(Hash value) => value.Value;
+
     /// <inheritdoc />
-    protected override Hash FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver)
-    {
-        return Hash.From(value);
-    }
+    protected override Hash FromLowLevel(ulong value, AttributeResolver resolver) => Hash.From(value);
 }

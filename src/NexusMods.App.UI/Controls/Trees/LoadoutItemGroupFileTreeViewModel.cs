@@ -8,6 +8,7 @@ using DynamicData.Kernel;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;

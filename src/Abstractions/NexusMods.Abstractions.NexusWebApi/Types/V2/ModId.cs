@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 
@@ -20,11 +21,11 @@ public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>, IAugme
 /// Mod ID attribute, for NexusMods API mod IDs.
 /// </summary>
 public class ModIdAttribute(string ns, string name) 
-    : ScalarAttribute<ModId, uint>(ValueTags.UInt32, ns, name)
+    : ScalarAttribute<ModId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(ModId value) => value.Value;
 
     /// <inheritdoc />
-    protected override ModId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => ModId.From(value);
+    protected override ModId FromLowLevel(uint value, AttributeResolver resolver) => ModId.From(value);
 } 

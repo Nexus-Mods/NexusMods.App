@@ -10,7 +10,6 @@ using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -28,6 +27,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private readonly IEnumerable<IGameLocator> _locators;
     public override string Name => "Stubbed Game";
     public override GameId GameId => GameId.From(uint.MaxValue);
+
+    public override SupportType SupportType => SupportType.Unsupported;
 
     private readonly IServiceProvider _serviceProvider;
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,

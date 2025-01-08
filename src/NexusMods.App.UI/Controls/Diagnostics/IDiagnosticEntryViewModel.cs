@@ -1,5 +1,5 @@
-using System.Reactive;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
@@ -9,6 +9,8 @@ public interface IDiagnosticEntryViewModel : IViewModelInterface
 {
     Diagnostic Diagnostic { get; }
 
+    string Title { get; }
+    
     string Summary { get; }
     
     DiagnosticSeverity Severity { get; }

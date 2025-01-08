@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -20,8 +20,12 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Telemetry;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
@@ -34,23 +38,25 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
     [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
 
-    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 
-    public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
-    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
-    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
-    public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
 
     private readonly ObservableAsPropertyHelper<IImage?> _avatar;
     public IImage? Avatar => _avatar.Value;
+    
+    [Reactive] public string? Username { get; set; } = string.Empty;
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
 
@@ -97,6 +103,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
+
+            Tracking.AddEvent(Events.Help.ViewChangelog, metadata: new EventMetadata(name: null));
         });
 
         ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -104,6 +112,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var loggingSettings = settingsManager.Get<LoggingSettings>();
             var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
             await osInterop.OpenDirectory(logDirectory);
+
+            Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
         });
 
         GiveFeedbackCommand = ReactiveCommand.Create(() =>
@@ -112,6 +122,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             alphaWarningViewModel.WorkspaceController = workspaceController;
 
             overlayController.Enqueue(alphaWarningViewModel);
+            Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
 
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
@@ -154,6 +165,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .BindToVM(this, vm => vm.IsLoggedIn)
                 .DisposeWith(d);
 
+            _loginManager.UserInfoObservable
+                .Select(u => u?.Name)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(name => Username = name ?? "");
+            
             _loginManager.IsPremiumObservable
                 .OnUI()
                 .BindToVM(this, vm => vm.IsPremium)

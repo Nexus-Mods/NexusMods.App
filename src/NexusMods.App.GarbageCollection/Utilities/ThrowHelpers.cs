@@ -1,5 +1,6 @@
 using NexusMods.App.GarbageCollection.Errors;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+
 namespace NexusMods.App.GarbageCollection.Utilities;
 
 internal static class ThrowHelpers

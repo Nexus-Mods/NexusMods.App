@@ -1,4 +1,6 @@
-﻿namespace NexusMods.App.UI.Controls.DataGrid;
+﻿using NexusMods.Abstractions.UI;
+
+namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// Interface for view models that are used in a column, each one is bound to a row,

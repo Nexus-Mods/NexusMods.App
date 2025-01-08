@@ -1,12 +1,12 @@
 ﻿[
   {
     FromPath: NativeMods/BG3NativeCameraTweaks.dll,
-    Hash: 0x9D3A484CEE5E5A51,
+    Hash: 0x3B9E9E8893CCB711,
     ToGamePath: {Game}/bin/NativeMods/BG3NativeCameraTweaks.dll
   },
   {
     FromPath: BG3NativeCameraTweaks.toml,
-    Hash: 0xF52CC272D80C600A,
+    Hash: 0x3760E4DFD2516321,
     ToGamePath: {Game}/bin/BG3NativeCameraTweaks.toml
   }
 ]

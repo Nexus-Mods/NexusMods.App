@@ -1,0 +1,9 @@
+<Module>
+    <!-- 👇 Current mod is `ImprovedGarrisons` -->
+    <Id value="ImprovedGarrisons"/>
+    <Name value="Improved Garrisons"/>
+    <DependedModuleMetadatas>
+        <!-- ❌ Missing 'id' attribute in dependency entry -->
+        <DependedModuleMetadata version="1.2.0" />
+    </DependedModuleMetadatas>
+</Module>

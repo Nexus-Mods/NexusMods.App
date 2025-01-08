@@ -3,9 +3,12 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.DataModel.Synchronizer;
@@ -40,13 +43,13 @@ public class SynchronizerService : ISynchronizerService
         var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
         var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
         return synchronizer.LoadoutToDiskDiff(loadout, diskState);
-        
     }
 
     /// <inheritdoc />
     public async Task Synchronize(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
+        ThrowIfMainBinaryInUse(loadout);
         
         var loadoutState = GetOrAddLoadoutState(loadoutId);
         using var _ = loadoutState.WithLock();
@@ -87,7 +90,7 @@ public class SynchronizerService : ISynchronizerService
     {
         var metadata = gameInstallation.GetMetadata(_conn);
         
-        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId))
+        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId))
         {
             loadout = Loadout.Load(_conn.Db, lastId);
             return true;
@@ -103,8 +106,8 @@ public class SynchronizerService : ISynchronizerService
         return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
             .Select(metadata =>
                 {
-                    if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastId) 
-                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGet(metadata, out var txId))
+                    if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId) 
+                        && GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metadata, out var txId))
                     {
                         return new LoadoutWithTxId(lastId, TxId.From(txId.Value));
                     }
@@ -186,14 +189,13 @@ public class SynchronizerService : ISynchronizerService
 
                     // Potentially long operation, run on thread pool
                     var diffFound = await Task.Run(() =>
-                        {
-                            _logger.LogInformation("Checking for changes in loadout {LoadoutId}", loadoutId);
-                            var diffTree = GetApplyDiffTree(loadoutId);
-                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
-                            _logger.LogInformation("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
-                            return diffFound;
-                        }
-                    );
+                    {
+                        _logger.LogDebug("Checking for changes in loadout {LoadoutId}", loadoutId);
+                        var diffTree = GetApplyDiffTree(loadoutId);
+                        var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                        _logger.LogDebug("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
+                        return diffFound;
+                    });
 
                     return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
                 }
@@ -202,5 +204,48 @@ public class SynchronizerService : ISynchronizerService
             .RefCount();
 
         return statusObservable;
+    }
+    
+    private void ThrowIfMainBinaryInUse(Loadout.ReadOnly loadout)
+    {   
+        // Note(sewer):
+        // Problem: Game may already be running.
+        // Edge Cases: - User may have multiple copies of a given game running.
+        //             - Only on Windows.
+        // Solution: Check if EXE (primaryfile) is in use.
+        // Note: This doesn't account for CLI calls. I think that's fine; an external CLI user/caller
+        var game = loadout.InstallationInstance.GetGame() as AGame;
+        var primaryFile = game!.GetPrimaryFile(loadout.InstallationInstance.Store)
+            .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]);
+        if (IsFileInUse(primaryFile))
+            throw new ExecutableInUseException("Game's main executable file is in use.\n" +
+                                               "This is an indicator the game may have been started outside of the App; and therefore files may be in use.\n" +
+                                               "This means that we are unable to perform a Synchronize (Apply) operation.");
+        return;
+
+        static bool IsFileInUse(AbsolutePath filePath)
+        {
+            if (!FileSystem.Shared.OS.IsWindows)
+                return false;
+
+            if (!filePath.FileExists)
+                return false;
+
+            try
+            {
+                using var fs = filePath.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                return false;
+            }
+            catch (IOException)
+            {
+                // The file is in use by another process
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // The file is in use or you don't have permission
+                return true;
+            }
+        }
     }
 }

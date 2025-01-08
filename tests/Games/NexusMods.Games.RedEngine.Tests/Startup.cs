@@ -28,7 +28,6 @@ public class Startup
             .AddGames()
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
-            .AddFileStoreAbstractions()
             .Validate();
     }
 }

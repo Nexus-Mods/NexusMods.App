@@ -1,4 +1,3 @@
-using System.Reactive.Linq;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -32,6 +31,9 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <inheritdoc/>
     public Observable<UserInfo?> UserInfoObservable => _userInfo;
 
+    /// <inheritdoc/>
+    public UserInfo? UserInfo => _cachedUserInfo.Get();
+
     private readonly IDisposable _observeDatomDisposable;
 
     /// <summary>
@@ -59,10 +61,17 @@ public sealed class LoginManager : IDisposable, ILoginManager
             .DistinctUntilChanged()
             .SubscribeAwait(async (hasValue, cancellationToken) =>
             {
-                _cachedUserInfo.Evict();
-
-                if (!hasValue) _userInfo.OnNext(value: null);
-                else _userInfo.OnNext(await Verify(cancellationToken));
+                if (!hasValue)
+                {
+                    _cachedUserInfo.Evict();
+                    _userInfo.OnNext(value: null);
+                }
+                else
+                {
+                    var userInfo = await Verify(cancellationToken);
+                    _cachedUserInfo.Store(userInfo);
+                    _userInfo.OnNext(userInfo);
+                }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
     }
 
@@ -140,7 +149,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        await _conn.Excise(JWTToken.All(_conn.Db).Select(e => e.Id).ToArray());
+        var tokenEntities = JWTToken.All(_conn.Db).Select(e => e.Id).ToArray();
+
+        // Retract the entities first, so the UI updates, then excise them
+        using var tx = _conn.BeginTransaction();
+        foreach (var entity in tokenEntities)
+            tx.Delete(entity, false);
+        await tx.Commit();
+
+
+        await _conn.Excise(tokenEntities);
     }
     
     

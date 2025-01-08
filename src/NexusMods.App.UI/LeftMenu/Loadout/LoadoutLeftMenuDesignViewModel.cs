@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -24,7 +25,7 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
                 new IconViewModel
                 {
                     Name = "Diagnostics",
-                    Icon = IconValues.Stethoscope,
+                    Icon = IconValues.Cardiology,
                 },
             ]
         );

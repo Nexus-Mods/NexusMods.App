@@ -39,8 +39,6 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
         foreach (var newFile in newFiles)
         {
-            GamePath gamePath;
-
             if (!IsModFile(newFile.LoadoutItemWithTargetPath.TargetPath, out var modDirectoryName))
             {
                 continue;

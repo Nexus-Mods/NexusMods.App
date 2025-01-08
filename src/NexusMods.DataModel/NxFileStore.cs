@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
@@ -14,8 +15,7 @@ using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
-using NexusMods.DataModel.ChunkedStreams;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -367,6 +367,16 @@ public class NxFileStore : IFileStore
         public Size Size => Size.From(_entry.DecompressedSize);
         public Size ChunkSize => Size.From((ulong)_header.Header.ChunkSizeBytes);
         public ulong ChunkCount => (ulong)_entry.GetChunkCount(_header.Header.ChunkSizeBytes);
+        
+        public ulong GetOffset(ulong chunkIndex)
+        {
+            return (ulong)_header.Header.ChunkSizeBytes * chunkIndex;
+        }
+
+        public int GetChunkSize(ulong chunkIndex)
+        {
+            return _header.Header.ChunkSizeBytes;
+        }
 
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong localIndex, CancellationToken token = default)
         {

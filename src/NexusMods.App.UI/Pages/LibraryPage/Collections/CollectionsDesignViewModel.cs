@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -18,7 +19,7 @@ public class CollectionsDesignViewModel : AViewModel<ICollectionsViewModel>, ICo
             ]
         );
     }
-    public IconValue TabIcon => IconValues.ModLibrary;
+    public IconValue TabIcon => IconValues.Collections;
     public string TabTitle => "Collections (WIP)";
     public WindowId WindowId { get; set; }
     public WorkspaceId WorkspaceId { get; set; }

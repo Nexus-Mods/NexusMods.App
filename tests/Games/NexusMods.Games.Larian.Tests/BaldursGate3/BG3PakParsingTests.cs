@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Paths;
 
@@ -25,14 +26,22 @@ public class BG3PakParsingTests
     {
         var fullPath = _fs.GetKnownPath(KnownPath.EntryDirectory).Combine("BaldursGate3/Resources/PakFiles/" + pakFilePath);
         await using var pakFileStream = File.OpenRead(fullPath.ToString());
-        var metaFileData = PakFileParser.ParsePakMeta(pakFileStream);
+        var metaFileData = PakFileParser.ParsePakMeta(pakFileStream).MetaFileData;
         var sb = new StringBuilder();
+        
         sb.AppendLine("ModuleShortDesc:");
         sb.Append(LsxXmlFormat.SerializeModuleShortDesc(metaFileData.ModuleShortDesc));
+        sb.AppendLineN();
+        var semanticVersion = metaFileData.ModuleShortDesc.SemanticVersion;
+        sb.AppendLine($"Version: {semanticVersion.Major}.{semanticVersion.Minor}.{semanticVersion.Patch}.{semanticVersion.Build}");
+        
         foreach (var dependency in metaFileData.Dependencies)
         {
             sb.AppendLine("Dependency:");
             sb.Append(LsxXmlFormat.SerializeModuleShortDesc(dependency));
+            sb.AppendLineN();
+            var ver = dependency.SemanticVersion;
+            sb.AppendLine($"SemanticVersion: {ver.Major}.{ver.Minor}.{ver.Patch}.{ver.Build}");
         }
         await Verify(sb.ToString()).UseParameters(pakFilePath);
     }
@@ -46,6 +55,7 @@ public class BG3PakParsingTests
             var act = () => PakFileParser.ParsePakMeta(pakFileStream);
             act.Should().Throw<InvalidDataException>();
         }
-        
     }
+    
+    
 }

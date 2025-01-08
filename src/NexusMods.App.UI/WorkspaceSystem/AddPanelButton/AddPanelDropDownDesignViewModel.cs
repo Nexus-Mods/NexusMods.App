@@ -1,4 +1,6 @@
-﻿namespace NexusMods.App.UI.WorkspaceSystem;
+﻿using NexusMods.Abstractions.UI;
+
+namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelDropDownDesignViewModel :  AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {

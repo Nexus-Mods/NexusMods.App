@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -16,16 +16,23 @@ namespace NexusMods.Networking.NexusWebApi.Extensions;
 public static class FragmentExtensions
 {
     /// <summary>
+    /// Resolves a category.
+    /// </summary>
+    public static EntityId Resolve(this ICollectionRevisionInfo_CollectionRevision_Collection_Category category, IDb db, ITransaction tx)
+    {
+        var resolver = GraphQLResolver.Create(db, tx, CollectionCategory.NexusId, (ulong)category.Id);
+        resolver.Add(CollectionCategory.Name, category.Name);
+        return resolver.Id;
+    }
+
+    /// <summary>
     /// Resolves the IUserFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static async Task<EntityId> Resolve(this IUserFragment userFragment, IDb db, ITransaction tx, HttpClient client, CancellationToken token)
+    public static EntityId Resolve(this IUserFragment userFragment, IDb db, ITransaction tx)
     {
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)userFragment.MemberId);
         userResolver.Add(User.Name, userFragment.Name);
-        userResolver.Add(User.Avatar, new Uri(userFragment.Avatar));
-        
-        var avatarImage = await DownloadImage(client, userFragment.Avatar, token);
-        userResolver.Add(User.AvatarImage,avatarImage);
+        userResolver.Add(User.AvatarUri, new Uri(userFragment.Avatar));
         return userResolver.Id;
     }
 
@@ -43,8 +50,17 @@ public static class FragmentExtensions
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
         nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);
+
         if (ulong.TryParse(modFileFragment.SizeInBytes, out var size))
+        {
             nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.From(size));
+        }
+        else
+        {
+            Debug.WriteLine($"Unable to parse `{modFileFragment.SizeInBytes}` as bytes for Uid `{modFileFragment.Uid}`");
+            nexusFileResolver.Add(NexusModsFileMetadata.Size, Size.Zero);
+        }
+
         return nexusFileResolver.Id;
     }
 

@@ -13,6 +13,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.Extensions.BCL;
+using NexusMods.Telemetry;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -150,6 +151,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         return vm;
     }
+    
 
     private void AddDefaultPanel(WorkspaceViewModel vm)
     {
@@ -163,13 +165,24 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             addPanelBehavior
         );
     }
-
-    private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    
+    public void UnregisterWorkspaceByContext<TContext>(Func<TContext, bool> predicate)
+        where TContext : IWorkspaceContext
     {
-        //TODO: currently unused, we have no cases where we unregister a workspace
-        // will need this when we support removing loadouts
         Dispatcher.UIThread.VerifyAccess();
 
+        var workspaces = FindWorkspacesByContext<TContext>();
+        var existingWorkspace = workspaces.FirstOrOptional(tuple => predicate(tuple.Item2));
+        if (!existingWorkspace.HasValue) return;
+        var workspace = existingWorkspace.Value.Item1;
+
+        UnregisterWorkspace(workspace);
+    }
+
+    private void UnregisterWorkspace(IWorkspaceViewModel workspaceViewModel)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        
         _workspaces.Remove(workspaceViewModel.Id);
 
         if (ReferenceEquals(ActiveWorkspace, workspaceViewModel) && AllWorkspaces.Count > 0)
@@ -337,6 +350,18 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.OpenPage(pageData, behavior, selectTab, checkOtherPanels);
+
+        if (Tracking.IsEnabled && pageData.HasValue)
+        {
+            var pageType = pageData.Value.Context.TrackingName;
+            var eventDefinition = behavior.Match(
+                f0: _ => Events.Page.ReplaceTab,
+                f1: _ => Events.Page.NewTab,
+                f2: _ => Events.Page.NewPanel
+            );
+
+            Tracking.AddEvent(eventDefinition, new EventMetadata(name: pageType));
+        }
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)

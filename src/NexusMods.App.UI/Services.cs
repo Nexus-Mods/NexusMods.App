@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
+using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Spine;
@@ -26,13 +27,13 @@ using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
@@ -40,9 +41,9 @@ using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
-using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
@@ -50,6 +51,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -82,11 +84,11 @@ public static class Services
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
+            .AddSingleton<GameRunningTracker>()
             .AddTransient<MainWindow>()
 
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
-            .AddTransient<IImageCache, ImageCache>()
 
             // View Models
             .AddTransient<MainWindowViewModel>()
@@ -97,13 +99,12 @@ public static class Services
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
-            .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
+            .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
-            .AddViewModel<InProgressViewModel, IInProgressViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
@@ -116,6 +117,7 @@ public static class Services
             .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
             .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
+            .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
             .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
             .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
@@ -128,13 +130,12 @@ public static class Services
             // Views
             .AddView<CollectionCardView, ICollectionCardViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
-            .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
+            .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
-            .AddView<InProgressView, IInProgressViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
@@ -149,6 +150,7 @@ public static class Services
             .AddView<DownloadSizeView, IDownloadSizeViewModel>()
             .AddView<DownloadStatusView, IDownloadStatusViewModel>()
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
+            .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
@@ -205,6 +207,15 @@ public static class Services
             .AddView<CollectionsView, ICollectionsViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
+            .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
+            .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
+            
+            .AddView<LoadOrderView, ILoadOrderViewModel>()
+            .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
+            
+            .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
+            .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -226,7 +237,6 @@ public static class Services
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
-            .AddSingleton<IPageFactory, InProgressPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
@@ -238,9 +248,10 @@ public static class Services
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionsPageFactory>()
+            .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
+            .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
 
             // LeftMenu factories
-            .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
             .AddSingleton<ILeftMenuFactory, LoadoutLeftMenuFactory>()
 
@@ -251,7 +262,6 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
             // Diagnostics
-            .AddSingleton<IValueFormatter, ModReferenceFormatter>()
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IValueFormatter, LoadoutItemGroupFormatter>()
@@ -267,6 +277,7 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<ILibraryDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
+            .AddSingleton<NexusModsDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddFileSystem()

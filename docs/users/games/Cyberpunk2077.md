@@ -23,7 +23,21 @@ Diagnostics are shown in the following situations:
     - [ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) - Detected by `.xl` files in the `archives` folder. 
     - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
 
+### REDmod Load Ordering
+Some mods for Cyberpunk 2077 make use of the official REDmod format for loading content. The Load Order page allows users to decide on the order in which the game will load content from REDmods. By default, the mods at the **top** of the list will win if they have conflicting changes with another REDmod lower down in the order. 
+
+![REDmod Load Order for Cyberpunk 2077.](../images/0.7.1/Cyberpunk2077LoadOrder.webp)
+
+You can learn more about the REDmod format on [community wiki](https://wiki.redmodding.org/cyberpunk-2077-modding/for-mod-users/users-modding-cyberpunk-2077/redmod/usage).
+
+Changes in REDmods are always overwritten by similar changes inside archive mods.
+
 ### Automated deployment for REDmods
+
+??? info "REDmod with Heroic Launcher (Linux)"
+    The app cannot run REDmod deployment automatically for users who have installed Cyberpunk 2077 through Heroic Launcher on Linux. To run REDmod in Heroic, ensure the "Enable Mods" checkbox is enabled under "Modify Installation". This will mean REDmods are deployed by Heroic Launcher before the game starts.
+    ![The option to "Modify Installation" is under the options menu when viewing a game in Heroic Launcher](../images/0.6.1/REDmodHeroicModifyInstall.webp)
+    ![The option to "Enable Mods" is under "REDmod Integration" in Heroic Launcher](../images/0.6.1/REDmodHeroicEnableMods.webp) 
 
 When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
 
@@ -36,7 +50,8 @@ This game can be managed via the app on the following operating systems and plat
 || :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
 |---|---|---|---|
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle: | :material-check-circle: | :material-close-thick: |
-| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-close-thick:[^1] | :material-close-thick: |
+| <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-check-circle:[^1][^2] | :material-close-thick: |
 | <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/cyberpunk-2077) | :material-check-circle: | :material-close-thick: | :material-close-thick: |
 
 [^1]: Offline backup installs from GOG.com cannot be detected automatically.
+[^2]: [Heroic Launcher](https://heroicgameslauncher.com/) is required. 

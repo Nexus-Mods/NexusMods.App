@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
@@ -268,7 +269,7 @@ public class LoadoutTreeDataGridAdapter : TreeDataGridAdapter<LoadoutItemModel, 
 
         return
         [
-            viewHierarchical ? LoadoutItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
+            viewHierarchical ? ITreeDataGridItemModel<LoadoutItemModel, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             // TODO: LoadoutItemModel.CreateVersionColumn(),
             // TODO: LoadoutItemModel.CreateSizeColumn(),
             LoadoutItemModel.CreateInstalledAtColumn(),

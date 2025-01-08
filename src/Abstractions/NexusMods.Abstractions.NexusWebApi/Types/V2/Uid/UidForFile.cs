@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
 /// <summary>
@@ -16,17 +18,17 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct UidForFile
+public struct UidForFile : IEquatable<UidForFile>
 {
     /// <summary>
     /// Unique identifier for the file, within the specific <see cref="GameId"/>.
     /// </summary>
-    public FileId FileId;
+    public readonly FileId FileId;
 
     /// <summary>
     /// Unique identifier for the game.
     /// </summary>
-    public GameId GameId;
+    public readonly GameId GameId;
 
     /// <summary/>
     public UidForFile(FileId fileId, GameId gameId)
@@ -58,6 +60,43 @@ public struct UidForFile
     /// Reinterprets a given <see cref="ulong"/> into a <see cref="UidForFile"/>.
     /// </summary>
     public static UidForFile FromUlong(ulong value) => Unsafe.As<ulong, UidForFile>(ref value);
+
+    /// <inheritdoc/>
+    public bool Equals(UidForFile other)
+    {
+        return FileId.Equals(other.FileId) && GameId.Equals(other.GameId);
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        return obj is UidForFile other && Equals(other);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            return (FileId.GetHashCode() * 397) ^ GameId.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// Equality.
+    /// </summary>
+    public static bool operator ==(UidForFile left, UidForFile right)
+    {
+        return left.Equals(right);
+    }
+
+    /// <summary>
+    /// Inequality.
+    /// </summary>
+    public static bool operator !=(UidForFile left, UidForFile right)
+    {
+        return !(left == right);
+    }
 }
 
 /// <summary>
@@ -65,11 +104,11 @@ public struct UidForFile
 /// See <see cref="UidForFile"/> for more details.
 /// </summary>
 public class UidForFileAttribute(string ns, string name) 
-    : ScalarAttribute<UidForFile, ulong>(ValueTags.UInt64, ns, name)
+    : ScalarAttribute<UidForFile, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForFile FromLowLevel(ulong value, ValueTags tags, AttributeResolver resolver) => UidForFile.FromUlong(value);
+    protected override UidForFile FromLowLevel(ulong value, AttributeResolver resolver) => UidForFile.FromUlong(value);
 } 

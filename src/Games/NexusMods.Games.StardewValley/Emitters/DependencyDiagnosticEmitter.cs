@@ -41,9 +41,10 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
-        if (!SemanticVersion.TryParse(smapi.Version, out var smapiVersion))
+        if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiStrVersion, out var smapiVersion))
         {
-            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapi.Version);
+            _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiStrVersion);
             yield break;
         }
 
@@ -180,6 +181,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     {
         var uniqueIdToVersion = loadoutItemIdToManifest
             .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
+            .DistinctBy(kv => kv.UniqueID)
             .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
 
         var collect = loadoutItemIdToManifest.SelectMany(kv =>

@@ -6,8 +6,7 @@
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                xmlns:settingEntries="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
-                                xmlns:ui="clr-namespace:NexusMods.App.UI"
+                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="550"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
@@ -72,7 +71,7 @@
                                 </ItemsControl.ItemsPanel>
 
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type ui:IViewModelInterface}">
+                                    <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
                                         <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

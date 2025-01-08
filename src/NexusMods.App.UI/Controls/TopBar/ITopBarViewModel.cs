@@ -1,5 +1,6 @@
 using System.Reactive;
 using Avalonia.Media;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -27,6 +28,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
     public IImage? Avatar { get; }
+    public string? Username { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
 

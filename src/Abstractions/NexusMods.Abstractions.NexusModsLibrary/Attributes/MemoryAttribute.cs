@@ -2,23 +2,18 @@ using System.Buffers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 
 /// <summary>
 /// A hashed blob attribute for <see cref="Memory{T}"/>.
 /// </summary>
-public class MemoryAttribute(string ns, string name) : HashedBlobAttribute<Memory<byte>>(ns, name)
+public class MemoryAttribute(string ns, string name) : ScalarAttribute<Memory<byte>, Memory<byte>, HashedBlobSerializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override Memory<byte> FromLowLevel(ReadOnlySpan<byte> value, ValueTags tags, AttributeResolver resolver)
-    {
-        return new Memory<byte>(value.ToArray());
-    }
+    protected override Memory<byte> ToLowLevel(Memory<byte> value) => value;
 
     /// <inheritdoc />
-    protected override void WriteValue<TWriter>(Memory<byte> value, TWriter writer)
-    {
-        writer.Write(value.Span);
-    }
+    protected override Memory<byte> FromLowLevel(Memory<byte> value, AttributeResolver resolver) => value;
 }

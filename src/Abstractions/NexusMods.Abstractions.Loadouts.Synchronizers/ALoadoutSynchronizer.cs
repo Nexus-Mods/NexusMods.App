@@ -1,21 +1,22 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
-using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Extensions.BCL;
-using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -410,8 +411,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, gameMetadata.LastSyncedLoadout);
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, gameMetadata.LastSyncedLoadoutTransaction);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
+            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
@@ -549,7 +550,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
                 tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
                 tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
-                tx.Retract(id, DiskStateEntry.Game, item.Disk.Value.Game);
+                tx.Retract(id, DiskStateEntry.Game, (EntityId)item.Disk.Value.Game);
             }
         }
     }
@@ -638,7 +639,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (GameInstallMetadata.LastSyncedLoadout.TryGet(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
+        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
@@ -680,18 +681,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return files.MaxBy(GetPriority);
 
-        int GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
+        // Placeholder for a more advanced selection algorithm
+        long GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
         {
             foreach (var parent in item.AsLoadoutItem().GetThisAndParents())
             {
                 if (!parent.TryGetAsLoadoutItemGroup(out var group))
                     continue;
-
+                
+                // GameFiles always lose
                 if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
                     return 0;
+                
+                // Overrides should always win
+                if (group.TryGetAsLoadoutOverridesGroup(out var overridesGroup))
+                    return long.MaxValue;
+                
+                // Return a placeholder priority based on creation time of the LoadoutGroup, newest wins.
+                // This allows for some degree of control and predictability in the selection process.
+                return group.GetCreatedAt().ToUnixTimeSeconds();
             }
-
-            return 50;
+            
+            // Should not happen
+            Debug.Assert(false, "LoadoutItem is not part of a LoadoutItemGroup");
+            return 0;
         }
     }
 
@@ -895,7 +908,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // If the files don't match, update the entry
                             if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
                             {
-                                var newHash = await file.XxHash64Async();
+                                var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
                                 tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
@@ -905,7 +918,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         else
                         {
                             // No previous entry found, so create a new one
-                            var newHash = await file.XxHash64Async(token: token);
+                            var newHash = await file.XxHash3Async(token: token);
                             _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                             {
                                 Path = gamePath.ToGamePathParentTuple(metadata.Id),
@@ -960,7 +973,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         return;
                     }
 
-                    var newHash = await file.XxHash64Async(token: token);
+                    var newHash = await file.XxHash3Async(token: token);
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = gamePath.ToGamePathParentTuple(metaDataId),
@@ -1084,7 +1097,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
-        if (!GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout))
+        if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout))
             return Optional<LoadoutId>.None;
         return LoadoutId.From(lastAppliedLoadout);
     }
@@ -1222,7 +1235,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
-                ValueHelpers.Remap(remapFn, datom.Prefix, buffer[..datom.ValueSpan.Length].Span);
+                datom.Prefix.ValueTag.Remap(buffer[..datom.ValueSpan.Length].Span, remapFn);
                 
                 // Add the new datom
                 tx.Add(newDatom);
@@ -1246,7 +1259,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
-        if (GameInstallMetadata.LastSyncedLoadout.TryGet(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
+        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {
             await DeactivateCurrentLoadout(loadout.InstallationInstance);
         }

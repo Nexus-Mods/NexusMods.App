@@ -17,6 +17,7 @@
     <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
@@ -29,8 +30,8 @@
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml"/>
 
-    <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
@@ -51,5 +52,6 @@
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelViewStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/Sorting/LoadOrderStyles.axaml"/>
 
 </Styles>

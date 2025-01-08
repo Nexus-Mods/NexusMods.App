@@ -1,14 +1,17 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Resources;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Hashing.xxHash64;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -18,8 +21,8 @@ namespace NexusMods.App.UI.Controls.MarkdownRenderer;
 public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>, IMarkdownRendererViewModel
 {
     private readonly ILogger _logger;
-    private readonly IImageCache _imageCache;
     private readonly HttpClient _httpClient;
+    private readonly IResourceLoader<Uri, Bitmap> _remoteImagePipeline;
 
     [Reactive] public string Contents { get; set; } = string.Empty;
     [Reactive] public Uri? MarkdownUri { get; set; }
@@ -30,14 +33,14 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
     public ReactiveCommand<string, Unit> OpenLinkCommand { get; }
 
     public MarkdownRendererViewModel(
+        IServiceProvider serviceProvider,
         ILogger<MarkdownRendererViewModel> logger,
         IOSInterop osInterop,
-        IImageCache imageCache,
         HttpClient httpClient)
     {
         _logger = logger;
-        _imageCache = imageCache;
         _httpClient = httpClient;
+        _remoteImagePipeline = ImagePipelines.GetMarkdownRendererRemoteImagePipeline(serviceProvider);
 
         PathResolver = new PathResolverImpl(this);
         ImageResolverPlugin = new ImageResolvePluginImpl(new ImageResolverImpl(this));
@@ -119,14 +122,11 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
         return await FetchRemoteImage(uri, cancellationToken);
     }
 
-    private async Task<Stream?> FetchRemoteImage(Uri uri, CancellationToken cancellationToken = default)
+    private Task<Stream?> FetchRemoteImage(Uri uri, CancellationToken cancellationToken = default)
     {
-        var hash = await _imageCache.Prefetch(new ImageIdentifier(uri), cancellationToken);
-        var hashValue = hash.Value;
-
-        var bytes = BitConverter.GetBytes(hashValue);
+        var bytes = Encoding.UTF8.GetBytes(uri.ToString());
         var ms = new MemoryStream(bytes, writable: false);
-        return ms;
+        return Task.FromResult<Stream?>(ms);
     }
 
     private class ImageResolvePluginImpl : IMdAvPlugin
@@ -190,14 +190,12 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 
         public async Task<IImage?> Load(Stream stream)
         {
-            var bytes = GC.AllocateUninitializedArray<byte>(sizeof(ulong));
-            stream.ReadExactly(bytes);
+            using var sr = new StreamReader(stream, Encoding.UTF8);
+            var url = await sr.ReadToEndAsync();
+            var uri = new Uri(url, UriKind.Absolute);
 
-            var hashValue = BitConverter.ToUInt64(bytes);
-            var hash = Hash.FromULong(hashValue);
-
-            var image = await _parent._imageCache.GetImage(new ImageIdentifier(hash), CancellationToken.None);
-            return image;
+            var resource = await _parent._remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None);
+            return resource.Data;
         }
     }
 }

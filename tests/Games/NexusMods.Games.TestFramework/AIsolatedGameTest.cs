@@ -24,7 +24,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -99,8 +99,15 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
     }
-
-
+    
+    public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
+    {
+        var libraryFile = await LibraryService.AddLocalFile(file);
+        if (!libraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
+            throw new InvalidOperationException("The library file should be an archive.");
+        return archive;
+    }
+    
     public record ConfigOptionsRecord
     {
         public bool RegisterNullGuidedInstaller { get; set; } = true;
@@ -117,7 +124,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .AddGames()
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
-            .AddFileStoreAbstractions()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }
@@ -168,7 +174,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         content ??= path.Path.ToString();
         var contentArray = Encoding.UTF8.GetBytes(content);
 
-        hash = contentArray.XxHash64();
+        hash = contentArray.xxHash3();
         size = Size.FromLong(contentArray.Length);
         return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
     }
@@ -233,7 +239,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         foreach (var path in paths)
         {
             var data = Encoding.UTF8.GetBytes(path);
-            var hash = data.XxHash64();
+            var hash = data.xxHash3();
             var size = Size.FromLong(path.Path.Length);
             
             // Create the LoadoutFile in DB
@@ -271,7 +277,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     private static LibraryFile.New CreateLibraryFile(string fileName, ITransaction tx, out EntityId entityId) => new(tx, out entityId)
     {
         FileName = fileName,
-        Hash = fileName.XxHash64AsUtf8(),
+        Hash = fileName.xxHash3AsUtf8(),
         Size = Size.FromLong(fileName.Length),
         LibraryItem = new LibraryItem.New(tx, entityId)
         {
@@ -409,7 +415,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Section("### Current State", metadata.LastScannedDiskStateTransaction);
         if (loadouts is not null)
         {
-            foreach (var loadout in loadouts.OrderBy(ld=> ld.ShortName))
+            foreach (var loadout in loadouts)
             {
                 if (!loadout.Items.Any())
                     continue;
@@ -418,10 +424,10 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
                     .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
             
                 sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
-                sb.AppendLine("| Path | Hash | Size | TxId |");
-                sb.AppendLine("| --- | --- | --- | --- |");
+                sb.AppendLine("| Path | Hash | Size |");
+                sb.AppendLine("| --- | --- | --- |");
                 foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
-                    sb.AppendLine($"| {entry.AsLoadoutItemWithTargetPath().TargetPath} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+                    sb.AppendLine($"| {FmtPath(entry.AsLoadoutItemWithTargetPath().TargetPath)} | {entry.Hash} | {entry.Size} |");
             }
         }
         
@@ -430,11 +436,16 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
             var entries = metadata.DiskStateAsOf(asOf);
-            sb.AppendLine($"{sectionName} - ({entries.Count}) - {TxId.From(asOf.Id.Value)}");
-            sb.AppendLine("| Path | Hash | Size | TxId |");
-            sb.AppendLine("| --- | --- | --- | --- |");
+            sb.AppendLine($"{sectionName} - ({entries.Count})");
+            sb.AppendLine("| Path | Hash | Size |");
+            sb.AppendLine("| --- | --- | --- |");
             foreach (var entry in entries.OrderBy(e=> e.Path)) 
-                sb.AppendLine($"| {entry.Path} | {entry.Hash} | {entry.Size} | {entry.MaxBy(x => x.T)?.T.ToString()} |");
+                sb.AppendLine($"| {FmtPath(entry.Path)} | {entry.Hash} | {entry.Size} |");
+        }
+        
+        static string FmtPath((EntityId entityId, LocationId locationId, RelativePath relativePath) targetPath)
+        {
+            return $"{{{targetPath.locationId}, {targetPath.relativePath}}}";
         }
     }
 

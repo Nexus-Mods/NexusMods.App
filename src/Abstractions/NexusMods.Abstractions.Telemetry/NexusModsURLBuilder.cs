@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
+using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Abstractions.Telemetry;
 
@@ -22,7 +23,10 @@ public static class NexusModsUrlBuilder
     private const string ParameterNameContent  = "mtm_content";
     private const string ParameterNameGroup    = "mtm_group";
 
-    private static Uri CreateUri(string baseUrl, string? campaign = null, string? medium = null)
+    /// <summary>
+    /// Creates a new URI by adding tracking parameters to the given <paramref name="baseUrl"/>.
+    /// </summary>
+    public static Uri CreateUri(string baseUrl, string? campaign = null, string? medium = null)
     {
         var parameters = new Dictionary<string, string?>
         {
@@ -42,6 +46,8 @@ public static class NexusModsUrlBuilder
     /// Use this method if you have a generic URL to Nexus Mods.
     /// </remarks>
     public static Uri CreateGenericUri(string baseUrl) => CreateUri(baseUrl);
+
+    public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
     /// <summary>
     /// Creates a new URI pointing to a mod on Nexus Mods. This should only be used

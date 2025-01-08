@@ -1,8 +1,6 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.NexusModsLibrary.Attributes;
+using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using ULongAttribute = NexusMods.Abstractions.MnemonicDB.Attributes.ULongAttribute;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -11,7 +9,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 /// </summary>
 public partial class User : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Abstractions.NexusModsLibrary.User";
+    private const string Namespace = "NexusMods.NexusModsLibrary.User";
     
     /// <summary>
     /// The user's username.
@@ -21,15 +19,15 @@ public partial class User : IModelDefinition
     /// <summary>
     /// The nexus id of the user.
     /// </summary>
-    public static readonly ULongAttribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
-    
+    public static readonly UInt64Attribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
+
     /// <summary>
-    /// The user's avatar URL.
+    /// Url to the avatar.
     /// </summary>
-    public static readonly UriAttribute Avatar = new(Namespace, nameof(Avatar));
-    
+    public static readonly UriAttribute AvatarUri = new(Namespace, nameof(AvatarUri));
+
     /// <summary>
-    /// The user's avatar image.
+    /// Avatar resource.
     /// </summary>
-    public static readonly MemoryAttribute AvatarImage = new(Namespace, nameof(AvatarImage));
+    public static readonly ReferenceAttribute<PersistedDbResource> AvatarResource = new(Namespace, nameof(AvatarResource)) { IsOptional = true };
 }

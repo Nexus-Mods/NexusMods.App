@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using ReactiveUI;

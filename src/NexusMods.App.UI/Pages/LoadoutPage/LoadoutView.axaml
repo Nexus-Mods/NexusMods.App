@@ -16,38 +16,47 @@
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
-                <Button x:Name="SwitchView">
-                    <TextBlock>Switch View</TextBlock>
-                </Button>
+                
+                <controls:StandardButton x:Name="SwitchView"
+                                         Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ToolTip.Tip="{x:Static resources:Language.FileOriginPage_SwitchView_ToolTip}" />
                 <Line />
 
-                <navigation:NavigationControl x:Name="ViewFilesButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="FolderOutline" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}" />
-                    </StackPanel>
-                </navigation:NavigationControl>
-                <Button x:Name="DeleteButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="PlaylistRemove" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}" />
-                    </StackPanel>
-                </Button>
+                <navigation:NavigationControl x:Name="ViewFilesButton"
+                                              Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
+                                              Type="Tertiary"
+                                              Size="Small"
+                                              Fill="Weak"
+                                              ShowIcon="Left"
+                                              LeftIcon="{x:Static icons:IconValues.Folder}"
+                                              ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
+                
+                <controls:StandardButton x:Name="DeleteButton"
+                                         Text="{x:Static resources:Language.LoadoutGridView__Remove}"
+                                         Type="Tertiary"
+                                         Size="Small"
+                                         Fill="Weak"
+                                         ShowIcon="Left"
+                                         LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
+                                         ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
             </StackPanel>
         </Border>
 
 
-        <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
-
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
+                             Header="Header">
+            
             <controls:EmptyState.Subtitle>
-                <StackPanel>
+                <StackPanel  Orientation="Vertical" Spacing="16">
                     <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
-                    <navigation:NavigationControl Classes="Square Primary" x:Name="ViewLibraryButton">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
-                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued" VerticalAlignment="Center" Size="18" />
-                            <TextBlock Text="Library" />
-                        </StackPanel>
-                    </navigation:NavigationControl>
+                    <navigation:NavigationControl x:Name="ViewLibraryButton"
+                                                  Text="Library"
+                                                  ShowIcon="Left"
+                                                  LeftIcon="{x:Static icons:IconValues.ModLibrary}"
+                                                  HorizontalAlignment="Center"/>
                 </StackPanel>
             </controls:EmptyState.Subtitle>
 

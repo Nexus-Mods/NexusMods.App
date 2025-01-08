@@ -1,8 +1,7 @@
+using System.IO.Hashing;
 using System.IO.MemoryMappedFiles;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
-using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Extensions.Hashing;
 
@@ -12,50 +11,30 @@ namespace NexusMods.Extensions.Hashing;
 public static class AbsolutePathExtensions
 {
     /// <summary>
-    /// Helper method to calculate the hash of a given file, reporting progress to the given job.
+    /// Helper method to calculate the hash of a given file.
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="job"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    public static async Task<Hash> XxHash64Async(this AbsolutePath input, IActivitySource<Size>? job = null,
-        CancellationToken token = default)
+    public static async Task<Hash> XxHash64Async(this AbsolutePath input, CancellationToken token = default)
     {
         await using var inputStream = input.Read();
-        if (job == null)
-            return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await Task.CompletedTask);
-        else
-            return await inputStream.HashingCopyAsync(Stream.Null, token,  async m =>
-            {
-                job.AddProgress(Size.FromLong(m.Length));
-            });
+        return await inputStream.HashingCopyAsync(Stream.Null, token, static _ => Task.CompletedTask);
     }
 
+    private static readonly Hash HashOfEmptyFile = Hash.From(XxHash3.HashToUInt64(ReadOnlySpan<byte>.Empty));
+
     /// <summary>
-    /// Calculates the xxHash64 of a file by memory mapping it and reports progress upon completion.
+    /// Calculates the xxHash64 of a file by memory mapping it.
     /// </summary>
-    /// <param name="input">The path to the file.</param>
-    /// <param name="job">The job to report progress to.</param>
-    /// <returns>The xxHash64 hash of the file.</returns>
-    public static Hash XxHash64MemoryMapped(this AbsolutePath input, IActivitySource<Size>? job = null)
+    public static Hash XxHash64MemoryMapped(this AbsolutePath input)
     {
         try
         {
             using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read, 0);
-            var hashValue = XxHash64Algorithm.HashBytes(mmf.AsSpan());
-            job?.AddProgress(Size.FromLong((long)mmf.Length));
+            var hashValue = XxHash3.HashToUInt64(mmf.AsSpan());
             return Hash.From(hashValue);
         }
         catch (ArgumentException)
         {
-            return Hash.From(XxHash64Algorithm.HashOfEmptyFile);
+            return HashOfEmptyFile;
         }
-    }
-
-    private static Hash XxHash64MemoryMappedInMemory(this AbsolutePath input, IActivitySource<Size>? job = null)
-    {
-        var ms = (MemoryStream)input.Read();
-        var hashValue = XxHash64Algorithm.HashBytes(ms.ToArray().AsSpan()[..(int)ms.Length]);
-        return Hash.From(hashValue);
     }
 }

@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -16,7 +15,7 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 [PublicAPI]
 public partial class NexusModsModPageMetadata : IModelDefinition
 {
-    private const string Namespace = "NexusMods.Library.NexusModsModPageMetadata";
+    private const string Namespace = "NexusMods.NexusModsLibrary.NexusModsModPageMetadata";
 
     /// <summary>
     /// The ID of the mod page.
@@ -40,7 +39,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The last time the mod page was updated (UTC). This is useful for cache invalidation.
     /// </summary>
-    public static readonly DateTimeAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
+    public static readonly TimestampAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
 
     /// <summary>
     /// Uri for the full sized picture of the mod.
@@ -61,6 +60,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
 
     public partial struct ReadOnly
     {
-        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}");
+        public string GetBaseUrl() => $"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}";
+        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri(GetBaseUrl());
     }
 }

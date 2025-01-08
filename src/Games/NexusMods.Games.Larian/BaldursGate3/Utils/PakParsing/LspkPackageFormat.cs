@@ -1,9 +1,26 @@
 using System.Text;
+using DynamicData.Kernel;
+using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 
+/// <summary>
+/// Static class containing definitions for the Larian Package (LSPK, `.pak`) format.
+/// </summary>
 public static class LspkPackageFormat
 {
+
+    public struct PakMetaData
+    {
+        public LsxXmlFormat.MetaFileData MetaFileData;
+        public Optional<ScriptExtenderConfigMetadata> ScriptExtenderConfigMetadata;
+    }
+    public struct ScriptExtenderConfigMetadata
+    {
+        public bool RequiresScriptExtender;
+        public int SeRequiredVersion;
+    }
+    
 #region Enums
 
     public enum PackageVersion

@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,6 +26,7 @@ public class LoadoutCardDesignViewModel : AViewModel<ILoadoutCardViewModel>, ILo
                     .DisposeWith(d);
             }
         );
+
     }
     
     public ILoadoutBadgeViewModel LoadoutBadgeViewModel { get; } = new LoadoutBadgeDesignViewModel();
@@ -35,7 +37,7 @@ public class LoadoutCardDesignViewModel : AViewModel<ILoadoutCardViewModel>, ILo
     public string HumanizedLoadoutLastApplyTime { get; } = "Last applied 2 months ago";
     public string HumanizedLoadoutCreationTime { get; } = "Created 10 months ago";
     public string LoadoutModCount { get; } = "Mods 276";
-    [Reactive] public bool IsDeleting { get; private set; } = true;
+    [Reactive] public bool IsDeleting { get; private set; } = false;
     public bool IsSkeleton { get; } = false;
     public bool IsLastLoadout { get; } = false;
     public ReactiveCommand<Unit, Unit> VisitLoadoutCommand { get; } = ReactiveCommand.Create(() => { });

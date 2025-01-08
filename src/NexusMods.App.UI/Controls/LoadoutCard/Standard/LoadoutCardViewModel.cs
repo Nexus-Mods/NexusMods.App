@@ -11,8 +11,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -72,8 +73,16 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutCreationTime)
                 .DisposeWith(d);
-            
-            interval.Select(_ => FormatLastAppliedTime(loadout.LastAppliedDateTime))
+
+            interval.Select(_ =>
+                    {
+                        if (loadout.LastAppliedDateTime.TryGet(out var lastAppliedTime))
+                        {
+                            return FormatLastAppliedTime(lastAppliedTime);
+                        }
+                        return "";
+                    }
+                )
                 .OnUI()
                 .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime)
                 .DisposeWith(d);
@@ -119,16 +128,17 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         return string.Format(Language.LoadoutCardViewModel_FormatNumMods_Mods__0_, numMods);
     }
     
-    private static string FormatCreatedTime(DateTime creationTime)
+    private static string FormatCreatedTime(DateTimeOffset creationTime)
     {
         return string.Format(Language.LoadoutCardViewModel_CreationTimeConverter_Created__0_, creationTime.Humanize());
     }
     
-    private static string FormatLastAppliedTime(DateTime lastAppliedTime)
+    private static string FormatLastAppliedTime(DateTimeOffset lastAppliedTime)
     {
-        var stringTime = lastAppliedTime == DateTime.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
+        var stringTime = lastAppliedTime == DateTimeOffset.MinValue ? Language.HumanizedDateTime_Never : lastAppliedTime.Humanize();
         return string.Format(Language.LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_, stringTime);
     }
+
     private async Task<Bitmap?> LoadImage(GameInstallation source)
     {
         return await Task.Run(async () =>
@@ -150,7 +160,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
     }
-    
+
     private static Task CopyLoadout(Loadout.ReadOnly loadout)
     {
         return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.CopyLoadout(loadout));

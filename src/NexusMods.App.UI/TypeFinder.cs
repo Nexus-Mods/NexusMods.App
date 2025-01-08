@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Pages.Changelog;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
@@ -9,6 +10,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -24,7 +26,6 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         // factory context
-        typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
         typeof(DiagnosticListPageContext),
         typeof(ApplyDiffPageContext),
@@ -35,12 +36,14 @@ internal class TypeFinder : ITypeFinder
         typeof(ItemContentsFileTreePageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
+        typeof(LoadOrdersWIPPageContext),
 
         // workspace context
         typeof(EmptyContext),
         typeof(HomeContext),
         typeof(LoadoutContext),
         typeof(DownloadsContext),
+        typeof(CollectionDownloadPageContext),
 
         // other
         typeof(WindowData),

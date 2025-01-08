@@ -14,6 +14,11 @@ public interface IGameRegistry
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames { get; }
     
     /// <summary>
+    /// Get an array of all supported games.
+    /// </summary>
+    public ILocatableGame[] SupportedGames { get; }    
+    
+    /// <summary>
     /// All the installations indexed by their ID.
     /// </summary>
     public IDictionary<EntityId, GameInstallation> Installations { get; }

@@ -5,7 +5,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
       <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
       <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
@@ -15,6 +14,10 @@
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
     </ItemGroup>
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">

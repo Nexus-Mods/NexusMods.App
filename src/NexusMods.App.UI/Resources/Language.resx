@@ -163,7 +163,7 @@
         <value>Download history</value>
     </data>
     <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
-        <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologize for the inconvenience.</value>
+        <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorize" on the website</value>
@@ -216,13 +216,13 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>Browse all games</value>
     </data>
-    <data name="FileOriginsPage__Delete_Mod" xml:space="preserve">
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
         <value>Delete</value>
     </data>
-    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
         <value>Add</value>
     </data>
-    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
         <value>Advanced add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
@@ -546,13 +546,13 @@
         <value>Help and feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Add mod to your loadout</value>
+        <value>Add the selected mod(s) to this loadout</value>
     </data>
-    <data name="FileOriginPage_RemoveMod_ToolTip" xml:space="preserve">
-        <value>Remove mod from the library, saving disk space</value>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>Permanently remove this mod from your Library</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Use advanced installer to manually select files to include</value>
+        <value>Select specific files from a mod to add to your loadout</value>
     </data>
     <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
         <value>View the changes that will be applied to your game folder</value>
@@ -582,7 +582,7 @@
         <value>button in the toolbar</value>
     </data>
     <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
-        <value>Install your downloaded mods from the</value>
+        <value>Install your mods from the Library</value>
     </data>
     <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
         <value>No mods added to {0}</value>
@@ -617,14 +617,14 @@
         <value>My Loadouts</value>
     </data>
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-        <value>Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use.</value>
+        <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
     </data>
     <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-        <value>Create new loadout</value>
+        <value>Create new</value>
     </data>
     <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
         <value>Currently Applied</value>
@@ -680,5 +680,45 @@
     </data>
     <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
         <value>Installed Mods</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Game is currently running</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>It looks like {0} is already running.
+To apply changes or launch the game again, please close the game first.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Switch View</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Show or hide mod page groups</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Import a mod from your computer</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Open Nexus Mods</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Forward</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Back</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Connect your Nexus Mods account</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Remove the selected mod(s) from this loadout</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>Ready to install - All required mods downloaded</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>{0} of {1} required mods downloaded</value>
     </data>
 </root>

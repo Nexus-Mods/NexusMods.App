@@ -8,6 +8,10 @@ on:
         required: false
         description: "The version of the application to build"
         default: "1.0.0"
+      Target:
+        description: "The git ref to base the release on (eg: '1957a8e7', default: current head of the branch the workflow is run on)"
+        required: false
+        type: string
       PupNetRepo:
         type: string
         required: false
@@ -80,7 +84,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.Target || github.sha }}
           submodules: "recursive"
+          
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        id: stepid
+        with:
+          dotnet-version: '9.x'
+
+      - name: Print debug info
+        run: dotnet --info          
 
       - name: Transform inputs
         id: transformInputs
@@ -124,7 +138,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload
@@ -145,6 +159,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.Target || github.sha }}
           submodules: "recursive"
 
       - name: Transform inputs
@@ -157,6 +172,12 @@ jobs:
           $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
           echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
           echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+          
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        id: stepid
+        with:
+          dotnet-version: '9.x'
 
       - name: Print debug info
         run: dotnet --info
@@ -204,7 +225,7 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ inputs.Target || github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
 
       - name: Upload
         id: upload

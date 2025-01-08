@@ -1,4 +1,4 @@
-namespace NexusMods.Abstractions.DataModel.Entities;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Interface used for items which provide an entity ID.

@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -66,6 +67,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
 
             loginManager.IsLoggedInObservable
+                .DistinctUntilChanged()
                 .Where(isSignedIn => isSignedIn)
                 .Select(_ => Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)

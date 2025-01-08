@@ -32,12 +32,6 @@ public static class Services
             .AddSingleton<VersionDiagnosticEmitter>()
             .AddSingleton<ModOverwritesGameFilesEmitter>()
 
-            // Attributes (old)
-            .AddAttributeCollection(typeof(SMAPIMarker))
-            .AddAttributeCollection(typeof(SMAPIModMarker))
-            .AddAttributeCollection(typeof(SMAPIManifestMetadata))
-            .AddAttributeCollection(typeof(SMAPIModDatabaseMarker))
-
             // Attributes
             .AddSMAPILoadoutItemModel()
             .AddSMAPIModDatabaseLoadoutFileModel()

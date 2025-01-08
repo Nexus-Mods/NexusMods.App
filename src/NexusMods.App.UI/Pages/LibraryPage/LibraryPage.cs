@@ -43,7 +43,7 @@ public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageCon
         {
             SectionName = "Mods",
             ItemName = Language.LibraryPageTitle,
-            Icon = IconValues.ModLibrary,
+            Icon = IconValues.LibraryOutline,
             PageData = new PageData
             {
                 FactoryId = Id,

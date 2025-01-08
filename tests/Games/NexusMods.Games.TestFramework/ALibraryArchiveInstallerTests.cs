@@ -10,7 +10,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
@@ -44,13 +44,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         return await RegisterLocalArchive(file);
     }
 
-    public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
-    {
-        var libraryFile = await LibraryService.AddLocalFile(file);
-        if (!libraryFile.AsLibraryFile().TryGetAsLibraryArchive(out var archive))
-            throw new InvalidOperationException("The library file should be an archive.");
-        return archive;
-    }
+
 
     protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller
@@ -182,11 +176,11 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
                     sb.Append(ul.ToString("X16").PadRight(48));
                     break;
                 case byte[] byteArray:
-                    var code = byteArray.XxHash64().Value;
+                    var code = byteArray.xxHash3().Value;
                     var hash = code.ToString("X16");
                     sb.Append($"Blob 0x{hash} {byteArray.Length} bytes".PadRight(48));
                     break;
-                case DateTime dateTime:
+                case DateTimeOffset dateTime:
                     sb.Append($"DateTime : {dateTimeCount++}".PadRight(48));
                     break;
                 default:

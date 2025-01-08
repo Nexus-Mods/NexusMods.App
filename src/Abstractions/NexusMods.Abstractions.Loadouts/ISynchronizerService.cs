@@ -1,6 +1,7 @@
 ﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -13,6 +14,7 @@ public interface ISynchronizerService
     /// Synchronize the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
     /// new changes in the loadout will be applied to the game folder.
     /// </summary>
+    /// <throws cref="ExecutableInUseException">Thrown if the game EXE is in use, meaning that it's running.</throws>
     public Task Synchronize(LoadoutId loadout);
     
     /// <summary>

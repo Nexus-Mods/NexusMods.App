@@ -231,7 +231,25 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new loadout.
+        ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
+        /// </summary>
+        public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Num_required_mods_downloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to install - All required mods downloaded.
+        /// </summary>
+        public static string CollectionDownloadViewModel_Ready_to_install {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Ready_to_install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
             get {
@@ -654,7 +672,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Downloads page is currently being reworked and will be replaced in a future update. We apologize for the inconvenience..
+        ///   Looks up a localized string similar to The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience..
         /// </summary>
         public static string DownloadsView_UnderDevelopment {
             get {
@@ -690,6 +708,25 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It looks like {0} is already running.
+        ///To apply changes or launch the game again, please close the game first..
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Description {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game is currently running.
+        /// </summary>
+        public static string ErrorGameAlreadyRunning_Title {
+            get {
+                return ResourceManager.GetString("ErrorGameAlreadyRunning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The mod you&apos;re trying to access has been deleted or is missing..
         /// </summary>
         public static string ErrorView_MissingMod_Description {
@@ -717,7 +754,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add mod to your loadout.
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string FileOriginPage_AddMod {
+            get {
+                return ResourceManager.GetString("FileOriginPage_AddMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the selected mod(s) to this loadout.
         /// </summary>
         public static string FileOriginPage_AddMod_ToolTip {
             get {
@@ -726,7 +772,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use advanced installer to manually select files to include.
+        ///   Looks up a localized string similar to Advanced add.
+        /// </summary>
+        public static string FileOriginPage_AddModAdvanced {
+            get {
+                return ResourceManager.GetString("FileOriginPage_AddModAdvanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select specific files from a mod to add to your loadout.
         /// </summary>
         public static string FileOriginPage_AddModAdvanced_ToolTip {
             get {
@@ -735,38 +790,38 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove mod from the library, saving disk space.
-        /// </summary>
-        public static string FileOriginPage_RemoveMod_ToolTip {
-            get {
-                return ResourceManager.GetString("FileOriginPage_RemoveMod_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add.
-        /// </summary>
-        public static string FileOriginsPage__Add_Mod {
-            get {
-                return ResourceManager.GetString("FileOriginsPage__Add_Mod", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Advanced add.
-        /// </summary>
-        public static string FileOriginsPage__Add_Mod_Advanced {
-            get {
-                return ResourceManager.GetString("FileOriginsPage__Add_Mod_Advanced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
-        public static string FileOriginsPage__Delete_Mod {
+        public static string FileOriginPage_DeleteMod {
             get {
-                return ResourceManager.GetString("FileOriginsPage__Delete_Mod", resourceCulture);
+                return ResourceManager.GetString("FileOriginPage_DeleteMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permanently remove this mod from your Library.
+        /// </summary>
+        public static string FileOriginPage_DeleteMod_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginPage_DeleteMod_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switch View.
+        /// </summary>
+        public static string FileOriginPage_SwitchView {
+            get {
+                return ResourceManager.GetString("FileOriginPage_SwitchView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show or hide mod page groups.
+        /// </summary>
+        public static string FileOriginPage_SwitchView_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginPage_SwitchView_ToolTip", resourceCulture);
             }
         }
         
@@ -785,6 +840,24 @@ namespace NexusMods.App.UI.Resources {
         public static string FileOriginsPage_FromDrive {
             get {
                 return ResourceManager.GetString("FileOriginsPage_FromDrive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import a mod from your computer.
+        /// </summary>
+        public static string FileOriginsPage_FromDrive_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_FromDrive_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Nexus Mods.
+        /// </summary>
+        public static string FileOriginsPage_FromNexus_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_FromNexus_ToolTip", resourceCulture);
             }
         }
         
@@ -1347,7 +1420,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install your downloaded mods from the.
+        ///   Looks up a localized string similar to Install your mods from the Library.
         /// </summary>
         public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
             get {
@@ -1365,11 +1438,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove the selected mod(s) from this loadout.
+        /// </summary>
+        public static string LoadoutGridView__Remove_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Remove_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View Mod files.
         /// </summary>
         public static string LoadoutGridView__View_Files {
             get {
                 return ResourceManager.GetString("LoadoutGridView__View_Files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string LoadoutGridView__View_Files_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__View_Files_ToolTip", resourceCulture);
             }
         }
         
@@ -1612,7 +1703,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loadouts enable you to switch between various play styles by customising each with different mods and configurations. Simply select and Apply the Loadout you wish to use..
+        ///   Looks up a localized string similar to Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play..
         /// </summary>
         public static string MyLoadoutsPageDescriptionText {
             get {
@@ -1837,6 +1928,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string TopBar_Back_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_Back_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward.
+        /// </summary>
+        public static string TopBar_Forward_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_Forward_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help and feedback.
         /// </summary>
         public static string TopBar_Help_ToolTip {
@@ -1869,6 +1978,15 @@ namespace NexusMods.App.UI.Resources {
         public static string TopBarActions__LOG_IN {
             get {
                 return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect your Nexus Mods account.
+        /// </summary>
+        public static string TopBarActions__LOG_IN_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBarActions__LOG_IN_ToolTip", resourceCulture);
             }
         }
         

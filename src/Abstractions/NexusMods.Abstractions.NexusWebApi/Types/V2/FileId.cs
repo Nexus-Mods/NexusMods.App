@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
 
@@ -19,11 +20,11 @@ public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>, IAugm
 /// File ID attribute, for NexusMods API file IDs.
 /// </summary>
 public class FileIdAttribute(string ns, string name) : 
-    ScalarAttribute<FileId, uint>(ValueTags.UInt32, ns, name)
+    ScalarAttribute<FileId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(FileId value) => value.Value;
 
     /// <inheritdoc />
-    protected override FileId FromLowLevel(uint value, ValueTags tags, AttributeResolver resolver) => FileId.From(value);
+    protected override FileId FromLowLevel(uint value, AttributeResolver resolver) => FileId.From(value);
 }

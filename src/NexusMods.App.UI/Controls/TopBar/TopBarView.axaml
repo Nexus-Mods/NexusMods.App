@@ -13,35 +13,43 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
                     Classes="Spacing-1_5"
                     Margin="16,0"
                     VerticalAlignment="Center">
             <TextBlock Classes="HeadingXSSemi ForegroundSubdued"
                        x:Name="ActiveWorkspaceTitleTextBlock" />
-            
-            <TextBlock Classes="BodyMDNormal ForegroundSubdued" 
+
+            <TextBlock Classes="BodyMDNormal ForegroundSubdued"
                        x:Name="ActiveWorkspaceSubtitleTextBlock"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center" />
         </StackPanel>
-        
-        
+
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button x:Name="GoBackInHistory" Classes="Action" Width="40" Height="40">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" Size="24"/>
-            </Button>
-            <Button x:Name="GoForwardInHistory" Classes="Action" Width="40" Height="40">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" Size="24"/>
-            </Button>
+            <controls:StandardButton x:Name="GoBackInHistory"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}" />
+            <controls:StandardButton x:Name="GoForwardInHistory"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
+                                     ShowLabel="False"
+                                     ShowIcon="Left"
+                                     Type="Tertiary"
+                                     Fill="Strong"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
         </StackPanel>
 
         <Menu Grid.Column="2" Margin="12 0">
@@ -51,62 +59,64 @@
                 </MenuItem.Header>
             </MenuItem>
 
-            <Separator Width="1" Height="40"/>
+            <Separator Width="1" Height="40" />
 
-            <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.SettingsView_Title}" />
-                </ToolTip.Tip>
+            <navigation:NavigationMenuItem Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem"
+                                           ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}">
                 <navigation:NavigationMenuItem.Header>
-                    <icons:UnifiedIcon Classes="Cog"/>
+                    <icons:UnifiedIcon Classes="Cog" />
                 </navigation:NavigationMenuItem.Header>
             </navigation:NavigationMenuItem>
 
-            <MenuItem Classes="TopBarMenuItem" Width="64">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
-                </ToolTip.Tip>
+            <MenuItem Classes="TopBarMenuItem" Width="64"
+                      ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="10, 0 , 10,  0">
-                        <icons:UnifiedIcon Classes="Help"/>
-                        <icons:UnifiedIcon Classes="MenuDown"/>
+                        <icons:UnifiedIcon Classes="Help" />
+                        <icons:UnifiedIcon Classes="MenuDown" />
                     </StackPanel>
                 </MenuItem.Header>
 
-                <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
+                <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
+                                               x:Name="ViewChangelogMenuItem" />
 
-                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
-                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
+                          x:Name="ViewAppLogsMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
+                          x:Name="GiveFeedbackMenuItem" />
             </MenuItem>
-            
+
             <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
                 <MenuItem.Header>
-                    <Button Classes="Standard Primary" x:Name="LoginButton">
-                        <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
-                    </Button>
+                    <controls:StandardButton x:Name="LoginButton"
+                                             Text="{x:Static resources:Language.TopBarActions__LOG_IN}"
+                                             Type="Primary"
+                                             Fill="Strong"
+                                             ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
                 </MenuItem.Header>
             </MenuItem>
-            
+
             <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="6">
                         <icons:UnifiedIcon Size="28" x:Name="AvatarIcon" />
-                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
+                        <icons:UnifiedIcon Classes="MenuDown" Size="24" />
                     </StackPanel>
                 </MenuItem.Header>
 
                 <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}" x:Name="OpenNexusModsProfileMenuItem" />
-                <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
+                          x:Name="OpenNexusModsAccountSettingsMenuItem" />
                 <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}" x:Name="SignOutMenuItem" />
             </MenuItem>
-            
+
             <MenuItem Classes="TopBarLabelMenuItem" x:Name="PremiumLabel" IsEnabled="False">
                 <MenuItem.Header>
-                    <TextBlock 
-                        Classes="TitleMDSemi" 
+                    <TextBlock
+                        Classes="TitleMDSemi"
                         VerticalAlignment="Center"
                         Margin="0"
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"/>
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}" />
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem Classes="TopBarLabelMenuItem" x:Name="FreeLabel" IsEnabled="False">
@@ -115,10 +125,10 @@
                         Classes="TitleMDSemi"
                         VerticalAlignment="Center"
                         Margin="0"
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"/>
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}" />
                 </MenuItem.Header>
             </MenuItem>
         </Menu>
-        
+
     </Grid>
 </reactiveUi:ReactiveUserControl>

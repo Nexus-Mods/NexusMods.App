@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.Media;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;

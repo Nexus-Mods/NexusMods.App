@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
@@ -28,18 +27,49 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];
     public override GameId GameId => GameId.From(3474);
+    public override SupportType SupportType => SupportType.Official;
+
+    public override HashSet<FeatureStatus> Features { get; } =
+    [
+        new(BaseFeatures.GameLocatable, IsImplemented: true),
+        new(BaseFeatures.HasInstallers, IsImplemented: true),
+        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
+        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
+    ];
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
         _osInformation = provider.GetRequiredService<IOSInformation>();
     }
+    
+    protected override Version GetVersion(GameLocatorResult locatorResult)
+    {
+        try
+        {
+            // Use the vulkan executable to get the version, not the primary file (launcher)
+            var executableGamePath = _osInformation.IsOSX 
+                ? new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3") 
+                : new GamePath(LocationId.Game, "bin/bg3.exe");
+
+            var fvi = executableGamePath
+                .Combine(locatorResult.Path).FileInfo
+                .GetFileVersionInfo();
+            return fvi.ProductVersion;
+        }
+        catch (Exception)
+        {
+            return new Version(0, 0, 0, 0);
+        }
+    }
 
     public override GamePath GetPrimaryFile(GameStore store)
     {
         if (_osInformation.IsOSX)
             return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
-        return new GamePath(LocationId.Game, "bin/bg3.exe");
+        
+        // Use launcher to allow choosing between DirectX11 and Vulkan on GOG, Steam already always starts the launcher
+        return new GamePath(LocationId.Game, "Launcher/LariLauncher.exe");
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

@@ -1,10 +1,9 @@
+using System.Text.Json;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
@@ -19,18 +18,24 @@ using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
-using User = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
 namespace NexusMods.Networking.NexusWebApi;
 
+/// <summary>
+/// Methods for connecting the Nexus Mods API with the Library.
+/// </summary>
 [PublicAPI]
-public class NexusModsLibrary
+public partial class NexusModsLibrary
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
     private readonly NexusGraphQLClient _gqlClient;
     private readonly HttpClient _httpClient;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IFileStore _fileStore;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     /// <summary>
     /// Constructor.
@@ -42,6 +47,10 @@ public class NexusModsLibrary
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
         _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
+        _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        _fileStore = serviceProvider.GetRequiredService<IFileStore>();
+        _jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
+        _mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -68,74 +77,6 @@ public class NexusModsLibrary
         
         var txResults = await tx.Commit();
         return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
-    }
-    
-    /// <summary>
-    /// Get or add a collection metadata
-    /// </summary>
-    public async Task<CollectionRevisionMetadata.ReadOnly> GetOrAddCollectionRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken token)
-    {
-        var revisions = CollectionRevisionMetadata.FindByRevisionNumber(_connection.Db, revisionNumber)
-            .Where(r => r.Collection.Slug == slug);
-        if (revisions.TryGetFirst(r => r.RevisionNumber == revisionNumber, out var revision)) 
-            return revision;
-        
-        var info = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(slug.Value, (int)revisionNumber.Value, true, token);
-        using var tx = _connection.BeginTransaction();
-        
-        var db = _connection.Db;
-        var collectionInfo = info.Data!.CollectionRevision.Collection;
-
-        // Remap the collection info
-        var collectionResolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
-        collectionResolver.Add(CollectionMetadata.Name, collectionInfo.Name);
-        collectionResolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
-        collectionResolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
-        
-        if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
-            collectionResolver.Add(CollectionMetadata.TileImageUri, tileImageUri);
-        
-        if (Uri.TryCreate(collectionInfo.HeaderImage?.Url, UriKind.Absolute, out var backgroundImageUri))
-            collectionResolver.Add(CollectionMetadata.BackgroundImageUri, backgroundImageUri);
-        
-        
-        var user = await collectionInfo.User.Resolve(db, tx, _httpClient, token);
-        collectionResolver.Add(CollectionMetadata.Author, user);
-        
-        // Remap the revision info
-        var revisionInfo = info.Data!.CollectionRevision;
-        var revisionResolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revisionInfo.Id));
-        revisionResolver.Add(CollectionRevisionMetadata.RevisionId, RevisionId.From((ulong)revisionInfo.Id));
-        revisionResolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
-        revisionResolver.Add(CollectionRevisionMetadata.CollectionId, collectionResolver.Id);
-        revisionResolver.Add(CollectionRevisionMetadata.Downloads, (ulong)revisionInfo.TotalDownloads);
-        revisionResolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(ulong.Parse(revisionInfo.TotalSize)));
-        revisionResolver.Add(CollectionRevisionMetadata.OverallRating, float.Parse(revisionInfo.OverallRating ?? "0.0") / 100);
-        revisionResolver.Add(CollectionRevisionMetadata.TotalRatings, (ulong)(revisionInfo.OverallRatingCount ?? 0));
-
-        foreach (var file in revisionInfo.ModFiles)
-        {
-            var fileInfo = file.File!;
-            
-            var modEId = fileInfo.Mod.Resolve(db, tx);
-            var modfile = fileInfo.Resolve(db, tx, modEId);
-            
-            var revisionFileResolver = GraphQLResolver.Create(db, tx, CollectionRevisionModFile.FileId, ulong.Parse(file.Id));
-            revisionFileResolver.Add(CollectionRevisionModFile.CollectionRevision, revisionResolver.Id);
-            revisionFileResolver.Add(CollectionRevisionModFile.NexusModFile, modfile);
-            revisionFileResolver.Add(CollectionRevisionModFile.IsOptional, file.Optional);
-        }
-        
-        var txResults = await tx.Commit();
-        return CollectionRevisionMetadata.Load(txResults.Db, txResults[revisionResolver.Id]);
-    }
-    
-    private async Task<byte[]> DownloadImage(string? uri, CancellationToken token)
-    {
-        if (uri is null) return [];
-        if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri)) return [];
-        
-        return await _httpClient.GetByteArrayAsync(imageUri, token);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -236,15 +177,28 @@ public class NexusModsLibrary
     {
         var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
         var file = await GetOrAddFile(fileId, modPage, cancellationToken);
-        
+
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
-        
+
         var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;
     }
-    
+
+    public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
+        AbsolutePath destination,
+        NexusModsFileMetadata.ReadOnly fileMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
+
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, fileMetadata.ModPage.GetUri(), destination);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
+
+        return nexusJob;
+    }
+
     /// <summary>
     /// Create a job that downloads a collection
     /// </summary>
