@@ -40,6 +40,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
         // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
         // until the entire model gets disposed. Without this, selection would break for off-screen items.
+        // ReSharper disable once AsyncVoidLambda
         var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(async changeSet =>
         {
             LibraryItems.ApplyChanges(changeSet);
