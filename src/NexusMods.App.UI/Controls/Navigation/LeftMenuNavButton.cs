@@ -2,10 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Controls.Navigation;
 
-namespace NexusMods.App.UI.LeftMenu.Items;
+namespace NexusMods.App.UI.Controls.Navigation;
 
 /// <summary>
 /// A standard left menu button with active and selected states, as well as workspace navigation capabilities.
