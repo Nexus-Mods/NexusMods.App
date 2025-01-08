@@ -63,14 +63,10 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
             else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
         }
 
-        var command = Cli.Wrap(exe.ToString())
-            .WithArguments(args)
-            .WithWorkingDirectory(exe.Parent.ToString());
-
         // Note(sewer): We use the tool runner to execute an alternative process,
         //              but because the UI expects `RunGameTool`, we override the `RunGameTool's` executor
         //              with `GameToolRunner` implementation.
-        await _runner.ExecuteAsync(loadout, command, true, cancellationToken);
+        await _runner.ExecuteAsync(loadout, exe, args, exe.Parent, true, cancellationToken);
     }
 
     // TODO: Refactor Bannerlord.LauncherManager so we don't have to copy (some) of the commandline logic.

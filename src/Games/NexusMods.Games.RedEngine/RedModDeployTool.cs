@@ -50,17 +50,14 @@ public class RedModDeployTool : ITool
         var fs = FileSystem.Shared;
         if (fs.OS.IsWindows)
         {
-            var command = Cli.Wrap(exe.ToString())
-                .WithArguments(["deploy", "--modlist=" + loadorderFile.Path], true)
-                .WithWorkingDirectory(exe.Parent.ToString());
-            await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
+            await _toolRunner.ExecuteAsync(loadout, exe, ["deploy", "--modlist=" + loadorderFile.Path], exe.Parent, true, cancellationToken);
         }
         else
         {
             if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
             {
                 await using var batchPath = await ExtractTemporaryDeployScript();
-                await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+                await _toolRunner.ExecuteAsync(loadout, batchPath, Array.Empty<string>(), null, true, cancellationToken);
             }
             else
             {
