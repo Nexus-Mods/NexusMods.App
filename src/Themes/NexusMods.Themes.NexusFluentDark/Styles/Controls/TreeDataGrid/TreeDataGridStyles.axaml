@@ -414,7 +414,12 @@
                         <!-- easy way to get the rounded corner to mask the image below -->
                         <Setter Property="ClipToBounds" Value="True" />
                         
-                        <Style Selector="^ > Image">
+                        <Style Selector="^ > Panel > icons|UnifiedIcon">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                            <Setter Property="Size" Value="16" />
+                        </Style>
+                        
+                        <Style Selector="^ > Panel > Image">
                             <Setter Property="Stretch" Value="UniformToFill" />
                         </Style>
                     </Style>
