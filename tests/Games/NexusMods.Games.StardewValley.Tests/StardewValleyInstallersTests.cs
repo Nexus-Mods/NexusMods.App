@@ -39,7 +39,7 @@ public class StardewValleyInstallersTests(ITestOutputHelper outputHelper) : ALib
         var sb = new StringBuilder();
         sb.AppendLine($"{group.AsLoadoutItem().Name}:");
         
-        foreach (var firstLevelChild in group.Children)
+        foreach (var firstLevelChild in group.Children.OrderBy(item => item.Name))
         {
             sb.AppendLine($"{firstLevelChild.Name}:");
             firstLevelChild.TryGetAsLoadoutItemGroup(out var childGroup).Should().BeTrue("The child should be a loadout item group.");
