@@ -6,7 +6,7 @@ using R3;
 
 namespace NexusMods.App.UI.Overlays;
 
-public interface IUpgradeToPremiumViewModel : IViewModelInterface
+public interface IUpgradeToPremiumViewModel : IOverlayViewModel
 {
     public IMarkdownRendererViewModel MarkdownRendererViewModel { get; }
 
