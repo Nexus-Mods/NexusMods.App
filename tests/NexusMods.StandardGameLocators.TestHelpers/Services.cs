@@ -42,7 +42,7 @@ public static class Services
 
         coll.AddSingleton<AHandler<GOGGame, GOGGameId>>(s =>
             new StubbedGameLocator<GOGGame, GOGGameId>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path),
+                tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path, "4242"),
                 game => game.Id));
 
         coll.AddSingleton<AHandler<SteamGame, AppId>>(s =>

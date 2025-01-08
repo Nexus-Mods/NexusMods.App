@@ -26,6 +26,8 @@ Diagnostics are shown in the following situations:
 ### REDmod Load Ordering
 Some mods for Cyberpunk 2077 make use of the official REDmod format for loading content. The Load Order page allows users to decide on the order in which the game will load content from REDmods. By default, the mods at the **top** of the list will win if they have conflicting changes with another REDmod lower down in the order. 
 
+![REDmod Load Order for Cyberpunk 2077.](../images/0.7.1/Cyberpunk2077LoadOrder.webp)
+
 You can learn more about the REDmod format on [community wiki](https://wiki.redmodding.org/cyberpunk-2077-modding/for-mod-users/users-modding-cyberpunk-2077/redmod/usage).
 
 Changes in REDmods are always overwritten by similar changes inside archive mods.

@@ -84,6 +84,12 @@ public interface IWorkspaceController
     /// </summary>
     public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<TContext, bool> predicate, Func<Optional<PageData>> getPageData, Func<TContext> getWorkspaceContext) where TContext : IWorkspaceContext;
 
+
+    /// <summary>
+    /// Unregisters a workspace identified by its ContextId.
+    /// </summary>
+    public void UnregisterWorkspaceByContext<TContext>(Func<TContext, bool> predicate) where TContext : IWorkspaceContext;
+
     /// <summary>
     /// Adds a new panel to a workspace.
     /// </summary>

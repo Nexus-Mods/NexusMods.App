@@ -151,6 +151,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         return vm;
     }
+    
 
     private void AddDefaultPanel(WorkspaceViewModel vm)
     {
@@ -164,13 +165,24 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             addPanelBehavior
         );
     }
-
-    private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    
+    public void UnregisterWorkspaceByContext<TContext>(Func<TContext, bool> predicate)
+        where TContext : IWorkspaceContext
     {
-        //TODO: currently unused, we have no cases where we unregister a workspace
-        // will need this when we support removing loadouts
         Dispatcher.UIThread.VerifyAccess();
 
+        var workspaces = FindWorkspacesByContext<TContext>();
+        var existingWorkspace = workspaces.FirstOrOptional(tuple => predicate(tuple.Item2));
+        if (!existingWorkspace.HasValue) return;
+        var workspace = existingWorkspace.Value.Item1;
+
+        UnregisterWorkspace(workspace);
+    }
+
+    private void UnregisterWorkspace(IWorkspaceViewModel workspaceViewModel)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        
         _workspaces.Remove(workspaceViewModel.Id);
 
         if (ReferenceEquals(ActiveWorkspace, workspaceViewModel) && AllWorkspaces.Count > 0)

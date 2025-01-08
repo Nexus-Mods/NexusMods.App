@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using NexusMods.DataModel.ChunkedStreams;
+using NexusMods.Abstractions.IO.ChunkedStreams;
 
 namespace NexusMods.DataModel.Tests.ChunkedReaders;
 
