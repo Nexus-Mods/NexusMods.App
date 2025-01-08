@@ -34,7 +34,7 @@ Premium users also get:
 * **No Ads - For Life!** - Never see ads again on the website, even if you cancel!
 * **Support authors** - Premium memberships allow Nexus Mods to reward mod authors.
 
-[Learn more about Premium]({ NexusModsUrlBuilder.CreateUri("https://next.nexusmods.com/premium") })
+[Learn more about Premium]({ NexusModsUrlBuilder.LearAboutPremiumUri })
 """;
 
         CommandCancel = new ReactiveCommand(_ => base.Close());
