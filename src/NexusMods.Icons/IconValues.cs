@@ -67,9 +67,6 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/check-circle-outline/
     public static readonly IconValue CheckCircleOutline = new ProjektankerIcon("mdi-check-circle-outline");
-    
-    // https://pictogrammers.com/library/mdi/icon/thumb-up/
-    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
@@ -93,17 +90,23 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/home/
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
+    // https://pictogrammers.com/library/mdi/icon/lock/
+    public static readonly IconValue Lock = new ProjektankerIcon("mdi-lock");
+
+    // https://pictogrammers.com/library/mdi/icon/open-in-new/
+    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
+
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
     public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
     
     // https://pictogrammers.com/library/mdi/icon/playlist-remove/
     public static readonly IconValue PlaylistRemove = new ProjektankerIcon("mdi-playlist-remove");
 
-    // https://pictogrammers.com/library/mdi/icon/open-in-new/
-    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
-
     // https://pictogrammers.com/library/mdi/icon/tab/
     public static readonly IconValue Tab = new ProjektankerIcon("mdi-tab");
+
+    // https://pictogrammers.com/library/mdi/icon/thumb-up/
+    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/magnfiy/
     public static readonly IconValue Search = new ProjektankerIcon("mdi-magnify");
