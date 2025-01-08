@@ -1,14 +1,15 @@
 # v0.7.2 - 2024-01-XX
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
-- Games UI
-- Loadouts UI
-- Health Check UI
-- Bannerlord: BLSE Health Checks
-- Login bug for UTC+6 users
-- Bundled mods bug for collections
-- Clean up workspace data when removing loadouts
-- Less messages in the app log regarding analytics
+* Games UI
+* Loadouts UI
+* Health Check UI
+* Bannerlord: BLSE Health Checks
+* File conflicts are now resolved using "most recently installed wins". This allows control of conflicts until the full UI is added for this.
+* Login bug for UTC+6 users
+* Bundled mods bug for collections
+* Clean up workspace data when removing loadouts
+* Less messages in the app log regarding analytics
 
 
 # v0.7.1 - 2024-12-17
