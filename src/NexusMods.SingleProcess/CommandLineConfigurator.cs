@@ -105,6 +105,9 @@ public class CommandLineConfigurator
                 {
                     var option = (Option)_makeOptionMethod.MakeGenericMethod(optionDefinition.Type)
                         .Invoke(this, [optionDefinition])!;
+
+                    option.IsRequired = !optionDefinition.IsOptional;
+                    
                     command.AddOption(option);
                     getters.Add(ctx => ctx.ParseResult.GetValueForOption(option));
                 }

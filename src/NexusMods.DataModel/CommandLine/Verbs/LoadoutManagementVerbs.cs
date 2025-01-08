@@ -1,14 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileSystemGlobbing;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -31,11 +29,13 @@ public static class LoadoutManagementVerbs
             .AddModule("loadout", "Commands for managing a specific loadout")
             .AddModule("loadout groups", "Commands for managing the file groups in a loadout")
             .AddModule("loadout group", "Commands for managing a specific group of files in a loadout")
+            .AddModule("loadout group items", "Commands for managing the items in a group of files in a loadout")
             .AddVerb(() => Synchronize)
             .AddVerb(() => InstallMod)
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => ListGroupContents)
-            .AddVerb(() => ListMods)
+            .AddVerb(() => ListGroups)
+            .AddVerb(() => DeleteGroupItems)
             .AddVerb(() => CreateLoadout);
 
     [Verb("loadout synchronize", "Synchronize the loadout with the game folders, adding any changes in the game folder to the loadout and applying any new changes in the loadout to the game folder")]
@@ -71,12 +71,10 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var db = conn.Db;
-        var rows = Loadout.All(db)
+        await Loadout.All(db)
             .Where(x => x.IsVisible())
-            .Select(list => new object[] { list.Name, list.Installation.Name, list.LoadoutId, list.Items.Count })
-            .ToList();
-
-        await renderer.Table(["Name", "Game", "Id", "Items"], rows);
+            .Select(list => (list.Name, list.Installation.Name, list.LoadoutId, list.Items.Count))
+            .RenderTable(renderer, "Name", "Game", "Id", "Items");
         return 0;
     }
 
@@ -84,6 +82,7 @@ public static class LoadoutManagementVerbs
     private static async Task<int> ListGroupContents([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Option("g", "group", "Name of the group to list")] string groupName,
+        [Option("f", "filterFiles", "Filter files by the given glob", true)] Matcher? filterFiles,
         [Injected] CancellationToken token)
     {
         var mod = loadout.Items
@@ -92,6 +91,11 @@ public static class LoadoutManagementVerbs
         
         if (!mod.IsValid())
             return await renderer.InputError("Group {0} not found", groupName);
+        
+        Func<string, bool> filter = _ => true;
+
+        if (filterFiles != null) 
+            filter = s => filterFiles.Match(s).HasMatches;
         
         await mod.Children
             .Select(c =>
@@ -109,14 +113,48 @@ public static class LoadoutManagementVerbs
 
                 })
             .Where(v => v != default((LocationId, RelativePath, string)))
+            .Where(f => filter(f.Item2.ToString()))
             .OrderBy(v => v.Item1)
             .ThenBy(v => v.Item2)
             .RenderTable(renderer, "Folder", "File", "Hash");
         return 0;
     }
 
+    [Verb("loadout group items delete", "Deletes items from a group that match a given pattern")]
+    private static async Task<int> DeleteGroupItems(
+        [Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
+        [Option("g", "group", "Name of the group to list")] string groupName,
+        [Option("f", "filterFiles", "Filter files by the given glob")] Matcher filterFiles,
+        [Injected] CancellationToken token)
+    {
+        var mod = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .First(m => m.AsLoadoutItem().Name == groupName);
+        
+        if (!mod.IsValid())
+            return await renderer.InputError("Group {0} not found", groupName);
+
+        var ids = mod.Children
+            .OfTypeLoadoutItemWithTargetPath()
+            .Where(t => filterFiles.Match(t.TargetPath.Item3.ToString()).HasMatches)
+            .Select(f => f.Id)
+            .ToArray();
+        
+        await renderer.Text("Deleting {0} items", ids.Length);
+        
+        using var tx = loadout.Db.Connection.BeginTransaction();
+        foreach (var id in ids)
+            tx.Delete(id, false);
+        await tx.Commit();
+        
+        await renderer.Text("Complete", ids.Length);
+        
+        return 0;
+    }
+
     [Verb("loadout groups list", "Lists the groups in a loadout")]
-    private static async Task<int> ListMods([Injected] IRenderer renderer,
+    private static async Task<int> ListGroups([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {

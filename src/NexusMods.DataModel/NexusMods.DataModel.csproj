@@ -30,6 +30,7 @@
         <PackageReference Include="BitFaster.Caching" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <PackageReference Include="Microsoft.Extensions.ObjectPool" />

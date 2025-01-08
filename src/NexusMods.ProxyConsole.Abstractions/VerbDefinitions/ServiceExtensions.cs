@@ -75,11 +75,11 @@ public static class ServiceExtensions
 
             if (option is not null)
             {
-                options.Add(new OptionDefinition(param.ParameterType, option.ShortName, option.LongName, option.HelpText, false));
+                options.Add(new OptionDefinition(param.ParameterType, option.ShortName, option.LongName, option.HelpText, false, option.IsOptional));
             }
             else if (injected is not null)
             {
-                options.Add(new OptionDefinition(param.ParameterType, string.Empty, string.Empty, string.Empty, true));
+                options.Add(new OptionDefinition(param.ParameterType, string.Empty, string.Empty, string.Empty, true, false));
             }
         }
 
