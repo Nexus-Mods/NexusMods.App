@@ -26,6 +26,7 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -39,6 +40,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     private readonly CollectionRevisionMetadata.ReadOnly _revision;
     private readonly CollectionMetadata.ReadOnly _collection;
 
+    private readonly IServiceProvider _serviceProvider;
+    private readonly LoadoutId _targetLoadout;
+
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public CollectionDownloadViewModel(
@@ -47,6 +51,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         LoadoutId targetLoadout) : base(windowManager)
     {
+        _serviceProvider = serviceProvider;
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var nexusModsDataProvider = serviceProvider.GetRequiredService<NexusModsDataProvider>();
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
@@ -61,6 +66,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         _revision = revisionMetadata;
         _collection = revisionMetadata.Collection;
+        _targetLoadout = targetLoadout;
 
         var libraryFile = collectionDownloader.GetLibraryFile(revisionMetadata);
         var collectionJsonFile = nexusModsLibrary.GetCollectionJsonFile(libraryFile);
@@ -232,15 +238,32 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             TreeDataGridAdapter.MessageSubject.SubscribeAwait(
                 onNextAsync: (message, cancellationToken) =>
                 {
-                    return message.Item.Match(
-                        f0: x => collectionDownloader.Download(x, cancellationToken),
-                        f1: x => collectionDownloader.Download(x, cancellationToken)
+                    return message.Match(
+                        f0: download => download.Item.Match(
+                            f0: x => collectionDownloader.Download(x, cancellationToken),
+                            f1: x => collectionDownloader.Download(x, cancellationToken)
+                        ),
+                        f1: install => InstallItem(install.Item, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
         });
+    }
+
+    private async ValueTask InstallItem(NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.ReadOnly download, CancellationToken cancellationToken)
+    {
+        var monitor = _serviceProvider.GetRequiredService<IJobMonitor>();
+
+        var job = await InstallCollectionDownloadJob.Create(
+            serviceProvider: _serviceProvider,
+            targetLoadout: _targetLoadout,
+            download: download,
+            cancellationToken: cancellationToken
+        );
+
+        await monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
     }
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
@@ -285,13 +308,20 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
 public record DownloadMessage(DownloadableItem Item);
 
+public record InstallMessage(NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.ReadOnly Item);
+
+public class Message : OneOfBase<DownloadMessage, InstallMessage>
+{
+    public Message(OneOf<DownloadMessage, InstallMessage> input) : base(input) { }
+}
+
 public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel, EntityId>,
-    ITreeDataGirdMessageAdapter<DownloadMessage>
+    ITreeDataGirdMessageAdapter<Message>
 {
     private readonly NexusModsDataProvider _nexusModsDataProvider;
     private readonly CollectionRevisionMetadata.ReadOnly _revisionMetadata;
 
-    public Subject<DownloadMessage> MessageSubject { get; } = new();
+    public Subject<Message> MessageSubject { get; } = new();
     public R3.ReactiveProperty<CollectionDownloadsFilter> Filter { get; } = new(value: CollectionDownloadsFilter.OnlyRequired);
 
     private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
@@ -326,7 +356,17 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
             var disposable = withDownloadAction.DownloadItemCommand.Subscribe(MessageSubject, static (downloadableItem, subject) =>
             {
                 var payload = new DownloadMessage(downloadableItem);
-                subject.OnNext(payload);
+                subject.OnNext(new Message(payload));
+            });
+
+            var didAdd = _commandDisposables.TryAdd(model, disposable);
+            Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+        } else if (model is NexusModsFileMetadataLibraryItemModel.Installable withInstallAction)
+        {
+            var disposable = withInstallAction.InstallItemCommand.Subscribe((MessageSubject, withInstallAction), static (_, state) =>
+            {
+                var (subject, withInstallAction) = state;
+                subject.OnNext(new Message(new InstallMessage(withInstallAction.Download.AsCollectionDownload())));
             });
 
             var didAdd = _commandDisposables.TryAdd(model, disposable);
