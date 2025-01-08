@@ -40,7 +40,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
         // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
         // until the entire model gets disposed. Without this, selection would break for off-screen items.
-        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet =>
+        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(async changeSet =>
         {
             LibraryItems.ApplyChanges(changeSet);
             
@@ -50,11 +50,13 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             //
             // SAFETY: This can't have race condition, code is executed on UI, so can't be executed in parallel.
             var first = LibraryItems.FirstOrDefault();
-            if (first.IsValid())
+            if (!first.IsValid()) return;
+            try
             {
-                var thumbNail = Task.Run(async () => await modPageThumbnailPipeline.LoadResourceAsync(first.ModPageMetadataId, CancellationToken.None)).Result;
+                var thumbNail = await modPageThumbnailPipeline.LoadResourceAsync(first.ModPageMetadataId, CancellationToken.None);
                 Thumbnail.Value = thumbNail.Data.Value;
             }
+            catch (Exception) { /* suppress unhandled error in case lookup fails silently */ }
         });
 
         var linkedLoadoutItemsDisposable = new SerialDisposable();
