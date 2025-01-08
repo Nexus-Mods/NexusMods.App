@@ -32,16 +32,16 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IToolManager _toolManager;
     private readonly IConnection _conn;
     private readonly IJobMonitor _monitor;
-    private readonly IOverlayController _overlayController;
+    private readonly IServiceProvider _serviceProvider;
     private readonly GameRunningTracker _gameRunningTracker;
 
-    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
+    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IServiceProvider serviceProvider, GameRunningTracker gameRunningTracker)
     {
         _logger = logger;
         _toolManager = toolManager;
         _conn = conn;
         _monitor = monitor;
-        _overlayController = overlayController;
+        _serviceProvider = serviceProvider;
         _gameRunningTracker = gameRunningTracker;
         
         this.WhenActivated(cd =>
@@ -72,7 +72,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         }
         catch (ExecutableInUseException)
         {
-            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_serviceProvider, marker.Installation.Name);
         }
         catch (Exception ex)
         {
