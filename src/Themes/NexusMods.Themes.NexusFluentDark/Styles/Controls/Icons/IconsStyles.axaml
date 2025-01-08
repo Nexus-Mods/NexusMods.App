@@ -111,6 +111,7 @@
                     <icons:UnifiedIcon Classes="Package" />
                     <icons:UnifiedIcon Classes="Cardiology" />
                     <icons:UnifiedIcon Classes="LibraryOutline" />
+                    <icons:UnifiedIcon Classes="CollectionsOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -593,5 +594,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Swap">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Swap}" />
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.CollectionsOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CollectionsOutline}" />
     </Style>
 </Styles>

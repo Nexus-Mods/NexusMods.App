@@ -4,42 +4,30 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Spacing="20" Orientation="Vertical">
+            <StackPanel Spacing="8" Orientation="Vertical">
                 <!-- Add Controls for Previewer Here -->
-                
+
                 <items:LeftMenuNavButton>
                     <Grid ColumnDefinitions="Auto, *">
-                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
-                        <TextBlock Grid.Column="1"
-                                   Margin="8 0 0 0"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Text="Default" />
+                        <icons:UnifiedIcon Grid.Column="0" Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                        <TextBlock Grid.Column="1" Text="Label Goes Here" />
                     </Grid>
                 </items:LeftMenuNavButton>
                 
                 <items:LeftMenuNavButton IsActive="True">
                     <Grid ColumnDefinitions="Auto, *">
-                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
-                        <TextBlock Grid.Column="1"
-                                   Margin="8 0 0 0"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Text="Active" />
+                        <icons:UnifiedIcon Grid.Column="0" Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                        <TextBlock Grid.Column="1" Text="Active" />
                     </Grid>
                 </items:LeftMenuNavButton>
-                
+
                 <items:LeftMenuNavButton IsSelected="True">
                     <Grid ColumnDefinitions="Auto, *">
-                        <icons:UnifiedIcon Grid.Column="0" Classes="Cog" />
-                        <TextBlock Grid.Column="1"
-                                   Margin="8 0 0 0"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Text="Selected" />
+                        <icons:UnifiedIcon Grid.Column="0" Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                        <TextBlock Grid.Column="1" Text="Selected" />
                     </Grid>
                 </items:LeftMenuNavButton>
-                
+
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -47,11 +35,37 @@
     <!-- Add Styles Here -->
     <Style Selector="items|LeftMenuNavButton">
 
-        
-        <!-- TODO: add proper styles for `:active` and `:selected` states -->
+        <Setter Property="Padding" Value="5,7" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="Fill" Value="None" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+
+        <Style Selector="^ > Grid > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Margin" Value="4 0 4 0" />
+        </Style>
+
+        <!-- ACTIVE -->
+
         <Style Selector="^:active">
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+
+            <Style Selector="^ > Grid > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            </Style>
+        </Style>
+
+        <!-- SELECTED -->
+
+        <Style Selector="^:selected">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600Brush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+
+            <Style Selector="^ > Grid > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            </Style>
         </Style>
     </Style>
 </Styles>
