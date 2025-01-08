@@ -200,7 +200,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
     private ILeftMenuItemViewModel MakeLoadoutItemGroupViewModel(IWorkspaceController workspaceController, CollectionGroup.ReadOnly itm, IServiceProvider serviceProvider)
     {
-        var vm = new LeftMenuCollectionViewModel
+        var vm = new LeftMenuCollectionItemViewModel
         {
             CollectionGroupId = itm.CollectionGroupId,
             Name = itm.AsLoadoutItemGroup().AsLoadoutItem().Name,
@@ -239,7 +239,7 @@ file class LeftMenuComparer : IComparer<ILeftMenuItemViewModel>
 
         return (x, y) switch
         {
-            (LeftMenuCollectionViewModel a, LeftMenuCollectionViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
+            (LeftMenuCollectionItemViewModel a, LeftMenuCollectionItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
             (IconViewModel a, IconViewModel b) => a.RelativeOrder.CompareTo(b.RelativeOrder),
             _ => 0,
         };

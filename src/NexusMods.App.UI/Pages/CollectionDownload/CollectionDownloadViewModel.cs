@@ -14,6 +14,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.TextEdit;
@@ -59,6 +60,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -81,13 +83,21 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
         CommandDownloadRequiredItems = _canDownloadRequiredItems.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken),
+            executeAsync: async (_, cancellationToken) =>
+            {
+                if (loginManager.IsPremium) await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken);
+                else overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
+            },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
 
         CommandDownloadOptionalItems = _canDownloadOptionalItems.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) => collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken),
+            executeAsync: async (_, cancellationToken) =>
+            {
+                if (loginManager.IsPremium) await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken);
+                else overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
+            },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
@@ -184,19 +194,24 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .OffUi()
                 .SelectMany(revision => collectionDownloader.DownloadedItemCountObservable(revision, itemType: CollectionDownloader.ItemType.Optional));
 
-            var isPremiumObservable = loginManager.IsPremiumObservable.Prepend(false);
+            loginManager.IsPremiumObservable
+                .Prepend(false)
+                .OnUI()
+                .Subscribe(isPremium => CanDownloadAutomatically = isPremium)
+                .AddTo(disposables);
+
             var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision).Prepend(false);
 
-            numDownloadedRequiredItemsObservable.CombineLatest(isPremiumObservable, isCollectionInstalledObservable)
+            numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
                 .Subscribe(tuple =>
                 {
-                    var (numDownloadedRequiredItems, isPremium, isCollectionInstalled) = tuple;
+                    var (numDownloadedRequiredItems, isCollectionInstalled) = tuple;
                     var hasDownloadedAllRequiredItems = numDownloadedRequiredItems == RequiredDownloadsCount;
 
                     CountDownloadedRequiredItems = numDownloadedRequiredItems;
                     _canInstallRequiredItems.OnNext(!isCollectionInstalled && hasDownloadedAllRequiredItems);
-                    _canDownloadRequiredItems.OnNext(!hasDownloadedAllRequiredItems && isPremium);
+                    _canDownloadRequiredItems.OnNext(!hasDownloadedAllRequiredItems);
 
                     if (hasDownloadedAllRequiredItems)
                     {
@@ -208,16 +223,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     }
                 }).AddTo(disposables);
 
-            numDownloadedOptionalItemsObservable.CombineLatest(isPremiumObservable)
+            numDownloadedOptionalItemsObservable
                 .OnUI()
-                .Subscribe(tuple =>
+                .Subscribe(numDownloadedOptionalItems =>
                 {
-                    var (numDownloadedOptionalItems, isPremium) = tuple;
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
 
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
                     _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0);
-                    _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems && isPremium);
+                    _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
 
             ImagePipelines.CreateObservable(_collection.Id, tileImagePipeline)
@@ -293,6 +307,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     [Reactive] public Bitmap? BackgroundImage { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     [Reactive] public string CollectionStatusText { get; private set; } = "";
+
+    [Reactive] public bool CanDownloadAutomatically { get; private set; } = false;
 
     public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
     public ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
