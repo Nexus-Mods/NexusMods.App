@@ -29,7 +29,7 @@ public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryIte
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
-        // Note: Because this is a local file, this always hits the fallback.
+        // Note: Because this is a local file, this always hits the fallback thumbnail in practice.
         var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
         var imageDisposable = ImagePipelines.CreateObservable(localFile.Id, modPageThumbnailPipeline)
             .ObserveOnUIThreadDispatcher()

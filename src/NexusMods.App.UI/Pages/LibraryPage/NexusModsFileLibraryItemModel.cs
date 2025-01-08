@@ -34,7 +34,6 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
-        // Note: Because this is a local file, this always hits the fallback.
         var imageDisposable = Disposable.Empty;
         ShowThumbnail.Value = showThumbnail;
         if (showThumbnail)
