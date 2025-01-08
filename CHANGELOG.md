@@ -1,3 +1,16 @@
+# v0.7.2 - 2024-01-XX
+This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
+
+- Games UI
+- Loadouts UI
+- Health Check UI
+- Bannerlord: BLSE Health Checks
+- Login bug for UTC+6 users
+- Bundled mods bug for collections
+- Clean up workspace data when removing loadouts
+- Less messages in the app log regarding analytics
+
+
 # v0.7.1 - 2024-12-17
 This release includes styling for the Load Order view, the ability to install and remove collections for all users and several improvements to the analytics we collect that will help inform our design decisions. 
 
