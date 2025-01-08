@@ -38,7 +38,8 @@ public class JwtTokenReply
     public string? Scope { get; set; }
 
     /// <summary>
-    /// unix timestamp (seconds resolution) of when the token was created
+    /// unix timestamp (seconds resolution) of when the token was created.
+    /// This timestamp is UTC+0.
     /// </summary>
     [JsonPropertyName("created_at")]
     public long CreatedAt { get; set; }
