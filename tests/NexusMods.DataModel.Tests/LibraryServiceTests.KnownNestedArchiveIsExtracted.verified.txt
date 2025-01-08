@@ -1,0 +1,8 @@
+﻿Parent Archive:
+nested_archive/extraFile.txt - 13 B -  0x56F02DFE88D8863C - Stored : True
+nested_archive/folder1/folder1file.txt - 15 B -  0x8520436F06348939 - Stored : True
+nested_archive/someNestedArchive.7z - 296 B -  0x0EC1B0949AB87C3E - Stored : False
+Nested Archive:
+deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt - 12 B -  0x3F0AB4D495E35A9A - Stored : True
+folder1/folder1file.txt - 15 B -  0x8520436F06348939 - Stored : True
+rootFile.txt - 12 B -  0x818A82701BC1CC30 - Stored : True

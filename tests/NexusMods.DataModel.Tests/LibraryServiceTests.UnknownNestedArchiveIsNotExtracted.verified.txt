@@ -1,0 +1,3 @@
+﻿nested_game_archive/extraFile.txt - 13 B -  0x56F02DFE88D8863C - Stored : True
+nested_game_archive/folder1/folder1file.txt - 15 B -  0x8520436F06348939 - Stored : True
+nested_game_archive/SomeModFile.archive - 296 B -  0x0EC1B0949AB87C3E - Stored : True
