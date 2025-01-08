@@ -2,6 +2,7 @@ using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
@@ -27,6 +28,7 @@ public class StardewValleyInstallersTests(ITestOutputHelper outputHelper) : ALib
     [InlineData("Portraits_for_Vendors.zip")]
     public async Task CanInstallMod(string filename)
     {
+        var fileStore = ServiceProvider.GetRequiredService<IFileStore>();
         var fullPath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(filename);
 
         var loadout = await CreateLoadout();
@@ -46,7 +48,7 @@ public class StardewValleyInstallersTests(ITestOutputHelper outputHelper) : ALib
             {
                 child.TryGetAsLoadoutItemWithTargetPath(out var targetPathItem).Should().BeTrue("The module should contain loadout items with a target path.");
                 targetPathItem.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue("The module should contain loadout files.");
-                sb.AppendLine($"  {{{targetPathItem.TargetPath.Item2}}} {targetPathItem.TargetPath.Item3} - {loadoutFile.Size} - {loadoutFile.Hash}");
+                sb.AppendLine($"  {{{targetPathItem.TargetPath.Item2}}} {targetPathItem.TargetPath.Item3} - {loadoutFile.Size} - {loadoutFile.Hash} - Stored: {fileStore.HaveFile(loadoutFile.Hash)}");
             }
             
             childGroup.TryGetAsSMAPIModLoadoutItem(out var redModGroup).Should().BeTrue("The child should be a smapi mod loadout group.");

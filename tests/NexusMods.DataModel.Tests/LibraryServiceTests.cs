@@ -68,6 +68,10 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var nestedLibraryFile = nestedArchive.Value.AsLibraryFile();
         nestedLibraryFile.TryGetAsLibraryArchive(out _).Should().BeFalse();
         
+        // File should be available in the file store
+        var isStored = await _fileStore.HaveFile(nestedLibraryFile.Hash);
+        isStored.Should().BeTrue();
+        
         // print the contents of the parent archive
         await Verify(PrintArchiveContents(archive));
     }
