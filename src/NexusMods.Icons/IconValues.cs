@@ -145,6 +145,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/information-outline/
     public static readonly IconValue Info = new ProjektankerIcon("mdi-information-outline");
 
+    // https://pictogrammers.com/library/mdi/icon/information/
+    public static readonly IconValue InfoFilled = new ProjektankerIcon("mdi-information");
+    
 #endregion
 
 #region AV
