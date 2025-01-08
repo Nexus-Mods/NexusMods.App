@@ -40,20 +40,20 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
             case DiagnosticSeverity.Suggestion:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION;
                 SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
-                SeverityExplanationTextBlock.Text = "Suggests mods and changes that may improve your experience.";
+                SeverityExplanationTextBlock.Text = "Something that doesn't indicate a problem and offers improvements to the user.";
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0D93C5FD");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#6693C5FD");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING;
-                SeverityExplanationTextBlock.Text = "Warnings indicate a mod may not load or game may become unstable.";
+                SeverityExplanationTextBlock.Text = "Something that has an unintended adverse effect on any part of the game.";
                 SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DFEF08A"); 
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66FEF08A");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR;
-                SeverityExplanationTextBlock.Text = "Critical errors can prevent your game from loading.";
+                SeverityExplanationTextBlock.Text = "Something that will make the game unplayable.";
                 SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DF87171");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66F87171");
