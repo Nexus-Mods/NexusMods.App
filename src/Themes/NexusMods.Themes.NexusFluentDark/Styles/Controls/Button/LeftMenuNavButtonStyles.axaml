@@ -27,7 +27,7 @@
                     </Border>
                 </StackPanel>
                 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="130">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="145">
                     
                     <items:LeftMenuNavButton>
                         <DockPanel>
@@ -58,7 +58,7 @@
                     
                 </StackPanel>
                 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="120">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="165">
                     
                     <items:LeftMenuNavButton>
                             <DockPanel>
