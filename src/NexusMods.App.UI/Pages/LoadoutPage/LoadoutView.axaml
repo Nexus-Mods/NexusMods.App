@@ -70,15 +70,15 @@
                         
                         <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
                             <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
-                                <Image Source="{CompiledBinding Thumbnail.Value}" />
+                                <Panel>
+                                    <!-- The below image is drawn after the icon and so covers it up if a thumbnail is present. --> 
+                                    <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                                    <Image Source="{CompiledBinding Thumbnail.Value}" />
+                                </Panel>
                             </Border>
                             <TextBlock Text="{CompiledBinding Name.Value}" />
                         </StackPanel>
-                        
-                        <!-- <StackPanel Orientation="Horizontal"> -->
-                        <!--     <Image Source="{CompiledBinding Thumbnail.Value}" /> -->
-                        <!--     <TextBlock Text="{CompiledBinding Name.Value}" /> -->
-                        <!-- </StackPanel> -->
                     </DataTemplate>
                     
                     <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
