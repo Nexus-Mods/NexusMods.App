@@ -486,14 +486,6 @@
         </Style>
     </Style>
 
-    <!-- LIBRARY TREEDATAGRID -->
-
-    <Style Selector="TreeDataGrid#LibraryTreeDataGrid">
-
-        
-    </Style>
-
-
     <!-- SORT \ LOAD ORDER TREEDATAGRID -->
 
     <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
