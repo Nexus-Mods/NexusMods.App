@@ -220,7 +220,7 @@ public class CollectionDownloader
     /// </summary>
     public static IObservable<bool> IsDownloadedObservable(IConnection connection, CollectionDownloadNexusMods.ReadOnly download)
     {
-        return connection.ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata).IsNotEmpty();
+        return connection.ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata).IsNotEmpty().DistinctUntilChanged();
     }
 
     /// <summary>
@@ -388,6 +388,9 @@ public class CollectionDownloader
         return res;
     }
 
+    /// <summary>
+    /// Gets the library file for the collection.
+    /// </summary>
     public NexusModsCollectionLibraryFile.ReadOnly GetLibraryFile(CollectionRevisionMetadata.ReadOnly revisionMetadata)
     {
         var datoms = _connection.Db.Datoms(
