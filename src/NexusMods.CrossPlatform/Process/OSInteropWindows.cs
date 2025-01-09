@@ -39,7 +39,9 @@ internal class OSInteropWindows : AOSInterop
     public override async Task OpenFileInDirectory(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default)
     {
         var path = filePath.ToNativeSeparators(_fileSystem.OS);
-        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select ""{path}""");
+
+        // reference: https://ss64.com/nt/explorer.html
+        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select,""{path}""");
         var task = _processFactory.ExecuteAsync(command, logProcessOutput: logOutput, cancellationToken: cancellationToken);
 
         try
