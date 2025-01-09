@@ -55,7 +55,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             try
             {
                 var thumbNail = await modPageThumbnailPipeline.LoadResourceAsync(first.ModPageMetadataId, CancellationToken.None);
-                Thumbnail.Value = thumbNail.Data.Value;
+                Thumbnail.Value = thumbNail.Data;
             }
             catch (Exception) { /* suppress unhandled error in case lookup fails silently */ }
         });

@@ -43,15 +43,6 @@ public static class ImagePipelines
             .SelectAwait(async (id, cancellationToken) => await pipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
             .Select(static resource => resource.Data);
     }
-    
-    public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Lifetime<Bitmap>> pipeline)
-    {
-        return Observable
-            .Return(input)
-            .ObserveOnThreadPool()
-            .SelectAwait(async (id, cancellationToken) => await pipeline.LoadResourceAsync(id, cancellationToken), configureAwait: false)
-            .Select(static resource => resource.Data.Value);
-    }
 
     public static IServiceCollection AddImagePipelines(this IServiceCollection serviceCollection)
     {
@@ -77,7 +68,7 @@ public static class ImagePipelines
                     connection: serviceProvider.GetRequiredService<IConnection>()
                 )
             )
-            .AddKeyedSingleton<IResourceLoader<EntityId, Lifetime<Bitmap>>>(
+            .AddKeyedSingleton<IResourceLoader<EntityId, Bitmap>>(
                 serviceKey: ModPageThumbnailPipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateModPageThumbnailPipeline(
                     connection: serviceProvider.GetRequiredService<IConnection>()
@@ -122,9 +113,9 @@ public static class ImagePipelines
     /// Input: ModPageMetadataId
     /// Output: Image (cached)
     /// </summary>
-    public static IResourceLoader<EntityId, Lifetime<Bitmap>> GetModPageThumbnailPipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<EntityId, Bitmap> GetModPageThumbnailPipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Lifetime<Bitmap>>>(serviceKey: ModPageThumbnailPipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: ModPageThumbnailPipelineKey);
     }
 
     public static IResourceLoader<Uri, Lifetime<Bitmap>> GetGuidedInstallerRemoteImagePipeline(IServiceProvider serviceProvider)
@@ -215,7 +206,7 @@ public static class ImagePipelines
     /// Input: ModPageMetadataId
     /// Output: Image (cached)
     /// </summary>
-    private static IResourceLoader<EntityId, Lifetime<Bitmap>> CreateModPageThumbnailPipeline(
+    private static IResourceLoader<EntityId, Bitmap> CreateModPageThumbnailPipeline(
         IConnection connection)
     {
         var pipeline = new HttpLoader(new HttpClient())
@@ -235,11 +226,6 @@ public static class ImagePipelines
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
             .UseFallbackValue(ModPageThumbnailFallback)
-            .UseScopedCache(
-                keyGenerator: static tuple => tuple.Item1,
-                keyComparer: EqualityComparer<EntityId>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 333, warmRatio: FavorWarmPartition.DefaultWarmRatio)
-            )
             .EntityIdToIdentifier(
                 connection: connection,
                 attribute: NexusModsModPageMetadata.ThumbnailUri
