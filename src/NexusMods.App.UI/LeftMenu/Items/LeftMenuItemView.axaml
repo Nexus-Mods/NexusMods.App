@@ -8,6 +8,6 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
-    <navigation:LeftMenuNavButton Text="Text" LeftIcon="{x:Static icons:IconValues.Settings}" ShowIcon="Left" />
+    <navigation:LeftMenuNavButton x:Name="NavButton" Text="View text" LeftIcon="{x:Static icons:IconValues.Settings}" ShowIcon="Left" />
 </reactiveUi:ReactiveUserControl>
 

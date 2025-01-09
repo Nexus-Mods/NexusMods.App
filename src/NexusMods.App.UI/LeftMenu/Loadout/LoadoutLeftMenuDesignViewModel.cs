@@ -16,6 +16,8 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
     public LoadoutLeftMenuDesignViewModel()
     {
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>([
+                new SimpleLeftMenuItemViewModel(),
+                
                 new IconViewModel
                 {
                     Name = "My Mods",

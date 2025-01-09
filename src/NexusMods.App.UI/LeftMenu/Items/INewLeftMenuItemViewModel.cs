@@ -9,7 +9,7 @@ public interface INewLeftMenuItemViewModel : IViewModelInterface,
     // TODO: Remove this this after all old left menu items are replaced, used to allow using either in the meantime
     ILeftMenuItemViewModel
 {
-    public string Text { get; }
+    public string Text { get; set; }
     
     public IconValue Icon { get; set; }
     

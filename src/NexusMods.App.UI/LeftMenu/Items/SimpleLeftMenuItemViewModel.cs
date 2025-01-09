@@ -8,17 +8,17 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class SimpleLeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
 {
-    [Reactive] public string Text { get; }
+    [Reactive] public string Text { get; set; }
     [Reactive] public IconValue Icon { get; set; }
-    [Reactive] public ReactiveCommand<Unit, Unit> NavigateCommand { get; }
+    [Reactive] public ReactiveCommand<Unit, Unit> NavigateCommand { get; private set; }
     
-    [Reactive] public bool IsActive { get; }
+    [Reactive] public bool IsActive { get; private set; }
     
-    [Reactive] public bool IsSelected { get; }
+    [Reactive] public bool IsSelected { get; private set; }
 
-    SimpleLeftMenuItemViewModel()
+    public SimpleLeftMenuItemViewModel()
     {
-        Text = "";
+        Text = "VM Text";
         Icon = IconValues.LibraryOutline;
         NavigateCommand = ReactiveCommand.Create(() => { });
         IsActive = false;
