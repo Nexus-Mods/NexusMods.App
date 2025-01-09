@@ -364,14 +364,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, _connection)
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, _connection, hasChildrenObservable, childrenObservable)
                 {
                     NameObservable = System.Reactive.Linq.Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
                     IsEnabledObservable = isEnabledObservable,
-
-                    HasChildrenObservable = hasChildrenObservable,
-                    ChildrenObservable = childrenObservable,
                 };
 
                 return model;

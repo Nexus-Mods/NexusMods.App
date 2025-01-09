@@ -7,6 +7,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -23,9 +24,14 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     private readonly IDisposable _loadoutItemIdsDisposable;
     private readonly IDisposable _childrenObservableDisposable;
 
-    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, IServiceProvider provider, IConnection connection) : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), true)
+    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, 
+        IServiceProvider provider, IConnection connection, IObservable<bool> hasChildrenObservable, 
+        IObservable<IChangeSet<LoadoutItemModel, EntityId>> childrenObservable) 
+        : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), true)
     {
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
+        ChildrenObservable = childrenObservable;
+        HasChildrenObservable = hasChildrenObservable;
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));
         
         // Inherit the icon from the first child

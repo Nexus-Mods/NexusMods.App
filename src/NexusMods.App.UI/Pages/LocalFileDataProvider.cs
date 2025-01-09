@@ -155,14 +155,11 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, _connection)
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, _connection, Observable.Return(true), childrenObservable)
                 {
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
                     InstalledAtObservable = installedAtObservable,
                     IsEnabledObservable = isEnabledObservable,
-
-                    HasChildrenObservable = Observable.Return(true),
-                    ChildrenObservable = childrenObservable,
                 };
 
                 return model;
