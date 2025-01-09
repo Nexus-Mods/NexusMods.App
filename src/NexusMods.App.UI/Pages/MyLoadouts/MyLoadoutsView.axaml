@@ -40,7 +40,8 @@
 
                     <TextBlock Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}"
                                Theme="{StaticResource BodyMDNormalTheme}"
-                               Foreground="{StaticResource NeutralStrongBrush}" />
+                               Foreground="{StaticResource NeutralStrongBrush}"
+                               TextWrapping="Wrap" />
                 </StackPanel>
 
                 <ItemsControl x:Name="GameSectionsItemsControl">
