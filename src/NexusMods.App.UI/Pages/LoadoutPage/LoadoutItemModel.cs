@@ -6,6 +6,7 @@ using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -55,9 +56,11 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             return ids.Select(id => (Id: id, ShouldEnable: shouldEnable)).ToArray();
         });
 
-        _modelActivationDisposable = WhenModelActivated(this, (model, disposables) =>
+        var state = (loadoutItemId, serviceProvider, connection, loadThumbnail);
+        _modelActivationDisposable = this.WhenActivated(state, static (model, tuple, disposables) =>
         {
-            ShowThumbnail.Value = loadThumbnail;
+            var (loadoutItemId, serviceProvider, connection, loadThumbnail) = tuple;
+            model.ShowThumbnail.Value = loadThumbnail;
             
             if (loadThumbnail)
             {
@@ -67,7 +70,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
                 {
                     ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
                         .ObserveOnUIThreadDispatcher()
-                        .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap)
+                        .Subscribe(model, static (bitmap, self) => self.Thumbnail.Value = bitmap)
                         .AddTo(disposables);
                 }
             }
