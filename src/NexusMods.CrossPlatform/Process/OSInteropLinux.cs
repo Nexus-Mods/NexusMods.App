@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using CliWrap;
+using LinuxDesktopUtils.XDGDesktopPortal;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
 
@@ -13,18 +14,42 @@ internal class OSInteropLinux : AOSInterop
 {
     private readonly IFileSystem _fileSystem;
     private readonly XDGOpenDependency _xdgOpenDependency;
+    private readonly DesktopPortalConnectionManagerWrapper _portalWrapper;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     public OSInteropLinux(
         ILoggerFactory loggerFactory,
+        DesktopPortalConnectionManagerWrapper portalWrapper,
         IProcessFactory processFactory,
         IFileSystem fileSystem,
         XDGOpenDependency xdgOpenDependency) : base(loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
         _xdgOpenDependency = xdgOpenDependency;
+        _portalWrapper = portalWrapper;
+        _logger = loggerFactory.CreateLogger<OSInteropLinux>();
+    }
+
+    /// <inheritdoc/>
+    public override async Task OpenUrl(Uri url, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        var connectionManager = await _portalWrapper.GetInstance();
+        var portal = await connectionManager.GetOpenUriPortalAsync();
+        await portal.OpenUriAsync(url, cancellationToken: cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public override async Task OpenFile(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        var connectionManager = await _portalWrapper.GetInstance();
+        var portal = await connectionManager.GetOpenUriPortalAsync();
+        await portal.OpenFileAsync(
+            file: FilePath.From(filePath.ToNativeSeparators(_fileSystem.OS)),
+            cancellationToken: cancellationToken
+        );
     }
 
     /// <inheritdoc/>
