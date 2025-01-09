@@ -15,8 +15,8 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class SimpleLeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
 {
-    [Reactive] public string Text { get; set; }
-    [Reactive] public IconValue Icon { get; set; }
+    [Reactive] public string Text { get; set; } = "";
+    [Reactive] public IconValue Icon { get; set; } = new();
     [Reactive] public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; private set; }
 
     [Reactive] public bool IsActive { get; private set; }
@@ -28,8 +28,6 @@ public class SimpleLeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>
         PageData pageData
         )
     {
-        Text = "VM Text";
-        Icon = IconValues.LibraryOutline;
         IsActive = false;
         IsSelected = false;
         
@@ -80,7 +78,7 @@ public class SimpleLeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>
                     return pageId == pageData.FactoryId && context == pageData.Context;
                 });
             
-            var isSelectedDisposable = isSelectedObservable.Subscribe(isSelected => IsSelected = isSelected)
+            isSelectedObservable.Subscribe(isSelected => IsSelected = isSelected)
                 .DisposeWith(d);
 
         });

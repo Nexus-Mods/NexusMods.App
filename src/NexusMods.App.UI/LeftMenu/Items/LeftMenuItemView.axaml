@@ -5,9 +5,8 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
-    <navigation:LeftMenuNavButton x:Name="NavButton" Text="View text" LeftIcon="{x:Static icons:IconValues.Settings}" ShowIcon="Left" />
+    <navigation:LeftMenuNavButton x:Name="NavButton" ShowIcon="Left" />
 </reactiveUi:ReactiveUserControl>
 
