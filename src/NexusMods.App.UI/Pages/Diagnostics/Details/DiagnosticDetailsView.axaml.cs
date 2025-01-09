@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
@@ -32,30 +33,33 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
 
         switch (vm.Severity)
         {
+            /* NOTE(insomnious): Using fixed colors unless Laurence uses these colors\opacities again.
+             * Same for the fixed text strings while we are testing the UI
+             */
+            
             case DiagnosticSeverity.Suggestion:
-                SeverityIcon.Classes.Add("HelpCircle");
-                SeverityIcon.Classes.Add("ForegroundInfoStrong");
-                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION.ToUpperInvariant();
+                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION;
                 SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
-                HorizontalLine.Classes.Add("InfoStrong");
+                SeverityExplanationTextBlock.Text = "Suggestions may offer improvements to your experience.";
+                MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0D93C5FD");
+                MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#6693C5FD");
                 break;
             case DiagnosticSeverity.Warning:
-                SeverityIcon.Classes.Add("Alert");
-                SeverityIcon.Classes.Add("ForegroundWarningStrong");
-                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING.ToUpperInvariant();
+                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING;
                 SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
-                HorizontalLine.Classes.Add("WarningStrong");
+                SeverityExplanationTextBlock.Text = "Warnings may negatively impact your experience.";
+                MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DFEF08A"); 
+                MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66FEF08A");
                 break;
             case DiagnosticSeverity.Critical:
-                SeverityIcon.Classes.Add("AlertOctagon");
-                SeverityIcon.Classes.Add("ForegroundDangerStrong");
-                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR.ToUpperInvariant();
+                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR;
+                SeverityExplanationTextBlock.Text = "Critical errors make the game unplayable.";
                 SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
-                HorizontalLine.Classes.Add("DangerStrong");
+                MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DF87171");
+                MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66F87171");
                 break;
             default:
-                SeverityIcon.Classes.Add("Bell");
-                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_HIDDEN.ToUpperInvariant();
+                SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_HIDDEN;
                 break;
         }
     }

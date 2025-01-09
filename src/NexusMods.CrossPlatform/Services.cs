@@ -1,3 +1,4 @@
+using LinuxDesktopUtils.XDGDesktopPortal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.CrossPlatform.ProtocolRegistration;
@@ -41,6 +42,8 @@ public static class Services
 
         if (OSInformation.Shared.IsLinux)
         {
+            services.AddSingleton<DesktopPortalConnectionManagerWrapper>();
+
             // General Components
             services.AddSingleton<XDGOpenDependency>();
             services.AddSingleton<IRuntimeDependency, XDGOpenDependency>();

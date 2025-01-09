@@ -58,13 +58,15 @@
                             <TextBlock Text="No games detected"
                                        Theme="{StaticResource BodyMDNormalTheme}"
                                        Foreground="{StaticResource NeutralSubduedBrush}"
-                                       TextAlignment="Left"/>
+                                       TextAlignment="Left"
+                                       TextWrapping="Wrap"/>
                         </controls:EmptyState.Subtitle>
 
                         <StackPanel Spacing="24">
                             <TextBlock Text="Add games to get started"
                                        Theme="{StaticResource BodyMDNormalTheme}"
-                                       Foreground="{StaticResource NeutralStrongBrush}" />
+                                       Foreground="{StaticResource NeutralStrongBrush}"
+                                       TextWrapping="Wrap"/>
                             <ItemsControl
                                 x:Name="DetectedGamesItemsControl">
                                 <ItemsControl.ItemsPanel>
