@@ -2,7 +2,7 @@ using Avalonia.ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public partial class LeftMenuItemView : ReactiveUserControl<ILeftMenuItemViewModel>
+public partial class LeftMenuItemView : ReactiveUserControl<INewLeftMenuItemViewModel>
 {
     public LeftMenuItemView()
     {
