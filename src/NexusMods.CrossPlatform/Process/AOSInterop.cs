@@ -78,6 +78,11 @@ internal abstract class AOSInterop : IOSInterop
         return OpenUrl(new Uri($"file://{directoryPath.ToNativeSeparators(OSInformation.Shared)}"), logOutput, fireAndForget, cancellationToken);
     }
 
+    public virtual Task OpenFileInDirectory(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default)
+    {
+        return OpenDirectory(filePath, logOutput, fireAndForget, cancellationToken);
+    }
+
     /// <inheritdoc />
     public virtual AbsolutePath GetOwnExe()
     {

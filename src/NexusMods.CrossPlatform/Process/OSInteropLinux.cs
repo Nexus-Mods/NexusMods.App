@@ -36,20 +36,34 @@ internal class OSInteropLinux : AOSInterop
     /// <inheritdoc/>
     public override async Task OpenUrl(Uri url, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
-        var connectionManager = await _portalWrapper.GetInstance();
-        var portal = await connectionManager.GetOpenUriPortalAsync();
+        var portal = await GetPortal();
         await portal.OpenUriAsync(url, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc/>
     public override async Task OpenFile(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
-        var connectionManager = await _portalWrapper.GetInstance();
-        var portal = await connectionManager.GetOpenUriPortalAsync();
+        var portal = await GetPortal();
         await portal.OpenFileAsync(
             file: FilePath.From(filePath.ToNativeSeparators(_fileSystem.OS)),
             cancellationToken: cancellationToken
         );
+    }
+
+    public override async Task OpenFileInDirectory(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default)
+    {
+        var portal = await GetPortal();
+        await portal.OpenFileInDirectoryAsync(
+            file: FilePath.From(filePath.ToNativeSeparators(_fileSystem.OS)),
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private async ValueTask<OpenUriPortal> GetPortal()
+    {
+        var connectionManager = await _portalWrapper.GetInstance();
+        var portal = await connectionManager.GetOpenUriPortalAsync();
+        return portal;
     }
 
     /// <inheritdoc/>
