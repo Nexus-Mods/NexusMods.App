@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
@@ -40,25 +41,25 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
         // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
         // until the entire model gets disposed. Without this, selection would break for off-screen items.
-        // ReSharper disable once AsyncVoidLambda
-        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(async changeSet =>
-        {
-            LibraryItems.ApplyChanges(changeSet);
-            
-            // Note(sewer): Update the thumbnail of the header to be the thumbnail of the first child item.
-            // By definition, all the sub items belong to this page, so the thumbnail of the child item
-            // is the thumbnail of this page.
-            //
-            // SAFETY: This can't have race condition, code is executed on UI, so can't be executed in parallel.
-            var first = LibraryItems.FirstOrDefault();
-            if (!first.IsValid()) return;
-            try
+        var libraryItemsDisposable = libraryItemsObservable.OnUI()
+            .Select(changeset =>
+                {
+                    LibraryItems.ApplyChanges(changeset);
+                    return LibraryItems.FirstOrDefault();
+                }
+            )
+            .Where(item => item.IsValid())
+            .SelectMany(async item =>
             {
-                var thumbNail = await modPageThumbnailPipeline.LoadResourceAsync(first.ModPageMetadataId, CancellationToken.None);
+                // Note(sewer): Update the thumbnail of the header to be the thumbnail of the first child item.
+                // By definition, all the sub items belong to this page, so the thumbnail of the child item
+                // is the thumbnail of this page.
+                //
+                // SAFETY: This can't have race condition, code is executed on UI, so can't be executed in parallel.
+                var thumbNail = await modPageThumbnailPipeline.LoadResourceAsync(item.ModPageMetadataId, CancellationToken.None);
                 Thumbnail.Value = thumbNail.Data;
-            }
-            catch (Exception) { /* suppress unhandled error in case lookup fails silently */ }
-        });
+                return item;
+            }).SubscribeWithErrorLogging();
 
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
