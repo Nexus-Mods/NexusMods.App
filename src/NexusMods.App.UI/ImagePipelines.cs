@@ -33,7 +33,7 @@ public static class ImagePipelines
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
     private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
     private static readonly Bitmap UserAvatarFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
-    private static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
+    private static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
 
     public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
     {
@@ -225,6 +225,10 @@ public static class ImagePipelines
             )
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
+            // Note(sewer): This is transparent, the actual fallback is provided on the
+            // UI end; which we show during the asynchronous load of the actual thumbnail
+            // from the pipeline. If the load fails, we show an all transparent fallback;
+            // meaning the underlying placeholder from before is still shown.
             .UseFallbackValue(ModPageThumbnailFallback)
             .EntityIdToIdentifier(
                 connection: connection,
