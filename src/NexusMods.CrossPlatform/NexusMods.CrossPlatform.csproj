@@ -4,6 +4,7 @@
 
     <ItemGroup>
         <PackageReference Include="CliWrap" />
+        <PackageReference Include="LinuxDesktopUtils.XDGDesktopPortal" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
