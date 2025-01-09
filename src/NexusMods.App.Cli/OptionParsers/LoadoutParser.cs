@@ -1,6 +1,8 @@
 using System.Globalization;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -10,7 +12,7 @@ namespace NexusMods.CLI.OptionParsers;
 /// Parses a string into a loadout marker
 /// </summary>
 [UsedImplicitly]
-internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
+internal class LoadoutParser(IConnection conn, IOptionParser<IGame> gameParser) : IOptionParser<Loadout.ReadOnly>
 {
     public bool TryParse(string input, out Loadout.ReadOnly value, out string error)
     {
@@ -34,6 +36,26 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
             {
                 value = loadout;
                 return true;
+            }
+        }
+        
+        // In the format of "<Game>/<ShortName>"
+        if (input.Contains("/"))
+        {
+            var parts = input.Split('/');
+            var game = parts[0];
+            var shortName = parts[1];
+
+            if (gameParser.TryParse(game, out var gameValue, out _))
+            {
+                if (Loadout
+                    .FindByShortName(db, shortName)
+                    .TryGetFirst(l => l.Installation.GameId == gameValue.GameId, out var foundLoadout))
+                {
+                    value = foundLoadout;
+                    return true;
+                }
+                    
             }
         }
 

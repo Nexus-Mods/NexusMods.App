@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
@@ -24,6 +25,45 @@ public static class RendererExtensions
     }
 
     /// <summary>
+    /// A table renderer for when you have a collection of tuples to render
+    /// </summary>
+    public static ValueTask Table<T>(this IRenderer renderer, IEnumerable<T> rows, params ReadOnlySpan<string> columnNames)
+        where T : ITuple
+    {
+        var namesPrepared = GC.AllocateArray<IRenderable>(columnNames.Length);
+        for (var i = 0; i < columnNames.Length; i++)
+        {
+            namesPrepared[i] = Renderable.Text(columnNames[i]);
+        }
+
+        static IRenderable[] PrepareRow(T row)
+        {
+            var rowPrepared = GC.AllocateArray<IRenderable>(row.Length);
+            for (var i = 0; i < row.Length; i++)
+            {
+                rowPrepared[i] = Renderable.Text(row[i]!.ToString()!);
+            }
+            return rowPrepared;
+        }
+
+        return renderer.RenderAsync(new Table
+            {
+                Columns = namesPrepared,
+                Rows = rows.Select(PrepareRow).ToArray(),
+            }
+        );
+    }
+    
+    /// <summary>
+    /// Renders the data in the given rows to a table
+    /// </summary>
+    public static ValueTask RenderTable<T>(this IEnumerable<T> rows, IRenderer renderer, params ReadOnlySpan<string> columnNames)
+        where T : ITuple
+    {
+        return renderer.Table(rows, columnNames);
+    }
+
+    /// <summary>
     /// Renders the given text to the renderer
     /// </summary>
     /// <param name="renderer"></param>
@@ -42,6 +82,18 @@ public static class RendererExtensions
     {
         // Todo: implement custom conversion and formatting for the arguments
         await renderer.RenderAsync(Renderable.Text(template, args.Select(a => a.ToString()!).ToArray()));
+    }
+    
+    /// <summary>
+    /// Renders the text to the renderer with the given arguments and template
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="text"></param>
+    public static async ValueTask<int> InputError(this IRenderer renderer, string template, params object[] args)
+    {
+        // Todo: implement custom conversion and formatting for the arguments
+        await renderer.RenderAsync(Renderable.Text(template, args.Select(a => a.ToString()!).ToArray()));
+        return -1;
     }
 
     /// <summary>

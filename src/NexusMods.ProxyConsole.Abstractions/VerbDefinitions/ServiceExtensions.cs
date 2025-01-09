@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -24,6 +20,15 @@ public static class ServiceExtensions
         var methodInfo = (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)fn.Body).Operand).Object!)
             ?.Value!;
         return coll.AddVerb(methodInfo);
+    }
+    
+    /// <summary>
+    /// Add a new module to the CLI, any verbs that are in a given module path must have a corresponding module definition.
+    /// </summary>
+    public static IServiceCollection AddModule(this IServiceCollection coll, string name, string description)
+    {
+        return coll
+            .AddSingleton(new ModuleDefinition(name, description));
     }
 
 
@@ -70,11 +75,11 @@ public static class ServiceExtensions
 
             if (option is not null)
             {
-                options.Add(new OptionDefinition(param.ParameterType, option.ShortName, option.LongName, option.HelpText, false));
+                options.Add(new OptionDefinition(param.ParameterType, option.ShortName, option.LongName, option.HelpText, false, option.IsOptional));
             }
             else if (injected is not null)
             {
-                options.Add(new OptionDefinition(param.ParameterType, string.Empty, string.Empty, string.Empty, true));
+                options.Add(new OptionDefinition(param.ParameterType, string.Empty, string.Empty, string.Empty, true, false));
             }
         }
 

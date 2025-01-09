@@ -24,6 +24,7 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
 using Spectre.Console;
+using Spectre.Console.Advanced;
 
 namespace NexusMods.App;
 
@@ -90,11 +91,12 @@ public class Program
 
         try
         {
+            if (OperatingSystem.IsWindows())
+                ConsoleHelper.EnsureConsole();
+            
             if (startupMode.RunAsMain)
             {
-                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
-                    args
-                );
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
 
                 if (startupMode.ShowUI)
                 {
@@ -180,6 +182,7 @@ public class Program
         if (!startupMode.ExecuteCli)
             return Task.FromResult(0);
         var configurator = provider.GetRequiredService<CommandLineConfigurator>();
+        _logger.LogInformation("Starting with Spectre.Cli");
         return configurator.RunAsync(startupMode.Args, new SpectreRenderer(AnsiConsole.Console), CancellationToken.None);
     }
 

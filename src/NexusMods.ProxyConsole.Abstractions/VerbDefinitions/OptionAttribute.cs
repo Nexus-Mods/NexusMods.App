@@ -9,7 +9,7 @@ namespace NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 /// <param name="longName"></param>
 /// <param name="helpText"></param>
 [AttributeUsage(AttributeTargets.Parameter)]
-public class OptionAttribute(string shortName, string longName, string helpText) : Attribute
+public class OptionAttribute(string shortName, string longName, string helpText, bool isOptional = false) : Attribute
 {
     /// <summary>
     /// The short name of the option. For example `h`
@@ -25,5 +25,9 @@ public class OptionAttribute(string shortName, string longName, string helpText)
     /// The help text for the option.
     /// </summary>
     public string HelpText { get; } = helpText;
-
+    
+    /// <summary>
+    /// True if the option is optional, false otherwise.
+    /// </summary>
+    public bool IsOptional { get; } = isOptional;
 }
