@@ -21,6 +21,12 @@ public partial class LeftMenuItemView : ReactiveUserControl<INewLeftMenuItemView
                 
                 this.BindCommand(ViewModel, vm => vm.NavigateCommand, view => view.NavButton)
                     .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsActive, view => view.NavButton.IsActive)
+                    .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsSelected, view => view.NavButton.IsSelected)
+                    .DisposeWith(d);
             }
         );
     }

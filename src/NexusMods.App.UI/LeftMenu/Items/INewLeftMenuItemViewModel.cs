@@ -1,5 +1,6 @@
 using System.Reactive;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -13,7 +14,7 @@ public interface INewLeftMenuItemViewModel : IViewModelInterface,
     
     public IconValue Icon { get; set; }
     
-    public ReactiveCommand<Unit, Unit> NavigateCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
     
     public bool IsActive { get; }
     
