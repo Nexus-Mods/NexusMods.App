@@ -1,11 +1,13 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace NexusMods.App;
 
 /// <summary>
 /// Helpers for consoles on Windows
 /// </summary>
-public class ConsoleHelper
+[SupportedOSPlatform("windows")]
+public static class ConsoleHelper
 {
     // ReSharper disable once InconsistentNaming
     private const int ATTACH_PARENT_PROCESS = -1;
