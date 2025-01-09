@@ -8,7 +8,7 @@
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticDetailsView">
 
     <Design.DataContext>
@@ -84,11 +84,9 @@
                 Background="#0D93C5FD"
                 BorderBrush="#6693C5FD">
 
-                <ScrollViewer Padding="0,0,24,0">
 
                     <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
 
-                </ScrollViewer>
             </Border>
 
         </DockPanel>
