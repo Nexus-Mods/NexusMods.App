@@ -30,6 +30,11 @@ public interface IOSInterop
     Task OpenDirectory(AbsolutePath directoryPath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Opens the directory with the system explorer and highlights the file.
+    /// </summary>
+    Task OpenFileInDirectory(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Get the path to the current executable
     /// </summary>
     AbsolutePath GetOwnExe();

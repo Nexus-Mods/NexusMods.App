@@ -23,12 +23,11 @@
         <DockPanel>
             <icons:UnifiedIcon x:Name="SeverityIcon" 
                                DockPanel.Dock="Left" />
-            <icons:UnifiedIcon
-                x:Name="NavigationIcon" 
+            <icons:UnifiedIcon x:Name="NavigationIcon" 
                 DockPanel.Dock="Right" 
                 Value="{x:Static icons:IconValues.ChevronRight}"/>
             
-            <StackPanel Margin="16,0">
+            <StackPanel Margin="16,0" Spacing="0">
                 <TextBlock x:Name="TitleText" 
                            Text="Name"
                            Theme="{StaticResource BodyMDNormalTheme}"
