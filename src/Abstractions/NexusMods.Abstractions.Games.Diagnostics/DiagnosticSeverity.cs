@@ -15,7 +15,7 @@ public enum DiagnosticSeverity : byte
     Hidden = 0,
 
     /// <summary>
-    /// Something that doesn't indicate a problem, and offers improvements to the user.
+    /// Suggestions may offer improvements to your experience.
     /// </summary>
     /// <remarks>
     /// This severity can be used to provide helpful advices to the user. Applying these
@@ -35,7 +35,7 @@ public enum DiagnosticSeverity : byte
     Suggestion = 1,
 
     /// <summary>
-    /// Something that has an unintended adverse effect on any part of the game.
+    /// Warnings may negatively impact your experience.
     /// </summary>
     /// <remarks>
     /// This severity encompasses unintended problems that negatively impact the game
@@ -53,7 +53,7 @@ public enum DiagnosticSeverity : byte
     Warning = 2,
 
     /// <summary>
-    /// Something that will make the game unplayable.
+    /// Critical errors make the game unplayable.
     /// </summary>
     /// <remarks>
     /// Unplayable, in this context, means that the user is unable

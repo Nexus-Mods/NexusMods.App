@@ -40,20 +40,20 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
             case DiagnosticSeverity.Suggestion:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION;
                 SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
-                SeverityExplanationTextBlock.Text = "Something that doesn't indicate a problem and offers improvements to the user.";
+                SeverityExplanationTextBlock.Text = "Suggestions may offer improvements to your experience.";
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0D93C5FD");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#6693C5FD");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING;
-                SeverityExplanationTextBlock.Text = "Something that has an unintended adverse effect on any part of the game.";
                 SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
+                SeverityExplanationTextBlock.Text = "Warnings may negatively impact your experience.";
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DFEF08A"); 
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66FEF08A");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR;
-                SeverityExplanationTextBlock.Text = "Something that will make the game unplayable.";
+                SeverityExplanationTextBlock.Text = "Critical errors make the game unplayable.";
                 SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DF87171");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66F87171");
