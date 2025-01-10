@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using Avalonia.Controls.Models.TreeDataGrid;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 
 namespace NexusMods.App.UI.Controls;
@@ -32,7 +34,7 @@ public interface IColumnDefinition<TModel, TSelf>
     static abstract string GetColumnTemplateResourceKey();
     static virtual string GetColumnId() => TSelf.GetColumnTemplateResourceKey();
 
-    static virtual IColumn<TModel> CreateColumn()
+    static virtual IColumn<TModel> CreateColumn(Optional<ListSortDirection> sortDirection = default)
     {
         return new CustomTemplateColumn<TModel>(
             header: TSelf.GetColumnHeader(),
@@ -47,6 +49,7 @@ public interface IColumnDefinition<TModel, TSelf>
         )
         {
             Id = TSelf.GetColumnId(),
+            SortDirection = sortDirection.HasValue ? sortDirection.Value : null,
         };
     }
 }
@@ -60,11 +63,11 @@ public static class ColumnCreator
     /// <summary>
     /// Creates a column from a static interface definition.
     /// </summary>
-    public static IColumn<TModel> CreateColumn<TModel, TColumnInterface>()
+    public static IColumn<TModel> CreateColumn<TModel, TColumnInterface>(Optional<ListSortDirection> sortDirection = default)
         where TModel : class
         where TColumnInterface : IColumnDefinition<TModel, TColumnInterface>, IComparable<TColumnInterface>
     {
-        return TColumnInterface.CreateColumn();
+        return TColumnInterface.CreateColumn(sortDirection);
     }
 }
 
