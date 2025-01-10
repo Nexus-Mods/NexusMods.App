@@ -366,6 +366,15 @@
         <Compile Update="Controls\TreeDataGrid\IItemModelComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\AValueComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\AFormattedValueComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\TreeDataGrid\BooleanComponent.cs">
             <DependentUpon>IItemModelComponent.cs</DependentUpon>
         </Compile>

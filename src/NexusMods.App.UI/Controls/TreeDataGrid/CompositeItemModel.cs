@@ -14,9 +14,9 @@ public class CompositeItemModel<TKey> :
     TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
     where TKey : notnull
 {
-    private readonly Dictionary<string, IDisposable> _observableSubscriptions = new();
-    private readonly ObservableDictionary<string, IItemModelComponent> _components = new();
-    public IReadOnlyObservableDictionary<string, IItemModelComponent> Components => _components;
+    private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
+    private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
+    public IReadOnlyObservableDictionary<ComponentKey, IItemModelComponent> Components => _components;
 
     private readonly IDisposable _activationDisposable;
     public CompositeItemModel()
@@ -49,7 +49,7 @@ public class CompositeItemModel<TKey> :
         });
     }
 
-    public void Add(string key, IItemModelComponent component)
+    public void Add(ComponentKey key, IItemModelComponent component)
     {
         _components.Add(key, component);
     }
@@ -57,7 +57,7 @@ public class CompositeItemModel<TKey> :
     public delegate IItemModelComponent ComponentFactory<T>(Observable<T> valueObservable, T initialValue);
 
     public void AddObservable<T>(
-        string key,
+        ComponentKey key,
         IObservable<Optional<T>> observable,
         ComponentFactory<T> componentFactory,
         bool subscribeImmediately = false) where T : notnull
@@ -66,7 +66,7 @@ public class CompositeItemModel<TKey> :
     }
 
     public void AddObservable<T>(
-        string key,
+        ComponentKey key,
         Observable<Optional<T>> observable,
         ComponentFactory<T> componentFactory,
         bool subscribeImmediately = false) where T : notnull
@@ -96,7 +96,7 @@ public class CompositeItemModel<TKey> :
 
     private static IDisposable SubscribeToObservable<T>(
         CompositeItemModel<TKey> self,
-        string key,
+        ComponentKey key,
         Observable<Optional<T>> observable,
         ComponentFactory<T> componentFactory) where T : notnull
     {
@@ -124,7 +124,7 @@ public class CompositeItemModel<TKey> :
         });
     }
 
-    public void Remove(string key)
+    public void Remove(ComponentKey key)
     {
         if (_components.Remove(key, out var value))
         {
@@ -140,7 +140,7 @@ public class CompositeItemModel<TKey> :
         }
     }
 
-    public bool TryGet<TComponent>(string key, [NotNullWhen(true)] out TComponent? component)
+    public bool TryGet<TComponent>(ComponentKey key, [NotNullWhen(true)] out TComponent? component)
     {
         if (!_components.TryGetValue(key, out var value))
         {

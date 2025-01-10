@@ -63,9 +63,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     {
         var itemModel = new CompositeItemModel<EntityId>();
 
-        itemModel.Add(key: "WIP_name", new StringComponent(value: libraryFile.AsLibraryItem().Name));
-        itemModel.Add(key: "WIP_downloadedDate", new DateComponent(value: libraryFile.GetCreatedAt()));
-        itemModel.Add(key: "WIP_size", new SizeComponent(value: libraryFile.Size));
+        itemModel.Add(ComponentKey.From("WIP_name"), new StringComponent(value: libraryFile.AsLibraryItem().Name));
+        itemModel.Add(ComponentKey.From("WIP_downloadedDate"), new DateComponent(value: libraryFile.GetCreatedAt()));
+        itemModel.Add(ComponentKey.From("WIP_size"), new SizeComponent(value: libraryFile.Size));
 
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
         var installedDateObservable = linkedLoadoutItemsObservable
@@ -80,7 +80,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             });
 
         itemModel.AddObservable(
-            key: "WIP_installDate",
+            key: ComponentKey.From("WIP_installDate"),
             observable: installedDateObservable,
             componentFactory: static (observable, value) => new DateComponent(
                 valueObservable: observable,
