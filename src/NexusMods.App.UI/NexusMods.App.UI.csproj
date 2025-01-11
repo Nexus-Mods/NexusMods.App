@@ -375,17 +375,8 @@
         <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\TreeDataGrid\BooleanComponent.cs">
-            <DependentUpon>IItemModelComponent.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\TreeDataGrid\DateComponent.cs">
-            <DependentUpon>IItemModelComponent.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\TreeDataGrid\SizeComponent.cs">
-            <DependentUpon>IItemModelComponent.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\TreeDataGrid\StringComponent.cs">
-            <DependentUpon>IItemModelComponent.cs</DependentUpon>
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
           <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>

@@ -49,57 +49,86 @@ public class CompositeItemModel<TKey> :
         });
     }
 
-    public void Add(ComponentKey key, IItemModelComponent component)
+    public void Add<TComponent>(IItemModelComponent<TComponent> component)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        _components.Add(key, component);
+        _components.Add(TComponent.GetKey(), component);
     }
 
-    public delegate IItemModelComponent ComponentFactory<T>(Observable<T> valueObservable, T initialValue);
+    public void Remove<TComponent>()
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        Remove(TComponent.GetKey());
+    }
 
-    public void AddObservable<T>(
-        ComponentKey key,
+    public void Remove(ComponentKey key)
+    {
+        if (_components.Remove(key, out var value))
+        {
+            if (value is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+
+        if (_observableSubscriptions.Remove(key, out var observableSubscription))
+        {
+            observableSubscription.Dispose();
+        }
+    }
+
+    public delegate IItemModelComponent<TComponent> ComponentFactory<TComponent, T>(Observable<T> valueObservable, T initialValue)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>;
+
+    public void AddObservable<TComponent, T>(
         IObservable<Optional<T>> observable,
-        ComponentFactory<T> componentFactory,
-        bool subscribeImmediately = false) where T : notnull
+        ComponentFactory<TComponent, T> componentFactory,
+        bool subscribeImmediately = false)
+        where T : notnull
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        AddObservable(key, observable.ToObservable(), componentFactory, subscribeImmediately);
+        AddObservable(observable.ToObservable(), componentFactory, subscribeImmediately);
     }
 
-    public void AddObservable<T>(
-        ComponentKey key,
+    public void AddObservable<TComponent, T>(
         Observable<Optional<T>> observable,
-        ComponentFactory<T> componentFactory,
-        bool subscribeImmediately = false) where T : notnull
+        ComponentFactory<TComponent, T> componentFactory,
+        bool subscribeImmediately = false)
+        where T : notnull
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         IDisposable disposable;
         if (subscribeImmediately)
         {
-            disposable = SubscribeToObservable(this, key, observable, componentFactory);
+            disposable = SubscribeToObservable(this, observable, componentFactory);
         }
         else
         {
             // ReSharper disable once NotDisposedResource
-            disposable = this.WhenActivated((key, observable, componentFactory), static (self, tuple, disposables) =>
+            disposable = this.WhenActivated((observable, componentFactory), static (self, tuple, disposables) =>
             {
-                var (key, observable, componentFactory) = tuple;
-                SubscribeToObservable(self, key, observable, componentFactory).AddTo(disposables);
+                var (observable, componentFactory) = tuple;
+                SubscribeToObservable(self, observable, componentFactory).AddTo(disposables);
             });
         }
 
-        if (_observableSubscriptions.TryGetValue(key, out var existingDisposable))
+        var key = TComponent.GetKey();
+        if (_observableSubscriptions.Remove(key, out var existingDisposable))
         {
             existingDisposable.Dispose();
-        } else {
-            _observableSubscriptions.Add(key, disposable);
         }
+
+        _observableSubscriptions.Add(key, disposable);
     }
 
-    private static IDisposable SubscribeToObservable<T>(
+    private static IDisposable SubscribeToObservable<TComponent, T>(
         CompositeItemModel<TKey> self,
-        ComponentKey key,
         Observable<Optional<T>> observable,
-        ComponentFactory<T> componentFactory) where T : notnull
+        ComponentFactory<TComponent, T> componentFactory)
+        where T : notnull
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
+        var key = TComponent.GetKey();
         return observable.Subscribe((self, key, observable, componentFactory), static (optionalValue, tuple) =>
         {
             var (self, key, observable, componentFactory) = tuple;
@@ -119,43 +148,46 @@ public class CompositeItemModel<TKey> :
                     optionalValue.Value
                 );
 
-                self.Add(key, component);
+                self.Add(component);
             }
         });
     }
 
-    public void Remove(ComponentKey key)
+    public bool TryGet<TComponent>([NotNullWhen(true)] out TComponent? component)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        if (_components.Remove(key, out var value))
-        {
-            if (value is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
-        }
-
-        if (_observableSubscriptions.Remove(key, out var observableSubscription))
-        {
-            observableSubscription.Dispose();
-        }
-    }
-
-    public bool TryGet<TComponent>(ComponentKey key, [NotNullWhen(true)] out TComponent? component)
-    {
+        var key = TComponent.GetKey();
         if (!_components.TryGetValue(key, out var value))
         {
-            component = default(TComponent);
+            component = null;
             return false;
         }
 
         if (value is not TComponent typedValue)
         {
-            component = default(TComponent);
+            component = null;
             return false;
         }
 
         component = typedValue;
         return true;
+    }
+
+    public TComponent Get<TComponent>() where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        var key = TComponent.GetKey();
+        if (!_components.TryGetValue(key, out var value))
+            throw new KeyNotFoundException($"Model doesn't have component `{typeof(TComponent)}` with key `{key}`");
+
+        if (value is not TComponent component)
+            throw new InvalidCastException($"Expected component of type `{typeof(TComponent)}`, found `{value.GetType()}` for key `{key}`");
+
+        return component;
+    }
+
+    public Optional<TComponent> GetOptional<TComponent>() where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        return TryGet<TComponent>(out var component) ? component : Optional<TComponent>.None;
     }
 
     private bool _isDisposed;
