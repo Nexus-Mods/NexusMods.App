@@ -323,7 +323,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             itemModel.Add(new SharedComponents.Name(value: modPage.Name));
 
             var observable = Observable
-                .Interval(period: TimeSpan.FromSeconds(2), timeProvider: ObservableSystem.DefaultTimeProvider)
+                .Interval(period: TimeSpan.FromSeconds(1), timeProvider: ObservableSystem.DefaultTimeProvider)
                 .Select(_ => Switcher.Instance.Get())
                 .Do(shouldShow => Console.WriteLine($"Should show: {shouldShow}"))
                 .Select(modPage.GetCreatedAt(), static (shouldShow, date) => shouldShow ? date : Optional<DateTimeOffset>.None);
@@ -347,8 +347,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         private bool _current;
         public bool Get()
         {
+            var tmp = _current;
             _current = !_current;
-            return _current;
+            return tmp;
         }
     }
 

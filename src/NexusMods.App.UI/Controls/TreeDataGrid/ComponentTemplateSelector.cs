@@ -81,24 +81,22 @@ public class ComponentTemplateSelector<TKey> : IDataTemplate
     {
         if (param is not CompositeItemModel<TKey> itemModel) throw new UnreachableException();
 
-        foreach (var kv in itemModel.Components)
+        foreach (var template in AvailableTemplates)
         {
-            var (_, component) = kv;
-            foreach (var template in AvailableTemplates)
-            {
-                if (template.DataType is null) throw new UnreachableException();
-                if (!template.DataType.IsInstanceOfType(component)) continue;
+            var type = template.DataType;
+            if (type is null) throw new UnreachableException();
 
-                // NOTE(erri120): DataTemplate.Build doesn't use the
-                // data you give it, need to manually set the DataContext.
-                // Otherwise. the new control will inherit the parent context,
-                // which is CompositeItemModel<TKey>.
-                var control = template.Build(data: null);
-                if (control is null) return null;
+            if (!itemModel.Components.TryGetValue(type, out var component)) continue;
 
-                control.DataContext = component;
-                return control;
-            }
+            // NOTE(erri120): DataTemplate.Build doesn't use the
+            // data you give it, need to manually set the DataContext.
+            // Otherwise. the new control will inherit the parent context,
+            // which is CompositeItemModel<TKey>.
+            var control = template.Build(data: null);
+            if (control is null) return null;
+
+            control.DataContext = component;
+            return control;
         }
 
         return Fallback;

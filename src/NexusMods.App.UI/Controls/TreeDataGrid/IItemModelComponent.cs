@@ -73,8 +73,6 @@ public interface IItemModelComponent<TSelf> : IItemModelComponent
             (null, null) => 0,
         };
     }
-
-    static abstract ComponentKey GetKey();
 }
 
 public static partial class ColumnCreator

@@ -14,7 +14,6 @@ public static class SharedComponents
 
     public sealed class Name : AValueComponent<string>, IItemModelComponent<Name>, IComparable<Name>
     {
-        public static ComponentKey GetKey() => ComponentKey.From(Prefix + "Name");
         public int CompareTo(Name? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
 
         public Name(
@@ -48,7 +47,6 @@ public static class SharedComponents
 
         public FileSize(Size value) : base(value, _FormatValue(value)) { }
 
-        public static ComponentKey GetKey() => ComponentKey.From(Prefix + "Size");
         public int CompareTo(FileSize? other) => Value.Value.CompareTo(other?.Value.Value ?? Size.Zero);
 
         private static string _FormatValue(Size value) => ByteSize.FromBytes(value.Value).Humanize();
@@ -69,7 +67,6 @@ public static class SharedComponents
 
         public DownloadedDate(DateTimeOffset value) : base(value) { }
 
-        public static ComponentKey GetKey() => ComponentKey.From(Prefix + "DownloadedDate");
         public int CompareTo(DownloadedDate? other) => Value.Value.CompareTo(other?.Value.Value ?? DateTimeOffset.UnixEpoch);
     }
 
@@ -87,7 +84,6 @@ public static class SharedComponents
 
         public InstalledDate(DateTimeOffset value) : base(value) { }
 
-        public static ComponentKey GetKey() => ComponentKey.From(Prefix + "InstalledDate");
         public int CompareTo(InstalledDate? other) => Value.Value.CompareTo(other?.Value.Value ?? DateTimeOffset.UnixEpoch);
     }
 }

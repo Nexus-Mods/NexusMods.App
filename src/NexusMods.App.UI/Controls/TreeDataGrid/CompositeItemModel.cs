@@ -14,9 +14,9 @@ public class CompositeItemModel<TKey> :
     TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
     where TKey : notnull
 {
-    private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
-    private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
-    public IReadOnlyObservableDictionary<ComponentKey, IItemModelComponent> Components => _components;
+    private readonly Dictionary<Type, IDisposable> _observableSubscriptions = new();
+    private readonly ObservableDictionary<Type, IItemModelComponent> _components = new();
+    public IReadOnlyObservableDictionary<Type, IItemModelComponent> Components => _components;
 
     private readonly IDisposable _activationDisposable;
     public CompositeItemModel()
@@ -52,18 +52,12 @@ public class CompositeItemModel<TKey> :
     public void Add<TComponent>(IItemModelComponent<TComponent> component)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        _components.Add(TComponent.GetKey(), component);
+        _components.Add(typeof(TComponent), component);
     }
 
-    public void Remove<TComponent>()
-        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    public void Remove<TComponent>() where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        Remove(TComponent.GetKey());
-    }
-
-    public void Remove(ComponentKey key)
-    {
-        if (_components.Remove(key, out var value))
+        if (_components.Remove(typeof(TComponent), out var value))
         {
             if (value is IDisposable disposable)
             {
@@ -71,7 +65,7 @@ public class CompositeItemModel<TKey> :
             }
         }
 
-        if (_observableSubscriptions.Remove(key, out var observableSubscription))
+        if (_observableSubscriptions.Remove(typeof(TComponent), out var observableSubscription))
         {
             observableSubscription.Dispose();
         }
@@ -112,13 +106,12 @@ public class CompositeItemModel<TKey> :
             });
         }
 
-        var key = TComponent.GetKey();
-        if (_observableSubscriptions.Remove(key, out var existingDisposable))
+        if (_observableSubscriptions.Remove(typeof(TComponent), out var existingDisposable))
         {
             existingDisposable.Dispose();
         }
 
-        _observableSubscriptions.Add(key, disposable);
+        _observableSubscriptions.Add(typeof(TComponent), disposable);
     }
 
     private static IDisposable SubscribeToObservable<TComponent, T>(
@@ -130,13 +123,12 @@ public class CompositeItemModel<TKey> :
     {
         return observable.Subscribe((self, observable, componentFactory), static (optionalValue, tuple) =>
         {
-            var key = TComponent.GetKey();
             var (self, observable, componentFactory) = tuple;
 
-            if (self._components.ContainsKey(key))
+            if (self._components.ContainsKey(typeof(TComponent)))
             {
                 if (optionalValue.HasValue) return;
-                self.Remove(key: key);
+                self.Remove<TComponent>();
             }
             else
             {
@@ -157,8 +149,7 @@ public class CompositeItemModel<TKey> :
     public bool TryGet<TComponent>([NotNullWhen(true)] out TComponent? component)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        var key = TComponent.GetKey();
-        if (!_components.TryGetValue(key, out var value))
+        if (!_components.TryGetValue(typeof(TComponent), out var value))
         {
             component = null;
             return false;
@@ -176,12 +167,11 @@ public class CompositeItemModel<TKey> :
 
     public TComponent Get<TComponent>() where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        var key = TComponent.GetKey();
-        if (!_components.TryGetValue(key, out var value))
-            throw new KeyNotFoundException($"Model doesn't have component `{typeof(TComponent)}` with key `{key}`");
+        if (!_components.TryGetValue(typeof(TComponent), out var value))
+            throw new KeyNotFoundException($"Model doesn't have component `{typeof(TComponent)}`");
 
         if (value is not TComponent component)
-            throw new InvalidCastException($"Expected component of type `{typeof(TComponent)}`, found `{value.GetType()}` for key `{key}`");
+            throw new InvalidCastException($"Expected component of type `{typeof(TComponent)}`, found `{value.GetType()}`");
 
         return component;
     }
