@@ -188,57 +188,70 @@ public class NewLoadoutTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
 {
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly LoadoutFilter _loadoutFilter;
+    private readonly SourceCache<Fake, EntityId> _cache;
 
     public NewLoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
     {
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _loadoutFilter = loadoutFilter;
-    }
 
-    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
-    {
-        var cache = new SourceCache<Fake, EntityId>(x => x.Id);
-        cache.Edit(updater =>
+        _cache = new SourceCache<Fake, EntityId>(x => x.Id);
+        _cache.Edit(updater =>
         {
             var data = Enumerable
                 .Range(0, 1000)
                 .Select(i => new Fake(
                     Id: EntityId.From((ulong)i),
                     Name: $"Mod {i}",
-                    CreatedAt: DateTimeOffset.Now - TimeSpan.FromDays(1) + TimeSpan.FromMinutes(i)
+                    CreatedAt: DateTimeOffset.Now - TimeSpan.FromDays(1) + TimeSpan.FromMinutes(i),
+                    InitialIsEnabled: Random.Shared.Next(minValue: 0, maxValue: 100) > 50
                 ));
 
             updater.AddOrUpdate(data);
         });
+    }
 
-        return cache.Connect().Transform(x =>
+    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
+    {
+        return _cache.Connect().Transform(x =>
         {
-            var itemModel = new CompositeItemModel<EntityId>();
+            var itemModel = new CompositeItemModel<EntityId>(x.Id);
 
             itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: x.Name));
+            itemModel.Add(LoadoutColumns.IsEnabled.ComponentKey, new LoadoutComponents.IsEnabled(
+                initialValue: x.InitialIsEnabled,
+                valueObservable: x.IsEnabled
+            ));
 
-            itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: x.CreatedAt));
+            // itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: x.CreatedAt));
+            var switcher = new Switcher();
+            var observable = Observable
+                .Interval(period: TimeSpan.FromSeconds(Random.Shared.Next(minValue: 1, maxValue: 5)), timeProvider: ObservableSystem.DefaultTimeProvider)
+                .Select(switcher, static (_, switcher) => switcher.Get())
+                .Prepend(true)
+                .Select(x.CreatedAt, static (shouldShow, date) => shouldShow ? date : Optional<DateTimeOffset>.None);
 
-            // var switcher = new Switcher();
-            // var observable = Observable
-            //     .Interval(period: TimeSpan.FromSeconds(Random.Shared.Next(minValue: 1, maxValue: 5)), timeProvider: ObservableSystem.DefaultTimeProvider)
-            //     .Select(switcher, static (_, switcher) => switcher.Get())
-            //     .Prepend(true)
-            //     .Select(x.CreatedAt, static (shouldShow, date) => shouldShow ? date : Optional<DateTimeOffset>.None);
-            //
-            // itemModel.AddObservable(
-            //     observable: observable,
-            //     componentFactory: static (observable, value) => new SharedComponents.InstalledDate(
-            //         valueObservable: observable,
-            //         initialValue: value
-            //     )
-            // );
+            itemModel.AddObservable(
+                key: SharedColumns.InstalledDate.ComponentKey,
+                observable: observable,
+                componentFactory: static (observable, value) => new DateComponent(
+                    initialValue: value,
+                    valueObservable: observable
+                )
+            );
 
             return itemModel;
         });
     }
 
-    private record Fake(EntityId Id, string Name, DateTimeOffset CreatedAt);
+    private record Fake(
+        EntityId Id,
+        string Name,
+        DateTimeOffset CreatedAt,
+        bool InitialIsEnabled)
+    {
+        public BehaviorSubject<bool> IsEnabled { get; } = new(initialValue: InitialIsEnabled);
+    }
 
     private class Switcher
     {
@@ -251,6 +264,33 @@ public class NewLoadoutTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
         }
     }
 
+    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _disposables = new();
+
+    protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
+    {
+        base.BeforeModelActivationHook(model);
+
+        var disposable = model.SubscribeToComponent<LoadoutComponents.IsEnabled, NewLoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.IsEnabled.ComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel), static (_, tuple) =>
+            {
+                var (self, itemModel) = tuple;
+                var x = self._cache.Lookup(itemModel.Key).Value;
+                x.IsEnabled.OnNext(!x.IsEnabled.Value);
+            })
+        );
+
+        _disposables[model] = disposable;
+    }
+
+    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
+    {
+        base.BeforeModelDeactivationHook(model);
+
+        _disposables.Remove(model);
+    }
+
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
         var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
@@ -259,6 +299,7 @@ public class NewLoadoutTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LoadoutColumns.IsEnabled>(),
         ];
     }
 }

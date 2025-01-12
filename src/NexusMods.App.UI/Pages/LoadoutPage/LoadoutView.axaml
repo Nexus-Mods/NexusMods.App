@@ -136,6 +136,31 @@
                         </controls:ColumnContentControl>
                     </DataTemplate>
 
+                    <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
+                        <DataTemplate.DataType>
+                            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
+                        </DataTemplate.DataType>
+
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled" ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
+                                            <ToggleSwitch Classes="Compact"
+                                                          HorizontalAlignment="Center"
+                                                          Command="{CompiledBinding CommandToggle}"
+                                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}">
+                                                <ToggleSwitch.OnContent><ContentControl /></ToggleSwitch.OnContent>
+                                                <ToggleSwitch.OffContent><ContentControl /></ToggleSwitch.OffContent>
+                                            </ToggleSwitch>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
+
+                        </controls:ColumnContentControl>
+                    </DataTemplate>
+
                     <!-- <DataTemplate x:Key="{x:Static controls:SharedComponents+Name.ColumnTemplateResourceKey}"> -->
                     <!--     <DataTemplate.DataType> -->
                     <!--         <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/> -->

@@ -1,4 +1,3 @@
-using DynamicData.Kernel;
 using Humanizer;
 using Humanizer.Bytes;
 using JetBrains.Annotations;
@@ -11,16 +10,14 @@ namespace NexusMods.App.UI.Controls;
 public sealed class SizeComponent : AFormattedValueComponent<Size>, IItemModelComponent<SizeComponent>, IComparable<SizeComponent>
 {
     public SizeComponent(
-        Size defaultValue,
+        Size initialValue,
         IObservable<Size> valueObservable,
-        bool subscribeWhenCreated = false,
-        Optional<Size> initialValue = default) : base(defaultValue, valueObservable, subscribeWhenCreated, initialValue, initialValue.Convert(_FormatValue)) { }
+        bool subscribeWhenCreated = false) : base(initialValue, _FormatValue(initialValue), valueObservable, subscribeWhenCreated) { }
 
     public SizeComponent(
-        Size defaultValue,
+        Size initialValue,
         Observable<Size> valueObservable,
-        bool subscribeWhenCreated = false,
-        Optional<Size> initialValue = default) : base(defaultValue, valueObservable, subscribeWhenCreated, initialValue, initialValue.Convert(_FormatValue)) { }
+        bool subscribeWhenCreated = false) : base(initialValue, _FormatValue(initialValue), valueObservable, subscribeWhenCreated) { }
 
     public SizeComponent(Size value) : base(value, _FormatValue(value)) { }
 

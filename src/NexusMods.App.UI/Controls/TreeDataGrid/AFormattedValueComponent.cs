@@ -1,8 +1,6 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
-using NexusMods.App.UI.Extensions;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -15,13 +13,13 @@ public abstract class AFormattedValueComponent<T> : ReactiveR3Object, IItemModel
     public BindableReactiveProperty<string> FormattedValue { get; }
 
     private readonly IDisposable? _activationDisposable;
-    protected AFormattedValueComponent(T defaultValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false, Optional<T> initialValue = default, Optional<string> initialFormattedValue = default) : this(defaultValue, valueObservable.ToObservable(), subscribeWhenCreated, initialValue, initialFormattedValue) { }
-    protected AFormattedValueComponent(T defaultValue, Observable<T> valueObservable, bool subscribeWhenCreated = false, Optional<T> initialValue = default, Optional<string> initialFormattedValue = default)
+    protected AFormattedValueComponent(T initialValue, string initialFormattedValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false) : this(initialValue, initialFormattedValue, valueObservable.ToObservable(), subscribeWhenCreated) { }
+    protected AFormattedValueComponent(T initialValue, string initialFormattedValue, Observable<T> valueObservable, bool subscribeWhenCreated = false)
     {
         if (!subscribeWhenCreated)
         {
-            Value = new BindableReactiveProperty<T>(value: initialValue.ValueOr(defaultValue));
-            FormattedValue = new BindableReactiveProperty<string>(value: initialFormattedValue.ValueOr(alternativeValue: string.Empty));
+            Value = new BindableReactiveProperty<T>(value: initialValue);
+            FormattedValue = new BindableReactiveProperty<string>(value: initialFormattedValue);
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, valueObservable, disposables) =>
             {
@@ -34,8 +32,10 @@ public abstract class AFormattedValueComponent<T> : ReactiveR3Object, IItemModel
         }
         else
         {
-            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue.ValueOr(defaultValue));
-            FormattedValue = Value.Select(this, static (value, self) => self.FormatValue(value)).ToBindableReactiveProperty(initialValue: initialFormattedValue.ValueOr(alternativeValue: string.Empty));
+            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue);
+            FormattedValue = Value
+                .Select(this, static (value, self) => self.FormatValue(value))
+                .ToBindableReactiveProperty(initialValue: initialFormattedValue);
         }
     }
 

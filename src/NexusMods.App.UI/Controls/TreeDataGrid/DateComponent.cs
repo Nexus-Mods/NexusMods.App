@@ -1,4 +1,3 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
@@ -14,13 +13,13 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent<DateComponent
     public BindableReactiveProperty<string> FormattedValue { get; }
 
     private readonly IDisposable _activationDisposable;
-    public DateComponent(IObservable<DateTimeOffset> valueObservable, bool subscribeWhenCreated = false, Optional<DateTimeOffset> initialValue = default) : this(valueObservable.ToObservable(), subscribeWhenCreated, initialValue) { }
-    public DateComponent(Observable<DateTimeOffset> valueObservable, bool subscribeWhenCreated = false, Optional<DateTimeOffset> initialValue = default)
+    public DateComponent(DateTimeOffset initialValue, IObservable<DateTimeOffset> valueObservable, bool subscribeWhenCreated = false) : this(initialValue, valueObservable.ToObservable(), subscribeWhenCreated) { }
+    public DateComponent(DateTimeOffset initialValue, Observable<DateTimeOffset> valueObservable, bool subscribeWhenCreated = false)
     {
         if (!subscribeWhenCreated)
         {
-            Value = new BindableReactiveProperty<DateTimeOffset>(value: initialValue.ValueOr(alternativeValue: DateTimeOffset.MinValue));
-            FormattedValue = new BindableReactiveProperty<string>(value: initialValue.Convert(date => date.FormatDate(now: TimeProvider.System.GetLocalNow())).ValueOr(alternativeValue: string.Empty));
+            Value = new BindableReactiveProperty<DateTimeOffset>(value: initialValue);
+            FormattedValue = new BindableReactiveProperty<string>(value: initialValue.FormatDate(now: TimeProvider.System.GetLocalNow()));
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, valueObservable, disposables) =>
             {
@@ -36,8 +35,8 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent<DateComponent
         }
         else
         {
-            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue.ValueOr(alternativeValue: DateTimeOffset.MinValue));
-            FormattedValue = Value.Select(static value => value.FormatDate(now: TimeProvider.System.GetLocalNow())).ToBindableReactiveProperty(initialValue: initialValue.Convert(date => date.FormatDate(now: TimeProvider.System.GetLocalNow())).ValueOr(alternativeValue: string.Empty));
+            Value = valueObservable.ToBindableReactiveProperty(initialValue);
+            FormattedValue = Value.Select(static value => value.FormatDate(now: TimeProvider.System.GetLocalNow())).ToBindableReactiveProperty(initialValue: initialValue.FormatDate(now: TimeProvider.System.GetLocalNow()));
 
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {

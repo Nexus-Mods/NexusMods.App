@@ -1,4 +1,3 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using R3;
 
@@ -10,16 +9,14 @@ public sealed class StringComponent : AValueComponent<string>, IItemModelCompone
     public int CompareTo(StringComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
 
     public StringComponent(
-        string defaultValue,
+        string initialValue,
         IObservable<string> valueObservable,
-        bool subscribeWhenCreated = false,
-        Optional<string> initialValue = default) : base(defaultValue, valueObservable, subscribeWhenCreated, initialValue) { }
+        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
 
     public StringComponent(
-        string defaultValue,
+        string initialValue,
         Observable<string> valueObservable,
-        bool subscribeWhenCreated = false,
-        Optional<string> initialValue = default) : base(defaultValue, valueObservable, subscribeWhenCreated, initialValue) { }
+        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
 
     public StringComponent(string value) : base(value) { }
 }

@@ -15,11 +15,16 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
 {
     private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
     private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
+
     public IReadOnlyObservableDictionary<ComponentKey, IItemModelComponent> Components => _components;
+    public TKey Key { get; }
 
     private readonly IDisposable _activationDisposable;
-    public CompositeItemModel()
+
+    public CompositeItemModel(TKey key)
     {
+        Key = key;
+
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
             foreach (var kv in self._components)
@@ -180,6 +185,43 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
     public Optional<TComponent> GetOptional<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         return TryGet<TComponent>(key, out var component) ? component : Optional<TComponent>.None;
+    }
+
+    public Observable<Optional<TComponent>> GetObservable<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        var adds = _components
+            .ObserveDictionaryAdd()
+            .Where(key, static (ev, key) => ev.Key == key)
+            .Select(key, static (ev, key) => Optional<TComponent>.Create(AssertComponent<TComponent>(key, ev.Value)));
+
+        var removes = _components
+            .ObserveDictionaryRemove()
+            .Where(key, static (ev, key) => ev.Key == key)
+            .Select(static _ => Optional<TComponent>.None);
+
+        return adds.Merge(removes).Prepend((this, key), static state => state.Item1.GetOptional<TComponent>(state.Item2));
+    }
+
+    public IDisposable SubscribeToComponent<TComponent, TState>(
+        ComponentKey key,
+        TState state,
+        Func<TState, CompositeItemModel<TKey>, TComponent, IDisposable> factory)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        var observable = GetObservable<TComponent>(key);
+        var serialDisposable = new SerialDisposable();
+
+        var disposable = observable.Subscribe((this, state, factory, serialDisposable), static (optional, tuple) =>
+        {
+            var (self, state, factory, serialDisposable) = tuple;
+
+            serialDisposable.Disposable = null;
+            if (!optional.HasValue) return;
+
+            serialDisposable.Disposable = factory(state, self, optional.Value);
+        });
+
+        return Disposable.Combine(serialDisposable, disposable);
     }
 
     private static TComponent AssertComponent<TComponent>(ComponentKey key, IItemModelComponent component)

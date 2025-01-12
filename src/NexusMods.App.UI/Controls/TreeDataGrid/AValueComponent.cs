@@ -1,8 +1,6 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
-using NexusMods.App.UI.Extensions;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -14,12 +12,12 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
     public BindableReactiveProperty<T> Value { get; }
 
     private readonly IDisposable? _activationDisposable;
-    protected AValueComponent(T defaultValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false, Optional<T> initialValue = default) : this(defaultValue, valueObservable.ToObservable(), subscribeWhenCreated, initialValue) { }
-    protected AValueComponent(T defaultValue, Observable<T> valueObservable, bool subscribeWhenCreated = false, Optional<T> initialValue = default)
+    protected AValueComponent(T initialValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false) : this(initialValue, valueObservable.ToObservable(), subscribeWhenCreated) { }
+    protected AValueComponent(T initialValue, Observable<T> valueObservable, bool subscribeWhenCreated = false)
     {
         if (!subscribeWhenCreated)
         {
-            Value = new BindableReactiveProperty<T>(value: initialValue.ValueOr(defaultValue));
+            Value = new BindableReactiveProperty<T>(value: initialValue);
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, valueObservable, disposables) =>
             {
@@ -31,7 +29,7 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
         }
         else
         {
-            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue.ValueOr(defaultValue));
+            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue);
         }
     }
 
