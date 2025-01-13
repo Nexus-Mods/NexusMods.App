@@ -36,8 +36,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
 
-    // public LoadoutTreeDataGridAdapter Adapter { get; }
-    public NewLoadoutTreeDataGridAdapter Adapter { get; }
+    public LoadoutTreeDataGridAdapter Adapter { get; }
+    // public NewLoadoutTreeDataGridAdapter Adapter { get; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
@@ -53,8 +53,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionGroupId = collectionGroupId,
         };
 
-        // Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
-        Adapter = new NewLoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
+        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
+        // Adapter = new NewLoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
         
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
@@ -121,18 +121,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                // var ids = Adapter.SelectedModels
-                //     .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
-                //     .ToHashSet();
-                //
-                // using var tx = _connection.BeginTransaction();
-                //
-                // foreach (var id in ids)
-                // {
-                //     tx.Delete(id, recursive: true);
-                // }
-                //
-                // await tx.Commit();
+                var ids = Adapter.SelectedModels
+                    .SelectMany(itemModel => itemModel.GetLoadoutItemIds())
+                    .ToHashSet();
+
+                using var tx = _connection.BeginTransaction();
+
+                foreach (var id in ids)
+                {
+                    tx.Delete(id, recursive: true);
+                }
+
+                await tx.Commit();
             },
             awaitOperation: AwaitOperation.Sequential,
             initialCanExecute: false,
@@ -143,41 +143,41 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         {
             Adapter.Activate().AddTo(disposables);
 
-            // // TODO: can be optimized with chunking or debounce
-            // Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
-            // {
-            //     using var tx = _connection.BeginTransaction();
-            //
-            //     foreach (var (loadoutItemId, shouldEnable) in message.Ids)
-            //     {
-            //         if (shouldEnable)
-            //         {
-            //             tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-            //         } else
-            //         {
-            //             tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
-            //         }
-            //     }
-            //
-            //     await tx.Commit();
-            // },
-            // awaitOperation: AwaitOperation.Parallel,
-            // configureAwait: false).AddTo(disposables);
-            //
-            // // Compute the target group for the ViewFilesCommand
-            // Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
-            //     .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
-            //     .ObserveOnThreadPool()
-            //     .Select(_connection,
-            //         static (model, connection) =>
-            //         {
-            //             if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-            //             return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(model.GetLoadoutItemIds(), connection);
-            //         }
-            //     )
-            //     .ObserveOnUIThreadDispatcher()
-            //     .Subscribe(viewModFilesArgumentsSubject.OnNext)
-            //     .AddTo(disposables);
+            // TODO: can be optimized with chunking or debounce
+            Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
+            {
+                using var tx = _connection.BeginTransaction();
+
+                foreach (var (loadoutItemId, shouldEnable) in message.Ids)
+                {
+                    if (shouldEnable)
+                    {
+                        tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                    } else
+                    {
+                        tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                    }
+                }
+
+                await tx.Commit();
+            },
+            awaitOperation: AwaitOperation.Parallel,
+            configureAwait: false).AddTo(disposables);
+
+            // Compute the target group for the ViewFilesCommand
+            Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
+                .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
+                .ObserveOnThreadPool()
+                .Select(_connection,
+                    static (model, connection) =>
+                    {
+                        if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
+                        return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(model.GetLoadoutItemIds(), connection);
+                    }
+                )
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(viewModFilesArgumentsSubject.OnNext)
+                .AddTo(disposables);
         });
     }
 }

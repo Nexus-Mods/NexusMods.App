@@ -161,38 +161,16 @@
                         </controls:ColumnContentControl>
                     </DataTemplate>
 
-                    <!-- <DataTemplate x:Key="{x:Static controls:SharedComponents+Name.ColumnTemplateResourceKey}"> -->
-                    <!--     <DataTemplate.DataType> -->
-                    <!--         <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/> -->
-                    <!--     </DataTemplate.DataType> -->
-                    <!-- -->
-                    <!--     <controls:ComponentControl> -->
-                    <!--          -->
-                    <!--     </controls:ComponentControl> -->
-                    <!-- -->
-                    <!-- <ContentControl> -->
-                    <!-- <ContentControl.DataTemplates> -->
-                    <!--     ~1~         <DataTemplate DataType="{x:Type local:ILibraryItemWithName}"> @1@ -->
-                    <!--     ~1~             <TextBlock Text="{CompiledBinding Name.Value}" /> @1@ -->
-                    <!--     ~1~         </DataTemplate> @1@ -->
-                    <!--     ~1~         <DataTemplate DataType="{x:Type local:ILibraryItemModel}"> @1@ -->
-                    <!--     ~1~             <TextBlock Text="-" /> @1@ -->
-                    <!--     ~1~         </DataTemplate> @1@ -->
-                    <!--     ~1~     </ContentControl.DataTemplates> @1@ -->
-                    <!--     ~1~ </ContentControl> @1@ -->
-                    <!-- </DataTemplate> -->
-
-
-                    <!-- <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel"> -->
-                    <!--     <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}"> -->
-                    <!--         <ToggleSwitch.OnContent> -->
-                    <!--             <ContentControl /> -->
-                    <!--         </ToggleSwitch.OnContent> -->
-                    <!--         <ToggleSwitch.OffContent> -->
-                    <!--             <ContentControl /> -->
-                    <!--         </ToggleSwitch.OffContent> -->
-                    <!--     </ToggleSwitch> -->
-                    <!-- </DataTemplate> -->
+                    <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
+                        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}">
+                            <ToggleSwitch.OnContent>
+                                <ContentControl />
+                            </ToggleSwitch.OnContent>
+                            <ToggleSwitch.OffContent>
+                                <ContentControl />
+                            </ToggleSwitch.OffContent>
+                        </ToggleSwitch>
+                    </DataTemplate>
                 </TreeDataGrid.Resources>
             </TreeDataGrid>
         </controls:EmptyState>
