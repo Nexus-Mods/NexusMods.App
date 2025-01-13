@@ -58,6 +58,7 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
                             )
                     )
                     .QueryWhenChanged(matchingPanels => matchingPanels.Count != 0)
+                    .DistinctUntilChanged()
             )
             .Switch();
         
@@ -65,6 +66,7 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
             .Select(workspace => workspace.WhenAnyValue(w => w.Panels.Count))
             .Switch()
             .Select(panelCount => panelCount == 1)
+            .DistinctUntilChanged()
             .Prepend(workspaceController.ActiveWorkspace.Panels.Count == 1);
         
         var isSelectedObservable = workspaceIsActiveObservable
@@ -78,9 +80,11 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
                     return pageData.FactoryId == pageId && pageData.Context.Equals(context);
                 }
             )
+            .DistinctUntilChanged()
             .Prepend(pageData.Context.Equals(workspaceController.ActiveWorkspace.SelectedTab?.Contents?.PageData?.Context))
             // No Selected state if there is only one panel in the workspace
-            .CombineLatest(workspaceHasSinglePanelObservable, (isSelected, hasSinglePanel) => isSelected && !hasSinglePanel);
+            .CombineLatest(workspaceHasSinglePanelObservable, (isSelected, hasSinglePanel) => isSelected && !hasSinglePanel)
+            .DistinctUntilChanged();
 
         this.WhenActivated(d =>
             {
