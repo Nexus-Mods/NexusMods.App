@@ -8,7 +8,7 @@ public class NXMGogAuthUrl : NXMUrl
     /// <summary>
     /// a code. This gets used in another request to get at the actual authorization code
     /// </summary>
-    public string? Code => Query.Get("code");
+    public string Code { get; }
     
     /// <summary>
     /// constructor
@@ -17,13 +17,13 @@ public class NXMGogAuthUrl : NXMUrl
     public NXMGogAuthUrl(Uri uri)
     {
         UrlType = NXMUrlType.OAuth;
-        if (!Query.AllKeys.Contains("code"))
-            throw new ArgumentException($"invalid nxm url \"{uri}\"");
-            
+        var parsedQuery = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        
+        Code = parsedQuery["code"] ?? throw new ArgumentException($"invalid nxm url \"{uri}\"");
     }
 
     /// <summary>
     /// serialize the url
     /// </summary>
-    public override string ToString() => $"nxm://gog-auth/?code={QueryString}";    
+    public override string ToString() => $"nxm://gog-auth/?code={Code}";    
 }

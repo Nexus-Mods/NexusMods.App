@@ -36,7 +36,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private readonly IGameDomainToGameIdMappingCache _cache;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly IGogClient _gogClient;
+    private readonly IClient _client;
 
     /// <summary>
     /// constructor
@@ -45,7 +45,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         IServiceProvider serviceProvider,
         ILogger<NxmIpcProtocolHandler> logger, 
         OAuth oauth,
-        IGogClient gogClient,
+        IClient client,
         IGameDomainToGameIdMappingCache cache,
         ILoginManager loginManager)
     {
@@ -53,7 +53,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
         _logger = logger;
         _oauth = oauth;
-        _gogClient = gogClient;
+        _client = client;
         _cache = cache;
         _loginManager = loginManager;
     }
@@ -74,7 +74,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 _oauth.AddUrl(oauthUrl);
                 break;
             case NXMGogAuthUrl gogUrl:
-                _gogClient.AuthUrl(gogUrl);
+                _client.AuthUrl(gogUrl);
                 break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in

@@ -19,11 +19,10 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
-using R3;
 
 namespace NexusMods.Networking.GOG;
 
-internal class Client : IGogClient
+internal class Client : IClient
 {
     private readonly ILogger<Client> _logger;
     private readonly IConnection _connection;
@@ -33,9 +32,6 @@ internal class Client : IGogClient
 
     private static readonly Uri AuthorizationUri = new("https://auth.gog.com/auth");
     private static readonly Uri RedirectUrl = new("nxm://gog-auth");
-    
-    
-
     
     private static readonly Uri TokenUri = new("https://auth.gog.com/token");
     
@@ -77,28 +73,20 @@ internal class Client : IGogClient
             { "client_id", ClientId },
             { "client_secret", ClientSecret },
             { "response_type", "code" },
-            { "redirect_uri", RedirectUrl.ToString() },
+            { "redirect_uri", "nxm://gog-auth" },
         };
 
         var urlTask = _authUrls.Reader.ReadAsync(token).AsTask();
         
         await _osInterop.OpenUrl(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)), cancellationToken: token);
 
-        if (Task.WaitAny([urlTask], token) == 0)
+        if (Task.WaitAny([urlTask], token) != 0)
         {
             _logger.LogWarning("The OAuth login request was cancelled.");
             return;
         }
 
-        var url = await urlTask;
-
-        var code = url.Code;
-        
-        if (code == null)
-        {
-            _logger.LogError("The OAuth login request did not contain a code.");
-            return;
-        }
+        var code = urlTask.Result.Code;
         
         // Request the token
         var tokenQuery = new Dictionary<string, string?>
@@ -107,7 +95,7 @@ internal class Client : IGogClient
             { "client_secret", ClientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", RedirectUrl.ToString() },
+            { "redirect_uri", "nxm://gog-auth/" },
         };
 
         var uri = new Uri(QueryHelpers.AddQueryString(TokenUri.ToString(), tokenQuery));

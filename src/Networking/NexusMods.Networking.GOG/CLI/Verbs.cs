@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Hashing.xxHash3;
@@ -21,7 +22,7 @@ public static class Verbs
             .AddVerb(() => Index);
 
     [Verb("gog-login", "Indexes a Steam app and updates the given output folder")]
-    private static async Task<int> Login([Injected] Client client)
+    private static async Task<int> Login([Injected] IClient client)
     {
         await client.Login(CancellationToken.None);
         return 0;
