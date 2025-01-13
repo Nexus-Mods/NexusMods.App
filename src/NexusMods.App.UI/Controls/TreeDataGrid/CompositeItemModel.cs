@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -9,18 +9,31 @@ using R3;
 
 namespace NexusMods.App.UI.Controls;
 
+/// <summary>
+/// Item model that allows for composition over inheritance with components.
+/// </summary>
 [PublicAPI]
 public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
     where TKey : notnull
 {
+    /// <summary>
+    /// Gets the key of the item model.
+    /// </summary>
+    public TKey Key { get; }
+
     private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
     private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
 
+    /// <summary>
+    /// Gets the dictionary of all components currently in the item model.
+    /// </summary>
     public IReadOnlyObservableDictionary<ComponentKey, IItemModelComponent> Components => _components;
-    public TKey Key { get; }
 
     private readonly IDisposable _activationDisposable;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public CompositeItemModel(TKey key)
     {
         Key = key;
@@ -34,31 +47,35 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
                 reactiveR3Object.Activate().AddTo(disposables);
             }
 
-            self._components.ObserveChanged().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
+            self._components.ObserveDictionaryAdd().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
             {
                 var (_, disposables) = tuple;
-                if (change.Action == NotifyCollectionChangedAction.Add)
-                {
-                    if (change.NewItem.Value is not IReactiveR3Object reactiveR3Object) return;
-                    reactiveR3Object.Activate().AddTo(disposables);
-                } else if (change.Action == NotifyCollectionChangedAction.Remove)
-                {
-                    if (change.OldItem.Value is not IReactiveR3Object reactiveR3Object) return;
-                    reactiveR3Object.Dispose();
-                } else if (change.Action == NotifyCollectionChangedAction.Reset)
-                {
-                    throw new NotSupportedException("Resets are not supported");
-                }
+                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
+                reactiveR3Object.Activate().AddTo(disposables);
+            }).AddTo(disposables);
+
+            self._components.ObserveDictionaryRemove().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
+            {
+                var (_, disposables) = tuple;
+                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
+                var didRemove = disposables.Remove(reactiveR3Object);
+                Debug.Assert(didRemove);
             }).AddTo(disposables);
         });
     }
 
+    /// <summary>
+    /// Adds the component with the given key to the item model.
+    /// </summary>
     public void Add<TComponent>(ComponentKey key, IItemModelComponent<TComponent> component)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         _components.Add(key, component);
     }
 
+    /// <summary>
+    /// Remove the component with the given key from the item model.
+    /// </summary>
     public bool Remove<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         if (!_components.Remove(key, out var value)) return false;
@@ -75,6 +92,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
     public delegate IItemModelComponent<TComponent> ComponentFactory<TComponent, T>(Observable<T> valueObservable, T initialValue)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>;
 
+    /// <summary>
+    /// Conditionally adds the component to the item model based on values from an observable stream.
+    /// </summary>
     public void AddObservable<TComponent, T>(
         ComponentKey key,
         IObservable<Optional<T>> observable,
@@ -86,6 +106,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
         AddObservable(key, observable.ToObservable(), componentFactory, subscribeImmediately);
     }
 
+    /// <summary>
+    /// Conditionally adds the component to the item model based on values from an observable stream.
+    /// </summary>
     public void AddObservable<TComponent, T>(
         ComponentKey key,
         Observable<Optional<T>> observable,
@@ -150,6 +173,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
         });
     }
 
+    /// <summary>
+    /// Tries to get the component with the given key.
+    /// </summary>
     public bool TryGet<TComponent>(ComponentKey key, [NotNullWhen(true)] out TComponent? component)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
@@ -163,6 +189,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
         return true;
     }
 
+    /// <summary>
+    /// Tries to get the component with the given key.
+    /// </summary>
     public bool TryGet(ComponentKey key, Type componentType, [NotNullWhen(true)] out IItemModelComponent? component)
     {
         if (!_components.TryGetValue(key, out var value))
@@ -177,16 +206,28 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
         return true;
     }
 
+    /// <summary>
+    /// Gets the component with the given key.
+    /// </summary>
     public TComponent Get<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         return AssertComponent<TComponent>(key, _components[key]);
     }
 
+    /// <summary>
+    /// Tries to get the component with the given key.
+    /// </summary>
     public Optional<TComponent> GetOptional<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         return TryGet<TComponent>(key, out var component) ? component : Optional<TComponent>.None;
     }
 
+    /// <summary>
+    /// Returns an observable stream with optional values when the component gets added or removed from the item model.
+    /// </summary>
+    /// <remarks>
+    /// On subscription, the current value gets prepended.
+    /// </remarks>
     public Observable<Optional<TComponent>> GetObservable<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         var adds = _components
@@ -202,6 +243,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
         return adds.Merge(removes).Prepend((this, key), static state => state.Item1.GetOptional<TComponent>(state.Item2));
     }
 
+    /// <summary>
+    /// Subscribes to a component with the given key in the item model.
+    /// </summary>
     public IDisposable SubscribeToComponent<TComponent, TState>(
         ComponentKey key,
         TState state,

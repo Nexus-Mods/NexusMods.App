@@ -25,6 +25,11 @@ public class ComponentTemplate<TComponent> : IComponentTemplate
     public Type ComponentType => typeof(TComponent);
     public ComponentKey ComponentKey { get; set; }
 
+    // NOTE(erri120): Rider currently is unable to properly understand DataTypeAttribute.
+    // The below is a hack and will be replaced in the future when Rider fixes their
+    // inline hints. See the bug report for more details:
+    // https://youtrack.jetbrains.com/issue/RIDER-121820
+
     private DataTemplate? _dataTemplate;
     public DataTemplate DataTemplate
     {
@@ -74,6 +79,9 @@ public class ColumnContentControl<TKey> : ContentControl
         return Fallback;
     }
 
+    /// <summary>
+    /// Subscribes to component changes in the item model and rebuilds the content.
+    /// </summary>
     private IDisposable Subscribe(CompositeItemModel<TKey> itemModel)
     {
         return itemModel.Components
@@ -101,6 +109,8 @@ public class ColumnContentControl<TKey> : ContentControl
                 return;
             }
 
+            // NOTE(erri120): we only care about Content changes when the
+            // Control is fully constructed and rendered on screen.
             if (IsLoaded) _serialDisposable.Disposable = Subscribe(itemModel);
         }
     }
@@ -108,6 +118,8 @@ public class ColumnContentControl<TKey> : ContentControl
     protected override bool RegisterContentPresenter(ContentPresenter presenter)
     {
         var didRegister = base.RegisterContentPresenter(presenter);
+
+        // NOTE(erri120): Puts content into the presenter before the first render.
         if (didRegister && Content is CompositeItemModel<TKey> itemModel)
         {
             var content = BuildContent(itemModel);

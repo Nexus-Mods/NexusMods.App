@@ -5,11 +5,17 @@ using JetBrains.Annotations;
 
 namespace NexusMods.App.UI.Controls;
 
+/// <summary>
+/// Represents a component in a composite item model.
+/// </summary>
 [PublicAPI]
 public interface IItemModelComponent;
 
+/// <summary>
+/// Represents a component in a composite item model.
+/// </summary>
 [PublicAPI]
-public interface IItemModelComponent<TSelf> : IItemModelComponent
+public interface IItemModelComponent<in TSelf> : IItemModelComponent
     where TSelf : class, IItemModelComponent<TSelf>, IComparable<TSelf>
 {
     static virtual int Compare(TSelf? a, TSelf? b)

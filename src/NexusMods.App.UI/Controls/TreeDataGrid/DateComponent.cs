@@ -6,6 +6,9 @@ using R3;
 
 namespace NexusMods.App.UI.Controls;
 
+/// <summary>
+/// Component for dates.
+/// </summary>
 [PublicAPI]
 public class DateComponent : ReactiveR3Object, IItemModelComponent<DateComponent>, IComparable<DateComponent>
 {
