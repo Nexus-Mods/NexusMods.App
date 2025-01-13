@@ -375,7 +375,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>();
+        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnailAndName>();
 
         return
         [

@@ -397,6 +397,37 @@
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter > TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
+        
+        <Style Selector="^.LibraryItemNameColumn">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+
+                <Style Selector="^ StackPanel#LibraryItemWithThumbnailAndNameStack">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
+                        
+                    <Style Selector="^ Border#LibraryItemThumbnailBorder">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                        <Setter Property="Width" Value="45" />
+                        <Setter Property="Height" Value="28" />
+                        <!-- easy way to get the rounded corner to mask the image below -->
+                        <Setter Property="ClipToBounds" Value="True" />
+                        
+                        <Style Selector="^ > Panel > icons|UnifiedIcon">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                            <Setter Property="Size" Value="16" />
+                        </Style>
+                        
+                        <Style Selector="^ > Panel > Image">
+                            <Setter Property="Stretch" Value="UniformToFill" />
+                        </Style>
+                    </Style>
+                </Style>
+                    
+            </Style>
+        </Style>
+        
     </Style>
 
 
@@ -460,7 +491,6 @@
         </Style>
     </Style>
 
-
     <!-- SORT \ LOAD ORDER TREEDATAGRID -->
 
     <Style Selector="TreeDataGrid#SortOrderTreeDataGrid">
@@ -508,17 +538,17 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Padding" Value="0" />
 
-                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter"> 
-                    <Setter Property="Background" 
+                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background"
                             Value="{StaticResource TreeDataGridHeaderBackgroundPointerOverBrush}" />
-                    <Setter Property="BorderBrush" 
+                    <Setter Property="BorderBrush"
                             Value="{StaticResource TreeDataGridHeaderBorderBrushPointerOverBrush}" />
                 </Style>
 
                 <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Background" 
+                    <Setter Property="Background"
                             Value="{StaticResource TreeDataGridHeaderBackgroundPressedBrush}" />
-                    <Setter Property="BorderBrush" 
+                    <Setter Property="BorderBrush"
                             Value="{StaticResource TreeDataGridHeaderBorderBrushPressedBrush}" />
                 </Style>
             </Style>

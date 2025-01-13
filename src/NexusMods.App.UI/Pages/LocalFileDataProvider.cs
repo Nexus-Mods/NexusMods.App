@@ -20,10 +20,12 @@ namespace NexusMods.App.UI.Pages;
 internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
 
     public LocalFileDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _serviceProvider = serviceProvider;
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
@@ -43,11 +45,11 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
 
-        var model = new LocalFileLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id))
+        var model = new LocalFileLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id), _serviceProvider)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
-
+        
         model.Name.Value = libraryFile.AsLibraryItem().Name;
         model.DownloadedDate.Value = libraryFile.GetCreatedAt();
         model.ItemSize.Value = libraryFile.Size;
@@ -77,7 +79,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
 
-                var model = new LocalFileParentLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id))
+                var model = new LocalFileParentLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id), _serviceProvider)
                 {
                     HasChildrenObservable = Observable.Return(true),
                     ChildrenObservable = childrenObservable,
@@ -121,7 +123,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                     .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
                     .SubscribeWithErrorLogging();
 
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem));
+                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false));
 
                 var installedAtObservable = cache.Connect()
                     .Transform(item => item.GetCreatedAt())
@@ -153,14 +155,12 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable)
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, 
+                    _serviceProvider, Observable.Return(true), childrenObservable, bitmap: null)
                 {
                     NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
                     InstalledAtObservable = installedAtObservable,
                     IsEnabledObservable = isEnabledObservable,
-
-                    HasChildrenObservable = Observable.Return(true),
-                    ChildrenObservable = childrenObservable,
                 };
 
                 return model;

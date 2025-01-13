@@ -616,9 +616,6 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithName.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LibraryPage\ILibraryItemWithVersion.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
@@ -696,6 +693,9 @@
         </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnailAndName.cs">
+          <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\IconDesignViewModel.cs">
           <DependentUpon>IIconViewModel.cs</DependentUpon>

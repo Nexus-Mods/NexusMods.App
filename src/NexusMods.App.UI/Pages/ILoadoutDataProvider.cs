@@ -38,13 +38,13 @@ public static class LoadoutDataProviderHelper
         });
     }
 
-    public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem)
+    public static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LibraryLinkedLoadoutItem.ReadOnly libraryLinkedLoadoutItem, IServiceProvider serviceProvider, bool loadThumbnail)
     {
         // NOTE(erri120): We'll only show the library linked loadout item group for now.
         // Showing sub-groups, like SMAPI mods for Stardew Valley, will not be shown for now.
         // We'll probably have a setting or something that the game extension can control.
 
-        return ToLoadoutItemModel(connection, libraryLinkedLoadoutItem.AsLoadoutItemGroup());
+        return ToLoadoutItemModel(connection, libraryLinkedLoadoutItem.AsLoadoutItemGroup(), serviceProvider, loadThumbnail);
 
         // var db = libraryLinkedLoadoutItem.Db;
 
@@ -73,7 +73,7 @@ public static class LoadoutDataProviderHelper
         // return arr;
     }
 
-    private static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LoadoutItemGroup.ReadOnly loadoutItemGroup)
+    private static LoadoutItemModel ToLoadoutItemModel(IConnection connection, LoadoutItemGroup.ReadOnly loadoutItemGroup, IServiceProvider serviceProvider, bool loadThumbnail)
     {
         var observable = LoadoutItemGroup
             .Observe(connection, loadoutItemGroup.Id)
@@ -86,7 +86,7 @@ public static class LoadoutDataProviderHelper
         // TODO: version (need to ask the game extension)
         // TODO: size (probably with RevisionsWithChildUpdates)
 
-        var model = new LoadoutItemModel(loadoutItemGroup.Id)
+        var model = new LoadoutItemModel(loadoutItemGroup.Id, serviceProvider, connection, loadThumbnail, loadThumbnail)
         {
             NameObservable = nameObservable,
             IsEnabledObservable = isEnabledObservable,
