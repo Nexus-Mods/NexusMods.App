@@ -8,7 +8,7 @@ using R3;
 namespace NexusMods.App.UI.Controls;
 
 [PublicAPI]
-public class DateComponent : ReactiveR3Object, IItemModelComponent
+public class DateComponent : ReactiveR3Object, IItemModelComponent<DateComponent>, IComparable<DateComponent>
 {
     public BindableReactiveProperty<DateTimeOffset> Value { get; }
     public BindableReactiveProperty<string> FormattedValue { get; }
@@ -66,6 +66,8 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent
             self.FormattedValue.Value = self.Value.Value.FormatDate(now: TimeProvider.System.GetLocalNow());
         });
     }
+
+    public int CompareTo(DateComponent? other) => DateTimeOffset.Compare(Value.Value, other?.Value.Value ?? DateTimeOffset.UnixEpoch);
 
     private bool _isDisposed;
     protected override void Dispose(bool disposing)

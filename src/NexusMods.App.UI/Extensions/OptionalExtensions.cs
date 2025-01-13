@@ -52,4 +52,10 @@ public static class OptionalExtensions
             (false, false) => 0,
         };
     }
+
+    public static int Compare<T>(this Optional<T> a, Optional<T> b)
+        where T : IComparable<T>
+    {
+        return Compare(a, b, static (a, b) => a.CompareTo(b));
+    }
 }

@@ -10,6 +10,33 @@ using R3;
 
 namespace NexusMods.App.UI.Controls;
 
+public interface IComponentTemplate
+{
+    Type ComponentType { get; }
+
+    ComponentKey ComponentKey { get; }
+
+    DataTemplate DataTemplate { get; }
+}
+
+public class ComponentTemplate<TComponent> : IComponentTemplate
+    where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+{
+    public Type ComponentType => typeof(TComponent);
+    public ComponentKey ComponentKey { get; set; }
+
+    private DataTemplate? _dataTemplate;
+    public DataTemplate DataTemplate
+    {
+        get => _dataTemplate ?? throw new InvalidOperationException();
+        set
+        {
+            if (value.DataType != ComponentType) throw new InvalidOperationException();
+            _dataTemplate = value;
+        }
+    }
+}
+
 /// <summary>
 /// Control for columns where row models are <see cref="CompositeItemModel{TKey}"/>.
 /// </summary>
@@ -17,7 +44,7 @@ public class ColumnContentControl<TKey> : ContentControl
     where TKey : notnull
 {
     [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global", Justification = "Updated in XAML")]
-    public List<DataTemplate> AvailableTemplates { get; } = [];
+    public List<IComponentTemplate> AvailableTemplates { get; } = [];
 
     public Control? Fallback { get; set; }
 
@@ -31,18 +58,13 @@ public class ColumnContentControl<TKey> : ContentControl
     {
         foreach (var template in AvailableTemplates)
         {
-            var type = template.DataType;
-            if (type is null) throw new UnreachableException();
-
-            // NOTE(erri120): this could use a debug check to make sure that
-            // the type specified in the data template is actually a component
-            if (!itemModel.Components.TryGetValue(type, out var component)) continue;
+            if (!itemModel.TryGet(template.ComponentKey, template.ComponentType, out var component)) continue;
 
             // NOTE(erri120): DataTemplate.Build doesn't use the
             // data you give it, need to manually set the DataContext.
             // Otherwise. the new control will inherit the parent context,
             // which is CompositeItemModel<TKey>.
-            var control = template.Build(data: null);
+            var control = template.DataTemplate.Build(data: null);
             if (control is null) return null;
 
             control.DataContext = component;

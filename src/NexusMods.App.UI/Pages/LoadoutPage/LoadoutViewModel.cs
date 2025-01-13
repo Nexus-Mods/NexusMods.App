@@ -215,9 +215,9 @@ public class NewLoadoutTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
         {
             var itemModel = new CompositeItemModel<EntityId>();
 
-            itemModel.Add(new SharedComponents.Name(value: x.Name));
+            itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: x.Name));
 
-            itemModel.Add(new SharedComponents.InstalledDate(value: x.CreatedAt));
+            itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: x.CreatedAt));
 
             // var switcher = new Switcher();
             // var observable = Observable

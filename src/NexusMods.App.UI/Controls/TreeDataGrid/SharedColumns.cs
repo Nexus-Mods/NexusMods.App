@@ -12,13 +12,14 @@ public static class SharedColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<SharedComponents.Name>();
-            var bValue = b.GetOptional<SharedComponents.Name>();
-
-            return aValue.Compare(bValue, static (a, b) => string.CompareOrdinal(a.Value.Value, b.Value.Value));
+            var aValue = a.GetOptional<StringComponent>(StringComponentKey);
+            var bValue = b.GetOptional<StringComponent>(StringComponentKey);
+            return aValue.Compare(bValue);
         }
 
         public const string ColumnTemplateResourceKey = Prefix + "Name";
+        public static readonly ComponentKey StringComponentKey = ComponentKey.From(Prefix + nameof(Name) + nameof(StringComponent));
+
         public static string GetColumnHeader() => "Name";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
@@ -27,13 +28,14 @@ public static class SharedColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<SharedComponents.InstalledDate>();
-            var bValue = b.GetOptional<SharedComponents.InstalledDate>();
-
-            return aValue.Compare(bValue, static (a, b) => a.Value.Value.CompareTo(b.Value.Value));
+            var aValue = a.GetOptional<DateComponent>(ComponentKey);
+            var bValue = b.GetOptional<DateComponent>(ComponentKey);
+            return aValue.Compare(bValue);
         }
 
         public const string ColumnTemplateResourceKey = Prefix + "InstalledDate";
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(Prefix + nameof(InstalledDate) + nameof(DateComponent));
+
         public static string GetColumnHeader() => "Installed";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
@@ -42,13 +44,14 @@ public static class SharedColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<SharedComponents.DownloadedDate>();
-            var bValue = b.GetOptional<SharedComponents.DownloadedDate>();
-
-            return aValue.Compare(bValue, static (a, b) => a.Value.Value.CompareTo(b.Value.Value));
+            var aValue = a.GetOptional<DateComponent>(ComponentKey);
+            var bValue = b.GetOptional<DateComponent>(ComponentKey);
+            return aValue.Compare(bValue);
         }
 
         public const string ColumnTemplateResourceKey = Prefix + "DownloadedDate";
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(Prefix + nameof(DownloadedDate) + nameof(DateComponent));
+
         public static string GetColumnHeader() => "Downloaded";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
