@@ -55,6 +55,11 @@ public record LoggingSettings : ISettings
     /// </summary>
     public TimeSpan ProcessLogRetentionSpan { get; } = TimeSpan.FromDays(7);
 
+    /// <summary>
+    /// When enabled, shows an exception modal to the user on every observed exception.
+    /// </summary>
+    public bool ShowExceptions { get; [UsedImplicitly] set; } = true;
+
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
@@ -81,6 +86,13 @@ public record LoggingSettings : ISettings
                     .AddToSection(Sections.DeveloperTools)
                     .WithDisplayName("Log to console")
                     .WithDescription("Enables the ConsoleTarget (stdout) for all loggers.")
+                    .UseBooleanContainer()
+                    .RequiresRestart()
+                )
+                .AddPropertyToUI(x => x.ShowExceptions, propertyBuilder => propertyBuilder
+                    .AddToSection(Sections.DeveloperTools)
+                    .WithDisplayName("Show exception modal")
+                    .WithDescription("Enables the exception modal.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

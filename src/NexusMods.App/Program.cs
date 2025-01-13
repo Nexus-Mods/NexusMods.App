@@ -232,8 +232,9 @@ public class Program
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
-            s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
-            
+            if (loggingSettings.ShowExceptions)
+                s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
+
             if (startupMode.IsAvaloniaDesigner)
             {
                 s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
