@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
