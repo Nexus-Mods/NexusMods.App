@@ -24,27 +24,29 @@
                 </StackPanel>
             </Expander.Header>
 
-            <ItemsControl x:Name="Collections">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <panels:FlexPanel
-                            AlignContent="FlexStart"
-                            RowSpacing="{StaticResource Spacing-3}"
-                            ColumnSpacing="{StaticResource Spacing-3}"
-                            Wrap="Wrap"
-                            Margin="24" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
-                        <reactive:ViewModelViewHost
-                            ViewModel="{CompiledBinding .}"
-                            Width="508"
-                            Height="288"
-                            ClipToBounds="False"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="Collections">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <panels:FlexPanel
+                                AlignContent="FlexStart"
+                                RowSpacing="{StaticResource Spacing-3}"
+                                ColumnSpacing="{StaticResource Spacing-3}"
+                                Wrap="Wrap"
+                                Margin="24" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
+                            <reactive:ViewModelViewHost
+                                ViewModel="{CompiledBinding .}"
+                                Width="508"
+                                Height="288"
+                                ClipToBounds="False" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Expander>
 
         <Expander Grid.Row="1" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
