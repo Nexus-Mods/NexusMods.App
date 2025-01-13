@@ -199,9 +199,4 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 return model;
             });
     }
-
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveItems(LoadoutFilter loadoutFilter)
-    {
-        return Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>();
-    }
 }

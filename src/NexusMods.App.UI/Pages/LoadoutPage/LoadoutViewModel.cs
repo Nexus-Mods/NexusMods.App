@@ -197,8 +197,58 @@ public class NewLoadoutTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        var observable = _loadoutDataProviders.Select(provider => provider.ObserveItems(_loadoutFilter)).MergeChangeSets();
-        return observable;
+        var cache = new SourceCache<Fake, EntityId>(x => x.Id);
+        cache.Edit(updater =>
+        {
+            var data = Enumerable
+                .Range(0, 1000)
+                .Select(i => new Fake(
+                    Id: EntityId.From((ulong)i),
+                    Name: $"Mod {i}",
+                    CreatedAt: DateTimeOffset.Now - TimeSpan.FromDays(1) + TimeSpan.FromMinutes(i)
+                ));
+
+            updater.AddOrUpdate(data);
+        });
+
+        return cache.Connect().Transform(x =>
+        {
+            var itemModel = new CompositeItemModel<EntityId>();
+
+            itemModel.Add(new SharedComponents.Name(value: x.Name));
+
+            itemModel.Add(new SharedComponents.InstalledDate(value: x.CreatedAt));
+
+            // var switcher = new Switcher();
+            // var observable = Observable
+            //     .Interval(period: TimeSpan.FromSeconds(Random.Shared.Next(minValue: 1, maxValue: 5)), timeProvider: ObservableSystem.DefaultTimeProvider)
+            //     .Select(switcher, static (_, switcher) => switcher.Get())
+            //     .Prepend(true)
+            //     .Select(x.CreatedAt, static (shouldShow, date) => shouldShow ? date : Optional<DateTimeOffset>.None);
+            //
+            // itemModel.AddObservable(
+            //     observable: observable,
+            //     componentFactory: static (observable, value) => new SharedComponents.InstalledDate(
+            //         valueObservable: observable,
+            //         initialValue: value
+            //     )
+            // );
+
+            return itemModel;
+        });
+    }
+
+    private record Fake(EntityId Id, string Name, DateTimeOffset CreatedAt);
+
+    private class Switcher
+    {
+        private bool _current;
+        public bool Get()
+        {
+            var tmp = _current;
+            _current = !_current;
+            return tmp;
+        }
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)

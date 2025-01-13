@@ -64,11 +64,6 @@ public class CompositeItemModel<TKey> :
                 disposable.Dispose();
             }
         }
-
-        if (_observableSubscriptions.Remove(typeof(TComponent), out var observableSubscription))
-        {
-            observableSubscription.Dispose();
-        }
     }
 
     public delegate IItemModelComponent<TComponent> ComponentFactory<TComponent, T>(Observable<T> valueObservable, T initialValue)

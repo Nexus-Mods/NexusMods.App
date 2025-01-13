@@ -98,19 +98,17 @@
                             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
                         </DataTemplate.DataType>
 
-                        <controls:ComponentColumn x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentColumn.DataTemplates>
-                                <controls:ComponentTemplateSelector x:TypeArguments="abstractions:EntityId">
-                                    <DataTemplate DataType="{x:Type controls:SharedComponents+Name}">
-                                        <TextBlock Text="{CompiledBinding Value.Value}"/>
-                                    </DataTemplate>
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <DataTemplate DataType="{x:Type controls:SharedComponents+Name}">
+                                    <TextBlock Text="{CompiledBinding Value.Value}"/>
+                                </DataTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
 
-                                    <controls:ComponentTemplateSelector.Fallback>
-                                        <TextBlock Text="-"/>
-                                    </controls:ComponentTemplateSelector.Fallback>
-                                </controls:ComponentTemplateSelector>
-                            </controls:ComponentColumn.DataTemplates>
-                        </controls:ComponentColumn>
+                            <controls:ColumnContentControl.Fallback>
+                                <TextBlock Text="-"/>
+                            </controls:ColumnContentControl.Fallback>
+                        </controls:ColumnContentControl>
                     </DataTemplate>
 
                     <DataTemplate x:Key="{x:Static controls:SharedColumns+InstalledDate.ColumnTemplateResourceKey}">
@@ -118,19 +116,17 @@
                             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
                         </DataTemplate.DataType>
 
-                        <controls:ComponentColumn x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentColumn.DataTemplates>
-                                <controls:ComponentTemplateSelector x:TypeArguments="abstractions:EntityId">
-                                    <DataTemplate DataType="{x:Type controls:SharedComponents+InstalledDate}">
-                                        <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
-                                    </DataTemplate>
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <DataTemplate DataType="{x:Type controls:SharedComponents+InstalledDate}">
+                                    <TextBlock Text="{CompiledBinding FormattedValue.Value}" />
+                                </DataTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
 
-                                    <controls:ComponentTemplateSelector.Fallback>
-                                        <TextBlock Text="-"/>
-                                    </controls:ComponentTemplateSelector.Fallback>
-                                </controls:ComponentTemplateSelector>
-                            </controls:ComponentColumn.DataTemplates>
-                        </controls:ComponentColumn>
+                            <controls:ColumnContentControl.Fallback>
+                                <TextBlock Text="-"/>
+                            </controls:ColumnContentControl.Fallback>
+                        </controls:ColumnContentControl>
                     </DataTemplate>
 
                     <!-- <DataTemplate x:Key="{x:Static controls:SharedComponents+Name.ColumnTemplateResourceKey}"> -->

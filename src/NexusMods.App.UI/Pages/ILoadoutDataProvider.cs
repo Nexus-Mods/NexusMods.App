@@ -3,7 +3,6 @@ using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
@@ -13,8 +12,6 @@ namespace NexusMods.App.UI.Pages;
 public interface ILoadoutDataProvider
 {
     IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter);
-
-    IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveItems(LoadoutFilter loadoutFilter);
 }
 
 public class LoadoutFilter
