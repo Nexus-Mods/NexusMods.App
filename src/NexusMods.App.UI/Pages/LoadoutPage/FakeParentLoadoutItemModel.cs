@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
@@ -22,42 +23,20 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
 
     private readonly IDisposable _modelActivationDisposable;
     private readonly IDisposable _loadoutItemIdsDisposable;
-    private readonly IDisposable _childrenObservableDisposable;
 
     public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, 
-        IServiceProvider provider, IConnection connection, IObservable<bool> hasChildrenObservable, 
-        IObservable<IChangeSet<LoadoutItemModel, EntityId>> childrenObservable) 
-        : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), true)
+        IServiceProvider provider, IObservable<bool> hasChildrenObservable, 
+        IObservable<IChangeSet<LoadoutItemModel, EntityId>> childrenObservable, Bitmap? bitmap) 
+        : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), false, true)
     {
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
         ChildrenObservable = childrenObservable;
         HasChildrenObservable = hasChildrenObservable;
+        Thumbnail.Value = bitmap!; // as intended.
+        if (bitmap != null)
+            ShowThumbnail.Value = true;
+
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));
-        
-        // Inherit the icon from the first child
-        _childrenObservableDisposable = ChildrenObservable.FirstAsync().Subscribe(set =>
-        {
-            foreach (var item in set)
-            {
-                if (item.Reason != ChangeReason.Add) continue;
-                        
-                // Note(sewer):
-                // The child may not be activated, so we can't just copy the thumbnail, from it as it may
-                // not have been loaded yet. We need to manually load it.
-                var current = item.Current;
-                var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(provider);
-                var libraryLinkedItem = LibraryLinkedLoadoutItem.Load(connection.Db, current.GetLoadoutItemIds().First());
-                if (libraryLinkedItem.IsValid() && libraryLinkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
-                {
-                    ImagePipelines.CreateObservable(nexusLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
-                        .Take(1)
-                        .ObserveOnUIThreadDispatcher()
-                        .Subscribe(this, (bitmap, _) => Thumbnail.Value = bitmap);
-                }
-                        
-                return;
-            }
-        });
         
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
         {
@@ -72,7 +51,7 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
         {
             if (disposing)
             {
-                Disposable.Dispose(_modelActivationDisposable, _loadoutItemIdsDisposable, _childrenObservableDisposable);
+                Disposable.Dispose(_modelActivationDisposable, _loadoutItemIdsDisposable);
             }
 
             LoadoutItemIds = null!;

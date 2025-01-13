@@ -20,7 +20,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
 
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     
-    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: false);
     
     public IObservable<string> NameObservable { get; init; } = System.Reactive.Linq.Observable.Return("-");
     public BindableReactiveProperty<string> Name { get; } = new("-");
@@ -44,7 +44,7 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
     public BindableReactiveProperty<string> FormattedInstalledAt { get; } = new("-");
 
     private readonly IDisposable _modelActivationDisposable;
-    public LoadoutItemModel(LoadoutItemId loadoutItemId, IServiceProvider serviceProvider, IConnection connection, bool loadThumbnail)
+    public LoadoutItemModel(LoadoutItemId loadoutItemId, IServiceProvider serviceProvider, IConnection connection, bool loadThumbnail, bool showThumbnail)
     {
         _fixedId = [loadoutItemId];
         ToggleEnableStateCommand = new ReactiveCommand<Unit, IReadOnlyCollection<(LoadoutItemId Id, bool ShouldEnable)>>(_ =>
@@ -56,12 +56,12 @@ public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId
             return ids.Select(id => (Id: id, ShouldEnable: shouldEnable)).ToArray();
         });
 
-        var state = (loadoutItemId, serviceProvider, connection, loadThumbnail);
+        var state = (loadoutItemId, serviceProvider, connection, loadThumbnail, showThumbnail);
         _modelActivationDisposable = this.WhenActivated(state, static (model, tuple, disposables) =>
         {
-            var (loadoutItemId, serviceProvider, connection, loadThumbnail) = tuple;
-            model.ShowThumbnail.Value = loadThumbnail;
+            var (loadoutItemId, serviceProvider, connection, loadThumbnail, showThumbnail) = tuple;
             
+            model.ShowThumbnail.Value = showThumbnail;
             if (loadThumbnail)
             {
                 var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);

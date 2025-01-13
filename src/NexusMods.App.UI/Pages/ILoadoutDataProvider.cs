@@ -86,7 +86,7 @@ public static class LoadoutDataProviderHelper
         // TODO: version (need to ask the game extension)
         // TODO: size (probably with RevisionsWithChildUpdates)
 
-        var model = new LoadoutItemModel(loadoutItemGroup.Id, serviceProvider, connection, loadThumbnail)
+        var model = new LoadoutItemModel(loadoutItemGroup.Id, serviceProvider, connection, loadThumbnail, true)
         {
             NameObservable = nameObservable,
             IsEnabledObservable = isEnabledObservable,

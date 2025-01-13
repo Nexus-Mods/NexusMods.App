@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.Resources;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -314,7 +315,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     .IsNotEmpty())
                 .IsNotEmpty()
             )
-            .Transform(modPage =>
+            .TransformAsync(async modPage =>
             {
                 // TODO: dispose
                 var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
@@ -364,7 +365,12 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                         return isEnabled.HasValue ? isEnabled.Value : null;
                     }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
 
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, _connection, hasChildrenObservable, childrenObservable)
+                var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(_serviceProvider);
+                Bitmap? bitmap = null;
+                try { bitmap = (await modPageThumbnailPipeline.LoadResourceAsync(modPage.Id, CancellationToken.None)).Data; }
+                catch (Exception) { /* Ignore missing thumbnail errors, in case user is e.g. migrating from older version */ }
+                
+                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, hasChildrenObservable, childrenObservable, bitmap)
                 {
                     NameObservable = System.Reactive.Linq.Observable.Return(modPage.Name),
                     InstalledAtObservable = installedAtObservable,
