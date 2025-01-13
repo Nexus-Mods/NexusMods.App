@@ -1,0 +1,42 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="pageHeader:IPageHeaderViewModel"
+    x:Class="NexusMods.App.UI.Controls.PageHeader.PageHeader"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d">
+    
+    <Design.DataContext>
+        <pageHeader:PageHeaderDesignViewModel/>
+    </Design.DataContext>
+    
+    <!-- header with pictogram -->
+    <DockPanel>
+        <Border Width="60" 
+                Height="60" 
+                Margin="0,0,8,0" 
+                DockPanel.Dock="Left" 
+                VerticalAlignment="Top" >
+            <icons:UnifiedIcon Size="60" x:Name="Icon" Value="{x:Static icons:IconValues.PictogramHealth}" />
+        </Border>
+
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+            <TextBlock  x:Name="TitleTextBlock" 
+                        Text="Health Check"
+                        Theme="{StaticResource HeadingSMSemiTheme}"
+                        Foreground="{StaticResource NeutralStrongBrush}"
+                        VerticalAlignment="Center"
+                        TextWrapping="Wrap" />
+            <TextBlock x:Name="DescriptionTextBlock" 
+                       Text="Review your Loadout for any issues and learn how to resolve them if needed."
+                       Theme="{StaticResource BodyMDNormalTheme}"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+    </DockPanel>
+    
+</reactiveUi:ReactiveUserControl>

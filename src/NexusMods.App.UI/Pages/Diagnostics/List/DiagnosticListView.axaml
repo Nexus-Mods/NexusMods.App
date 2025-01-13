@@ -10,6 +10,7 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
@@ -47,29 +48,31 @@
         <!-- need DockPanel to make the TabControl fill the available space, needed for ScrollViewer to calculate height properly -->
         <DockPanel Margin="24">
 
+            <pageHeader:PageHeader DockPanel.Dock="Top" /> 
+            
             <!-- header with pictogram -->
-            <DockPanel DockPanel.Dock="Top">
-                <Border Width="60" 
-                        Height="60" 
-                        Margin="0,0,8,0" 
-                        DockPanel.Dock="Left" 
-                        VerticalAlignment="Top" >
-                    <icons:UnifiedIcon Size="60" Value="{x:Static icons:IconValues.PictogramHealth}"/>
-                </Border>
-
-                <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-                    <TextBlock Text="Health Check"
-                               Theme="{StaticResource HeadingSMSemiTheme}"
-                               Foreground="{StaticResource NeutralStrongBrush}"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap" />
-                    <TextBlock
-                        Text="Review your Loadout for any issues and learn how to resolve them if needed."
-                        Theme="{StaticResource BodyMDNormalTheme}"
-                        Foreground="{StaticResource NeutralStrongBrush}"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </DockPanel>
+            <!-- <DockPanel DockPanel.Dock="Top"> -->
+            <!--     <Border Width="60"  -->
+            <!--             Height="60"  -->
+            <!--             Margin="0,0,8,0"  -->
+            <!--             DockPanel.Dock="Left"  -->
+            <!--             VerticalAlignment="Top" > -->
+            <!--         <icons:UnifiedIcon Size="60" Value="{x:Static icons:IconValues.PictogramHealth}"/> -->
+            <!--     </Border> -->
+            <!-- -->
+            <!--     <StackPanel Orientation="Vertical" VerticalAlignment="Top"> -->
+            <!--         <TextBlock Text="Health Check" -->
+            <!--                    Theme="{StaticResource HeadingSMSemiTheme}" -->
+            <!--                    Foreground="{StaticResource NeutralStrongBrush}" -->
+            <!--                    VerticalAlignment="Center" -->
+            <!--                    TextWrapping="Wrap" /> -->
+            <!--         <TextBlock -->
+            <!--             Text="Review your Loadout for any issues and learn how to resolve them if needed." -->
+            <!--             Theme="{StaticResource BodyMDNormalTheme}" -->
+            <!--             Foreground="{StaticResource NeutralStrongBrush}" -->
+            <!--             TextWrapping="Wrap" /> -->
+            <!--     </StackPanel> -->
+            <!-- </DockPanel> -->
 
             <controls:EmptyState x:Name="EmptyState"
                                  Margin="0"

@@ -713,6 +713,16 @@
         <Compile Update="LeftMenu\Items\IIconViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\PageHeader\PageHeader.axaml.cs">
+          <DependentUpon>PageHeader.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\PageHeader\PageHeaderDesignViewModel.cs">
+          <DependentUpon>IPageHeaderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\PageHeader\PageHeaderViewModel.cs">
+          <DependentUpon>IPageHeaderViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
