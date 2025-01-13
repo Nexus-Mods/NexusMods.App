@@ -9,13 +9,38 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Border Grid.Row="0">
+            <ItemsControl x:Name="Collections">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <panels:FlexPanel
+                            AlignContent="FlexStart"
+                            RowSpacing="{StaticResource Spacing-3}"
+                            ColumnSpacing="{StaticResource Spacing-3}"
+                            Wrap="Wrap"
+                            Margin="24" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
+                        <reactive:ViewModelViewHost
+                            ViewModel="{CompiledBinding .}"
+                            Width="508"
+                            Height="288"
+                            ClipToBounds="False"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
         <!-- Toolbar -->
-        <Border Grid.Row="0" Classes="Toolbar">
+        <Border Grid.Row="1" Classes="Toolbar">
             <StackPanel Orientation="Horizontal">
                 
                 <controls:StandardButton x:Name="SwitchView"
@@ -80,7 +105,7 @@
         </Border>
 
         <!-- Empty State -->
-        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="2"
                              Header="{x:Static resources:Language.EmptyLibraryTitleText}">
             <controls:EmptyState.Subtitle>
                 <StackPanel Orientation="Vertical" Spacing="16">

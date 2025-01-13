@@ -28,6 +28,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     .AddTo(disposables);
             }
 
+            this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
+                .AddTo(disposables);
+
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .AddTo(disposables);
 
