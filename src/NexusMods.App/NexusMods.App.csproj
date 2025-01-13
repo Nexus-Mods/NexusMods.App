@@ -25,7 +25,6 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
-        <ProjectReference Include="..\NexusMods.App.UI.WebBrowser\NexusMods.App.UI.WebBrowser.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />

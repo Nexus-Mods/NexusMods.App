@@ -2,24 +2,28 @@ using System.IO.Compression;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Channels;
 using Jitbit.Utils;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.Networking.GOG;
 
-internal class Client
+internal class Client : IGogClient
 {
     private readonly ILogger<Client> _logger;
     private readonly IConnection _connection;
@@ -28,8 +32,10 @@ internal class Client
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     private static readonly Uri AuthorizationUri = new("https://auth.gog.com/auth");
+    private static readonly Uri RedirectUrl = new("nxm://gog-auth");
+    
+    
 
-    private static readonly Uri CallbackPrefix = new("https://embed.gog.com/on_login_success");
     
     private static readonly Uri TokenUri = new("https://auth.gog.com/token");
     
@@ -40,7 +46,8 @@ internal class Client
     private readonly FastCache<Md5, Memory<byte>> _blockCache;
     private readonly IOSInterop _osInterop;
     private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
-
+    
+    private Channel<NXMGogAuthUrl> _authUrls = Channel.CreateUnbounded<NXMGogAuthUrl>();
     public Client(ILogger<Client> logger, IConnection connection, IOSInterop osInterop, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
     {
         _osInterop = osInterop;
@@ -70,54 +77,55 @@ internal class Client
             { "client_id", ClientId },
             { "client_secret", ClientSecret },
             { "response_type", "code" },
-            { "redirect_uri", "nxm://gog-auth" },
+            { "redirect_uri", RedirectUrl.ToString() },
         };
+
+        var urlTask = _authUrls.Reader.ReadAsync(token).AsTask();
         
         await _osInterop.OpenUrl(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)), cancellationToken: token);
-        throw new NotImplementedException();
-        
-        /*
-        if (request == null)
+
+        if (Task.WaitAny([urlTask], token) == 0)
         {
             _logger.LogWarning("The OAuth login request was cancelled.");
             return;
         }
+
+        var url = await urlTask;
+
+        var code = url.Code;
         
-        // Parse the code from the query
-        var parsed = HttpUtility.ParseQueryString(request.Query);
-        var code = parsed["code"];
         if (code == null)
         {
             _logger.LogError("The OAuth login request did not contain a code.");
             return;
         }
-
+        
         // Request the token
-        var tokenQuery = new Dictionary<string, string?>()
+        var tokenQuery = new Dictionary<string, string?>
         {
             { "client_id", ClientId },
             { "client_secret", ClientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", "https://embed.gog.com/on_login_success?origin=client" },
+            { "redirect_uri", RedirectUrl.ToString() },
         };
-        
+
         var uri = new Uri(QueryHelpers.AddQueryString(TokenUri.ToString(), tokenQuery));
-        
+
         var tokenResponse = await _client.GetFromJsonAsync<TokenResponse>(uri, token);
-        
+
         if (tokenResponse == null)
         {
             _logger.LogError("The OAuth login request did not return a token.");
             return;
         }
-        
+
         // Save the login information
         using var tx = _connection.BeginTransaction();
         var e = tx.TempId();
         if (TryGetAuthInfo(out var found))
             e = found.Id;
-        
+
         tx.Add(e, AuthInfo.AccessToken, tokenResponse.AccessToken);
         tx.Add(e, AuthInfo.RefreshToken, tokenResponse.RefreshToken);
         tx.Add(e, AuthInfo.ExpiresAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
@@ -125,7 +133,6 @@ internal class Client
         tx.Add(e, AuthInfo.UserId, ulong.Parse(tokenResponse.UserId));
         await tx.Commit();
         _logger.LogInformation("Logged in successfully to GOG.");
-        */
     }
     
 
@@ -361,5 +368,10 @@ internal class Client
     public void AddCachedBlock(Md5 md5, Memory<byte> buffer)
     {
         _blockCache.AddOrUpdate(md5, buffer, CacheTime);
+    }
+
+    public void AuthUrl(NXMGogAuthUrl url)
+    {
+        _authUrls.Writer.TryWrite(url);
     }
 }

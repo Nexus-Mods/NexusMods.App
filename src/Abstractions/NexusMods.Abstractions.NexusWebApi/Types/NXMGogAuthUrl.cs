@@ -1,6 +1,4 @@
-using NexusMods.Abstractions.NexusWebApi.Types;
-
-namespace NexusMods.Abstractions.GOG.DTOs;
+namespace NexusMods.Abstractions.NexusWebApi.Types;
 
 /// <summary>
 /// The GOG authentication callback URL.
