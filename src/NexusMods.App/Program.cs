@@ -5,6 +5,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
@@ -222,6 +223,7 @@ public class Program
         ExperimentalSettings experimentalSettings,
         GameLocatorSettings? gameLocatorSettings = null)
     {
+        var observableTarget = new ObservableLoggingTarget();
         var host = new HostBuilder().ConfigureServices(services =>
         {
             var s = services.AddApp(
@@ -230,18 +232,20 @@ public class Program
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
+            s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
+            
             if (startupMode.IsAvaloniaDesigner)
             {
                 s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
             }
         })
-        .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
+        .ConfigureLogging((_, builder) => AddLogging(observableTarget, builder, loggingSettings, startupMode))
         .Build();
 
         return host;
     }
 
-    private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
+    private static void AddLogging(ObservableLoggingTarget observableLoggingTarget, ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
     {
         var fs = FileSystem.Shared;
         var config = new NLog.Config.LoggingConfiguration();
@@ -282,6 +286,7 @@ public class Program
         }
 
         config.AddRuleForAllLevels(fileTarget);
+        config.AddRuleForAllLevels(observableLoggingTarget);
 
 
         // NOTE(erri120): RemoveLoggerFactoryFilter prevents

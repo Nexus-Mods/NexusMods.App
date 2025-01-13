@@ -26,7 +26,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly IJobMonitor _jobMonitor;
 
     private readonly LoadoutId _loadoutId;
-    private readonly IOverlayController _overlayController;
+    private readonly IServiceProvider _serviceProvider;
     private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
 
@@ -41,7 +41,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider, IJobMonitor jobMonitor, IOverlayController overlayController, GameRunningTracker gameRunningTracker)
     {
         _loadoutId = loadoutId;
-        _overlayController = overlayController;
+        _serviceProvider = serviceProvider;
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
@@ -118,7 +118,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         catch (ExecutableInUseException)
         {
             var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_overlayController, marker.Installation.Name);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_serviceProvider, marker.Installation.Name);
         }
     }
 }
