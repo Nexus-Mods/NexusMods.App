@@ -58,6 +58,7 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
             {
                 var (_, disposables) = tuple;
                 if (change.Value is not IReactiveR3Object reactiveR3Object) return;
+                // NOTE(erri120): CompositeDisposable.Remove disposes the object
                 var didRemove = disposables.Remove(reactiveR3Object);
                 Debug.Assert(didRemove);
             }).AddTo(disposables);
