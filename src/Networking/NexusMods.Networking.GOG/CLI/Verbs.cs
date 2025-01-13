@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
-using NexusMods.Abstractions.OAuth;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -17,7 +16,7 @@ namespace NexusMods.Networking.GOG.CLI;
 public static class Verbs
 {
     internal static IServiceCollection AddGOGVerbs(this IServiceCollection collection) =>
-        collection
+        collection 
             .AddVerb(() => Login)
             .AddVerb(() => Index);
 

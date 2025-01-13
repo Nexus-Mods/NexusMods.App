@@ -2,7 +2,6 @@ using System.IO.Compression;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Web;
 using Jitbit.Utils;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -11,7 +10,7 @@ using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
-using NexusMods.Abstractions.OAuth;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
@@ -22,17 +21,13 @@ namespace NexusMods.Networking.GOG;
 
 internal class Client
 {
-    private readonly IOAuthUserInterventionHandler _oAuthUserInterventionHandler;
     private readonly ILogger<Client> _logger;
     private readonly IConnection _connection;
     private readonly HttpClient _client;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private const string ClientId = "46899977096215655";
-    private const string ClientSecret = "9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9";
 
-    private static readonly Uri AuthorizationUri =
-        new("https://auth.gog.com/auth?client_id=46899977096215655&redirect_uri=https://embed.gog.com/on_login_success?origin=client&response_type=code&layout=galaxy");
+    private static readonly Uri AuthorizationUri = new("https://auth.gog.com/auth");
 
     private static readonly Uri CallbackPrefix = new("https://embed.gog.com/on_login_success");
     
@@ -43,14 +38,15 @@ internal class Client
     private readonly SemaphoreSlim _secureUrlLock = new(1, 1);
     
     private readonly FastCache<Md5, Memory<byte>> _blockCache;
+    private readonly IOSInterop _osInterop;
     private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
 
-    public Client(ILogger<Client> logger, IConnection connection, IOAuthUserInterventionHandler oAuthUserInterventionHandler, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
+    public Client(ILogger<Client> logger, IConnection connection, IOSInterop osInterop, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
     {
+        _osInterop = osInterop;
         _client = client;
         _logger = logger;
         _connection = connection;
-        _oAuthUserInterventionHandler = oAuthUserInterventionHandler;
         
         _jsonSerializerOptions = new JsonSerializerOptions(jsonSerializerOptions)
         {
@@ -69,14 +65,18 @@ internal class Client
 
     public async Task Login(CancellationToken token)
     {
-        // Ask the OAuth handler to handle the login request
-        var request = await _oAuthUserInterventionHandler.HandleOAuthRequest(new OAuthLoginRequest
-            {
-                AuthorizationUrl = AuthorizationUri,
-                CallbackType = CallbackType.Capture,
-                CallbackPrefix = CallbackPrefix,
-            }
-        , token);
+        var authQuery = new Dictionary<string, string?>()
+        {
+            { "client_id", ClientId },
+            { "client_secret", ClientSecret },
+            { "response_type", "code" },
+            { "redirect_uri", "nxm://gog-auth" },
+        };
+        
+        await _osInterop.OpenUrl(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)), cancellationToken: token);
+        throw new NotImplementedException();
+        
+        /*
         if (request == null)
         {
             _logger.LogWarning("The OAuth login request was cancelled.");
@@ -125,6 +125,7 @@ internal class Client
         tx.Add(e, AuthInfo.UserId, ulong.Parse(tokenResponse.UserId));
         await tx.Commit();
         _logger.LogInformation("Logged in successfully to GOG.");
+        */
     }
     
 

@@ -8,5 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
     </ItemGroup>
 </Project>

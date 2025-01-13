@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -9,7 +8,6 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
-using NexusMods.App.UI.WebBrowser;
 using NexusMods.CLI;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
@@ -100,8 +98,7 @@ public static class Services
                 .AddDownloaders()
                 .AddCleanupVerbs()
                 .AddSteamCli()
-                .AddGOG()
-                .AddWebBrowser();
+                .AddGOG();
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);

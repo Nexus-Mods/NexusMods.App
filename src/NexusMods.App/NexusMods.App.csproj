@@ -23,7 +23,6 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
-        <ProjectReference Include="..\NexusMods.App.UI.WebBrowser\NexusMods.App.UI.WebBrowser.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI.WebBrowser\NexusMods.App.UI.WebBrowser.csproj" />
