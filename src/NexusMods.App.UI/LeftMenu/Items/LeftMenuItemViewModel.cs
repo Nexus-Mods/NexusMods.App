@@ -12,16 +12,16 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class SimpleLeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
+public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
 {
     [Reactive] public string Text { get; set; } = "";
     [Reactive] public IconValue Icon { get; set; } = new();
-    [Reactive] public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; private set; }
+    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
 
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
 
-    public SimpleLeftMenuItemViewModel(
+    public LeftMenuItemViewModel(
         IWorkspaceController workspaceController,
         WorkspaceId workspaceId,
         PageData pageData
