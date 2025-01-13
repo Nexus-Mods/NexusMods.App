@@ -12,7 +12,6 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent
 {
     public BindableReactiveProperty<DateTimeOffset> Value { get; }
     public BindableReactiveProperty<string> FormattedValue { get; }
-    public Observable<DateTimeOffset>? Ticker { get; set; }
 
     private readonly IDisposable _activationDisposable;
     public DateComponent(IObservable<DateTimeOffset> valueObservable, bool subscribeWhenCreated = false, Optional<DateTimeOffset> initialValue = default) : this(valueObservable.ToObservable(), subscribeWhenCreated, initialValue) { }
@@ -25,9 +24,7 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, valueObservable, disposables) =>
             {
-                var ticker = self.Ticker ?? Observable.Return(TimeProvider.System.GetLocalNow());
-
-                valueObservable.ObserveOnUIThreadDispatcher().CombineLatest(ticker, static (value, now) => (value, now)).Subscribe(self, static (tuple, self) =>
+                valueObservable.ObserveOnUIThreadDispatcher().CombineLatest(Tickers.Primary, static (value, now) => (value, now)).Subscribe(self, static (tuple, self) =>
                 {
                     var (value, now) = tuple;
                     self.Value.Value = value;
@@ -44,9 +41,7 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent
 
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
-                var ticker = self.Ticker ?? Observable.Return(TimeProvider.System.GetLocalNow());
-
-                ticker.Subscribe(self, static (now, self) =>
+                Tickers.Primary.Subscribe(self, static (now, self) =>
                 {
                     self.FormattedValue.Value = self.Value.Value.FormatDate(now: now);
                 }).AddTo(disposables);
@@ -63,9 +58,7 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
-            if (self.Ticker is null) return;
-
-            self.Ticker.Subscribe(self, static (now, self) =>
+            Tickers.Primary.Subscribe(self, static (now, self) =>
             {
                 self.FormattedValue.Value = self.Value.Value.FormatDate(now: now);
             }).AddTo(disposables);

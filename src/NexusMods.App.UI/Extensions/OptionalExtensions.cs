@@ -32,4 +32,24 @@ public static class OptionalExtensions
         value = default;
         return false;
     }
+
+    public static int Compare<T>(this Optional<T> a, Optional<T> b, Func<T, T, int> comparer)
+        where T : notnull
+    {
+        var (x, y) = (a.HasValue, b.HasValue);
+        return (x, y) switch
+        {
+            // both have values
+            (true, true) => comparer(a.Value, b.Value),
+
+            // b precedes a
+            (true, false) => 1,
+
+            // a precedes b
+            (false, true) => -1,
+
+            // a and b are in the same position
+            (false, false) => 0,
+        };
+    }
 }

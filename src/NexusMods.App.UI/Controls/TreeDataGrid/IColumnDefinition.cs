@@ -58,7 +58,7 @@ public interface IColumnDefinition<TModel, TSelf>
 /// Column helper.
 /// </summary>
 [PublicAPI]
-public static class ColumnCreator
+public static partial class ColumnCreator
 {
     /// <summary>
     /// Creates a column from a static interface definition.

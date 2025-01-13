@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public interface ILoadoutViewModel : IPageViewModelInterface
 {
-    LoadoutTreeDataGridAdapter Adapter { get; }
+    NewLoadoutTreeDataGridAdapter Adapter { get; }
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
     

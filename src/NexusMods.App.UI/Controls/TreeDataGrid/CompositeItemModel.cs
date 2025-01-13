@@ -128,10 +128,11 @@ public class CompositeItemModel<TKey> :
         where T : notnull
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        var key = TComponent.GetKey();
-        return observable.Subscribe((self, key, observable, componentFactory), static (optionalValue, tuple) =>
+        return observable.Subscribe((self, observable, componentFactory), static (optionalValue, tuple) =>
         {
-            var (self, key, observable, componentFactory) = tuple;
+            var key = TComponent.GetKey();
+            var (self, observable, componentFactory) = tuple;
+
             if (self._components.ContainsKey(key))
             {
                 if (optionalValue.HasValue) return;

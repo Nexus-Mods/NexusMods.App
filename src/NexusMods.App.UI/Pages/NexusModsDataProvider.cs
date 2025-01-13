@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Resources;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -24,6 +25,7 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using R3;
+using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
@@ -297,6 +299,57 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = modPageMetadata.Name;
         return model;
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveItems(LoadoutFilter loadoutFilter)
+    {
+        var modPages = NexusModsModPageMetadata
+            .ObserveAll(_connection)
+            .FilterOnObservable((_, modPageEntityId) => _connection
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPageEntityId)
+                .FilterOnObservable((d, _) => _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E)
+                    .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
+                    .IsNotEmpty()
+                )
+                .IsNotEmpty()
+            );
+
+        return modPages.Transform(modPage =>
+        {
+            var itemModel = new CompositeItemModel<EntityId>();
+
+            itemModel.Add(new SharedComponents.Name(value: modPage.Name));
+
+            var observable = Observable
+                .Interval(period: TimeSpan.FromSeconds(2), timeProvider: ObservableSystem.DefaultTimeProvider)
+                .Select(_ => Switcher.Instance.Get())
+                .Do(shouldShow => Console.WriteLine($"Should show: {shouldShow}"))
+                .Select(modPage.GetCreatedAt(), static (shouldShow, date) => shouldShow ? date : Optional<DateTimeOffset>.None);
+
+            itemModel.AddObservable(
+                observable: observable,
+                componentFactory: static (observable, value) => new SharedComponents.InstalledDate(
+                    valueObservable: observable,
+                    initialValue: value
+                )
+            );
+
+            return itemModel;
+        });
+    }
+
+    private class Switcher
+    {
+        public static readonly Switcher Instance = new();
+
+        private bool _current;
+        public bool Get()
+        {
+            _current = !_current;
+            return _current;
+        }
     }
 
     public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)

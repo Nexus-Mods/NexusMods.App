@@ -26,6 +26,7 @@ using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
+using R3.Avalonia;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
