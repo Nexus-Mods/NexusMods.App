@@ -22,6 +22,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<ITreeDataGridSource<TModel>> Source { get; } = new();
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
+    public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
 
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     protected ObservableList<TModel> Roots { get; private set; } = [];
@@ -56,7 +57,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
             self.Roots
                 .ObserveCountChanged(notifyCurrentCount: true)
-                .Subscribe(self, static (count, self) => self.IsSourceEmpty.Value = count == 0)
+                .Subscribe(self, static (count, self) =>
+                {
+                    self.SourceCount.Value = count;
+                    self.IsSourceEmpty.Value = count == 0;
+                })
                 .AddTo(disposables);
 
             self.ViewHierarchical

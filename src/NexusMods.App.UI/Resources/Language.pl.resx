@@ -501,10 +501,10 @@
 		<value>Pokaż</value>
 	</data>
 	<data name="AddPanelToolTip" xml:space="preserve">
-		<value>Dodaj dodatkowy panel na podzielonym ekranie</value>
+		<value>Kliknij, aby dodać dodatkowy panel na podzielonym ekranie</value>
 	</data>
 	<data name="Panel_Add_tab_ToolTip" xml:space="preserve">
-		<value>Dodaj kartę</value>
+		<value>Kliknij, aby dodać kartę</value>
 	</data>
 	<data name="TopBar_MyProfile" xml:space="preserve">
 		<value>Mój profil</value>
@@ -531,22 +531,22 @@
 		<value>Otwórz w nowym panelu</value>
 	</data>
 	<data name="TopBar_Help_ToolTip" xml:space="preserve">
-		<value>Pomoc i opinie</value>
+		<value>Kliknij, aby sprawdzić pomoc i opinie</value>
 	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-		<value>Dodaj mod do swojej listy modów</value>
+		<value>Kliknij, aby dodać wybrany mod do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-		<value>Usuń moda z biblioteki, aby zwolnić miejsce na dysku</value>
+		<value>Kliknij, aby trwale usunąć ten mod ze swojej biblioteki</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-		<value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
+		<value>Kliknij, aby wybrać określone pliki z moda, które dodasz do swojego zestawu</value>
 	</data>
 	<data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
-		<value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
+		<value>Kliknij, aby zobaczyć zmiany, które zostaną zastosowane w folderze gry</value>
 	</data>
 	<data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
-		<value>Zastosuj zmiany w folderze gry</value>
+		<value>Kliknij, aby zastosować zmiany w folderze gry</value>
 	</data>
 	<data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
 		<value>Plik zostanie dodany</value>
@@ -605,14 +605,14 @@
 		<value>Moje zestawy</value>
 	</data>
 	<data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-		<value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji. Wybierz i zastosuj zestaw, który najlepiej odpowiada twoim preferencjom, aby rozpocząć przygodę z modowaniem.</value>
+		<value>Twórz zestawy gier, które będą zawierały indywidualne preferencje oraz ustawienia modów.&#xA;Przełączaj się między zestawami i zastosuj swój ulubiony zestaw, aby z nim zagrać.</value>
 	</data>
 	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
 		<value>Zestawy {0}</value>
 		<comment>Where {0} is the name of the game</comment>
 	</data>
 	<data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
-		<value>Utwórz nowy zestaw</value>
+		<value>Utwórz nowy</value>
 	</data>
 	<data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
 		<value>Aktualnie zastosowany</value>
@@ -655,10 +655,10 @@
 		<value>Nigdy</value>
 	</data>
 	<data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
-		<value>Zastosowanie zmian do gry</value>
+		<value>Kliknij, aby zastosować zmiany do gry</value>
 	</data>
 	<data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
-		<value>Usuń zestaw</value>
+		<value>Kliknij, aby usunąć zestaw</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod" xml:space="preserve">
 		<value>Usuń</value>
@@ -666,4 +666,46 @@
 	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
 		<value>Zainstalowane mody</value>
 	</data>
+	<data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Gra jest już uruchomiona</value>
+    </data>
+	<data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>Wygląda na to, że gra {0} jest już uruchomiona.&#x0a;Zamknij grę, aby zastosować zmiany lub ponownie uruchomić grę.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Przełącz widok</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby pokazać lub ukryć grupy stron modów</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby zaimportować mod z dysku</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby otworzyć stronę Nexus Mods</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby przejść dalej</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby przejść wstecz</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby połączyć swoje konto Nexus Mods</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Kliknij, aby usunąć wybrany mod z tego zestawu</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>Gotowa do zainstalowania - wszystkie wymagane mody zostały pobrane</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>Pobrano {0} z {1} wymaganych modów</value>
+    </data>
+    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
+        <value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
+    </data>
 </root>

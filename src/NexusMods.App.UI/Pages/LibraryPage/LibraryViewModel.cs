@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
@@ -9,6 +10,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Abstractions.UI.Extensions;
@@ -16,6 +18,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
+using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -26,6 +29,7 @@ using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
+using R3.Avalonia;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -57,6 +61,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly Loadout.ReadOnly _loadout;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
+    private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
+    public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
     private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
 
@@ -69,6 +75,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _serviceProvider = serviceProvider;
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
+        var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
         var ticker = R3.Observable
             .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
@@ -166,9 +175,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             disposables.Add(gameObservable.Connect());
 
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
-
-            Adapter.Activate();
-            Disposable.Create(Adapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            Adapter.Activate().AddTo(disposables);
 
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
@@ -192,6 +199,25 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
+
+            CollectionMetadata.ObserveAll(_connection)
+                .FilterImmutable(collection =>
+                {
+                    if (!CollectionMetadata.GameId.TryGetValue(collection, out var collectionGameId)) return true;
+                    return collectionGameId == game.GameId;
+                })
+                .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(
+                    tileImagePipeline: tileImagePipeline,
+                    userAvatarPipeline: userAvatarPipeline,
+                    windowManager: WindowManager,
+                    workspaceId: WorkspaceId,
+                    connection: _connection,
+                    revision: coll.Revisions.First().RevisionId,
+                    targetLoadout: _loadout)
+                )
+                .Bind(out _collections)
+                .Subscribe()
+                .AddTo(disposables);
         });
     }
 
@@ -375,7 +401,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>();
+        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnailAndName>();
 
         return
         [

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
@@ -27,6 +28,18 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
                     .AddTo(disposables);
             }
+
+            this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.Collections.Count, view => view.ExpanderCollections.IsVisible, static count => count > 0)
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.Collections.Count, view => view.TextNumCollections.Text, static i => i.ToString("N0"))
+                .AddTo(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.Adapter.SourceCount.Value, view => view.TextNumMods.Text, static i => i.ToString("N0"))
+                .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
                 .AddTo(disposables);

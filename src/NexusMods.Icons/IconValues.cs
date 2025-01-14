@@ -67,9 +67,6 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/check-circle-outline/
     public static readonly IconValue CheckCircleOutline = new ProjektankerIcon("mdi-check-circle-outline");
-    
-    // https://pictogrammers.com/library/mdi/icon/thumb-up/
-    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
@@ -93,17 +90,23 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/home/
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
+    // https://pictogrammers.com/library/mdi/icon/lock/
+    public static readonly IconValue Lock = new ProjektankerIcon("mdi-lock");
+
+    // https://pictogrammers.com/library/mdi/icon/open-in-new/
+    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
+
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
     public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
     
     // https://pictogrammers.com/library/mdi/icon/playlist-remove/
     public static readonly IconValue PlaylistRemove = new ProjektankerIcon("mdi-playlist-remove");
 
-    // https://pictogrammers.com/library/mdi/icon/open-in-new/
-    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
-
     // https://pictogrammers.com/library/mdi/icon/tab/
     public static readonly IconValue Tab = new ProjektankerIcon("mdi-tab");
+
+    // https://pictogrammers.com/library/mdi/icon/thumb-up/
+    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/magnfiy/
     public static readonly IconValue Search = new ProjektankerIcon("mdi-magnify");
@@ -145,6 +148,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/information-outline/
     public static readonly IconValue Info = new ProjektankerIcon("mdi-information-outline");
 
+    // https://pictogrammers.com/library/mdi/icon/information/
+    public static readonly IconValue InfoFilled = new ProjektankerIcon("mdi-information");
+    
 #endregion
 
 #region AV
@@ -505,6 +511,12 @@ public static class IconValues
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:sports_esports:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=gamepad&icon.size=24&icon.color=%23e8eaed
     public static readonly IconValue LibraryOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
         "M4 22C3.45 22 2.97917 21.8042 2.5875 21.4125C2.19583 21.0208 2 20.55 2 20V10C2 9.45 2.19583 8.97917 2.5875 8.5875C2.97917 8.19583 3.45 8 4 8H20C20.55 8 21.0208 8.19583 21.4125 8.5875C21.8042 8.97917 22 9.45 22 10V20C22 20.55 21.8042 21.0208 21.4125 21.4125C21.0208 21.8042 20.55 22 20 22H4ZM4 20H20V10H4V20ZM12 18L16 15L12 12L8 15L12 18ZM4 7V5H20V7H4ZM7 4V2H17V4H7Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // new collections icon 
+    public static readonly IconValue CollectionsOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M11.9911 15.7433L5.44 10.9822L4 12.0291L12 17.8455L20 12.0291L18.5511 10.9739L11.9911 15.7433ZM11.9911 19.8977L5.44 15.1366L4 16.1835L12 21.9999L20 16.1835L18.5511 15.1283L11.9911 19.8977ZM19.9992 7.81605L18.5415 8.87125L11.9996 13.6321L5.44881 8.87125L4 7.81605L11.9996 2L19.9992 7.81605ZM16.2656 7.81405L11.9996 4.71247L7.72972 7.81685L11.9986 10.9193L16.2656 7.81405Z",
         new Rect(0, 0, 24, 24 )
     ));
     

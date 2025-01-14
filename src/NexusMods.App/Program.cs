@@ -5,6 +5,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
@@ -24,6 +25,7 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
 using Spectre.Console;
+using Spectre.Console.Advanced;
 
 namespace NexusMods.App;
 
@@ -90,11 +92,12 @@ public class Program
 
         try
         {
+            if (OperatingSystem.IsWindows())
+                ConsoleHelper.EnsureConsole();
+            
             if (startupMode.RunAsMain)
             {
-                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
-                    args
-                );
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
 
                 if (startupMode.ShowUI)
                 {
@@ -180,6 +183,7 @@ public class Program
         if (!startupMode.ExecuteCli)
             return Task.FromResult(0);
         var configurator = provider.GetRequiredService<CommandLineConfigurator>();
+        _logger.LogInformation("Starting with Spectre.Cli");
         return configurator.RunAsync(startupMode.Args, new SpectreRenderer(AnsiConsole.Console), CancellationToken.None);
     }
 
@@ -219,6 +223,7 @@ public class Program
         ExperimentalSettings experimentalSettings,
         GameLocatorSettings? gameLocatorSettings = null)
     {
+        var observableTarget = new ObservableLoggingTarget();
         var host = new HostBuilder().ConfigureServices(services =>
         {
             var s = services.AddApp(
@@ -227,18 +232,21 @@ public class Program
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
+            if (loggingSettings.ShowExceptions)
+                s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
+
             if (startupMode.IsAvaloniaDesigner)
             {
                 s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
             }
         })
-        .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
+        .ConfigureLogging((_, builder) => AddLogging(observableTarget, builder, loggingSettings, startupMode))
         .Build();
 
         return host;
     }
 
-    private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
+    private static void AddLogging(ObservableLoggingTarget observableLoggingTarget, ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
     {
         var fs = FileSystem.Shared;
         var config = new NLog.Config.LoggingConfiguration();
@@ -279,6 +287,7 @@ public class Program
         }
 
         config.AddRuleForAllLevels(fileTarget);
+        config.AddRuleForAllLevels(observableLoggingTarget);
 
 
         // NOTE(erri120): RemoveLoggerFactoryFilter prevents
@@ -291,6 +300,7 @@ public class Program
 
         loggingBuilder.AddFilter("Microsoft", LogLevel.Warning);
         loggingBuilder.AddFilter("System", LogLevel.Warning);
+        loggingBuilder.AddFilter("Avalonia.ReactiveUI", LogLevel.Warning);
 
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(settings.MinimumLevel);

@@ -11,31 +11,33 @@ namespace NexusMods.Networking.NexusWebApi;
 internal static class NexusApiVerbs
 {
     internal static IServiceCollection AddNexusApiVerbs(this IServiceCollection collection) =>
-        collection.AddVerb(() => NexusApiVerify)
+        collection
+            .AddModule("nexus", "Commands for interacting with the Nexus Mods API")
+            .AddVerb(() => NexusApiVerify)
             .AddVerb(() => NexusDownloadLinks);
 
 
-    [Verb("nexus-api-verify", "Verifies the logged in account via the Nexus API")]
+    [Verb("nexus verify", "Verifies the logged in account via the Nexus API")]
     private static async Task<int> NexusApiVerify([Injected] IRenderer renderer,
         [Injected] NexusApiClient nexusApiClient,
         [Injected] IAuthenticatingMessageFactory messageFactory,
         [Injected] CancellationToken token)
     {
         var userInfo = await messageFactory.Verify(nexusApiClient, token);
-        await renderer.Table(new[] { "Name", "Premium" },
-            new[]
-            {
-                new object[]
-                {
-                    userInfo?.Name ?? "<Not logged in>",
+        
+        await renderer.Table(["Name", "Premium"],
+        [
+            [
+                userInfo?.Name ?? "<Not logged in>",
                     userInfo?.IsPremium ?? false,
-                }
-            });
+            ],
+        ]
+        );
 
         return 0;
     }
 
-    [Verb("nexus-download-links", "Generates download links for a given file")]
+    [Verb("nexus download-links", "Generates download links for a given file")]
     private static async Task<int> NexusDownloadLinks([Injected] IRenderer renderer,
         [Option("g", "gameDomain", "Game domain")] string gameDomain,
         [Option("m", "modId", "Mod ID")] ModId modId,

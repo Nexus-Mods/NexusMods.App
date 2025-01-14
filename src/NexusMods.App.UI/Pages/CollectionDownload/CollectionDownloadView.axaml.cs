@@ -5,6 +5,7 @@ using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
@@ -61,6 +62,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(image => CollectionImage.Source = image)
                 .DisposeWith(d);
+
+            this.WhenAnyValue(
+                    view => view.ViewModel!.IsDownloading.Value,
+                    view => view.ViewModel!.IsInstalling.Value,
+                    static (isDownloading, isInstalling) => isDownloading || isInstalling
+                )
+                .Subscribe(isActive => Spinner.IsVisible = isActive);
 
             this.OneWayBind(ViewModel, vm => vm.Name, view => view.Heading.Text)
                 .DisposeWith(d);
@@ -152,6 +160,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 })
                 .Subscribe(className => OverallRatingPanel.Classes.Add(className))
                 .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)
+                .Subscribe(canDownloadAutomatically =>
+                {
+                    ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+                    ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+                }).DisposeWith(d);
         });
     }
 }

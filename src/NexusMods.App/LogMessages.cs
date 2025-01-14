@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Pages.CollectionDownload;
 
 namespace NexusMods.App;
 
@@ -47,6 +48,16 @@ internal static partial class LogMessages
         Message = "Encountered an exception published to an object with an unobserved ThrownExceptions property"
     )]
     public static partial void UnobservedReactiveThrownException(
+        ILogger logger,
+        Exception e
+    );
+
+    [LoggerMessage(
+        EventId = 4, EventName = nameof(R3UnhandledException),
+        Level = LogLevel.Error,
+        Message = "Encountered an unhandled exception in R3"
+    )]
+    public static partial void R3UnhandledException(
         ILogger logger,
         Exception e
     );

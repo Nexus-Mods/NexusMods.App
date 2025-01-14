@@ -1,10 +1,14 @@
+using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.UI.Extensions;
-using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -20,9 +24,18 @@ public class FakeParentLoadoutItemModel : LoadoutItemModel
     private readonly IDisposable _modelActivationDisposable;
     private readonly IDisposable _loadoutItemIdsDisposable;
 
-    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable) : base(default(LoadoutItemId))
+    public FakeParentLoadoutItemModel(IObservable<IChangeSet<LoadoutItemId, EntityId>> loadoutItemIdsObservable, 
+        IServiceProvider provider, IObservable<bool> hasChildrenObservable, 
+        IObservable<IChangeSet<LoadoutItemModel, EntityId>> childrenObservable, Bitmap? bitmap) 
+        : base(default(LoadoutItemId), provider, provider.GetRequiredService<IConnection>(), false, true)
     {
         LoadoutItemIdsObservable = loadoutItemIdsObservable;
+        ChildrenObservable = childrenObservable;
+        HasChildrenObservable = hasChildrenObservable;
+        Thumbnail.Value = bitmap!; // as intended.
+        if (bitmap != null)
+            ShowThumbnail.Value = true;
+
         _loadoutItemIdsDisposable = LoadoutItemIdsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LoadoutItemIds.ApplyChanges(changeSet));
         
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>

@@ -4,6 +4,7 @@ using BitFaster.Caching;
 using BitFaster.Caching.Lru;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
@@ -14,6 +15,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Media;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
+using SkiaSharp;
 
 namespace NexusMods.App.UI;
 
@@ -23,6 +25,7 @@ public static class ImagePipelines
     private const string CollectionTileImagePipelineKey = nameof(CollectionTileImagePipelineKey);
     private const string CollectionBackgroundImagePipelineKey = nameof(CollectionBackgroundImagePipelineKey);
     private const string UserAvatarPipelineKey = nameof(UserAvatarPipelineKey);
+    private const string ModPageThumbnailPipelineKey = nameof(ModPageThumbnailPipelineKey);
     private const string GuidedInstallerRemoteImagePipelineKey = nameof(GuidedInstallerRemoteImagePipelineKey);
     private const string GuidedInstallerFileImagePipelineKey = nameof(GuidedInstallerFileImagePipelineKey);
     private const string MarkdownRendererRemoteImagePipelineKey = nameof(MarkdownRendererRemoteImagePipelineKey);
@@ -30,6 +33,7 @@ public static class ImagePipelines
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
     private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
     private static readonly Bitmap UserAvatarFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
+    private static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
 
     public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
     {
@@ -61,6 +65,12 @@ public static class ImagePipelines
                 serviceKey: CollectionBackgroundImagePipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateCollectionBackgroundImagePipeline(
                     httpClient: serviceProvider.GetRequiredService<HttpClient>(),
+                    connection: serviceProvider.GetRequiredService<IConnection>()
+                )
+            )
+            .AddKeyedSingleton<IResourceLoader<EntityId, Bitmap>>(
+                serviceKey: ModPageThumbnailPipelineKey,
+                implementationFactory: static (serviceProvider, _) => CreateModPageThumbnailPipeline(
                     connection: serviceProvider.GetRequiredService<IConnection>()
                 )
             )
@@ -97,6 +107,15 @@ public static class ImagePipelines
     public static IResourceLoader<EntityId, Bitmap> GetCollectionBackgroundImagePipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: CollectionBackgroundImagePipelineKey);
+    }
+    
+    /// <summary>
+    /// Input: ModPageMetadataId
+    /// Output: Image (cached)
+    /// </summary>
+    public static IResourceLoader<EntityId, Bitmap> GetModPageThumbnailPipeline(IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: ModPageThumbnailPipelineKey);
     }
 
     public static IResourceLoader<Uri, Lifetime<Bitmap>> GetGuidedInstallerRemoteImagePipeline(IServiceProvider serviceProvider)
@@ -178,6 +197,42 @@ public static class ImagePipelines
             .EntityIdToIdentifier(
                 connection: connection,
                 attribute: CollectionMetadata.BackgroundImageUri
+            );
+
+        return pipeline;
+    }
+    
+    /// <summary>
+    /// Input: ModPageMetadataId
+    /// Output: Image (cached)
+    /// </summary>
+    private static IResourceLoader<EntityId, Bitmap> CreateModPageThumbnailPipeline(
+        IConnection connection)
+    {
+        var pipeline = new HttpLoader(new HttpClient())
+            .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
+            .Decode(decoderType: DecoderType.Skia)
+            .Resize(newSize: new SKSizeI(
+                width: 90,
+                height: 56
+            ))
+            .Encode(encoderType: EncoderType.Qoi)
+            .PersistInDb(
+                connection: connection,
+                referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
+                identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
+                partitionId: PartitionId.User(ImagePartitionId)
+            )
+            .Decode(decoderType: DecoderType.Qoi)
+            .ToAvaloniaBitmap()
+            // Note(sewer): This is transparent, the actual fallback is provided on the
+            // UI end; which we show during the asynchronous load of the actual thumbnail
+            // from the pipeline. If the load fails, we show an all transparent fallback;
+            // meaning the underlying placeholder from before is still shown.
+            .UseFallbackValue(ModPageThumbnailFallback)
+            .EntityIdToIdentifier(
+                connection: connection,
+                attribute: NexusModsModPageMetadata.ThumbnailUri
             );
 
         return pipeline;
