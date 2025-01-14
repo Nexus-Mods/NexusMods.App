@@ -6,7 +6,7 @@
                                 xmlns:leftMenu="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="550"
                                 x:Class="NexusMods.App.UI.LeftMenu.Loadout.LoadoutLeftMenuView">
     <Design.DataContext>
         <leftMenu:LoadoutLeftMenuDesignViewModel />
