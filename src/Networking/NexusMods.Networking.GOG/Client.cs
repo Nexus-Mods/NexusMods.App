@@ -33,6 +33,9 @@ internal class Client : IClient
     private static readonly Uri AuthorizationUri = new("https://auth.gog.com/auth");
     private static readonly Uri RedirectUrl = new("nxm://gog-auth");
     
+    private const string ClientId = "58276512461627742";
+    private const string ClientSecret = "211e87c957cb191888bdd333b794ee87757367883eb04f79653053302e291734";
+    
     private static readonly Uri TokenUri = new("https://auth.gog.com/token");
     
     private readonly Dictionary<ProductId, SecureUrl[]> _secureUrls = new();
@@ -73,7 +76,7 @@ internal class Client : IClient
             { "client_id", ClientId },
             { "client_secret", ClientSecret },
             { "response_type", "code" },
-            { "redirect_uri", "nxm://gog-auth" },
+            { "redirect_uri", RedirectUrl.ToString() },
         };
 
         var urlTask = _authUrls.Reader.ReadAsync(token).AsTask();
@@ -95,7 +98,7 @@ internal class Client : IClient
             { "client_secret", ClientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", "nxm://gog-auth/" },
+            { "redirect_uri", RedirectUrl.ToString() },
         };
 
         var uri = new Uri(QueryHelpers.AddQueryString(TokenUri.ToString(), tokenQuery));

@@ -20,4 +20,14 @@ public interface IRenderer
     /// </summary>
     /// <returns></returns>
     public ValueTask ClearAsync();
+
+    /// <summary>
+    /// Displays progress bars for tasks as long as the returned disposable is not disposed.
+    /// </summary>
+    public IDisposable WithProgress();
+
+    /// <summary>
+    /// Creates a progress bar, if not used inside a <see cref="WithProgress"/> block, it will not be displayed.
+    /// </summary>
+    public IProgress CreateProgress();
 }
