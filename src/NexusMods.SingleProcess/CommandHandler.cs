@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Cli;
+using NexusMods.ProxyConsole.Abstractions;
 
 namespace NexusMods.SingleProcess;
 
@@ -11,7 +14,7 @@ namespace NexusMods.SingleProcess;
 /// </summary>
 /// <param name="getters"></param>
 /// <param name="methodInfo"></param>
-internal class CommandHandler(List<Func<InvocationContext, object?>> getters, MethodInfo methodInfo)
+internal class CommandHandler(IServiceProvider serviceProvider, List<Func<InvocationContext, object?>> getters, MethodInfo methodInfo)
     : ICommandHandler
 {
     public int Invoke(InvocationContext context)
@@ -19,15 +22,24 @@ internal class CommandHandler(List<Func<InvocationContext, object?>> getters, Me
         throw new NotSupportedException("Only async is supported");
     }
 
-    public Task<int> InvokeAsync(InvocationContext context)
+    public async Task<int> InvokeAsync(InvocationContext context)
     {
-        // Resolve all the parameters
-        var args = GC.AllocateUninitializedArray<object?>(getters.Count);
-        for (var i = 0; i < getters.Count; i++)
+        try
         {
-            args[i] = getters[i](context);
+            // Resolve all the parameters
+            var args = GC.AllocateUninitializedArray<object?>(getters.Count);
+            for (var i = 0; i < getters.Count; i++)
+            {
+                args[i] = getters[i](context);
+            }
+
+            // Invoke the method
+            return await (Task<int>)methodInfo.Invoke(null, args)!;
         }
-        // Invoke the method
-        return (Task<int>)methodInfo.Invoke(null, args)!;
+        catch (Exception ex)
+        {
+            await serviceProvider.GetRequiredService<IRenderer>().Text("An error occurred while executing the command {0}", ex.ToString());
+            return -1;
+        }
     }
 }

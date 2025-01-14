@@ -123,8 +123,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             {
                 var pageData = new PageData
                 {
-                    FactoryId = CollectionsPageFactory.StaticId,
-                    Context = new CollectionsPageContext
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext()
                     {
                         LoadoutId = targetLoadout,
                     },
@@ -413,7 +413,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
     {
         return
         [
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithName>(),
+            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnailAndName>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithVersion>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithSize>(),
             ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithAction>(),

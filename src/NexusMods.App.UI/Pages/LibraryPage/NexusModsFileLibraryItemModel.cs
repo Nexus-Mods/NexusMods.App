@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -12,8 +13,11 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+/// <summary>
+///     This is used for individual files (archives) linked to a download page.
+/// </summary>
 public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
@@ -21,7 +25,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
-    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem)
+    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider, bool showThumbnail = true)
     {
         LibraryItemId = nexusModsLibraryItem.Id;
 
@@ -30,6 +34,16 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
+        var imageDisposable = Disposable.Empty;
+        ShowThumbnail.Value = showThumbnail;
+        if (showThumbnail)
+        {
+            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+            imageDisposable = ImagePipelines.CreateObservable(nexusModsLibraryItem.ModPageMetadataId, modPageThumbnailPipeline)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+        }
+        
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
 
@@ -56,7 +70,8 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
             FormattedInstalledDate,
             InstallItemCommand,
             IsInstalled,
-            InstallButtonText
+            InstallButtonText,
+            imageDisposable
         );
     }
 
@@ -67,6 +82,8 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 

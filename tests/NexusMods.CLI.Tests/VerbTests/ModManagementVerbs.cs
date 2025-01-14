@@ -14,25 +14,25 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         
         var install = await CreateInstall();
 
-        var log = await Run("create-loadout", "-g", $"{uint.MaxValue}", "-v",
+        var log = await Run("loadout create", "-g", $"{uint.MaxValue}", "-v",
             install.Version.ToString(), "-n", listName);
 
-        log = await Run("list-loadouts");
+        log = await Run("loadouts list");
 
-        log.LastTableColumns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
+        log.LastTableColumns.Should().BeEquivalentTo("Name", "Game", "Id", "Items");
         log.TableCellsWith(0, listName).Should().NotBeEmpty();
 
-        log = await Run("list-mods", "-l", listName);
+        log = await Run("loadout groups list", "-l", listName);
         log.LastTable.Rows.Length.Should().Be(2);
 
-        log = await Run("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString(), "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
+        log = await Run("loadout install", "-l", listName, "-f", Data7ZipLZMA2.ToString(), "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
 
-        log = await Run("list-mods", "-l", listName);
-        log.LastTable.Rows.Length.Should().Be(2);
+        log = await Run("loadout groups list", "-l", listName);
+        log.LastTable.Rows.Length.Should().Be(3);
 
-        log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.FileName);
+        log = await Run("loadout group list", "-l", listName, "-g", Data7ZipLZMA2.FileName);
         log.LastTable.Rows.Length.Should().Be(3);
         
-        log = await Run("synchronize", "-l", listName);
+        log = await Run("loadout synchronize", "-l", listName);
     }
 }

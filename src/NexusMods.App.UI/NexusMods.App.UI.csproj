@@ -85,6 +85,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
@@ -606,17 +607,11 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardDesignViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\Collections\CollectionsDesignViewModel.cs">
-          <DependentUpon>ICollectionsViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\CollectionDownload\CollectionDownloadDesignViewModel.cs">
           <DependentUpon>ICollectionDownloadViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithName.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LibraryPage\ILibraryItemWithVersion.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
@@ -696,6 +691,9 @@
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnailAndName.cs">
+          <DependentUpon>ILibraryItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="LeftMenu\Items\IconDesignViewModel.cs">
           <DependentUpon>IIconViewModel.cs</DependentUpon>
         </Compile>
@@ -712,6 +710,9 @@
         </Compile>
         <Compile Update="LeftMenu\Items\IIconViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemViewModel.cs">
+          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\PageHeader\PageHeader.axaml.cs">
           <DependentUpon>PageHeader.axaml</DependentUpon>

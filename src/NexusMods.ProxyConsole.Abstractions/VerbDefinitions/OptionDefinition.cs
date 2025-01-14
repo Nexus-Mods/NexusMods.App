@@ -10,4 +10,4 @@ namespace NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 /// <param name="LongName"></param>
 /// <param name="HelpText"></param>
 /// <param name="IsInjected"></param>
-public record OptionDefinition(Type Type, string ShortName, string LongName, string HelpText, bool IsInjected);
+public record OptionDefinition(Type Type, string ShortName, string LongName, string HelpText, bool IsInjected, bool IsOptional);

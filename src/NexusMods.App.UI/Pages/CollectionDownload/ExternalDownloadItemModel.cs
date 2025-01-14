@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.UI.Extensions;
@@ -11,16 +12,22 @@ using R3;
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDownloadAction
 {
-    public ExternalDownloadItemModel(CollectionDownloadExternal.ReadOnly externalDownload)
+    public ExternalDownloadItemModel(CollectionDownloadExternal.ReadOnly externalDownload, IServiceProvider serviceProvider)
     {
         DownloadableItem = new DownloadableItem(externalDownload);
         FormattedSize = ItemSize.ToFormattedProperty();
         DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
+        // Note: Because this is an external file with no known image, this always hits the fallback.
+        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        var imageDisposable = ImagePipelines.CreateObservable(externalDownload.Id, modPageThumbnailPipeline)
+            .ObserveOnUIThreadDispatcher()
+            .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+        
         // ReSharper disable once NotDisposedResource
         var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
         {
@@ -43,13 +50,16 @@ public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel
             FormattedSize,
             DownloadItemCommand,
             DownloadState,
-            DownloadButtonText
+            DownloadButtonText,
+            imageDisposable
         );
     }
 
     public required Observable<bool> IsInLibraryObservable { get; init; }
     public required Observable<IJob> DownloadJobObservable { get; init; }
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();

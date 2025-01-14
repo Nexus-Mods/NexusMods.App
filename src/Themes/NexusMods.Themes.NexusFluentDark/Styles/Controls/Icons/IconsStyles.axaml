@@ -595,6 +595,12 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Swap">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Swap}" />
+    </Style> 
+    <Style Selector="icons|UnifiedIcon.CollectionsOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CollectionsOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.InfoFilled">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.InfoFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />

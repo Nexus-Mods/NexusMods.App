@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
@@ -30,12 +31,12 @@ public class CommandLineConfigurator
     /// </summary>
     /// <param name="provider"></param>
     /// <param name="verbDefinitions"></param>
-    public CommandLineConfigurator(IServiceProvider provider, IEnumerable<VerbDefinition> verbDefinitions)
+    public CommandLineConfigurator(IServiceProvider provider, IEnumerable<VerbDefinition> verbDefinitions, IEnumerable<ModuleDefinition> moduleDefinitions)
     {
         _logger = provider.GetRequiredService<ILogger<CommandLineConfigurator>>();
 
         _makeOptionMethod = GetType().GetMethod(nameof(MakeOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
-        (_rootCommand, _injectedTypes) = MakeRootCommand(verbDefinitions);
+        (_rootCommand, _injectedTypes) = MakeRootCommand(verbDefinitions, moduleDefinitions);
         _provider = provider;
     }
 
@@ -44,14 +45,52 @@ public class CommandLineConfigurator
     /// </summary>
     /// <param name="verbDefinitions"></param>
     /// <returns></returns>
-    private (RootCommand, Type[]) MakeRootCommand(IEnumerable<VerbDefinition> verbDefinitions)
+    private (RootCommand, Type[]) MakeRootCommand(IEnumerable<VerbDefinition> verbDefinitions, IEnumerable<ModuleDefinition> moduleDefinitions)
     {
         var rootCommand = new RootCommand();
         var injectedTypes = new HashSet<Type>();
 
-        foreach (var verbDefinition in verbDefinitions)
+        var modules = new Dictionary<string, Command>();
+
+        // Create the modules first so we can tie verbs to them
+        foreach (var module in moduleDefinitions.OrderBy(v => v.Name.Length).ThenBy(v => v.Name.Last()))
         {
-            var command = new Command(verbDefinition.Name, verbDefinition.Description);
+            if (modules.ContainsKey(module.Name))
+                throw new InvalidOperationException($"Module {module.Name} already exists can't define it again");
+            
+            var nameParts = module.Name.Split(" ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            var localName = nameParts[^1];
+            var command = new Command(localName, module.Description);
+            modules.Add(module.Name, command);
+
+            if (nameParts.Length > 1)
+            {
+                var parentName = string.Join(" ", nameParts[..^1]);
+                if (!modules.TryGetValue(parentName, out var parent))
+                    throw new InvalidOperationException($"Parent module {module.Name} does not exist");
+                
+                parent.AddCommand(command);
+            }
+            else
+            {
+                rootCommand.AddCommand(command);
+            }
+            
+        }
+
+        foreach (var verbDefinition in verbDefinitions.OrderBy(v => v.Name.Last()))
+        {
+            Command parentCommand = rootCommand;
+            var nameParts = verbDefinition.Name.Split(" ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (nameParts.Length > 1)
+            {
+                var moduleName = string.Join(" ", nameParts[..^1]);
+                if (!modules.TryGetValue(moduleName, out var moduleCommand))
+                    throw new InvalidOperationException($"Module {moduleName} does not exist");
+                parentCommand = moduleCommand;
+            }
+
+            var command = new Command(nameParts[^1], verbDefinition.Description);
             var getters = new List<Func<InvocationContext, object?>>();
 
             foreach (var optionDefinition in verbDefinition.Options)
@@ -65,14 +104,17 @@ public class CommandLineConfigurator
                 else
                 {
                     var option = (Option)_makeOptionMethod.MakeGenericMethod(optionDefinition.Type)
-                        .Invoke(this, new[] { optionDefinition })!;
+                        .Invoke(this, [optionDefinition])!;
+
+                    option.IsRequired = !optionDefinition.IsOptional;
+                    
                     command.AddOption(option);
                     getters.Add(ctx => ctx.ParseResult.GetValueForOption(option));
                 }
             }
-            command.Handler = new CommandHandler(getters, verbDefinition.Info);
+            command.Handler = new CommandHandler(_provider, getters, verbDefinition.Info);
 
-            rootCommand.AddCommand(command);
+            parentCommand.AddCommand(command);
         }
         return (rootCommand, injectedTypes.ToArray());
     }

@@ -39,7 +39,11 @@ public interface IHasLinkedLoadoutItems
 
         if (serialDisposable.Disposable is null)
         {
-            serialDisposable.Disposable = self.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changes => self.LinkedLoadoutItems.ApplyChanges(changes));
+            serialDisposable.Disposable = self.LinkedLoadoutItemsObservable.OnUI().SubscribeWithErrorLogging(changes =>
+                {
+                    self.LinkedLoadoutItems.ApplyChanges(changes);
+                }
+            );
         }
 
         return disposable;
