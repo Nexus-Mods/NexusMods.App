@@ -16,7 +16,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.LibraryPage;
-using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -61,6 +60,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
+        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundImagePipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -103,9 +103,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         );
 
         // TODO: implement this button
-        CommandInstallOptionalItems = _canInstallOptionalItems.ToReactiveCommand<Unit>();
+        CommandInstallOptionalItems = _isInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>();
 
-        CommandInstallRequiredItems = _canInstallRequiredItems.ToReactiveCommand<Unit>(
+        CommandInstallRequiredItems = _isInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) => { await InstallCollectionJob.Create(
                 serviceProvider,
                 targetLoadout,
@@ -183,6 +183,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         {
             TreeDataGridAdapter.Activate();
             Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+
+            jobMonitor
+                .HasActiveJob<InstallCollectionJob>(job => job.RevisionMetadata.Id == _revision.Id)
+                .Subscribe(isInstalling => _isInstalling.OnNext(isInstalling))
+                .AddTo(disposables);
 
             var numDownloadedRequiredItemsObservable = Observable
                 .Return(_revision)
@@ -284,6 +289,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canInstallRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canInstallOptionalItems = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _isInstalling = new(initialValue: false);
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
