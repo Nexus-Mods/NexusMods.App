@@ -183,8 +183,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         this.WhenActivated(disposables =>
         {
-            TreeDataGridAdapter.Activate();
-            Disposable.Create(TreeDataGridAdapter, static adapter => adapter.Deactivate()).AddTo(disposables);
+            TreeDataGridAdapter.Activate().AddTo(disposables);
 
             jobMonitor
                 .HasActiveJob<InstallCollectionJob>(job => job.RevisionMetadata.Id == _revision.Id)
