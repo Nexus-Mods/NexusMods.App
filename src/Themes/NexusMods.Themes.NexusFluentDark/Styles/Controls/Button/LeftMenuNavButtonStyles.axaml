@@ -1,0 +1,273 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <StackPanel Spacing="8" Orientation="Horizontal">
+
+                <StackPanel Spacing="8" Orientation="Vertical" Width="80">
+                    <Border Height="34">
+                        <TextBlock Text="Default"
+                                   VerticalAlignment="Center"
+                                   Theme="{StaticResource BodyMDBoldTheme}"
+                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    </Border>
+                    <Border Height="34">
+                        <TextBlock Text="Active"
+                                   VerticalAlignment="Center"
+                                   Theme="{StaticResource BodyMDBoldTheme}"
+                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    </Border>
+                    <Border Height="34">
+                        <TextBlock Text="Selected"
+                                   VerticalAlignment="Center"
+                                   Theme="{StaticResource BodyMDBoldTheme}"
+                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Spacing="8" Orientation="Vertical" Width="145">
+
+                    <navigation:LeftMenuNavButton>
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsActive="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsSelected="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                </StackPanel>
+
+                <StackPanel Spacing="8" Orientation="Vertical" Width="165">
+
+                    <navigation:LeftMenuNavButton>
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <Border DockPanel.Dock="Right"
+                                    Padding="6,0"
+                                    Height="20"
+                                    CornerRadius="{StaticResource Rounded-full}"
+                                    Background="{StaticResource PrimaryModerate}">
+                                <TextBlock
+                                    TextAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Foreground="{StaticResource NeutralInverted}"
+                                    Text="1" />
+                            </Border>
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsActive="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <Border DockPanel.Dock="Right"
+                                    Padding="6,0"
+                                    Height="20"
+                                    CornerRadius="{StaticResource Rounded-full}"
+                                    Background="{StaticResource PrimaryModerate}">
+                                <TextBlock
+                                    TextAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Foreground="{StaticResource NeutralInverted}"
+                                    Text="12" />
+                            </Border>
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsSelected="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <Border DockPanel.Dock="Right"
+                                    Padding="6,0"
+                                    Height="20"
+                                    CornerRadius="{StaticResource Rounded-full}"
+                                    Background="{StaticResource PrimaryModerate}">
+                                <TextBlock
+                                    TextAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Foreground="{StaticResource NeutralInverted}"
+                                    Text="123" />
+                            </Border>
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                </StackPanel>
+                <StackPanel Spacing="8" Orientation="Vertical">
+                    <navigation:LeftMenuNavButton>
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <ToggleSwitch DockPanel.Dock="Right"
+                                          Classes="ExtraSmall"
+                                          OnContent="{x:Null}"
+                                          OffContent="{x:Null}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsActive="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <ToggleSwitch DockPanel.Dock="Right"
+                                          Classes="ExtraSmall"
+                                          OnContent="{x:Null}"
+                                          OffContent="{x:Null}"
+                                          IsChecked="True" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsSelected="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <ToggleSwitch DockPanel.Dock="Right"
+                                          Classes="ExtraSmall"
+                                          OnContent="{x:Null}"
+                                          OffContent="{x:Null}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                </StackPanel>
+
+                <StackPanel Spacing="8" Orientation="Vertical" Width="200">
+
+                    <navigation:LeftMenuNavButton>
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <icons:UnifiedIcon DockPanel.Dock="Right"
+                                               Value="{x:Static icons:IconValues.InfoFilled}"
+                                               Foreground="{StaticResource InfoStrongBrush}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsActive="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <icons:UnifiedIcon DockPanel.Dock="Right"
+                                               Value="{x:Static icons:IconValues.Warning}"
+                                               Foreground="{StaticResource WarningStrongBrush}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+
+                    <navigation:LeftMenuNavButton IsSelected="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <icons:UnifiedIcon DockPanel.Dock="Right"
+                                               Value="{x:Static icons:IconValues.Error}"
+                                               Foreground="{StaticResource DangerStrongBrush}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <Style Selector="navigation|LeftMenuNavButton">
+
+        <Setter Property="Padding" Value="6,6" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="Fill" Value="None" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <!-- using margin to make up for the border on other states being inside the button -->
+        <Setter Property="Margin" Value="2" />
+
+        <Style Selector="^ > DockPanel > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Margin" Value="4 0 4 0" />
+        </Style>
+
+        <!-- ACTIVE -->
+
+        <Style Selector="^:active">
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+
+            <Style Selector="^ > DockPanel > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            </Style>
+        </Style>
+
+        <!-- SELECTED -->
+
+        <Style Selector="^:selected">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600Brush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+
+            <Style Selector="^ > DockPanel > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            </Style>
+        </Style>
+
+        <!-- POINTEROVER -->
+
+        <Style Selector="^:pointerover:not(:selected)">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        </Style>
+
+    </Style>
+</Styles>

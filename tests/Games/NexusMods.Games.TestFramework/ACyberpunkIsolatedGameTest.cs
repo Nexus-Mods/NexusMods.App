@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CrossPlatform;
-using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;

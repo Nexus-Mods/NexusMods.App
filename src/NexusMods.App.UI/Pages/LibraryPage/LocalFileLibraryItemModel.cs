@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -12,14 +13,14 @@ using R3;
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
-    public LocalFileLibraryItemModel(LocalFile.ReadOnly localFile)
+    public LocalFileLibraryItemModel(LocalFile.ReadOnly localFile, IServiceProvider serviceProvider)
     {
         LibraryItemId = localFile.Id;
 
@@ -28,6 +29,12 @@ public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
+        // Note: Because this is a local file, this always hits the fallback thumbnail in practice.
+        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        var imageDisposable = ImagePipelines.CreateObservable(localFile.Id, modPageThumbnailPipeline)
+            .ObserveOnUIThreadDispatcher()
+            .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+        
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
 
@@ -42,6 +49,7 @@ public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel
 
         _modelDisposable = Disposable.Combine(
             datesDisposable,
+            imageDisposable,
             linkedLoadoutItemsDisposable,
             modelActivationDisposable,
             Name,
@@ -53,7 +61,8 @@ public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel
             FormattedInstalledDate,
             InstallItemCommand,
             IsInstalled,
-            InstallButtonText
+            InstallButtonText,
+            Thumbnail
         );
     }
 
@@ -64,7 +73,9 @@ public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; set; } = new();
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }

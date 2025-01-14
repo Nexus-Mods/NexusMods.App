@@ -1,11 +1,12 @@
 using System.Reactive;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
+public interface ILaunchButtonViewModel : IViewModelInterface
 {
     /// <summary>
     /// The currently selected loadout.

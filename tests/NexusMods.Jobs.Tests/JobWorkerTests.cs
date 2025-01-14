@@ -4,14 +4,13 @@ using Xunit;
 
 namespace NexusMods.Jobs.Tests;
 
-public class JobWorkerTests
+public class JobWorkerTests(IJobMonitor jobMonitor)
 {
     [Fact]
     public async Task TestCreateSync()
     {
-        var monitor = new JobMonitor();
         var job = new MyJob();
-        var worker = monitor.Begin<MyJob, string>(job, async _ => "hello world");
+        var worker = jobMonitor.Begin<MyJob, string>(job, async _ => "hello world");
 
         var jobResult = await worker;
         jobResult.Should().Be("hello world");
@@ -20,9 +19,8 @@ public class JobWorkerTests
     [Fact]
     public async Task TestCreateAsync()
     {
-        var monitor = new JobMonitor();
         var job = new MyJob();
-        var worker = monitor.Begin(job, async _ =>
+        var worker = jobMonitor.Begin(job, async _ =>
             {
                 await Task.Delay(100);
                 return "hello world";

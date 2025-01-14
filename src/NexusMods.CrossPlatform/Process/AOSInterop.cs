@@ -30,7 +30,7 @@ internal abstract class AOSInterop : IOSInterop
     protected abstract Command CreateCommand(Uri uri);
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public virtual async Task OpenUrl(Uri url, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         var command = CreateCommand(url);
 
@@ -55,7 +55,7 @@ internal abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public Task OpenFile(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public virtual Task OpenFile(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         if (!filePath.FileExists)
         {
@@ -76,6 +76,11 @@ internal abstract class AOSInterop : IOSInterop
         }
 
         return OpenUrl(new Uri($"file://{directoryPath.ToNativeSeparators(OSInformation.Shared)}"), logOutput, fireAndForget, cancellationToken);
+    }
+
+    public virtual Task OpenFileInDirectory(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default)
+    {
+        return OpenDirectory(filePath, logOutput, fireAndForget, cancellationToken);
     }
 
     /// <inheritdoc />

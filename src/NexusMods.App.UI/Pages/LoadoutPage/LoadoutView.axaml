@@ -10,13 +10,14 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
-                
+
                 <controls:StandardButton x:Name="SwitchView"
                                          Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
                                          Type="Tertiary"
@@ -33,7 +34,7 @@
                                               ShowIcon="Left"
                                               LeftIcon="{x:Static icons:IconValues.Folder}"
                                               ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
-                
+
                 <controls:StandardButton x:Name="DeleteButton"
                                          Text="{x:Static resources:Language.LoadoutGridView__Remove}"
                                          Type="Tertiary"
@@ -46,9 +47,9 @@
         </Border>
 
 
-        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" 
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
                              Header="Header">
-            
+
             <controls:EmptyState.Subtitle>
                 <StackPanel  Orientation="Vertical" Spacing="16">
                     <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
@@ -66,6 +67,20 @@
                           CanUserSortColumns="True"
                           Classes="MainListsStyling">
                 <TreeDataGrid.Resources>
+                    <DataTemplate x:Key="DisplayThumbnailAndNameColumnTemplate" DataType="local:LoadoutItemModel">
+                        <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
+                            <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
+                                <Panel>
+                                    <!-- The below image is drawn after the icon and so covers it up if a thumbnail is present. --> 
+                                    <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                                    <Image Source="{CompiledBinding Thumbnail.Value}" />
+                                </Panel>
+                            </Border>
+                            <TextBlock Text="{CompiledBinding Name.Value}" />
+                        </StackPanel>
+                    </DataTemplate>
+                    
                     <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="local:LoadoutItemModel">
                         <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" Command="{CompiledBinding ToggleEnableStateCommand}" IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}">
                             <ToggleSwitch.OnContent>
@@ -75,6 +90,75 @@
                                 <ContentControl />
                             </ToggleSwitch.OffContent>
                         </ToggleSwitch>
+                    </DataTemplate>
+
+                    <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
+                        <DataTemplate.DataType>
+                            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
+                        </DataTemplate.DataType>
+
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent" ComponentKey="{x:Static controls:SharedColumns+Name.StringComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                            <TextBlock Text="{CompiledBinding Value.Value}" />
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
+
+                            <controls:ColumnContentControl.Fallback>
+                                <TextBlock Text="-"/>
+                            </controls:ColumnContentControl.Fallback>
+                        </controls:ColumnContentControl>
+                    </DataTemplate>
+
+                    <DataTemplate x:Key="{x:Static controls:SharedColumns+InstalledDate.ColumnTemplateResourceKey}">
+                        <DataTemplate.DataType>
+                            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
+                        </DataTemplate.DataType>
+
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <controls:ComponentTemplate x:TypeArguments="controls:DateComponent" ComponentKey="{x:Static controls:SharedColumns+InstalledDate.ComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type controls:DateComponent}">
+                                            <TextBlock Text="{CompiledBinding FormattedValue.Value}" />
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
+
+                            <controls:ColumnContentControl.Fallback>
+                                <TextBlock Text="-"/>
+                            </controls:ColumnContentControl.Fallback>
+                        </controls:ColumnContentControl>
+                    </DataTemplate>
+
+                    <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
+                        <DataTemplate.DataType>
+                            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
+                        </DataTemplate.DataType>
+
+                        <controls:ColumnContentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ColumnContentControl.AvailableTemplates>
+                                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled" ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
+                                            <ToggleSwitch Classes="Compact"
+                                                          HorizontalAlignment="Center"
+                                                          Command="{CompiledBinding CommandToggle}"
+                                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}">
+                                                <ToggleSwitch.OnContent><ContentControl /></ToggleSwitch.OnContent>
+                                                <ToggleSwitch.OffContent><ContentControl /></ToggleSwitch.OffContent>
+                                            </ToggleSwitch>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ColumnContentControl.AvailableTemplates>
+
+                        </controls:ColumnContentControl>
                     </DataTemplate>
                 </TreeDataGrid.Resources>
             </TreeDataGrid>

@@ -37,14 +37,7 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
         SwitchSortDirectionCommand = ReactiveCommand.Create(() => { IsAscending = !IsAscending; });
 
         Adapter = new LoadOrderTreeDataGridDesignAdapter();
-
-        this.WhenActivated(d =>
-            {
-                Adapter.Activate();
-                Disposable.Create(() => Adapter.Deactivate())
-                    .DisposeWith(d);
-            }
-        );
+        this.WhenActivated(d => { Adapter.Activate().DisposeWith(d); });
 
         AlertSettingsWrapper = null!;
     }

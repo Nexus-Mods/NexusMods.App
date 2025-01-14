@@ -67,9 +67,6 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/check-circle-outline/
     public static readonly IconValue CheckCircleOutline = new ProjektankerIcon("mdi-check-circle-outline");
-    
-    // https://pictogrammers.com/library/mdi/icon/thumb-up/
-    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
@@ -93,17 +90,23 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/home/
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
+    // https://pictogrammers.com/library/mdi/icon/lock/
+    public static readonly IconValue Lock = new ProjektankerIcon("mdi-lock");
+
+    // https://pictogrammers.com/library/mdi/icon/open-in-new/
+    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
+
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
     public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
     
     // https://pictogrammers.com/library/mdi/icon/playlist-remove/
     public static readonly IconValue PlaylistRemove = new ProjektankerIcon("mdi-playlist-remove");
 
-    // https://pictogrammers.com/library/mdi/icon/open-in-new/
-    public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
-
     // https://pictogrammers.com/library/mdi/icon/tab/
     public static readonly IconValue Tab = new ProjektankerIcon("mdi-tab");
+
+    // https://pictogrammers.com/library/mdi/icon/thumb-up/
+    public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
     // https://pictogrammers.com/library/mdi/icon/magnfiy/
     public static readonly IconValue Search = new ProjektankerIcon("mdi-magnify");
@@ -145,6 +148,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/information-outline/
     public static readonly IconValue Info = new ProjektankerIcon("mdi-information-outline");
 
+    // https://pictogrammers.com/library/mdi/icon/information/
+    public static readonly IconValue InfoFilled = new ProjektankerIcon("mdi-information");
+    
 #endregion
 
 #region AV
@@ -332,6 +338,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
+    // https://pictogrammers.com/library/mdi/icon/swap-vertical"/
+    public static readonly IconValue Swap = new ProjektankerIcon("mdi-swap-vertical");
+
 #endregion
     
 #region Notification
@@ -491,12 +500,36 @@ public static class IconValues
         new Rect(0, -960, 960, 960 )
     ));
     
+    // new health check icon 
+    // https://fonts.google.com/icons?icon.query=cardio&icon.size=34&icon.color=%23e8eaed&selected=Material+Symbols+Outlined:cardiology:FILL@0;wght@400;GRAD@0;opsz@40
+    public static readonly IconValue Cardiology = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M293.33-840q55.34 0 103.34 25.33 48 25.34 83.33 72.67 39.33-49.33 86.33-73.67 47-24.33 100.34-24.33 90.66 0 152 61.33Q880-717.33 880-626q0 11.67-1.17 23-1.16 11.33-3.83 23h-68q3.67-11.67 5-23t1.33-23q0-64-41.33-105.67-41.33-41.66-105.33-41.66-49.67 0-92.34 29.83-42.66 29.83-65.66 81.5h-58q-22.34-51-65-81.17-42.67-30.16-92.34-30.16-64 0-105.33 41.66Q146.67-690 146.67-626q0 11.67 1.33 23t5 23H85q-2.67-11.67-3.83-23Q80-614.33 80-626q0-91.33 61.33-152.67 61.34-61.33 152-61.33Zm-94.66 460H288q36 38.33 83 83.33t109 101.34q62-56.34 108.67-101.34 46.66-45 82.66-83.33h90.34q-40.67 46.67-98 102.67-57.34 56-137 128.66l-46.67 42-46.67-42q-79.66-72.66-136.83-128.66-57.17-56-97.83-102.67ZM442-326.67q10.33 0 18.17-6.16Q468-339 471.33-349L530-524l42.33 62.67q5 6.66 12 10.66t15.67 4h313.33v-66.66H619L548-618q-5.33-7.67-13.17-11.17-7.83-3.5-16.83-3.5-10.33 0-18.5 6.17T488-610.33l-58 174.66-42.67-63q-5-6.66-11.66-10.66-6.67-4-15.34-4H46.67v66.66h293.66l71 105.34q5.34 7.66 13.5 11.16 8.17 3.5 17.17 3.5Zm38-157.66Z",
+        new Rect(0, -960, 960, 960 )
+    ));
+    
+    // new library icon 
+    // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:sports_esports:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=gamepad&icon.size=24&icon.color=%23e8eaed
+    public static readonly IconValue LibraryOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M4 22C3.45 22 2.97917 21.8042 2.5875 21.4125C2.19583 21.0208 2 20.55 2 20V10C2 9.45 2.19583 8.97917 2.5875 8.5875C2.97917 8.19583 3.45 8 4 8H20C20.55 8 21.0208 8.19583 21.4125 8.5875C21.8042 8.97917 22 9.45 22 10V20C22 20.55 21.8042 21.0208 21.4125 21.4125C21.0208 21.8042 20.55 22 20 22H4ZM4 20H20V10H4V20ZM12 18L16 15L12 12L8 15L12 18ZM4 7V5H20V7H4ZM7 4V2H17V4H7Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // new collections icon 
+    public static readonly IconValue CollectionsOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M11.9911 15.7433L5.44 10.9822L4 12.0291L12 17.8455L20 12.0291L18.5511 10.9739L11.9911 15.7433ZM11.9911 19.8977L5.44 15.1366L4 16.1835L12 21.9999L20 16.1835L18.5511 15.1283L11.9911 19.8977ZM19.9992 7.81605L18.5415 8.87125L11.9996 13.6321L5.44881 8.87125L4 7.81605L11.9996 2L19.9992 7.81605ZM16.2656 7.81405L11.9996 4.71247L7.72972 7.81685L11.9986 10.9193L16.2656 7.81405Z",
+        new Rect(0, 0, 24, 24 )
+    ));
     
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion
     
 #region Brand Pictograms
+    
+    /// <summary>
+    /// Brand pictogram for Health
+    /// </summary>
+    public static readonly IconValue PictogramHealth = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg"));
     
     /// <summary>
     /// Brand pictogram for Games in 3D

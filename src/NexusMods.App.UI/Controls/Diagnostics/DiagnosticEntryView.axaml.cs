@@ -31,15 +31,15 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         switch (vm.Severity)
         {
             case DiagnosticSeverity.Suggestion:
-                SeverityIcon.Value = IconValues.Help;
+                SeverityIcon.Value = IconValues.InfoFilled;
                 SeverityIcon.Classes.Add("ForegroundInfoStrong");
                 break;
             case DiagnosticSeverity.Warning:
-                SeverityIcon.Value = IconValues.Error;
+                SeverityIcon.Value = IconValues.Warning;
                 SeverityIcon.Classes.Add("ForegroundWarningStrong");
                 break;
             case DiagnosticSeverity.Critical:
-                SeverityIcon.Value = IconValues.Alert;
+                SeverityIcon.Value = IconValues.Error;
                 SeverityIcon.Classes.Add("ForegroundDangerStrong");
                 break;
             default:
@@ -48,5 +48,6 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         }
                 
         DescriptionText.Text = vm.Summary;
+        TitleText.Text = vm.Title;
     }
 }

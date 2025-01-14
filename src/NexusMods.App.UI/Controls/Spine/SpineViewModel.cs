@@ -48,7 +48,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private ISpineItemViewModel? _activeSpineItem;
 
-    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
+    private Dictionary<WorkspaceId, ILeftMenuViewModel> _leftMenus = new([]);
     private readonly IConnection _conn;
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
@@ -88,55 +88,67 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var workspaceController = windowManager.ActiveWorkspaceController;
 
         this.WhenActivated(disposables =>
-            {
-                var loadouts = Loadout.ObserveAll(_conn);
+                {
+                    var loadouts = Loadout.ObserveAll(_conn);
 
-                loadouts
-                    .Filter(loadout => loadout.IsVisible())
-                    .TransformAsync(async loadout =>
-                        {
-                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
+                    loadouts
+                        .Filter(loadout => loadout.IsVisible())
+                        .TransformAsync(async loadout =>
+                            {
+                                await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
-                            var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
-                            vm.Image = LoadImageFromStream(iconStream);
-                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
-                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
-                            vm.IsActive = false;
-                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
-                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
-                            return vm;
-                        }
-                    )
-                    .Sort(LoadoutComparerInstance)
-                    .OnUI()
-                    .Bind(out _loadoutSpineItems)
+                                var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
+                                vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
+                                vm.Image = LoadImageFromStream(iconStream);
+                                vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
+                                vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
+                                vm.IsActive = false;
+                                vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
+                                vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
+                                return vm;
+                            }
+                        )
+                        .OnUI()
+                        .OnItemRemoved(loadoutSpineItem =>
+                            {
+                                if (loadoutSpineItem.WorkspaceContext is LoadoutContext loadoutContext)
+                                    workspaceController.UnregisterWorkspaceByContext<LoadoutContext>(context => loadoutContext == context);
+                            })
+                    .SortAndBind(out _loadoutSpineItems, LoadoutComparerInstance)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 
                 // Create Left Menus for each workspace on demand
                 workspaceController.AllWorkspaces
                     .ToObservableChangeSet()
-                    .Transform(workspace =>
+                    .OnItemAdded(workspace =>
+                    {
+                        if (_leftMenus.TryGetValue(workspace.Id, out _))
                         {
-                            try
-                            {
-                                var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
-                                    workspace.Context,
-                                    workspace.Id,
-                                    workspaceController
-                                );
-
-                                return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id, message: $"Missing {workspace.Context.GetType()}");
-                            }
-                            catch (Exception e)
-                            {
-                                _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
-                                return new EmptyLeftMenuViewModel(workspace.Id, message: $"Error for {workspace.Context.GetType()}");
-                            }
+                            return;
                         }
-                    )
-                    .Bind(out _leftMenus)
+                            
+                        try
+                        {
+                            var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
+                                workspace.Context,
+                                workspace.Id,
+                                workspaceController
+                            );
+
+                            _leftMenus.Add(
+                                workspace.Id, leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id, message: $"Missing {workspace.Context.GetType()}")
+                            );
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
+                            _leftMenus.Add(
+                                workspace.Id, new EmptyLeftMenuViewModel(workspace.Id, message: $"Error for {workspace.Context.GetType()}")
+                            );
+                        }
+                    })
+                    .OnItemRemoved(workspace => _leftMenus.Remove(workspace.Id, out _))
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 
@@ -163,7 +175,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
                     .Select(workspace => workspace.Id)
-                    .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
+                    .Select(workspaceId => _leftMenus.GetValueOrDefault(workspaceId))
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
 

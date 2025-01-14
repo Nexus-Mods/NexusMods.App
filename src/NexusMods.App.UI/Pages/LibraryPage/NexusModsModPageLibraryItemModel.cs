@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -12,8 +14,11 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+/// <summary>
+///     When in the library, and using tree view, this shows the top level item that represents the top page.
+/// </summary>
 public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-    ILibraryItemWithName,
+    ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,
@@ -23,7 +28,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public required IObservable<int> NumInstalledObservable { get; init; }
     private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
-    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
+    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IServiceProvider serviceProvider)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
@@ -32,10 +37,33 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
+        var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
 
         // NOTE(erri120): This subscription needs to be set up in the constructor and kept alive
         // until the entire model gets disposed. Without this, selection would break for off-screen items.
-        var libraryItemsDisposable =  libraryItemsObservable.OnUI().SubscribeWithErrorLogging(changeSet => LibraryItems.ApplyChanges(changeSet));
+        var libraryItemsDisposable = libraryItemsObservable.OnUI()
+            .Select(changeset =>
+                {
+                    LibraryItems.ApplyChanges(changeset);
+                    return LibraryItems.FirstOrDefault();
+                }
+            )
+            .Where(item => item.IsValid())
+            .SelectMany(async item =>
+            {
+                // Skip mods without thumbnails
+                if (!item.ModPageMetadata.Contains(NexusModsModPageMetadata.ThumbnailUri))
+                    return item;
+                
+                // Note(sewer): Update the thumbnail of the header to be the thumbnail of the first child item.
+                // By definition, all the sub items belong to this page, so the thumbnail of the child item
+                // is the thumbnail of this page.
+                //
+                // SAFETY: This can't have race condition, code is executed on UI, so can't be executed in parallel.
+                var thumbNail = await modPageThumbnailPipeline.LoadResourceAsync(item.ModPageMetadataId, CancellationToken.None);
+                Thumbnail.Value = thumbNail.Data;
+                return item;
+            }).SubscribeWithErrorLogging();
 
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
@@ -102,6 +130,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
     public ObservableDictionary<EntityId, LibraryLinkedLoadoutItem.ReadOnly> LinkedLoadoutItems { get; private set; } = [];
 
+    public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
+    public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();

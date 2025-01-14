@@ -104,6 +104,7 @@ public static class Services
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
+            .AddViewModel<LeftMenuItemViewModel, INewLeftMenuItemViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
@@ -135,6 +136,7 @@ public static class Services
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
+            .AddView<LeftMenuItemView, INewLeftMenuItemViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
             .AddView<LeftMenuView, ILeftMenuViewModel>()
@@ -204,7 +206,6 @@ public static class Services
             .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
 
             .AddView<LibraryView, ILibraryViewModel>()
-            .AddView<CollectionsView, ICollectionsViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
             .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
@@ -215,6 +216,9 @@ public static class Services
             
             .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
             .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
+
+            .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
+            .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -247,7 +251,6 @@ public static class Services
             .AddSingleton<IPageFactory, ItemContentsFileTreePageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
-            .AddSingleton<IPageFactory, CollectionsPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
 

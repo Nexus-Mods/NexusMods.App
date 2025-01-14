@@ -7,6 +7,7 @@ public static class Services
 {
     public static IServiceCollection AddJobMonitor(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddSingleton<IJobMonitor, JobMonitor>();
+        return serviceCollection
+            .AddSingleton<IJobMonitor, JobMonitor>();
     }
 }

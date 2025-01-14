@@ -10,20 +10,40 @@
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
-
+    
     <Design.DataContext>
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="DropShadowBorder">
-        <navigation:NavigationControl x:Name="EntryButton">
-            <panels:FlexPanel x:Name="EntryFlexPanel">
-                <icons:UnifiedIcon x:Name="SeverityIcon" />
-                <TextBlock x:Name="DescriptionText" />
-                <icons:UnifiedIcon x:Name="NavigationIcon" Value="{x:Static icons:IconValues.ChevronRight}" />
-            </panels:FlexPanel>
-        </navigation:NavigationControl>
-    </Border>
-
+    <navigation:NavigationControl x:Name="EntryButton"
+                                  Padding="16,12"
+                                  HorizontalAlignment="Stretch"
+                                  Height="62">
+        
+        <DockPanel>
+            <icons:UnifiedIcon x:Name="SeverityIcon" 
+                               DockPanel.Dock="Left" />
+            <icons:UnifiedIcon x:Name="NavigationIcon" 
+                DockPanel.Dock="Right" 
+                Value="{x:Static icons:IconValues.ChevronRight}"/>
+            
+            <StackPanel Margin="16,0" Spacing="0">
+                <TextBlock x:Name="TitleText" 
+                           Text="Name"
+                           Theme="{StaticResource BodyMDNormalTheme}"
+                           Foreground="{StaticResource NeutralStrongBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap"
+                           />
+                <TextBlock x:Name="DescriptionText"
+                           Theme="{StaticResource BodySMNormalTheme}"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap"
+                           />
+            </StackPanel>
+            
+        </DockPanel>
+    </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>
