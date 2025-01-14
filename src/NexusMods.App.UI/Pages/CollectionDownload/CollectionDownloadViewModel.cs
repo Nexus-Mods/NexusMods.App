@@ -231,7 +231,14 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     }
                     else
                     {
-                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
+                        if (isCollectionInstalled)
+                        {
+                            CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
+                        }
+                        else
+                        {
+                            CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
+                        }
                     }
                 }).AddTo(disposables);
 
