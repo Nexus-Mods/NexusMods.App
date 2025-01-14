@@ -1294,6 +1294,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSTALLED MODS.
+        /// </summary>
+        public static string LeftMenu_Label_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UTILITIES.
+        /// </summary>
+        public static string LeftMenu_Label_Utilities {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Utilities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete mod(s).
         /// </summary>
         public static string LibraryItemDeleteConfirmation_DeleteModsButton {

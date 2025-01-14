@@ -721,4 +721,10 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
         <value>{0} of {1} required mods downloaded</value>
     </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>INSTALLED MODS</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>UTILITIES</value>
+    </data>
 </root>
