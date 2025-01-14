@@ -19,8 +19,7 @@ public interface IClient
     /// Initiate the login process.
     /// </summary>
     public Task Login(CancellationToken token);
-
-
+    
     /// <summary>
     /// Get all the builds for a given product and OS.
     /// </summary>
@@ -32,7 +31,8 @@ public interface IClient
     public Task<DepotInfo> GetDepot(Build build, CancellationToken token);
 
     /// <summary>
-    /// Given a depot, a build, and a path, return a stream to the file.
+    /// Given a depot, a build, and a path, return a stream to the file. This file is seekable, and will cache and
+    /// stream in data as required from the CDN.
     /// </summary>
     public Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token);
 }

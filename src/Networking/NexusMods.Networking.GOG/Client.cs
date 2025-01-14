@@ -29,6 +29,7 @@ internal class Client : IClient
     private readonly HttpClient _client;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly IOSInterop _osInterop;
 
     private static readonly Uri AuthorizationUri = new("https://auth.gog.com/auth");
     private static readonly Uri RedirectUrl = new("nxm://gog-auth");
@@ -38,15 +39,30 @@ internal class Client : IClient
     
     private static readonly Uri TokenUri = new("https://auth.gog.com/token");
     
+    // A cache of secure URLs, which are CDN urls and associated auth data
     private readonly Dictionary<ProductId, SecureUrl[]> _secureUrls = new();
     
+    // A lock for the secure URL cache
     private readonly SemaphoreSlim _secureUrlLock = new(1, 1);
     
+    // A cache of blocks from the shared block cache. When a depot contains a small file container, we want to 
+    // cache the blocks so that we don't have to re-download them if there are a lot of files that are found in the 
+    // same block
     private readonly FastCache<Md5, Memory<byte>> _blockCache;
-    private readonly IOSInterop _osInterop;
-    private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
     
+    /// <summary>
+    /// TTL time for the secure URL cache.
+    /// </summary>
+    private static readonly TimeSpan CacheTime = TimeSpan.FromMinutes(5);
+    
+    /// <summary>
+    /// A channel for incoming auth URLs.
+    /// </summary>
     private Channel<NXMGogAuthUrl> _authUrls = Channel.CreateUnbounded<NXMGogAuthUrl>();
+    
+    /// <summary>
+    /// Standard DI constructor.
+    /// </summary>
     public Client(ILogger<Client> logger, IConnection connection, IOSInterop osInterop, HttpClient client, JsonSerializerOptions jsonSerializerOptions)
     {
         _osInterop = osInterop;
@@ -68,7 +84,9 @@ internal class Client : IClient
     /// </summary>
     internal HttpClient HttpClient => _client;
 
-
+    /// <summary>
+    /// Start the login process.
+    /// </summary>
     public async Task Login(CancellationToken token)
     {
         var authQuery = new Dictionary<string, string?>()
@@ -361,6 +379,10 @@ internal class Client : IClient
         _blockCache.AddOrUpdate(md5, buffer, CacheTime);
     }
 
+    /// <summary>
+    /// Feed a new auth URL into the client.
+    /// </summary>
+    /// <param name="url"></param>
     public void AuthUrl(NXMGogAuthUrl url)
     {
         _authUrls.Writer.TryWrite(url);
