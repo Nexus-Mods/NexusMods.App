@@ -48,6 +48,7 @@
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderBrush" Value="Red" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
+        <Setter Property="Padding" Value="0" />
         
         <Style Selector="^:down /template/ Border#ExpanderContent">
             <Setter Property="BorderThickness" Value="0" />
