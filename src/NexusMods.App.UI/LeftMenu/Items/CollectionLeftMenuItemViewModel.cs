@@ -12,11 +12,11 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
 {
-    [Reactive] public bool IsEnabled { get; private set; }
+    [Reactive] public override bool IsEnabled { get; set; }
     
-    [Reactive] public bool IsToggleVisible { get; private set; } = true;
+    public override bool IsToggleVisible { get; } = true;
     
-    private CollectionGroupId _collectionGroupId;
+    public CollectionGroupId CollectionGroupId;
     
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -25,7 +25,8 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
         IServiceProvider serviceProvider,
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
-        _collectionGroupId = collectionGroupId;
+        IsToggleVisible = true;
+        CollectionGroupId = collectionGroupId;
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
         var isEnabledObservable = CollectionGroup.Observe(conn, collectionGroupId)
@@ -33,7 +34,9 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
         
         this.WhenActivated(d =>
         {
-            isEnabledObservable.Subscribe(isEnabled => IsEnabled = isEnabled)
+            isEnabledObservable
+                .OnUI()
+                .Subscribe(isEnabled => IsEnabled = isEnabled)
                 .DisposeWith(d);
         });
 

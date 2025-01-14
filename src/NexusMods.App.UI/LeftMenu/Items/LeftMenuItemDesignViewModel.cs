@@ -15,5 +15,7 @@ public class LeftMenuItemDesignViewModel : AViewModel<INewLeftMenuItemViewModel>
         ReactiveCommand.Create<NavigationInformation>((info) => { });
     public bool IsActive { get; } = false;
     public bool IsSelected { get; } = false;
-    public bool IsToggleVisible { get; } = false;
+    public bool IsToggleVisible { get; set; } = false;
+    
+    public bool IsEnabled { get; set; } = true;
 }

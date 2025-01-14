@@ -21,6 +21,7 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
 
+
     public LeftMenuItemViewModel(
         IWorkspaceController workspaceController,
         WorkspaceId workspaceId,
@@ -96,4 +97,8 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
             }
         );
     }
+    
+    // ToggleSwitch related properties
+    public virtual bool IsToggleVisible { get; } = false;
+    public virtual bool IsEnabled { get; set; } = true;
 }

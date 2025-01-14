@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public interface ILoadoutLeftMenuViewModel : ILeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public ReadOnlyObservableCollection<INewLeftMenuItemViewModel> LeftMenuCollectionItems { get; }
     
     public IApplyControlViewModel ApplyControlViewModel { get; }
     

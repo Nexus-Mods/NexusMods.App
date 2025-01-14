@@ -20,10 +20,9 @@ public interface INewLeftMenuItemViewModel : IViewModelInterface,
     
     public bool IsSelected { get; }
     
-    
     // ToggleSwitch related properties
-    public bool IsToggleVisible => false;
+    public bool IsToggleVisible { get; }
     
-    public bool IsEnabled => true;
+    public bool IsEnabled { get; set; }
     
 }

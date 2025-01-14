@@ -105,6 +105,7 @@ public static class Services
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<LeftMenuItemViewModel, INewLeftMenuItemViewModel>()
+            .AddViewModel<CollectionLeftMenuItemViewModel, INewLeftMenuItemViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()

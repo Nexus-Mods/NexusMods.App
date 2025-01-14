@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -31,12 +32,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public INewLeftMenuItemViewModel LeftMenuItemLoadout { get; }
     public INewLeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
 
-    private readonly SourceList<ILeftMenuItemViewModel> _items = new();
-    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _finalCollection = new([]);
-
-    private readonly SourceList<ILeftMenuItemViewModel> _collectionGroupItems = new();
-
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items => _finalCollection;
+    private ReadOnlyObservableCollection<INewLeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
+    public ReadOnlyObservableCollection<INewLeftMenuItemViewModel> LeftMenuCollectionItems => _leftMenuCollectionItems;
     public WorkspaceId WorkspaceId { get; }
 
     [Reactive] private int NewDownloadModelCount { get; set; }
@@ -47,20 +44,15 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IWorkspaceController workspaceController,
         IServiceProvider serviceProvider)
     {
+        WorkspaceId = workspaceId;
+        
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
-
-        WorkspaceId = workspaceId;
-        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId,
-            serviceProvider,
-            monitor,
-            overlayController,
-            gameRunningTracker
-        );
-
+        var collectionItemComparer = new LeftMenuCollectionItemComparer();
+        
         LeftMenuItemLibrary = new LeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
@@ -95,6 +87,31 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Text = Language.LoadoutView_Title_Installed_Mods,
             Icon = IconValues.Mods,
         };
+        
+        var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
+            .Filter(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
+            .SortBy(item => item.IsReadOnly)
+            .Transform(collection => new CollectionLeftMenuItemViewModel(
+                    workspaceController,
+                    WorkspaceId,
+                    new PageData
+                    {
+                        FactoryId = LoadoutPageFactory.StaticId,
+                        Context = new LoadoutPageContext
+                        {
+                            LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                            GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
+                        },
+                    },
+                    serviceProvider,
+                    collection.CollectionGroupId
+                )
+                {
+                    Text = collection.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    Icon = IconValues.Collections,
+                }
+            )
+            .Transform(INewLeftMenuItemViewModel (item) => item);
 
         LeftMenuItemHealthCheck = new LeftMenuItemViewModel(
             workspaceController,
@@ -113,39 +130,18 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Icon = IconValues.Cardiology,
         };
 
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId,
+            serviceProvider,
+            monitor,
+            overlayController,
+            gameRunningTracker
+        );
+
         this.WhenActivated(disposable =>
             {
-                _collectionGroupItems.Clear();
-                CollectionGroup.ObserveAll(conn)
-                    .Filter(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
-                    .SortBy(itm => itm.IsReadOnly)
-                    .Transform(itm => MakeLoadoutItemGroupViewModel(workspaceController, itm, serviceProvider))
-                    .Subscribe(s =>
-                        {
-                            _collectionGroupItems.Edit(x =>
-                                {
-                                    foreach (var change in s)
-                                    {
-                                        if (change.Reason == ChangeReason.Add)
-                                            x.Add(change.Current);
-                                        if (change.Reason == ChangeReason.Remove)
-                                            x.Remove(change.Current);
-                                        if (change.Reason == ChangeReason.Update)
-                                        {
-                                            x.Remove(change.Previous.Value);
-                                            x.Add(change.Current);
-                                        }
-                                    }
-                                }
-                            );
-                        }
-                    )
-                    .DisposeWith(disposable);
-
-                _items.Connect()
-                    .Merge(_collectionGroupItems.Connect())
-                    .Sort(new LeftMenuComparer())
-                    .Bind(out _finalCollection)
+                collectionItemsObservable
+                    .OnUI()
+                    .SortAndBind(out _leftMenuCollectionItems, collectionItemComparer)
                     .Subscribe()
                     .DisposeWith(disposable);
 
@@ -188,53 +184,25 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 //     .DisposeWith(disposable);
             }
         );
-        }
-
-        private ILeftMenuItemViewModel MakeLoadoutItemGroupViewModel(IWorkspaceController workspaceController, CollectionGroup.ReadOnly itm, IServiceProvider serviceProvider)
-        {
-            var vm = new LeftMenuCollectionItemViewModel
-            {
-                CollectionGroupId = itm.CollectionGroupId,
-                Name = itm.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                Icon = IconValues.Collections,
-                RelativeOrder = 2,
-                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-                    {
-                        var pageData = new PageData
-                        {
-                            FactoryId = LoadoutPageFactory.StaticId,
-                            Context = new LoadoutPageContext
-                            {
-                                LoadoutId = itm.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
-                                GroupScope = itm.AsLoadoutItemGroup().LoadoutItemGroupId,
-                            },
-                        };
-
-                        var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                        workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-                    }
-                ),
-            };
-            return vm;
-        }
     }
+}
 
-    file class LeftMenuComparer : IComparer<ILeftMenuItemViewModel>
+file class LeftMenuCollectionItemComparer : IComparer<INewLeftMenuItemViewModel>
+{
+    public int Compare(INewLeftMenuItemViewModel? x, INewLeftMenuItemViewModel? y)
     {
-        public int Compare(ILeftMenuItemViewModel? x, ILeftMenuItemViewModel? y)
-        {
-            if (x is null && y is null)
-                return 0;
-            if (x is null)
-                return -1;
-            if (y is null)
-                return 1;
+        if (x is null && y is null)
+            return 0;
+        if (x is null)
+            return -1;
+        if (y is null)
+            return 1;
 
-            return (x, y) switch
-            {
-                (LeftMenuCollectionItemViewModel a, LeftMenuCollectionItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-                (IconViewModel a, IconViewModel b) => a.RelativeOrder.CompareTo(b.RelativeOrder),
-                _ => 0,
-            };
-        }
+        return (x, y) switch
+        {
+            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
+            ({ } a, { } b) => string.Compare(a.Text, b.Text, StringComparison.Ordinal),
+            _ => 0,
+        };
     }
+}

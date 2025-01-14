@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public ReadOnlyObservableCollection<INewLeftMenuItemViewModel> LeftMenuCollectionItems { get; }
     public WorkspaceId WorkspaceId { get; } = new();
     public IApplyControlViewModel ApplyControlViewModel { get; } = new ApplyControlDesignViewModel();
     
@@ -31,18 +31,20 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
 
     public LoadoutLeftMenuDesignViewModel()
     {
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>([
+        LeftMenuCollectionItems = new ReadOnlyObservableCollection<INewLeftMenuItemViewModel>([
                 
-                new IconViewModel
+                new LeftMenuItemDesignViewModel()
                 {
-                    Name = "My Collection",
+                    Text = "My Collection",
                     Icon = IconValues.Collections,
+                    IsToggleVisible = true,
                 },
-
-                new IconViewModel
+                
+                new LeftMenuItemDesignViewModel()
                 {
-                    Name = "Stardew Valley Very Expanded",
+                    Text = "Stardew Valley Very Expanded",
                     Icon = IconValues.Collections,
+                    IsToggleVisible = true,
                 },
             ]
         );
