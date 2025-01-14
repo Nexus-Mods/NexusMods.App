@@ -51,6 +51,10 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             .Where(item => item.IsValid())
             .SelectMany(async item =>
             {
+                // Skip mods without thumbnails
+                if (!item.ModPageMetadata.Contains(NexusModsModPageMetadata.ThumbnailUri))
+                    return item;
+                
                 // Note(sewer): Update the thumbnail of the header to be the thumbnail of the first child item.
                 // By definition, all the sub items belong to this page, so the thumbnail of the child item
                 // is the thumbnail of this page.

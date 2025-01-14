@@ -4,13 +4,12 @@ using Xunit;
 
 namespace NexusMods.Jobs.Tests;
 
-public partial class SynchronousTests
+public class SynchronousTests(IJobMonitor jobMonitor)
 {
     [Fact]
     public async Task TestCompletedJob()
     {
-        var monitor = new JobMonitor();
-        var job = monitor.Begin<MyLocalJob, string>(new MyLocalJob());
+        var job = jobMonitor.Begin<MyLocalJob, string>(new MyLocalJob());
 
         (await job).Should().Be("hello world");
     }
