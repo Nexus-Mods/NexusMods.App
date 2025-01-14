@@ -714,6 +714,9 @@
         <Compile Update="LeftMenu\Items\IIconViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemViewModel.cs">
+          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
