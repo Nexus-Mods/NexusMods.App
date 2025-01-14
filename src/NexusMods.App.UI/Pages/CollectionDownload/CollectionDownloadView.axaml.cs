@@ -63,6 +63,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .SubscribeWithErrorLogging(image => CollectionImage.Source = image)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(
+                    view => view.ViewModel!.IsDownloading.Value,
+                    view => view.ViewModel!.IsInstalling.Value,
+                    static (isDownloading, isInstalling) => isDownloading || isInstalling
+                )
+                .Subscribe(isActive => Spinner.IsVisible = isActive);
+
             this.OneWayBind(ViewModel, vm => vm.Name, view => view.Heading.Text)
                 .DisposeWith(d);
 
