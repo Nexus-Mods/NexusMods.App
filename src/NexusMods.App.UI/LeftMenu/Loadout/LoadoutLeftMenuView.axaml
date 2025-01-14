@@ -17,7 +17,7 @@
             
             <StackPanel>
                 <Separator />
-                <TextBlock>INSTALL MODS</TextBlock>
+                <TextBlock>INSTALLED MODS</TextBlock>
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="LoadoutItem" />
