@@ -10,12 +10,12 @@ We've given several of the core app pages a face lift to match our latest brandi
 A small, but important improvement to File Conflicts has been included in this release. In previous versions, when two mods provide files with the same name, the conflict winner would be chosen at random. We didn't feel this made a lot of sense so now the mod most recently added to the loadout will always win the conflict. To adjust the priority of mods you can now remove the more important mods from the loadout and re-add them. This is a temporary solution which we work on building a UI for conflict management. 
 
 ## Bannerlord Software Extender support
-Bannerlord players can now install and manager Bannerlord Software Extender (BLSE) with the app. The game will also be started with BLSE when configured. In addition, we've added some Health Checks diagnostics which show up when:
+Bannerlord players can now install and manage Bannerlord Software Extender (BLSE) with the app. The game will also be started with BLSE when configured. In addition, we've added some Health Checks diagnostics which show up when:
 
 * Bannerlord Software Extender is installed but the `BLSE.LoadingInterceptor` or `BLSE.AssemblyResolver` dependencies are missing.
 * Bannerlord Software Extender is installed but Harmony is missing.
 
-On Linux, the app will now start BLSE with the `/forcenetcore` argument in case the WINE or Proton is not set up in a way that is compatible. 
+On Linux, the app will now start BLSE with the `/forcenetcore` argument to avoid any potential issues related to the users's WINE or Proton setup. 
 
 ## Technical Changes
 * Free users will now see a modal prompting them to upgrade to Premium when clicking the "Download all" buttons for Collections. Downloading mods individually is still possible. 
@@ -23,7 +23,7 @@ On Linux, the app will now start BLSE with the `/forcenetcore` argument in case 
 * Reduced the number of log messages to make troubleshooting issues easier. 
 
 ## Bugfixes
-* Collections that include bundled mods can now be installed correctly.
+* Fixed an issue where collections that include bundled mods would never be installable as it would always show pending downloads.
 * Fixed an issue where users in timezones 6 or more hours ahead of UTC would be unable to download collections.
 
 ## Known Issues
