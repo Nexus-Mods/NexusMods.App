@@ -32,6 +32,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
                 .AddTo(disposables);
 
+            this.OneWayBind(ViewModel, vm => vm.Collections.Count, view => view.ExpanderCollections.IsVisible, static count => count > 0)
+                .AddTo(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.Collections.Count, view => view.TextNumCollections.Text, static i => i.ToString("N0"))
                 .AddTo(disposables);
 
