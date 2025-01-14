@@ -17,7 +17,7 @@
     <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*">
         <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
             <Expander.Header>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}" Classes="ExpanderLibraryHeader">
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}"/>
                     <TextBlock Text="Collections"/>
                     <TextBlock x:Name="TextNumCollections" Text="0" />
@@ -51,7 +51,7 @@
 
         <Expander x:Name="ExpanderMods" Grid.Row="1" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
             <Expander.Header>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}" Classes="ExpanderLibraryHeader">
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}"/>
                     <TextBlock Text="Mods"/>
                     <TextBlock x:Name="TextNumMods" Text="0" />
