@@ -7,7 +7,7 @@ using ReactiveUI;
 namespace NexusMods.App.UI.LeftMenu.Items;
 
 public interface INewLeftMenuItemViewModel : IViewModelInterface, 
-    // TODO: Remove this this after all old left menu items are replaced, used to allow using either in the meantime
+    // TODO: Remove this after all old left menu items are replaced, used to allow using either in the meantime
     ILeftMenuItemViewModel
 {
     public string Text { get; set; }
@@ -19,5 +19,11 @@ public interface INewLeftMenuItemViewModel : IViewModelInterface,
     public bool IsActive { get; }
     
     public bool IsSelected { get; }
+    
+    
+    // ToggleSwitch related properties
+    public bool IsToggleVisible => false;
+    
+    public bool IsEnabled => true;
     
 }

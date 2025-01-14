@@ -14,6 +14,8 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
 {
     [Reactive] public bool IsEnabled { get; private set; }
     
+    [Reactive] public bool IsToggleVisible { get; private set; } = true;
+    
     private CollectionGroupId _collectionGroupId;
     
     public CollectionLeftMenuItemViewModel(

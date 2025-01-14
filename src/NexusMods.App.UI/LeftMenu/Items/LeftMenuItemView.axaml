@@ -8,12 +8,24 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
+    <Design.DataContext>
+        <items:LeftMenuItemDesignViewModel />
+    </Design.DataContext>
+    
     <navigation:LeftMenuNavButton x:Name="NavButton" >
         <DockPanel>
             <icons:UnifiedIcon x:Name="LeftIcon" DockPanel.Dock="Left" />
+            
+            <ToggleSwitch x:Name="ToggleSwitch" DockPanel.Dock="Right"
+                          Classes="ExtraSmall"
+                          OnContent="{x:Null}"
+                          OffContent="{x:Null}"
+                          IsVisible="False"/>
+            
             <TextBlock x:Name="LabelTextBlock"
                        TextWrapping="NoWrap"
                        TextTrimming="CharacterEllipsis" />
+            
         </DockPanel>
     </navigation:LeftMenuNavButton>
 </reactiveUi:ReactiveUserControl>
