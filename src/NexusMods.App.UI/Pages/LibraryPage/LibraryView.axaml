@@ -15,7 +15,7 @@
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
     <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*">
-        <Expander Grid.Row="0" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
+        <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}"/>
@@ -49,7 +49,7 @@
             </ScrollViewer>
         </Expander>
 
-        <Expander Grid.Row="1" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
+        <Expander x:Name="ExpanderMods" Grid.Row="1" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}"/>
