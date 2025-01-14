@@ -34,7 +34,8 @@ public class AVerbTest(IServiceProvider provider)
     {
         var renderer = new LoggingRenderer();
         var configurator = provider.GetRequiredService<CommandLineConfigurator>();
-        var result = await configurator.RunAsync(args, renderer, CancellationToken.None);
+        var withSplitName = args[0].Split(' ').Concat(args[1..]).ToArray();
+        var result = await configurator.RunAsync(withSplitName, renderer, CancellationToken.None);
         if (result != 0)
         {
             var errorLog = renderer.Logs.OfType<Text>().Select(t => t.Template).Aggregate((acc, itm) => acc + itm);

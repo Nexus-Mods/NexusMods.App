@@ -162,7 +162,7 @@ public class CollectionDownloader
         var locallyAddedDatoms = db.Datoms(LocalFile.Md5, download.Md5);
         if (locallyAddedDatoms.Count > 0)
         {
-            foreach (var datom in directDownloadDatoms)
+            foreach (var datom in locallyAddedDatoms)
             {
                 var file = LocalFile.Load(db, datom.E);
                 if (file.IsValid())

@@ -110,8 +110,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var loggingSettings = settingsManager.Get<LoggingSettings>();
-            var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
-            await osInterop.OpenDirectory(logDirectory);
+            var logPath = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem);
+            await osInterop.OpenFileInDirectory(logPath);
 
             Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
         });

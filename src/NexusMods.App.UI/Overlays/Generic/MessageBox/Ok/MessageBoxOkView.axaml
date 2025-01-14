@@ -11,9 +11,9 @@
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
-    <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="640">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24">
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="16">
 
                 <!-- Title -->
                 <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
@@ -30,7 +30,10 @@
                 </DockPanel>
 
                 <!-- Message -->
-                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" />
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" MaxLines="50" />
+                
+                <!-- Supporting Markdown -->
+                <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640" MaxWidth="600"/>
 
             </StackPanel>
 

@@ -94,7 +94,7 @@
             </controls:EmptyState.Subtitle>
 
             <Grid>
-                <TreeDataGrid x:Name="TreeDataGrid"
+                <TreeDataGrid x:Name="LibraryTreeDataGrid"
                               ShowColumnHeaders="True"
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
