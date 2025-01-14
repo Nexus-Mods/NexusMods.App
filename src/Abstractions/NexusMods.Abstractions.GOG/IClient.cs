@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.GOG.DTOs;
+using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GOG;
 
@@ -17,4 +19,20 @@ public interface IClient
     /// Initiate the login process.
     /// </summary>
     public Task Login(CancellationToken token);
+
+
+    /// <summary>
+    /// Get all the builds for a given product and OS.
+    /// </summary>
+    public Task<Build[]> GetBuilds(ProductId productId, OS os, CancellationToken token);
+
+    /// <summary>
+    /// Get the depot information for a build.
+    /// </summary>
+    public Task<DepotInfo> GetDepot(Build build, CancellationToken token);
+
+    /// <summary>
+    /// Given a depot, a build, and a path, return a stream to the file.
+    /// </summary>
+    public Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token);
 }
