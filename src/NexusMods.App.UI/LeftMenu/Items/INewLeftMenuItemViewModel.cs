@@ -25,4 +25,5 @@ public interface INewLeftMenuItemViewModel : IViewModelInterface,
     
     public bool IsEnabled { get; set; }
     
+    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
 }

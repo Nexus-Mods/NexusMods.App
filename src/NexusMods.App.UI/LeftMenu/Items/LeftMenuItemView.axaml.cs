@@ -31,7 +31,10 @@ public partial class LeftMenuItemView : ReactiveUserControl<INewLeftMenuItemView
                 this.OneWayBind(ViewModel, vm => vm.IsToggleVisible, view => view.ToggleSwitch.IsVisible)
                     .DisposeWith(d);
                 
-                this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.ToggleSwitch.IsEnabled)
+                this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.ToggleSwitch.IsChecked)
+                    .DisposeWith(d);
+                
+                this.BindCommand(ViewModel, vm => vm.ToggleIsEnabledCommand, view => view.ToggleSwitch)
                     .DisposeWith(d);
             }
         );

@@ -18,4 +18,5 @@ public class LeftMenuItemDesignViewModel : AViewModel<INewLeftMenuItemViewModel>
     public bool IsToggleVisible { get; set; } = false;
     
     public bool IsEnabled { get; set; } = true;
+    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; } = ReactiveCommand.Create(() => { });
 }

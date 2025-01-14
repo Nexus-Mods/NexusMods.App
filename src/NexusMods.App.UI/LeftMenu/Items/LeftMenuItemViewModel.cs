@@ -101,4 +101,6 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
     // ToggleSwitch related properties
     public virtual bool IsToggleVisible { get; } = false;
     public virtual bool IsEnabled { get; set; } = true;
+    public virtual ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; } = 
+        ReactiveCommand.Create(() => { });
 }
