@@ -6,15 +6,15 @@ using ReactiveUI;
 namespace NexusMods.App.UI.LeftMenu;
 
 [UsedImplicitly]
-public partial class LeftMenuView : ReactiveUserControl<ILeftMenuViewModel>
+public partial class EmptyLeftMenuView : ReactiveUserControl<IEmptyLeftMenuViewModel>
 {
-    public LeftMenuView()
+    public EmptyLeftMenuView()
     {
         InitializeComponent();
 
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Items, view => view.MenuItemsControl.Items)
+            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemEmpty, view => view.EmptyLeftMenuItem.ViewModel)
                 .DisposeWith(d);
         });
     }

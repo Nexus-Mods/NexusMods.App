@@ -113,12 +113,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Icon = IconValues.Cardiology,
         };
 
-        var tools = new ILeftMenuItemViewModel[]
-        {
-        };
-
-        _items.AddRange(tools);
-
         this.WhenActivated(disposable =>
             {
                 _collectionGroupItems.Clear();
