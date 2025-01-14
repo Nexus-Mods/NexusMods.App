@@ -82,7 +82,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
         OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
-        CommandDownloadRequiredItems = IsDownloading.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
+        CommandDownloadRequiredItems = _isDownloadingRequiredItems.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
                 if (loginManager.IsPremium) await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: cancellationToken);
@@ -92,7 +92,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        CommandDownloadOptionalItems = IsDownloading.CombineLatest(_canDownloadOptionalItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
+        CommandDownloadOptionalItems = _isDownloadingOptionalItems.CombineLatest(_canDownloadOptionalItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
                 if (loginManager.IsPremium) await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken);
@@ -179,6 +179,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             }
         );
 
+        IsDownloading = _isDownloadingRequiredItems.CombineLatest(_isDownloadingOptionalItems, static (a, b) => a || b).ToBindableReactiveProperty();
+
         this.WhenActivated(disposables =>
         {
             TreeDataGridAdapter.Activate();
@@ -191,9 +193,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .AddTo(disposables);
 
             jobMonitor
-                .HasActiveJob<DownloadCollectionJob>(job => job.RevisionMetadata.Id == _revision.Id)
+                .HasActiveJob<DownloadCollectionJob>(job => job.RevisionMetadata.Id == _revision.Id && job.ItemType == CollectionDownloader.ItemType.Required)
                 .OnUI()
-                .Subscribe(isDownloading => IsDownloading.Value = isDownloading)
+                .Subscribe(isDownloading => _isDownloadingRequiredItems.OnNext(isDownloading))
+                .AddTo(disposables);
+
+            jobMonitor
+                .HasActiveJob<DownloadCollectionJob>(job => job.RevisionMetadata.Id == _revision.Id && job.ItemType == CollectionDownloader.ItemType.Optional)
+                .OnUI()
+                .Subscribe(isDownloading => _isDownloadingOptionalItems.OnNext(isDownloading))
                 .AddTo(disposables);
 
             var numDownloadedRequiredItemsObservable = Observable
@@ -301,11 +309,13 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
-    public BindableReactiveProperty<bool> IsDownloading { get; }= new(value: false);
+    private readonly BehaviorSubject<bool> _isDownloadingRequiredItems = new(initialValue: false);
+    private readonly BehaviorSubject<bool> _isDownloadingOptionalItems = new(initialValue: false);
+    public BindableReactiveProperty<bool> IsDownloading { get; }
 
     private readonly BehaviorSubject<bool> _canInstallRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canInstallOptionalItems = new(initialValue: false);
-    public BindableReactiveProperty<bool> IsInstalling { get; }= new(value: false);
+    public BindableReactiveProperty<bool> IsInstalling { get; } = new(value: false);
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
