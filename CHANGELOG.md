@@ -1,15 +1,39 @@
 # v0.7.2 - 2024-01-XX
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
-* Games UI
-* Loadouts UI
-* Health Check UI
-* Bannerlord: BLSE Health Checks
-* File conflicts are now resolved using "most recently installed wins". This allows control of conflicts until the full UI is added for this.
-* Login bug for UTC+6 users
-* Bundled mods bug for collections
-* Clean up workspace data when removing loadouts
-* Less messages in the app log regarding analytics
+## UI Improvements 
+We've given several of the core app pages a face lift to match our latest branding changes. This includes the Games, Loadouts, and Health Check pages. You'll start to notice more stylised icons throughout the app. 
+
+![Games page (top left), Loadouts page (top right), Health Check page (bottom left), Diagnostic page (bottom right)](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1736850088-817327564.png)
+
+## File Conflicts
+A small, but important improvement to File Conflicts has been included in this release. In previous versions, when two mods provide files with the same name, the conflict winner would be chosen at random. We didn't feel this made a lot of sense so now the mod most recently added to the loadout will always win the conflict. To adjust the priority of mods you can now remove the more important mods from the loadout and re-add them. This is a temporary solution which we work on building a UI for conflict management. 
+
+## Bannerlord Software Extender support
+Bannerlord players can now install and manager Bannerlord Software Extender (BLSE) with the app. The game will also be started with BLSE when configured. In addition, we've added some Health Checks diagnostics which show up when:
+
+* Bannerlord Software Extender is installed but the `BLSE.LoadingInterceptor` or `BLSE.AssemblyResolver` dependencies are missing.
+* Bannerlord Software Extender is installed but Harmony is missing.
+
+On Linux, the app will now start BLSE with the `/forcenetcore` argument in case the WINE or Proton is not set up in a way that is compatible. 
+
+## Technical Changes
+* Free users will now see a modal prompting them to upgrade to Premium when clicking the "Download all" buttons for Collections. Downloading mods individually is still possible. 
+* When a loadout is removed, the associated Workspace data is now cleaned up.
+* Reduced the number of log messages to make troubleshooting issues easier. 
+
+## Bugfixes
+* Collections that include bundled mods can now be installed correctly.
+* Fixed an issue where users in timezones 6 or more hours ahead of UTC would be unable to download collections.
+
+## Known Issues
+* Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
+* Bundled mods included with collections do not appear in the UI but are still applied to your game. 
+* The success rating for collections is not showing the correct value. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The Collections (WIP) pages is not filtered by game. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
+* The "Load Order" heading toggle does not persist in the Load Order view. 
 
 
 # v0.7.1 - 2024-12-17
