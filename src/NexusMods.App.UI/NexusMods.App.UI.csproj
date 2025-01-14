@@ -718,6 +718,12 @@
           <DependentUpon>EmptyLeftMenuView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemDesignViewModel.cs">
+          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\CollectionLeftMenuItemViewModel.cs">
+          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
