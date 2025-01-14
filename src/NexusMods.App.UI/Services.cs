@@ -218,6 +218,9 @@ public static class Services
             .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
             .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 
+            .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
+            .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
