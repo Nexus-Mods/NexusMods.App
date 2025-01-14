@@ -31,7 +31,7 @@ On Linux, the app will now start BLSE with the `/forcenetcore` argument to avoid
 * Bundled mods included with collections do not appear in the UI but are still applied to your game. 
 * The success rating for collections is not showing the correct value. 
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-* The Collections (WIP) pages is not filtered by game. 
+* The Collections (WIP) page is not filtered by game. 
 * The "Switch View" option does not persist in the Library/Installed Mods view.
 * The "Load Order" heading toggle does not persist in the Load Order view. 
 
