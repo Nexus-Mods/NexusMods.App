@@ -205,7 +205,6 @@ public static class Services
             .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
 
             .AddView<LibraryView, ILibraryViewModel>()
-            .AddView<CollectionsView, ICollectionsViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
             .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
@@ -251,7 +250,6 @@ public static class Services
             .AddSingleton<IPageFactory, ItemContentsFileTreePageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
-            .AddSingleton<IPageFactory, CollectionsPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
 

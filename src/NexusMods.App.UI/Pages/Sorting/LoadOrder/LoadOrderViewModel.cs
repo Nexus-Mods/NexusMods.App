@@ -89,9 +89,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         this.WhenActivated(d =>
             {
-                Adapter.Activate();
-                Disposable.Create(() => Adapter.Deactivate())
-                    .DisposeWith(d);
+                Adapter.Activate().DisposeWith(d);
 
                 sortDirectionObservable.Connect()
                     .DisposeWith(d);

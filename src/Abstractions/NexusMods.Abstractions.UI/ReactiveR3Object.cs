@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.UI;
 public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
 {
     Observable<bool> Activation { get; }
-    void Activate();
+    IDisposable Activate();
     void Deactivate();
 }
 
@@ -23,7 +23,12 @@ public class ReactiveR3Object : IReactiveR3Object
     private readonly BehaviorSubject<bool> _activation = new(initialValue: false);
     public Observable<bool> Activation => _activation;
 
-    public void Activate() => _activation.OnNext(true);
+    public IDisposable Activate()
+    {
+        _activation.OnNext(true);
+        return Disposable.Create(this, static self => self.Deactivate());
+    }
+
     public void Deactivate()
     {
         // NOTE(erri120): no need to deactivate disposed objects, as

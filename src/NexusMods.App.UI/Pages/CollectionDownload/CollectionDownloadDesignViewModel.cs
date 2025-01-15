@@ -39,6 +39,10 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public int CountDownloadedOptionalItems { get; } = 0;
     public int CountDownloadedRequiredItems { get; } = 1;
     public bool CanDownloadAutomatically { get; } = false;
+
+    public BindableReactiveProperty<bool> IsDownloading { get; } = new();
+    public BindableReactiveProperty<bool> IsInstalling { get; } = new();
+
     public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandInstallOptionalItems { get; } = new ReactiveCommand();

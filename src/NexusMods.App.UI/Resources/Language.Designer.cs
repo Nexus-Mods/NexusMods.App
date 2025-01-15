@@ -231,6 +231,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ready to play - All required mods installed.
+        /// </summary>
+        public static string CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_requi" +
+                        "red_mods_installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
         /// </summary>
         public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
