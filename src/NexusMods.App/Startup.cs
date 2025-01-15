@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
+using R3;
 using ReactiveUI;
 using Splat;
 
@@ -108,6 +109,12 @@ public class Startup
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));
+
+        var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+        ObservableSystem.RegisterUnhandledExceptionHandler(exception =>
+        {
+            LogMessages.R3UnhandledException(logger, exception);
+        });
 
         return app;
     }

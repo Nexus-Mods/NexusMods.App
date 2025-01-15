@@ -24,8 +24,19 @@ public static class IJobMonitorExtensions
     {
         return jobMonitor.GetObservableChangeSet<TJobType>()
             .FilterOnObservable(job => job.ObservableStatus.Select(status => status.IsActive()));
-    } 
-    
+    }
+
+    public static IObservable<bool> HasActiveJob<TJobType>(this IJobMonitor jobMonitor, Func<TJobType, bool> predicate)
+        where TJobType : IJobDefinition
+    {
+        return jobMonitor
+            .ObserveActiveJobs<TJobType>()
+            .QueryWhenChanged(query => query.Items.Any(x =>
+            {
+                if (x.Definition is not TJobType concrete) return false;
+                return predicate(concrete);
+            }));
+    }
     
     /// <summary>
     /// Gets an observable of the average progress percent of all given jobs.

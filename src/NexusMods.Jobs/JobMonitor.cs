@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using DynamicData;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 
@@ -16,9 +17,11 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public ReadOnlyObservableCollection<IJob> Jobs => _jobs;
 
     private readonly CompositeDisposable _compositeDisposable = new();
+    private readonly ILogger<JobMonitor> _logger;
 
-    public JobMonitor()
+    public JobMonitor(ILogger<JobMonitor> logger)
     {
+        _logger = logger;
         var disposable = _allJobs
             .Connect()
             .Bind(out _jobs)
@@ -50,7 +53,22 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         using var creator = JobGroupCreator.Push(this);
         var ctx = new JobContext<TJobType, TResultType>(definition, this, creator.Group, task);
         _allJobs.AddOrUpdate(ctx);
-        Task.Run(ctx.Start);
+        Task.Run(async () =>
+            {
+                await ctx.Start();
+                if (ctx.Status == JobStatus.Failed)
+                {
+                    if (ctx.TryGetException(out var ex))
+                    {
+                        _logger.LogError(ex!, "Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
+                    }
+                    else
+                    {
+                        _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
+                    }
+                }
+            }
+        );
         return new JobTask<TJobType, TResultType>(ctx);
     }
 
@@ -60,7 +78,22 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         using var creator = JobGroupCreator.Push(this);
         var ctx = new JobContext<TJobType, TResultType>(job, this, creator.Group, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
-        Task.Run(ctx.Start);
+        Task.Run(async () =>
+            {
+                await ctx.Start();
+                if (ctx.Status == JobStatus.Failed)
+                {
+                    if (ctx.TryGetException(out var ex))
+                    {
+                        _logger.LogError(ex!, "Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
+                    }
+                    else
+                    {
+                        _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
+                    }
+                }
+            }
+        );
         return new JobTask<TJobType, TResultType>(ctx);
     }
 }

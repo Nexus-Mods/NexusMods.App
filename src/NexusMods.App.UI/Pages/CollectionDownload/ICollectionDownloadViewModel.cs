@@ -87,6 +87,9 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     bool CanDownloadAutomatically { get; }
 
+    BindableReactiveProperty<bool> IsInstalling { get; }
+    BindableReactiveProperty<bool> IsDownloading { get; }
+
     ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
     ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
 
