@@ -6,9 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public interface INewLeftMenuItemViewModel : IViewModelInterface, 
-    // TODO: Remove this after all old left menu items are replaced, used to allow using either in the meantime
-    ILeftMenuItemViewModel
+public interface INewLeftMenuItemViewModel : IViewModelInterface 
 {
     public string Text { get; set; }
     

@@ -389,9 +389,6 @@
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuDesignViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Items\IconViewModel.cs">
-          <DependentUpon>IIconViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="LeftMenu\Items\IApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
@@ -694,9 +691,6 @@
         <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnailAndName.cs">
           <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Items\IconDesignViewModel.cs">
-          <DependentUpon>IIconViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlView.axaml.cs">
           <DependentUpon>ApplyControlView.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -704,12 +698,6 @@
         <Compile Update="LeftMenu\Items\ApplyControl\LaunchButtonView.axaml.cs">
           <DependentUpon>LaunchButtonView.axaml</DependentUpon>
           <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="LeftMenu\Items\LeftMenuCollectionItemViewModel.cs">
-          <DependentUpon>IconViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Items\IIconViewModel.cs">
-          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\LeftMenuItemViewModel.cs">
           <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
