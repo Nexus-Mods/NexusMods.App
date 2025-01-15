@@ -44,7 +44,7 @@
                     <Setter Property="LayoutHeight" Value="300" />
                     <Setter Property="SaveAspectRatio" Value="True" />
                 </Style>
-
+                
                 <Style Selector="^ ctxt|CTextBlock">
 
                     <!-- set CTextBlock defaults to paragraph -->
@@ -159,7 +159,7 @@
                     <Setter Property="Padding" Value="4,2" />
                     <Setter Property="Margin" Value="2,0" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                 </Style>
 
                 <!-- links and their states -->
@@ -175,10 +175,11 @@
                 <!-- code block (separate to inline code) -->
                 <Style Selector="^ Border.CodeBlock">
                     <Setter Property="Padding" Value="8,8" />
-                    <Setter Property="Margin" Value="8,16" />
-                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Margin" Value="0,8" />
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentHighBrush}" />
                     <Setter Property="CornerRadius" Value="4" />
-                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
 
                     <Style Selector="^ TextBlock">
                         <Setter Property="FontFamily" Value="{StaticResource FontBodyCode}" />
