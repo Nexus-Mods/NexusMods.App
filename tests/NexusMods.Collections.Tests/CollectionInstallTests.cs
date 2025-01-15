@@ -1,7 +1,5 @@
-using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -50,8 +48,8 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var collectionDownloader = new CollectionDownloader(ServiceProvider);
         await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: Connection.Db);
 
-        var items = collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
-        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items, Optional<NexusCollectionLoadoutGroup.ReadOnly>.None);
+        var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+        var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items);
 
         loadout = loadout.Rebase();
 

@@ -1,7 +1,5 @@
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
@@ -51,8 +49,8 @@ internal static class Verbs
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: token);
 
-        var items = collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
-        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata, items, Optional<NexusCollectionLoadoutGroup.ReadOnly>.None);
+        var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+        var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata, items);
         return 0;
     }
     
