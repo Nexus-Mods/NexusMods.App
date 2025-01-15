@@ -124,10 +124,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     if (msg.Exception != null)
                     {
                         details = $"""
-                                  ### Exception Details
                                   ```
-                                    {msg.Exception}
-                                  ```  
+                                  {msg.Exception}
+                                  ``` 
                                   """;
                     }
 
