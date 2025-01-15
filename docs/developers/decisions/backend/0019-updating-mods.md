@@ -33,22 +33,10 @@ For now, we will:
 - [Use the 'fuzzy' search strategy](#fuzzy-search-strategy) to match files. (Phase 0)
 
 ***Once all other work around updates (UI, etc.)*** is complete, with a working prototype, we will
-improve on this by doing the following:
+improve on this by doing the following (Phase 1):
 
 - [Use the `file_updates` array from V1 API's Querying Mod Files][querying-mod-files]
     - Or an equivalent V2 API, if available.
-
-## Displaying Mod Updates
-
-!!! info "We display all files on a given mod page that are more recent (file upload time) than the user's file."
-
-Although uncommon this may include:
-
-- Files for other mods on same mod page.
-- Older files (if uploaded out of order).
-
-We will for now rely on *users' common sense* to identify whether a file is an 
-update to a previous file or not. Until site decides on future plans.
 
 ## Fuzzy Search Strategy
 
