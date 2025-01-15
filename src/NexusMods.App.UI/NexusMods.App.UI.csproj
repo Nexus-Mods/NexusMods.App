@@ -363,6 +363,27 @@
         <Compile Update="WorkspaceAttachments\AttachmentsFactories\LoadoutAttachmentsFactory.cs">
           <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\IItemModelComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\AValueComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\AFormattedValueComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\DateComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\StringComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\SizeComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
           <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
         </Compile>
@@ -607,9 +628,6 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardDesignViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\Collections\CollectionsDesignViewModel.cs">
-          <DependentUpon>ICollectionsViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\CollectionDownload\CollectionDownloadDesignViewModel.cs">
           <DependentUpon>ICollectionDownloadViewModel.cs</DependentUpon>
         </Compile>
@@ -713,6 +731,9 @@
         </Compile>
         <Compile Update="LeftMenu\Items\IIconViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemViewModel.cs">
+          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

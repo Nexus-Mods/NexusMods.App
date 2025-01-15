@@ -514,6 +514,12 @@ public static class IconValues
         new Rect(0, 0, 24, 24 )
     ));
     
+    // new collections icon 
+    public static readonly IconValue CollectionsOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M11.9911 15.7433L5.44 10.9822L4 12.0291L12 17.8455L20 12.0291L18.5511 10.9739L11.9911 15.7433ZM11.9911 19.8977L5.44 15.1366L4 16.1835L12 21.9999L20 16.1835L18.5511 15.1283L11.9911 19.8977ZM19.9992 7.81605L18.5415 8.87125L11.9996 13.6321L5.44881 8.87125L4 7.81605L11.9996 2L19.9992 7.81605ZM16.2656 7.81405L11.9996 4.71247L7.72972 7.81685L11.9986 10.9193L16.2656 7.81405Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion

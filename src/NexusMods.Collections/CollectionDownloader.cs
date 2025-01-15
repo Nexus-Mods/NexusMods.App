@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -37,6 +38,7 @@ public class CollectionDownloader
     private readonly ILibraryService _libraryService;
     private readonly IOSInterop _osInterop;
     private readonly HttpClient _httpClient;
+    private readonly IJobMonitor _jobMonitor;
 
     /// <summary>
     /// Constructor.
@@ -52,6 +54,7 @@ public class CollectionDownloader
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
     }
 
     private async ValueTask<bool> CanDirectDownload(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
@@ -93,7 +96,10 @@ public class CollectionDownloader
         }
     }
 
-    private async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
+    /// <summary>
+    /// Downloads an external file.
+    /// </summary>
+    public async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
     {
         if (await CanDirectDownload(download, cancellationToken))
         {
@@ -271,7 +277,7 @@ public class CollectionDownloader
     /// <summary>
     /// Returns whether the item matches the given item type.
     /// </summary>
-    private static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
+    internal static bool DownloadMatchesItemType(CollectionDownload.ReadOnly download, ItemType itemType)
     {
         if (download.IsOptional && itemType.HasFlagFast(ItemType.Optional)) return true;
         if (download.IsRequired && itemType.HasFlagFast(ItemType.Required)) return true;
@@ -322,27 +328,16 @@ public class CollectionDownloader
         int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
     {
-        var downloads = revisionMetadata.Downloads.ToArray();
-
-        await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
+        var job = new DownloadCollectionJob
         {
-            CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = maxDegreeOfParallelism == -1 ? Environment.ProcessorCount : maxDegreeOfParallelism,
-        }, body: async (index, token) =>
-        {
-            var download = downloads[index];
-            if (!DownloadMatchesItemType(download, itemType)) return;
+            Downloader = this,
+            RevisionMetadata = revisionMetadata,
+            Db = db,
+            ItemType = itemType,
+            MaxDegreeOfParallelism = maxDegreeOfParallelism,
+        };
 
-            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
-            {
-                if (IsDownloaded(nexusModsDownload, db)) return;
-                await Download(nexusModsDownload, token);
-            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
-            {
-                if (IsDownloaded(externalDownload, db)) return;
-                await Download(externalDownload, onlyDirectDownloads: true, token);
-            }
-        });
+        await _jobMonitor.Begin<DownloadCollectionJob, R3.Unit>(job);
     }
 
     /// <summary>

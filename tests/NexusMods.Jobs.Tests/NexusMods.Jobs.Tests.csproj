@@ -6,7 +6,6 @@
 
     <ItemGroup>
         <PackageReference Remove="Xunit.DependencyInjection" />
-        <PackageReference Remove="Xunit.DependencyInjection.Logging" />
         <PackageReference Remove="Xunit.DependencyInjection.SkippableFact" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="NexusMods.MnemonicDB" />
