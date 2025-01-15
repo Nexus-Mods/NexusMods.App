@@ -9,7 +9,7 @@ In addition to basic mod management features, players also benefit from these de
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-![An example Health Check message prompting the installation of a missing mod.](../images/0.7.0/HealthCheckExampleBannerlord.webp)
+![An example Health Check message prompting the installation of a missing mod.](../images/0.7.2/HealthCheckExampleBannerlord.webp)
 
 Diagnostics are shown in the following situations and uses the SubModule.xml file included with mods to generate these messages: 
 
