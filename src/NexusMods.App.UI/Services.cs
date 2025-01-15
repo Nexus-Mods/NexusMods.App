@@ -138,7 +138,6 @@ public static class Services
             .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
-            .AddView<EmptyLeftMenuView, IEmptyLeftMenuViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
