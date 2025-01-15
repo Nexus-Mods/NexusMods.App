@@ -43,6 +43,8 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "Loadout to apply")] Loadout.ReadOnly loadout,
         [Injected] ISynchronizerService syncService)
     {
+        if (await syncService.IsAnyLoadoutSynchronizing())
+            return await renderer.InputError("Another loadout is already being synchronized.");
         await syncService.Synchronize(loadout);
         return 0;
     }

@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -21,6 +22,7 @@ public class SynchronizerService : ISynchronizerService
     private readonly IGameRegistry _gameRegistry;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
+    private readonly ConcurrentDictionary<LoadoutId, bool> _synchronizingLoadouts = new();
     private readonly object _lock = new();
 
     /// <summary>
@@ -44,20 +46,33 @@ public class SynchronizerService : ISynchronizerService
         var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
         return synchronizer.LoadoutToDiskDiff(loadout, diskState);
     }
-
+    
+    public async Task<bool> IsAnyLoadoutSynchronizing()
+    {
+        return _synchronizingLoadouts.Values.Any(synchronizing => synchronizing);
+    }
+    
     /// <inheritdoc />
     public async Task Synchronize(LoadoutId loadoutId)
     {
-        var loadout = Loadout.Load(_conn.Db, loadoutId);
-        ThrowIfMainBinaryInUse(loadout);
-        
-        var loadoutState = GetOrAddLoadoutState(loadoutId);
-        using var _ = loadoutState.WithLock();
+        _synchronizingLoadouts[loadoutId] = true;
+        try
+        {
+            var loadout = Loadout.Load(_conn.Db, loadoutId);
+            ThrowIfMainBinaryInUse(loadout);
 
-        var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
-        using var _2 = gameState.WithLock();
-        
-        await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+            var loadoutState = GetOrAddLoadoutState(loadoutId);
+            using var _ = loadoutState.WithLock();
+
+            var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
+            using var _2 = gameState.WithLock();
+
+            await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+        }
+        finally
+        {
+            _synchronizingLoadouts[loadoutId] = false;
+        }
     }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
@@ -84,7 +99,7 @@ public class SynchronizerService : ISynchronizerService
             return state;
         }
     }
-
+    
     /// <inheritdoc />
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout)
     {
