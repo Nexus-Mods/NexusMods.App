@@ -10,7 +10,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.Collections;
@@ -44,21 +43,24 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         LoadoutId target,
         NexusModsCollectionLibraryFile.ReadOnly source,
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
-        CollectionDownload.ReadOnly[] items,
-        Optional<NexusCollectionLoadoutGroup.ReadOnly> group)
+        CollectionDownload.ReadOnly[] items)
     {
+        var connection = provider.GetRequiredService<IConnection>();
+        var group = CollectionDownloader.GetCollectionGroup(revisionMetadata, target, connection.Db);
+
         var monitor = provider.GetRequiredService<IJobMonitor>();
+
         var job = new InstallCollectionJob
         {
-            Items = items,
             Group = group,
+            Items = items,
             TargetLoadout = target,
             SourceCollection = source,
             RevisionMetadata = revisionMetadata,
             ServiceProvider = provider,
+            Connection = connection,
             FileStore = provider.GetRequiredService<IFileStore>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
-            Connection = provider.GetRequiredService<IConnection>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
         };
 
@@ -70,11 +72,16 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// </summary>
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)
     {
-        var isReady = CollectionDownloader.IsFullyDownloaded(Items, db: Connection.Db);
+        var g = Group.Convert(static x => x.AsCollectionGroup());
+        var items = Items
+            .Where(item => !CollectionDownloader.GetStatus(item, g, Connection.Db).IsInstalled(out _))
+            .ToArray();
+
+        var isReady = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
         if (!isReady) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
 
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
-        var modsAndDownloads = GatherDownloads(root);
+        var modsAndDownloads = GatherDownloads(items, root);
 
         NexusCollectionLoadoutGroup.ReadOnly collectionGroup;
         if (Group.HasValue)
@@ -149,9 +156,9 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return await monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
     }
 
-    private List<ModAndDownload> GatherDownloads(CollectionRoot root)
+    private static List<ModAndDownload> GatherDownloads(CollectionDownload.ReadOnly[] items, CollectionRoot root)
     {
-        var map = Items.ToDictionary(static download => download.ArrayIndex, static download => download);
+        var map = items.ToDictionary(static download => download.ArrayIndex, static download => download);
         var list = new List<ModAndDownload>();
 
         foreach (var kv in map)

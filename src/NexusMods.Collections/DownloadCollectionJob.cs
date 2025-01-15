@@ -26,7 +26,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
         {
             var download = downloads[index];
             if (!CollectionDownloader.DownloadMatchesItemType(download, ItemType)) return;
-            if (!CollectionDownloader.GetStatus(download, Optional<LoadoutId>.None, Db).IsNotDownloaded()) return;
+            if (!CollectionDownloader.GetStatus(download, Db).IsNotDownloaded()) return;
 
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {

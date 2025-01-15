@@ -1,11 +1,8 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO.Hashing;
 using System.Security.Cryptography;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
@@ -21,7 +18,6 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -53,13 +49,9 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
-        var collectionGroupIds = connection.Db.Datoms(
-            (NexusCollectionLoadoutGroup.Revision, download.CollectionRevision),
-            (LoadoutItem.LoadoutId, targetLoadout)
-        );
-
-        if (collectionGroupIds.Count <= 0) throw new InvalidOperationException("Collection needs to exist");
-        var collectionGroup = CollectionGroup.Load(connection.Db, collectionGroupIds[0]);
+        var optionalCollectionGroup = CollectionDownloader.GetCollectionGroup(download.CollectionRevision, targetLoadout, connection.Db);
+        if (!optionalCollectionGroup.HasValue) throw new InvalidOperationException("Collection must exist!");
+        var collectionGroup = optionalCollectionGroup.Value.AsCollectionGroup();
 
         var sourceCollection = new CollectionDownloader(serviceProvider).GetLibraryFile(download.CollectionRevision);
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
@@ -340,9 +332,9 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         return children;
     }
 
-    private static LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download, IDb db)
+    private LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download, IDb db)
     {
-        var status = CollectionDownloader.GetStatus(download, Optional<LoadoutId>.None, db);
+        var status = CollectionDownloader.GetStatus(download, Group, db);
         if (!status.IsInLibrary(out var libraryItem)) throw new NotImplementedException();
         if (!libraryItem.TryGetAsLibraryFile(out var libraryFile)) throw new NotImplementedException();
         return libraryFile;

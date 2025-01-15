@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -186,7 +185,7 @@ public class CollectionDownloader
     /// </summary>
     public static bool IsFullyDownloaded(CollectionDownload.ReadOnly[] items, IDb db)
     {
-        return items.All(download => !GetStatus(download, Optional<LoadoutId>.None, db).IsNotDownloaded());
+        return items.All(download => !GetStatus(download, db).IsNotDownloaded());
     }
 
     [Flags, PublicAPI]
@@ -230,13 +229,13 @@ public class CollectionDownloader
         return observables.CombineLatest(static list => list.All(static installed => installed));
     }
 
-    private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<LoadoutId> loadout, IDb db)
+    private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
     {
-        if (!loadout.HasValue) return new CollectionDownloadStatus.Bundled();
+        if (!collectionGroup.HasValue) return new CollectionDownloadStatus.Bundled();
 
         var entityIds = db.Datoms(
             (NexusCollectionBundledLoadoutGroup.BundleDownload, download),
-            (LoadoutItem.Loadout, loadout.Value)
+            (LoadoutItem.ParentId, collectionGroup.Value)
         );
 
         foreach (var entityId in entityIds)
@@ -268,7 +267,7 @@ public class CollectionDownloader
             });
     }
 
-    private static CollectionDownloadStatus GetStatus(CollectionDownloadNexusMods.ReadOnly download, Optional<LoadoutId> loadout, IDb db)
+    private static CollectionDownloadStatus GetStatus(CollectionDownloadNexusMods.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
     {
         var datoms = db.Datoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata);
         if (datoms.Count == 0) return new CollectionDownloadStatus.NotDownloaded();
@@ -281,7 +280,7 @@ public class CollectionDownloader
         }
 
         if (!libraryItem.IsValid()) return new CollectionDownloadStatus.NotDownloaded();
-        return GetStatus(download.AsCollectionDownload().CollectionRevision, libraryItem.AsLibraryItem(), loadout, db);
+        return GetStatus(libraryItem.AsLibraryItem(), collectionGroup, db);
     }
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
@@ -303,7 +302,7 @@ public class CollectionDownloader
             });
     }
 
-    private static CollectionDownloadStatus GetStatus(CollectionDownloadExternal.ReadOnly download, Optional<LoadoutId> loadout, IDb db)
+    private static CollectionDownloadStatus GetStatus(CollectionDownloadExternal.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
     {
         var libraryFile = default(LibraryFile.ReadOnly);
 
@@ -331,7 +330,7 @@ public class CollectionDownloader
         }
 
         if (!libraryFile.IsValid()) return new CollectionDownloadStatus.NotDownloaded();
-        return GetStatus(download.AsCollectionDownload().CollectionRevision, libraryFile.AsLibraryItem(), loadout, db);
+        return GetStatus(libraryFile.AsLibraryItem(), collectionGroup, db);
     }
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
@@ -356,16 +355,15 @@ public class CollectionDownloader
     }
 
     private static CollectionDownloadStatus GetStatus(
-        CollectionRevisionMetadata.ReadOnly revision,
         LibraryItem.ReadOnly libraryItem,
-        Optional<LoadoutId> loadoutId,
+        Optional<CollectionGroup.ReadOnly> collectionGroup,
         IDb db)
     {
-        if (!loadoutId.HasValue) return new CollectionDownloadStatus.InLibrary(libraryItem);
+        if (!collectionGroup.HasValue) return new CollectionDownloadStatus.InLibrary(libraryItem);
 
         var entityIds = db.Datoms(
             (LibraryLinkedLoadoutItem.LibraryItem, libraryItem),
-            (LoadoutItem.LoadoutId, loadoutId.Value)
+            (LoadoutItem.ParentId, collectionGroup.Value)
         );
 
         if (entityIds.Count == 0) return new CollectionDownloadStatus.InLibrary(libraryItem);
@@ -374,10 +372,6 @@ public class CollectionDownloader
         {
             var loadoutItem = LoadoutItem.Load(db, entityId);
             if (!loadoutItem.IsValid()) continue;
-            if (!LoadoutItem.Parent.TryGetValue(loadoutItem, out var parentId)) continue;
-
-            var group= NexusCollectionLoadoutGroup.Load(db, parentId);
-            if (!group.IsValid() || group.RevisionId != revision) continue;
             return new CollectionDownloadStatus.Installed(loadoutItem);
         }
 
@@ -443,21 +437,32 @@ public class CollectionDownloader
     /// <summary>
     /// Gets the status of a download.
     /// </summary>
-    public static CollectionDownloadStatus GetStatus(CollectionDownload.ReadOnly download, Optional<LoadoutId> loadout, IDb db)
+    public static CollectionDownloadStatus GetStatus(CollectionDownload.ReadOnly download, IDb db)
+    {
+        return GetStatus(download, new Optional<CollectionGroup.ReadOnly>(), db);
+    }
+
+    /// <summary>
+    /// Gets the status of a download.
+    /// </summary>
+    public static CollectionDownloadStatus GetStatus(
+        CollectionDownload.ReadOnly download,
+        Optional<CollectionGroup.ReadOnly> collectionGroup,
+        IDb db)
     {
         if (download.TryGetAsCollectionDownloadBundled(out var bundled))
         {
-            return GetStatus(bundled, loadout, db);
+            return GetStatus(bundled, collectionGroup, db);
         }
 
         if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
         {
-            return GetStatus(nexusModsDownload, loadout, db);
+            return GetStatus(nexusModsDownload, collectionGroup, db);
         }
 
         if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
         {
-            return GetStatus(externalDownload, loadout, db);
+            return GetStatus(externalDownload, collectionGroup, db);
         }
 
         throw new NotSupportedException();
@@ -511,6 +516,26 @@ public class CollectionDownloader
         if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
         var source = NexusModsCollectionLibraryFile.Load(_connection.Db, datoms[0]);
         return source;
+    }
+
+    public static Optional<NexusCollectionLoadoutGroup.ReadOnly> GetCollectionGroup(
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        LoadoutId loadoutId,
+        IDb db)
+    {
+        var entityIds = db.Datoms(
+            (NexusCollectionLoadoutGroup.Revision, revisionMetadata),
+            (LoadoutItem.Loadout, loadoutId)
+        );
+
+        if (entityIds.Count == 0) return Optional.None<NexusCollectionLoadoutGroup.ReadOnly>();
+        foreach (var entityId in entityIds)
+        {
+            var group = NexusCollectionLoadoutGroup.Load(db, entityId);
+            if (group.IsValid()) return group;
+        }
+
+        return new Optional<NexusCollectionLoadoutGroup.ReadOnly>();
     }
 }
 

@@ -3,9 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -111,8 +109,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 targetLoadout,
                 source: libraryFile,
                 revisionMetadata,
-                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
-                group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required)
             ); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
