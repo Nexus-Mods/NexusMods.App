@@ -1529,7 +1529,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installed Mods.
+        ///   Looks up a localized string similar to All.
         /// </summary>
         public static string LoadoutView_Title_Installed_Mods {
             get {
@@ -1538,7 +1538,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installed Mods.
+        ///   Looks up a localized string similar to All.
         /// </summary>
         public static string LoadoutViewPageTitle {
             get {

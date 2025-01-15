@@ -26,7 +26,7 @@
             <ItemsControl x:Name="MenuItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Spacing="{StaticResource Spacing-1}" />
+                        <StackPanel Spacing="{StaticResource Spacing-2}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
