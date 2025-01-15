@@ -16,4 +16,4 @@ Diagnostics are divided into several types:
 
 To get more information on the specific Health Check diagnostics for the game you are managing, please see the [Games](../games/index.md) section.
 
-![A design mockup showing examples of multiple Health Check diagnostics](../images/0.5.2/HealthCheckExample.png)
+![A design mockup showing examples of multiple Health Check diagnostics](../images/0.7.2/HealthCheckExample.webp)

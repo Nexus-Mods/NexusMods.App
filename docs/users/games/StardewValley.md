@@ -9,7 +9,7 @@ Manage your installation of Stardew Modding API (SMAPI) by simply downloading an
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-![An example Health Check message prompting the installation of a missing mod.](../images/0.5.3/HealthCheckExample.webp)
+![An example Health Check message prompting the installation of a missing mod.](../images/0.7.2/HealthCheckExampleSDV.webp)
 
 Diagnostics are shown in the following situations: 
 

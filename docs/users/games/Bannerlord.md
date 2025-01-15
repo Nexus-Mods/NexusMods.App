@@ -9,10 +9,9 @@ In addition to basic mod management features, players also benefit from these de
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-![An example Health Check message prompting the installation of a missing mod.](../images/0.7.0/HealthCheckExampleBannerlord.webp)
+![An example Health Check message prompting the installation of a missing mod.](../images/0.7.2/HealthCheckExampleBannerlord.webp)
 
 Diagnostics are shown in the following situations and uses the SubModule.xml file included with mods to generate these messages: 
-!!! warning "Bannerlord Software Extender (BLSE) is not supported in 0.7.1. This is planned for a future release."
 
 - A mod is installed and requires another mod which is not installed or enabled.
 - A mod is installed and requires a specific version of another mod which is not installed or enabled.
@@ -20,6 +19,8 @@ Diagnostics are shown in the following situations and uses the SubModule.xml fil
 - The SubModule.xml file in the mod contains errors.
 - The installed mods create a "circular dependency" meaning if you follow the dependencies for each mod you get into an infinite loop. 
 - Load order items need attention. This could be that an entry should be loaded before or after another. 
+- Bannerlord Software Extender is installed but the `BLSE.LoadingInterceptor` or `BLSE.AssemblyResolver` dependencies are missing.
+- Bannerlord Software Extender is installed but Harmony is missing.
 
 
 ### Selective Game Backup
