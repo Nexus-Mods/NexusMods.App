@@ -9,6 +9,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NuGet.Versioning;
 using ObservableCollections;
 using R3;
 
@@ -22,17 +23,22 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     ILibraryItemWithSize,
     ILibraryItemWithDates,
     ILibraryItemWithInstallAction,
+    ILibraryItemWithVersion, // Inherited from child, per design request
     IHasLinkedLoadoutItems,
     IIsParentLibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
     private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
 
-    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IServiceProvider serviceProvider)
+    public NexusModsModPageLibraryItemModel(
+        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<bool> hasChildrenObservable,
+        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IServiceProvider serviceProvider)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
+        HasChildrenObservable = hasChildrenObservable;
+        ChildrenObservable = childrenObservable;
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
         // ReSharper disable once NotDisposedResource
@@ -105,11 +111,33 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                 })
                 .AddTo(disposables);
         });
+        
+        var setVersionDisposable = ChildrenObservable
+            .ToCollection()
+            .Subscribe(items =>
+            {
+                // Note(sewer): Design says put highest version of child here.
+                //
+                // There is no 'standard' for version fields, as some sources
+                // like the Nexus website allow you to specify anything in the version field.
+                // We do a 'best effort' here by trying to parse as SemVer and using
+                // that. There are some possible alternatives, e.g. 'by upload date',
+                // however; that then requires additional logic, to not pick up other
+                // mods on the same mod page, etc. So we go for something simple for now.
+                var maxVersion = items
+                    .OfType<ILibraryItemWithVersion>()
+                    .Max(x => NuGetVersion.TryParse(x.Version.Value, out var version) 
+                        ? version : new NuGetVersion(0, 0, 0));
+
+                if (maxVersion != null)
+                    Version.Value = maxVersion!.ToString(); // SAFETY: Not null because >= 1 item.
+            });
 
         _modelDisposable = Disposable.Combine(
             datesDisposable,
             modelActivationDisposable,
             libraryItemsDisposable,
+            setVersionDisposable,
             Name,
             ItemSize,
             FormattedSize,
@@ -133,6 +161,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+
+    public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
