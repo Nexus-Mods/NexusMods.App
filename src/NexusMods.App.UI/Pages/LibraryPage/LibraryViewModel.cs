@@ -32,6 +32,7 @@ using R3;
 using R3.Avalonia;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -42,6 +43,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public string EmptyLibrarySubtitleText { get; }
 
+    public ReactiveCommand<Unit> UpdateAllCommand { get; }
+    public ReactiveCommand<Unit> RefreshUpdatesCommand { get; }
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
 
     public ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
@@ -119,6 +122,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
         });
+
+        RefreshUpdatesCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException());
+        UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException());
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()

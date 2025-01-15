@@ -64,8 +64,8 @@
                     <StackPanel Orientation="Horizontal">
                         <!-- 'Updates' button. -->
                         <!-- This button's text is updated at runtime to set number of mods -->
-                        <SplitButton Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
-                        <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                        <SplitButton x:Name="UpdateAll" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                        <controls:StandardButton x:Name="Refresh" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
                 
                         <Line />
                         
