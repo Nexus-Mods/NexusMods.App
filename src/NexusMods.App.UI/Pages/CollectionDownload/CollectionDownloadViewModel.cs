@@ -76,11 +76,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         TabTitle = _collection.Name;
         TabIcon = IconValues.CollectionsOutline;
 
-        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
+        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata, targetLoadout);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
-        RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
-        OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
+        RequiredDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
+        OptionalDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
         CommandDownloadRequiredItems = _isDownloadingRequiredItems.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
@@ -219,7 +219,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .Subscribe(isPremium => CanDownloadAutomatically = isPremium)
                 .AddTo(disposables);
 
-            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision).Prepend(false);
+            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision, _targetLoadout).Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -367,6 +367,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 {
     private readonly NexusModsDataProvider _nexusModsDataProvider;
     private readonly CollectionRevisionMetadata.ReadOnly _revisionMetadata;
+    private readonly LoadoutId _targetLoadout;
 
     public Subject<Message> MessageSubject { get; } = new();
     public R3.ReactiveProperty<CollectionDownloadsFilter> Filter { get; } = new(value: CollectionDownloadsFilter.OnlyRequired);
@@ -376,10 +377,12 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     public CollectionDownloadTreeDataGridAdapter(
         NexusModsDataProvider nexusModsDataProvider,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        LoadoutId targetLoadout)
     {
         _nexusModsDataProvider = nexusModsDataProvider;
         _revisionMetadata = revisionMetadata;
+        _targetLoadout = targetLoadout;
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
         {
@@ -437,7 +440,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, Filter.AsSystemObservable());
+        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, Filter.AsSystemObservable(), _targetLoadout);
     }
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
