@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.IO;
@@ -33,6 +34,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     public required IConnection Connection { get; init; }
     public required LoadoutId TargetLoadout { get; init; }
     public required NexusModsLibrary NexusModsLibrary { get; init; }
+    public required ILogger Logger { get; init; }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
@@ -62,6 +64,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             FileStore = provider.GetRequiredService<IFileStore>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
+            Logger = provider.GetRequiredService<ILogger<InstallCollectionJob>>(),
         };
 
         return monitor.Begin<InstallCollectionJob, NexusCollectionLoadoutGroup.ReadOnly>(job);
@@ -72,10 +75,17 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     /// </summary>
     public async ValueTask<NexusCollectionLoadoutGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionJob> context)
     {
+        Logger.LogInformation("Starting installation of `{CollectionName}/{RevisionNumber}`", RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
+
         var g = Group.Convert(static x => x.AsCollectionGroup());
         var items = Items
             .Where(item => !CollectionDownloader.GetStatus(item, g, Connection.Db).IsInstalled(out _))
             .ToArray();
+
+        if (items.Length == 0) return Group.Value;
+
+        var skipCount = Items.Length - items.Length;
+        if (skipCount > 0) Logger.LogInformation("Skipping `{Count}` already installed items for `{CollectionName}/{RevisionNumber}`", skipCount, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
 
         var isReady = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
         if (!isReady) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
@@ -118,8 +128,16 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var installed = new ConcurrentBag<(ModAndDownload, LoadoutItemGroup.ReadOnly)>();
         await Parallel.ForEachAsync(modsAndDownloads, context.CancellationToken, async (modAndDownload, _) =>
         {
-            var result = await InstallMod(modAndDownload, collectionGroup);
-            installed.Add((modAndDownload, result));
+            try
+            {
+                Logger.LogDebug("Installing `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
+                var result = await InstallMod(modAndDownload, collectionGroup);
+                installed.Add((modAndDownload, result));
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Failed to install `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
+            }
         });
 
         using (var tx = Connection.BeginTransaction())
@@ -135,7 +153,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return collectionGroup;
     }
 
-    private async ValueTask<LoadoutItemGroup.ReadOnly> InstallMod(ModAndDownload modAndDownload, NexusCollectionLoadoutGroup.ReadOnly collectionGroup)
+    private IJobTask<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly> InstallMod(ModAndDownload modAndDownload, NexusCollectionLoadoutGroup.ReadOnly collectionGroup)
     {
         var monitor = ServiceProvider.GetRequiredService<IJobMonitor>();
 
@@ -153,7 +171,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             LibraryService = LibraryService,
         };
 
-        return await monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
+        return monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
     }
 
     private static List<ModAndDownload> GatherDownloads(CollectionDownload.ReadOnly[] items, CollectionRoot root)
