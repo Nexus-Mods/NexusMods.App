@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class LeftMenuItemDesignViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
+public class LeftMenuItemDesignViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMenuItemViewModel
 {
     [Reactive] public string Text { get; set; } = "Design Item";
     [Reactive] public IconValue Icon { get; set; } = IconValues.Settings;

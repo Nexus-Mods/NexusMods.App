@@ -4,8 +4,8 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 
 public interface IHomeLeftMenuViewModel : ILeftMenuViewModel
 {
-    public INewLeftMenuItemViewModel LeftMenuItemMyGames { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyGames { get; }
     
-    public INewLeftMenuItemViewModel LeftMenuItemMyLoadouts { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; }
     
 }

@@ -28,12 +28,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 {
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
-    public INewLeftMenuItemViewModel LeftMenuItemLibrary { get; }
-    public INewLeftMenuItemViewModel LeftMenuItemLoadout { get; }
-    public INewLeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
+    public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
+    public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
 
-    private ReadOnlyObservableCollection<INewLeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
-    public ReadOnlyObservableCollection<INewLeftMenuItemViewModel> LeftMenuCollectionItems => _leftMenuCollectionItems;
+    private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
+    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems => _leftMenuCollectionItems;
     public WorkspaceId WorkspaceId { get; }
 
     [Reactive] private int NewDownloadModelCount { get; set; }
@@ -111,7 +111,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     Icon = IconValues.Collections,
                 }
             )
-            .Transform(INewLeftMenuItemViewModel (item) => item);
+            .Transform(ILeftMenuItemViewModel (item) => item);
 
         LeftMenuItemHealthCheck = new LeftMenuItemViewModel(
             workspaceController,
@@ -187,9 +187,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     }
 }
 
-file class LeftMenuCollectionItemComparer : IComparer<INewLeftMenuItemViewModel>
+file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
 {
-    public int Compare(INewLeftMenuItemViewModel? x, INewLeftMenuItemViewModel? y)
+    public int Compare(ILeftMenuItemViewModel? x, ILeftMenuItemViewModel? y)
     {
         if (x is null && y is null)
             return 0;

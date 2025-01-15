@@ -10,7 +10,7 @@ public class EmptyLeftMenuViewModel : AViewModel<IEmptyLeftMenuViewModel>, IEmpt
 {
     public WorkspaceId WorkspaceId { get; }
     
-    public INewLeftMenuItemViewModel LeftMenuItemEmpty { get; }
+    public ILeftMenuItemViewModel LeftMenuItemEmpty { get; }
     
     public EmptyLeftMenuViewModel(WorkspaceId workspaceId, string message)
     {

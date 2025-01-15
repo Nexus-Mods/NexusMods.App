@@ -4,5 +4,5 @@ namespace NexusMods.App.UI.LeftMenu;
 
 public interface IEmptyLeftMenuViewModel : ILeftMenuViewModel
 {
-    public INewLeftMenuItemViewModel LeftMenuItemEmpty { get; }
+    public ILeftMenuItemViewModel LeftMenuItemEmpty { get; }
 }

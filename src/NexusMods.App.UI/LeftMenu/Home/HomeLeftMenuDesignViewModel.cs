@@ -11,12 +11,12 @@ public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, I
 {
     public WorkspaceId WorkspaceId { get; } = WorkspaceId.NewId();
     
-    public INewLeftMenuItemViewModel LeftMenuItemMyGames { get; } = new LeftMenuItemDesignViewModel
+    public ILeftMenuItemViewModel LeftMenuItemMyGames { get; } = new LeftMenuItemDesignViewModel
     {
         Text = Language.MyGames,
         Icon = IconValues.GamepadOutline,
     };
-    public INewLeftMenuItemViewModel LeftMenuItemMyLoadouts { get; } = new LeftMenuItemDesignViewModel
+    public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; } = new LeftMenuItemDesignViewModel
     {
         Text = Language.MyLoadoutsPageTitle,
         Icon = IconValues.Package,

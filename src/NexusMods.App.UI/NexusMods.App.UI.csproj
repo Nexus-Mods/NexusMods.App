@@ -700,17 +700,17 @@
           <SubType>Code</SubType>
         </Compile>
         <Compile Update="LeftMenu\Items\LeftMenuItemViewModel.cs">
-          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Empty\EmptyLeftMenuView.axaml.cs">
           <DependentUpon>EmptyLeftMenuView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
         <Compile Update="LeftMenu\Items\LeftMenuItemDesignViewModel.cs">
-          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\CollectionLeftMenuItemViewModel.cs">
-          <DependentUpon>INewLeftMenuItemViewModel.cs</DependentUpon>
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

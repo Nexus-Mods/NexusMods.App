@@ -16,8 +16,8 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
     public WorkspaceId WorkspaceId { get; }
-    public INewLeftMenuItemViewModel LeftMenuItemMyGames { get; }
-    public INewLeftMenuItemViewModel LeftMenuItemMyLoadouts { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyGames { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; }
 
     public HomeLeftMenuViewModel(
         IMyGamesViewModel myGamesViewModel,
