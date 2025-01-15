@@ -36,14 +36,14 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
                 new LeftMenuItemDesignViewModel()
                 {
                     Text = "My Collection",
-                    Icon = IconValues.Collections,
+                    Icon = IconValues.CollectionsOutline,
                     IsToggleVisible = true,
                 },
                 
                 new LeftMenuItemDesignViewModel()
                 {
                     Text = "Stardew Valley Very Expanded",
-                    Icon = IconValues.Collections,
+                    Icon = IconValues.CollectionsOutline,
                     IsToggleVisible = true,
                 },
             ]

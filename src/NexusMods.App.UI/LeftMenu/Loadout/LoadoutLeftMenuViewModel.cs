@@ -108,7 +108,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 )
                 {
                     Text = collection.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                    Icon = IconValues.Collections,
+                    Icon = IconValues.CollectionsOutline,
                 }
             )
             .Transform(ILeftMenuItemViewModel (item) => item);
