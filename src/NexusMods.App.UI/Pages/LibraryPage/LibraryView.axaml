@@ -63,6 +63,12 @@
                 <Border Grid.Row="0" Classes="Toolbar">
                     <StackPanel Orientation="Horizontal">
 
+                        <!-- 'Updates' button. -->
+                        <!-- This button's text is updated at runtime to set number of mods -->
+                        <SplitButton Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                
+                        <Line />
+                        
                         <controls:StandardButton x:Name="SwitchView"
                                                  Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
                                                  Type="Tertiary"
