@@ -18,5 +18,5 @@ public partial class Text : IRenderable
     /// <summary>
     /// The arguments to be used in the template
     /// </summary>
-    public string[] Arguments { get; init; } = Array.Empty<string>();
+    public string[] Arguments { get; init; } = [];
 }

@@ -6,7 +6,6 @@ using Examples.TreeDataGrid.Basic.ViewModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 

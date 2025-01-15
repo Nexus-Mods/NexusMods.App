@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
-
 namespace NexusMods.ProxyConsole.Abstractions;
 
 /// <summary>

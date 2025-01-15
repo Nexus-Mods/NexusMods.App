@@ -99,7 +99,7 @@ public static class ServiceExtensions
     {
         return collection.AddSingleton<IOptionParser<TVal>, TParser>();
     }
-
+    
     /// <summary>
     /// Registers a custom option parser for a given type.
     /// </summary>
@@ -110,6 +110,25 @@ public static class ServiceExtensions
     public static IServiceCollection AddOptionParser<TVal>(this IServiceCollection services, Func<string, (TVal? Value, string? Error)> parser)
     {
         return services.AddSingleton<IOptionParser<TVal>>(new DelegateParser<TVal>(parser));
+    }
+    
+    /// <summary>
+    /// Registers a custom option parser for a given type, assumes that the parser will throw an exception if the value is invalid.
+    /// </summary>
+    public static IServiceCollection AddOptionParser<TVal>(this IServiceCollection services, Func<string, TVal> parser)
+    {
+        return services.AddSingleton<IOptionParser<TVal>>(new DelegateParser<TVal>(s =>
+            {
+                try
+                {
+                    return (parser(s), null);
+                }
+                catch (Exception e)
+                {
+                    return (default!, e.Message);
+                }
+            }
+        ));
     }
 
     /// <summary>

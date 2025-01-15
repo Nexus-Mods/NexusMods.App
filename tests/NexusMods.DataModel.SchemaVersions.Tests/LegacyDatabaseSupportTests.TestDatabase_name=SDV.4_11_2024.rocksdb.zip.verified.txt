@@ -1,7 +1,7 @@
 ﻿{
   Name: SDV.4_11_2024.rocksdb.zip,
   OldFingerprint: None,
-  NewFingerprint: 0xF310EDA75F1BF2BE,
+  NewFingerprint: 0x1C7EA030C4F3DDB6,
   LoadoutItemGroups: 201,
   Files: 16729,
   Created: 2024-11-04 17:45:27

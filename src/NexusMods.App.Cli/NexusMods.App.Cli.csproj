@@ -8,6 +8,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />

@@ -7,6 +7,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj" />
+        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj" />
     </ItemGroup>
 </Project>

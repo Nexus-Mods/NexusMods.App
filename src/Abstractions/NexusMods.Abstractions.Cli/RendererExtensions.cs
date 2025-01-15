@@ -72,6 +72,25 @@ public static class RendererExtensions
     {
         await renderer.RenderAsync(Renderable.Text(text));
     }
+    
+    /// <summary>
+    /// Starts a progress bar box in the renderer that will be stopped when the returned disposable is disposed
+    /// </summary>
+    public static async Task<IAsyncDisposable> WithProgress(this IRenderer renderer)
+    {
+        await renderer.RenderAsync(new StartProgress());
+
+        return new DisposableProgress(renderer);
+    }
+
+    private class DisposableProgress(IRenderer renderer) : IAsyncDisposable
+    { 
+        public async ValueTask DisposeAsync()
+        {
+            await renderer.RenderAsync(new StopProgress());
+        }
+    }
+
 
     /// <summary>
     /// Renders the text to the renderer with the given arguments and template
@@ -118,5 +137,30 @@ public static class RendererExtensions
     {
         await renderer.Text(template, args);
         await renderer.Text("Error: {0}", ex);
+    }
+
+    /// <summary>
+    /// Creates a new progress task with the given text, the task will be deleted when the returned disposable is disposed
+    /// </summary>
+    public static async ValueTask<ProgressTask> StartProgressTask(this IRenderer renderer, string text, double? maxValue = null)
+    {
+        var taskId = Guid.NewGuid();
+        await renderer.RenderAsync(new CreateProgressTask() { TaskId = taskId, Text = text });
+        return new ProgressTask(renderer, taskId, maxValue);
+    }
+
+    /// <summary>
+    /// Wraps the enumeration in a progress task that will update the progress bar as the items are enumerated
+    /// </summary>
+    public static async IAsyncEnumerable<T> WithProgress<T>(this T[] items, IRenderer renderer, string text)
+    {
+        var increment = 1.0 / items.Length;
+        await using var task = await renderer.StartProgressTask(text);
+        
+        foreach (var item in items)
+        {
+            await task.IncrementProgress(increment);
+            yield return item;
+        }
     }
 }

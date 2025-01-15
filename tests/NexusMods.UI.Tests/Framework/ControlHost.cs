@@ -2,7 +2,6 @@
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 
 namespace NexusMods.UI.Tests.Framework;
 

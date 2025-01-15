@@ -33,11 +33,10 @@ public class CommandLineConfigurator
     /// <param name="verbDefinitions"></param>
     public CommandLineConfigurator(IServiceProvider provider, IEnumerable<VerbDefinition> verbDefinitions, IEnumerable<ModuleDefinition> moduleDefinitions)
     {
+        _provider = provider;
         _logger = provider.GetRequiredService<ILogger<CommandLineConfigurator>>();
-
         _makeOptionMethod = GetType().GetMethod(nameof(MakeOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
         (_rootCommand, _injectedTypes) = MakeRootCommand(verbDefinitions, moduleDefinitions);
-        _provider = provider;
     }
 
     /// <summary>

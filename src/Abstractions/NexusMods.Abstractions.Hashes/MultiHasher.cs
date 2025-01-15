@@ -40,14 +40,26 @@ public class MultiHasher
     /// <summary>
     /// Hashes the stream to all the common hash algorithms.
     /// </summary>
-    public async Task<MultiHash> HashStream(Stream stream, CancellationToken token)
+    public async Task<MultiHash> HashStream(Stream stream, CancellationToken token = default, Func<Size, ValueTask>? onSize = null)
     {
         stream.Position = 0;
 
+        var lastUpdate = Size.Zero;
+        var totalRead = Size.Zero;
+        var updateInterval = Size.FromLong(1024 * 1024 * 10);
+        
         while (true)
         {
             token.ThrowIfCancellationRequested();
             var read = await stream.ReadAsync(_buffer, token);
+            totalRead += Size.FromLong(read);
+
+            if (onSize != null && lastUpdate + updateInterval < totalRead)
+            {
+                await onSize.Invoke(totalRead - lastUpdate);
+                lastUpdate = totalRead;
+            }
+
             if (read == 0)
                 break;
             var span = _buffer.AsSpan(0, read);

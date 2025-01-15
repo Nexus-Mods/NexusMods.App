@@ -2,6 +2,8 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GOG;
+using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -34,6 +36,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private readonly IGameDomainToGameIdMappingCache _cache;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IClient _client;
 
     /// <summary>
     /// constructor
@@ -42,6 +45,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         IServiceProvider serviceProvider,
         ILogger<NxmIpcProtocolHandler> logger, 
         OAuth oauth,
+        IClient client,
         IGameDomainToGameIdMappingCache cache,
         ILoginManager loginManager)
     {
@@ -49,6 +53,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
         _logger = logger;
         _oauth = oauth;
+        _client = client;
         _cache = cache;
         _loginManager = loginManager;
     }
@@ -59,14 +64,17 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var parsed = NXMUrl.Parse(url);
 
         // NOTE(erri120): don't log OAuth callbacks, they contain sensitive information
-        if (parsed is not NXMOAuthUrl) _logger.LogDebug("Received NXM URL: {Url}", parsed.ToString());
-        else _logger.LogDebug("Received NXM OAuth URL");
+        if (parsed is not NXMOAuthUrl && parsed is not NXMGogAuthUrl) _logger.LogDebug("Received NXM URL: {Url}", parsed.ToString());
+        else _logger.LogDebug("Received URL of type {Type}", parsed.GetType());
 
         var userInfo = await _loginManager.GetUserInfoAsync(cancel);
         switch (parsed)
         {
             case NXMOAuthUrl oauthUrl:
                 _oauth.AddUrl(oauthUrl);
+                break;
+            case NXMGogAuthUrl gogUrl:
+                _client.AuthUrl(gogUrl);
                 break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in

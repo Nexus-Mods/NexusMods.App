@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 using ReactiveUI.Fody.Helpers;
 
 namespace Examples.TreeDataGrid.Basic.ViewModel;
