@@ -50,7 +50,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         var collectionDownloader = new CollectionDownloader(ServiceProvider);
         await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: Connection.Db);
 
-        var items = collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+        var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
         var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items, Optional<NexusCollectionLoadoutGroup.ReadOnly>.None);
 
         loadout = loadout.Rebase();

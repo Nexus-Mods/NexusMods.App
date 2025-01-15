@@ -111,7 +111,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 targetLoadout,
                 source: libraryFile,
                 revisionMetadata,
-                items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
                 group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
             ); },
             awaitOperation: AwaitOperation.Drop,
@@ -234,18 +234,18 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                     if (hasDownloadedAllRequiredItems)
                     {
-                        CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
-                    }
-                    else
-                    {
                         if (isCollectionInstalled)
                         {
                             CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
                         }
                         else
                         {
-                            CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
+                            CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                         }
+                    }
+                    else
+                    {
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
                     }
                 }).AddTo(disposables);
 

@@ -223,11 +223,11 @@ public class CollectionDownloader
     /// </summary>
     public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision, LoadoutId loadout)
     {
-        return _connection
-            .ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision)
-            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
-            .FilterImmutable(item => item.LoadoutId == loadout)
-            .IsNotEmpty();
+        var observables = revision.Downloads
+            .Where(download => DownloadMatchesItemType(download, ItemType.Required))
+            .Select(download => GetStatusObservable(download, loadout).Select(static status => status.IsInstalled(out _)));
+
+        return observables.CombineLatest(static list => list.All(static installed => installed));
     }
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<LoadoutId> loadout, IDb db)
@@ -361,13 +361,24 @@ public class CollectionDownloader
         Optional<LoadoutId> loadoutId,
         IDb db)
     {
-        var datoms = db.Datoms(LibraryLinkedLoadoutItem.LibraryItem, libraryItem);
-        if (datoms.Count == 0) return new CollectionDownloadStatus.InLibrary(libraryItem);
+        if (!loadoutId.HasValue) return new CollectionDownloadStatus.InLibrary(libraryItem);
 
-        foreach (var datom in datoms)
+        var entityIds = db.Datoms(
+            (LibraryLinkedLoadoutItem.LibraryItem, libraryItem),
+            (LoadoutItem.LoadoutId, loadoutId.Value)
+        );
+
+        if (entityIds.Count == 0) return new CollectionDownloadStatus.InLibrary(libraryItem);
+
+        foreach (var entityId in entityIds)
         {
-            var loadoutItem = LoadoutItem.Load(db, datom.E);
-            if (loadoutItem.IsValid()) return new CollectionDownloadStatus.Installed(loadoutItem);
+            var loadoutItem = LoadoutItem.Load(db, entityId);
+            if (!loadoutItem.IsValid()) continue;
+            if (!LoadoutItem.Parent.TryGetValue(loadoutItem, out var parentId)) continue;
+
+            var group= NexusCollectionLoadoutGroup.Load(db, parentId);
+            if (!group.IsValid() || group.RevisionId != revision) continue;
+            return new CollectionDownloadStatus.Installed(loadoutItem);
         }
 
         return new CollectionDownloadStatus.InLibrary(libraryItem);
@@ -472,7 +483,7 @@ public class CollectionDownloader
     /// <summary>
     /// Returns all items of the desired type (required/optional).
     /// </summary>
-    public CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
+    public static CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
     {
         var res = new CollectionDownload.ReadOnly[revision.Downloads.Count];
 

@@ -344,7 +344,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     {
         var status = CollectionDownloader.GetStatus(download, Optional<LoadoutId>.None, db);
         if (!status.IsInLibrary(out var libraryItem)) throw new NotImplementedException();
-        if (libraryItem.TryGetAsLibraryFile(out var libraryFile)) throw new NotImplementedException();
+        if (!libraryItem.TryGetAsLibraryFile(out var libraryFile)) throw new NotImplementedException();
         return libraryFile;
     }
 }
