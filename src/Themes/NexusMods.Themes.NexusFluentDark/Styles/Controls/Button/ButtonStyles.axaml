@@ -1,8 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI"
-        xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Classes="Spacing-5">
@@ -20,9 +18,6 @@
                         </icons:UnifiedIcon.Value>
                     </icons:UnifiedIcon>
                 </Button>
-                <loadout:LeftMenuCollectionView>
-                    <items:IconViewModel Icon="{x:Static icons:IconValues.Home}" Name="Some Text" />
-                </loadout:LeftMenuCollectionView>
                 <Button Classes="Invisible" HorizontalAlignment="Center">
                     <TextBlock Text="Invisible" />
                 </Button>

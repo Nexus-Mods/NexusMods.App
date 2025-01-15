@@ -74,7 +74,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         var collectionJsonFile = nexusModsLibrary.GetCollectionJsonFile(libraryFile);
 
         TabTitle = _collection.Name;
-        TabIcon = IconValues.Collections;
+        TabIcon = IconValues.CollectionsOutline;
 
         TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
