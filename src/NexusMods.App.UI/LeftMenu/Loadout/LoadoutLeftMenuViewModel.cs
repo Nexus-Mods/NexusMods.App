@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
@@ -17,6 +18,7 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -52,6 +54,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
         
         LeftMenuItemLibrary = new LeftMenuItemViewModel(
             workspaceController,
@@ -87,9 +90,14 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Text = Language.LoadoutView_Title_Installed_Mods,
             Icon = IconValues.Mods,
         };
-        
+
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
-            .Filter(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
+            .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
+            .FilterOnObservable(group =>
+            {
+                if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection)) return Observable.Return(true);
+                return collectionDownloader.IsCollectionInstalledObservable(nexusCollection.Revision, Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group)));
+            })
             .SortBy(item => item.IsReadOnly)
             .Transform(collection => new CollectionLeftMenuItemViewModel(
                     workspaceController,

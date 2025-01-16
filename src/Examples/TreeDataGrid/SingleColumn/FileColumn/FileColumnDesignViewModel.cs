@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 
 namespace Examples.TreeDataGrid.SingleColumn.FileColumn;
 

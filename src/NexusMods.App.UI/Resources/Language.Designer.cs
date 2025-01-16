@@ -1394,6 +1394,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage downloaded mods and collections.
+        /// </summary>
+        public static string LibraryPageTitleToolTip {
+            get {
+                return ResourceManager.GetString("LibraryPageTitleToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Loadout.
         /// </summary>
         public static string LoadoutCard_DeleteLoadoutToolTip {
@@ -1538,6 +1547,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review your Loadout for any issues and learn how to resolve them if needed.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_Diagnostics_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_Diagnostics_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
@@ -1552,6 +1570,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LoadoutView_Title_Installed_Mods {
             get {
                 return ResourceManager.GetString("LoadoutView_Title_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage all installed mods.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods_ToolTip", resourceCulture);
             }
         }
         
