@@ -96,7 +96,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             .FilterOnObservable(group =>
             {
                 if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection)) return Observable.Return(true);
-                return collectionDownloader.IsCollectionInstalled(nexusCollection.Revision, loadoutContext.LoadoutId);
+                return collectionDownloader.IsCollectionInstalled(nexusCollection.Revision, Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group)));
             })
             .SortBy(item => item.IsReadOnly)
             .Transform(collection => new CollectionLeftMenuItemViewModel(

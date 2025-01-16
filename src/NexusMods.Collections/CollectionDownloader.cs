@@ -154,8 +154,8 @@ public class CollectionDownloader
             .AsEntityIds()
             .Transform(datom => CollectionDownload.Load(_connection.Db, datom.E))
             .FilterImmutable(download => DownloadMatchesItemType(download, itemType))
-            .TransformOnObservable(download => GetStatusObservable(download, Optional<LoadoutId>.None))
-            .FilterImmutable(static status => !status.IsNotDownloaded() && !status.IsBundled())
+            .TransformOnObservable(download => GetStatusObservable(download, Observable.Return(Optional<CollectionGroup.ReadOnly>.None)))
+            .FilterImmutable(static status => status.IsDownloaded() && !status.IsBundled())
             .QueryWhenChanged(query => query.Count)
             .Prepend(0);
     }
@@ -185,7 +185,7 @@ public class CollectionDownloader
     /// </summary>
     public static bool IsFullyDownloaded(CollectionDownload.ReadOnly[] items, IDb db)
     {
-        return items.All(download => !GetStatus(download, db).IsNotDownloaded());
+        return items.All(download => GetStatus(download, db).IsDownloaded());
     }
 
     [Flags, PublicAPI]
@@ -220,11 +220,11 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the collection is installed.
     /// </summary>
-    public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision, LoadoutId loadout)
+    public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision, IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         var observables = revision.Downloads
             .Where(download => DownloadMatchesItemType(download, ItemType.Required))
-            .Select(download => GetStatusObservable(download, loadout).Select(static status => status.IsInstalled(out _)));
+            .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)));
 
         return observables.CombineLatest(static list => list.All(static installed => installed));
     }
@@ -249,22 +249,24 @@ public class CollectionDownloader
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
         CollectionDownloadBundled.ReadOnly download,
-        Optional<LoadoutId> loadout)
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
-        if (!loadout.HasValue) return Observable.Return(new CollectionDownloadStatus(new CollectionDownloadStatus.Bundled()));
-
         return _connection
             .ObserveDatoms(NexusCollectionBundledLoadoutGroup.BundleDownload, download)
+            .TransformImmutable(datom => LoadoutItem.Load(_connection.Db, datom.E))
+            .FilterOnObservable(item =>
+            {
+                return groupObservable
+                    .Select(optional => optional.Convert(static group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId))
+                    .Select(loadoutId => loadoutId.HasValue && item.LoadoutId == loadoutId.Value);
+            })
             .QueryWhenChanged(query => query.Items.FirstOrOptional(static _ => true))
-            .DistinctUntilChanged(OptionalDatomComparer.Instance)
             .Select(optional =>
             {
                 if (!optional.HasValue) return (CollectionDownloadStatus) new CollectionDownloadStatus.Bundled();
-
-                var loadoutItem = LoadoutItem.Load(_connection.Db, optional.Value.E);
-                Debug.Assert(loadoutItem.IsValid());
-                return new CollectionDownloadStatus.Installed(loadoutItem);
-            });
+                return new CollectionDownloadStatus.Installed(optional.Value);
+            })
+            .Prepend(new CollectionDownloadStatus.Bundled());
     }
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadNexusMods.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
@@ -285,7 +287,7 @@ public class CollectionDownloader
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
         CollectionDownloadNexusMods.ReadOnly download,
-        Optional<LoadoutId> loadout)
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         return _connection
             .ObserveDatoms(NexusModsLibraryItem.FileMetadata, download.FileMetadata)
@@ -298,7 +300,7 @@ public class CollectionDownloader
                 var libraryItem = LibraryItem.Load(_connection.Db, optional.Value.E);
                 Debug.Assert(libraryItem.IsValid());
 
-                return GetStatusObservable(download.AsCollectionDownload().CollectionRevision, libraryItem, loadout);
+                return GetStatusObservable(libraryItem, groupObservable);
             });
     }
 
@@ -335,7 +337,7 @@ public class CollectionDownloader
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
         CollectionDownloadExternal.ReadOnly download,
-        Optional<LoadoutId> loadout)
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         var directDownloads = _connection.ObserveDatoms(SliceDescriptor.Create(DirectDownloadLibraryFile.Md5, download.Md5, _connection.AttributeCache));
         var locallyAdded = _connection.ObserveDatoms(SliceDescriptor.Create(LocalFile.Md5, download.Md5, _connection.AttributeCache));
@@ -350,7 +352,7 @@ public class CollectionDownloader
                 var libraryItem = LibraryItem.Load(_connection.Db, optional.Value.E);
                 Debug.Assert(libraryItem.IsValid());
 
-                return GetStatusObservable(download.AsCollectionDownload().CollectionRevision, libraryItem, loadout);
+                return GetStatusObservable(libraryItem, groupObservable);
             });
     }
 
@@ -379,29 +381,24 @@ public class CollectionDownloader
     }
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
-        CollectionRevisionMetadata.ReadOnly revision,
         LibraryItem.ReadOnly libraryItem,
-        Optional<LoadoutId> loadoutId)
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         return _connection
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItem.LibraryItemId)
             .TransformImmutable(datom => LibraryLinkedLoadoutItem.Load(_connection.Db, datom.E))
-            .FilterImmutable(item => !loadoutId.HasValue || item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId.Value)
-            .TransformImmutable(item =>
+            .FilterOnObservable(item =>
             {
-                if (!LoadoutItem.Parent.TryGetValue(item, out var parentId)) return (item, default(NexusCollectionLoadoutGroup.ReadOnly));
-                return (item, NexusCollectionLoadoutGroup.Load(_connection.Db, parentId));
+                return groupObservable
+                    .Select(optional => optional.Convert(static group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId))
+                    .Select(loadoutId => loadoutId.HasValue && item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId.Value);
             })
             .QueryWhenChanged(query =>
             {
-                var optional = query.Items.FirstOrOptional(tuple =>
-                {
-                    var (_, collectionGroup) = tuple;
-                    return collectionGroup.IsValid() && collectionGroup.RevisionId == revision;
-                });
+                var optional = query.Items.FirstOrOptional(static x => true);
 
                 CollectionDownloadStatus status = optional.HasValue
-                    ? new CollectionDownloadStatus.Installed(optional.Value.Item1.AsLoadoutItemGroup().AsLoadoutItem())
+                    ? new CollectionDownloadStatus.Installed(optional.Value.AsLoadoutItemGroup().AsLoadoutItem())
                     : new CollectionDownloadStatus.InLibrary(libraryItem);
 
                 return status;
@@ -414,21 +411,21 @@ public class CollectionDownloader
     /// </summary>
     public IObservable<CollectionDownloadStatus> GetStatusObservable(
         CollectionDownload.ReadOnly download,
-        Optional<LoadoutId> loadout)
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         if (download.TryGetAsCollectionDownloadBundled(out var bundled))
         {
-            return GetStatusObservable(bundled, loadout).DistinctUntilChanged();
+            return GetStatusObservable(bundled, groupObservable).DistinctUntilChanged();
         }
 
         if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
         {
-            return GetStatusObservable(nexusModsDownload, loadout).DistinctUntilChanged();
+            return GetStatusObservable(nexusModsDownload, groupObservable).DistinctUntilChanged();
         }
 
         if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
         {
-            return GetStatusObservable(externalDownload, loadout).DistinctUntilChanged();
+            return GetStatusObservable(externalDownload, groupObservable).DistinctUntilChanged();
         }
 
         throw new NotSupportedException();
@@ -537,12 +534,32 @@ public class CollectionDownloader
 
         return new Optional<NexusCollectionLoadoutGroup.ReadOnly>();
     }
+
+    public IObservable<Optional<CollectionGroup.ReadOnly>> GetGroupObservable(CollectionRevisionMetadata.ReadOnly revision, LoadoutId targetLoadout)
+    {
+        return _connection
+            .ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision)
+            .QueryWhenChanged(query =>
+            {
+                foreach (var datom in query.Items)
+                {
+                    var group = CollectionGroup.Load(_connection.Db, datom.E);
+                    if (!group.IsValid()) continue;
+                    if (group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId != targetLoadout) continue;
+                    return Optional<CollectionGroup.ReadOnly>.Create(group);
+                }
+
+                return Optional<CollectionGroup.ReadOnly>.None;
+            })
+            .Prepend(GetCollectionGroup(revision, targetLoadout, _connection.Db).Convert(static x => x.AsCollectionGroup()));
+    }
 }
 
 /// <summary>
 /// Represents the current status of a download in a collection.
 /// </summary>
 [PublicAPI]
+[DebuggerDisplay("{Value}")]
 public readonly struct CollectionDownloadStatus : IEquatable<CollectionDownloadStatus>
 {
     /// <summary>
@@ -621,6 +638,7 @@ public readonly struct CollectionDownloadStatus : IEquatable<CollectionDownloadS
     }
 
     public bool IsNotDownloaded() => Value.IsT0;
+    public bool IsDownloaded() => !IsNotDownloaded();
     public bool IsBundled() => Value.IsT1;
 
     public bool IsInLibrary(out LibraryItem.ReadOnly libraryItem)
