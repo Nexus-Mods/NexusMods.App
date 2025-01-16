@@ -9,7 +9,8 @@ namespace NexusMods.Abstractions.GOG.DTOs;
 /// Information about a build, which is a collection of files and the chunks that make up those files. This may sound confusing, but the idea
 /// is that "build" and to some extent "depot" are both metadata concepts. The Build is the information about what a collection of files are tagged
 /// as (like Cyberpunk 1.5) and the depot is metadata about the actual files that are stored on the CDN. There is a 1:1 relationship between depots and
-/// builds. However
+/// builds. The files in the depot are then stored in one of many CDNs, these CDN links are known as "SecureLinks". There may be many secure links (mirrors)
+/// for a given depot
 /// </summary>
 [UsedImplicitly]
 public class Build
