@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <StackPanel Spacing="8">
+                <pageHeader:PageHeader />
+                <pageHeader:PageHeader 
+                    Title="A lovely new title" 
+                    Description="What a delightfully medium length description for this control" 
+                    Icon="{x:Static icons:IconValues.PictogramGame3D}" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type pageHeader:PageHeader}" TargetType="pageHeader:PageHeader">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <Border Width="60"
+                            Height="60"
+                            Margin="0,0,8,0"
+                            DockPanel.Dock="Left"
+                            VerticalAlignment="Top">
+                        <icons:UnifiedIcon Size="60" x:Name="Icon" />
+                    </Border>
+
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock x:Name="TitleTextBlock"
+                                   Theme="{StaticResource HeadingSMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="DescriptionTextBlock"
+                                   Theme="{StaticResource BodyMDNormalTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+
+</ResourceDictionary>
