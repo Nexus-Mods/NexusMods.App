@@ -12,7 +12,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INewLeftMenuItemViewModel
+public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMenuItemViewModel
 {
     [Reactive] public string Text { get; set; } = "";
     [Reactive] public IconValue Icon { get; set; } = new();
@@ -20,6 +20,7 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
 
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
+
 
     public LeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -96,4 +97,10 @@ public class LeftMenuItemViewModel : AViewModel<INewLeftMenuItemViewModel>, INew
             }
         );
     }
+    
+    // ToggleSwitch related properties
+    public virtual bool IsToggleVisible { get; } = false;
+    public virtual bool IsEnabled { get; set; } = true;
+    public virtual ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; } = 
+        ReactiveCommand.Create(() => { });
 }

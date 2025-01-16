@@ -18,7 +18,7 @@
         <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down" HorizontalAlignment="Stretch">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}" Classes="ExpanderLibraryHeader">
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}"/>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}"/>
                     <TextBlock Text="Collections"/>
                     <TextBlock x:Name="TextNumCollections" Text="0" />
                 </StackPanel>

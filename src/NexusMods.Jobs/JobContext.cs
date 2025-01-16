@@ -96,6 +96,21 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     {
         return _tcs.Task;
     }
+    
+    /// <summary>
+    /// Try to get the exception that caused the job to fail.
+    /// </summary>
+    public bool TryGetException(out Exception? exception)
+    {
+        if (_tcs.Task.IsFaulted)
+        {
+            exception = _tcs.Task.Exception;
+            return true;
+        }
+
+        exception = null;
+        return false;
+    }
 
     public TJobResult Result => _result.HasValue ? _result.Value : throw new InvalidOperationException();
     

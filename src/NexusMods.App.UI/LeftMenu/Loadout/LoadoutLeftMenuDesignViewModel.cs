@@ -9,21 +9,21 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems { get; }
     public WorkspaceId WorkspaceId { get; } = new();
     public IApplyControlViewModel ApplyControlViewModel { get; } = new ApplyControlDesignViewModel();
     
-    public INewLeftMenuItemViewModel LeftMenuItemLibrary { get; } = new LeftMenuItemDesignViewModel
+    public ILeftMenuItemViewModel LeftMenuItemLibrary { get; } = new LeftMenuItemDesignViewModel
     {
         Text = Language.LibraryPageTitle,
         Icon = IconValues.LibraryOutline,
     };
-    public INewLeftMenuItemViewModel LeftMenuItemLoadout { get; } = new LeftMenuItemDesignViewModel
+    public ILeftMenuItemViewModel LeftMenuItemLoadout { get; } = new LeftMenuItemDesignViewModel
     {
         Text = Language.LoadoutView_Title_Installed_Mods,
         Icon = IconValues.Mods,
     };
-    public INewLeftMenuItemViewModel LeftMenuItemHealthCheck { get; } = new LeftMenuItemDesignViewModel
+    public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; } = new LeftMenuItemDesignViewModel
     {
         Text = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
         Icon = IconValues.Cardiology,
@@ -31,18 +31,20 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
 
     public LoadoutLeftMenuDesignViewModel()
     {
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>([
+        LeftMenuCollectionItems = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>([
                 
-                new IconViewModel
+                new LeftMenuItemDesignViewModel()
                 {
-                    Name = "My Collection",
-                    Icon = IconValues.Collections,
+                    Text = "My Collection",
+                    Icon = IconValues.CollectionsOutline,
+                    IsToggleVisible = true,
                 },
-
-                new IconViewModel
+                
+                new LeftMenuItemDesignViewModel()
                 {
-                    Name = "Stardew Valley Very Expanded",
-                    Icon = IconValues.Collections,
+                    Text = "Stardew Valley Very Expanded",
+                    Icon = IconValues.CollectionsOutline,
+                    IsToggleVisible = true,
                 },
             ]
         );

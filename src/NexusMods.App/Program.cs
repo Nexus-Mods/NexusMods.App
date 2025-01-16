@@ -300,6 +300,7 @@ public class Program
 
         loggingBuilder.AddFilter("Microsoft", LogLevel.Warning);
         loggingBuilder.AddFilter("System", LogLevel.Warning);
+        loggingBuilder.AddFilter("Avalonia.ReactiveUI", LogLevel.Warning);
 
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(settings.MinimumLevel);

@@ -15,8 +15,9 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 [UsedImplicitly]
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
     public WorkspaceId WorkspaceId { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyGames { get; }
+    public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; }
 
     public HomeLeftMenuViewModel(
         IMyGamesViewModel myGamesViewModel,
@@ -24,42 +25,33 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
         IWorkspaceController workspaceController)
     {
         WorkspaceId = workspaceId;
-        var items = new ILeftMenuItemViewModel[]
+
+        LeftMenuItemMyGames = new LeftMenuItemViewModel(
+            workspaceController,
+            WorkspaceId,
+            new PageData
+            {
+                FactoryId = MyGamesPageFactory.StaticId,
+                Context = new MyGamesPageContext(),
+            }
+        )
         {
-            new IconViewModel
-            {
-                Name = Language.MyGames,
-                Icon = IconValues.GamepadOutline,
-                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-                {
-                    var pageData = new PageData
-                    {
-                        FactoryId = MyGamesPageFactory.StaticId,
-                        Context = new MyGamesPageContext(),
-                    };
-
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-                }),
-            },
-            new IconViewModel
-            {
-                Name = Language.MyLoadoutsPageTitle,
-                Icon = IconValues.Package,
-                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-                {
-                    var pageData = new PageData
-                    {
-                        FactoryId = MyLoadoutsPageFactory.StaticId,
-                        Context = new MyLoadoutsPageContext(),
-                    };
-
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-                }),
-            },
+            Text = Language.MyGames,
+            Icon = IconValues.GamepadOutline,
         };
-
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
+        
+        LeftMenuItemMyLoadouts = new LeftMenuItemViewModel(
+            workspaceController,
+            WorkspaceId,
+            new PageData
+            {
+                FactoryId = MyLoadoutsPageFactory.StaticId,
+                Context = new MyLoadoutsPageContext(),
+            }
+        )
+        {
+            Text = Language.MyLoadoutsPageTitle,
+            Icon = IconValues.Package,
+        };
     }
 }
