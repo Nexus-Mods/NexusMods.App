@@ -1406,17 +1406,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("CollectionDownloadViewModel_Num_required_mods_downloaded", resourceCulture);
             }
         }
-
+        
         public static string FileOriginPage_UpdateAll {
             get {
                 return ResourceManager.GetString("FileOriginPage_UpdateAll", resourceCulture);
             }
         }
-
+        
         public static string CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed {
             get {
                 return ResourceManager.GetString("CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_requi" +
                         "red_mods_installed", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemButtonUpdate_Single {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_Single", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemButtonUpdate_Multiple {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_Multiple", resourceCulture);
+            }
+        }
+        
+        public static string LibraryItemButtonUpdate_All {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_All", resourceCulture);
             }
         }
     }

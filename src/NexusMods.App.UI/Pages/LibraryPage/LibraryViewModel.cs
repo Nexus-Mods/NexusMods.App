@@ -483,6 +483,10 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
             Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
         }
 
+        if (model is ILibraryItemWithUpdateAction withUpdateAction)
+        {
+            throw new NotImplementedException("nyot implemented. o no 😺");
+        }
 
         base.BeforeModelActivationHook(model);
     }

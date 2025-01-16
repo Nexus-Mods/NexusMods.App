@@ -21,7 +21,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
-    ILibraryItemWithInstallAction,
+    ILibraryItemWithUpdateAction,
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
@@ -32,6 +32,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
+        UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
 
         var imageDisposable = Disposable.Empty;
         ShowThumbnail.Value = showThumbnail;
@@ -100,6 +101,10 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
     public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
 
+    public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
+    public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
+    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1));
+
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
 
@@ -128,5 +133,6 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public void InformUpdateAvailable(NexusModsFileMetadata.ReadOnly mostRecentFile)
     {
         Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(Version.Value, mostRecentFile.Version);
+        UpdateAvailable.Value = true;
     }
 }

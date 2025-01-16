@@ -16,6 +16,9 @@ public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibrar
     {
         return (this, other) switch
         {
+            (ILibraryItemWithUpdateAction, ILibraryItemWithInstallAction) => -1, // updates before install
+            (ILibraryItemWithUpdateAction, ILibraryItemWithDownloadAction) => -1, // updates before download
+            
             (ILibraryItemWithInstallAction, ILibraryItemWithDownloadAction) => 1, // install after download
             (ILibraryItemWithDownloadAction, ILibraryItemWithInstallAction) => -1, // download before install
 
@@ -23,6 +26,7 @@ public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibrar
             (ILibraryItemWithDownloadAction a, ILibraryItemWithDownloadAction b) => ((int)a.DownloadState.Value).CompareTo((int)b.DownloadState.Value),
 
             (ILibraryItemWithInstallAction a, ILibraryItemWithInstallAction b) => a.IsInstalled.Value.CompareTo(b.IsInstalled.Value),
+
             _ => 0,
         };
     }
@@ -110,3 +114,37 @@ public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
     }
 }
 
+/// <summary>
+/// Extends the 'Install' action with the update capabilities; allowing install and update
+/// on some menus and only 'Install' on others.
+/// </summary>
+public interface ILibraryItemWithUpdateAction : ILibraryItemWithInstallAction
+{
+    ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
+
+    BindableReactiveProperty<bool> UpdateAvailable { get; }
+
+    BindableReactiveProperty<string> UpdateButtonText { get; }
+
+    public static ReactiveCommand<Unit, ILibraryItemModel> CreateCommand<TModel>(TModel model)
+        where TModel : ILibraryItemModel, ILibraryItemWithUpdateAction
+    {
+        var canUpdate = model.UpdateAvailable.Select(static hasUpdate => hasUpdate);
+        return canUpdate.ToReactiveCommand<Unit, ILibraryItemModel>(_ => model, initialCanExecute: false);
+    }
+
+    public static string GetButtonText(int numUpdatable, int numTotal)
+    {
+        // TODO: Translate this (string.format)
+        // 'Update All'
+        if (numUpdatable == numTotal)
+            return Resources.Language.LibraryItemButtonUpdate_All;
+
+        // 'Update'
+        if (numUpdatable == 1)
+            return Resources.Language.LibraryItemButtonUpdate_Single;
+
+        // 'Update ({0} / {1})'
+        return string.Format(Resources.Language.LibraryItemButtonUpdate_Multiple, numUpdatable, numTotal);
+    }
+}
