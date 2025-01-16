@@ -19,7 +19,7 @@
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
+    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top" >
 
         <StackPanel Grid.Column="0"
                     Orientation="Horizontal"
@@ -34,8 +34,15 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
-
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            
+            <controls:StandardButton x:Name="WeWantFeedback"
+                                     Text="We Want Feedback"
+                                     Type="Secondary"
+                                     Fill="Weak"
+                                     HorizontalAlignment="Center"
+                                     LeftIcon="{x:Static icons:IconValues.PictogramGame3D}"
+                                     ShowIcon="Left"/>
             <controls:StandardButton x:Name="GoBackInHistory"
                                      ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
                                      ShowLabel="False"

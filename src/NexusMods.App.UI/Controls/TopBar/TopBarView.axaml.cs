@@ -45,7 +45,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackMenuItem)
                 .DisposeWith(d);
 
-
+            this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.WeWantFeedback)
+                .DisposeWith(d);
+            
             this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                 .DisposeWith(d);
 
