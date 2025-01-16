@@ -1,4 +1,6 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -14,6 +16,11 @@ public partial class LeftMenuItemView : ReactiveUserControl<ILeftMenuItemViewMod
             {
                 
                 this.OneWayBind(ViewModel, vm => vm.Text, view => view.LabelTextBlock.Text)
+                    .DisposeWith(d);
+                
+                this.WhenAnyValue(view => view.ViewModel!)
+                    .Where(vm => vm.IsToggleVisible)
+                    .Subscribe(vm => { ToolTip.SetTip(this, vm.Text); })
                     .DisposeWith(d);
                 
                 this.OneWayBind(ViewModel, vm => vm.Icon, view => view.LeftIcon.Value)
