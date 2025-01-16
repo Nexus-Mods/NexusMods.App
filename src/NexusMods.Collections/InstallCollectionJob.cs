@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.Collections;
@@ -116,6 +117,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                         {
                             Name = root.Info.Name,
                             LoadoutId = TargetLoadout,
+                            IsDisabled = true,
                         },
                     },
                 },
@@ -147,6 +149,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 tx.Add(modGroup.Id, LoadoutItem.Name, tuple.Mod.Name);
             }
 
+            tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
             await tx.Commit();
         }
 
