@@ -15,7 +15,7 @@
     <Grid RowDefinitions="*, Auto" Margin="12,0,12,12">
         <StackPanel Grid.Row="0" Orientation="Vertical">
             <items:LeftMenuItemView x:Name="LibraryItem"
-                                    ToolTip.Tip="Manage downloaded mods and collections" />
+                                    ToolTip.Tip="{x:Static resources:Language.LibraryPageTitleToolTip}" />
             
             <StackPanel>
                 <Separator />
@@ -23,7 +23,7 @@
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="LoadoutItem"
-                                    ToolTip.Tip="View and manage all installed mods" />
+                                    ToolTip.Tip="{x:Static resources:Language.LoadoutView_Title_Installed_Mods_ToolTip}" />
 
             <ItemsControl x:Name="MenuItemsControl">
                 <ItemsControl.ItemsPanel>
@@ -39,7 +39,7 @@
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="HealthCheckItem" 
-                                    ToolTip.Tip="Review your Loadout for any issues and learn how to resolve them if needed." />
+                                    ToolTip.Tip="{x:Static resources:Language.LoadoutLeftMenuViewModel_Diagnostics_ToolTip}" />
         </StackPanel>
 
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="ApplyControlViewHost" />
