@@ -53,7 +53,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         IObservable<CollectionDownloadsFilter> filterObservable,
         LoadoutId loadoutId)
     {
-        var collectionGroupObservable = _collectionDownloader.GetGroupObservable(revisionMetadata, loadoutId).Replay(bufferSize: 1).RefCount();
+        var collectionGroupObservable = _collectionDownloader.GetCollectionGroupObservable(revisionMetadata, loadoutId).Replay(bufferSize: 1).RefCount();
 
         return _connection
             .ObserveDatoms(CollectionDownloadEntity.CollectionRevision, revisionMetadata)

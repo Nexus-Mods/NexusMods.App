@@ -220,7 +220,7 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the collection is installed.
     /// </summary>
-    public IObservable<bool> IsCollectionInstalled(CollectionRevisionMetadata.ReadOnly revision, IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
+    public IObservable<bool> IsCollectionInstalledObservable(CollectionRevisionMetadata.ReadOnly revision, IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         var observables = revision.Downloads
             .Where(download => DownloadMatchesItemType(download, ItemType.Required))
@@ -515,6 +515,9 @@ public class CollectionDownloader
         return source;
     }
 
+    /// <summary>
+    /// Returns the collection group associated with the revision or none.
+    /// </summary>
     public static Optional<NexusCollectionLoadoutGroup.ReadOnly> GetCollectionGroup(
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         LoadoutId loadoutId,
@@ -535,7 +538,10 @@ public class CollectionDownloader
         return new Optional<NexusCollectionLoadoutGroup.ReadOnly>();
     }
 
-    public IObservable<Optional<CollectionGroup.ReadOnly>> GetGroupObservable(CollectionRevisionMetadata.ReadOnly revision, LoadoutId targetLoadout)
+    /// <summary>
+    /// Gets an observable stream containing the collection group associated with the revision.
+    /// </summary>
+    public IObservable<Optional<CollectionGroup.ReadOnly>> GetCollectionGroupObservable(CollectionRevisionMetadata.ReadOnly revision, LoadoutId targetLoadout)
     {
         return _connection
             .ObserveDatoms(NexusCollectionLoadoutGroup.Revision, revision)

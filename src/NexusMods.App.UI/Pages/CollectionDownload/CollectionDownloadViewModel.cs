@@ -216,8 +216,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .Subscribe(isPremium => CanDownloadAutomatically = isPremium)
                 .AddTo(disposables);
 
-            var collectionGroupObservable = collectionDownloader.GetGroupObservable(_revision, _targetLoadout);
-            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision, collectionGroupObservable).Prepend(false);
+            var collectionGroupObservable = collectionDownloader.GetCollectionGroupObservable(_revision, _targetLoadout);
+            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalledObservable(_revision, collectionGroupObservable).Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()

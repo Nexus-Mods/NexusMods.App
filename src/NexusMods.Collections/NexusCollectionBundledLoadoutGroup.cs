@@ -19,5 +19,8 @@ public partial class NexusCollectionBundledLoadoutGroup : IModelDefinition
     /// </summary>
     public static readonly ReferenceAttribute<NexusModsCollectionLibraryFile> CollectionLibraryFile = new(Namespace, nameof(CollectionLibraryFile));
 
+    /// <summary>
+    /// Reference to the original download.
+    /// </summary>
     public static readonly ReferenceAttribute<CollectionDownloadBundled> BundleDownload = new(Namespace, nameof(BundleDownload));
 }
