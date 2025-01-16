@@ -170,7 +170,7 @@ internal class Client : IClient
     /// </summary>
     private bool NeedsRefresh(AuthInfo.ReadOnly authInfo)
     {
-        return authInfo.ExpiresAt < DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1);
+        return authInfo.ExpiresAt < DateTimeOffset.UtcNow + TimeSpan.FromMinutes(1);
     }
 
     /// <summary>
