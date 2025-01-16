@@ -17,6 +17,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 /// <summary>
 ///     When in the library, and using tree view, this shows the top level item that represents the top page.
 /// </summary>
+[Obsolete("Use CompositeItemModel instead")]
 public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,

@@ -14,6 +14,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public class LoadoutItemModel : TreeDataGridItemModel<LoadoutItemModel, EntityId>
 {
     public ReactiveProperty<DateTimeOffset> InstalledAt { get; } = new(DateTime.UnixEpoch);
