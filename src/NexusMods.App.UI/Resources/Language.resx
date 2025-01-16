@@ -232,7 +232,7 @@
         <value>Supported Games</value>
     </data>
     <data name="MyGamesView__Page_Description" xml:space="preserve">
-        <value>Lists all the games that we support</value>
+        <value>Add games to get started</value>
     </data>
     <data name="Button_Manage" xml:space="preserve">
         <value>Manage</value>

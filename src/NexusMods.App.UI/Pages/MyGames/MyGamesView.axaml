@@ -17,11 +17,11 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader">
-    
+
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
-    
+
     <ScrollViewer>
         <StackPanel Margin="24"
                     Orientation="Vertical"
@@ -34,46 +34,31 @@
                     CornerRadius="8">
 
                 <StackPanel Spacing="8">
-                    
-                    <pageHeader:PageHeader 
+                    <pageHeader:PageHeader
                         Title="My Games"
                         Description="{x:Static resources:Language.MyGamesView__Page_Description}"
-                        Icon="{x:Static icons:IconValues.PictogramGame3D}"/> 
-                    
-                    
-                    <Separator
-                        Background="{StaticResource StrokeTranslucentWeakBrush}"
-                        Margin="0,12,0,12" />
-                    
-                    <!-- <Border Padding="0,24,0,0" -->
-                    <!--         BorderThickness="0,1,0,0" -->
-                    <!--         BorderBrush="{DynamicResource StrokeTranslucentWeakBrush}"> -->
-                    <!--      -->
+                        Icon="{x:Static icons:IconValues.PictogramGame3D}" />
 
-                    
                     <controls:EmptyState x:Name="DetectedGamesEmptyState"
                                          Margin="0"
                                          HorizontalAlignment="Left">
-                        
+
                         <controls:EmptyState.Styles>
                             <Style Selector="Border#EmptyStateBorder">
                                 <Setter Property="Margin" Value="0" />
                             </Style>
                         </controls:EmptyState.Styles>
-                        
+
                         <controls:EmptyState.Subtitle>
-                            <TextBlock Text="No games detected"
-                                       Theme="{StaticResource BodyMDNormalTheme}"
+                            <TextBlock Text="No games found"
+                                       Theme="{StaticResource BodyXLNormalTheme}"
                                        Foreground="{StaticResource NeutralSubduedBrush}"
                                        TextAlignment="Left"
-                                       TextWrapping="Wrap"/>
+                                       TextWrapping="Wrap"
+                                       Margin="0,16,0,0"/>
                         </controls:EmptyState.Subtitle>
 
-                        <StackPanel Spacing="24">
-                            <TextBlock Text="Add games to get started"
-                                       Theme="{StaticResource BodyMDNormalTheme}"
-                                       Foreground="{StaticResource NeutralStrongBrush}"
-                                       TextWrapping="Wrap"/>
+                        <StackPanel Spacing="24" Margin="0,16,0,0">
                             <ItemsControl
                                 x:Name="DetectedGamesItemsControl">
                                 <ItemsControl.ItemsPanel>
@@ -94,7 +79,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        
+
                     </controls:EmptyState>
 
                     <!-- </Border> -->

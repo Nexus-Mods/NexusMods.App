@@ -1740,7 +1740,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lists all the games that we support.
+        ///   Looks up a localized string similar to Add games to get started.
         /// </summary>
         public static string MyGamesView__Page_Description {
             get {
