@@ -100,14 +100,18 @@ internal class Client : IClient
         var urlTask = _authUrls.Reader.ReadAsync(token).AsTask();
         
         await _osInterop.OpenUrl(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)), cancellationToken: token);
-
-        if (Task.WaitAny([urlTask], token) != 0)
+        
+        var code = "";
+        try
         {
-            _logger.LogWarning("The OAuth login request was cancelled.");
+            var result = await urlTask;
+            code = result.Code;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex, "Failed to get the OAuth code.");
             return;
         }
-
-        var code = urlTask.Result.Code;
         
         // Request the token
         var tokenQuery = new Dictionary<string, string?>
@@ -255,11 +259,15 @@ internal class Client : IClient
     public async Task LogOut()
     {
         using var tx = _connection.BeginTransaction();
-        foreach (var found in AuthInfo.All(_connection.Db))
+        var infos = AuthInfo.All(_connection.Db).Select(ent => ent.Id).ToArray();
+        foreach (var found in infos)
         {
             tx.Delete(found, false);
         }
         await tx.Commit();
+
+        await _connection.Excise(infos);
+
     }
     
     /// <summary>

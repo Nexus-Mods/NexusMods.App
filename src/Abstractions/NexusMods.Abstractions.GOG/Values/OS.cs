@@ -1,3 +1,4 @@
+// ReSharper disable InconsistentNaming
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace NexusMods.Abstractions.GOG.Values;
 
@@ -7,5 +8,6 @@ namespace NexusMods.Abstractions.GOG.Values;
 public enum OS
 {
     windows,
-    osx
+    osx,
+    linux
 }
