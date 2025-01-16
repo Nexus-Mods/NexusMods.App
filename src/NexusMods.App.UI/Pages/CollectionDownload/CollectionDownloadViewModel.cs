@@ -3,9 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -76,11 +74,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         TabTitle = _collection.Name;
         TabIcon = IconValues.CollectionsOutline;
 
-        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata);
+        TreeDataGridAdapter = new CollectionDownloadTreeDataGridAdapter(nexusModsDataProvider, revisionMetadata, targetLoadout);
         TreeDataGridAdapter.ViewHierarchical.Value = false;
 
-        RequiredDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
-        OptionalDownloadsCount = collectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
+        RequiredDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
+        OptionalDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
 
         CommandDownloadRequiredItems = _isDownloadingRequiredItems.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
@@ -111,8 +109,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 targetLoadout,
                 source: libraryFile,
                 revisionMetadata,
-                items: collectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required),
-                group: Optional<NexusCollectionLoadoutGroup.ReadOnly>.None
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required)
             ); },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -219,7 +216,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .Subscribe(isPremium => CanDownloadAutomatically = isPremium)
                 .AddTo(disposables);
 
-            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalled(_revision).Prepend(false);
+            var collectionGroupObservable = collectionDownloader.GetCollectionGroupObservable(_revision, _targetLoadout);
+            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalledObservable(_revision, collectionGroupObservable).Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -234,18 +232,18 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                     if (hasDownloadedAllRequiredItems)
                     {
-                        CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
-                    }
-                    else
-                    {
                         if (isCollectionInstalled)
                         {
                             CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
                         }
                         else
                         {
-                            CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
+                            CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                         }
+                    }
+                    else
+                    {
+                        CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
                     }
                 }).AddTo(disposables);
 
@@ -367,6 +365,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 {
     private readonly NexusModsDataProvider _nexusModsDataProvider;
     private readonly CollectionRevisionMetadata.ReadOnly _revisionMetadata;
+    private readonly LoadoutId _targetLoadout;
 
     public Subject<Message> MessageSubject { get; } = new();
     public R3.ReactiveProperty<CollectionDownloadsFilter> Filter { get; } = new(value: CollectionDownloadsFilter.OnlyRequired);
@@ -376,10 +375,12 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     public CollectionDownloadTreeDataGridAdapter(
         NexusModsDataProvider nexusModsDataProvider,
-        CollectionRevisionMetadata.ReadOnly revisionMetadata)
+        CollectionRevisionMetadata.ReadOnly revisionMetadata,
+        LoadoutId targetLoadout)
     {
         _nexusModsDataProvider = nexusModsDataProvider;
         _revisionMetadata = revisionMetadata;
+        _targetLoadout = targetLoadout;
 
         _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
         {
@@ -437,7 +438,7 @@ public class CollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<ILibrar
 
     protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, Filter.AsSystemObservable());
+        return _nexusModsDataProvider.ObserveCollectionItems(_revisionMetadata, Filter.AsSystemObservable(), _targetLoadout);
     }
 
     protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
