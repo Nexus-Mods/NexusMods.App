@@ -96,6 +96,9 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all files which have a 'newer' date than the current one.
     /// </summary>
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
     public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, UidForFile uid)
     {
         var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
@@ -105,6 +108,9 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all files which have a 'newer' date than the current one.
     /// </summary>
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
     public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(NexusModsFileMetadata.ReadOnly file) 
         => GetNewerFilesForExistingFile(new ModFileMetadataMixin(file)).Select(x => ((ModFileMetadataMixin)x).Metadata);
 
@@ -112,6 +118,9 @@ public static class RunUpdateCheck
     /// Returns all files which have a 'newer' date than the current one,
     /// using fuzzy name matching to handle variations in file naming.
     /// </summary>
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
     public static IEnumerable<IAmAModFile> GetNewerFilesForExistingFile(IAmAModFile file)
     {
         // Get the normalized name for the current file
@@ -135,6 +144,7 @@ public static class RunUpdateCheck
                 // Must have matching normalized name
                 FuzzySearch.NormalizeFileName(otherFile.Name, otherFile.Version)
                     .Equals(normalizedName, StringComparison.OrdinalIgnoreCase)
-            );
+            )
+            .OrderByDescending(x => x.UploadedAt);
     }
 }

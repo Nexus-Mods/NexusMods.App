@@ -27,8 +27,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
 {
     public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider, bool showThumbnail = true)
     {
-        LibraryItemId = nexusModsLibraryItem.Id;
-
+        LibraryItem = nexusModsLibraryItem;
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
@@ -75,7 +74,8 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         );
     }
 
-    public LibraryItemId LibraryItemId { get; }
+    public LibraryItemId LibraryItemId => LibraryItem.Id;
+    public NexusModsLibraryItem.ReadOnly LibraryItem { get; }
 
     public Observable<DateTimeOffset>? Ticker { get; set; }
 
@@ -120,4 +120,13 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     }
 
     public override string ToString() => $"Nexus Mods File: {Name.Value}";
+    
+    /// <summary>
+    /// Informs the mod page model of an available update to the item.
+    /// </summary>
+    /// <param name="mostRecentFile">The most recent file of any of the page's children.</param>
+    public void InformUpdateAvailable(NexusModsFileMetadata.ReadOnly mostRecentFile)
+    {
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(Version.Value, mostRecentFile.Version);
+    }
 }

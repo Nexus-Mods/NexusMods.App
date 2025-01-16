@@ -6,10 +6,12 @@ using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -25,6 +27,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
@@ -60,7 +63,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly INexusApiClient _nexusApiClient;
     private readonly ILibraryItemInstaller _advancedInstaller;
+    private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly Loadout.ReadOnly _loadout;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
@@ -73,9 +78,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
+        INexusApiClient nexusApiClient,
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        _nexusApiClient = nexusApiClient;
+        _gameIdMappingCache = gameIdMappingCache;
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
@@ -123,8 +131,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
         });
 
-        RefreshUpdatesCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException());
-        UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException());
+        RefreshUpdatesCommand = new ReactiveCommand<Unit>(
+            executeAsync: (_, token) => RefreshUpdates(token),
+            awaitOperation: AwaitOperation.Sequential
+        );
+        UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
@@ -167,7 +178,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
-                var gameDomain = (await gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
+                var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
                 var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
@@ -224,7 +235,103 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .Bind(out _collections)
                 .Subscribe()
                 .AddTo(disposables);
+
+            // Note(sewer)
+            // Begin an asynchronous update check on entering the view.
+            // Since this can take a bit with libraries that have 1000s of items,
+            // we do this in the background and update the items as needed.
+            _ = RefreshUpdates(CancellationToken.None);
         });
+    }
+    
+    // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
+    private async ValueTask RefreshUpdates(CancellationToken token) 
+    {
+        var logger = _serviceProvider.GetRequiredService<ILogger<LibraryViewModel>>();
+        
+        // Identify all mod pages needing a refresh.
+        var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(_connection.Db, _nexusApiClient, _gameIdMappingCache);
+        
+        // Start a transaction with updated info if at least 1 item needs
+        // updating with upstream server.
+        if (updateCheckResult.AnyItemNeedsUpdate())
+        {
+            using var tx = _connection.BeginTransaction();
+            var gqlClient = _serviceProvider.GetRequiredService<NexusGraphQLClient>();
+            await RunUpdateCheck.UpdateModFilesForOutdatedPages(_connection.Db, tx, logger, gqlClient, updateCheckResult, token);
+        }
+        
+        // We've now updated our under the hood understanding of what's on the Nexus,
+        // we now need to extract every file from the Nexus from the rows, and check,
+        // for updates individually.
+        foreach (var itemModel in Adapter.GetRoots())
+        {
+            switch (itemModel)
+            {
+                // The items here can either be `NexusModsModPageLibraryItemModel`
+                // (as 'fake parents') in tree view, or members of 
+                // 'NexusModsFileLibraryItemModel' directly.
+                case NexusModsModPageLibraryItemModel modPageModel:
+                {
+                    var libraryItems = modPageModel.LibraryItems;
+                    if (libraryItems.Length <= 0)
+                        continue;
+            
+                    // Note(sewer) Search for note with text N20250116
+                    var newestDate = DateTimeOffset.MinValue;
+                    NexusModsFileMetadata.ReadOnly newestItem = default;
+                    var filesToUpdate = new List<(NexusModsLibraryItem.ReadOnly, NexusModsFileMetadata.ReadOnly)>();
+                    var isAnyOnModPageNewer = false;
+                    
+                    // Note(sewer): The cast `NexusModsFileLibraryItemModel` is valid because
+                    // `NexusModsModPageLibraryItemModel` is a container of `NexusModsModPageLibraryItemModel`.
+                    foreach (var libraryItemModel in modPageModel.Children.OfType<NexusModsFileLibraryItemModel>())
+                    {
+                        var libraryItem = libraryItemModel.LibraryItem;
+                        var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(libraryItem.FileMetadata);
+                        var mostRecentItem = newerItems.FirstOrDefault();
+                        if (!mostRecentItem.IsValid()) // Catch case of no newer items.
+                            continue;
+
+                        var isNewestOnModPage = mostRecentItem.UploadedAt > newestDate;
+                        if (isNewestOnModPage)
+                        {
+                            filesToUpdate.Add((libraryItem, mostRecentItem));
+                            newestDate = mostRecentItem.UploadedAt;
+                            newestItem = mostRecentItem;
+                            isAnyOnModPageNewer = true;
+                        }
+
+                        libraryItemModel.InformUpdateAvailable(mostRecentItem);
+                    }
+
+                    if (isAnyOnModPageNewer)
+                        modPageModel.InformAvailableUpdate(newestItem, filesToUpdate);
+
+                    break;
+                }
+                case NexusModsFileLibraryItemModel fileModPageModel:
+                {
+                    var libraryItem = fileModPageModel.LibraryItem;
+                    var newerItem = RunUpdateCheck.GetNewerFilesForExistingFile(libraryItem.FileMetadata);
+                    break;
+                }
+                case LocalFileLibraryItemModel 
+                    or LocalFileParentLibraryItemModel 
+                    or NexusModsFileMetadataLibraryItemModel.Downloadable 
+                    or NexusModsFileMetadataLibraryItemModel.Installable:
+                    // Ignore (Unsupported)
+                    break;
+                default:
+                    // Catch any potential future classes.
+                    throw new NotImplementedException("[RefreshUpdates] Unknown Model Class Encountered While Update Checking.\n" +
+                                                      "This code needs updated. Please report this as a bug.\n" +
+                                                      $"TypeName: {itemModel.GetType().Name}");
+            }
+        }
+
+        // Now beam down the update notification to all items
+        // RunUpdateCheck.GetNewerFilesForExistingFile()
     }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -323,6 +430,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
     private readonly LibraryFilter _libraryFilter;
 
     public Subject<InstallMessage> MessageSubject { get; } = new();
+    public ObservableList<ILibraryItemModel> GetRoots() => Roots;
     private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
 
     private readonly IDisposable _activationDisposable;

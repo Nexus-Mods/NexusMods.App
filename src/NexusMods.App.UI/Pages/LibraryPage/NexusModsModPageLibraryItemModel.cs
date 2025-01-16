@@ -28,7 +28,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     IIsParentLibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
-    private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
+    private ObservableHashSet<NexusModsLibraryItem.ReadOnly> _libraryItems = [];
 
     public NexusModsModPageLibraryItemModel(
         IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<bool> hasChildrenObservable,
@@ -50,8 +50,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         var libraryItemsDisposable = libraryItemsObservable.OnUI()
             .Select(changeset =>
                 {
-                    LibraryItems.ApplyChanges(changeset);
-                    return LibraryItems.FirstOrDefault();
+                    _libraryItems.ApplyChanges(changeset);
+                    return _libraryItems.FirstOrDefault();
                 }
             )
             .Where(item => item.IsValid())
@@ -79,14 +79,14 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             // ReSharper disable once NotDisposedResource
             IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
 
-            self.LibraryItems
+            self._libraryItems
                 .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(self, static (count, self) =>
                 {
                     if (count > 0)
                     {
-                        self.DownloadedDate.Value = self.LibraryItems.Max(static item => item.GetCreatedAt());
-                        self.ItemSize.Value = self.LibraryItems.Sum(static item => item.AsLibraryItem().TryGetAsLibraryFile(out var libraryFile) ? libraryFile.Size : Size.Zero);
+                        self.DownloadedDate.Value = self._libraryItems.Max(static item => item.GetCreatedAt());
+                        self.ItemSize.Value = self._libraryItems.Sum(static item => item.AsLibraryItem().TryGetAsLibraryFile(out var libraryFile) ? libraryFile.Size : Size.Zero);
                     }
                     else
                     {
@@ -98,7 +98,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             self.NumInstalledObservable
                 .ToObservable()
                 .CombineLatest(
-                    source2: self.LibraryItems.ObserveCountChanged(notifyCurrentCount: true),
+                    source2: self._libraryItems.ObserveCountChanged(notifyCurrentCount: true),
                     source3: ReactiveUI.WhenAnyMixin.WhenAnyValue(self, static self => self.IsExpanded).ToObservable(),
                     source4: self.IsInstalled,
                     static (numInstalled,numTotal,isExpanded , _) => (numInstalled, numTotal, isExpanded)
@@ -116,6 +116,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             .ToCollection()
             .Subscribe(items =>
             {
+                // N20250116
                 // Note(sewer): Design says put highest version of child here.
                 //
                 // There is no 'standard' for version fields, as some sources
@@ -151,8 +152,9 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         );
     }
 
-    public IReadOnlyList<LibraryItemId> LibraryItemIds => LibraryItems.Select(static x => (LibraryItemId)x.Id).ToArray();
-
+    public IReadOnlyList<LibraryItemId> LibraryItemIds => _libraryItems.Select(static x => (LibraryItemId)x.Id).ToArray();
+    public NexusModsLibraryItem.ReadOnly[] LibraryItems => _libraryItems.ToArray();
+    
     public Observable<DateTimeOffset>? Ticker { get; set; }
 
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
@@ -161,7 +163,6 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
-
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
@@ -190,7 +191,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             }
 
             LinkedLoadoutItems = null!;
-            LibraryItems = null!;
+            _libraryItems = null!;
             _isDisposed = true;
         }
 
@@ -198,4 +199,18 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     }
 
     public override string ToString() => $"Nexus Mods Mod Page: {Name.Value}";
+
+    /// <summary>
+    /// Informs the mod page model of an available update to the item.
+    /// </summary>
+    /// <param name="mostRecentFile">The most recent file of any of the page's children.</param>
+    /// <param name="filesToUpdate">
+    ///     All files that are newer than a currently downloaded item.
+    ///     This allows updating of all items belonging to this mod page.
+    /// </param>
+    public void InformAvailableUpdate(NexusModsFileMetadata.ReadOnly mostRecentFile, List<(NexusModsLibraryItem.ReadOnly oldItem, NexusModsFileMetadata.ReadOnly newItem)> filesToUpdate)
+    {
+        // Note(sewer): filesToUpdate is currently unused, will be used in future code.
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(Version.Value, mostRecentFile.Version);
+    }
 }
