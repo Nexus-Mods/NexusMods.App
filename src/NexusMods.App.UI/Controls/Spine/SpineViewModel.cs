@@ -136,16 +136,16 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                                 workspaceController
                             );
 
-                            _leftMenus.Add(
-                                workspace.Id, leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id, message: $"Missing {workspace.Context.GetType()}")
-                            );
+                            if (leftMenu == null)
+                            {
+                                throw new InvalidDataException("LeftMenu factory returned a null view model");
+                            }
+                            
+                            _leftMenus.Add(workspace.Id, leftMenu);
                         }
                         catch (Exception e)
                         {
                             _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
-                            _leftMenus.Add(
-                                workspace.Id, new EmptyLeftMenuViewModel(workspace.Id, message: $"Error for {workspace.Context.GetType()}")
-                            );
                         }
                     })
                     .OnItemRemoved(workspace => _leftMenus.Remove(workspace.Id, out _))

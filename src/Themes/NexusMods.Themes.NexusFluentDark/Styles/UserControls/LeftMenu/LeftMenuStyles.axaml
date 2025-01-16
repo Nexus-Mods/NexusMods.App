@@ -16,7 +16,7 @@
     <Style Selector="loadout|LoadoutLeftMenuView">
 
         <Style Selector="^ Grid > StackPanel">
-            <Setter Property="Spacing" Value="8" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
 
             <Style Selector="^ StackPanel > Separator">
                 <Setter Property="Margin" Value="0,4,0,8" />

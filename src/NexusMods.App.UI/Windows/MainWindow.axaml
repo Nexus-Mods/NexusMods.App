@@ -25,7 +25,7 @@
         <windows:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="Auto, *, 48">
+    <Grid ColumnDefinitions="72, 232, *" RowDefinitions="Auto, *, 48">
         <Border Background="{StaticResource BrandTranslucentDark800Brush}"
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
