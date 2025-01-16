@@ -78,7 +78,7 @@ public class SpectreRenderer : Abstractions.IRenderer
         switch (renderable)
         {
             case Impl.StartProgress startProgress:
-                await StartProgress(startProgress);
+                StartProgress(startProgress);
                 break;
             case Impl.StopProgress stopProgress:
                 await StopProgress(stopProgress);
@@ -107,20 +107,19 @@ public class SpectreRenderer : Abstractions.IRenderer
         await _progressTask!;
     }
 
-    private async Task StartProgress(Impl.StartProgress _)
+    private void StartProgress(Impl.StartProgress _)
     {
         Debug.Assert(_progressChannel == null);
         _progressChannel = Channel.CreateUnbounded<IRenderable>();
         _progressTask = _console.Progress()
             .HideCompleted(true)
-            .Columns(new ProgressColumn[]
-            {
-                new SpinnerColumn(),
-                new PercentageColumn(),
-                new ProgressBarColumn(),
-                new RemainingTimeColumn(),
-                new TaskDescriptionColumn {Alignment = Justify.Left},
-            })
+            .Columns(
+                new SpinnerColumn(), 
+                new PercentageColumn(), 
+                new ProgressBarColumn(), 
+                new RemainingTimeColumn(), 
+                new TaskDescriptionColumn {Alignment = Justify.Left}
+            )
             .StartAsync(ProgressTask);
     }
 
