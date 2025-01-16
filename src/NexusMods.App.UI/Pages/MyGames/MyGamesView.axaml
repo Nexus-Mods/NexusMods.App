@@ -15,7 +15,8 @@
     xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader">
     
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
@@ -34,16 +35,22 @@
 
                 <StackPanel Spacing="8">
                     
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Border Width="48" Height="48">
-                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
-                        </Border>
-                        <TextBlock Text="My Games"
-                                   Theme="{StaticResource HeadingSMSemiTheme}"
-                                   Foreground="{StaticResource NeutralStrongBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
+                    <pageHeader:PageHeader 
+                        Title="My Games"
+                        Description="{x:Static resources:Language.MyGamesView__Page_Description}"
+                        Icon="{x:Static icons:IconValues.PictogramGame3D}"/> 
+                    
+                    
+                    <Separator
+                        Background="{StaticResource StrokeTranslucentWeakBrush}"
+                        Margin="0,12,0,12" />
+                    
+                    <!-- <Border Padding="0,24,0,0" -->
+                    <!--         BorderThickness="0,1,0,0" -->
+                    <!--         BorderBrush="{DynamicResource StrokeTranslucentWeakBrush}"> -->
+                    <!--      -->
 
+                    
                     <controls:EmptyState x:Name="DetectedGamesEmptyState"
                                          Margin="0"
                                          HorizontalAlignment="Left">
@@ -90,6 +97,7 @@
                         
                     </controls:EmptyState>
 
+                    <!-- </Border> -->
                 </StackPanel>
             </Border>
 

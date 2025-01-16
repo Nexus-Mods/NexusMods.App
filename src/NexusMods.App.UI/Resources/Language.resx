@@ -231,6 +231,9 @@
     <data name="MyGamesView__Detected_games" xml:space="preserve">
         <value>Supported Games</value>
     </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>Lists all the games that we support</value>
+    </data>
     <data name="Button_Manage" xml:space="preserve">
         <value>Manage</value>
     </data>
@@ -595,6 +598,12 @@
         <value>Download {0} mods from Nexus Mods</value>
         <comment>{0} is the name of the currently managed game</comment>
     </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>Health Check</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value>Review your Loadout for any issues and learn how to resolve them if needed</value>
+    </data>
     <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
         <value>Your loadout passed the health check without issues</value>
     </data>
@@ -619,6 +628,8 @@
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
         <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
+    
+    
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
