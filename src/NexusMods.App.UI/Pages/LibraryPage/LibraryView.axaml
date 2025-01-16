@@ -14,54 +14,70 @@
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
-    <ScrollViewer>
-        <StackPanel>
-            <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down"
-                      HorizontalAlignment="Stretch">
-                <Expander.Header>
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                                Classes="ExpanderLibraryHeader">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" />
-                        <TextBlock Text="Collections" />
-                        <TextBlock x:Name="TextNumCollections" Text="0" />
-                    </StackPanel>
-                </Expander.Header>
 
-                <ScrollViewer>
-                    <ItemsControl x:Name="Collections">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <panels:FlexPanel
-                                    AlignContent="FlexStart"
-                                    RowSpacing="{StaticResource Spacing-3}"
-                                    ColumnSpacing="{StaticResource Spacing-3}"
-                                    Wrap="Wrap"
-                                    Margin="24" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
-                                <reactive:ViewModelViewHost
-                                    ViewModel="{CompiledBinding .}"
-                                    Width="508"
-                                    Height="288"
-                                    ClipToBounds="False" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Expander>
+    <Grid RowDefinitions="Auto, *" VerticalAlignment="Top">
+        <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down"
+                  HorizontalAlignment="Stretch">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
+                            Classes="ExpanderLibraryHeader">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" />
+                    <TextBlock Text="Collections" />
+                    <TextBlock x:Name="TextNumCollections" Text="0" />
+                </StackPanel>
+            </Expander.Header>
 
-            <Expander x:Name="ExpanderMods" Grid.Row="1" IsExpanded="True" ExpandDirection="Down"
-                      HorizontalAlignment="Stretch">
-                <Expander.Header>
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                                Classes="ExpanderLibraryHeader">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                        <TextBlock Text="Mods" />
-                        <TextBlock x:Name="TextNumMods" Text="0" />
+            <ScrollViewer
+                MaxHeight="350">
+                <ItemsControl x:Name="Collections">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <panels:FlexPanel
+                                AlignContent="FlexStart"
+                                RowSpacing="{StaticResource Spacing-3}"
+                                ColumnSpacing="{StaticResource Spacing-3}"
+                                Wrap="Wrap"
+                                Margin="24" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
+                            <reactive:ViewModelViewHost
+                                ViewModel="{CompiledBinding .}"
+                                Width="508"
+                                Height="288"
+                                ClipToBounds="False" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Expander>
+
+
+        <Expander x:Name="ExpanderMods" Grid.Row="1" IsExpanded="True" ExpandDirection="Down"
+                  HorizontalAlignment="Stretch">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
+                            Classes="ExpanderLibraryHeader">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
+                    <TextBlock Text="Mods" />
+                    <TextBlock x:Name="TextNumMods" Text="0" />
+                </StackPanel>
+            </Expander.Header>
+            <!-- Empty State -->
+
+            <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
+                                 Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+                <controls:EmptyState.Subtitle>
+                    <StackPanel Orientation="Vertical" Spacing="16">
+                        <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
+                        <controls:StandardButton x:Name="EmptyLibraryLinkButton"
+                                                 Text="Open Nexus Mods"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                 HorizontalAlignment="Center" />
                     </StackPanel>
-                </Expander.Header>
+                </controls:EmptyState.Subtitle>
 
                 <Grid RowDefinitions="Auto, *">
 
@@ -130,30 +146,14 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Empty State -->
-                    <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
-                                         Header="{x:Static resources:Language.EmptyLibraryTitleText}">
-                        <controls:EmptyState.Subtitle>
-                            <StackPanel Orientation="Vertical" Spacing="16">
-                                <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
-                                <controls:StandardButton x:Name="EmptyLibraryLinkButton"
-                                                         Text="Open Nexus Mods"
-                                                         ShowIcon="Left"
-                                                         LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                         HorizontalAlignment="Center" />
-                            </StackPanel>
-                        </controls:EmptyState.Subtitle>
-
-                        <TreeDataGrid x:Name="TreeDataGrid"
-                                      ShowColumnHeaders="True"
-                                      CanUserResizeColumns="True"
-                                      CanUserSortColumns="True"
-                                      HorizontalAlignment="Stretch" />
-
-                    </controls:EmptyState>
+                    <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
+                                  ShowColumnHeaders="True"
+                                  CanUserResizeColumns="True"
+                                  CanUserSortColumns="True"
+                                  HorizontalAlignment="Stretch" />
                 </Grid>
-            </Expander>
-        </StackPanel>
-    </ScrollViewer>
+            </controls:EmptyState>
+        </Expander>
+    </Grid>
 
 </reactive:ReactiveUserControl>
