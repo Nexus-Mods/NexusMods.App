@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Jitbit.FastCache" />
+      <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+      <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <PackageReference Include="SmartFormat" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
+      <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
+      <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

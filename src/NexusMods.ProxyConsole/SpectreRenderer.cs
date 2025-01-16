@@ -1,4 +1,7 @@
-﻿using Spectre.Console;
+﻿using System.Diagnostics;
+using System.Threading.Channels;
+using NexusMods.ProxyConsole.Abstractions;
+using Spectre.Console;
 using Impl = NexusMods.ProxyConsole.Abstractions.Implementations;
 using Render = Spectre.Console.Rendering;
 
@@ -10,6 +13,8 @@ namespace NexusMods.ProxyConsole;
 public class SpectreRenderer : Abstractions.IRenderer
 {
     private readonly IAnsiConsole _console;
+    private Channel<IRenderable>? _progressChannel;
+    private Task? _progressTask = null;
 
     /// <summary>
     /// Wraps the given <see cref="IAnsiConsole"/> instance as a <see cref="Abstractions.IRenderer"/>.
@@ -70,8 +75,78 @@ public class SpectreRenderer : Abstractions.IRenderer
     /// <inheritdoc />
     public async ValueTask RenderAsync(Abstractions.IRenderable renderable)
     {
-        var spectre = await ToSpectreAsync(renderable);
-        _console.Write(spectre);
+        switch (renderable)
+        {
+            case Impl.StartProgress startProgress:
+                StartProgress(startProgress);
+                break;
+            case Impl.StopProgress stopProgress:
+                await StopProgress(stopProgress);
+                break;
+            case Impl.CreateProgressTask createProgressTask:
+                _progressChannel!.Writer.TryWrite(createProgressTask);
+                break;
+            case Impl.DeleteProgressTask deleteProgressTask:
+                _progressChannel!.Writer.TryWrite(deleteProgressTask);
+                break;
+            case Impl.UpdateTask updateTask:
+                _progressChannel!.Writer.TryWrite(updateTask);
+                break;
+            default:
+                var spectre = await ToSpectreAsync(renderable);
+                _console.Write(spectre);
+                break;
+        }
+        
+    }
+
+    private async Task StopProgress(Impl.StopProgress _)
+    {
+        Debug.Assert(_progressChannel != null);
+        _progressChannel.Writer.TryComplete();
+        await _progressTask!;
+    }
+
+    private void StartProgress(Impl.StartProgress _)
+    {
+        Debug.Assert(_progressChannel == null);
+        _progressChannel = Channel.CreateUnbounded<IRenderable>();
+        _progressTask = _console.Progress()
+            .HideCompleted(true)
+            .Columns(
+                new SpinnerColumn(), 
+                new PercentageColumn(), 
+                new ProgressBarColumn(), 
+                new RemainingTimeColumn(), 
+                new TaskDescriptionColumn {Alignment = Justify.Left}
+            )
+            .StartAsync(ProgressTask);
+    }
+
+    private async Task ProgressTask(ProgressContext context)
+    {
+        var tasks = new Dictionary<Guid, ProgressTask>();
+        await foreach (var renderable in _progressChannel!.Reader.ReadAllAsync())
+        {
+            switch (renderable)
+            {
+                case Impl.CreateProgressTask createProgressTask:
+                    var task = context.AddTask(createProgressTask.Text, maxValue: 1.0);
+                    tasks.Add(createProgressTask.TaskId, task);
+                    break;
+                case Impl.UpdateTask updateTask:
+                    if (!tasks.TryGetValue(updateTask.TaskId, out task))
+                        break;
+                    task.Increment(updateTask.IncrementProgressBy);
+                    break;
+                case Impl.DeleteProgressTask deleteProgressTask:
+                    if (!tasks.TryGetValue(deleteProgressTask.TaskId, out task))
+                        break;
+                    task.StopTask();
+                    tasks.Remove(deleteProgressTask.TaskId);
+                    break;
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -80,4 +155,5 @@ public class SpectreRenderer : Abstractions.IRenderer
         _console.Clear();
         return ValueTask.CompletedTask;
     }
+
 }
