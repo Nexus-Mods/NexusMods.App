@@ -135,13 +135,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                                 workspace.Id,
                                 workspaceController
                             );
-                            
-                            if (leftMenu != null)
+
+                            if (leftMenu == null)
                             {
-                                _leftMenus.Add(workspace.Id, leftMenu);
+                                throw new InvalidDataException("LeftMenu factory returned a null view model");
                             }
                             
-                            throw new InvalidDataException("LeftMenu factory returned a null view model");
+                            _leftMenus.Add(workspace.Id, leftMenu);
                         }
                         catch (Exception e)
                         {
