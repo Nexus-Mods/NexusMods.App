@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -11,6 +12,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
@@ -48,9 +50,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
-
+        
         this.WhenActivated(d =>
         {
+            ConnectErrors(serviceProvider)
+                .DisposeWith(d);
+            
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = WorkspaceController;
             alphaWarningViewModel.Controller = overlayController;
@@ -103,7 +108,33 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
         });
     }
-    
+
+    private IDisposable ConnectErrors(IServiceProvider provider)
+    {
+        var source = provider.GetService<IObservableExceptionSource>();
+        if (source is null)
+            return Disposable.Empty;
+
+        return source.Exceptions
+            .Subscribe(msg =>
+                {
+                    var title = "Unhandled Exception";
+                    var description = msg.Message;
+                    string? details = null;
+                    if (msg.Exception != null)
+                    {
+                        details = $"""
+                                  ```
+                                  {msg.Exception}
+                                  ``` 
+                                  """;
+                    }
+
+                    Task.Run(() => MessageBoxOkViewModel.Show(provider, title, description, details));
+                }
+            );
+    }
+
     internal void OnClose()
     {
         // NOTE(erri120): This gets called by the View and can't be inside the disposable

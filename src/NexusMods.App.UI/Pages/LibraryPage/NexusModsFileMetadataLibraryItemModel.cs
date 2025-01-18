@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -12,17 +13,22 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 public static class NexusModsFileMetadataLibraryItemModel
 {
     public class Downloadable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-        ILibraryItemWithName,
+        ILibraryItemWithThumbnailAndName,
         ILibraryItemWithVersion,
         ILibraryItemWithSize,
         ILibraryItemWithDownloadAction
     {
-        public Downloadable(CollectionDownloadNexusMods.ReadOnly download)
+        public Downloadable(CollectionDownloadNexusMods.ReadOnly download, IServiceProvider serviceProvider)
         {
             DownloadableItem = new DownloadableItem(download);
             FormattedSize = ItemSize.ToFormattedProperty();
             DownloadItemCommand = ILibraryItemWithDownloadAction.CreateCommand(this);
 
+            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+            var thumbnailDisposable = ImagePipelines.CreateObservable(download.FileMetadata.ModPageId, modPageThumbnailPipeline)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+            
             // ReSharper disable once NotDisposedResource
             var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
             {
@@ -47,7 +53,8 @@ public static class NexusModsFileMetadataLibraryItemModel
                 FormattedSize,
                 DownloadItemCommand,
                 DownloadState,
-                DownloadButtonText
+                DownloadButtonText,
+                thumbnailDisposable
             );
         }
 
@@ -56,6 +63,8 @@ public static class NexusModsFileMetadataLibraryItemModel
 
         public BindableReactiveProperty<string> Name { get; } = new(value: "-");
         public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+        public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
+        public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
 
         public ReactiveProperty<Size> ItemSize { get; } = new();
         public BindableReactiveProperty<string> FormattedSize { get; }
@@ -90,17 +99,22 @@ public static class NexusModsFileMetadataLibraryItemModel
     }
 
     public class Installable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
-        ILibraryItemWithName,
+        ILibraryItemWithThumbnailAndName,
         ILibraryItemWithVersion,
         ILibraryItemWithSize,
         ILibraryItemWithInstallAction
     {
-        public Installable(CollectionDownloadNexusMods.ReadOnly download)
+        public Installable(CollectionDownloadNexusMods.ReadOnly download, IServiceProvider serviceProvider)
         {
             Download = download;
             FormattedSize = ItemSize.ToFormattedProperty();
             InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
 
+            var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+            var thumbnailDisposable = ImagePipelines.CreateObservable(download.FileMetadata.ModPageId, modPageThumbnailPipeline)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (bitmap, self) => self.Thumbnail.Value = bitmap);
+            
             // ReSharper disable once NotDisposedResource
             var modelActivationDisposable = this.WhenActivated(static (self, disposables) =>
             {
@@ -120,7 +134,8 @@ public static class NexusModsFileMetadataLibraryItemModel
                 ItemSize,
                 FormattedSize,
                 IsInstalled,
-                InstallButtonText
+                InstallButtonText,
+                thumbnailDisposable
             );
         }
 
@@ -129,6 +144,8 @@ public static class NexusModsFileMetadataLibraryItemModel
         public CollectionDownloadNexusMods.ReadOnly Download { get; }
         public BindableReactiveProperty<string> Name { get; } = new(value: "-");
         public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+        public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
+        public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
 
         public ReactiveProperty<Size> ItemSize { get; } = new();
         public BindableReactiveProperty<string> FormattedSize { get; }

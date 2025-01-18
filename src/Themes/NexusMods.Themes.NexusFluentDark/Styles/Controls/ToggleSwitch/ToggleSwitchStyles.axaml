@@ -1,100 +1,128 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="10" Classes="Low">
+        <Border Padding="16" Classes="Low" Width="600">
 
-            <StackPanel Classes="Spacing-1" Margin="6">
-                <TextBlock Classes="HeadingXSSemi">ToggleSwitch</TextBlock>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+            <StackPanel Spacing="8">
+                <TextBlock Theme="{StaticResource HeadingXSSemiTheme}">ToggleSwitch</TextBlock>
+                <Grid
+                    ColumnDefinitions="1*,1*,1*">
 
                     <!-- Default -->
 
-                    <StackPanel Classes="Spacing-1" Margin="6">
-                        <TextBlock Classes="TitleMDSemi">Default</TextBlock>
+                    <StackPanel Spacing="12">
+                        
+                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Default</TextBlock>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
+                        <ToggleSwitch />
 
-                            <TextBlock Classes="BodyMDBold">Default</TextBlock>
-                            <ToggleSwitch />
-                        </StackPanel>
-
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="False" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="True" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Indeterminate</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="False" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Checked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="True" />
                         </StackPanel>
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Indeterminate</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="{x:Null}" />
                         </StackPanel>
                     </StackPanel>
 
                     <!-- Compact -->
 
-                    <StackPanel Grid.Column="1" Classes="Spacing-1" Margin="6">
+                    <StackPanel Grid.Column="1" Spacing="12">
 
-                        <TextBlock Classes="TitleMDSemi">Compact</TextBlock>
+                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Compact</TextBlock>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Default</TextBlock>
-                            <ToggleSwitch Classes="Compact" />
-                        </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
+                        <ToggleSwitch Classes="Compact" />
+
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="False" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="True" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Enabled, Indeterminate</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="False" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Checked</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="True" />
                         </StackPanel>
 
-                        <StackPanel Classes="Spacing-none" Margin="6">
-                            <TextBlock Classes="BodyMDBold">Disabled, Indeterminate</TextBlock>
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="{x:Null}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Compact -->
+
+                    <StackPanel Grid.Column="2" Spacing="12">
+
+                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Extra Small</TextBlock>
+
+                        <ToggleSwitch Classes="ExtraSmall" />
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="False" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="True" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="{x:Null}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="False" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="True" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
+                            <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="{x:Null}" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -108,7 +136,7 @@
         <Style.Resources>
             <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource NeutralModerate}" />
             <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{StaticResource NeutralModerate}" />
-            <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource SurfaceMid}" />
+            <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource SurfaceMid }" />
             <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource NeutralModerate}" />
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="{StaticResource SurfaceHigh }" />
             <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="{StaticResource NeutralModerate}" />
@@ -131,6 +159,13 @@
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOffDisabled" Color="{StaticResource BrandTranslucentLight200}" />
             <SolidColorBrush x:Key="ToggleSwitchFillOffDisabled" Color="{StaticResource BrandTranslucentDark50}" />
             <SolidColorBrush x:Key="ToggleSwitchStrokeOffDisabled" Color="{StaticResource BrandTranslucentLight50}" />
+
+            <Thickness x:Key="ToggleSwitchTopHeaderMargin">0</Thickness>
+            <GridLength x:Key="ToggleSwitchPreContentMargin">0</GridLength>
+            <GridLength x:Key="ToggleSwitchPostContentMargin">0</GridLength>
+            <x:Double x:Key="ToggleSwitchThemeMinWidth">0</x:Double>
+            <Thickness x:Key="ToggleSwitchOnStrokeThickness">0</Thickness>
+            <Thickness x:Key="ToggleSwitchOuterBorderStrokeThickness">0</Thickness>
         </Style.Resources>
 
         <Setter Property="ClipToBounds" Value="False" />
@@ -151,8 +186,7 @@
                     <Grid
                         Grid.Row="1"
                         HorizontalAlignment="Left"
-                        MinWidth="{DynamicResource ToggleSwitchThemeMinWidth}"
-                        VerticalAlignment="Top">
+                        MinWidth="{DynamicResource ToggleSwitchThemeMinWidth}">
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="{DynamicResource ToggleSwitchPreContentMargin}" />
@@ -170,7 +204,6 @@
                             Background="{DynamicResource ToggleSwitchContainerBackground}"
                             Grid.ColumnSpan="3"
                             Grid.RowSpan="3"
-                            Margin="0,5"
                             TemplatedControl.IsTemplateFocusTarget="True"
                             x:Name="SwitchAreaGrid" />
 
@@ -203,6 +236,7 @@
                             CornerRadius="{StaticResource Rounded-full}"
                             Height="32"
                             Width="52"
+                            VerticalAlignment="Top"
                             Grid.Row="1"
                             Grid.Column="0"
                             x:Name="OuterBorder" />
@@ -214,6 +248,7 @@
                             CornerRadius="{StaticResource Rounded-full}"
                             Height="32"
                             Width="52"
+                            VerticalAlignment="Top"
                             Grid.Row="1"
                             Grid.Column="0"
                             x:Name="SwitchKnobBounds" />
@@ -223,9 +258,9 @@
                             Grid.Column="0"
                             Width="20"
                             HorizontalAlignment="Left"
-                            Margin="4,4,0,0"
                             x:Name="PART_SwitchKnob">
                             <Grid
+                                Margin="4,4,0,0"
                                 Height="24"
                                 Width="24"
                                 x:Name="PART_MovingKnobs">
@@ -259,7 +294,7 @@
                             Grid.Column="0"
                             Height="24"
                             Width="24"
-                            Margin="20,0,0,0"
+                            Margin="0,0,0,0"
                             x:Name="FAKE_KnobGrid">
                             <Ellipse
                                 Fill="{StaticResource BrandTranslucentLight50}"
@@ -296,7 +331,7 @@
         <Setter Property="KnobTransitions">
             <Transitions>
                 <DoubleTransition
-                    Duration="0:0:0.2"
+                    Duration="0:0:0.4"
                     Easing="CubicEaseOut"
                     Property="Canvas.Left" />
             </Transitions>
@@ -305,8 +340,21 @@
 
         <!-- COMPACT class overrides -->
         <Style Selector="^.Compact">
+            <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+            <Setter Property="Height" Value="20" />
             <Setter Property="Width" Value="40" />
-            <Style Selector="^ /template/ Border#OuterBorder, ^ /template/ Border#SwitchKnobBounds">
+
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="Height" Value="20" />
+                <Setter Property="Width" Value="40" />
+            </Style>
+            
+            <Style Selector="^ /template/ Border#SwitchKnobBounds">
+                <Setter Property="Height" Value="20" />
+                <Setter Property="Width" Value="40" />
+            </Style>
+            
+            <Style Selector="^ /template/ Grid#SwitchAreaGrid">
                 <Setter Property="Height" Value="20" />
                 <Setter Property="Width" Value="40" />
             </Style>
@@ -328,9 +376,17 @@
 
             <Style Selector="^ /template/ Canvas#PART_SwitchKnob">
                 <Setter Property="Width" Value="20" />
-                <Setter Property="Margin" Value="0,0,0,0" />
+                <Setter Property="Margin" Value="0,-2,0,0" />
             </Style>
-
+            
+            <Style Selector="^ /template/ Grid#PART_MovingKnobs">
+                <Setter Property="Margin" Value="-2,0,0,0" />
+            </Style>
+            
+            <Style Selector="^ /template/ Grid#FAKE_KnobGrid">
+                <Setter Property="Margin" Value="0,-2,0,0" />
+            </Style>
+            
             <Style Selector="^ /template/ Ellipse#FAKE_KnobOuter">
                 <Setter Property="Height" Value="16" />
                 <Setter Property="Width" Value="16" />
@@ -347,6 +403,77 @@
             </Style>
         </Style>
 
+        <!-- ExtraSmall class overrides -->
+        <Style Selector="^.ExtraSmall">
+            <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
+
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Margin" Value="0" />
+
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#SwitchKnobBounds">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <Style Selector="^ /template/ Ellipse#SwitchKnobOn">
+                <Setter Property="Height" Value="12" />
+                <Setter Property="Width" Value="12" />
+            </Style>
+
+            <Style Selector="^ /template/ Ellipse#SwitchKnobOff">
+                <Setter Property="Height" Value="8" />
+                <Setter Property="Width" Value="8" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <Style Selector="^ /template/ Ellipse#SwitchKnobOuter">
+                <Setter Property="Height" Value="24" />
+                <Setter Property="Width" Value="24" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <Style Selector="^ /template/ Canvas#PART_SwitchKnob">
+                <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                <Setter Property="Width" Value="16" />
+                <Setter Property="Margin" Value="0,-4,0,0" />
+            </Style>
+
+            <Style Selector="^ /template/ Grid#FAKE_KnobGrid">
+                <Setter Property="Margin" Value="0,-4,0,0" />
+            </Style>
+            
+            <Style Selector="^ /template/ Ellipse#FAKE_KnobOuter">
+                <Setter Property="Height" Value="12" />
+                <Setter Property="Width" Value="12" />
+            </Style>
+
+            <Style Selector="^ /template/ Ellipse#FAKE_KnobInner">
+                <Setter Property="Height" Value="8" />
+                <Setter Property="Width" Value="8" />
+            </Style>
+
+            <Style Selector="^ /template/ Ellipse#FAKE_KNOBHOVER">
+                <Setter Property="Height" Value="28" />
+                <Setter Property="Width" Value="28" />
+            </Style>
+            
+            <Style Selector="^ /template/ Grid#PART_MovingKnobs">
+                <Setter Property="Margin" Value="-4,0,0,0" />
+            </Style>
+            
+            <Style Selector="^ /template/ Grid#FAKE_KNOBGRID">
+                <Setter Property="Margin" Value="0" />
+            </Style>
+        </Style>
 
         <!-- start of checked state -->
         <Style Selector="^:checked">
@@ -524,6 +651,29 @@
                 <Style Selector="^:indeterminate /template/ Ellipse#SwitchKnobOff">
                     <Setter Property="Width" Value="8" />
                     <Setter Property="Height" Value="8" />
+                </Style>
+            </Style>
+            
+            <!-- EXTRA SMALL -->
+            <Style Selector="^.ExtraSmall">
+                <Style Selector="^ /template/ Ellipse#SwitchKnobOn">
+                    <Setter Property="Width" Value="14" />
+                    <Setter Property="Height" Value="14" />
+                </Style>
+
+                <Style Selector="^ /template/ Ellipse#SwitchKnobOff">
+                    <Setter Property="Width" Value="10" />
+                    <Setter Property="Height" Value="10" />
+                </Style>
+
+                <Style Selector="^ /template/ Grid#SwitchAreaGrid">
+                    <Setter Property="Background" Value="{DynamicResource ToggleSwitchContainerBackgroundPressed}" />
+                </Style>
+
+                <!-- indeterminate -->
+                <Style Selector="^:indeterminate /template/ Ellipse#SwitchKnobOff">
+                    <Setter Property="Width" Value="7" />
+                    <Setter Property="Height" Value="7" />
                 </Style>
             </Style>
         </Style>

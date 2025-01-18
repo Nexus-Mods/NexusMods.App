@@ -9,19 +9,17 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 
 public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
     public WorkspaceId WorkspaceId { get; } = WorkspaceId.NewId();
-
-    public HomeLeftMenuDesignViewModel()
+    
+    public ILeftMenuItemViewModel LeftMenuItemMyGames { get; } = new LeftMenuItemDesignViewModel
     {
-        var items = new ILeftMenuItemViewModel[]
-        {
-            new IconViewModel
-            {
-                Name = Language.MyGames,
-                Icon = IconValues.Game,
-            },
-        };
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
-    }
+        Text = Language.MyGames,
+        Icon = IconValues.GamepadOutline,
+    };
+    public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; } = new LeftMenuItemDesignViewModel
+    {
+        Text = Language.MyLoadoutsPageTitle,
+        Icon = IconValues.Package,
+    };
+    
 }

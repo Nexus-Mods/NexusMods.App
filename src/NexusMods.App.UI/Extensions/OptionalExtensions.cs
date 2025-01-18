@@ -13,7 +13,7 @@ public static class OptionalExtensions
     /// <param name="optional">The source.</param>
     /// <param name="alternativeValue">The alternative value.</param>
     /// <typeparam name="T">The Type of the item.</typeparam>
-    public static T ValueOr<T>(this Optional<T> optional, T alternativeValue) where T : struct
+    public static T ValueOr<T>(this Optional<T> optional, T alternativeValue) where T : notnull
     {
         return optional.HasValue ? optional.Value : alternativeValue;
     }
@@ -31,5 +31,31 @@ public static class OptionalExtensions
 
         value = default;
         return false;
+    }
+
+    public static int Compare<T>(this Optional<T> a, Optional<T> b, Func<T, T, int> comparer)
+        where T : notnull
+    {
+        var (x, y) = (a.HasValue, b.HasValue);
+        return (x, y) switch
+        {
+            // both have values
+            (true, true) => comparer(a.Value, b.Value),
+
+            // b precedes a
+            (true, false) => 1,
+
+            // a precedes b
+            (false, true) => -1,
+
+            // a and b are in the same position
+            (false, false) => 0,
+        };
+    }
+
+    public static int Compare<T>(this Optional<T> a, Optional<T> b)
+        where T : IComparable<T>
+    {
+        return Compare(a, b, static (a, b) => a.CompareTo(b));
     }
 }

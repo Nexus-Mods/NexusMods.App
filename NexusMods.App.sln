@@ -286,6 +286,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.Steam.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Hashes", "src\Abstractions\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj", "{AF703852-D7B0-4BAD-8C75-B6046C6F0490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.GOG", "src\Networking\NexusMods.Networking.GOG\NexusMods.Networking.GOG.csproj", "{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GOG", "src\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj", "{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Logging", "src\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj", "{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -752,6 +758,18 @@ Global
 		{AF703852-D7B0-4BAD-8C75-B6046C6F0490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF703852-D7B0-4BAD-8C75-B6046C6F0490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF703852-D7B0-4BAD-8C75-B6046C6F0490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -885,6 +903,9 @@ Global
 		{24457AAA-8954-4BD6-8EB5-168EAC6EFB1B} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{17023DB9-8E31-4397-B3E1-141149987865} = {897C4198-884F-448A-B0B0-C2A6D971EAE0}
 		{AF703852-D7B0-4BAD-8C75-B6046C6F0490} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
+		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

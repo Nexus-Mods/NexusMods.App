@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Border Padding="8" Width="200" Height="500" Classes="Low">
+            <loadout:LoadoutLeftMenuView>
+                <loadout:LoadoutLeftMenuView.DataContext>
+                    <loadout:LoadoutLeftMenuDesignViewModel/>
+                </loadout:LoadoutLeftMenuView.DataContext>
+            </loadout:LoadoutLeftMenuView>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <Style Selector="loadout|LoadoutLeftMenuView">
+
+        <Style Selector="^ Grid > StackPanel">
+            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+
+            <Style Selector="^ StackPanel > Separator">
+                <Setter Property="Margin" Value="0,4,0,8" />
+                <Setter Property="Background" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>

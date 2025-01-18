@@ -3,6 +3,7 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
     </ItemGroup>
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
       <PackageReference Include="ObservableCollections.R3" />
     </ItemGroup>
 </Project>

@@ -231,6 +231,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ready to play - All required mods installed.
+        /// </summary>
+        public static string CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_requi" +
+                        "red_mods_installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
         /// </summary>
         public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
@@ -1294,6 +1304,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSTALLED MODS.
+        /// </summary>
+        public static string LeftMenu_Label_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UTILITIES.
+        /// </summary>
+        public static string LeftMenu_Label_Utilities {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Utilities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete mod(s).
         /// </summary>
         public static string LibraryItemDeleteConfirmation_DeleteModsButton {
@@ -1344,6 +1372,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LibraryPageTitle {
             get {
                 return ResourceManager.GetString("LibraryPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage downloaded mods and collections.
+        /// </summary>
+        public static string LibraryPageTitleToolTip {
+            get {
+                return ResourceManager.GetString("LibraryPageTitleToolTip", resourceCulture);
             }
         }
         
@@ -1492,6 +1529,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review your Loadout for any issues and learn how to resolve them if needed.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_Diagnostics_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_Diagnostics_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
@@ -1501,7 +1547,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installed Mods.
+        ///   Looks up a localized string similar to All.
         /// </summary>
         public static string LoadoutView_Title_Installed_Mods {
             get {
@@ -1510,7 +1556,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installed Mods.
+        ///   Looks up a localized string similar to View and manage all installed mods.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
         /// </summary>
         public static string LoadoutViewPageTitle {
             get {
@@ -1546,7 +1601,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ok.
+        ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string MessageBox_Button_Ok {
             get {

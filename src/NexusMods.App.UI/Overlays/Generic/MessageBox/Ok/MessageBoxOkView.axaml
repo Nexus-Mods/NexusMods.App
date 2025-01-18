@@ -9,44 +9,67 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ok="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Ok"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="640">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24">
+
+            <DockPanel Margin="24, 16">
 
                 <!-- Title -->
-                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
-                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
-
+                <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0">
+                    
                     <!-- 'Cross' button. -->
-                    <Button
-                        x:Name="CloseButton"
-                        DockPanel.Dock="Right"
-                        Classes="BareIcon WindowClose"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"/>
+                    <controls:StandardButton
+                        x:Name="CloseButton" DockPanel.Dock="Right"
+                        LeftIcon="{x:Static icons:IconValues.Close}"
+                        ShowIcon="Left"
+                        ShowLabel="False"
+                        Type="Tertiary"
+                        Fill="None" />
 
+                    <TextBlock x:Name="HeadingText"
+                               Text="Title Text"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis" />
                 </DockPanel>
 
-                <!-- Message -->
-                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" />
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <!-- Message -->
+                    <TextBlock x:Name="MessageTextBlock" 
+                               TextWrapping="WrapWithOverflow" 
+                               MaxLines="50"
+                               Text="Description" />
 
-            </StackPanel>
+                    <!-- Supporting Markdown -->
+                    <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640"
+                                                  MaxWidth="600" />
+                </StackPanel>
+
+            </DockPanel>
 
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
-
-                <Button x:Name="OkButton"
-                        Classes="Standard Primary"
+            <StackPanel Orientation="Horizontal"
+                        Margin="24"
+                        VerticalAlignment="Center"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Ok}" />
-                </Button>
+                        Spacing="{StaticResource Spacing-2.5}">
+
+                <controls:StandardButton
+                    x:Name="OkButton"
+                    Text="{x:Static resources:Language.MessageBox_Button_Ok}"
+                    Type="Primary"
+                    Fill="Strong"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
+
             </StackPanel>
 
         </base:MessageBoxBackground.BottomContent>
