@@ -26,11 +26,6 @@ public interface ISynchronizerService
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout);
-
-    /// <summary>
-    /// Returns the state of the synchronizer for any loadout.
-    /// </summary>
-    public Task<bool> IsAnyLoadoutSynchronizing();
     
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation

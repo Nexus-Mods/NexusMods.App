@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -22,7 +21,7 @@ public class SynchronizerService : ISynchronizerService
     private readonly IGameRegistry _gameRegistry;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
-    private readonly ConcurrentDictionary<LoadoutId, bool> _synchronizingLoadouts = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly object _lock = new();
 
     /// <summary>
@@ -47,15 +46,10 @@ public class SynchronizerService : ISynchronizerService
         return synchronizer.LoadoutToDiskDiff(loadout, diskState);
     }
     
-    public async Task<bool> IsAnyLoadoutSynchronizing()
-    {
-        return _synchronizingLoadouts.Values.Any(synchronizing => synchronizing);
-    }
-    
     /// <inheritdoc />
     public async Task Synchronize(LoadoutId loadoutId)
     {
-        _synchronizingLoadouts[loadoutId] = true;
+        await _semaphore.WaitAsync();
         try
         {
             var loadout = Loadout.Load(_conn.Db, loadoutId);
@@ -71,7 +65,7 @@ public class SynchronizerService : ISynchronizerService
         }
         finally
         {
-            _synchronizingLoadouts[loadoutId] = false;
+            _semaphore.Release();
         }
     }
 
