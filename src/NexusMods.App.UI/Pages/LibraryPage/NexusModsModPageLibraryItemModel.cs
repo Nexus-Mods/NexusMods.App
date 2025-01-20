@@ -186,7 +186,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
     public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
     public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
-    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1));
+    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1, true));
     
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;

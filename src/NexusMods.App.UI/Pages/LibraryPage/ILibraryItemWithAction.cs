@@ -133,18 +133,21 @@ public interface ILibraryItemWithUpdateAction : ILibraryItemWithInstallAction
         return canUpdate.ToReactiveCommand<Unit, ILibraryItemModel>(_ => model, initialCanExecute: false);
     }
 
-    public static string GetButtonText(int numUpdatable, int numTotal)
+    public static string GetButtonText(int numUpdatable, int numTotal, bool alwaysShowWithCount)
     {
-        // TODO: Translate this (string.format)
+        // 'Update ({0})'
+        if (alwaysShowWithCount)
+            return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
+        
+        // 'Update'
+        if (numUpdatable == 1)
+            return Resources.Language.LibraryItemButtonUpdate_Single;
+        
         // 'Update All'
         if (numUpdatable == numTotal)
             return Resources.Language.LibraryItemButtonUpdate_All;
 
-        // 'Update'
-        if (numUpdatable == 1)
-            return Resources.Language.LibraryItemButtonUpdate_Single;
-
-        // 'Update ({0} / {1})'
-        return string.Format(Resources.Language.LibraryItemButtonUpdate_Multiple, numUpdatable, numTotal);
+        // 'Update ({0})'
+        return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
     }
 }

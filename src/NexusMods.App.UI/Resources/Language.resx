@@ -730,8 +730,8 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
         <value>Update</value>
     </data>
-    <data name="LibraryItemButtonUpdate_Multiple" xml:space="preserve">
-        <value>Update ({0} / {1})</value>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Update ({0})</value>
     </data>
     <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
         <value>Update All</value>

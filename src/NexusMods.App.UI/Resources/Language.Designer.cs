@@ -1426,9 +1426,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string LibraryItemButtonUpdate_Multiple {
+        public static string LibraryItemButtonUpdate_CounterInBracket {
             get {
-                return ResourceManager.GetString("LibraryItemButtonUpdate_Multiple", resourceCulture);
+                return ResourceManager.GetString("LibraryItemButtonUpdate_CounterInBracket", resourceCulture);
             }
         }
         
