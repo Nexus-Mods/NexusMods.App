@@ -22,7 +22,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
-    ILibraryItemWithInstallAction,
+    ILibraryItemWithUpdateAction,
     ILibraryItemWithVersion, // Inherited from child, per design request
     IHasLinkedLoadoutItems,
     IIsParentLibraryItemModel
@@ -40,6 +40,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         HasChildrenObservable = hasChildrenObservable;
         ChildrenObservable = childrenObservable;
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
+        UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
 
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
@@ -183,6 +184,10 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
     public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
 
+    public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
+    public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
+    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1));
+    
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
 
@@ -217,5 +222,6 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     {
         // Note(sewer): filesToUpdate is currently unused, will be used in future code.
         Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
+        UpdateAvailable.Value = true;
     }
 }

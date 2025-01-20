@@ -485,7 +485,7 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
 
         if (model is ILibraryItemWithUpdateAction withUpdateAction)
         {
-            throw new NotImplementedException("nyot implemented. o no 😺");
+            //throw new NotImplementedException("nyot implemented. o no 😺");
         }
 
         base.BeforeModelActivationHook(model);
