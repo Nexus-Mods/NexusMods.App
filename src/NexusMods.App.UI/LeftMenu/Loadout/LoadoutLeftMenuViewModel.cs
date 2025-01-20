@@ -22,6 +22,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -48,15 +49,29 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
-        
+
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
-        
+
+        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
+            .Filter(datom =>
+                {
+                    var item = LoadoutItem.Load(conn.Db, datom.E);
+                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
+                }
+            )
+            .QueryWhenChanged(datoms => datoms.Count);
+
+        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
+            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
+        );
+
         LeftMenuItemLibrary = new LeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
@@ -88,17 +103,22 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods),
+            Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default, loadoutLabelObservable),
             Icon = IconValues.Mods,
         };
 
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
             .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
             .FilterOnObservable(group =>
-            {
-                if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection)) return Observable.Return(true);
-                return collectionDownloader.IsCollectionInstalledObservable(nexusCollection.Revision, Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group)));
-            })
+                {
+                    if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection))
+                        return Observable.Return(true);
+                    return collectionDownloader.IsCollectionInstalledObservable(
+                        nexusCollection.Revision,
+                        Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group))
+                    );
+                }
+            )
             .SortBy(item => item.IsReadOnly)
             .Transform(collection => new CollectionLeftMenuItemViewModel(
                     workspaceController,
