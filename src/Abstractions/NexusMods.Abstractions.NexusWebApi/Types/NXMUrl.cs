@@ -86,6 +86,10 @@ public class NXMUrl
         {
             result = new NXMOAuthUrl(uri);
         }
+        else if (uri.Host == "gog-auth")
+        {
+            result = new NXMGogAuthUrl(uri);
+        }
         else if (uri.Segments.Length >= 5)
         {
             if (uri.Segments[1] == "mods/")

@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -17,12 +18,10 @@ public class HashJsonConverter : JsonConverter<Hash>
     {
         var input = reader.GetString();
         if (input is null) throw new JsonException();
-
+        
         Span<byte> bytes = stackalloc byte[sizeof(ulong)];
-
-        var status = Convert.FromHexString(input, bytes, out _, out _);
-        Debug.Assert(status == OperationStatus.Done);
-
+        ((ReadOnlySpan<char>)input).FromHex(bytes);
+        
         var value = MemoryMarshal.Read<ulong>(bytes);
         return Hash.FromULong(value);
     }
@@ -30,13 +29,12 @@ public class HashJsonConverter : JsonConverter<Hash>
     /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Hash value, JsonSerializerOptions options)
     {
+        Span<byte> buffer = stackalloc byte[8];
+        BinaryPrimitives.WriteUInt64BigEndian(buffer, value.Value);
+        
         Span<char> span = stackalloc char[sizeof(ulong) * 2];
-        Span<byte> bytes = stackalloc byte[sizeof(ulong)];
-        MemoryMarshal.Write(bytes, value.Value);
-
-        var success = Convert.TryToHexString(bytes, span, out _);
-        Debug.Assert(success);
-
+        ((ReadOnlySpan<byte>)buffer).ToHex(span);
+        
         writer.WriteStringValue(span);
     }
 }
