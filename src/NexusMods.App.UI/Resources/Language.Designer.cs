@@ -1547,11 +1547,20 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All.
+        ///   Looks up a localized string similar to All ({0}).
         /// </summary>
         public static string LoadoutView_Title_Installed_Mods {
             get {
                 return ResourceManager.GetString("LoadoutView_Title_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods_Default {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods_Default", resourceCulture);
             }
         }
         
