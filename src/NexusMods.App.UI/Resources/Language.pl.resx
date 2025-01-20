@@ -673,7 +673,7 @@
 		<value>Usuń</value>
 	</data>
 	<data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
-		<value>Wszystkie</value>
+		<value>Wszystkie ({0})</value>
 	</data>
 	<data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
 		<value>Zobacz i zarządzaj wszystkimi zainstalowanymi modami</value>
@@ -725,5 +725,8 @@
 	</data>
 	<data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
 		<value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
+	</data>
+	<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+		<value>Wszystkie</value>
 	</data>
 </root>
