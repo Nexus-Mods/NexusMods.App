@@ -42,6 +42,12 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     public static readonly TimestampAttribute UpdatedAt = new(Namespace, nameof(UpdatedAt));
 
     /// <summary>
+    /// The last time a full update of this page info was performed in the data store.
+    /// This is used for local caching.
+    /// </summary>
+    public static readonly TimestampAttribute DataUpdatedAt = new(Namespace, nameof(DataUpdatedAt));
+    
+    /// <summary>
     /// Uri for the full sized picture of the mod.
     /// </summary>
     public static readonly UriAttribute FullSizedPictureUri = new(Namespace, nameof(FullSizedPictureUri)) { IsOptional = true };

@@ -55,7 +55,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
     {
         _items = items;
         DebugVerifyAllItemsAreFromSameGame();
-        
+
         _actions = new CacheUpdaterAction[items.Length];
         _itemToIndex = new Dictionary<ModId, int>(items.Length);
         for (var x = 0; x < _items.Length; x++)
@@ -66,8 +66,11 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
         var minCachedDate = utcNow - expiry; 
         for (var x = 0; x < _items.Length; x++)
         {
-            if (_items[x].GetLastUpdatedDateUtc() < minCachedDate)
+            var lastUpdatedDate = _items[x].GetLastUpdatedDateUtc();
+            if (lastUpdatedDate < minCachedDate)
                 _actions[x] = CacheUpdaterAction.NeedsUpdate;
+            else if (lastUpdatedDate >= minCachedDate)
+                _actions[x] = CacheUpdaterAction.UpdateLastCheckedTimestamp;
         }
     }
 
