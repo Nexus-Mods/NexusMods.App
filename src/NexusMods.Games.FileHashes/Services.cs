@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.Settings;
 
-namespace NexusMods.Abstractions.Games.FileHashes;
+namespace NexusMods.Games.FileHashes;
 
 public static class Services
 {
@@ -14,6 +16,8 @@ public static class Services
             .AddPathHashRelationModel()
             .AddGogBuildModel()
             .AddSteamManifestModel()
+            .AddSingleton<IFileHashesService, FileHashesService>()
+            .AddSettings<FileHashesServiceSettings>()
             .AddHashRelationModel();
     }
     

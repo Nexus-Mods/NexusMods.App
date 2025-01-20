@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 using Xunit.DependencyInjection.Logging;
 
@@ -10,7 +11,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
-            .AddSingleton<HttpClient>()
+            .AddHttpDownloader()
             .AddSteam()
             .AddLoggingAuthenticationHandler()
             .AddLocalAuthFileStorage()

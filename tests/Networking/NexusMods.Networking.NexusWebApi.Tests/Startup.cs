@@ -26,7 +26,6 @@ public class Startup
             .AddSerializationAbstractions()
             .AddFileSystem()
             .AddSettingsManager()
-            .AddSingleton<HttpClient>()
             .AddHttpDownloader()
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<LocalHttpServer>()

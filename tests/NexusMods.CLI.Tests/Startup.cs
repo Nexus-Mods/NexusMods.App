@@ -50,7 +50,6 @@ public class Startup
                 })
                 .AddFileExtractors()
                 .AddCLI()
-                .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
                 .AddNexusWebApi(true)
                 .AddLoadoutAbstractions()
