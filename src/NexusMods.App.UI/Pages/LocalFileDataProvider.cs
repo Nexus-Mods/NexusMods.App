@@ -1,19 +1,13 @@
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.Paths.Trees.Traits;
 using Observable = System.Reactive.Linq.Observable;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
@@ -137,77 +131,5 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
         return parentItemModel;
-    }
-
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
-    {
-        // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
-        // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
-        // back to the LocalFile
-        return _connection
-            .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .AsEntityIds()
-            .FilterOnObservable((_, e) => _connection
-                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
-                .AsEntityIds()
-                .FilterInStaticLoadout(_connection, loadoutFilter)
-                .IsNotEmpty()
-            )
-            .Transform((_, entityId) =>
-            {
-                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
-
-                // TODO: dispose
-                var cache = new SourceCache<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(static item => item.Id);
-                var disposable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .AsEntityIds()
-                    .FilterInStaticLoadout(_connection, loadoutFilter)
-                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
-                    .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
-                    .SubscribeWithErrorLogging();
-
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false));
-
-                var installedAtObservable = cache.Connect()
-                    .Transform(item => item.GetCreatedAt())
-                    .QueryWhenChanged(query =>
-                    {
-                        if (query.Count == 0) return DateTimeOffset.MinValue;
-                        return query.Items.Max();
-                    });
-
-                var loadoutItemIdsObservable = cache.Connect().Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
-
-                var isEnabledObservable = cache.Connect()
-                    .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
-                    .QueryWhenChanged(query =>
-                    {
-                        var isEnabled = Optional<bool>.None;
-                        foreach (var isItemEnabled in query.Items)
-                        {
-                            if (!isEnabled.HasValue)
-                            {
-                                isEnabled = isItemEnabled;
-                            }
-                            else
-                            {
-                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
-                            }
-                        }
-
-                        return isEnabled.HasValue ? isEnabled.Value : null;
-                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
-
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, 
-                    _serviceProvider, Observable.Return(true), childrenObservable, bitmap: null)
-                {
-                    NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
-                    InstalledAtObservable = installedAtObservable,
-                    IsEnabledObservable = isEnabledObservable,
-                };
-
-                return model;
-            });
     }
 }
