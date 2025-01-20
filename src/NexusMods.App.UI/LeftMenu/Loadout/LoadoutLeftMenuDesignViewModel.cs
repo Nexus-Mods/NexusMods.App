@@ -21,7 +21,7 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
     };
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods),
+        Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default),
         Icon = IconValues.Mods,
     };
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; } = new LeftMenuItemDesignViewModel

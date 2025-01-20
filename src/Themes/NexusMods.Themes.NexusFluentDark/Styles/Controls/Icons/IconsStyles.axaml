@@ -602,7 +602,4 @@
     <Style Selector="icons|UnifiedIcon.InfoFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
     </Style>
-    <Style Selector="icons|UnifiedIcon.InfoFilled">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
-    </Style>
 </Styles>

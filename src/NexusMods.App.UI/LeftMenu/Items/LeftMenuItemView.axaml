@@ -28,6 +28,21 @@
                                       Command="{CompiledBinding ToggleIsEnabledCommand}"/>
                     </DataTemplate>
                     
+                    <!-- HealthCheck item -->
+                    <DataTemplate DataType="items:HealthCheckLeftMenuItemViewModel">
+                        <StackPanel Orientation="Horizontal">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.InfoFilled}"
+                                               Foreground="{StaticResource InfoStrongBrush}"
+                                               IsVisible="{CompiledBinding IsSuggestionVisible}"/>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Warning}"
+                                               Foreground="{StaticResource WarningStrongBrush}"
+                                               IsVisible="{CompiledBinding IsWarningVisible}"/>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Error}"
+                                               Foreground="{StaticResource DangerStrongBrush}"
+                                               IsVisible="{CompiledBinding IsCriticalVisible}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                    
                     <!-- Nothing for default items  -->
                     <DataTemplate DataType="items:ILeftMenuItemViewModel"/>
                 </ContentControl.DataTemplates>
