@@ -60,26 +60,20 @@ internal class ChunkedStreamSource : IChunkedStreamSource
             blockData.Span.CopyTo(buffer.Span);
             return;
         }
-
-        while (true)
-        {
-            var parameters = _secureUrl.Parameters;
-            var md5s = chunk.CompressedMd5.ToString().ToLower();
-            parameters = parameters with { path = parameters.path + $"/{md5s[..2]}/{md5s[2..4]}/{md5s}" };
-            var url = Smart.Format(_secureUrl.UrlFormat, parameters);
-
-            await using var chunkStream = await _client.HttpClient.GetStreamAsync(url, token);
-            await using var zlibStream = new ZLibStream(chunkStream, CompressionMode.Decompress);
-            try
+        
+        await _client._pipeline.ExecuteAsync(async token =>
             {
+                var parameters = _secureUrl.Parameters;
+                var md5s = chunk.CompressedMd5.ToString().ToLower();
+                parameters = parameters with { path = parameters.path + $"/{md5s[..2]}/{md5s[2..4]}/{md5s}" };
+                var url = Smart.Format(_secureUrl.UrlFormat, parameters);
+
+                await using var chunkStream = await _client.HttpClient.GetStreamAsync(url, token);
+                await using var zlibStream = new ZLibStream(chunkStream, CompressionMode.Decompress);
+
                 await zlibStream.ReadExactlyAsync(buffer, token);
-                break;
             }
-            catch (HttpIOException e)
-            {
-                continue;
-            }
-        }
+        );
 
         #if DEBUG
         var md5 = Md5.From(MD5.HashData(buffer.Span));

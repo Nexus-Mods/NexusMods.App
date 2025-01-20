@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -73,26 +74,58 @@ public class Build : IAsyncDisposable
         using var tx = _connection.BeginTransaction();
         await _renderer.TextLine("Importing Steam data");
         
-        var manifestsPath = path / "json" / "stores" / "steam" / "manifests";
-        foreach (var manifest in manifestsPath.EnumerateFiles(KnownExtensions.Json))
-        {
-            await using var manifestStream = manifest.Read();
-            var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
-            
-            var pathIds = new List<EntityId>();
-            foreach (var file in parsedManifest.Files)
-            {
-                var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
-                if (!refDbRelation.IsValid())
-                {
-                    throw new Exception("Sha1 not found in the reference database");
-                }
+        var appPath = path / "json" / "stores" / "steam" / "apps";
 
-                var relationId = EnsureHashPathRelation(tx, refDb, file.Path, file.Hash);
-                pathIds.Add(relationId);
+        var manifestCount = 0;
+        var pathCounts = 0;
+        
+        foreach (var appData in appPath.EnumerateFiles(KnownExtensions.Json))
+        {
+            await using var appStream = appData.Read();
+            var parsedAppData = (await JsonSerializer.DeserializeAsync<ProductInfo>(appStream, _jsonOptions))!;
+
+            foreach (var depot in parsedAppData.Depots)
+            {
+                foreach (var (manifestName, manifestInfo) in depot.Manifests)
+                {
+                    var manifestPath = path / "json" / "stores" / "steam" / "manifests" / (manifestInfo.ManifestId + ".json");
+                    await using var manifestStream = manifestPath.Read();
+                    var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
+
+                    var pathIds = new List<EntityId>();
+                    foreach (var file in parsedManifest.Files)
+                    {
+                        // Steam manifests include folders, which we don't care about
+                        if (file.Chunks.Length == 0)
+                            continue;
+                        
+                        var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
+                        if (!refDbRelation.IsValid())
+                        {
+                            throw new Exception($"Sha1 not found in the reference database for path {file.Path} and hash {file.Hash}");
+                        }
+
+                        var relationId = EnsureHashPathRelation(tx, refDb, file.Path, file.Hash);
+                        pathIds.Add(relationId);
+                        pathCounts++;
+                    }
+                    
+                    _ = new SteamManifest.New(tx)
+                    {
+                        AppId = parsedAppData.AppId,
+                        DepotId = depot.DepotId,
+                        ManifestId = manifestInfo.ManifestId,
+                        Name = manifestName,
+                        FilesIds = pathIds,
+                    };
+                    manifestCount++;
+                }
             }
-            
         }
+        var result = await tx.Commit();
+        RemapHashPaths(result);
+        
+        await _renderer.TextLine("Imported {0} manifests with {1} paths", manifestCount, pathCounts);
     }
 
     private async Task AddGogData(AbsolutePath path)

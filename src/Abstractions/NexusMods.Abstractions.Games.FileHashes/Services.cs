@@ -13,6 +13,7 @@ public static class Services
         return services.AddFileHashesVerbs()
             .AddPathHashRelationModel()
             .AddGogBuildModel()
+            .AddSteamManifestModel()
             .AddHashRelationModel();
     }
     
