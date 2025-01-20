@@ -130,11 +130,11 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     WorkspaceId,
                     new PageData
                     {
-                        FactoryId = LoadoutPageFactory.StaticId,
-                        Context = new LoadoutPageContext
+                        FactoryId = CollectionLoadoutPageFactory.StaticId,
+                        Context = new CollectionLoadoutPageContext
                         {
                             LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
-                            GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
+                            GroupId = collection,
                         },
                     },
                     serviceProvider,

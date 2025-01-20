@@ -1,0 +1,75 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="loadoutPage:ICollectionLoadoutViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.LoadoutPage.CollectionLoadoutView">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <StackPanel x:Name="Banner" Grid.Row="0" Orientation="Horizontal">
+            <Image x:Name="TileImage" MaxWidth="100" MaxHeight="100"/>
+            <Image x:Name="BackgroundImage" MaxWidth="100" MaxHeight="100"/>
+            <TextBlock x:Name="CollectionName"/>
+            <TextBlock x:Name="Revision"/>
+            <Image x:Name="AuthorAvatar" MaxWidth="100" MaxHeight="100"/>
+            <TextBlock x:Name="AuthorName"/>
+        </StackPanel>
+
+        <Border Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <ToggleSwitch x:Name="CollectionToggle" Classes="Compact" HorizontalAlignment="Center">
+                    <ToggleSwitch.OnContent>
+                        <ContentControl />
+                    </ToggleSwitch.OnContent>
+                    <ToggleSwitch.OffContent>
+                        <ContentControl />
+                    </ToggleSwitch.OffContent>
+                </ToggleSwitch>
+            </StackPanel>
+        </Border>
+
+        <TreeDataGrid Grid.Row="2" x:Name="TreeDataGrid"
+                      ShowColumnHeaders="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      Classes="MainListsStyling">
+            <TreeDataGrid.Resources>
+                <DataTemplate x:Key="DisplayThumbnailAndNameColumnTemplate" DataType="loadoutPage:LoadoutItemModel">
+                    <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
+                        <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
+                            <Panel>
+                                <!-- The below image is drawn after the icon and so covers it up if a thumbnail is present. -->
+                                <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                                <Image Source="{CompiledBinding Thumbnail.Value}" />
+                            </Panel>
+                        </Border>
+                        <TextBlock Text="{CompiledBinding Name.Value}" />
+                    </StackPanel>
+                </DataTemplate>
+
+                <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="loadoutPage:LoadoutItemModel">
+                    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center"
+                                  Command="{CompiledBinding ToggleEnableStateCommand}"
+                                  IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}">
+                        <ToggleSwitch.OnContent>
+                            <ContentControl />
+                        </ToggleSwitch.OnContent>
+                        <ToggleSwitch.OffContent>
+                            <ContentControl />
+                        </ToggleSwitch.OffContent>
+                    </ToggleSwitch>
+                </DataTemplate>
+
+            </TreeDataGrid.Resources>
+        </TreeDataGrid>
+    </Grid>
+
+
+</reactive:ReactiveUserControl>
+
