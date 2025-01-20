@@ -133,10 +133,10 @@ public interface ILibraryItemWithUpdateAction : ILibraryItemWithInstallAction
         return canUpdate.ToReactiveCommand<Unit, ILibraryItemModel>(_ => model, initialCanExecute: false);
     }
 
-    public static string GetButtonText(int numUpdatable, int numTotal, bool alwaysShowWithCount)
+    public static new string GetButtonText(int numUpdatable, int numTotal, bool isExpanded)
     {
         // 'Update ({0})'
-        if (alwaysShowWithCount)
+        if (isExpanded)
             return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
         
         // 'Update'

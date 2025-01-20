@@ -41,6 +41,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         ChildrenObservable = childrenObservable;
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
         UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
+        _numUpdatable = 1;
+        UpdateButtonText = new(value: ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, 1, false));
 
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
@@ -109,6 +111,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                 {
                     var (numInstalled, numTotal, isExpanded) = tuple;
                     self.InstallButtonText.Value = ILibraryItemWithInstallAction.GetButtonText(numInstalled, numTotal, isExpanded);
+                    self.UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(self._numUpdatable, numTotal, isExpanded);
                 })
                 .AddTo(disposables);
         });
@@ -186,10 +189,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
     public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
     public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
-    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1, true));
+    public BindableReactiveProperty<string> UpdateButtonText { get; } 
     
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
+    private int _numUpdatable = 0;
 
     protected override void Dispose(bool disposing)
     {
@@ -218,10 +222,13 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     ///     All files that are newer than a currently downloaded item.
     ///     This allows updating of all items belonging to this mod page.
     /// </param>
-    public void InformAvailableUpdate(NexusModsFileMetadata.ReadOnly mostRecentFile, List<(NexusModsLibraryItem.ReadOnly oldItem, NexusModsFileMetadata.ReadOnly newItem)> filesToUpdate)
+    public void InformAvailableUpdate(
+        NexusModsFileMetadata.ReadOnly mostRecentFile, List<(NexusModsLibraryItem.ReadOnly oldItem, NexusModsFileMetadata.ReadOnly newItem)> filesToUpdate)
     {
         // Note(sewer): filesToUpdate is currently unused, will be used in future code.
+        _numUpdatable = filesToUpdate.Count;
         Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
+        UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, _libraryItems.Count, false);
         UpdateAvailable.Value = true;
     }
 }
