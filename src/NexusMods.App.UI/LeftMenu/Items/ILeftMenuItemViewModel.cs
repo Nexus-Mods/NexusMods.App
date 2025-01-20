@@ -1,5 +1,6 @@
 using System.Reactive;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using ReactiveUI;
@@ -8,7 +9,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public interface ILeftMenuItemViewModel : IViewModelInterface 
 {
-    public string Text { get; set; }
+    public StringComponent Text { get; set; }
     
     public IconValue Icon { get; set; }
     

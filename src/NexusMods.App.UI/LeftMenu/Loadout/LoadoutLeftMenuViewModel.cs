@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
@@ -69,7 +70,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LibraryPageTitle,
+            Text = new StringComponent(Language.LibraryPageTitle),
             Icon = IconValues.LibraryOutline,
         };
 
@@ -87,7 +88,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LoadoutView_Title_Installed_Mods,
+            Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods),
             Icon = IconValues.Mods,
         };
 
@@ -115,7 +116,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     collection.CollectionGroupId
                 )
                 {
-                    Text = collection.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
                     Icon = IconValues.CollectionsOutline,
                 }
             )
@@ -134,7 +135,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
+            Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
         };
 
@@ -209,7 +210,7 @@ file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
         return (x, y) switch
         {
             (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            ({ } a, { } b) => string.Compare(a.Text, b.Text, StringComparison.Ordinal),
+            ({ } a, { } b) => string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
             _ => 0,
         };
     }
