@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// <summary>
 /// A node in the synchronization tree.
 /// </summary>
-public class SyncTreeNode : ISyncNode
+public struct SyncTreeNode : ISyncNode
 {
     /// <summary>
     /// Path of the file in the game folder.

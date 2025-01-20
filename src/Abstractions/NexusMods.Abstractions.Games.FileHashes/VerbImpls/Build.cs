@@ -1,0 +1,269 @@
+using System.IO.Compression;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GOG.Values;
+using NexusMods.Abstractions.Hashes;
+using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.MnemonicDB;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Storage;
+using NexusMods.MnemonicDB.Storage.RocksDbBackend;
+using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
+using NexusMods.ProxyConsole.Abstractions;
+using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
+
+namespace NexusMods.Abstractions.Games.FileHashes.VerbImpls;
+
+public class Build : IAsyncDisposable
+{
+    private readonly TemporaryPath _tempFolder;
+    private readonly DatomStore _datomStore;
+    private readonly Connection _connection;
+    private readonly IRenderer _renderer;
+    private readonly JsonSerializerOptions _jsonOptions;
+    
+    private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
+    private readonly Backend _backend;
+
+    public Build(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager)
+    {
+        Provider = provider;
+        _renderer = renderer;
+        _tempFolder = temporaryFileManager.CreateFolder();
+        _jsonOptions = provider.GetRequiredService<JsonSerializerOptions>();
+        
+        
+        
+        _backend = new Backend();
+        var settings = new DatomStoreSettings
+        {
+            Path = _tempFolder,
+        };
+        _datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, _backend);
+        _connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), _datomStore, provider, []);
+    }
+    
+    public IServiceProvider Provider { get; set; }
+
+    public async Task BuildFrom(AbsolutePath path)
+    {
+        await AddHashes(path);
+        await AddGogData(path);
+        await AddSteamData(path);
+        
+        
+        
+        await using var exportStream = FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\export.datoms").Create();
+        await _datomStore.ExportAsync(exportStream);
+        
+        _datomStore.Dispose();
+        _backend.Dispose();
+        ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\export.zip").ToString(), CompressionLevel.SmallestSize, false);
+
+    }
+
+    private async Task AddSteamData(AbsolutePath path)
+    {
+        var refDb = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+        await _renderer.TextLine("Importing Steam data");
+        
+        var manifestsPath = path / "json" / "stores" / "steam" / "manifests";
+        foreach (var manifest in manifestsPath.EnumerateFiles(KnownExtensions.Json))
+        {
+            await using var manifestStream = manifest.Read();
+            var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
+            
+            var pathIds = new List<EntityId>();
+            foreach (var file in parsedManifest.Files)
+            {
+                var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
+                if (!refDbRelation.IsValid())
+                {
+                    throw new Exception("Sha1 not found in the reference database");
+                }
+
+                var relationId = EnsureHashPathRelation(tx, refDb, file.Path, file.Hash);
+                pathIds.Add(relationId);
+            }
+            
+        }
+    }
+
+    private async Task AddGogData(AbsolutePath path)
+    {
+        using var tx = _connection.BeginTransaction();
+        await _renderer.TextLine("Importing GOG data");
+        
+        var foundHashesPath = path / "json" / "stores" / "gog" / "found_hashes";
+
+        var refDb = _connection.Db;
+        var pathCount = 0;
+        var buildCount = 0;
+        foreach (var foundHashesFile in foundHashesPath.EnumerateFiles(KnownExtensions.Json))
+        {
+            try
+            {
+                await using var fs = foundHashesFile.Read();
+                var parsedFoundHashes = (await JsonSerializer.DeserializeAsync<Dictionary<string, Hash>>(fs, _jsonOptions))!;
+
+                var buildIdString = foundHashesFile.GetFileNameWithoutExtension();
+                var buildId = BuildId.From(ulong.Parse(buildIdString));
+
+
+                var pathIds = new List<EntityId>();
+
+                foreach (var (relativePath, hash) in parsedFoundHashes)
+                {
+                    var refDbRelation = HashRelation.FindByXxHash3(refDb, Hash.From(hash.Value)).FirstOrDefault();
+                    if (!refDbRelation.IsValid())
+                    {
+                        throw new Exception("Hash not found in the reference database for path " + relativePath + " and hash " + hash);
+                    }
+
+                    var relationId = EnsureHashPathRelation(tx, refDb, relativePath, hash);
+                    pathIds.Add(relationId);
+                    pathCount++;
+                }
+
+                var buildPath = path / "json" / "stores"/ "gog" / "builds" / (buildId + ".json");
+                await using var buildFs = buildPath.Read();
+                var parsedBuild = (await JsonSerializer.DeserializeAsync<GOG.DTOs.Build>(buildFs, _jsonOptions))!;
+
+                var os = parsedBuild.OS switch
+                {
+                    "windows" => OperatingSystem.Windows,
+                    "osx" => OperatingSystem.MacOS,
+                    "linux" => OperatingSystem.Linux,
+                    _ => throw new Exception("Unknown OS"),
+                };
+
+                _ = new GogBuild.New(tx)
+                {
+                    BuildId = buildId,
+                    ProductId = parsedBuild.ProductId,
+                    OperatingSystem = os,
+                    VersionName = parsedBuild.VersionName,
+                    Public = parsedBuild.Public,
+                    FilesIds = pathIds,
+                };
+            }
+            catch (Exception ex)
+            {
+                await _renderer.Error(ex, "Failed to import {0}: {1}", foundHashesFile, ex.Message);
+            }
+            buildCount++;
+        }
+
+        var result = await tx.Commit();
+        RemapHashPaths(result);
+        
+        await _renderer.TextLine("Imported {0} builds with {1} paths", buildCount, pathCount);
+    }
+
+    private void RemapHashPaths(ICommitResult result)
+    {
+        var toRemap = _knownHashPaths.Where(f => f.Value.Partition == PartitionId.Temp).ToArray();
+        
+        foreach (var (key, id) in toRemap)
+        {
+            _knownHashPaths[key] = result[id];
+        }
+    }
+
+    private async Task AddHashes(AbsolutePath path)
+    {
+        var hashPath = path / "json" / "hashes";
+
+        await _renderer.TextLine("Importing hashes");
+        using var tx = _connection.BeginTransaction();
+        
+        var count = 0;
+        foreach (var file in hashPath.EnumerateFiles(KnownExtensions.Json))
+        {
+            try
+            {
+                await using var fs = file.Read();
+                var parsedHash = (await JsonSerializer.DeserializeAsync<MultiHash>(fs, _jsonOptions))!;
+
+                _ = new HashRelation.New(tx)
+                {
+                    XxHash3 = parsedHash.XxHash3,
+                    XxHash64 = parsedHash.XxHash64,
+                    MinimalHash = parsedHash.MinimalHash,
+                    Md5 = parsedHash.Md5,
+                    Sha1 = parsedHash.Sha1,
+                    Crc32 = parsedHash.Crc32,
+                    Size = parsedHash.Size,
+                };
+                count++;
+            }
+            catch (Exception ex)
+            {
+                await _renderer.Error(ex, "Failed to import {0}: {1}", file, ex.Message);
+            }
+        }
+
+        await tx.Commit();
+        await _renderer.TextLine("Imported {0} hashes", count);
+    }
+
+    /// <summary>
+    /// Find or insert a hash path relation
+    /// </summary>
+    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Hash hash)
+    {
+        var hashRelation = HashRelation.FindByXxHash3(referenceDb, hash).FirstOrDefault();
+        
+        if (!hashRelation.IsValid())
+        {
+            throw new Exception("Hash not found in the reference database");
+        }
+        
+        return EnsureHashPathRelation(tx, path, hashRelation);
+    }
+    
+    /// <summary>
+    /// Find or insert a hash path relation
+    /// </summary>
+    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1 hash)
+    {
+        var hashRelation = HashRelation.FindBySha1(referenceDb, hash).FirstOrDefault();
+        
+        if (!hashRelation.IsValid())
+        {
+            throw new Exception("Hash not found in the reference database");
+        }
+        
+        return EnsureHashPathRelation(tx, path, hashRelation);
+    }
+
+    private EntityId EnsureHashPathRelation(ITransaction tx, RelativePath path, HashRelationId hashRelation)
+    {
+        if (_knownHashPaths.TryGetValue((path, hashRelation), out var entityId))
+        {
+            return entityId;
+        }
+        
+        var newHashPathRelation = new PathHashRelation.New(tx)
+        {
+            Path = path,
+            HashId = hashRelation,
+        };
+        
+        _knownHashPaths[(path, hashRelation)] = newHashPathRelation.Id;
+        
+        return newHashPathRelation.Id;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _datomStore.Dispose();
+        await _tempFolder.DisposeAsync();
+    }
+}
