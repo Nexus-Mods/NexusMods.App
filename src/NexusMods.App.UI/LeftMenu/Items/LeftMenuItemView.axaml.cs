@@ -15,7 +15,7 @@ public partial class LeftMenuItemView : ReactiveUserControl<ILeftMenuItemViewMod
         this.WhenActivated(d =>
             {
                 
-                this.OneWayBind(ViewModel, vm => vm.Text, view => view.LabelTextBlock.Text)
+                this.OneWayBind(ViewModel, vm => vm.Text.Value.Value, view => view.LabelTextBlock.Text)
                     .DisposeWith(d);
                 
                 this.WhenAnyValue(view => view.ViewModel!)

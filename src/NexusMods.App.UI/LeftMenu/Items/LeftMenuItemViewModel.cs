@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -14,7 +15,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMenuItemViewModel
 {
-    [Reactive] public string Text { get; set; } = "";
+    public StringComponent Text { get; init; } = new("");
     [Reactive] public IconValue Icon { get; set; } = new();
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
 
@@ -89,6 +90,9 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
 
         this.WhenActivated(d =>
             {
+                Text.Activate()
+                    .DisposeWith(d);
+                
                 isActiveObservable.Subscribe(isActive => IsActive = isActive)
                     .DisposeWith(d);
 

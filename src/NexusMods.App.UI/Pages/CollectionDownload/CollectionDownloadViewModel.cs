@@ -11,9 +11,11 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -155,8 +157,6 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        CommandViewInLibrary = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
-
         CommandOpenJsonFile = new ReactiveCommand(
             execute: _ =>
             {
@@ -175,6 +175,25 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }
         );
+
+        CommandViewCollection = IsInstalled.ToReactiveCommand<NavigationInformation>(info =>
+        {
+            var group = CollectionDownloader.GetCollectionGroup(_revision, _targetLoadout, connection.Db).Value;
+
+            var pageData = new PageData
+            {
+                FactoryId = LoadoutPageFactory.StaticId,
+                Context = new LoadoutPageContext
+                {
+                    LoadoutId = _targetLoadout,
+                    GroupScope = group.AsCollectionGroup().AsLoadoutItemGroup().LoadoutItemGroupId,
+                },
+            };
+
+            var workspaceController = GetWorkspaceController();
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        });
 
         IsDownloading = _isDownloadingRequiredItems.CombineLatest(_isDownloadingOptionalItems, static (a, b) => a || b).ToBindableReactiveProperty();
 
@@ -217,7 +236,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .AddTo(disposables);
 
             var collectionGroupObservable = collectionDownloader.GetCollectionGroupObservable(_revision, _targetLoadout);
-            var isCollectionInstalledObservable = collectionDownloader.IsCollectionInstalledObservable(_revision, collectionGroupObservable).Prepend(false);
+            var isCollectionInstalledObservable = collectionDownloader
+                .IsCollectionInstalledObservable(_revision, collectionGroupObservable)
+                .Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -234,6 +255,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     {
                         if (isCollectionInstalled)
                         {
+                            IsInstalled.Value = true;
                             CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
                         }
                         else
@@ -304,6 +326,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         await monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
     }
 
+    public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
+
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _isDownloadingRequiredItems = new(initialValue: false);
@@ -337,15 +361,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     [Reactive] public string CollectionStatusText { get; private set; } = "";
 
-    [Reactive] public bool CanDownloadAutomatically { get; private set; } = false;
+    [Reactive] public bool CanDownloadAutomatically { get; private set; }
 
+    public ReactiveCommand<NavigationInformation> CommandViewCollection { get; }
     public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
     public ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
     public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; }
     public ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
 
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
-    public ReactiveCommand<Unit> CommandViewInLibrary { get; }
     public ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
