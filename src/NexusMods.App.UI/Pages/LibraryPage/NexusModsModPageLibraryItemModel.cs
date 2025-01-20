@@ -131,7 +131,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                         ? version : new NuGetVersion(0, 0, 0));
 
                 if (maxVersion != null)
-                    Version.Value = maxVersion!.ToString(); // SAFETY: Not null because >= 1 item.
+                {
+                    // SAFETY: Not null because >= 1 item.
+                    _preUpdateVersion = maxVersion!.ToString();
+                    Version.Value = _preUpdateVersion;
+                } 
             });
 
         _modelDisposable = Disposable.Combine(
@@ -164,7 +168,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
-
+    private string _preUpdateVersion = string.Empty;
+    
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
 
@@ -211,6 +216,6 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public void InformAvailableUpdate(NexusModsFileMetadata.ReadOnly mostRecentFile, List<(NexusModsLibraryItem.ReadOnly oldItem, NexusModsFileMetadata.ReadOnly newItem)> filesToUpdate)
     {
         // Note(sewer): filesToUpdate is currently unused, will be used in future code.
-        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(Version.Value, mostRecentFile.Version);
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
     }
 }

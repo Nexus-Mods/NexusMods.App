@@ -243,10 +243,6 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
 
-        model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
-        model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
-        model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
-
         if (nexusModsLibraryItem.FileMetadata.Size.TryGet(out var size))
             model.ItemSize.Value = size;
 

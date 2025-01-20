@@ -31,6 +31,11 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
+        Name.Value = nexusModsLibraryItem.FileMetadata.Name;
+        DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
+        _preUpdateVersion = nexusModsLibraryItem.FileMetadata.Version;
+        Version.Value = _preUpdateVersion;
+        
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
         UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
 
@@ -87,6 +92,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+    private string _preUpdateVersion;
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
@@ -132,7 +138,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     /// <param name="mostRecentFile">The most recent file of any of the page's children.</param>
     public void InformUpdateAvailable(NexusModsFileMetadata.ReadOnly mostRecentFile)
     {
-        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(Version.Value, mostRecentFile.Version);
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
         UpdateAvailable.Value = true;
     }
 }
