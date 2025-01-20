@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -66,7 +67,9 @@ public class Build : IAsyncDisposable
         
         ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), output.ToString(), CompressionLevel.SmallestSize, false);
 
-        await _renderer.TextLine("Database built and exported to {0}. Final size {1}", output, output.FileInfo.Size);
+        var zipHash = await output.XxHash64Async();
+
+        await _renderer.TextLine("Database built and exported to {0}. Final size {1}. Hash: {2}", output, output.FileInfo.Size, zipHash);
     }
 
     private async Task AddSteamData(AbsolutePath path)
@@ -125,7 +128,6 @@ public class Build : IAsyncDisposable
         }
         var result = await tx.Commit();
         RemapHashPaths(result);
-        
         await _renderer.TextLine("Imported {0} manifests with {1} paths", manifestCount, pathCounts);
     }
 
