@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
-using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -51,21 +50,23 @@ public class Build : IAsyncDisposable
     
     public IServiceProvider Provider { get; set; }
 
-    public async Task BuildFrom(AbsolutePath path)
+    public async Task BuildFrom(AbsolutePath path, AbsolutePath output)
     {
         await AddHashes(path);
         await AddGogData(path);
         await AddSteamData(path);
         
-        
-        
-        await using var exportStream = FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\export.datoms").Create();
-        await _datomStore.ExportAsync(exportStream);
+        await _renderer.TextLine("Exporting database");
         
         _datomStore.Dispose();
         _backend.Dispose();
-        ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\export.zip").ToString(), CompressionLevel.SmallestSize, false);
+        
+        if (output.FileExists)
+            output.Delete();
+        
+        ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), output.ToString(), CompressionLevel.SmallestSize, false);
 
+        await _renderer.TextLine("Database built and exported to {0}. Final size {1}", output, output.FileInfo.Size);
     }
 
     private async Task AddSteamData(AbsolutePath path)

@@ -24,7 +24,7 @@ public static class Verbs
         await using var builder = new Build(renderer, serviceProvider, temporaryFileManager);
 
 
-        await builder.BuildFrom(path);
+        await builder.BuildFrom(path, output);
         
         
         return 0;
