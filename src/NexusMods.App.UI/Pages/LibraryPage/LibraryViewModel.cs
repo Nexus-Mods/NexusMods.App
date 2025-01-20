@@ -299,6 +299,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             using var tx = _connection.BeginTransaction();
             var gqlClient = _serviceProvider.GetRequiredService<NexusGraphQLClient>();
             await RunUpdateCheck.UpdateModFilesForOutdatedPages(_connection.Db, tx, logger, gqlClient, updateCheckResult, token);
+            await tx.Commit();
         }
         
         // We've now updated our under the hood understanding of what's on the Nexus,
