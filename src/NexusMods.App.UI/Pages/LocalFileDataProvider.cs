@@ -6,11 +6,14 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.Paths.Trees.Traits;
 using Observable = System.Reactive.Linq.Observable;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
@@ -93,6 +96,47 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
                 return (ILibraryItemModel)model;
             });
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return LocalFile.ObserveAll(_connection)
+            .FilterOnObservable((_, entityId) => _connection
+                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
+                .AsEntityIds()
+                .FilterInStaticLoadout(_connection, loadoutFilter)
+                .IsNotEmpty()
+            )
+            .Transform(localFile => ToLoadoutItemModel(loadoutFilter, localFile));
+    }
+
+    private CompositeItemModel<EntityId> ToLoadoutItemModel(LoadoutFilter loadoutFilter, LocalFile.ReadOnly localFile)
+    {
+        var linkedItemsObservable = _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItem, localFile)
+            .AsEntityIds()
+            .FilterInStaticLoadout(_connection, loadoutFilter)
+            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E));
+        // TODO: erri120: find something better here
+        // NOTE(erri120): big performance implications here
+            // .PublishWithFunc(() => LoadoutDataProviderHelper.GetLinkedLoadoutItems(_connection.Db, loadoutFilter, localFile.AsLibraryFile().AsLibraryItem()))
+            // .RefCount();
+
+        var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
+        var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+
+        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
+        {
+            HasChildrenObservable = hasChildrenObservable,
+            ChildrenObservable = childrenObservable,
+        };
+
+        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
+
+        LoadoutDataProviderHelper.AddDateComponent(parentItemModel, localFile.GetCreatedAt(), linkedItemsObservable);
+        LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+
+        return parentItemModel;
     }
 
     public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)

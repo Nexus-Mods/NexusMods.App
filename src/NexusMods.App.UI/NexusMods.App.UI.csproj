@@ -375,6 +375,9 @@
         <Compile Update="Controls\TreeDataGrid\StringComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\ImageComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\TreeDataGrid\SizeComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>

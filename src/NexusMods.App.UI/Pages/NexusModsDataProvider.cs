@@ -10,6 +10,8 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.Resources;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -18,6 +20,7 @@ using NexusMods.Collections;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using R3;
@@ -39,6 +42,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     private readonly IJobMonitor _jobMonitor;
     private readonly IServiceProvider _serviceProvider;
     private readonly CollectionDownloader _collectionDownloader;
+    private readonly IResourceLoader<EntityId, Bitmap> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
@@ -46,6 +50,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _collectionDownloader = new CollectionDownloader(serviceProvider);
         _serviceProvider = serviceProvider;
+        _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
@@ -360,6 +365,59 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 };
 
                 return model;
+            });
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return NexusModsModPageMetadata
+            .ObserveAll(_connection)
+            .FilterOnObservable((_, modPageEntityId) => _connection
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPageEntityId)
+                .FilterOnObservable((d, _) => _connection
+                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, d.E)
+                    .AsEntityIds()
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
+                    .IsNotEmpty())
+                .IsNotEmpty()
+            )
+            .Transform(modPage =>
+            {
+                var linkedItemsObservable = _connection
+                    .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id).AsEntityIds()
+                    .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
+                    // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
+                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
+                    .FilterInStaticLoadout(_connection, loadoutFilter)
+                    .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E));
+        // TODO: erri120: find something better here
+        // NOTE(erri120): big performance implications here
+                    // .Publish()
+                    // .PublishWithFunc(() =>
+                    // {
+                    //     var db = _connection.Db;
+                    //     var libraryItems = db.Datoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id);
+                    //     var changes = libraryItems.SelectMany(x => LoadoutDataProviderHelper.GetLinkedLoadoutItems(db, loadoutFilter, x.E));
+                    //     return new ChangeSet<LoadoutItem.ReadOnly, EntityId>(changes);
+                    // })
+                    // .RefCount();
+
+                var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
+                var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+
+                var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
+                {
+                    HasChildrenObservable = hasChildrenObservable,
+                    ChildrenObservable = childrenObservable,
+                };
+
+                parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+                parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+
+                LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
+                LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+
+                return parentItemModel;
             });
     }
 }

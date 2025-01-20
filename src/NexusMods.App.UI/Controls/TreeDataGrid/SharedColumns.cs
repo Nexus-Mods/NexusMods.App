@@ -19,6 +19,7 @@ public static class SharedColumns
 
         public const string ColumnTemplateResourceKey = Prefix + "Name";
         public static readonly ComponentKey StringComponentKey = ComponentKey.From(Prefix + nameof(Name) + nameof(StringComponent));
+        public static readonly ComponentKey ImageComponentKey = ComponentKey.From(Prefix + nameof(Name) + nameof(ImageComponent));
 
         public static string GetColumnHeader() => "Name";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;

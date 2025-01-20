@@ -14,8 +14,8 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
     {
         InitializeComponent();
 
-        // TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        // TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, LoadoutItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {

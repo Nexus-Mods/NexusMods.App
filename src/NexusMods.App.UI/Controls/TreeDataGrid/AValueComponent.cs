@@ -10,7 +10,6 @@ namespace NexusMods.App.UI.Controls;
 /// </summary>
 [PublicAPI]
 public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
-    where T : notnull
 {
     /// <summary>
     /// Gets the value property.
@@ -77,4 +76,19 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
 
         base.Dispose(disposing);
     }
+}
+
+public class ValueComponent<T> : AValueComponent<T>
+{
+    public ValueComponent(
+        T initialValue,
+        IObservable<T> valueObservable,
+        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+
+    public ValueComponent(
+        T initialValue,
+        Observable<T> valueObservable,
+        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+
+    public ValueComponent(T value) : base(value) { }
 }
