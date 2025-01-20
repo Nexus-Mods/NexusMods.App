@@ -135,6 +135,9 @@
                         Margin="0" />
 
                     <StackPanel Spacing="12">
+                        <TextBlock Text="Game not found?"
+                                   Theme="{StaticResource HeadingXSSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
                             Text="If your installed game was not found, it might be because our auto-detection didn’t pick it up."
                             Theme="{StaticResource BodyMDNormalTheme}"
