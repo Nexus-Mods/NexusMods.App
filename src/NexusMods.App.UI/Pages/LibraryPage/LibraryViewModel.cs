@@ -32,10 +32,8 @@ using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
-using R3.Avalonia;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -197,20 +195,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
                 {
-                    if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+                    switch (message.Action)
                     {
-                        foreach (var id in multipleIds)
-                        {
-                            var libraryItem = LibraryItem.Load(_connection.Db, id);
-                            if (!libraryItem.IsValid()) continue;
-                            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-                        }
-                    }
-                    else
-                    {
-                        var libraryItem = LibraryItem.Load(_connection.Db, singleId);
-                        if (!libraryItem.IsValid()) return;
-                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                        case ActionType.Install:
+                            await HandleInstallMessage(message, cancellationToken);
+                            break;
+                        case ActionType.Update:
+                            HandleUpdateMessage(message, cancellationToken);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -243,7 +237,53 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             _ = RefreshUpdates(CancellationToken.None);
         });
     }
+    private async Task HandleInstallMessage(ActionMessage message, CancellationToken cancellationToken)
+    {
+        if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+        {
+            foreach (var id in multipleIds)
+            {
+                var libraryItem = LibraryItem.Load(_connection.Db, id);
+                if (!libraryItem.IsValid()) continue;
+                await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+            }
+        }
+        else
+        {
+            var libraryItem = LibraryItem.Load(_connection.Db, singleId);
+            if (!libraryItem.IsValid()) return;
+            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+        }
+    }
     
+    private void HandleUpdateMessage(ActionMessage message, CancellationToken cancellationToken)
+    {
+        void StartLibraryItemUpdate(LibraryItemId id)
+        {
+            var libraryItem = LibraryItem.Load(_connection.Db, id);
+            if (!libraryItem.IsValid()) return;
+            
+            // By definition, if we start an update, it's a Nexus 
+            if (!libraryItem.TryGetAsNexusModsLibraryItem(out var nexusItem))
+                Debug.Fail("Can only be a Nexus item by definition, as of time of writing this code.");
+
+            var modFileUrlFormat = "https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={0}&game_id={1}";
+            var modFileUrl = string.Format(modFileUrlFormat, nexusItem.FileMetadata.Uid.FileId, nexusItem.FileMetadata.Uid.GameId);
+            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+            osInterop.OpenUrl(new Uri(modFileUrl), cancellationToken: cancellationToken);
+        }
+        
+        if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+        {
+            foreach (var id in multipleIds)
+                StartLibraryItemUpdate(id);
+        }
+        else
+        {
+            StartLibraryItemUpdate(singleId);
+        }
+    }
+
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
     {
@@ -420,16 +460,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 }
 
-public readonly record struct InstallMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload);
+public readonly record struct ActionMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload, ActionType Action);
+public enum ActionType { Install, Update }
 
 public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel, EntityId>,
-    ITreeDataGirdMessageAdapter<InstallMessage>
+    ITreeDataGirdMessageAdapter<ActionMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly ConnectableObservable<DateTimeOffset> _ticker;
     private readonly LibraryFilter _libraryFilter;
 
-    public Subject<InstallMessage> MessageSubject { get; } = new();
+    public Subject<ActionMessage> MessageSubject { get; } = new();
     public ObservableList<ILibraryItemModel> GetRoots() => Roots;
     private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
 
@@ -465,27 +506,30 @@ public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel,
             hasTicker.Ticker = _ticker;
         }
 
-        if (model is ILibraryItemWithInstallAction withInstallAction)
+        static OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> GetPayload(object model) => model switch
         {
-            var disposable = withInstallAction.InstallItemCommand.Subscribe(MessageSubject, static (model, subject) =>
-            {
-                var payload = model switch
-                {
-                    IIsParentLibraryItemModel parent => OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId>.FromT0(parent.LibraryItemIds),
-                    IIsChildLibraryItemModel child => child.LibraryItemId,
-                    _ => throw new NotSupportedException(),
-                };
+            IIsParentLibraryItemModel parent => OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId>.FromT0(parent.LibraryItemIds),
+            IIsChildLibraryItemModel child => child.LibraryItemId,
+            _ => throw new NotSupportedException(),
+        };
 
-                subject.OnNext(new InstallMessage(payload));
-            });
+        var disposable = model switch 
+        {
+            ILibraryItemWithUpdateAction updateAction => updateAction.UpdateItemCommand.Subscribe(
+                MessageSubject, 
+                static (model, subject) => subject.OnNext(new ActionMessage(GetPayload(model), ActionType.Update))
+            ),
+            ILibraryItemWithInstallAction installAction => installAction.InstallItemCommand.Subscribe(
+                MessageSubject, 
+                static (model, subject) => subject.OnNext(new ActionMessage(GetPayload(model), ActionType.Install))
+            ),
+            _ => null
+        };
 
+        if (disposable != null)
+        {
             var didAdd = _commandDisposables.TryAdd(model, disposable);
             Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-        }
-
-        if (model is ILibraryItemWithUpdateAction withUpdateAction)
-        {
-            //throw new NotImplementedException("nyot implemented. o no 😺");
         }
 
         base.BeforeModelActivationHook(model);
