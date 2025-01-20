@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NexusMods.Networking.ModUpdates.Tests.Helpers;
-using static NexusMods.Networking.ModUpdates.Tests.Helpers.TestItem;
+using static NexusMods.Networking.ModUpdates.Tests.Helpers.TestModFeedItem;
 
 namespace NexusMods.Networking.ModUpdates.Tests;
 
@@ -10,7 +10,7 @@ public class MultiFeedCacheUpdaterTests
     public void Constructor_WithEmptyItems_ShouldNotThrow()
     {
         // Arrange & Act
-        Action act = () => new MultiFeedCacheUpdater<TestItem>([], TimeSpan.FromDays(30));
+        Action act = () => new MultiFeedCacheUpdater<TestModFeedItem>([], TimeSpan.FromDays(30));
 
         // Assert
         act.Should().NotThrow();
@@ -33,7 +33,7 @@ public class MultiFeedCacheUpdaterTests
         };
 
         // Act
-        var updater = new MultiFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
         var result = updater.BuildFlattened();
 
         // Assert
@@ -61,7 +61,7 @@ public class MultiFeedCacheUpdaterTests
             Create(2, 2, now.AddDays(-8)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         var updateItems = new[]
         {
@@ -99,7 +99,7 @@ public class MultiFeedCacheUpdaterTests
             Create(2, 2, now.AddDays(-7)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
         var updateItems = new[]
         {
             Create(1, 1, now.AddDays(-8)),  // Newer, needs update
@@ -140,7 +140,7 @@ public class MultiFeedCacheUpdaterTests
             Create(2, 2, now.AddDays(-7)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         var updateItems = new[]
         {
@@ -186,7 +186,7 @@ public class MultiFeedCacheUpdaterTests
             Create(3, 1, now.AddDays(-15)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         var updateItems = new[]
         {
