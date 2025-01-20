@@ -18,7 +18,7 @@ using NexusMods.Paths.Utilities;
 using NexusMods.ProxyConsole.Abstractions;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
 
-namespace NexusMods.Abstractions.Games.FileHashes.VerbImpls;
+namespace NexusMods.Games.FileHashes.VerbImpls;
 
 public class Build : IAsyncDisposable
 {
@@ -169,7 +169,7 @@ public class Build : IAsyncDisposable
 
                 var buildPath = path / "json" / "stores"/ "gog" / "builds" / (buildId + ".json");
                 await using var buildFs = buildPath.Read();
-                var parsedBuild = (await JsonSerializer.DeserializeAsync<GOG.DTOs.Build>(buildFs, _jsonOptions))!;
+                var parsedBuild = (await JsonSerializer.DeserializeAsync<NexusMods.Abstractions.GOG.DTOs.Build>(buildFs, _jsonOptions))!;
 
                 var os = parsedBuild.OS switch
                 {
