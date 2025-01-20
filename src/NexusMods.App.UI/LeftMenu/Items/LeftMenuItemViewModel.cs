@@ -15,7 +15,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMenuItemViewModel
 {
-    [Reactive] public StringComponent Text { get; set; } = new("");
+    public StringComponent Text { get; init; } = new("");
     [Reactive] public IconValue Icon { get; set; } = new();
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
 

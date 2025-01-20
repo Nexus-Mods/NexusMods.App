@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public interface ILeftMenuItemViewModel : IViewModelInterface 
 {
-    public StringComponent Text { get; set; }
+    public StringComponent Text { get; }
     
     public IconValue Icon { get; set; }
     
