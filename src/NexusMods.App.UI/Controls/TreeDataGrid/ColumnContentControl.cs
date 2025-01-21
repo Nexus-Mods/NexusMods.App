@@ -112,7 +112,7 @@ public abstract class ACustomContentControl<TContent> : ContentControl
     }
 }
 
-public class SingleComponentControl<TKey> : ACustomContentControl<CompositeItemModel<TKey>>
+public class ComponentControl<TKey> : ACustomContentControl<CompositeItemModel<TKey>>
     where TKey : notnull
 {
     public IComponentTemplate? ComponentTemplate { get; set; }

@@ -10,8 +10,8 @@
         </DataTemplate.DataType>
 
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
-            <controls:SingleComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:SingleComponentControl.ComponentTemplate>
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
                                                 ComponentKey="{x:Static controls:SharedColumns+Name.ImageComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
@@ -20,15 +20,15 @@
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
-                </controls:SingleComponentControl.ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
 
-                <controls:SingleComponentControl.Fallback>
+                <controls:ComponentControl.Fallback>
                     <icons:UnifiedIcon Size="20" Value="{x:Static icons:IconValues.Mods}" />
-                </controls:SingleComponentControl.Fallback>
-            </controls:SingleComponentControl>
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
 
-            <controls:SingleComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:SingleComponentControl.ComponentTemplate>
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
                                                 ComponentKey="{x:Static controls:SharedColumns+Name.StringComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
@@ -37,12 +37,12 @@
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
-                </controls:SingleComponentControl.ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
 
-                <controls:SingleComponentControl.Fallback>
+                <controls:ComponentControl.Fallback>
                     <TextBlock Text="-" />
-                </controls:SingleComponentControl.Fallback>
-            </controls:SingleComponentControl>
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
         </StackPanel>
     </DataTemplate>
 
@@ -51,8 +51,8 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:SingleComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:SingleComponentControl.ComponentTemplate>
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:DateComponent"
                                             ComponentKey="{x:Static controls:SharedColumns+InstalledDate.ComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
@@ -61,12 +61,12 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-            </controls:SingleComponentControl.ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
 
-            <controls:SingleComponentControl.Fallback>
+            <controls:ComponentControl.Fallback>
                 <TextBlock Text="-" />
-            </controls:SingleComponentControl.Fallback>
-        </controls:SingleComponentControl>
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
     </DataTemplate>
 
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
@@ -74,8 +74,8 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:SingleComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:SingleComponentControl.ComponentTemplate>
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
@@ -94,9 +94,9 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-            </controls:SingleComponentControl.ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
 
-        </controls:SingleComponentControl>
+        </controls:ComponentControl>
     </DataTemplate>
 </ResourceDictionary>
 
