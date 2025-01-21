@@ -13,6 +13,8 @@ public interface ILeftMenuItemViewModel : IViewModelInterface
     
     public IconValue Icon { get; set; }
     
+    public string ToolTipText { get; }
+    
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
     
     public bool IsActive { get; }
