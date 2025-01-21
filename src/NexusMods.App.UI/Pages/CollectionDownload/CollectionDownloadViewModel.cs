@@ -181,11 +181,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
             var pageData = new PageData
             {
-                FactoryId = LoadoutPageFactory.StaticId,
-                Context = new LoadoutPageContext
+                FactoryId = CollectionLoadoutPageFactory.StaticId,
+                Context = new CollectionLoadoutPageContext
                 {
                     LoadoutId = _targetLoadout,
-                    GroupScope = group.AsCollectionGroup().AsLoadoutItemGroup().LoadoutItemGroupId,
+                    GroupId = group.AsCollectionGroup(),
                 },
             };
 
