@@ -76,6 +76,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Text = new StringComponent(Language.LibraryPageTitle),
             Icon = IconValues.LibraryOutline,
+            ToolTip = new StringComponent(Language.LibraryPageTitleToolTip),
             CountObservable = this.WhenAnyValue(vm => vm.NewDownloadModelCount),
         };
         
@@ -109,6 +110,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default, loadoutLabelObservable),
             Icon = IconValues.Mods,
+            ToolTip = new StringComponent(Language.LoadoutView_Title_Installed_Mods_ToolTip),
         };
 
         // Collections
@@ -179,6 +181,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
+            ToolTip = new StringComponent(Language.LoadoutLeftMenuViewModel_Diagnostics_ToolTip),
         };
         
         // Apply Control
