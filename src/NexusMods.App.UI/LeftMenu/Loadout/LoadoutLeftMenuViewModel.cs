@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
@@ -21,6 +22,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -47,15 +49,29 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
-        
+
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
-        
+
+        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
+            .Filter(datom =>
+                {
+                    var item = LoadoutItem.Load(conn.Db, datom.E);
+                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
+                }
+            )
+            .QueryWhenChanged(datoms => datoms.Count);
+
+        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
+            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
+        );
+
         LeftMenuItemLibrary = new LeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
@@ -69,7 +85,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LibraryPageTitle,
+            Text = new StringComponent(Language.LibraryPageTitle),
             Icon = IconValues.LibraryOutline,
         };
 
@@ -87,17 +103,22 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LoadoutView_Title_Installed_Mods,
+            Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default, loadoutLabelObservable),
             Icon = IconValues.Mods,
         };
 
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
             .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
             .FilterOnObservable(group =>
-            {
-                if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection)) return Observable.Return(true);
-                return collectionDownloader.IsCollectionInstalledObservable(nexusCollection.Revision, Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group)));
-            })
+                {
+                    if (!group.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollection))
+                        return Observable.Return(true);
+                    return collectionDownloader.IsCollectionInstalledObservable(
+                        nexusCollection.Revision,
+                        Observable.Return(Optional<CollectionGroup.ReadOnly>.Create(group))
+                    );
+                }
+            )
             .SortBy(item => item.IsReadOnly)
             .Transform(collection => new CollectionLeftMenuItemViewModel(
                     workspaceController,
@@ -115,7 +136,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     collection.CollectionGroupId
                 )
                 {
-                    Text = collection.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
                     Icon = IconValues.CollectionsOutline,
                 }
             )
@@ -134,7 +155,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             }
         )
         {
-            Text = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
+            Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
         };
 
@@ -209,7 +230,7 @@ file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
         return (x, y) switch
         {
             (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            ({ } a, { } b) => string.Compare(a.Text, b.Text, StringComparison.Ordinal),
+            ({ } a, { } b) => string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
             _ => 0,
         };
     }
