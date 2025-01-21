@@ -47,5 +47,10 @@ public partial class HashRelation : IModelDefinition
     /// The size of the file in bytes
     /// </summary>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsIndexed = true };
-    
+
+    /// <summary>
+    /// The paths that are associated with this hash relation.
+    /// </summary>
+    public static readonly BackReferenceAttribute<PathHashRelation> Paths = new(PathHashRelation.Hash);
+
 }

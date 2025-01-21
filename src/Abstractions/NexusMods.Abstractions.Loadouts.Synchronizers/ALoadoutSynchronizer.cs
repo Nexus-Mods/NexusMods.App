@@ -6,7 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
@@ -49,6 +52,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     protected readonly IConnection Connection;
 
     private readonly IJobMonitor _jobMonitor;
+    private readonly IFileHashesService _fileHashService;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -60,10 +64,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ISorter sorter,
         IConnection conn,
         IOSInformation os,
+        IFileHashesService fileHashService,
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _fileHashService = fileHashService;
 
         _logger = logger;
         _fileStore = fileStore;
@@ -84,6 +90,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>(),
+        provider.GetRequiredService<IFileHashesService>(),
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
@@ -959,6 +966,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task IndexNewState(GameInstallation installation, ITransaction tx)
     {
         var metaDataId = installation.GameMetadataId;
+
+        var hashDb = await _fileHashService.GetFileHashesDb();
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
@@ -967,24 +976,45 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
                 {
-                    var gamePath = installation.LocationsRegister.ToGamePath(file);
-                    if (IsIgnoredPath(gamePath))
-                    {
-                        return;
-                    }
-
-                    var newHash = await file.XxHash3Async(token: token);
+                    var (gamePath, newHash) = await HashGameFile(hashDb, installation, file, token);
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = gamePath.ToGamePathParentTuple(metaDataId),
                         Hash = newHash,
                         Size = file.FileInfo.Size,
                         LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = metaDataId
+                        GameId = metaDataId,
                     };
                 }
             );
         }
+    }
+
+    private static async ValueTask<(GamePath gamePath, Hash newHash)> HashGameFile(IDb hashDb, GameInstallation installation, AbsolutePath file, CancellationToken token)
+    {
+        var gamePath = installation.LocationsRegister.ToGamePath(file);
+        
+        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash
+        var relation = HashRelation.FindBySize(hashDb, file.FileInfo.Size);
+        if (relation.Count != 0)
+        {
+            // We have a size match, so minimal hash it, and see if we have a match
+            var minimalHash = await MultiHasher.MinimalHash(file, token);
+            foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
+            {
+                // Match on the relative path as well as the minimal hash
+                foreach (var path in matchingHash.Paths)
+                {
+                    if (path.Path == gamePath.Path)
+                        return (gamePath, matchingHash.XxHash3);
+                }
+                
+            }
+        }
+        
+        // No other matches, so do a full hash
+        var newHash = await file.XxHash3Async(token: token);
+        return (gamePath, newHash);
     }
 
     /// <inheritdoc />
