@@ -1,4 +1,4 @@
-# v0.7.2 - 2024-01-XX
+# v0.7.2 - 2024-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
 ## UI Improvements 
