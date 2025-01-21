@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -913,12 +914,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             var fileInfo = file.FileInfo;
 
                             // If the files don't match, update the entry
-                            if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
+                            if (fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc() || fileInfo.Size != entry.Size)
                             {
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, file.FileInfo.LastWriteTimeUtc);
                                 changes = true;
                             }
                         }
@@ -959,7 +960,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         return changes;
     }
-        
+    
+
     /// <summary>
     /// Index the game state and create the initial disk state
     /// </summary>
