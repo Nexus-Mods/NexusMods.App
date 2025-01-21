@@ -9,10 +9,19 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
 {
     LoadoutTreeDataGridAdapter Adapter { get; }
 
+    /// <summary>
+    /// Gets whether the collection is local or remote.
+    /// </summary>
     bool IsLocalCollection { get; }
 
+    /// <summary>
+    /// Gets whether the collection is read-only.
+    /// </summary>
     bool IsReadOnly { get; }
 
+    /// <summary>
+    /// Gets whether the collection is enabled.
+    /// </summary>
     bool IsCollectionEnabled { get; }
 
     string Name { get; }
