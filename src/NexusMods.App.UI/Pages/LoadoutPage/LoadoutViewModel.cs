@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
