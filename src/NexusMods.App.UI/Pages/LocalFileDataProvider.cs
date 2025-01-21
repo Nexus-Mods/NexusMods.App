@@ -109,11 +109,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         var linkedItemsObservable = _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItem, localFile)
             .AsEntityIds()
             .FilterInStaticLoadout(_connection, loadoutFilter)
-            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E));
-        // TODO: erri120: find something better here
-        // NOTE(erri120): big performance implications here
-            // .PublishWithFunc(() => LoadoutDataProviderHelper.GetLinkedLoadoutItems(_connection.Db, loadoutFilter, localFile.AsLibraryFile().AsLibraryItem()))
-            // .RefCount();
+            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
+            .RefCount();
 
         var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
         var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
