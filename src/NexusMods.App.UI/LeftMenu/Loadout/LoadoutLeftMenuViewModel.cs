@@ -30,16 +30,17 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public IApplyControlViewModel ApplyControlViewModel { get; }
-
+    public WorkspaceId WorkspaceId { get; }
+    
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    
+    public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems => _leftMenuCollectionItems;
-    public WorkspaceId WorkspaceId { get; }
-
+    
     [Reactive] private int NewDownloadModelCount { get; set; }
 
     public LoadoutLeftMenuViewModel(
@@ -58,21 +59,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
-
-        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
-            .Filter(datom =>
-                {
-                    var item = LoadoutItem.Load(conn.Db, datom.E);
-                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
-                }
-            )
-            .QueryWhenChanged(datoms => datoms.Count);
-
-        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
-            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
-        );
-
-        LeftMenuItemLibrary = new LeftMenuItemViewModel(
+        
+        // Library
+        LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
             workspaceController,
             WorkspaceId,
             new PageData
@@ -87,7 +76,22 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Text = new StringComponent(Language.LibraryPageTitle),
             Icon = IconValues.LibraryOutline,
+            CountObservable = this.WhenAnyValue(vm => vm.NewDownloadModelCount),
         };
+        
+        // Loadout
+        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
+            .Filter(datom =>
+                {
+                    var item = LoadoutItem.Load(conn.Db, datom.E);
+                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
+                }
+            )
+            .QueryWhenChanged(datoms => datoms.Count);
+
+        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
+            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
+        );
 
         LeftMenuItemLoadout = new LeftMenuItemViewModel(
             workspaceController,
@@ -107,6 +111,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Icon = IconValues.Mods,
         };
 
+        // Collections
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
             .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
             .FilterOnObservable(group =>
@@ -141,7 +146,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 }
             )
             .Transform(ILeftMenuItemViewModel (item) => item);
-
+        
+        // Health Check
         LeftMenuItemHealthCheck = new HealthCheckLeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
@@ -160,13 +166,15 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
         };
-
+        
+        // Apply Control
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId,
             serviceProvider,
             monitor,
             overlayController,
             gameRunningTracker
         );
+        
 
         this.WhenActivated(disposable =>
             {
@@ -190,11 +198,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream
                 // above will count all existing downloads, which we want to ignore.
                 NewDownloadModelCount = 0;
-
-                // this.WhenAnyValue(vm => vm.NewDownloadModelCount)
-                //     .Select(count => count == 0 ? [] : new[] { count.ToString() })
-                //     .BindToVM(LeftMenuItemLibrary, vm => vm.Badges)
-                //     .DisposeWith(disposable);
+                
+                LeftMenuItemLibrary.WhenAnyValue(item=> item.IsActive)
+                    .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
+                    .DisposeWith(disposable);
             }
         );
     }
@@ -213,8 +220,10 @@ file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
 
         return (x, y) switch
         {
-            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            ({ } a, { } b) => string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
+            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => 
+                a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
+            ({ } a, { } b) => 
+                string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
             _ => 0,
         };
     }

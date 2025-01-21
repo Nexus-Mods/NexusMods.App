@@ -732,6 +732,9 @@
         <Compile Update="LeftMenu\Items\HealthCheckLeftMenuItemViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemWithCountBadgeViewModel.cs">
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

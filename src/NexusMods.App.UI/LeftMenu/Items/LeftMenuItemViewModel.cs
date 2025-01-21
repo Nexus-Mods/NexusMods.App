@@ -17,11 +17,9 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
 {
     public StringComponent Text { get; init; } = new("");
     [Reactive] public IconValue Icon { get; set; } = new();
-    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
-
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
-
+    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
 
     public LeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -38,11 +36,12 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
                 workspaceController.OpenPage(workspaceId, pageData, behavior);
             }
         );
-
+        
         var workspaceIsActiveObservable = workspaceController
             .WhenAnyValue(controller => controller.ActiveWorkspace)
             .Where(workspace => workspace.Id == workspaceId);
 
+        // Should be 'Active' if the page is open and selected in any panel of the workspace
         var isActiveObservable = workspaceIsActiveObservable
             .Select(workspace =>
                 workspace.Panels.ToObservableChangeSet()
@@ -71,6 +70,7 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
             .DistinctUntilChanged()
             .Prepend(workspaceController.ActiveWorkspace.Panels.Count == 1);
         
+        // Should be 'Selected' only if there are multiple panels and the page is open and selected in the selected panel 
         var isSelectedObservable = workspaceIsActiveObservable
             .Select(workspace => workspace.WhenAnyValue(w => w.SelectedTab.Contents))
             .Switch()
