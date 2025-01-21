@@ -127,7 +127,7 @@
                                                        Theme="{StaticResource BodyMDNormalTheme}"
                                                        Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
                                         </StackPanel>
-                                        <StackPanel
+                                        <StackPanel x:Name="NexusModsLogo"
                                             Orientation="Horizontal"
                                             Spacing="4">
                                             <icons:UnifiedIcon Size="24"

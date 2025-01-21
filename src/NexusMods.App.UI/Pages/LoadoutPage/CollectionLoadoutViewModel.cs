@@ -48,12 +48,14 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             Name = revisionMetadata.Value.Collection.Name;
             RevisionNumber = revisionMetadata.Value.RevisionNumber;
             AuthorName = revisionMetadata.Value.Collection.Author.Name;
+            IsLocalCollection = false;
         }
         else
         {
             Name = TabTitle;
             RevisionNumber = RevisionNumber.From(1);
             AuthorName = string.Empty;
+            IsLocalCollection = true;
         }
 
         var ticker = R3.Observable
@@ -124,6 +126,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         });
     }
 
+    public bool IsLocalCollection { get; }
     public bool IsReadOnly { get; }
 
     public string Name { get; }

@@ -9,6 +9,10 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
 {
     LoadoutTreeDataGridAdapter Adapter { get; }
 
+    bool IsLocalCollection { get; }
+
+    bool IsReadOnly { get; }
+
     bool IsCollectionEnabled { get; }
 
     string Name { get; }

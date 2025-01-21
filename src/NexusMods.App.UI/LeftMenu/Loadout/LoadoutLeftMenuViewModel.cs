@@ -125,10 +125,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 }
             )
             .SortBy(item => item.IsReadOnly)
-            .Transform(collection => new CollectionLeftMenuItemViewModel(
-                    workspaceController,
-                    WorkspaceId,
-                    new PageData
+            .Transform(collection =>
+            {
+                var pageData = collection.IsReadOnly
+                    ? new PageData
                     {
                         FactoryId = CollectionLoadoutPageFactory.StaticId,
                         Context = new CollectionLoadoutPageContext
@@ -136,15 +136,29 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                             LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
                             GroupId = collection,
                         },
-                    },
+                    }
+                    : new PageData
+                    {
+                        FactoryId = LoadoutPageFactory.StaticId,
+                        Context = new LoadoutPageContext
+                        {
+                            LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                            GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
+                        },
+                    };
+
+                return new CollectionLeftMenuItemViewModel(
+                    workspaceController,
+                    WorkspaceId,
+                    pageData,
                     serviceProvider,
                     collection.CollectionGroupId
                 )
                 {
                     Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
                     Icon = IconValues.CollectionsOutline,
-                }
-            )
+                };
+            })
             .Transform(ILeftMenuItemViewModel (item) => item);
         
         // Health Check

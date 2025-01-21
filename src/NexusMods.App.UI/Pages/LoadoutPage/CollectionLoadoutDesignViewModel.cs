@@ -23,4 +23,6 @@ public class CollectionLoadoutDesignViewModel : APageViewModel<ICollectionLoadou
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public ReactiveCommand<Unit> CommandToggle { get; } = new ReactiveCommand();
+    public bool IsLocalCollection { get; } = false;
+    public bool IsReadOnly { get; } = true;
 }
