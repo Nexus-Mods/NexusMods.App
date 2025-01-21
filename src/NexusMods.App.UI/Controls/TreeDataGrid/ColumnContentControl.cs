@@ -48,7 +48,14 @@ public abstract class ACustomContentControl<TContent> : ContentControl
 {
     private readonly SerialDisposable _serialDisposable = new();
 
+    /// <summary>
+    /// Builds a control for the given content.
+    /// </summary>
     protected abstract Control? BuildContentControl(TContent content);
+
+    /// <summary>
+    /// Subscribes to content changes.
+    /// </summary>
     protected abstract IDisposable Subscribe(TContent content);
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
