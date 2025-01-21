@@ -54,7 +54,7 @@
                                 </Border>
 
                                 <!-- collection image -->
-                                <Border Grid.Column="0" x:Name="CollectionImageBorder" IsVisible="False"
+                                <Border Grid.Column="0" x:Name="CollectionImageBorder"
                                         Height="90"
                                         Width="73"
                                         VerticalAlignment="Top"
