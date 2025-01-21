@@ -20,7 +20,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     
     public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
     
-    public CollectionGroupId CollectionGroupId;
+    public CollectionGroupId CollectionGroupId { get; }
     
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -29,8 +29,9 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         IServiceProvider serviceProvider,
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
-        CollectionGroupId = collectionGroupId;
         var conn = serviceProvider.GetRequiredService<IConnection>();
+        
+        CollectionGroupId = collectionGroupId;
 
         var isEnabledObservable = CollectionGroup.Observe(conn, collectionGroupId)
             .Select(collectionGroup => collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());

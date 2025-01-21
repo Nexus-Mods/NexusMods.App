@@ -30,16 +30,17 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public IApplyControlViewModel ApplyControlViewModel { get; }
-
+    public WorkspaceId WorkspaceId { get; }
+    
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    
+    public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems => _leftMenuCollectionItems;
-    public WorkspaceId WorkspaceId { get; }
-
+    
     [Reactive] private int NewDownloadModelCount { get; set; }
 
     public LoadoutLeftMenuViewModel(
@@ -173,6 +174,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             overlayController,
             gameRunningTracker
         );
+        
 
         this.WhenActivated(disposable =>
             {
@@ -218,8 +220,10 @@ file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
 
         return (x, y) switch
         {
-            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            ({ } a, { } b) => string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
+            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => 
+                a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
+            ({ } a, { } b) => 
+                string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
             _ => 0,
         };
     }
