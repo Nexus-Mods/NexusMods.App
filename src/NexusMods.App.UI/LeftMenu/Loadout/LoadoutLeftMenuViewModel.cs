@@ -142,7 +142,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             )
             .Transform(ILeftMenuItemViewModel (item) => item);
 
-        LeftMenuItemHealthCheck = new LeftMenuItemViewModel(
+        LeftMenuItemHealthCheck = new HealthCheckLeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
             new PageData
@@ -152,7 +152,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 {
                     LoadoutId = loadoutContext.LoadoutId,
                 },
-            }
+            },
+            diagnosticManager,
+            loadoutContext.LoadoutId
         )
         {
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
@@ -173,24 +175,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .SortAndBind(out _leftMenuCollectionItems, collectionItemComparer)
                     .Subscribe()
                     .DisposeWith(disposable);
-
-                // diagnosticManager
-                //     .CountDiagnostics(loadoutContext.LoadoutId)
-                //     .OnUI()
-                //     .Select(counts =>
-                //         {
-                //             var badges = new List<string>(capacity: 3);
-                //             if (counts.NumCritical != 0)
-                //                 badges.Add(counts.NumCritical.ToString());
-                //             if (counts.NumWarnings != 0)
-                //                 badges.Add(counts.NumWarnings.ToString());
-                //             if (counts.NumSuggestions != 0)
-                //                 badges.Add(counts.NumSuggestions.ToString());
-                //             return badges.ToArray();
-                //         }
-                //     )
-                //     .BindToVM(LeftMenuItemHealthCheck, vm => vm.Badges)
-                //     .DisposeWith(disposable);
 
                 LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                     .RemoveKey()

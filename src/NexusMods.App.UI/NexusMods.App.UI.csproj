@@ -729,6 +729,9 @@
         <Compile Update="LeftMenu\Items\ILeftMenuItemWithToggleViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\HealthCheckLeftMenuItemViewModel.cs">
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
