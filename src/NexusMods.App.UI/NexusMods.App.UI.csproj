@@ -735,6 +735,9 @@
         <Compile Update="LeftMenu\Items\LeftMenuItemWithCountBadgeViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\CollectionDownload\CollectionDownloadViewModel.cs">
+          <DependentUpon>ICollectionDownloadViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

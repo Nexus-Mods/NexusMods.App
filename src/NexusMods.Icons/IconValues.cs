@@ -361,6 +361,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/school
     public static readonly IconValue School = new ProjektankerIcon("mdi-school");
 
+    // https://pictogrammers.com/library/mdi/icon/account
+    public static readonly IconValue Account = new ProjektankerIcon("mdi-account");
+    
 #endregion
 
 #region Toggle
@@ -525,6 +528,11 @@ public static class IconValues
 #endregion
     
 #region Brand Pictograms
+    
+    /// <summary>
+    /// Brand pictogram for Health
+    /// </summary>
+    public static readonly IconValue NexusColor = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg"));
     
     /// <summary>
     /// Brand pictogram for Health

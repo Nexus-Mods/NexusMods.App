@@ -113,6 +113,8 @@
                     <icons:UnifiedIcon Classes="LibraryOutline" />
                     <icons:UnifiedIcon Classes="CollectionsOutline" />
                     <icons:UnifiedIcon Classes="InfoFilled" />
+                    <icons:UnifiedIcon Classes="NexusColor" />
+                    <icons:UnifiedIcon Classes="Account" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -601,5 +603,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.InfoFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.NexusColor">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.NexusColor}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Account">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Account}" />
     </Style>
 </Styles>
