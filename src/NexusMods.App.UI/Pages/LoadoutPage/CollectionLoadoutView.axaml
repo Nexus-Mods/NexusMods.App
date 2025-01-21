@@ -206,37 +206,7 @@
                       ShowColumnHeaders="True"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True"
-                      Classes="MainListsStyling">
-            <TreeDataGrid.Resources>
-                <DataTemplate x:Key="DisplayThumbnailAndNameColumnTemplate" DataType="loadoutPage:LoadoutItemModel">
-                    <StackPanel Orientation="Horizontal" x:Name="LibraryItemWithThumbnailAndNameStack">
-                        <Border x:Name="LibraryItemThumbnailBorder" IsVisible="{CompiledBinding ShowThumbnail.Value}">
-                            <Panel>
-                                <!-- The below image is drawn after the icon and so covers it up if a thumbnail is present. -->
-                                <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
-                                <Image Source="{CompiledBinding Thumbnail.Value}" />
-                            </Panel>
-                        </Border>
-                        <TextBlock Text="{CompiledBinding Name.Value}" />
-                    </StackPanel>
-                </DataTemplate>
-
-                <DataTemplate x:Key="ToggleEnableColumnTemplate" DataType="loadoutPage:LoadoutItemModel">
-                    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center"
-                                  Command="{CompiledBinding ToggleEnableStateCommand}"
-                                  IsChecked="{CompiledBinding IsEnabled.Value, Mode=OneWay}">
-                        <ToggleSwitch.OnContent>
-                            <ContentControl />
-                        </ToggleSwitch.OnContent>
-                        <ToggleSwitch.OffContent>
-                            <ContentControl />
-                        </ToggleSwitch.OffContent>
-                    </ToggleSwitch>
-                </DataTemplate>
-
-            </TreeDataGrid.Resources>
-        </TreeDataGrid>
+                      Classes="MainListsStyling"/>
     </Grid>
 
 
