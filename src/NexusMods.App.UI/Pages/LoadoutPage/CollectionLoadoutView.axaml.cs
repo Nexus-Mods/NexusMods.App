@@ -49,20 +49,18 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .SubscribeWithErrorLogging(value =>
                     {
                         CollectionToggle.IsChecked = value;
+                        ToolbarReadOnly.IsVisible = value;
+                        ToolbarDisabled.IsVisible = !value;
 
                         if (value)
                         {
                             ToolbarBorder.Classes.Add("Info");
                             ToolbarBorder.Classes.Remove("Warning");
-                            ToolbarReadOnly.IsVisible = true;
-                            ToolbarDisabled.IsVisible = false;
                         }
                         else
                         {
                             ToolbarBorder.Classes.Remove("Info");
                             ToolbarBorder.Classes.Add("Warning");
-                            ToolbarReadOnly.IsVisible = false;
-                            ToolbarDisabled.IsVisible = true;
                         }
                     }
                 )
