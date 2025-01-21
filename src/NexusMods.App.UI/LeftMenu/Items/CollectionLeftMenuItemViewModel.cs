@@ -40,8 +40,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         {
             using var tx = conn.BeginTransaction();
             
-            var shouldEnable = !IsEnabled;
-            if (shouldEnable)
+            if (IsEnabled)
             {
                 tx.Retract(CollectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
             } else
