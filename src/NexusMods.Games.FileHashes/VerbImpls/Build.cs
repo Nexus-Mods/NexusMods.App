@@ -58,6 +58,7 @@ public class Build : IAsyncDisposable
         await AddSteamData(path);
         
         await _renderer.TextLine("Exporting database");
+        await _connection.FlushAndCompact();
         
         _datomStore.Dispose();
         _backend.Dispose();

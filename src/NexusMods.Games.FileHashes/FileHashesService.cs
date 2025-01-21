@@ -51,6 +51,8 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             path.DeleteDirectory();
         }
+
+
         
         // Open the latest database
         var latest = ExistingDBs().FirstOrDefault();
@@ -58,21 +60,28 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             _currentDb = OpenDb(latest.PublishTime, latest.Path);
         }
+        
+        // Trigger an update
+        Task.Run(() => Task.FromResult(ForceUpdate()));
     }
 
     private ConnectedDb OpenDb(DateTimeOffset timestamp, AbsolutePath path)
     {
-        _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
-        var backend = new Backend();
-        var settings = new DatomStoreSettings
-        {
-            Path = path,
-        };
-        var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-        var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, []);
-
         lock (_databases)
         {
+            if (_databases.TryGetValue(path, out var existing))
+                return existing;
+            
+            _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
+            var backend = new Backend(readOnly: true);
+            var settings = new DatomStoreSettings
+            {
+                Path = path,
+            };
+            var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, []);
+
+
             var connectedDb = new ConnectedDb(connection.Db, connection, store, backend, timestamp, path);
             _databases[path] = connectedDb;
             return connectedDb;
