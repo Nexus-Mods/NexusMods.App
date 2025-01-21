@@ -42,7 +42,6 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
         foreach (var fileNode in parent.EnumerateFilesBfs())
         {
             var relativePath = new RelativePath("bin").Join(fileNode.Value.Item.Path.DropFirst(parent.Depth()));
-            Console.WriteLine($"Target path: {relativePath}");
             var loadoutFile = new LoadoutFile.New(transaction, out var id)
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
