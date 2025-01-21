@@ -43,7 +43,10 @@ public class ComponentTemplate<TComponent> : IComponentTemplate
     }
 }
 
-public abstract class ACustomContentControl<TContent> : ContentControl
+/// <summary>
+/// Custom <see cref="ContentControl"/> to reactively build the control.
+/// </summary>
+public abstract class AReactiveContentControl<TContent> : ContentControl
     where TContent : class
 {
     private readonly SerialDisposable _serialDisposable = new();
@@ -112,7 +115,7 @@ public abstract class ACustomContentControl<TContent> : ContentControl
     }
 }
 
-public class ComponentControl<TKey> : ACustomContentControl<CompositeItemModel<TKey>>
+public class ComponentControl<TKey> : AReactiveContentControl<CompositeItemModel<TKey>>
     where TKey : notnull
 {
     public IComponentTemplate? ComponentTemplate { get; set; }
@@ -157,7 +160,7 @@ public class ComponentControl<TKey> : ACustomContentControl<CompositeItemModel<T
 /// <summary>
 /// Control for columns where row models are <see cref="CompositeItemModel{TKey}"/>.
 /// </summary>
-public class MultiComponentControl<TKey> : ACustomContentControl<CompositeItemModel<TKey>>
+public class MultiComponentControl<TKey> : AReactiveContentControl<CompositeItemModel<TKey>>
     where TKey : notnull
 {
     [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global", Justification = "Updated in XAML")]
