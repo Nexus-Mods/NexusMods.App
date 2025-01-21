@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
@@ -34,8 +35,6 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 })
                 .DisposeWith(disposables);
             
-            // this.OneWayBind(ViewModel, vm => vm.BackgroundImage, view => view.BackgroundImage.Source)
-            //     .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
@@ -44,8 +43,30 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.BindCommand(ViewModel, vm => vm.CommandToggle, view => view.CollectionToggle)
                 .AddTo(disposables);
-            this.OneWayBind(ViewModel, vm => vm.IsCollectionEnabled, view => view.CollectionToggle.IsChecked)
-                .AddTo(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.IsCollectionEnabled)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(value =>
+                    {
+                        CollectionToggle.IsChecked = value;
+
+                        if (value)
+                        {
+                            ToolbarBorder.Classes.Add("Info");
+                            ToolbarBorder.Classes.Remove("Warning");
+                            ToolbarReadOnly.IsVisible = true;
+                            ToolbarDisabled.IsVisible = false;
+                        }
+                        else
+                        {
+                            ToolbarBorder.Classes.Remove("Info");
+                            ToolbarBorder.Classes.Add("Warning");
+                            ToolbarReadOnly.IsVisible = false;
+                            ToolbarDisabled.IsVisible = true;
+                        }
+                    }
+                )
+                .DisposeWith(disposables);
             
             this.WhenAnyValue(view => view.ViewModel!.BackgroundImage)
                 .WhereNotNull()

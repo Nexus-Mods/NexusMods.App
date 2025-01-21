@@ -17,7 +17,7 @@
     <!-- Add Styles Here -->
     <Style Selector="collections|CollectionLoadoutView">
         
-        <!-- <Setter Property="Background" Value="Chocolate"></Setter> -->
+       
         
     </Style>
 </Styles>
