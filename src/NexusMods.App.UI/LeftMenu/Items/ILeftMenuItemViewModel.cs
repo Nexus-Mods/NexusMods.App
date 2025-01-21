@@ -18,11 +18,4 @@ public interface ILeftMenuItemViewModel : IViewModelInterface
     public bool IsActive { get; }
     
     public bool IsSelected { get; }
-    
-    // ToggleSwitch related properties
-    public bool IsToggleVisible { get; }
-    
-    public bool IsEnabled { get; set; }
-    
-    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
 }

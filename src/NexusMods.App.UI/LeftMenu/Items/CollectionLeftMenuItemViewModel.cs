@@ -12,13 +12,13 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
+public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuItemWithToggleViewModel
 {
-    [Reactive] public override bool IsEnabled { get; set; }
+    [Reactive] public bool IsEnabled { get; set; }
     
-    public override bool IsToggleVisible { get; } = true;
+    public bool IsToggleVisible { get; } = true;
     
-    public override ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
     
     public CollectionGroupId CollectionGroupId;
     
@@ -29,7 +29,6 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
         IServiceProvider serviceProvider,
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
-        IsToggleVisible = true;
         CollectionGroupId = collectionGroupId;
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
