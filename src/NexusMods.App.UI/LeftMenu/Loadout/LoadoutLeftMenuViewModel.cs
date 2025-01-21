@@ -58,21 +58,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
-
-        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
-            .Filter(datom =>
-                {
-                    var item = LoadoutItem.Load(conn.Db, datom.E);
-                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
-                }
-            )
-            .QueryWhenChanged(datoms => datoms.Count);
-
-        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
-            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
-        );
-
-        LeftMenuItemLibrary = new LeftMenuItemViewModel(
+        
+        // Library
+        LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
             workspaceController,
             WorkspaceId,
             new PageData
@@ -87,7 +75,22 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Text = new StringComponent(Language.LibraryPageTitle),
             Icon = IconValues.LibraryOutline,
+            CountObservable = this.WhenAnyValue(vm => vm.NewDownloadModelCount),
         };
+        
+        // Loadout
+        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
+            .Filter(datom =>
+                {
+                    var item = LoadoutItem.Load(conn.Db, datom.E);
+                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
+                }
+            )
+            .QueryWhenChanged(datoms => datoms.Count);
+
+        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
+            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
+        );
 
         LeftMenuItemLoadout = new LeftMenuItemViewModel(
             workspaceController,
@@ -107,6 +110,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Icon = IconValues.Mods,
         };
 
+        // Collections
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
             .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
             .FilterOnObservable(group =>
@@ -141,7 +145,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 }
             )
             .Transform(ILeftMenuItemViewModel (item) => item);
-
+        
+        // Health Check
         LeftMenuItemHealthCheck = new HealthCheckLeftMenuItemViewModel(
             workspaceController,
             WorkspaceId,
@@ -160,7 +165,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
         };
-
+        
+        // Apply Control
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId,
             serviceProvider,
             monitor,
@@ -190,11 +196,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream
                 // above will count all existing downloads, which we want to ignore.
                 NewDownloadModelCount = 0;
-
-                // this.WhenAnyValue(vm => vm.NewDownloadModelCount)
-                //     .Select(count => count == 0 ? [] : new[] { count.ToString() })
-                //     .BindToVM(LeftMenuItemLibrary, vm => vm.Badges)
-                //     .DisposeWith(disposable);
+                
+                LeftMenuItemLibrary.WhenAnyValue(item=> item.IsActive)
+                    .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
+                    .DisposeWith(disposable);
             }
         );
     }
