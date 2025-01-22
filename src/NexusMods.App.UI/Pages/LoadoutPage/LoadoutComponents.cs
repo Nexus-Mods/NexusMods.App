@@ -1,28 +1,90 @@
+using DynamicData;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
+using ObservableCollections;
+using OneOf;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutComponents
 {
-    public sealed class IsEnabled : AValueComponent<bool>, IItemModelComponent<IsEnabled>, IComparable<IsEnabled>
+    public sealed class IsEnabled : ReactiveR3Object, IItemModelComponent<IsEnabled>, IComparable<IsEnabled>
     {
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
 
-        public int CompareTo(IsEnabled? other) => Value.Value.CompareTo(other?.Value.Value ?? false);
+        private readonly ValueComponent<bool?> _valueComponent;
+        public BindableReactiveProperty<bool?> Value => _valueComponent.Value;
+
+        private readonly OneOf<ObservableHashSet<LoadoutItemId>, LoadoutItemId[]> _ids;
+
+        public IEnumerable<LoadoutItemId> ItemIds => _ids.Match(
+            f0: static x => x.AsEnumerable(),
+            f1: static x => x.AsEnumerable()
+        );
+
+        public int CompareTo(IsEnabled? other)
+        {
+            var (a, b) = (Value.Value, other?.Value.Value);
+            return (a, b) switch
+            {
+                (null, null) => 0,
+                (not null, null) => 1,
+                (null, not null) => -1,
+                (not null, not null) => a.Value.CompareTo(b.Value),
+            };
+        }
+
+        private readonly IDisposable _activationDisposable;
 
         public IsEnabled(
-            bool initialValue,
-            IObservable<bool> valueObservable,
-            bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+            ValueComponent<bool?> valueComponent,
+            LoadoutItemId itemId)
+        {
+            _valueComponent = valueComponent;
+            _ids = new[] { itemId };
+
+            _activationDisposable = this.WhenActivated((self, disposables) =>
+            {
+                self._valueComponent.Activate().AddTo(disposables);
+            });
+        }
 
         public IsEnabled(
-            bool initialValue,
-            Observable<bool> valueObservable,
-            bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+            ValueComponent<bool?> valueComponent,
+            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
+        {
+            _valueComponent = valueComponent;
+            _ids = new ObservableHashSet<LoadoutItemId>();
 
-        public IsEnabled(bool value) : base(value) { }
+            _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
+            {
+                var childrenItemIdsObservable = state;
+                self._valueComponent.Activate().AddTo(disposables);
+
+                childrenItemIdsObservable
+                    .SubscribeWithErrorLogging(changeSet => self._ids.AsT0.ApplyChanges(changeSet))
+                    .AddTo(disposables);
+
+                Disposable.Create(self._ids.AsT0, static set => set.Clear()).AddTo(disposables);
+            });
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && !_isDisposed)
+            {
+                Disposable.Dispose(_activationDisposable, _valueComponent);
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }
 

@@ -16,6 +16,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 /// <summary>
 ///     This is used for individual files (archives) linked to a download page.
 /// </summary>
+[Obsolete("Use CompositeItemModel instead")]
 public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithVersion,

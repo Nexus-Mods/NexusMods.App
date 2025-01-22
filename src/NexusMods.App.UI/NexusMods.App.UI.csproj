@@ -375,6 +375,9 @@
         <Compile Update="Controls\TreeDataGrid\StringComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\ImageComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\TreeDataGrid\SizeComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
@@ -582,9 +585,6 @@
         </Compile>
         <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
           <DependentUpon>ILibraryViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LoadoutPage\FakeParentLoadoutItemModel.cs">
-            <DependentUpon>LoadoutItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>

@@ -1,8 +1,6 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
@@ -16,7 +14,7 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionLoadoutView, ICollectionLoadoutViewModel, LoadoutItemModel, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionLoadoutView, ICollectionLoadoutViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
