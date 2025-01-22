@@ -14,8 +14,10 @@ public partial class HomeLeftMenuView : ReactiveUserControl<IHomeLeftMenuViewMod
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(x => x.ViewModel!.Items)
-                .BindTo(this, x => x.MenuItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemMyGames, view => view.MyGamesItem.ViewModel)
+                .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemMyLoadouts, view => view.MyLoadoutsItem.ViewModel)
                 .DisposeWith(d);
         });
     }

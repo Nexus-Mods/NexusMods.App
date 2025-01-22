@@ -1,14 +1,11 @@
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Observable = System.Reactive.Linq.Observable;
@@ -95,75 +92,41 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             });
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        // NOTE(erri120): For the nested loadout view, the parent will be a "fake" loadout model
-        // created from a LocalFile where the children are the LibraryLinkedLoadoutItems that link
-        // back to the LocalFile
-        return _connection
-            .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .AsEntityIds()
-            .FilterOnObservable((_, e) => _connection
-                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
+        return LocalFile.ObserveAll(_connection)
+            .FilterOnObservable((_, entityId) => _connection
+                .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                 .AsEntityIds()
                 .FilterInStaticLoadout(_connection, loadoutFilter)
                 .IsNotEmpty()
             )
-            .Transform((_, entityId) =>
-            {
-                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
+            .Transform(localFile => ToLoadoutItemModel(loadoutFilter, localFile));
+    }
 
-                // TODO: dispose
-                var cache = new SourceCache<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(static item => item.Id);
-                var disposable = _connection
-                    .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
-                    .AsEntityIds()
-                    .FilterInStaticLoadout(_connection, loadoutFilter)
-                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e))
-                    .Adapt(new SourceCacheAdapter<LibraryLinkedLoadoutItem.ReadOnly, EntityId>(cache))
-                    .SubscribeWithErrorLogging();
+    private CompositeItemModel<EntityId> ToLoadoutItemModel(LoadoutFilter loadoutFilter, LocalFile.ReadOnly localFile)
+    {
+        var linkedItemsObservable = _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItem, localFile)
+            .AsEntityIds()
+            .FilterInStaticLoadout(_connection, loadoutFilter)
+            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
+            .RefCount();
 
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItem => LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false));
+        var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
+        var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
 
-                var installedAtObservable = cache.Connect()
-                    .Transform(item => item.GetCreatedAt())
-                    .QueryWhenChanged(query =>
-                    {
-                        if (query.Count == 0) return DateTimeOffset.MinValue;
-                        return query.Items.Max();
-                    });
+        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
+        {
+            HasChildrenObservable = hasChildrenObservable,
+            ChildrenObservable = childrenObservable,
+        };
 
-                var loadoutItemIdsObservable = cache.Connect().Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutItemId);
+        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
 
-                var isEnabledObservable = cache.Connect()
-                    .TransformOnObservable(x => LoadoutItem.Observe(_connection, x.Id).Select(item => !item.IsDisabled))
-                    .QueryWhenChanged(query =>
-                    {
-                        var isEnabled = Optional<bool>.None;
-                        foreach (var isItemEnabled in query.Items)
-                        {
-                            if (!isEnabled.HasValue)
-                            {
-                                isEnabled = isItemEnabled;
-                            }
-                            else
-                            {
-                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
-                            }
-                        }
+        LoadoutDataProviderHelper.AddDateComponent(parentItemModel, localFile.GetCreatedAt(), linkedItemsObservable);
+        LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
-                        return isEnabled.HasValue ? isEnabled.Value : null;
-                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
-
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, 
-                    _serviceProvider, Observable.Return(true), childrenObservable, bitmap: null)
-                {
-                    NameObservable = Observable.Return(libraryFile.AsLibraryItem().Name),
-                    InstalledAtObservable = installedAtObservable,
-                    IsEnabledObservable = isEnabledObservable,
-                };
-
-                return model;
-            });
+        return parentItemModel;
     }
 }

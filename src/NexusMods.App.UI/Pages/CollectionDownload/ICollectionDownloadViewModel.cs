@@ -2,6 +2,7 @@ using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using R3;
@@ -87,9 +88,11 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     bool CanDownloadAutomatically { get; }
 
+    BindableReactiveProperty<bool> IsInstalled { get; }
     BindableReactiveProperty<bool> IsInstalling { get; }
     BindableReactiveProperty<bool> IsDownloading { get; }
 
+    ReactiveCommand<NavigationInformation> CommandViewCollection { get; }
     ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
     ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
 
@@ -97,7 +100,6 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
 
     ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
-    ReactiveCommand<Unit> CommandViewInLibrary { get; }
     ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
     ReactiveCommand<Unit> CommandDeleteCollection { get; }

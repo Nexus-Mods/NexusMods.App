@@ -103,8 +103,8 @@ public static class Services
             .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
-            .AddViewModel<IconViewModel, IIconViewModel>()
-            .AddViewModel<LeftMenuItemViewModel, INewLeftMenuItemViewModel>()
+            .AddViewModel<LeftMenuItemViewModel, ILeftMenuItemViewModel>()
+            .AddViewModel<CollectionLeftMenuItemViewModel, ILeftMenuItemViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
@@ -135,11 +135,9 @@ public static class Services
             .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
-            .AddView<IconView, IIconViewModel>()
-            .AddView<LeftMenuItemView, INewLeftMenuItemViewModel>()
+            .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
-            .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<MetricsOptInView, IMetricsOptInViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
@@ -220,6 +218,9 @@ public static class Services
             .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
             .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
 
+            .AddView<CollectionLoadoutView, ICollectionLoadoutViewModel>()
+            .AddViewModel<CollectionLoadoutViewModel, ICollectionLoadoutViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -253,6 +254,7 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
+            .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

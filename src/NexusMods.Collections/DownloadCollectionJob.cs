@@ -1,4 +1,6 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -24,14 +26,13 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
         {
             var download = downloads[index];
             if (!CollectionDownloader.DownloadMatchesItemType(download, ItemType)) return;
+            if (CollectionDownloader.GetStatus(download, Db).IsDownloaded()) return;
 
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {
-                if (CollectionDownloader.IsDownloaded(nexusModsDownload, Db)) return;
                 await Downloader.Download(nexusModsDownload, token);
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
             {
-                if (CollectionDownloader.IsDownloaded(externalDownload, Db)) return;
                 await Downloader.Download(externalDownload, onlyDirectDownloads: true, token);
             }
         });
