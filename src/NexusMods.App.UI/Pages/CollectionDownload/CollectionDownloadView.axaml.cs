@@ -31,7 +31,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.BindCommand(ViewModel, vm => vm.CommandDeleteAllDownloads, view => view.MenuItemDeleteAllDownloads)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.MenuItemDeleteCollection)
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollectionRevision, view => view.MenuItemDeleteCollectionRevision)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.TextCollectionStatus.Text)

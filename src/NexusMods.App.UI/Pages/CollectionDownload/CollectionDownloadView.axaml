@@ -40,10 +40,10 @@
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem x:Name="MenuItemDeleteCollection">
+            <MenuItem x:Name="MenuItemDeleteCollectionRevision">
                 <MenuItem.Header>
                     <panels:FlexPanel>
-                        <TextBlock>Delete Collection</TextBlock>
+                        <TextBlock>Delete collection revision</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
