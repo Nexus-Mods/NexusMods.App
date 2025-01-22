@@ -11,22 +11,63 @@
     <Design.DataContext>
         <items:LeftMenuItemDesignViewModel />
     </Design.DataContext>
-    
-    <navigation:LeftMenuNavButton x:Name="NavButton" >
+
+    <navigation:LeftMenuNavButton x:Name="NavButton">
         <DockPanel>
             <icons:UnifiedIcon x:Name="LeftIcon" DockPanel.Dock="Left" />
-            
-            <ToggleSwitch x:Name="ToggleSwitch" DockPanel.Dock="Right"
-                          Classes="ExtraSmall"
-                          OnContent="{x:Null}"
-                          OffContent="{x:Null}"
-                          IsVisible="False"/>
-            
+
+            <ContentControl x:Name="RightContentControl" DockPanel.Dock="Right">
+                <ContentControl.DataTemplates>
+                    <!-- Collection items -->
+                    <DataTemplate DataType="items:ILeftMenuItemWithToggleViewModel">
+                        <ToggleSwitch Classes="ExtraSmall"
+                                      OnContent="{x:Null}"
+                                      OffContent="{x:Null}"
+                                      IsVisible="{CompiledBinding IsToggleVisible}"
+                                      IsChecked="{CompiledBinding IsEnabled}"
+                                      Command="{CompiledBinding ToggleIsEnabledCommand}" />
+                    </DataTemplate>
+
+                    <!-- HealthCheck item -->
+                    <DataTemplate DataType="items:HealthCheckLeftMenuItemViewModel">
+                        <StackPanel Orientation="Horizontal">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.InfoFilled}"
+                                               Foreground="{StaticResource InfoStrongBrush}"
+                                               IsVisible="{CompiledBinding IsSuggestionVisible}" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Warning}"
+                                               Foreground="{StaticResource WarningStrongBrush}"
+                                               IsVisible="{CompiledBinding IsWarningVisible}" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Error}"
+                                               Foreground="{StaticResource DangerStrongBrush}"
+                                               IsVisible="{CompiledBinding IsCriticalVisible}" />
+                        </StackPanel>
+                    </DataTemplate>
+
+                    <!-- Badge with count item -->
+                    <DataTemplate DataType="items:LeftMenuItemWithCountBadgeViewModel">
+                        <Border Padding="6,0"
+                                Height="20"
+                                CornerRadius="{StaticResource Rounded-full}"
+                                Background="{StaticResource PrimaryModerate}"
+                                IsVisible="{CompiledBinding IsBadgeVisible}">
+                            <TextBlock TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Theme="{StaticResource BodySMBoldTheme}"
+                                       Foreground="{StaticResource NeutralInverted}"
+                                       Text="{CompiledBinding Count}" />
+                        </Border>
+                    </DataTemplate>
+
+                    <!-- Nothing for default items  -->
+                    <DataTemplate DataType="items:ILeftMenuItemViewModel" />
+                </ContentControl.DataTemplates>
+            </ContentControl>
+
             <TextBlock x:Name="LabelTextBlock"
                        TextWrapping="NoWrap"
                        TextTrimming="CharacterEllipsis" />
-            
+
         </DockPanel>
     </navigation:LeftMenuNavButton>
 </reactiveUi:ReactiveUserControl>
-

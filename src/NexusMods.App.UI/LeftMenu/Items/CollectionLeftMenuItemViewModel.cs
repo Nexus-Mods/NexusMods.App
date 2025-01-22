@@ -12,15 +12,15 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
+public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuItemWithToggleViewModel
 {
-    [Reactive] public override bool IsEnabled { get; set; }
+    [Reactive] public bool IsEnabled { get; set; }
     
-    public override bool IsToggleVisible { get; } = true;
+    public bool IsToggleVisible { get; } = true;
     
-    public override ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
     
-    public CollectionGroupId CollectionGroupId;
+    public CollectionGroupId CollectionGroupId { get; }
     
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -29,9 +29,9 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
         IServiceProvider serviceProvider,
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
-        IsToggleVisible = true;
-        CollectionGroupId = collectionGroupId;
         var conn = serviceProvider.GetRequiredService<IConnection>();
+        
+        CollectionGroupId = collectionGroupId;
 
         var isEnabledObservable = CollectionGroup.Observe(conn, collectionGroupId)
             .Select(collectionGroup => collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
@@ -40,8 +40,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel
         {
             using var tx = conn.BeginTransaction();
             
-            var shouldEnable = !IsEnabled;
-            if (shouldEnable)
+            if (IsEnabled)
             {
                 tx.Retract(CollectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
             } else

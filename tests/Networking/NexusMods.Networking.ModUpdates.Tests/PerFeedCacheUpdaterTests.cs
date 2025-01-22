@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using FluentAssertions;
 using NexusMods.Networking.ModUpdates.Tests.Helpers;
-using static NexusMods.Networking.ModUpdates.Tests.Helpers.TestItem;
+using static NexusMods.Networking.ModUpdates.Tests.Helpers.TestModFeedItem;
 
 namespace NexusMods.Networking.ModUpdates.Tests;
 
@@ -11,7 +11,7 @@ public class PerFeedCacheUpdaterTests
     public void Constructor_WithEmptyItems_ShouldNotThrow()
     {
         // Arrange & Act
-        Action act = () => new PerFeedCacheUpdater<TestItem>([], TimeSpan.FromDays(30));
+        Action act = () => new PerFeedCacheUpdater<TestModFeedItem>([], TimeSpan.FromDays(30));
 
         // Assert
         act.Should().NotThrow();
@@ -31,7 +31,7 @@ public class PerFeedCacheUpdaterTests
         // Act
         // ReSharper disable once HeapView.ObjectAllocation.Evident
         // ReSharper disable once ObjectCreationAsStatement
-        Action act = () => new PerFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        Action act = () => new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -53,7 +53,7 @@ public class PerFeedCacheUpdaterTests
         };
 
         // Act
-        var updater = new PerFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
         var result = updater.Build();
 
         // Assert
@@ -82,7 +82,7 @@ public class PerFeedCacheUpdaterTests
             Create(1, 3, now.AddDays(-15)),
         };
 
-        var updater = new PerFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         var updateItems = new[]
         {
@@ -118,7 +118,7 @@ public class PerFeedCacheUpdaterTests
             Create(1, 2, now.AddDays(-5)),
         };
 
-        var updater = new PerFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
         var updateItems = new[]
         {
             Create(1, 1, now.AddDays(-8)),  // Newer, needs update
@@ -154,7 +154,7 @@ public class PerFeedCacheUpdaterTests
             Create(1, 3, now.AddDays(-15)),
         };
 
-        var updater = new PerFeedCacheUpdater<TestItem>(items, TimeSpan.FromDays(30));
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
 
         var updateItems = new[]
         {

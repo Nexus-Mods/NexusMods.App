@@ -696,7 +696,7 @@
         <value>Delete Loadout</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
-        <value>All</value>
+        <value>All ({0})</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
         <value>View and manage all installed mods</value>
@@ -749,5 +749,8 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
         <value>Ready to play - All required mods installed</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>All</value>
     </data>
 </root>

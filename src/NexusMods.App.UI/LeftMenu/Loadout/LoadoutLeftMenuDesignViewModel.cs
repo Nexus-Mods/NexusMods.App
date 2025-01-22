@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -15,17 +16,17 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
     
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = Language.LibraryPageTitle,
+        Text = new StringComponent(Language.LibraryPageTitle),
         Icon = IconValues.LibraryOutline,
     };
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = Language.LoadoutView_Title_Installed_Mods,
+        Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default),
         Icon = IconValues.Mods,
     };
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
+        Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
         Icon = IconValues.Cardiology,
     };
 
@@ -35,14 +36,14 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
                 
                 new LeftMenuItemDesignViewModel()
                 {
-                    Text = "My Collection",
+                    Text = new StringComponent("My Collection"),
                     Icon = IconValues.CollectionsOutline,
                     IsToggleVisible = true,
                 },
                 
                 new LeftMenuItemDesignViewModel()
                 {
-                    Text = "Stardew Valley Very Expanded",
+                    Text = new StringComponent("Stardew Valley Very Expanded"),
                     Icon = IconValues.CollectionsOutline,
                     IsToggleVisible = true,
                 },

@@ -218,6 +218,9 @@ public static class Services
             .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
             .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
 
+            .AddView<CollectionLoadoutView, ICollectionLoadoutViewModel>()
+            .AddViewModel<CollectionLoadoutViewModel, ICollectionLoadoutViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -251,6 +254,7 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
+            .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
