@@ -2,72 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage">
-    <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
-        <DataTemplate.DataType>
-            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
-        </DataTemplate.DataType>
-
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
-            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+Name.ImageComponentKey}">
-                        <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:ImageComponent}">
-                                <Image Width="45" Height="28" Source="{CompiledBinding Value.Value}" />
-                            </DataTemplate>
-                        </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
-                </controls:ComponentControl.ComponentTemplate>
-
-                <controls:ComponentControl.Fallback>
-                    <icons:UnifiedIcon Size="20" Value="{x:Static icons:IconValues.Mods}" />
-                </controls:ComponentControl.Fallback>
-            </controls:ComponentControl>
-
-            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+Name.StringComponentKey}">
-                        <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:StringComponent}">
-                                <TextBlock Text="{CompiledBinding Value.Value}" />
-                            </DataTemplate>
-                        </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
-                </controls:ComponentControl.ComponentTemplate>
-
-                <controls:ComponentControl.Fallback>
-                    <TextBlock Text="-" />
-                </controls:ComponentControl.Fallback>
-            </controls:ComponentControl>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="{x:Static controls:SharedColumns+InstalledDate.ColumnTemplateResourceKey}">
-        <DataTemplate.DataType>
-            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
-        </DataTemplate.DataType>
-
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="controls:DateComponent"
-                                            ComponentKey="{x:Static controls:SharedColumns+InstalledDate.ComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:DateComponent}">
-                            <TextBlock Text="{CompiledBinding FormattedValue.Value}" />
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
-
-            <controls:ComponentControl.Fallback>
-                <TextBlock Text="-" />
-            </controls:ComponentControl.Fallback>
-        </controls:ComponentControl>
-    </DataTemplate>
 
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
