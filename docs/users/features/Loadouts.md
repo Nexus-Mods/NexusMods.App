@@ -36,4 +36,4 @@ To remove a loadout, use the :material-delete-forever: icon at the bottom of the
 
 ![The My Loadouts screen showing a multiple loadouts for Cyberpunk 2077](../images/0.7.2/LoadoutsMultiple.webp)
 
-The currently active loadout cannot be removed. To completely remove a game from the app, including all loadouts, please see [Removing a Game](../AddGames.md#removing-a-game).
+The currently active loadout cannot be removed. To completely remove a game from the app, including all loadouts, please see [Removing a Game](../gettingstarted/AddGames.md#removing-a-game).

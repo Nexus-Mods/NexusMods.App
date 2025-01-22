@@ -51,18 +51,23 @@ theme:
     - navigation.tabs
     - navigation.indexes
     - content.footnote.tooltips
+    # - toc.integrate
 
 plugins:
   - search
+  # - social
+  # - mkdocs-video
 
 nav:
   - User Guides: 
     - Home: users/index.md
     - System Requirements: users/SystemRequirements.md
-    - Getting Started: users/GettingStarted.md
-    - Adding a Game: users/AddGames.md
+    - Getting Started: 
+      - users/gettingstarted/index.md
+      - Adding a Game: users/gettingstarted/AddGames.md
+      - Downloading a Mod: users/gettingstarted/DownloadAMod.md
+      - Downloading a Collection: users/gettingstarted/DownloadACollection.md
     # - Mod Library: users/Library.md
-    # - Installed Mods: users/InstalledMods.md
     - Features: 
       - Loadouts: users/features/Loadouts.md
       - Health Check: users/features/HealthCheck.md
