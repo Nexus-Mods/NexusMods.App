@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
@@ -36,7 +37,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             }
         )
         {
-            Text = Language.MyGames,
+            Text = new StringComponent(Language.MyGames),
             Icon = IconValues.GamepadOutline,
         };
         
@@ -50,7 +51,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             }
         )
         {
-            Text = Language.MyLoadoutsPageTitle,
+            Text = new StringComponent(Language.MyLoadoutsPageTitle),
             Icon = IconValues.Package,
         };
     }

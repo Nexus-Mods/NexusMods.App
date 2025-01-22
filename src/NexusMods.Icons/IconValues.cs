@@ -95,6 +95,19 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
+    
+    // https://pictogrammers.com/library/mdi/icon/format-list-bulleted/
+    public static readonly IconValue FormatListBullet = new ProjektankerIcon("mdi-format-list-bulleted");
+    
+    // https://pictogrammers.com/library/mdi/icon/format-list-checkbox/
+    public static readonly IconValue FormatListCheckbox = new ProjektankerIcon("mdi-format-list-checkbox");
+    
+    // https://pictogrammers.com/library/mdi/icon/dots-grid/
+    public static readonly IconValue DotsGrid = new ProjektankerIcon("mdi-dots-grid");
+    
+    // https://pictogrammers.com/library/mdi/icon/format-align-justify/
+    public static readonly IconValue FormatAlignJustify = new ProjektankerIcon("mdi-format-align-justify");
+    
 
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
     public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
@@ -361,6 +374,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/school
     public static readonly IconValue School = new ProjektankerIcon("mdi-school");
 
+    // https://pictogrammers.com/library/mdi/icon/account
+    public static readonly IconValue Account = new ProjektankerIcon("mdi-account");
+    
 #endregion
 
 #region Toggle
@@ -520,11 +536,22 @@ public static class IconValues
         new Rect(0, 0, 24, 24 )
     ));
     
+    // new mods icon
+    public static readonly IconValue ModsOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M18.97 12.4328L17.6972 13.4184L11.985 17.8656L6.26506 13.4184L5 12.4328L11.985 7L18.97 12.4328ZM15.71 12.4309L11.985 9.53372L8.25668 12.4335L11.9842 15.3316L15.71 12.4309Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion
     
 #region Brand Pictograms
+    
+    /// <summary>
+    /// Brand pictogram for Health
+    /// </summary>
+    public static readonly IconValue NexusColor = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg"));
     
     /// <summary>
     /// Brand pictogram for Health

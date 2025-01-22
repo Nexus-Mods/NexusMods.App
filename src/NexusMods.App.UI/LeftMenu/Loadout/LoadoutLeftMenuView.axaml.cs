@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using ReactiveUI;
@@ -28,6 +29,12 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
 
             this.WhenAnyValue(x => x.ViewModel!.LeftMenuCollectionItems)
                 .BindTo(this, x => x.MenuItemsControl.ItemsSource)
+                .DisposeWith(disposables);
+            
+            // Only show Loadout entry if number of collections is greater than 1
+            this.WhenAnyValue(view => view.ViewModel!.LeftMenuCollectionItems.Count)
+                .Select(count => count > 1)
+                .BindTo(this, view => view.LoadoutItem.IsVisible)
                 .DisposeWith(disposables);
         });
     }

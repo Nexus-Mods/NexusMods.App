@@ -206,6 +206,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     if (!CollectionMetadata.GameId.TryGetValue(collection, out var collectionGameId)) return true;
                     return collectionGameId == game.GameId;
                 })
+                .OnUI()
                 .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,

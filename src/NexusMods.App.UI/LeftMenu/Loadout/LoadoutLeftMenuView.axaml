@@ -13,17 +13,15 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*, Auto" Margin="12,0,12,12">
-        <StackPanel Grid.Row="0" Orientation="Vertical">
-            <items:LeftMenuItemView x:Name="LibraryItem"
-                                    ToolTip.Tip="{x:Static resources:Language.LibraryPageTitleToolTip}" />
+        <StackPanel Grid.Row="0" Orientation="Vertical" x:Name="LeftMenuStack">
+            <items:LeftMenuItemView x:Name="LibraryItem" />
             
             <StackPanel>
                 <Separator />
                 <TextBlock Text="{x:Static resources:Language.LeftMenu_Label_Installed_Mods}"/>
             </StackPanel>
             
-            <items:LeftMenuItemView x:Name="LoadoutItem"
-                                    ToolTip.Tip="{x:Static resources:Language.LoadoutView_Title_Installed_Mods_ToolTip}" />
+            <items:LeftMenuItemView x:Name="LoadoutItem" />
 
             <ItemsControl x:Name="MenuItemsControl">
                 <ItemsControl.ItemsPanel>
@@ -38,8 +36,7 @@
                 <TextBlock Text="{x:Static resources:Language.LeftMenu_Label_Utilities}"/>
             </StackPanel>
             
-            <items:LeftMenuItemView x:Name="HealthCheckItem" 
-                                    ToolTip.Tip="{x:Static resources:Language.LoadoutLeftMenuViewModel_Diagnostics_ToolTip}" />
+            <items:LeftMenuItemView x:Name="HealthCheckItem" />
         </StackPanel>
 
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="ApplyControlViewHost" />

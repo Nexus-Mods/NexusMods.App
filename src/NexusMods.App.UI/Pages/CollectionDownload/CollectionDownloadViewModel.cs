@@ -118,7 +118,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         );
 
         CommandDeleteCollection = new ReactiveCommand(
-            executeAsync: async (_, cancellationToken) =>
+            executeAsync: async (_, _) =>
             {
                 var pageData = new PageData
                 {
@@ -129,13 +129,12 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     },
                 };
 
-                await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken);
-
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
 
-                await nexusModsLibrary.DeleteCollection(_collection, cancellationToken);
+                await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
+                await nexusModsLibrary.DeleteCollection(_collection, cancellationToken: CancellationToken.None);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false,
@@ -182,11 +181,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
             var pageData = new PageData
             {
-                FactoryId = LoadoutPageFactory.StaticId,
-                Context = new LoadoutPageContext
+                FactoryId = CollectionLoadoutPageFactory.StaticId,
+                Context = new CollectionLoadoutPageContext
                 {
                     LoadoutId = _targetLoadout,
-                    GroupScope = group.AsCollectionGroup().AsLoadoutItemGroup().LoadoutItemGroupId,
+                    GroupId = group.AsCollectionGroup(),
                 },
             };
 

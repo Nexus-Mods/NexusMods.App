@@ -9,10 +9,13 @@ public static class Tickers
 
     static Tickers()
     {
-        Primary = Observable
+        var observable = Observable
             .Interval(period: Period, timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
             .Select(_ => TimeProvider.System.GetLocalNow())
-            .Publish(initialValue: TimeProvider.System.GetLocalNow());
+            .Replay(bufferSize: 1);
+
+        _ = observable.Connect();
+        Primary = observable;
     }
 }

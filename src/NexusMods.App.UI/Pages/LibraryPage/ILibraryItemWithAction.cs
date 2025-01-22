@@ -10,6 +10,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibraryItemWithAction>, IColumnDefinition<ILibraryItemModel, ILibraryItemWithAction>
 {
     int IComparable<ILibraryItemWithAction>.CompareTo(ILibraryItemWithAction? other)
@@ -32,6 +33,7 @@ public interface ILibraryItemWithAction : ILibraryItemModel, IComparable<ILibrar
     static string IColumnDefinition<ILibraryItemModel, ILibraryItemWithAction>.GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithInstallAction : ILibraryItemWithAction
 {
     ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
@@ -79,6 +81,7 @@ public class DownloadableItem : OneOfBase<CollectionDownloadNexusMods.ReadOnly, 
     public DownloadableItem(OneOf<CollectionDownloadNexusMods.ReadOnly, CollectionDownloadExternal.ReadOnly> input) : base(input) { }
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
 {
     DownloadableItem DownloadableItem { get; }
