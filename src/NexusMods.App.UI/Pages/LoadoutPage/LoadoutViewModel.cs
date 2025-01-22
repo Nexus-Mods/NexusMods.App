@@ -62,7 +62,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         {
             var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
             TabTitle = collectionGroup.Name;
-            TabIcon = IconValues.FormatAlignJustify;
+            TabIcon = IconValues.CollectionsOutline;
         }
         else
         {

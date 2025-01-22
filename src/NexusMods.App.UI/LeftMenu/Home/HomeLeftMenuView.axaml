@@ -16,7 +16,7 @@
         <home:HomeLeftMenuDesignViewModel />
     </Design.DataContext>
     
-    <StackPanel Margin="12,0,12,12">
+    <StackPanel Margin="12,0,12,12" x:Name="LeftMenuStack">
         <items:LeftMenuItemView x:Name="MyGamesItem" />
         <items:LeftMenuItemView x:Name="MyLoadoutsItem"/>
     </StackPanel>

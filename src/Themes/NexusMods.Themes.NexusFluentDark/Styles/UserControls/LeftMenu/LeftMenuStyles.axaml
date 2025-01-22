@@ -20,39 +20,19 @@
             </Grid>
         </Border>
     </Design.PreviewWith>
-
-    <!-- HOME LEFT MENU -->
-    <Style Selector="home|HomeLeftMenuView">
-        
-        <!-- MAIN STACK -->
-        <Style Selector="^ > StackPanel">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-            
-            <!-- SEPERATOR AND TITLE STACK -->
-            <Style Selector="^ > StackPanel">
-                <Style Selector="^ > Separator">
-                    <Setter Property="Margin" Value="0,4,0,8" />
-                    <Setter Property="Background" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
-                </Style>
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
-                </Style>
-            </Style>
-        </Style>
-    </Style>
     
-    <!-- LOADOUT LEFT MENU -->
-    <Style Selector="loadout|LoadoutLeftMenuView">
+    <!-- HOME & LOADOUT LEFT MENU -->
+    <Style Selector="home|HomeLeftMenuView,loadout|LoadoutLeftMenuView">
         
         <!-- MAIN STACK -->
-        <Style Selector="^ Grid > StackPanel">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+        <Style Selector="^ StackPanel#LeftMenuStack">
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
 
             <!-- SEPERATOR AND TITLE STACK -->
             <Style Selector="^ > StackPanel">
+                <Setter Property="Margin" Value="0,4,0,4" />
                 <Style Selector="^ > Separator">
-                    <Setter Property="Margin" Value="0,4,0,8" />
+                    <Setter Property="Margin" Value="0,0,0,12" />
                     <Setter Property="Background" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
                 </Style>
                 <Style Selector="^ > TextBlock">
