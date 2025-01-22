@@ -912,10 +912,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         if (inState.TryGetValue(gamePath, out var entry))
                         {
                             var fileInfo = file.FileInfo;
-
-                            // If the files don't match, update the entry
+                            
+                            // Dates in computers are so utterly borked it's not even funny. Turns out here there's an issue, a DateTimeOffset
+                            // when run through DateTime and/or an ulong conversion will lose a very small amount of precision, about 150μs worth. 
+                            // But this precision loss is negated if everything just uses a long. So convert both sides to a long and compare.
+                            // If you ever want to try and fix this, simply subtract one from the other, and you'll see a timespan that does not
+                            // equal zero. This is the precision loss, I (halgari) am not sure how else to fix it.
                             if (fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc() || fileInfo.Size != entry.Size)
                             {
+                                // If the files don't match, update the entry
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
@@ -1002,7 +1007,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             // We have a size match, so minimal hash it, and see if we have a match
             var minimalHash = await MultiHasher.MinimalHash(file, token);
-            var xxHash = await file.XxHash3Async(token: token);
             foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
             {
                 // Match on the relative path as well as the minimal hash
