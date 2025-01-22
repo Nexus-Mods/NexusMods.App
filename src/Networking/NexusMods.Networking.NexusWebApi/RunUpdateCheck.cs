@@ -40,7 +40,7 @@ public static class RunUpdateCheck
             updater.Update(updateResults);
         }
         
-        return updater.BuildFlattened();
+        return updater.BuildFlattened(v1Timespan);
     }
 
     /// <summary>
@@ -49,28 +49,56 @@ public static class RunUpdateCheck
     public static async Task UpdateModFilesForOutdatedPages(IDb db, ITransaction tx, ILogger logger, INexusGraphQLClient gqlClient, PerFeedCacheUpdaterResult<PageMetadataMixin> result, CancellationToken cancellationToken)
     {
         // Note(sewer): Undetermined items may be removed items from the site; or
-        // caused by programmer error, so wr should log these whenever possible,
+        // caused by programmer error, so we should log these whenever possible,
         // but they should not cause a critical error; in case it's simply the result
         // of mod removal such as DMCA takedown.
-        foreach (var mixin in result.UndeterminedItems)
+        using var semaphore = new SemaphoreSlim(16);
+        var tasks = new List<Task>();
+
+        // Helper function to process a single mixin with error handling
+        async Task ProcessMixin(PageMetadataMixin mixin, bool isUndetermined)
         {
             try
             {
-                await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+                await semaphore.WaitAsync(cancellationToken);
+                try
+                {
+                    await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
             }
             catch (Exception e)
             {
-                var id = mixin.GetModPageId();
-                logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
+                if (isUndetermined)
+                {
+                    var id = mixin.GetModPageId();
+                    logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
+                }
+                else
+                {
+                    // Rethrow for non-undetermined items as these should be truly exceptional
+                    throw;
+                }
             }
         }
 
-        // Note(sewer): But I'm not sure where to put this yet, all the GraphQL stuff is source generated.
+        // Process undetermined items
+        foreach (var mixin in result.UndeterminedItems)
+        {
+            tasks.Add(ProcessMixin(mixin, true));
+        }
+
+        // Process out of date items
         foreach (var mixin in result.OutOfDateItems)
         {
-            // For the remaining items, failure to obtain result here should be truly exceptional.
-            await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+            tasks.Add(ProcessMixin(mixin, false));
         }
+
+        // Wait for all tasks to complete
+        await Task.WhenAll(tasks);
     }
 
     private static async Task UpdateModPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
