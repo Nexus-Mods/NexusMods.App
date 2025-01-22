@@ -30,10 +30,10 @@
                 <Style Selector="^[Fill=Weak]">
                     <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
                     <Style Selector="^:pointerover">
-                        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                     </Style>
                     <Style Selector="^:pressed">
-                        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                        <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
                     </Style>
                 </Style>
             </Style>
