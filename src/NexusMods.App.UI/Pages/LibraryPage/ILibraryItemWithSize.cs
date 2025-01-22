@@ -4,6 +4,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithSize : ILibraryItemModel, IComparable<ILibraryItemWithSize>, IColumnDefinition<ILibraryItemModel, ILibraryItemWithSize>
 {
     ReactiveProperty<Size> ItemSize { get; }

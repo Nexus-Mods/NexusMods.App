@@ -12,6 +12,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public static class NexusModsFileMetadataLibraryItemModel
 {
+    [Obsolete("Use CompositeItemModel instead")]
     public class Downloadable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
         ILibraryItemWithThumbnailAndName,
         ILibraryItemWithVersion,
@@ -98,6 +99,7 @@ public static class NexusModsFileMetadataLibraryItemModel
         public override string ToString() => $"Nexus Mods File Metadata: {Name.Value}";
     }
 
+    [Obsolete("Use CompositeItemModel instead")]
     public class Installable : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
         ILibraryItemWithThumbnailAndName,
         ILibraryItemWithVersion,

@@ -58,19 +58,13 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             IsLocalCollection = true;
         }
 
-        var ticker = R3.Observable
-            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
-            .ObserveOnUIThreadDispatcher()
-            .Select(_ => DateTime.Now)
-            .Publish(initialValue: DateTime.Now);
-
         var loadoutFilter = new LoadoutFilter
         {
             LoadoutId = pageContext.LoadoutId,
             CollectionGroupId = LoadoutItemGroupId.From(pageContext.GroupId),
         };
 
-        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, ticker, loadoutFilter);
+        Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
         CommandToggle = new ReactiveCommand(
             executeAsync: async (_, _) =>

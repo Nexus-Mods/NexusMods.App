@@ -6,9 +6,9 @@ public class SourceCacheAdapter<TObject, TKey> : IChangeSetAdaptor<TObject, TKey
     where TObject : notnull
     where TKey : notnull
 {
-    private readonly SourceCache<TObject, TKey> _sourceCache;
+    private readonly ISourceCache<TObject, TKey> _sourceCache;
 
-    public SourceCacheAdapter(SourceCache<TObject, TKey> sourceCache)
+    public SourceCacheAdapter(ISourceCache<TObject, TKey> sourceCache)
     {
         _sourceCache = sourceCache;
     }
