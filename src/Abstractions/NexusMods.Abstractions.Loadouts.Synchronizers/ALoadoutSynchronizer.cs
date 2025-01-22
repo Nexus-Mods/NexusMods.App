@@ -924,7 +924,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                                tx.Add(entry.Id, DiskStateEntry.LastModified, file.FileInfo.LastWriteTimeUtc);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
                                 changes = true;
                             }
                         }
@@ -997,6 +997,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
+    /// <summary>
+    /// Hash a file but first check the hash database for a matching size and minimal hash, and use that to reduce
+    /// the amount of work needed to produce the hash.
+    /// </summary>
     private static async ValueTask<(GamePath gamePath, Hash newHash)> HashGameFile(IDb hashDb, GameInstallation installation, AbsolutePath file, CancellationToken token)
     {
         var gamePath = installation.LocationsRegister.ToGamePath(file);
