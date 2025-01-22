@@ -11,10 +11,12 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items">
+    
     <Design.DataContext>
         <home:HomeLeftMenuDesignViewModel />
     </Design.DataContext>
-    <StackPanel Margin="16,0,16,12">
+    
+    <StackPanel Margin="12,0,12,12">
         <items:LeftMenuItemView x:Name="MyGamesItem" />
         <items:LeftMenuItemView x:Name="MyLoadoutsItem"/>
     </StackPanel>

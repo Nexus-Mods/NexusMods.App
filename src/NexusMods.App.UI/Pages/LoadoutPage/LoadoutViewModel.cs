@@ -62,12 +62,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         {
             var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
             TabTitle = collectionGroup.Name;
-            TabIcon = IconValues.CollectionsOutline;
+            TabIcon = IconValues.FormatAlignJustify;
         }
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
-            TabIcon = IconValues.Mods;
+            TabIcon = IconValues.FormatAlignJustify;
         }
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
