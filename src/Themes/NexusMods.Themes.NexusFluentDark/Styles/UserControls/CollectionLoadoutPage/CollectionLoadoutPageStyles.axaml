@@ -1,0 +1,24 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                  
+    
+    <Design.PreviewWith>
+        <Border Width="800" Height="500">
+            <Border.Resources>
+                <collections:CollectionLoadoutDesignViewModel x:Key="CollectionLoadoutDesignViewModel" />
+            </Border.Resources>
+            <collections:CollectionLoadoutView DataContext="{StaticResource CollectionLoadoutDesignViewModel}" />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="collections|CollectionLoadoutView">
+        
+       
+        
+    </Style>
+</Styles>
+

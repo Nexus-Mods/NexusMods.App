@@ -9,16 +9,17 @@
     xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items">
+    
     <Design.DataContext>
         <home:HomeLeftMenuDesignViewModel />
     </Design.DataContext>
-    <ItemsControl Margin="16,0,16,12" x:Name="MenuItemsControl">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <StackPanel />
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-    </ItemsControl>
+    
+    <StackPanel Margin="12,0,12,12" x:Name="LeftMenuStack">
+        <items:LeftMenuItemView x:Name="MyGamesItem" />
+        <items:LeftMenuItemView x:Name="MyLoadoutsItem"/>
+    </StackPanel>
+    
 </reactiveUi:ReactiveUserControl>
 

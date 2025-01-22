@@ -53,7 +53,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
         {
             SectionName = "Mods",
             ItemName = Language.LoadoutViewPageTitle,
-            Icon = IconValues.Collections,
+            Icon = IconValues.FormatAlignJustify,
             PageData = new PageData
             {
                 FactoryId = Id,

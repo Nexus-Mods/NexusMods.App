@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using NexusMods.App.UI;
 using NexusMods.App.UI.Overlays;
 using ReactiveUI.Fody.Helpers;
 

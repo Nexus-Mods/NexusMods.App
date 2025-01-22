@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -38,10 +39,12 @@ public interface IItemModelComponent<in TSelf> : IItemModelComponent
 
 public static partial class ColumnCreator
 {
-    public static IColumn<CompositeItemModel<TKey>> Create<TKey, TColumn>(Optional<ListSortDirection> sortDirection = default)
+    public static IColumn<CompositeItemModel<TKey>> Create<TKey, TColumn>(
+        Optional<ListSortDirection> sortDirection = default,
+        Optional<GridLength> width = default)
         where TKey : notnull
         where TColumn : class, ICompositeColumnDefinition<TColumn>
     {
-        return TColumn.CreateColumn<TKey>(sortDirection);
+        return TColumn.CreateColumn<TKey>(sortDirection, width);
     }
 }

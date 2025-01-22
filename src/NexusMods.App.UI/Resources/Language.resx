@@ -79,7 +79,7 @@
         <value>No</value>
     </data>
     <data name="MessageBox_Button_Ok" xml:space="preserve">
-        <value>Ok</value>
+        <value>OK</value>
     </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
         <value>{0} will be cancelled and the files will be deleted.</value>
@@ -283,7 +283,7 @@
         <value>Home</value>
     </data>
     <data name="LoadoutViewPageTitle" xml:space="preserve">
-        <value>Installed Mods</value>
+        <value>All</value>
     </data>
     <data name="Downloads_WorkspaceTitle" xml:space="preserve">
         <value>Downloads</value>
@@ -350,6 +350,9 @@
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
         <value>Health Check</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip" xml:space="preserve">
+        <value>Review your Loadout for any issues and learn how to resolve them if needed</value>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>All ({0})</value>
@@ -460,6 +463,9 @@
     </data>
     <data name="LibraryPageTitle" xml:space="preserve">
         <value>Library</value>
+    </data>
+    <data name="LibraryPageTitleToolTip" xml:space="preserve">
+        <value>Manage downloaded mods and collections</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
         <value>MOD NAME</value>
@@ -679,7 +685,10 @@
         <value>Delete Loadout</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
-        <value>Installed Mods</value>
+        <value>All ({0})</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
+        <value>View and manage all installed mods</value>
     </data>
     <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
         <value>Game is currently running</value>
@@ -724,6 +733,12 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="FileOriginPage_UpdateAll" xml:space="preserve">
         <value>Update All</value>
     </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>INSTALLED MODS</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>UTILITIES</value>
+    </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
         <value>Ready to play - All required mods installed</value>
     </data>
@@ -735,5 +750,8 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
         <value>Update All</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>All</value>
     </data>
 </root>

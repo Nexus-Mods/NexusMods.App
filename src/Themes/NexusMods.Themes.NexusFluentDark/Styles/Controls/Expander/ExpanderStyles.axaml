@@ -20,7 +20,7 @@
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
                                     Classes="ExpanderLibraryHeader">
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}" />
                             <TextBlock Text="Collections" />
                             <TextBlock x:Name="TextNumCollections" Text="0" />
                         </StackPanel>
@@ -42,22 +42,31 @@
         - ToggleButton#ExpanderHeader
         - Border#ExpanderContent   
     -->
-
+    <Styles.Resources>
+        <!-- Header -->
+        <HorizontalAlignment x:Key="ExpanderHeaderHorizontalContentAlignment">Stretch</HorizontalAlignment>
+        <VerticalAlignment x:Key="ExpanderHeaderVerticalContentAlignment">Center</VerticalAlignment>
+        <Thickness x:Key="ExpanderHeaderPadding">16,0,0,0</Thickness>
+        <Thickness x:Key="ExpanderHeaderBorderThickness">0,0,0,1</Thickness>
+        <Thickness x:Key="ExpanderChevronBorderThickness">0</Thickness>
+        <Thickness x:Key="ExpanderChevronMargin">20,0,8,0</Thickness>
+        <x:Double x:Key="ExpanderChevronButtonSize">32</x:Double>
+    </Styles.Resources>
+    
+    
     <Style Selector="Expander">
 
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="Red" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
         <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
         
         <Style Selector="^:down /template/ Border#ExpanderContent">
             <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="^ StackPanel.ExpanderLibraryHeader">
-
             <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
-
             <Style Selector="^ > icons|UnifiedIcon">
                 <Setter Property="Size" Value="20" />
             </Style>
@@ -75,8 +84,8 @@
         <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
             <!-- Copied from source -->
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ExpanderHeaderBorderBrush}" />
-            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandTranslucentDark300Brush}" />
+            <Setter Property="BorderThickness" Value="{DynamicResource ExpanderHeaderBorderThickness}" />
             <Setter Property="Foreground" Value="{DynamicResource ExpanderHeaderForeground}" />
             <Setter Property="Padding" Value="24,0" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />

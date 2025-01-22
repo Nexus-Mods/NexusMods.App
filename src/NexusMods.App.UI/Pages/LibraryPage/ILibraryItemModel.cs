@@ -12,13 +12,16 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemModel : ITreeDataGridItemModel<ILibraryItemModel, EntityId>;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface IHasTicker
 {
     Observable<DateTimeOffset>? Ticker { get; set; }
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface IHasLinkedLoadoutItems
 {
     IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; }
@@ -50,16 +53,19 @@ public interface IHasLinkedLoadoutItems
     }
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface IIsParentLibraryItemModel : ILibraryItemModel
 {
     IReadOnlyList<LibraryItemId> LibraryItemIds { get; }
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface IIsChildLibraryItemModel : ILibraryItemModel
 {
     LibraryItemId LibraryItemId { get; }
 }
 
+[Obsolete("Use CompositeItemModel instead")]
 [SuppressMessage("ReSharper", "PossibleInterfaceMemberAmbiguity")]
 public interface ILibraryItemWithDates : IHasTicker, ILibraryItemWithDownloadedDate, ILibraryItemWithInstalledDate
 {

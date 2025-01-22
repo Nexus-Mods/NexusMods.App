@@ -103,6 +103,14 @@
         <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
         <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        
+        <Style Selector="^.Info">
+            <Setter Property="Background" Value="{StaticResource BrandInfo950Brush}"/>
+        </Style>
+        
+        <Style Selector="^.Warning">
+            <Setter Property="Background" Value="{StaticResource BrandWarning950Brush}"/>
+        </Style>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid">

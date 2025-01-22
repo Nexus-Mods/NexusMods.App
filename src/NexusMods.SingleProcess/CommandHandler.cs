@@ -4,6 +4,7 @@ using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
 using NexusMods.ProxyConsole.Abstractions;
 
@@ -38,6 +39,7 @@ internal class CommandHandler(IServiceProvider serviceProvider, List<Func<Invoca
         }
         catch (Exception ex)
         {
+            serviceProvider.GetRequiredService<ILogger<CommandHandler>>().LogError(ex, "An error occurred while executing the command {0}", methodInfo.Name);
             await serviceProvider.GetRequiredService<IRenderer>().Text("An error occurred while executing the command {0}", ex.ToString());
             return -1;
         }

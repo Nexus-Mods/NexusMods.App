@@ -1,4 +1,4 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="items:INewLeftMenuItemViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="items:ILeftMenuItemViewModel" xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,15 +6,68 @@
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
-    <navigation:LeftMenuNavButton x:Name="NavButton" >
+    <Design.DataContext>
+        <items:LeftMenuItemDesignViewModel />
+    </Design.DataContext>
+
+    <navigation:LeftMenuNavButton x:Name="NavButton">
         <DockPanel>
             <icons:UnifiedIcon x:Name="LeftIcon" DockPanel.Dock="Left" />
+
+            <ContentControl x:Name="RightContentControl" DockPanel.Dock="Right">
+                <ContentControl.DataTemplates>
+                    <!-- Collection items -->
+                    <DataTemplate DataType="items:ILeftMenuItemWithToggleViewModel">
+                        <ToggleSwitch Classes="ExtraSmall"
+                                      OnContent="{x:Null}"
+                                      OffContent="{x:Null}"
+                                      IsVisible="{CompiledBinding IsToggleVisible}"
+                                      IsChecked="{CompiledBinding IsEnabled}"
+                                      Command="{CompiledBinding ToggleIsEnabledCommand}" />
+                    </DataTemplate>
+
+                    <!-- HealthCheck item -->
+                    <DataTemplate DataType="items:HealthCheckLeftMenuItemViewModel">
+                        <StackPanel Orientation="Horizontal">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.InfoFilled}"
+                                               Foreground="{StaticResource InfoStrongBrush}"
+                                               IsVisible="{CompiledBinding IsSuggestionVisible}" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Warning}"
+                                               Foreground="{StaticResource WarningStrongBrush}"
+                                               IsVisible="{CompiledBinding IsWarningVisible}" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Error}"
+                                               Foreground="{StaticResource DangerStrongBrush}"
+                                               IsVisible="{CompiledBinding IsCriticalVisible}" />
+                        </StackPanel>
+                    </DataTemplate>
+
+                    <!-- Badge with count item -->
+                    <DataTemplate DataType="items:LeftMenuItemWithCountBadgeViewModel">
+                        <Border Padding="6,0"
+                                Height="20"
+                                CornerRadius="{StaticResource Rounded-full}"
+                                Background="{StaticResource PrimaryModerate}"
+                                IsVisible="{CompiledBinding IsBadgeVisible}">
+                            <TextBlock TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Theme="{StaticResource BodySMBoldTheme}"
+                                       Foreground="{StaticResource NeutralInverted}"
+                                       Text="{CompiledBinding Count}" />
+                        </Border>
+                    </DataTemplate>
+
+                    <!-- Nothing for default items  -->
+                    <DataTemplate DataType="items:ILeftMenuItemViewModel" />
+                </ContentControl.DataTemplates>
+            </ContentControl>
+
             <TextBlock x:Name="LabelTextBlock"
                        TextWrapping="NoWrap"
                        TextTrimming="CharacterEllipsis" />
+
         </DockPanel>
     </navigation:LeftMenuNavButton>
 </reactiveUi:ReactiveUserControl>
-

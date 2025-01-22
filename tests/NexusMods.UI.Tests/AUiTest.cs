@@ -5,7 +5,6 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Tests.Framework;
 

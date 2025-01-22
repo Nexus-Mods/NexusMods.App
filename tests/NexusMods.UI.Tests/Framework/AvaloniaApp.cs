@@ -7,7 +7,6 @@ using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.UI.Tests.Framework;
