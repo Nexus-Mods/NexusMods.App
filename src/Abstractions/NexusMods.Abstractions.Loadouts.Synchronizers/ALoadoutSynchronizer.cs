@@ -1002,6 +1002,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             // We have a size match, so minimal hash it, and see if we have a match
             var minimalHash = await MultiHasher.MinimalHash(file, token);
+            var xxHash = await file.XxHash3Async(token: token);
             foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
             {
                 // Match on the relative path as well as the minimal hash

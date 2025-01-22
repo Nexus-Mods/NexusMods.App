@@ -55,7 +55,7 @@ internal class Client : IClient
     /// <summary>
     /// TTL time for the secure URL cache.
     /// </summary>
-    private static readonly TimeSpan CacheTime = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
     
     /// <summary>
     /// A channel for incoming auth URLs.
@@ -253,7 +253,13 @@ internal class Client : IClient
             var msg = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId}/os/{os}/builds?generation=2"), CancellationToken.None);
             using var response = await _client.SendAsync(msg, token);
             if (!response.IsSuccessStatusCode)
-                throw new Exception($"Failed to get builds for {productId} on {os}. {response.StatusCode}");
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return [];
+                else
+                    throw new Exception($"Failed to get builds for {productId} on {os}. {response.StatusCode}");
+            }
+
 
             await using var responseStream = await response.Content.ReadAsStreamAsync(token);
             var content = await JsonSerializer.DeserializeAsync<BuildListResponse>(responseStream, _jsonSerializerOptions, token);

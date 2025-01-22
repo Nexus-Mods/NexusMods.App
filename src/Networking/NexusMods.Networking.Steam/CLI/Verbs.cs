@@ -21,7 +21,19 @@ public static class Verbs
         collection
             .AddModule("steam", "Verbs for interacting with Steam")
             .AddModule("steam app", "Verbs for querying app data")
-            .AddVerb(() => IndexSteamApp);
+            .AddVerb(() => IndexSteamApp)
+            .AddVerb(() => Login);
+    
+    [Verb("steam login", "Starts the login process for Steam")]
+    private static async Task<int> Login(
+        [Injected] IRenderer renderer,
+        [Injected] ISteamSession steamSession,
+        [Injected] CancellationToken token)
+    {
+        await steamSession.Connect(token);
+        return 0;
+    }
+    
     
     [Verb("steam app index", "Indexes a Steam app and updates the given output folder")]
     private static async Task<int> IndexSteamApp(

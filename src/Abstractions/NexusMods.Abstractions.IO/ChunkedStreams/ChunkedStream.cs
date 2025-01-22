@@ -208,11 +208,12 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         get => (long)_position;
         set => Seek(value, SeekOrigin.Begin);
     }
-
-    /// <inheritdoc />
-    public override ValueTask DisposeAsync()
+    
+    protected override void Dispose(bool disposing)
     {
-        _cache.Dispose();
-        return base.DisposeAsync();
+        if (disposing)
+        {
+            _cache.Dispose();
+        }
     }
 }
