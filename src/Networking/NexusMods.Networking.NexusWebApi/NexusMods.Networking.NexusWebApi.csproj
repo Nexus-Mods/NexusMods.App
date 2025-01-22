@@ -24,13 +24,4 @@
       <ProjectReference Include="..\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
       <ProjectReference Include="..\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <GraphQL Update="GraphQL\GameIdToDomain.graphql">
-        <Generator>MSBuild:GenerateGraphQLCode</Generator>
-      </GraphQL>
-      <GraphQL Update="GraphQL\ModFilesByUid.graphql">
-        <Generator>MSBuild:GenerateGraphQLCode</Generator>
-      </GraphQL>
-    </ItemGroup>
 </Project>
