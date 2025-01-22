@@ -66,18 +66,7 @@
             </Expander.Header>
             <!-- Empty State -->
 
-            <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
-                                 Header="{x:Static resources:Language.EmptyLibraryTitleText}">
-                <controls:EmptyState.Subtitle>
-                    <StackPanel Orientation="Vertical" Spacing="16">
-                        <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
-                        <controls:StandardButton x:Name="EmptyLibraryLinkButton"
-                                                 Text="Open Nexus Mods"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                 HorizontalAlignment="Center" />
-                    </StackPanel>
-                </controls:EmptyState.Subtitle>
+            
 
                 <Grid RowDefinitions="Auto, *">
 
@@ -145,14 +134,27 @@
 
                         </StackPanel>
                     </Border>
+                    
+                    <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
+                                         Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+                        <controls:EmptyState.Subtitle>
+                            <StackPanel Orientation="Vertical" Spacing="16">
+                                <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
+                                <controls:StandardButton x:Name="EmptyLibraryLinkButton"
+                                                         Text="Open Nexus Mods"
+                                                         ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                         HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </controls:EmptyState.Subtitle>
 
                     <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                                   ShowColumnHeaders="True"
                                   CanUserResizeColumns="True"
                                   CanUserSortColumns="True"
                                   HorizontalAlignment="Stretch" />
+                    </controls:EmptyState>
                 </Grid>
-            </controls:EmptyState>
         </Expander>
     </Grid>
 

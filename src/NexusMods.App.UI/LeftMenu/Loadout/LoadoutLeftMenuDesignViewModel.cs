@@ -22,7 +22,7 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; } = new LeftMenuItemDesignViewModel
     {
         Text = new StringComponent(Language.LoadoutView_Title_Installed_Mods_Default),
-        Icon = IconValues.Mods,
+        Icon = IconValues.FormatAlignJustify,
     };
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; } = new LeftMenuItemDesignViewModel
     {

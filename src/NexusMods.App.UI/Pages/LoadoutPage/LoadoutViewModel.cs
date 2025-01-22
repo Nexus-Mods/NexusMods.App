@@ -56,7 +56,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
-            TabIcon = IconValues.Mods;
+            TabIcon = IconValues.FormatAlignJustify;
         }
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
