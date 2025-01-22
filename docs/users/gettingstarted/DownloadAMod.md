@@ -27,3 +27,9 @@ If a mod page doesn't have the buttons to download directly into the app, this c
 In both cases, you can still add mods to the Library as explained in [Adding a mod to the Library manually](#adding-a-mod-to-the-library-manually) above.
 
 ### Clicking the "Vortex" button doesn't start the download
+
+If the buttons oon the mod page do not trigger a download, check the following:
+
+- Another mod manager is handling downloads
+- NXM handler issue
+- Website issue
