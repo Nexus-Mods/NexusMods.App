@@ -261,15 +261,20 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         void StartLibraryItemUpdate(LibraryItemId id)
         {
+            // By definition, only works on Nexus library items.
             var libraryItem = LibraryItem.Load(_connection.Db, id);
-            if (!libraryItem.IsValid()) return;
-            
-            // By definition, if we start an update, it's a Nexus 
-            if (!libraryItem.TryGetAsNexusModsLibraryItem(out var nexusItem))
-                Debug.Fail("Can only be a Nexus item by definition, as of time of writing this code.");
+            if (!libraryItem.IsValid() || !libraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem)) 
+                return;
+
+            // Reuse known newest version in local storage, obtained via
+            // call to make starting this update possible in first place.
+            var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(nexusLibraryItem.FileMetadata);
+            var mostRecentVersion = newerItems.FirstOrDefault();
+            if (!mostRecentVersion.IsValid()) // Catch case of no newer items.
+                return;
 
             var modFileUrlFormat = "https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={0}&game_id={1}";
-            var modFileUrl = string.Format(modFileUrlFormat, nexusItem.FileMetadata.Uid.FileId, nexusItem.FileMetadata.Uid.GameId);
+            var modFileUrl = string.Format(modFileUrlFormat, mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
             var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
             osInterop.OpenUrl(new Uri(modFileUrl), cancellationToken: cancellationToken);
         }
@@ -376,9 +381,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                                                       $"TypeName: {itemModel.GetType().Name}");
             }
         }
-
-        // Now beam down the update notification to all items
-        // RunUpdateCheck.GetNewerFilesForExistingFile()
     }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
