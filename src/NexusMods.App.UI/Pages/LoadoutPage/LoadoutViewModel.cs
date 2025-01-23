@@ -1,11 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
@@ -22,6 +24,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -32,8 +35,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
+    public ReactiveCommand<Unit> CollectionToggleCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
+    
+    [Reactive] public bool IsCollection { get; private set; } 
+    [Reactive] public bool IsCollectionEnabled { get; private set; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
@@ -52,11 +59,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             var collectionGroup = LoadoutItem.Load(connection.Db, collectionGroupId.Value);
             TabTitle = collectionGroup.Name;
             TabIcon = IconValues.CollectionsOutline;
+            IsCollection = true;
+            CollectionToggleCommand = new ReactiveCommand<Unit>(
+                async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, connection), 
+                configureAwait: false
+            );
         }
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
+            CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
         }
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
@@ -164,7 +177,31 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)
                 .AddTo(disposables);
+            
+            if (collectionGroupId.HasValue)
+            {
+                LoadoutItem.Observe(connection, collectionGroupId.Value)
+                    .Select(item => item.IsEnabled())
+                    .OnUI()
+                    .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
+                    .AddTo(disposables);
+            }
         });
+    }
+
+    private static async Task ToggleCollectionGroup(Optional<LoadoutItemGroupId> collectionGroupId, bool shouldEnable, IConnection connection)
+    {
+        if (!collectionGroupId.HasValue) return;
+        using var tx = connection.BeginTransaction();
+        if (shouldEnable)
+        {
+            tx.Retract(collectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
+        }
+        else
+        {
+            tx.Add(collectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
+        }
+        await tx.Commit();
     }
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
