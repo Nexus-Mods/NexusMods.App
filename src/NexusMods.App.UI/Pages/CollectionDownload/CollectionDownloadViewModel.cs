@@ -117,7 +117,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        CommandDeleteCollection = new ReactiveCommand(
+        CommandDeleteCollectionRevision = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
                 var pageData = new PageData
@@ -134,7 +134,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
 
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
-                await nexusModsLibrary.DeleteCollection(_collection, cancellationToken: CancellationToken.None);
+                await nexusModsLibrary.DeleteRevision(_revision);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false,
@@ -371,7 +371,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
     public ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
-    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);

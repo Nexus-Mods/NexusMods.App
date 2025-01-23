@@ -61,11 +61,73 @@ public partial class NexusModsLibrary
     }
 
     /// <summary>
+    /// Gets all revision numbers that are newer than the current revision.
+    /// </summary>
+    public async ValueTask<RevisionNumber[]> GetNewerRevisionNumbers(
+        CollectionRevisionMetadata.ReadOnly currentRevision,
+        CancellationToken cancellationToken)
+    {
+        var revisionNumbers = await GetAllRevisionNumbers(currentRevision.Collection, cancellationToken);
+
+        var currentValue = currentRevision.RevisionNumber.Value;
+        var newer = revisionNumbers
+            .TakeWhile(other => other.Value > currentValue)
+            .ToArray();
+
+        return newer;
+    }
+
+    /// <summary>
+    /// Gets all revision numbers for the given collection in descending order.
+    /// </summary>
+    public async ValueTask<RevisionNumber[]> GetAllRevisionNumbers(
+        CollectionMetadata.ReadOnly collection,
+        CancellationToken cancellationToken)
+    {
+        var gameDomain = await _mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
+
+        var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
+            slug: collection.Slug.Value,
+            domainName: gameDomain.Value.Value,
+            viewAdultContent: true,
+            cancellationToken: cancellationToken
+        );
+
+        var revisions = apiResult.Data?.Collection.Revisions;
+        if (revisions is null) throw new NotSupportedException($"API call returned no data for collection slug `{collection.Slug}`");
+
+        var revisionNumbers = revisions
+            .Select(static x => x.RevisionNumber)
+            .OrderDescending()
+            .Select(static number => RevisionNumber.From((ulong)number))
+            .ToArray();
+
+        return revisionNumbers;
+    }
+
+    /// <summary>
+    /// Deletes a revision and all downloaded entities.
+    /// </summary>
+    public async ValueTask DeleteRevision(CollectionRevisionMetadataId revisionId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId);
+        foreach (var downloadId in downloadIds)
+        {
+            tx.Delete(downloadId.E, recursive: false);
+        }
+
+        tx.Delete(revisionId, recursive: false);
+
+        await tx.Commit();
+    }
+
+    /// <summary>
     /// Deletes a collection, all revisions, and all download entities of all revisions.
     /// </summary>
-    public async ValueTask DeleteCollection(
-        CollectionMetadataId collectionMetadataId,
-        CancellationToken cancellationToken)
+    public async ValueTask DeleteCollection(CollectionMetadataId collectionMetadataId)
     {
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();

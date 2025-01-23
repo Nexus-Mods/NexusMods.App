@@ -1,0 +1,13 @@
+# Fetches all revision numbers of a collection
+query CollectionRevisionNumbers($slug: String!, $domainName: String!, $viewAdultContent: Boolean!)
+{
+    collection(slug: $slug, domainName: $domainName, viewAdultContent: $viewAdultContent)
+    {
+        id,
+
+        revisions {
+            id,
+            revisionNumber
+        }
+    }
+}
