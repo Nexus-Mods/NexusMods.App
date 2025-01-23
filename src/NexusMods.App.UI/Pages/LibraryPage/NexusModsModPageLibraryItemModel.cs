@@ -33,13 +33,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
     public NexusModsModPageLibraryItemModel(
         IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<bool> hasChildrenObservable,
-        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IServiceProvider serviceProvider)
+        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IServiceProvider serviceProvider) : base(hasChildrenObservable, childrenObservable)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
-        HasChildrenObservable = hasChildrenObservable;
-        ChildrenObservable = childrenObservable;
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
         UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
         _numUpdatable = 1;
