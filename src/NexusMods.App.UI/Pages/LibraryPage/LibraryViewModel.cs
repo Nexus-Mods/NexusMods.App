@@ -355,7 +355,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 case NexusModsFileLibraryItemModel fileModPageModel:
                 {
                     var libraryItem = fileModPageModel.LibraryItem;
-                    var newerItem = RunUpdateCheck.GetNewerFilesForExistingFile(libraryItem.FileMetadata);
+                    var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(libraryItem.FileMetadata);
+                    var mostRecentItem = newerItems.FirstOrDefault();
+                    if (!mostRecentItem.IsValid()) // Catch case of no newer items.
+                        continue;
+                    
+                    fileModPageModel.InformUpdateAvailable(mostRecentItem);
                     break;
                 }
                 case LocalFileLibraryItemModel 
