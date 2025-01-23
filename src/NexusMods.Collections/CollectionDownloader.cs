@@ -559,6 +559,50 @@ public class CollectionDownloader
             })
             .Prepend(GetCollectionGroup(revision, targetLoadout, _connection.Db).Convert(static x => x.AsCollectionGroup()));
     }
+
+    /// <summary>
+    /// Deletes a revision and all downloaded entities.
+    /// </summary>
+    public async ValueTask DeleteRevision(CollectionRevisionMetadataId revisionId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId);
+        foreach (var downloadId in downloadIds)
+        {
+            tx.Delete(downloadId.E, recursive: false);
+        }
+
+        tx.Delete(revisionId, recursive: false);
+
+        await tx.Commit();
+    }
+
+    /// <summary>
+    /// Deletes a collection, all revisions, and all download entities of all revisions.
+    /// </summary>
+    public async ValueTask DeleteCollection(CollectionMetadataId collectionMetadataId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
+        foreach (var revisionId in revisionIds)
+        {
+            var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId.E);
+            foreach (var downloadId in downloadIds)
+            {
+                tx.Delete(downloadId.E, recursive: false);
+            }
+
+            tx.Delete(revisionId.E, recursive: false);
+        }
+
+        tx.Delete(collectionMetadataId, recursive: false);
+
+        await tx.Commit();
+    }
 }
 
 /// <summary>
