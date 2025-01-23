@@ -7,7 +7,6 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.CollectionLoadoutView">
 
@@ -185,14 +184,9 @@
                             <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                                 <!-- <controls:StandardButton Size="Small" Text="..." /> -->
                                 <!-- <Line Classes="Separator" /> -->
-                                <ToggleSwitch x:Name="CollectionToggle" Classes="Compact">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
+                                <ToggleSwitch x:Name="CollectionToggle" Classes="Compact"
+                                              OnContent="{x:Null}"
+                                              OffContent="{x:Null}"/>
                             </StackPanel>
                         </Grid>
 
