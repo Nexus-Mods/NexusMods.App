@@ -99,7 +99,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                     return self
                         .GetRootsObservable(viewHierarchical)
                         .OnUI()
-                        .DisposeMany()
                         .ToObservable()
                         .Do(self, static (changeSet, self) => self.Roots.ApplyChanges(changeSet))
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
