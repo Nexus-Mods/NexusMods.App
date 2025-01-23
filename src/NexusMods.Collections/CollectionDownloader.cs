@@ -13,7 +13,9 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -58,6 +60,29 @@ public class CollectionDownloader
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+    }
+
+    /// <summary>
+    /// Gets or adds a revision.
+    /// </summary>
+    public async ValueTask<CollectionRevisionMetadata.ReadOnly> GetOrAddRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken cancellationToken)
+    {
+        var revisions = CollectionRevisionMetadata
+            .FindByRevisionNumber(_connection.Db, revisionNumber)
+            .Where(r => r.Collection.Slug == slug);
+
+        if (revisions.TryGetFirst(out var revision)) return revision;
+
+        await using var destination = _temporaryFileManager.CreateFile();
+        var downloadJob = _nexusModsLibrary.CreateCollectionDownloadJob(destination, slug, revisionNumber, CancellationToken.None);
+
+        var libraryFile = await _libraryService.AddDownload(downloadJob);
+
+        if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
+            throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+
+        revision = await _nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, slug, revisionNumber, cancellationToken);
+        return revision;
     }
 
     private async ValueTask<bool> CanDirectDownload(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)

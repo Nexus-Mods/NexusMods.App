@@ -87,11 +87,28 @@
                                             <Setter Property="Orientation" Value="Horizontal" />
                                             <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
 
-                                            <Style Selector="^ TextBlock#Revision">
-                                                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                            <Style Selector="^ StackPanel#RevisionsPanel">
+                                                <Setter Property="Orientation" Value="Horizontal"/>
+                                                <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
+
+                                                <Style Selector="^ TextBlock#Revision">
+                                                    <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                                </Style>
+
+                                                <Style Selector="^ icons|UnifiedIcon#ArrowRight">
+                                                    <Setter Property="Size" Value="18"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}"/>
+                                                    <Setter Property="Value" Value="{x:Static icons:IconValues.ArrowForward}"/>
+                                                </Style>
+
+                                                <Style Selector="^ TextBlock#NewestRevision">
+                                                    <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}"/>
+                                                </Style>
                                             </Style>
+
 
                                             <Style Selector="^ StackPanel#AuthorStackPanel">
                                                 <Setter Property="Orientation" Value="Horizontal" />
