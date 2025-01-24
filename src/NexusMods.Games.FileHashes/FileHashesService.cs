@@ -117,15 +117,14 @@ public class FileHashesService : IFileHashesService, IDisposable
     {
         try
         {
-            await _updateLock.WaitAsync();
             if (GameHashesReleseFileName.FileExists)
                 GameHashesReleseFileName.Delete();
-            await CheckForUpdate();
         }
-        finally
+        catch (Exception ex)
         {
-            _updateLock.Release();
+            _logger.LogError(ex, "Error during force update");
         }
+        await CheckForUpdate();
     }
     
     public async Task CheckForUpdate()
