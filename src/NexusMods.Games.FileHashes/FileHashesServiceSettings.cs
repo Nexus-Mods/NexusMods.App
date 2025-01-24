@@ -14,9 +14,17 @@ public record FileHashesServiceSettings : ISettings
     public ConfigurablePath HashDatabaseLocation { get; init; }
     
     /// <summary>
+    /// Only checks GitHub for updates this often, in order to avoid API rate limits.
+    /// </summary>
+    public TimeSpan HashDatabaseUpdateInterval { get; init; } = TimeSpan.FromHours(6);
+    
+    /// <summary>
     /// The URL to the Github API to get the latest release.
     /// </summary>
     public Uri GithubReleaseUrl { get; init; } = new("https://api.github.com/repos/Nexus-Mods/game-hashes/releases/latest");
+    
+    public RelativePath ReleaseFilePath { get; init; } = "game-hashes-release.json";
+    
 
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

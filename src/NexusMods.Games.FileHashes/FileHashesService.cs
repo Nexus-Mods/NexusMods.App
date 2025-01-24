@@ -62,7 +62,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
         
         // Trigger an update
-        Task.Run(() => Task.FromResult(ForceUpdate()));
+        Task.Run(() => Task.FromResult(CheckForUpdate()));
     }
 
     private ConnectedDb OpenDb(DateTimeOffset timestamp, AbsolutePath path)
@@ -104,19 +104,45 @@ public class FileHashesService : IFileHashesService, IDisposable
             .OrderByDescending(v => v.Item1);
     }
     
-    private async Task<Release> GetRelease()
+    private async Task<Release> GetRelease(AbsolutePath storagePath)
     {
         await using var stream = await _httpClient.GetStreamAsync(_settings.GithubReleaseUrl);
-        return (await JsonSerializer.DeserializeAsync<Release>(stream, _jsonSerializerOptions))!;
+        await using var diskPath = storagePath.Create();
+        await stream.CopyToAsync(diskPath);
+        diskPath.Position = 0;
+        return (await JsonSerializer.DeserializeAsync<Release>(diskPath, _jsonSerializerOptions))!;
     }
-    
+
     public async Task ForceUpdate()
     {
         try
         {
             await _updateLock.WaitAsync();
+            if (GameHashesReleseFileName.FileExists)
+                GameHashesReleseFileName.Delete();
+            await CheckForUpdate();
+        }
+        finally
+        {
+            _updateLock.Release();
+        }
+    }
+    
+    public async Task CheckForUpdate()
+    {
+        try
+        {
+            await _updateLock.WaitAsync();
             
-            var release = await GetRelease();
+            var gameHashesReleseFileName = GameHashesReleseFileName;
+            if (gameHashesReleseFileName.FileExists && gameHashesReleseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
+            {
+                _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
+                return;
+            }
+            
+            
+            var release = await GetRelease(gameHashesReleseFileName);
             
             _logger.LogTrace("Checking for new hash database release");
 
@@ -167,6 +193,8 @@ public class FileHashesService : IFileHashesService, IDisposable
             _updateLock.Release();
         }
     }
+
+    private AbsolutePath GameHashesReleseFileName => _settings.HashDatabaseLocation.ToPath(_fileSystem) / _settings.ReleaseFilePath;
 
     public async ValueTask<IDb> GetFileHashesDb()
     {
