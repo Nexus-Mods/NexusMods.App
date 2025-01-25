@@ -1,0 +1,39 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    
+    <!-- name column -->
+    <Style Selector="TreeDataGridTemplateCell.SharedColumn_Name /template/ ContentPresenter#PART_ContentPresenter">
+
+        <Style Selector="^ StackPanel">
+            <Setter Property="Spacing" Value="{StaticResource Spacing-3}"/>
+        </Style>
+
+        <!-- thumbnail -->
+        <Style Selector="^ Border.SharedColumn_Name_ImageComponent">
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+            <Setter Property="Width" Value="45" />
+            <Setter Property="Height" Value="28" />
+            <!-- easy way to get the rounded corner to mask the image below -->
+            <Setter Property="ClipToBounds" Value="True" />
+                        
+            <Style Selector="^ > Panel > icons|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="Size" Value="16" />
+            </Style>
+                        
+            <Style Selector="^ > Panel > Image">
+                <Setter Property="Stretch" Value="UniformToFill" />
+            </Style>
+        </Style>
+
+        <!-- name -->
+        <Style Selector="^ Border.SharedColumn_Name_StringComponent TextBlock">
+        </Style>
+
+    </Style>
+
+</Styles>
+

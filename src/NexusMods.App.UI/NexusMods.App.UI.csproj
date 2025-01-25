@@ -375,6 +375,9 @@
         <Compile Update="Controls\TreeDataGrid\StringComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\ImageComponent.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\TreeDataGrid\SizeComponent.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
@@ -583,9 +586,6 @@
         <Compile Update="Pages\LibraryPage\LibraryViewModel.cs">
           <DependentUpon>ILibraryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LoadoutPage\FakeParentLoadoutItemModel.cs">
-            <DependentUpon>LoadoutItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
         </Compile>
@@ -724,7 +724,25 @@
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\CollectionLeftMenuItemViewModel.cs">
+          <DependentUpon>ILeftMenuItemWithToggleViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ILeftMenuItemWithToggleViewModel.cs">
           <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\HealthCheckLeftMenuItemViewModel.cs">
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemWithCountBadgeViewModel.cs">
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\CollectionDownloadViewModel.cs">
+          <DependentUpon>ICollectionDownloadViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutPage\CollectionLoadoutViewModel.cs">
+          <DependentUpon>ICollectionLoadoutViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\LoadoutPage\CollectionLoadoutDesignViewModel.cs">
+          <DependentUpon>ICollectionLoadoutViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

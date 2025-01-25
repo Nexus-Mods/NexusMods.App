@@ -18,7 +18,7 @@ A loadout is automatically created when the game is managed for the first time. 
 ??? tip "Can't see your game?"
     If you're managing several games, you may need to scroll down to find the loadouts. 
 
-![The My Loadouts screen showing a single loadout for Cyberpunk 2077](../images/0.6.0/LoadoutsSingle.webp)
+![The My Loadouts screen showing a single loadout for Cyberpunk 2077](../images/0.7.2/LoadoutsSingle.webp)
 
 From this screen, simply click the "Create New Loadout" tile. A new loadout card will appear in the view and an icon will be added to the spine. 
 
@@ -34,6 +34,6 @@ Copied loadouts contain the same list of mods (and any additional data) of the o
 
 To remove a loadout, use the :material-delete-forever: icon at the bottom of the loadout card.
 
-![The My Loadouts screen showing a multiple loadouts for Cyberpunk 2077](../images/0.6.0/LoadoutsMultiple.webp)
+![The My Loadouts screen showing a multiple loadouts for Cyberpunk 2077](../images/0.7.2/LoadoutsMultiple.webp)
 
 The currently active loadout cannot be removed. To completely remove a game from the app, including all loadouts, please see [Removing a Game](../AddGames.md#removing-a-game).

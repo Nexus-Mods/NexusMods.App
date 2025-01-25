@@ -61,30 +61,48 @@ public partial class NexusModsLibrary
     }
 
     /// <summary>
-    /// Deletes a collection, all revisions, and all download entities of all revisions.
+    /// Gets all revision numbers that are newer than the current revision.
     /// </summary>
-    public async ValueTask DeleteCollection(
-        CollectionMetadataId collectionMetadataId,
+    public async ValueTask<RevisionNumber[]> GetNewerRevisionNumbers(
+        CollectionRevisionMetadata.ReadOnly currentRevision,
         CancellationToken cancellationToken)
     {
-        var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var revisionNumbers = await GetAllRevisionNumbers(currentRevision.Collection, cancellationToken);
 
-        var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
-        foreach (var revisionId in revisionIds)
-        {
-            var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId.E);
-            foreach (var downloadId in downloadIds)
-            {
-                tx.Delete(downloadId.E, recursive: false);
-            }
+        var currentValue = currentRevision.RevisionNumber.Value;
+        var newer = revisionNumbers
+            .TakeWhile(other => other.Value > currentValue)
+            .ToArray();
 
-            tx.Delete(revisionId.E, recursive: false);
-        }
+        return newer;
+    }
 
-        tx.Delete(collectionMetadataId, recursive: false);
+    /// <summary>
+    /// Gets all revision numbers for the given collection in descending order.
+    /// </summary>
+    public async ValueTask<RevisionNumber[]> GetAllRevisionNumbers(
+        CollectionMetadata.ReadOnly collection,
+        CancellationToken cancellationToken)
+    {
+        var gameDomain = await _mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
 
-        await tx.Commit();
+        var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
+            slug: collection.Slug.Value,
+            domainName: gameDomain.Value.Value,
+            viewAdultContent: true,
+            cancellationToken: cancellationToken
+        );
+
+        var revisions = apiResult.Data?.Collection.Revisions;
+        if (revisions is null) throw new NotSupportedException($"API call returned no data for collection slug `{collection.Slug}`");
+
+        var revisionNumbers = revisions
+            .Select(static x => x.RevisionNumber)
+            .OrderDescending()
+            .Select(static number => RevisionNumber.From((ulong)number))
+            .ToArray();
+
+        return revisionNumbers;
     }
 
     private static ResolvedEntitiesLookup ResolveModFiles(

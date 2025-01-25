@@ -25,19 +25,19 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.BindCommand(ViewModel, vm => vm.CommandViewOnNexusMods, view => view.MenuItemViewOnNexusMods)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CommandViewInLibrary, view => view.MenuItemViewInLibrary)
-                .DisposeWith(d);
-
             this.BindCommand(ViewModel, vm => vm.CommandOpenJsonFile, view => view.MenuItemOpenJsonFile)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.CommandDeleteAllDownloads, view => view.MenuItemDeleteAllDownloads)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.MenuItemDeleteCollection)
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollectionRevision, view => view.MenuItemDeleteCollectionRevision)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.TextCollectionStatus.Text)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandViewCollection, view => view.ButtonViewCollection)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.CommandDownloadRequiredItems, view => view.ButtonDownloadRequiredItems)
@@ -48,6 +48,9 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.BindCommand(ViewModel, vm => vm.CommandDownloadOptionalItems, view => view.ButtonDownloadOptionalItems)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.CommandInstallOptionalItems, view => view.ButtonInstallOptionalItems)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandUpdateCollection, view => view.ButtonUpdateCollection)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.DownloadsTree.Source)
@@ -106,6 +109,20 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
 
+            this.WhenAnyValue(
+                    view => view.ViewModel!.IsUpdateAvailable.Value,
+                    view => view.ViewModel!.NewestRevisionNumber.Value)
+                .Subscribe(tuple =>
+                {
+                    var (isUpdateAvailable, optional) = tuple;
+
+                    ButtonUpdateCollection.IsVisible = isUpdateAvailable;
+                    ArrowRight.IsVisible = isUpdateAvailable;
+                    NewestRevision.IsVisible = isUpdateAvailable;
+
+                    if (optional.HasValue) NewestRevision.Text = $"Revision {optional.Value}";
+                }).DisposeWith(d);
+
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
                 .Select(selectedItem =>
                 {
@@ -121,19 +138,22 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
-                view => view.ViewModel!.CountDownloadedOptionalItems)
-                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, b))
+                view => view.ViewModel!.CountDownloadedOptionalItems,
+                view => view.ViewModel!.IsInstalled.Value)
+                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, b))
                 .Subscribe(tuple =>
                 {
-                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, filter) = tuple;
+                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, filter) = tuple;
                     var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
                     var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
 
+                    ButtonViewCollection.IsVisible = isInstalled;
+
                     ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
-                    ButtonInstallRequiredItems.IsVisible = hasDownloadedAllRequiredItems;
+                    ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
 
                     ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
-                    ButtonInstallOptionalItems.IsVisible = false; // TODO: implement this button
+                    ButtonInstallOptionalItems.IsVisible = !isInstalled && false; // TODO: implement this button
                     // ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional;
                 }).DisposeWith(d);
 
