@@ -21,7 +21,12 @@ public record FileHashesServiceSettings : ISettings
     /// <summary>
     /// The URL to the Github API to get the latest release.
     /// </summary>
-    public Uri GithubReleaseUrl { get; init; } = new("https://api.github.com/repos/Nexus-Mods/game-hashes/releases/latest");
+    public Uri GithubManifestUrl { get; init; } = new("https://github.com/Nexus-Mods/game-hashes/releases/latest/download/manifest.json");
+    
+    /// <summary>
+    /// The URL to the GitHub release to download the latest hashes database.
+    /// </summary>
+    public Uri GameHashesDbUrl { get; init; } = new("https://github.com/Nexus-Mods/game-hashes/releases/latest/download/game_hashes_db.zip");
     
     public RelativePath ReleaseFilePath { get; init; } = "game-hashes-release.json";
     

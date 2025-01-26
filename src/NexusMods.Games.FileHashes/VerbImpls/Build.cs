@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -16,6 +17,7 @@ using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.ProxyConsole.Abstractions;
+using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
 
 namespace NexusMods.Games.FileHashes.VerbImpls;
@@ -66,11 +68,33 @@ public class Build : IAsyncDisposable
         if (output.FileExists)
             output.Delete();
         
-        ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), output.ToString(), CompressionLevel.SmallestSize, false);
+        var hashesDbPath = output / "game_hashes_db.zip";
+        if (hashesDbPath.FileExists)
+            hashesDbPath.Delete();
+        
+        var manifestPath = output / "manifest.json";
+        ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), hashesDbPath.ToString(), CompressionLevel.SmallestSize, false);
 
-        var zipHash = await output.XxHash64Async();
+        var zipHash = await hashesDbPath.XxHash64Async();
 
-        await _renderer.TextLine("Database built and exported to {0}. Final size {1}. Hash: {2}", output, output.FileInfo.Size, zipHash);
+        var manifest = new DTOs.Manifest()
+        {
+            CreatedAt = DateTimeOffset.UtcNow,
+            Assets =
+            [
+                new DTOs.Asset()
+                {
+                    Type = AssetType.GameHashDb,
+                    Hash = zipHash,
+                    Size = hashesDbPath.FileInfo.Size,
+                },
+            ],
+        };
+
+        await using var manifestStream = manifestPath.Create();
+        await JsonSerializer.SerializeAsync(manifestStream, manifest, _jsonOptions);
+
+        await _renderer.TextLine("Database built and exported to {0}. Final size {1}. Hash: {2}", output, hashesDbPath.FileInfo.Size, zipHash);
     }
 
     private async Task AddSteamData(AbsolutePath path)

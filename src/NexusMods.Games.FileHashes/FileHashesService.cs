@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Games.FileHashes.GithubDTOs;
+using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
@@ -49,7 +49,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         // the db doesn't update often so this is fine
         foreach (var (_, path) in ExistingDBs().Skip(1))
         {
-            path.DeleteDirectory();
+            path.DeleteDirectory(true);
         }
 
 
@@ -104,13 +104,13 @@ public class FileHashesService : IFileHashesService, IDisposable
             .OrderByDescending(v => v.Item1);
     }
     
-    private async Task<Release> GetRelease(AbsolutePath storagePath)
+    private async Task<Manifest> GetRelease(AbsolutePath storagePath)
     {
-        await using var stream = await _httpClient.GetStreamAsync(_settings.GithubReleaseUrl);
+        await using var stream = await _httpClient.GetStreamAsync(_settings.GithubManifestUrl);
         await using var diskPath = storagePath.Create();
         await stream.CopyToAsync(diskPath);
         diskPath.Position = 0;
-        return (await JsonSerializer.DeserializeAsync<Release>(diskPath, _jsonSerializerOptions))!;
+        return (await JsonSerializer.DeserializeAsync<Manifest>(diskPath, _jsonSerializerOptions))!;
     }
 
     public async Task ForceUpdate()
@@ -147,22 +147,22 @@ public class FileHashesService : IFileHashesService, IDisposable
 
             var existingReleases = ExistingDBs().ToList();
 
-            if (existingReleases.Any(r => r.PublishTime == release.PublishedAt))
+            if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
                 return;
 
-            var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.PublishedAt.ToUnixTimeSeconds()}.tmp.zip";
+            var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.tmp.zip";
 
-            var asset = release.Assets.First(a => a.Name == "game_hashes_db.zip");
+            var asset = release.Assets.First(a => a.Type == AssetType.GameHashDb);
 
             {
                 // download the database
-                await using var stream = await _httpClient.GetStreamAsync(asset.BrowserDownloadUrl);
+                await using var stream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
                 await using var fileStream = tempZipPath.Create();
                 await stream.CopyToAsync(fileStream);
             }
 
 
-            var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.PublishedAt.ToUnixTimeSeconds()}_tmp";
+            var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
             {
                 // extact it 
                 tempDir.CreateDirectory();
@@ -178,14 +178,14 @@ public class FileHashesService : IFileHashesService, IDisposable
             }
 
             // rename the temp folder
-            var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.PublishedAt.ToUnixTimeSeconds().ToString();
+            var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.CreatedAt.ToUnixTimeSeconds().ToString();
             Directory.Move(tempDir.ToString(), finalDir.ToString());
 
             // delete the temp files
             tempZipPath.Delete();
             
             // open the new database
-            _currentDb = OpenDb(release.PublishedAt, finalDir);
+            _currentDb = OpenDb(release.CreatedAt, finalDir);
         }
         finally
         {
