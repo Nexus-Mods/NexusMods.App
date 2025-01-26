@@ -222,8 +222,17 @@
 	<data name="MyGamesView__Detected_games" xml:space="preserve">
 		<value>Wspierane gry</value>
 	</data>
+	<data name="MyGamesView__Page_Description" xml:space="preserve">
+		<value>Dodaj gry, aby zacząć</value>
+	</data>
 	<data name="Button_Manage" xml:space="preserve">
 		<value>Zarządzaj</value>
+	</data>
+	<data name="DiagnosticListView.Page_Title" xml:space="preserve">
+		<value>Kontrola kondycji</value>
+	</data>
+	<data name="DiagnosticListView.Page_Description" xml:space="preserve">
+		<value>Sprawdź swój zestaw pod kątem wszelkich problemów i dowiedz się, jak je rozwiązać</value>
 	</data>
 	<data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
 		<value>Łącznie {1:0}%</value>
@@ -340,7 +349,7 @@
 		<value>Kontrola kondycji</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip" xml:space="preserve">
-		<value>Sprawdź swój zestaw pod kątem wszelkich problemów i dowiedz się, jak je rozwiązać</value>
+		<value>Kliknij, aby sprawdzić swój zestaw pod kątem wszelkich problemów i dowiedz się, jak je rozwiązać</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
 		<value>Ukryte</value>
@@ -717,6 +726,9 @@
 	<data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
 		<value>Pobrano {0} z {1} wymaganych modów</value>
 	</data>
+	<data name="FileOriginPage_UpdateAll" xml:space="preserve">
+		<value>Zaktualizuj wszystko</value>
+	</data>
 	<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
 		<value>ZAINSTALOWANE MODY</value>
 	</data>
@@ -725,6 +737,15 @@
 	</data>
 	<data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
 		<value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
+	</data>
+	<data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+		<value>Zaktualizuj</value>
+	</data>
+	<data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+		<value>Zaktualizuj ({0})</value>
+	</data>
+	<data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+		<value>Zaktualizuj wszystko</value>
 	</data>
 	<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
 		<value>Wszystkie</value>
