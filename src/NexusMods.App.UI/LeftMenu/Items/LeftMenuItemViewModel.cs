@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.Abstractions.UI;
@@ -17,11 +18,12 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
 {
     public StringComponent Text { get; init; } = new("");
     [Reactive] public IconValue Icon { get; set; } = new();
-    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
-
+    [Reactive] public string ToolTipText { get; private set; }
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
+    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
 
+    public StringComponent? ToolTip { get; init; }
 
     public LeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -31,6 +33,7 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
     {
         IsActive = false;
         IsSelected = false;
+        ToolTipText = string.Empty;
 
         NavigateCommand = ReactiveCommand.Create<NavigationInformation>((info) =>
             {
@@ -43,6 +46,7 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
             .WhenAnyValue(controller => controller.ActiveWorkspace)
             .Where(workspace => workspace.Id == workspaceId);
 
+        // Should be 'Active' if the page is open and selected in any panel of the workspace
         var isActiveObservable = workspaceIsActiveObservable
             .Select(workspace =>
                 workspace.Panels.ToObservableChangeSet()
@@ -63,14 +67,15 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
                     .DistinctUntilChanged()
             )
             .Switch();
-        
+
         var workspaceHasSinglePanelObservable = workspaceIsActiveObservable
             .Select(workspace => workspace.WhenAnyValue(w => w.Panels.Count))
             .Switch()
             .Select(panelCount => panelCount == 1)
             .DistinctUntilChanged()
             .Prepend(workspaceController.ActiveWorkspace.Panels.Count == 1);
-        
+
+        // Should be 'Selected' only if there are multiple panels and the page is open and selected in the selected panel 
         var isSelectedObservable = workspaceIsActiveObservable
             .Select(workspace => workspace.WhenAnyValue(w => w.SelectedTab.Contents))
             .Switch()
@@ -90,9 +95,16 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
 
         this.WhenActivated(d =>
             {
+                ToolTip?.Activate()
+                    .DisposeWith(d);
                 Text.Activate()
                     .DisposeWith(d);
-                
+
+                // Set the ToolTipText to the value of the ToolTip component if it is not null, otherwise set it to the value of the Text component
+                (ToolTip ?? Text).Value.WhenAnyValue(item => item.Value)
+                    .Subscribe(value => ToolTipText = value)
+                    .DisposeWith(d);
+
                 isActiveObservable.Subscribe(isActive => IsActive = isActive)
                     .DisposeWith(d);
 
@@ -101,10 +113,4 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
             }
         );
     }
-    
-    // ToggleSwitch related properties
-    public virtual bool IsToggleVisible { get; } = false;
-    public virtual bool IsEnabled { get; set; } = true;
-    public virtual ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; } = 
-        ReactiveCommand.Create(() => { });
 }

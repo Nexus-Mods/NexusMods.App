@@ -3,6 +3,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithVersion : ILibraryItemModel, IComparable<ILibraryItemWithVersion>, IColumnDefinition<ILibraryItemModel, ILibraryItemWithVersion>
 {
     BindableReactiveProperty<string> Version { get; }

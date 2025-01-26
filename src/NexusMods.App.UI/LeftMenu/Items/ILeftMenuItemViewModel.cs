@@ -13,16 +13,11 @@ public interface ILeftMenuItemViewModel : IViewModelInterface
     
     public IconValue Icon { get; set; }
     
+    public string ToolTipText { get; }
+    
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; }
     
     public bool IsActive { get; }
     
     public bool IsSelected { get; }
-    
-    // ToggleSwitch related properties
-    public bool IsToggleVisible { get; }
-    
-    public bool IsEnabled { get; set; }
-    
-    public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
 }

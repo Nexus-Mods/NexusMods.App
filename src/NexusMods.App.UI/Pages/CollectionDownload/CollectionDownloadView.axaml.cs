@@ -31,7 +31,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.BindCommand(ViewModel, vm => vm.CommandDeleteAllDownloads, view => view.MenuItemDeleteAllDownloads)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.MenuItemDeleteCollection)
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollectionRevision, view => view.MenuItemDeleteCollectionRevision)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.CollectionStatusText, view => view.TextCollectionStatus.Text)
@@ -48,6 +48,9 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.BindCommand(ViewModel, vm => vm.CommandDownloadOptionalItems, view => view.ButtonDownloadOptionalItems)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.CommandInstallOptionalItems, view => view.ButtonInstallOptionalItems)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.CommandUpdateCollection, view => view.ButtonUpdateCollection)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TreeDataGridAdapter.Source.Value, view => view.DownloadsTree.Source)
@@ -105,6 +108,20 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
+
+            this.WhenAnyValue(
+                    view => view.ViewModel!.IsUpdateAvailable.Value,
+                    view => view.ViewModel!.NewestRevisionNumber.Value)
+                .Subscribe(tuple =>
+                {
+                    var (isUpdateAvailable, optional) = tuple;
+
+                    ButtonUpdateCollection.IsVisible = isUpdateAvailable;
+                    ArrowRight.IsVisible = isUpdateAvailable;
+                    NewestRevision.IsVisible = isUpdateAvailable;
+
+                    if (optional.HasValue) NewestRevision.Text = $"Revision {optional.Value}";
+                }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
                 .Select(selectedItem =>

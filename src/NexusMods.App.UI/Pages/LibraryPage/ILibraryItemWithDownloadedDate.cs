@@ -4,6 +4,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithDownloadedDate : ILibraryItemModel, IComparable<ILibraryItemWithDownloadedDate>, IColumnDefinition<ILibraryItemModel, ILibraryItemWithDownloadedDate>
 {
     ReactiveProperty<DateTimeOffset> DownloadedDate { get; }

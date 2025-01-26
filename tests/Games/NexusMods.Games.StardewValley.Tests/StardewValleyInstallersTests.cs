@@ -44,12 +44,23 @@ public class StardewValleyInstallersTests(ITestOutputHelper outputHelper) : ALib
             sb.AppendLine($"{firstLevelChild.Name}:");
             firstLevelChild.TryGetAsLoadoutItemGroup(out var childGroup).Should().BeTrue("The child should be a loadout item group.");
             
-            foreach (var child in childGroup.Children.OrderBy(x=> x.Name))
-            {
-                child.TryGetAsLoadoutItemWithTargetPath(out var targetPathItem).Should().BeTrue("The module should contain loadout items with a target path.");
-                targetPathItem.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue("The module should contain loadout files.");
-                sb.AppendLine($"  {{{targetPathItem.TargetPath.Item2}}} {targetPathItem.TargetPath.Item3} - {loadoutFile.Size} - {loadoutFile.Hash} - Stored: {fileStore.HaveFile(loadoutFile.Hash)}");
-            }
+            // Print out the children of the group
+            childGroup.Children
+                .Select(child =>
+                {
+                    child.TryGetAsLoadoutItemWithTargetPath(out var targetPathItem).Should().BeTrue("The module should contain loadout items with a target path.");
+                    targetPathItem.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue("The module should contain loadout files.");
+                    return (targetPathItem, loadoutFile);
+                })
+                .OrderBy(tuple => tuple.targetPathItem.TargetPath.Item3)
+                .ToList()
+                .ForEach(tuple =>
+                {
+                    var path = tuple.targetPathItem.TargetPath;
+                    var hash = tuple.loadoutFile.Hash;
+                    var size = tuple.loadoutFile.Size;
+                    sb.AppendLine($"  {{{path.Item2}}} {path.Item3} - {size} - {hash} - Stored: {fileStore.HaveFile(hash)}");
+                });
             
             childGroup.TryGetAsSMAPIModLoadoutItem(out var redModGroup).Should().BeTrue("The child should be a smapi mod loadout group.");
         }

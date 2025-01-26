@@ -1,0 +1,207 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="loadoutPage:ICollectionLoadoutViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.LoadoutPage.CollectionLoadoutView">
+
+    <Design.DataContext>
+        <loadoutPage:CollectionLoadoutDesignViewModel />
+    </Design.DataContext>
+
+    <!-- header, treedatagrid -->
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- header -->
+        <Border x:Name="HeaderBorderBackground">
+            <Border x:Name="HeaderBorder">
+
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#BF0F0F10" />
+                        <GradientStop Offset="1" Color="#F20F0F10" />
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <StackPanel x:Name="Banner" Orientation="Vertical">
+
+                    <!-- first header row (image and metadata) -->
+                    <Border x:Name="MainContentBorder" Padding="24">
+                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+
+                            <!-- left column (image) -->
+                            <Grid>
+
+                                <!-- placeholder -->
+                                <Border Grid.Column="0"
+                                        Height="90"
+                                        Width="73"
+                                        VerticalAlignment="Top"
+                                        ClipToBounds="True"
+                                        CornerRadius="{StaticResource Rounded}"
+                                        BorderThickness="2"
+                                        Background="{StaticResource SurfaceTranslucentLowBrush}"
+                                        BorderBrush="{StaticResource StrokeTranslucentWeakBrush}">
+                                    <icons:UnifiedIcon Size="50"
+                                                       Value="{x:Static icons:IconValues.Account}"
+                                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </Border>
+
+                                <!-- collection image -->
+                                <Border Grid.Column="0" x:Name="CollectionImageBorder"
+                                        Height="90"
+                                        Width="73"
+                                        VerticalAlignment="Top"
+                                        ClipToBounds="True"
+                                        CornerRadius="{StaticResource Rounded}">
+                                    <Image x:Name="CollectionImage" />
+                                </Border>
+                            </Grid>
+
+                            <!-- right column (metadata) -->
+
+                            <Grid Grid.Column="1" x:Name="CollectionDetails"
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  Margin="16,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" MaxWidth="500" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal" Spacing="2">
+                                    <icons:UnifiedIcon Size="16"
+                                                       Value="{x:Static icons:IconValues.CollectionsOutline}"
+                                                       Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                    <TextBlock Grid.Row="0" x:Name="Title"
+                                               Text="COLLECTION"
+                                               Theme="{StaticResource TitleXSSemiTheme}"
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="1" x:Name="CollectionName"
+                                           Theme="{StaticResource HeadingXSSemiTheme}"
+                                           Foreground="{StaticResource NeutralStrongBrush}"
+                                           Margin="0,4,0,4" />
+
+                                <Border Grid.Row="2" IsVisible="False">
+                                    <StackPanel>
+                                        <TextBlock Text="Your Loadout starts with a default, private collection."
+                                                   Theme="{StaticResource BodyMDNormalTheme}"
+                                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <TextBlock Text="You can copy it to share."
+                                                   Theme="{StaticResource BodyMDNormalTheme}"
+                                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" x:Name="TagsPanelBorder"
+                                        BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                                        BorderThickness="0,1,0,0"
+                                        Padding="0,8,0,8">
+
+                                    <StackPanel x:Name="TagsPanel"
+                                                Orientation="Horizontal"
+                                                Spacing="12">
+                                        <TextBlock x:Name="Revision"
+                                                   Theme="{StaticResource BodyMDBoldTheme}"
+                                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <StackPanel x:Name="AuthorStackPanel"
+                                                    Orientation="Horizontal"
+                                                    Margin="0,0,0,0"
+                                                    Spacing="4">
+                                            <Border x:Name="AuthorAvatarBorder"
+                                                    Width="24"
+                                                    Height="24">
+                                                <Border.Clip>
+                                                    <EllipseGeometry Rect="0,0,24,24" />
+                                                </Border.Clip>
+                                                <Image x:Name="AuthorAvatar" />
+                                            </Border>
+                                            <TextBlock x:Name="AuthorName"
+                                                       Theme="{StaticResource BodyMDNormalTheme}"
+                                                       Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        </StackPanel>
+                                        <StackPanel x:Name="NexusModsLogo"
+                                            Orientation="Horizontal"
+                                            Spacing="4">
+                                            <icons:UnifiedIcon Size="24"
+                                                               Value="{x:Static icons:IconValues.NexusColor}" />
+                                            <TextBlock Text="Nexus Mods"
+                                                       Theme="{StaticResource BodyMDNormalTheme}"
+                                                       Foreground="{StaticResource PrimaryStrongBrush}" />
+
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- toolbar -->
+                    <Border x:Name="ToolbarBorder"
+                            Classes="Toolbar">
+
+                        <Grid ColumnDefinitions="*,*">
+
+                            <!-- left side -->
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                                <StackPanel
+                                    x:Name="ToolbarReadOnly"
+                                    Orientation="Horizontal"
+                                    Spacing="4">
+                                    <icons:UnifiedIcon Size="20"
+                                                       Value="{x:Static icons:IconValues.Lock}"
+                                                       Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                                    <TextBlock Text="Read only"
+                                               Theme="{StaticResource BodyMDBoldTheme}"
+                                               Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                                    <TextBlock Text="- Create a local copy of a Nexus Mods collection to make changes"
+                                               Theme="{StaticResource BodyMDNormalTheme}"
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </StackPanel>
+                                <StackPanel
+                                    x:Name="ToolbarDisabled"
+                                    Orientation="Horizontal"
+                                    Spacing="4">
+                                    <icons:UnifiedIcon Size="20"
+                                                       Value="{x:Static icons:IconValues.Info}"
+                                                       Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                                    <TextBlock Text="Collection disabled"
+                                               Theme="{StaticResource BodyMDBoldTheme}"
+                                               Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                                    <TextBlock Text="- Mods will not be loaded"
+                                               Theme="{StaticResource BodyMDNormalTheme}"
+                                               Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- right side -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                <!-- <controls:StandardButton Size="Small" Text="..." /> -->
+                                <!-- <Line Classes="Separator" /> -->
+                                <ToggleSwitch x:Name="CollectionToggle" Classes="Compact"
+                                              OnContent="{x:Null}"
+                                              OffContent="{x:Null}"/>
+                            </StackPanel>
+                        </Grid>
+
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- tree data grid -->
+        <TreeDataGrid Grid.Row="2" x:Name="TreeDataGrid"
+                      ShowColumnHeaders="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      Classes="MainListsStyling"/>
+    </Grid>
+
+
+</reactive:ReactiveUserControl>
