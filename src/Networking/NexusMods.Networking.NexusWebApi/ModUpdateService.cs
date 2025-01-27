@@ -66,8 +66,10 @@ public class ModUpdateService : IModUpdateService
     public void NotifyForUpdates()
     {
         // Notify every file of its update.
-        foreach (var metadata in NexusModsFileMetadata.All(_connection.Db))
+        var allLibraryItems = NexusModsLibraryItem.All(_connection.Db).ToDictionary(x => x.FileMetadata.Id);
+        foreach (var libraryItem in allLibraryItems.Values)
         {
+            var metadata = libraryItem.FileMetadata;
             var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(metadata);
             var mostRecentItem = newerItems.FirstOrDefault();
             if (!mostRecentItem.IsValid()) // Catch case of no newer items.
@@ -76,7 +78,7 @@ public class ModUpdateService : IModUpdateService
             // Notify the file of its update.                                                                                                                                                                                                         
             _newestModVersionSubject.OnNext(new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem)); 
         }
-        
+
         // Check every mod page, and notify it of its update.
         foreach (var modPage in NexusModsModPageMetadata.All(_connection.Db))
         {
@@ -85,8 +87,9 @@ public class ModUpdateService : IModUpdateService
             var numToUpdate = 0;
             var isAnyOnModPageNewer = false;
 
-            // Check all mods within the mod page; finding the newest one.
-            foreach (var modFile in modPage.Files)
+            // Check all mods within the mod page that are in our library.
+            // By matching file metadata ID.
+            foreach (var modFile in modPage.Files.Where(x => allLibraryItems.ContainsKey(x.Id)))
             {
                 var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(modFile);
                 var mostRecentItem = newerItems.FirstOrDefault();
