@@ -292,20 +292,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
     {
-        var logger = _serviceProvider.GetRequiredService<ILogger<LibraryViewModel>>();
-        
-        // Identify all mod pages needing a refresh.
-        var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(_connection.Db, _nexusApiClient, _gameIdMappingCache);
-        
-        // Start a transaction with updated info if at least 1 item needs
-        // updating with upstream server.
-        if (updateCheckResult.AnyItemNeedsUpdate())
-        {
-            using var tx = _connection.BeginTransaction();
-            var gqlClient = _serviceProvider.GetRequiredService<NexusGraphQLClient>();
-            await RunUpdateCheck.UpdateModFilesForOutdatedPages(_connection.Db, tx, logger, gqlClient, updateCheckResult, token);
-            await tx.Commit();
-        }
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();                                                                                                                                          
+        await updateService.CheckAndUpdateMods(token); 
         
         // We've now updated our under the hood understanding of what's on the Nexus,
         // we now need to extract every file from the Nexus from the rows, and check,
