@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -51,21 +52,28 @@ public static class LibraryDataProviderHelper
             );
     }
 
-    public static void AddDateComponent(
-        CompositeItemModel<EntityId> parentItemModel,
-        DateTimeOffset initialValue,
+    public static void AddInstalledDateComponent(
+        CompositeItemModel<EntityId> itemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
     {
         var dateObservable = linkedItemsObservable
-            .QueryWhenChanged(query => query.Items
-                .Select(static item => item.GetCreatedAt())
-                .Min()
-            );
+            .QueryWhenChanged(query =>
+            {
+                if (query.Count == 0) return Optional<DateTimeOffset>.None;
 
-        parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(
-            initialValue: initialValue,
-            valueObservable: dateObservable
-        ));
+                return query.Items
+                    .Select(static item => item.GetCreatedAt())
+                    .Min();
+            });
+
+        itemModel.AddObservable(
+            key: SharedColumns.InstalledDate.ComponentKey,
+            observable: dateObservable,
+            componentFactory: (valueObservable, initialValue) => new DateComponent(
+                initialValue,
+                valueObservable
+            )
+        );
     }
 }
 

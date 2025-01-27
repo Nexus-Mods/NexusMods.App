@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
+using System.Runtime.Versioning;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Aggregation;
@@ -217,6 +218,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
     }
 
+    [Obsolete]
     private ILibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, LibraryFilter libraryFilter, bool showThumbnails)
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
@@ -235,6 +237,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return model;
     }
 
+    [Obsolete]
     private ILibraryItemModel ToLibraryItemModel(
         NexusModsModPageMetadata.ReadOnly modPageMetadata,
         LibraryFilter libraryFilter)
@@ -301,7 +304,60 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
     {
-        return Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>();
+        return NexusModsModPageMetadata
+            .ObserveAll(_connection)
+            // only show mod pages for the currently selected game
+            .FilterOnObservable(modPage => libraryFilter.GameObservable.Select(game => modPage.Uid.GameId.Equals(game.GameId)))
+            // only show mod pages that have library files
+            .FilterOnObservable(modPage => _connection
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
+                .IsNotEmpty()
+            )
+            .Transform(modPage => ToLibraryItemModel2(modPage, libraryFilter));
+    }
+
+    private CompositeItemModel<EntityId> ToLibraryItemModel2(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
+    {
+        var libraryItems = _connection
+            .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
+            .AsEntityIds()
+            .Transform(datom => NexusModsLibraryItem.Load(_connection.Db, datom.E))
+            .RefCount();
+
+        var hasChildrenObservable = libraryItems.IsNotEmpty();
+        var childrenObservable = libraryItems.Transform(libraryItem => ToLibraryItemModel2(libraryItem, libraryFilter));
+
+        var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
+        {
+            HasChildrenObservable = hasChildrenObservable,
+            ChildrenObservable = childrenObservable,
+        };
+
+        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+
+        return parentItemModel;
+    }
+
+    private CompositeItemModel<EntityId> ToLibraryItemModel2(NexusModsLibraryItem.ReadOnly libraryItem, LibraryFilter libraryFilter)
+    {
+        var linkedLoadoutItemsObservable = LibraryDataProviderHelper
+            .GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id)
+            .RefCount();
+
+        var fileMetadata = libraryItem.FileMetadata;
+
+        var itemModel = new CompositeItemModel<EntityId>(libraryItem.Id);
+
+        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: fileMetadata.Name));
+        itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
+
+        if (libraryItem.FileMetadata.Size.TryGet(out var size))
+            itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
+
+        LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
+
+        return itemModel;
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
