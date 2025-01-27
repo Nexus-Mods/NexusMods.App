@@ -115,7 +115,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                 .AddTo(disposables);
         });
         
-        var setVersionDisposable = ChildrenObservable
+        var setVersionDisposable = childrenObservable
             .ToCollection()
             .Subscribe(items =>
             {
