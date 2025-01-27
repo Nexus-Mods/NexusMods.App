@@ -918,7 +918,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // But this precision loss is negated if everything just uses a long. So convert both sides to a long and compare.
                             // If you ever want to try and fix this, simply subtract one from the other, and you'll see a timespan that does not
                             // equal zero. This is the precision loss, I (halgari) am not sure how else to fix it.
-                            if (fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc() || fileInfo.Size != entry.Size)
+                            if (AreDifferentModifiedDates(fileInfo, entry) || fileInfo.Size != entry.Size)
                             {
                                 // If the files don't match, update the entry
                                 var newHash = await file.XxHash3Async();
@@ -965,7 +965,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         return changes;
     }
-    
+
+    private static bool AreDifferentModifiedDates(IFileEntry fileInfo, DiskStateEntry.ReadOnly entry)
+    {
+        var diskFileTime = fileInfo.LastWriteTimeUtc.ToFileTime();
+        var entryFileTime = entry.LastModified.ToFileTime();
+        return fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc();
+    }
+
 
     /// <summary>
     /// Index the game state and create the initial disk state
