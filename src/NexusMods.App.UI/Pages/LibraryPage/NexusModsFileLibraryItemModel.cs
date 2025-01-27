@@ -26,7 +26,8 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
-    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider, bool showThumbnail = true)
+    public NexusModsFileLibraryItemModel(
+        NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IObservable<NexusModsFileMetadata.ReadOnly> hasUpdateObservable, IServiceProvider serviceProvider, bool showThumbnail = true)
     {
         LibraryItem = nexusModsLibraryItem;
         FormattedSize = ItemSize.ToFormattedProperty();
@@ -52,14 +53,15 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
-
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
         // ReSharper disable once NotDisposedResource
-        var modelActivationDisposable = this.WhenActivated(linkedLoadoutItemsDisposable, static (self, linkedLoadoutItemsDisposable, disposables) =>
+        var state = (hasUpdateObservable, linkedLoadoutItemsDisposable);
+        var modelActivationDisposable = this.WhenActivated(state, static (self, tuple, disposables) =>
         {
             // ReSharper disable once NotDisposedResource
-            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
+            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, tuple.linkedLoadoutItemsDisposable).AddTo(disposables);
+            tuple.hasUpdateObservable.Subscribe(self.InformUpdateAvailable).AddTo(disposables);
         });
 
         _modelDisposable = Disposable.Combine(
