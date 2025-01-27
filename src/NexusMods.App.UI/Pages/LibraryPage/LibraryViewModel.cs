@@ -213,9 +213,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
-            Adapter.ViewHierarchical.Subscribe(this, (_, self) => { self.NotifyUpdates(); })
-                .AddTo(disposables);
-
             CollectionMetadata.ObserveAll(_connection)
                 .FilterImmutable(collection =>
                 {
@@ -299,8 +296,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {                                                                                                                                        
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
     }
-    
-    private void NotifyUpdates() { _modUpdateService.NotifyForUpdates(); }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
