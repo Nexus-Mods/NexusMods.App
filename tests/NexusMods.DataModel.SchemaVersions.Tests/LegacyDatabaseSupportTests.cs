@@ -8,6 +8,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
@@ -52,27 +53,27 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
         using var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, provider.GetServices<IAnalyzer>());
         
-        var oldFingerprint = RecordedFingerprint(connection.Db);
+        var oldFingerprint = RecordedVersion(connection.Db);
         
-        var migrationService = new MigrationService(provider.GetRequiredService<ILogger<MigrationService>>(), connection, provider.GetServices<IMigration>());
-        await migrationService.Run();
+        var migrationService = new MigrationService(provider.GetRequiredService<ILogger<MigrationService>>(), connection, provider, provider.GetServices<MigrationDefinition>());
+        await migrationService.MigrateAll();
         
         await Verify(GetStatistics(connection.Db, name, oldFingerprint)).UseParameters(name);
     }
 
-    private Hash? RecordedFingerprint(IDb db)
+    private MigrationId RecordedVersion(IDb db)
     {
         var cache = db.AttributeCache;
-        if (!cache.Has(SchemaVersion.Fingerprint.Id))
-            return null;
+        if (!cache.Has(SchemaVersion.CurrentVersion.Id))
+            return MigrationId.From(0);
         
-        var fingerprints = db.Datoms(SchemaVersion.Fingerprint);
+        var fingerprints = db.Datoms(SchemaVersion.CurrentVersion);
         if (fingerprints.Count == 0)
-            return null;
-        return Hash.From(ValueTag.UInt64.Read<ulong>(fingerprints.First().ValueSpan));
+            return MigrationId.From(0);
+        return (MigrationId)db.Datoms(SchemaVersion.CurrentVersion).Single().Resolved(db.Connection.AttributeResolver).ObjectValue;
     }
 
-    private Statistics GetStatistics(IDb db, string name, Hash? oldFingerprint)
+    private Statistics GetStatistics(IDb db, string name, MigrationId oldId)
     {
         var timestampAttr = MnemonicDB.Abstractions.BuiltInEntities.Transaction.Timestamp;
         
@@ -81,8 +82,8 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
         return new Statistics
         {
             Name = name,
-            OldFingerprint = oldFingerprint?.ToString() ?? "None",
-            NewFingerprint = RecordedFingerprint(db)?.ToString() ?? "None",
+            OldId = oldId,
+            NewId = RecordedVersion(db),
             Loadouts = Loadout.All(db).Count,
             LoadoutItemGroups = LoadoutItemGroup.All(db).Count,
             Files = LoadoutItemWithTargetPath.All(db).Count,
@@ -98,9 +99,9 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
     {
         public string Name { get; init; }
         
-        public string OldFingerprint { get; init; }
+        public MigrationId OldId { get; init; }
         
-        public string NewFingerprint { get; init; }
+        public MigrationId NewId{ get; init; }
         
         public int Loadouts { get; init; }
         public int LoadoutItemGroups { get; init; }

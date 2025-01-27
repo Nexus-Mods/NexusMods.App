@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -11,34 +12,87 @@ public class MigrationService
 {
     private readonly ILogger<MigrationService> _logger;
     private readonly IConnection _connection;
-    private readonly List<IMigration> _migrations;
+    private readonly List<MigrationDefinition> _migrations;
+    private readonly IServiceProvider _provider;
 
-    public MigrationService(ILogger<MigrationService> logger, IConnection connection, IEnumerable<IMigration> migrations)
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    public MigrationService(ILogger<MigrationService> logger, IConnection connection, IServiceProvider provider, IEnumerable<MigrationDefinition> migrations)
     {
         _logger = logger;
         _connection = connection;
-        _migrations = migrations.OrderBy(m => m.CreatedAt).ToList();
+        _provider = provider;
+        _migrations = migrations.OrderBy(m => m.Id).ToList();
     }
 
-    public async Task Run()
+    /// <summary>
+    /// Return the current schema version (0 if none exists)
+    /// </summary>
+    private ushort GetCurrentMigrationId(IDb db)
     {
-        // Run all migrations, for now this interface works by handing a transaction to each migration, in the future we'll need
-        // to add support for changing history of the datoms and not just the most recent state. But until we need such a migration
-        // we'll go with this approach as it's simpler.
+        var version = SchemaVersion.All(db).SingleOrDefault();
+        return !version.IsValid() ? (ushort)0 : version.CurrentVersion.Value;
+    }
+
+    public async Task<IDb> InitialSetup()
+    {
+        var currentVersion = GetCurrentMigrationId(_connection.Db);
+        if (currentVersion != 0)
+            throw new InvalidOperationException("Cannot perform a schema init on a database that already has a schema version");
+
+        using var tx = _connection.BeginTransaction();
+        _ = new SchemaVersion.New(tx)
+        {
+            CurrentVersion = _migrations.Last().Id,
+        };
+
+        // Populate the log, this isn't strictly needed but is nice for testing, to know what migrations we saw when the DB was created
         foreach (var migration in _migrations)
         {
-            var db = _connection.Db;
-            if (!migration.ShouldRun(db))
+            _ = new MigrationLogItem.New(tx)
             {
-                _logger.LogInformation("Migration {Name} skipped", migration.Name);
-                continue;
-            }
+                MigrationId = migration.Id,
+                RunAt = DateTimeOffset.Now,
+                WasRun = false,
+            };
+        }
+        
+        var result = await tx.Commit();
+        return result.Db;
+    }
+
+    /// <summary>
+    /// Perfrom the DB migration
+    /// </summary>
+    public async Task MigrateAll()
+    {
+        var currentVersion = GetCurrentMigrationId(_connection.Db);
+        foreach (var definition in _migrations.Where(m => m.Id > currentVersion))
+        {
+            var instance = (IMigration)_provider.GetRequiredService(definition.Type);
             
-            _logger.LogInformation("Running migration {Name}", migration.Name);
+            _logger.LogInformation("Running Migration ({Id}){Name}", definition.Id, definition.Name);
+
+            if (instance is IScanningMigration scanningMigration)
+            {
+                // do it
+                throw new NotImplementedException();
+
+            }
+            else
+            {
+                throw new NotImplementedException("No other migration types supported (yet)");
+            }
+
             using var tx = _connection.BeginTransaction();
-            migration.Migrate(db, tx);
+            _ = new MigrationLogItem.New(tx)
+            {
+                RunAt = DateTimeOffset.UtcNow,
+                MigrationId = definition.Id,
+                WasRun = true,
+            };
             await tx.Commit();
-            _logger.LogInformation("Migration {Name} completed", migration.Name);
         }
     }
 }
