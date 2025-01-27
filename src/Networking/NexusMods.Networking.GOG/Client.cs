@@ -347,8 +347,7 @@ internal class Client : IClient
                     // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
                     var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
                     var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize,
-                        secureUrl
-                    );
+                        secureUrl, putInCache: true);
                     var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
                     var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
                     return subStream;

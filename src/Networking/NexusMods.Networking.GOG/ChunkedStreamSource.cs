@@ -18,12 +18,14 @@ internal class ChunkedStreamSource : IChunkedStreamSource
     private readonly Chunk[] _chunks;
     private readonly ulong[] _offsets;
     private readonly SecureUrl _secureUrl;
+    private readonly bool _putInCache;
 
-    public ChunkedStreamSource(Client client, Chunk[] chunks, Size size, SecureUrl url)
+    public ChunkedStreamSource(Client client, Chunk[] chunks, Size size, SecureUrl url, bool putInCache = false)
     {
         _secureUrl = url;
         _client = client;
         _chunks = chunks;
+        _putInCache = putInCache;
         
         _offsets = new ulong[_chunks.Length];
         ulong offset = 0;
@@ -80,7 +82,8 @@ internal class ChunkedStreamSource : IChunkedStreamSource
         Debug.Assert(md5.Equals(chunk.Md5));
         #endif
         
-        _client.AddCachedBlock(chunk.CompressedMd5, buffer.ToArray());
+        if (_putInCache) 
+            _client.AddCachedBlock(chunk.CompressedMd5, buffer.ToArray());
     }
     
 
