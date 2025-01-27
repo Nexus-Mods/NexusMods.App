@@ -1,32 +1,53 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
     <Design.PreviewWith>
         <Border Width="1000" Height="300">
             <Menu VerticalAlignment="Top">
                 <MenuItem Header="First" IsSubMenuOpen="True">
                     <MenuItem Header="Item" />
                     <MenuItem Header="Disabled" IsEnabled="False" />
-                    <Separator/>
+                    <Separator />
                     <MenuItem Header="Selected" IsSelected="True" />
                 </MenuItem>
-                <MenuItem Header="Second"/>
+                <MenuItem Header="Second" />
                 <MenuItem Header="Third" IsSubMenuOpen="True">
                     <MenuItem Header="With Icon">
                         <MenuItem.Icon>
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}"/>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}" />
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <Separator/>
+                    <Separator />
 
-                    <MenuItem Header="With Radio 1" ToggleType="Radio" GroupName="Group" IsChecked="True"/>
-                    <MenuItem Header="With Radio 2" ToggleType="Radio" GroupName="Group"/>
+                    <MenuItem Header="With Radio 1" ToggleType="Radio" GroupName="Group" IsChecked="True" />
+                    <MenuItem Header="With Radio 2" ToggleType="Radio" GroupName="Group" />
 
-                    <Separator/>
+                    <Separator />
 
-                    <MenuItem Header="With CheckBox" ToggleType="CheckBox" IsChecked="True"/>
+                    <MenuItem Header="With CheckBox" ToggleType="CheckBox" IsChecked="True" />
+                    <MenuItem>
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                        </MenuItem.Icon>
+                        <MenuItem.Header>
+                            <panels:FlexPanel>
+                                <TextBlock>Nexus Mods</TextBlock>
+                            </panels:FlexPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Classes="Critical">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
+                        </MenuItem.Icon>
+                        <MenuItem.Header>
+                            <panels:FlexPanel>
+                                <TextBlock>Something Critical</TextBlock>
+                            </panels:FlexPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
                 </MenuItem>
 
                 <MenuItem>
@@ -43,7 +64,7 @@
                     To make this easier, you can use this control:
                     -->
                     <MenuItem.Header>
-                        <controls:TopLevelMenuItemHeader Icon="{x:Static icons:IconValues.Code}" Text="With Icon"/>
+                        <controls:TopLevelMenuItemHeader Icon="{x:Static icons:IconValues.Code}" Text="With Icon" />
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>
@@ -53,7 +74,7 @@
 
     <Style Selector="controls|TopLevelMenuItemHeader">
         <Style Selector="^ /template/ StackPanel#StackPanel">
-            <Setter Property="Spacing" Value="8"/>
+            <Setter Property="Spacing" Value="8" />
         </Style>
     </Style>
 
@@ -62,48 +83,64 @@
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/MenuItem.xaml
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Controls/MenuItem.cs
         -->
-
+        <Style Selector="^ panels|FlexPanel > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>   
+        
         <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
-            <Setter Property="IsVisible" Value="True"></Setter>
+            <Setter Property="IsVisible" Value="True" />
+        
         </Style>
 
         <Style Selector="^ /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="{StaticResource SurfaceMid}"/>
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceMid}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         </Style>
 
         <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="Foreground" Value="{StaticResource NeutralModerate}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerate}" />
         </Style>
+
+
+
 
         <!-- Hover state (yes, this is using :selected) -->
         <Style Selector="^:selected">
             <Style Selector="^ /template/ Border#PART_LayoutRoot">
                 <Setter Property="Background" Value="{StaticResource SurfaceHigh}" />
             </Style>
-
             <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrong}"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
             </Style>
         </Style>
 
         <!-- Pressed state -->
         <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="{StaticResource SurfaceLow}"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
             <Style Selector="^ ContentPresenter#PART_HeaderPresenter">
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
             </Style>
         </Style>
 
         <!-- Disabled state -->
         <Style Selector="^:disabled">
             <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                <Setter Property="Background" Value="{StaticResource SurfaceMid}"/>
-                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>
+                <Setter Property="Background" Value="{StaticResource SurfaceMid}" />
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
-
             <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                <Setter Property="Foreground" Value="{StaticResource NeutralModerate}"/>
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerate}" />
+            </Style>
+        </Style>
+        
+        
+        <Style Selector="^.Critical">
+            <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="Foreground" Value="IndianRed" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="IndianRed" />
             </Style>
         </Style>
     </Style>

@@ -11,7 +11,7 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+    mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
@@ -20,6 +20,9 @@
     <reactiveUi:ReactiveUserControl.Resources>
         <MenuFlyout x:Key="CollectionMenuFlyout">
             <MenuItem x:Name="MenuItemViewOnNexusMods">
+                <MenuItem.Icon>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}"/>
+                </MenuItem.Icon>
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>View on Nexus Mods</TextBlock>
@@ -27,20 +30,29 @@
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemOpenJsonFile">
+                <MenuItem.Icon>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}"/>
+                </MenuItem.Icon>
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Open JSON file</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem x:Name="MenuItemDeleteAllDownloads">
+            <MenuItem x:Name="MenuItemDeleteAllDownloads" Classes="Critical">
+                <MenuItem.Icon>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}"/>
+                </MenuItem.Icon>
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete all downloads</TextBlock>
                     </panels:FlexPanel>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem x:Name="MenuItemDeleteCollectionRevision">
+            <MenuItem x:Name="MenuItemDeleteCollectionRevision" Classes="Critical">
+                <MenuItem.Icon>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}"/>
+                </MenuItem.Icon>
                 <MenuItem.Header>
                     <panels:FlexPanel>
                         <TextBlock>Delete collection revision</TextBlock>
@@ -54,15 +66,28 @@
                 <panels:FlexPanel x:Name="ListHeaderRow">
                     <TextBlock x:Name="TextCollectionStatus"/>
                     <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner"/>
-                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems" Text="Download all required mods" />
-                    <controls:StandardButton x:Name="ButtonInstallRequiredItems" Text="Install Collection" />
-                    <navigation:NavigationControl x:Name="ButtonViewCollection" Text="View Installed Collection"/>
+                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems" Text="Download all required mods"
+                                             Size="Small"
+                                             Type="Secondary"
+                                             Fill="Strong"/>
+                    <controls:StandardButton x:Name="ButtonInstallRequiredItems" Text="Install Collection"
+                                             Size="Small"
+                                             Type="Primary"
+                                             Fill="Strong" />
+                    <navigation:NavigationControl x:Name="ButtonViewCollection" Text="View Installed Collection"
+                                                  Size="Small"/>
 
-                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection" Text="Install Update"/>
+                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection" Text="Install Update"
+                                             Size="Small"/>
 
-                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems" Text="Download all optional mods" />
-                    <controls:StandardButton x:Name="ButtonInstallOptionalItems" Text="Install downloaded optional mods" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..." />
+                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems" Text="Download all optional mods"
+                                             Size="Small"
+                                             Type="Secondary"
+                                             Fill="Strong" />
+                    <controls:StandardButton x:Name="ButtonInstallOptionalItems" Text="Install downloaded optional mods"
+                                             Size="Small" />
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..."
+                                             Size="Small" />
                 </panels:FlexPanel>
             </Border>
 
