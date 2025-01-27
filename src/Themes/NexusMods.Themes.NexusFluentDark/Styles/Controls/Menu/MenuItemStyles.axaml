@@ -137,10 +137,10 @@
         <Style Selector="^.Critical">
             <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
                 <Setter Property="IsVisible" Value="True" />
-                <Setter Property="Foreground" Value="IndianRed" />
+                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
             </Style>
             <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                <Setter Property="Foreground" Value="IndianRed" />
+                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
             </Style>
         </Style>
     </Style>
