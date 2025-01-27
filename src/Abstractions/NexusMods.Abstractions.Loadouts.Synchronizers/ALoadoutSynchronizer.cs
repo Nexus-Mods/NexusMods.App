@@ -918,7 +918,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // But this precision loss is negated if everything just uses a long. So convert both sides to a long and compare.
                             // If you ever want to try and fix this, simply subtract one from the other, and you'll see a timespan that does not
                             // equal zero. This is the precision loss, I (halgari) am not sure how else to fix it.
-                            if (fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc() || fileInfo.Size != entry.Size)
+                            if (fileInfo.LastWriteTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
                                 // If the files don't match, update the entry
                                 var newHash = await file.XxHash3Async();
