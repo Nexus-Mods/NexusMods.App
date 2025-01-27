@@ -33,7 +33,7 @@ public class ModUpdateService : IModUpdateService
         _gqlClient = gqlClient;
     }
 
-    public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateMods(CancellationToken token)
+    public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true)
     {
         // Identify all mod pages needing a refresh
         var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(
@@ -56,6 +56,15 @@ public class ModUpdateService : IModUpdateService
             await tx.Commit();
         }
         
+        if (notify)
+            NotifyForUpdates();
+
+        return updateCheckResult;
+    }
+
+    /// <inheritdoc />
+    public void NotifyForUpdates()
+    {
         // Notify every file of its update.
         foreach (var metadata in NexusModsFileMetadata.All(_connection.Db))
         {
@@ -97,8 +106,6 @@ public class ModUpdateService : IModUpdateService
             if (isAnyOnModPageNewer)
                 _newestModOnAnyPageSubject.OnNext(new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(modPage, new NewestModPageVersionData(newestItem, numToUpdate)));
         }
-
-        return updateCheckResult;
     }
 
     /// <inheritdoc />

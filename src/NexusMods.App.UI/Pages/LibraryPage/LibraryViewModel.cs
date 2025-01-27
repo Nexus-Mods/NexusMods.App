@@ -65,6 +65,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly ILibraryItemInstaller _advancedInstaller;
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly Loadout.ReadOnly _loadout;
+    private readonly IModUpdateService _modUpdateService;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
@@ -84,6 +85,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _gameIdMappingCache = gameIdMappingCache;
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
@@ -211,6 +213,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
+            Adapter.ViewHierarchical.Subscribe(this, (_, self) => { self.NotifyUpdates(); })
+                .AddTo(disposables);
+
             CollectionMetadata.ObserveAll(_connection)
                 .FilterImmutable(collection =>
                 {
@@ -233,7 +238,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
             // Note(sewer)
             // Begin an asynchronous update check on entering the view.
-            // Since this can take a bit with libraries that have 1000s of items,
+            // Since this can take a bit with libraries that have 1000s of (uncached) items,
             // we do this in the background and update the items as needed.
             _ = RefreshUpdates(CancellationToken.None);
         });
@@ -291,10 +296,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
-    {
-        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();                                                                                                                                          
-        await updateService.CheckAndUpdateMods(token);
+    {                                                                                                                                        
+        await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
     }
+    
+    private void NotifyUpdates() { _modUpdateService.NotifyForUpdates(); }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
