@@ -25,7 +25,7 @@ public static class Verbs
         [Injected] IServiceProvider serviceProvider,
         [Injected] CancellationToken token)
     {
-        await using var builder = new Build(renderer, serviceProvider, temporaryFileManager);
+        await using var builder = new BuildHashesDb(renderer, serviceProvider, temporaryFileManager);
         
         await builder.BuildFrom(path, output);
         return 0;

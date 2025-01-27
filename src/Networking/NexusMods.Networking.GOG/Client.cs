@@ -55,7 +55,7 @@ internal class Client : IClient
     /// <summary>
     /// TTL time for the secure URL cache.
     /// </summary>
-    private static readonly TimeSpan CacheTime = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan CacheTime = TimeSpan.FromMinutes(5);
     
     /// <summary>
     /// A channel for incoming auth URLs.

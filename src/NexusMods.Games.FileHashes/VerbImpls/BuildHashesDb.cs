@@ -22,7 +22,7 @@ using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.Operating
 
 namespace NexusMods.Games.FileHashes.VerbImpls;
 
-public class Build : IAsyncDisposable
+public class BuildHashesDb : IAsyncDisposable
 {
     private readonly TemporaryPath _tempFolder;
     private readonly DatomStore _datomStore;
@@ -33,7 +33,7 @@ public class Build : IAsyncDisposable
     private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
     private readonly Backend _backend;
 
-    public Build(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager)
+    public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager)
     {
         Provider = provider;
         _renderer = renderer;

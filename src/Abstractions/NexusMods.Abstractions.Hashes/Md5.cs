@@ -110,7 +110,7 @@ public unsafe struct Md5 : IEquatable<Md5>
     public static Md5 FromUInt128(UInt128 value)
     {
         var md5 = new Md5();
-        MemoryMarshal.Write(md5.WritableSpan, ref value);
+        MemoryMarshal.Write(md5.WritableSpan, value);
         return md5;
     }
 }

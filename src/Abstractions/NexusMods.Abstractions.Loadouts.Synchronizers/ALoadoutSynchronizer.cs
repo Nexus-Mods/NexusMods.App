@@ -1005,7 +1005,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var gamePath = installation.LocationsRegister.ToGamePath(file);
         
-        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash
+        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash. 
+        // File sizes are actually fairly unique. Of-course they collide a lot, but since most games have different
+        // types of file and pack their assets in archives, the number of collisions are fairly low. Using a path
+        // first is more expensive due to it being a insensitive string comparsion, and we'd have to hash the file
+        // on disk to get the minimal hash. 
+        // So we do size -> minimal hash -> path (path being uses mostly as a doublecheck at the end).
         var relation = HashRelation.FindBySize(hashDb, file.FileInfo.Size);
         if (relation.Count != 0)
         {
