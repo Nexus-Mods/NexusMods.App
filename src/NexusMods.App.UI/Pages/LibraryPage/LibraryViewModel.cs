@@ -293,74 +293,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private async ValueTask RefreshUpdates(CancellationToken token) 
     {
         var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();                                                                                                                                          
-        await updateService.CheckAndUpdateMods(token); 
-        
-        // We've now updated our under the hood understanding of what's on the Nexus,
-        // we now need to extract every file from the Nexus from the rows, and check,
-        // for updates individually.
-        foreach (var itemModel in Adapter.GetRoots())
-        {
-            switch (itemModel)
-            {
-                // The items here can either be `NexusModsModPageLibraryItemModel`
-                // (as 'fake parents') in tree view, or members of 
-                // 'NexusModsFileLibraryItemModel' directly.
-                case NexusModsModPageLibraryItemModel modPageModel:
-                {
-                    var libraryItems = modPageModel.LibraryItems;
-                    if (libraryItems.Length <= 0)
-                        continue;
-            
-                    // Note(sewer) Search for note with text N20250116
-                    var newestDate = DateTimeOffset.MinValue;
-                    NexusModsFileMetadata.ReadOnly newestItem = default;
-                    var filesToUpdate = new List<(NexusModsLibraryItem.ReadOnly, NexusModsFileMetadata.ReadOnly)>();
-                    var isAnyOnModPageNewer = false;
-                    
-                    // Note(sewer): The cast `NexusModsFileLibraryItemModel` is valid because
-                    // `NexusModsModPageLibraryItemModel` is a container of `NexusModsModPageLibraryItemModel`.
-                    foreach (var libraryItemModel in modPageModel.Children.OfType<NexusModsFileLibraryItemModel>())
-                    {
-                        var libraryItem = libraryItemModel.LibraryItem;
-                        var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(libraryItem.FileMetadata);
-                        var mostRecentItem = newerItems.FirstOrDefault();
-                        if (!mostRecentItem.IsValid()) // Catch case of no newer items.
-                            continue;
-
-                        var isNewestOnModPage = mostRecentItem.UploadedAt > newestDate;
-                        if (isNewestOnModPage)
-                        {
-                            filesToUpdate.Add((libraryItem, mostRecentItem));
-                            newestDate = mostRecentItem.UploadedAt;
-                            newestItem = mostRecentItem;
-                            isAnyOnModPageNewer = true;
-                        }
-
-                        libraryItemModel.InformUpdateAvailable(mostRecentItem);
-                    }
-
-                    if (isAnyOnModPageNewer)
-                        modPageModel.InformAvailableUpdate(newestItem, filesToUpdate);
-
-                    break;
-                }
-                case NexusModsFileLibraryItemModel fileModPageModel:
-                {
-                    break;
-                }
-                case LocalFileLibraryItemModel 
-                    or LocalFileParentLibraryItemModel 
-                    or NexusModsFileMetadataLibraryItemModel.Downloadable 
-                    or NexusModsFileMetadataLibraryItemModel.Installable:
-                    // Ignore (Unsupported)
-                    break;
-                default:
-                    // Catch any potential future classes.
-                    throw new NotImplementedException("[RefreshUpdates] Unknown Model Class Encountered While Update Checking.\n" +
-                                                      "This code needs updated. Please report this as a bug.\n" +
-                                                      $"TypeName: {itemModel.GetType().Name}");
-            }
-        }
+        await updateService.CheckAndUpdateMods(token);
     }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)

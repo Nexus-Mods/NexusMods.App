@@ -16,7 +16,8 @@ public class ModUpdateService : IModUpdateService
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
-    private readonly Subject<KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>> _newestVersionSubject = new();   
+    private readonly Subject<KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>> _newestModVersionSubject = new();
+    private readonly Subject<KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>> _newestModOnAnyPageSubject = new();
 
     public ModUpdateService(
         IConnection connection,
@@ -64,16 +65,55 @@ public class ModUpdateService : IModUpdateService
                 continue;
 
             // Notify the file of its update.                                                                                                                                                                                                         
-            _newestVersionSubject.OnNext(new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem)); 
+            _newestModVersionSubject.OnNext(new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem)); 
+        }
+        
+        // Check every mod page, and notify it of its update.
+        foreach (var modPage in NexusModsModPageMetadata.All(_connection.Db))
+        {
+            var newestDate = DateTimeOffset.MinValue;
+            NexusModsFileMetadata.ReadOnly newestItem = default;
+            var numToUpdate = 0;
+            var isAnyOnModPageNewer = false;
+
+            // Check all mods within the mod page; finding the newest one.
+            foreach (var modFile in modPage.Files)
+            {
+                var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(modFile);
+                var mostRecentItem = newerItems.FirstOrDefault();
+                if (!mostRecentItem.IsValid()) // Catch case of no newer items.
+                    continue;
+
+                var isNewestOnModPage = mostRecentItem.UploadedAt > newestDate;
+                if (!isNewestOnModPage)
+                    continue;
+
+                numToUpdate++;
+                newestDate = mostRecentItem.UploadedAt;
+                newestItem = mostRecentItem;
+                isAnyOnModPageNewer = true;
+            }
+
+            if (isAnyOnModPageNewer)
+                _newestModOnAnyPageSubject.OnNext(new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(modPage, new NewestModPageVersionData(newestItem, numToUpdate)));
         }
 
         return updateCheckResult;
     }
 
     /// <inheritdoc />
-    public IObservable<NexusModsFileMetadata.ReadOnly> GetNewestVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<NexusModsFileMetadata.ReadOnly> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
     {
-        return _newestVersionSubject
+        return _newestModVersionSubject
+            .Where(kv => kv.Key.Id == current.Id) // fastest possible compare
+            .Select(kv => kv.Value); 
+        // Note(sewer): Value is valid by definition, we only beam valid values
+    }
+    
+    /// <inheritdoc />
+    public IObservable<NewestModPageVersionData> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    {
+        return _newestModOnAnyPageSubject
             .Where(kv => kv.Key.Id == current.Id) // fastest possible compare
             .Select(kv => kv.Value); 
         // Note(sewer): Value is valid by definition, we only beam valid values
