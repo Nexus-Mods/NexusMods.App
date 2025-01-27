@@ -219,7 +219,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider, showThumbnails)
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
+        var hasUpdateObservable = updateService.GetNewestVersionObservable(nexusModsLibraryItem.FileMetadata);
+        
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, hasUpdateObservable, _serviceProvider, showThumbnails)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
@@ -265,7 +268,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .QueryWhenChanged(query => query.Count > 0)
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
-
+        
         var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, hasChildrenObservable, childrenObservable, _serviceProvider)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
