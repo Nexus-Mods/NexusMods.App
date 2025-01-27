@@ -53,12 +53,12 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
         using var datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         var connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), datomStore, provider, provider.GetServices<IAnalyzer>());
         
-        var oldFingerprint = RecordedVersion(connection.Db);
+        var oldMigrationId = RecordedVersion(connection.Db);
         
         var migrationService = new MigrationService(provider.GetRequiredService<ILogger<MigrationService>>(), connection, provider, provider.GetServices<MigrationDefinition>());
         await migrationService.MigrateAll();
         
-        await Verify(GetStatistics(connection.Db, name, oldFingerprint)).UseParameters(name);
+        await Verify(GetStatistics(connection.Db, name, oldMigrationId)).UseParameters(name);
     }
 
     private MigrationId RecordedVersion(IDb db)
@@ -82,8 +82,8 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
         return new Statistics
         {
             Name = name,
-            OldId = oldId,
-            NewId = RecordedVersion(db),
+            OldId = oldId.Value,
+            NewId = RecordedVersion(db).Value,
             Loadouts = Loadout.All(db).Count,
             LoadoutItemGroups = LoadoutItemGroup.All(db).Count,
             Files = LoadoutItemWithTargetPath.All(db).Count,
@@ -99,9 +99,9 @@ public class LegacyDatabaseSupportTests(IServiceProvider provider, IFileExtracto
     {
         public string Name { get; init; }
         
-        public MigrationId OldId { get; init; }
+        public ushort OldId { get; init; }
         
-        public MigrationId NewId{ get; init; }
+        public ushort NewId{ get; init; }
         
         public int Loadouts { get; init; }
         public int LoadoutItemGroups { get; init; }

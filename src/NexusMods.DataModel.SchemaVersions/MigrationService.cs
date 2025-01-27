@@ -76,8 +76,8 @@ public class MigrationService
 
             if (instance is IScanningMigration scanningMigration)
             {
-                // do it
-                throw new NotImplementedException();
+                scanningMigration.Prepare(_connection.Db);
+                await _connection.ScanUpdate(scanningMigration.Update);
 
             }
             else
@@ -92,7 +92,17 @@ public class MigrationService
                 MigrationId = definition.Id,
                 WasRun = true,
             };
+            var id = SchemaVersionEntityId(_connection.Db, tx, definition.Id);
+            tx.Add(id, SchemaVersion.CurrentVersion, definition.Id);
             await tx.Commit();
         }
+    }
+
+    private EntityId SchemaVersionEntityId(IDb db, ITransaction tx, MigrationId definitionId)
+    {
+        var existing = SchemaVersion.All(db).SingleOrDefault();
+        if (existing.IsValid())
+            return existing.Id;
+        return tx.TempId();
     }
 }

@@ -8,5 +8,5 @@ public interface IScanningMigration : IMigration
 {
     void Prepare(IDb db);
 
-    bool Update(ref KeyPrefix prefix, ReadOnlySpan<byte> valueSpan, in IBufferWriter<byte> writer);
+    ScanResultType Update(ref KeyPrefix prefix, ReadOnlySpan<byte> valueSpan, in IBufferWriter<byte> writer);
 }

@@ -6,7 +6,7 @@ namespace NexusMods.DataModel.SchemaVersions;
 /// A sortable migration id
 /// </summary>
 [ValueObject<ushort>]
-public readonly partial struct MigrationId
+public readonly partial struct MigrationId : IAugmentWith<JsonAugment>
 {
     /// <summary>
     /// Parse the MigrationId and Migration name from the given class name, should be in the format of _XXXX_Name
