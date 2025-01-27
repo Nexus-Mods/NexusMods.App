@@ -262,8 +262,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         void StartLibraryItemUpdate(LibraryItemId id)
         {
             // By definition, only works on Nexus library items.
-            var libraryItem = LibraryItem.Load(_connection.Db, id);
-            if (!libraryItem.IsValid() || !libraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem)) 
+            var nexusLibraryItem = NexusModsLibraryItem.Load(_connection.Db, id);
+            if (!nexusLibraryItem.IsValid()) 
                 return;
 
             // Reuse known newest version in local storage, obtained via
