@@ -273,10 +273,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             if (!mostRecentVersion.IsValid()) // Catch case of no newer items.
                 return;
 
-            var modFileUrlFormat = "https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={0}&game_id={1}";
-            var modFileUrl = string.Format(modFileUrlFormat, mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
+            var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
             var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-            osInterop.OpenUrl(new Uri(modFileUrl), cancellationToken: cancellationToken);
+            osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
         }
         
         if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
