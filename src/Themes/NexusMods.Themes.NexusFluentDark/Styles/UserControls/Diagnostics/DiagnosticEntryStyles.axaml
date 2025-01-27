@@ -25,12 +25,23 @@
         <Style Selector="^ controls|StandardButton#EntryButton">
             <Setter Property="Type" Value="Tertiary" />
             <Setter Property="Fill" Value="Weak" />
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            
+
+            <Style Selector="^[Type=Tertiary]">
+                <Style Selector="^[Fill=Weak]">
+                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                    <Style Selector="^:pointerover">
+                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                    </Style>
+                    <Style Selector="^:pressed">
+                        <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
+                    </Style>
+                </Style>
+            </Style>
+
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
-            
+
                 <Style Selector="^:pointerover">
                     <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
                 </Style>

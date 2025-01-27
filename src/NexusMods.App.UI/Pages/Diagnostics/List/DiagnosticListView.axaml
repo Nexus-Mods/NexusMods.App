@@ -10,6 +10,7 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
@@ -47,30 +48,71 @@
         <!-- need DockPanel to make the TabControl fill the available space, needed for ScrollViewer to calculate height properly -->
         <DockPanel Margin="24">
 
-            <!-- header with pictogram -->
-            <StackPanel Spacing="8" DockPanel.Dock="Top">
-
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Border Width="48" Height="48">
-                        <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramHealth}" />
-                    </Border>
-                    <TextBlock Text="Health Check"
-                               Theme="{StaticResource HeadingSMSemiTheme}"
-                               Foreground="{StaticResource NeutralStrongBrush}"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-
-                <TextBlock
-                    Text="Review your Loadout for any issues and learn how to resolve them if needed."
-                    Theme="{StaticResource BodyMDNormalTheme}"
-                    Foreground="{StaticResource NeutralStrongBrush}"
-                    TextWrapping="Wrap" />
-            </StackPanel>
+            <pageHeader:PageHeader DockPanel.Dock="Top"
+                                   Title="{x:Static resources:Language.DiagnosticListView_Page_Title}"
+                                   Description="{x:Static resources:Language.DiagnosticListView_Page_Description}"
+                                   Icon="{x:Static icons:IconValues.PictogramHealth}"/> 
 
             <controls:EmptyState x:Name="EmptyState"
-                                 Icon="{x:Static icons:IconValues.CheckCircle}"
-                                 Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
-                                 Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
+                                 Margin="0"
+                                 Padding="0"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Top">
+
+                <controls:EmptyState.Styles>
+                    <Style Selector="controls|EmptyState">
+                        <Setter Property="Template">
+                            <ControlTemplate>
+                                <Grid>
+                                    <Border x:Name="EmptyStateBorder">
+                                        <ContentPresenter x:Name="SubtitleContentPresenter"
+                                                          Content="{TemplateBinding Subtitle}" />
+                                    </Border>
+                                    <ContentPresenter Grid.Column="0" Grid.Row="0" x:Name="ContentPresenter"
+                                                      Content="{TemplateBinding Content}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter>
+                    </Style>
+
+                    <Style Selector="Border#EmptyStateBorder">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </controls:EmptyState.Styles>
+
+                <controls:EmptyState.Subtitle>
+                    <Border
+                        VerticalAlignment="Top"
+                        Margin="0,16,0,0"
+                        CornerRadius="4"
+                        BorderThickness="2"
+                        Padding="24"
+                        Background="#0D86EFAC"
+                        BorderBrush="#6686EFAC">
+
+                        <StackPanel Orientation="Vertical" Spacing="8">
+                            <DockPanel>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}"
+                                                   Size="20"
+                                                   Foreground="{StaticResource SuccessStrongBrush}"
+                                                   DockPanel.Dock="Left"
+                                                   Margin="0,0,6,0" />
+                                <TextBlock
+                                    Theme="{StaticResource HeadingXSSemiTheme}"
+                                    Foreground="{StaticResource NeutralTranslucentStrongBrush}"
+                                    Text="Your loadout passed the health check with no issues"
+                                    TextWrapping="Wrap" />
+                            </DockPanel>
+                            <TextBlock
+                                Theme="{StaticResource BodyLGNormalTheme}"
+                                Foreground="{StaticResource NeutralSubduedBrush}"
+                                Text="Ready for gaming"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </controls:EmptyState.Subtitle>
 
                 <TabControl x:Name="TabControl"
                             Margin="0,24,0,0"

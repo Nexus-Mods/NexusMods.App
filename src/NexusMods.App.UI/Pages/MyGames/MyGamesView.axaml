@@ -15,12 +15,13 @@
     xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
-    
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader">
+
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
-    
+
     <ScrollViewer>
         <StackPanel Margin="24"
                     Orientation="Vertical"
@@ -33,40 +34,31 @@
                     CornerRadius="8">
 
                 <StackPanel Spacing="8">
-                    
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Border Width="48" Height="48">
-                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramGame3D}" />
-                        </Border>
-                        <TextBlock Text="My Games"
-                                   Theme="{StaticResource HeadingSMSemiTheme}"
-                                   Foreground="{StaticResource NeutralStrongBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
+                    <pageHeader:PageHeader
+                        Title="My Games"
+                        Description="{x:Static resources:Language.MyGamesView__Page_Description}"
+                        Icon="{x:Static icons:IconValues.PictogramGame3D}" />
 
                     <controls:EmptyState x:Name="DetectedGamesEmptyState"
                                          Margin="0"
                                          HorizontalAlignment="Left">
-                        
+
                         <controls:EmptyState.Styles>
                             <Style Selector="Border#EmptyStateBorder">
                                 <Setter Property="Margin" Value="0" />
                             </Style>
                         </controls:EmptyState.Styles>
-                        
+
                         <controls:EmptyState.Subtitle>
-                            <TextBlock Text="No games detected"
-                                       Theme="{StaticResource BodyMDNormalTheme}"
+                            <TextBlock Text="No games found"
+                                       Theme="{StaticResource BodyXLNormalTheme}"
                                        Foreground="{StaticResource NeutralSubduedBrush}"
                                        TextAlignment="Left"
-                                       TextWrapping="Wrap"/>
+                                       TextWrapping="Wrap"
+                                       Margin="0,16,0,0"/>
                         </controls:EmptyState.Subtitle>
 
-                        <StackPanel Spacing="24">
-                            <TextBlock Text="Add games to get started"
-                                       Theme="{StaticResource BodyMDNormalTheme}"
-                                       Foreground="{StaticResource NeutralStrongBrush}"
-                                       TextWrapping="Wrap"/>
+                        <StackPanel Spacing="24" Margin="0,16,0,0">
                             <ItemsControl
                                 x:Name="DetectedGamesItemsControl">
                                 <ItemsControl.ItemsPanel>
@@ -87,9 +79,10 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        
+
                     </controls:EmptyState>
 
+                    <!-- </Border> -->
                 </StackPanel>
             </Border>
 
@@ -142,6 +135,9 @@
                         Margin="0" />
 
                     <StackPanel Spacing="12">
+                        <TextBlock Text="Game not found?"
+                                   Theme="{StaticResource HeadingXSSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
                             Text="If your installed game was not found, it might be because our auto-detection didn’t pick it up."
                             Theme="{StaticResource BodyMDNormalTheme}"
