@@ -1,12 +1,12 @@
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using DynamicData.Kernel;
+using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
+using R3;
 namespace NexusMods.Networking.NexusWebApi;
 
 public class ModUpdateService : IModUpdateService
@@ -16,8 +16,12 @@ public class ModUpdateService : IModUpdateService
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
-    private readonly Subject<KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>> _newestModVersionSubject = new();
-    private readonly Subject<KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>> _newestModOnAnyPageSubject = new();
+    
+    // Use SourceCache to maintain latest values per key
+    private readonly SourceCache<KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>, EntityId> _newestModVersionCache = 
+        new (x => x.Key.Id);
+    private readonly SourceCache<KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>, EntityId> _newestModOnAnyPageCache 
+        = new(x => x.Key.Id);
 
     public ModUpdateService(
         IConnection connection,
@@ -41,8 +45,7 @@ public class ModUpdateService : IModUpdateService
             _nexusApiClient, 
             _gameIdMappingCache);
         
-        // Start a transaction with updated info if at least 1 item needs
-        // updating with upstream server
+        // Fetch the data from the Nexus servers if at least a single item needs updating.
         if (updateCheckResult.AnyItemNeedsUpdate())
         {
             using var tx = _connection.BeginTransaction();
@@ -76,7 +79,8 @@ public class ModUpdateService : IModUpdateService
                 continue;
 
             // Notify the file of its update.                                                                                                                                                                                                         
-            _newestModVersionSubject.OnNext(new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem)); 
+            var kvp = new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem);
+            _newestModVersionCache.AddOrUpdate(kvp);
         }
 
         // Check every mod page, and notify it of its update.
@@ -107,25 +111,30 @@ public class ModUpdateService : IModUpdateService
             }
 
             if (isAnyOnModPageNewer)
-                _newestModOnAnyPageSubject.OnNext(new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(modPage, new NewestModPageVersionData(newestItem, numToUpdate)));
+            {
+                var kvp = new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(
+                    modPage, 
+                    new NewestModPageVersionData(newestItem, numToUpdate));
+                _newestModOnAnyPageCache.AddOrUpdate(kvp);
+            }
         }
     }
 
     /// <inheritdoc />
     public IObservable<NexusModsFileMetadata.ReadOnly> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
     {
-        return _newestModVersionSubject
-            .Where(kv => kv.Key.Id == current.Id) // fastest possible compare
-            .Select(kv => kv.Value); 
+        return _newestModVersionCache.Connect()
+            .Transform(kv => kv.Value)
+            .WatchValue(current.Id);
         // Note(sewer): Value is valid by definition, we only beam valid values
     }
     
     /// <inheritdoc />
     public IObservable<NewestModPageVersionData> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
     {
-        return _newestModOnAnyPageSubject
-            .Where(kv => kv.Key.Id == current.Id) // fastest possible compare
-            .Select(kv => kv.Value); 
+        return _newestModOnAnyPageCache.Connect()
+            .Transform(kv => kv.Value)
+            .WatchValue(current.Id);
         // Note(sewer): Value is valid by definition, we only beam valid values
     }
 }
