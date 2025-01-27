@@ -8,6 +8,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NuGet.Versioning;
 using ObservableCollections;
@@ -32,7 +33,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     private ObservableHashSet<NexusModsLibraryItem.ReadOnly> _libraryItems = [];
 
     public NexusModsModPageLibraryItemModel(
-        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<bool> hasChildrenObservable,
+        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<NewestModPageVersionData> hasUpdateObservable, IObservable<bool> hasChildrenObservable,
         IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IServiceProvider serviceProvider) : base(hasChildrenObservable, childrenObservable)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
@@ -76,10 +77,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
         // ReSharper disable once NotDisposedResource
-        var modelActivationDisposable = this.WhenActivated(linkedLoadoutItemsDisposable, static (self, linkedLoadoutItemsDisposable, disposables) =>
+        var state = (linkedLoadoutItemsDisposable, hasUpdateObservable);
+        var modelActivationDisposable = this.WhenActivated(state, static (self, state, disposables) =>
         {
             // ReSharper disable once NotDisposedResource
-            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
+            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, state.linkedLoadoutItemsDisposable).AddTo(disposables);
 
             self._libraryItems
                 .ObserveCountChanged(notifyCurrentCount: true)
@@ -113,6 +115,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                     self.UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(self._numUpdatable, numTotal, isExpanded);
                 })
                 .AddTo(disposables);
+
+            state.hasUpdateObservable.Subscribe(self.InformAvailableUpdate).AddTo(disposables);
         });
         
         var setVersionDisposable = childrenObservable
@@ -216,17 +220,10 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     /// <summary>
     /// Informs the mod page model of an available update to the item.
     /// </summary>
-    /// <param name="mostRecentFile">The most recent file of any of the page's children.</param>
-    /// <param name="filesToUpdate">
-    ///     All files that are newer than a currently downloaded item.
-    ///     This allows updating of all items belonging to this mod page.
-    /// </param>
-    public void InformAvailableUpdate(
-        NexusModsFileMetadata.ReadOnly mostRecentFile, List<(NexusModsLibraryItem.ReadOnly oldItem, NexusModsFileMetadata.ReadOnly newItem)> filesToUpdate)
+    public void InformAvailableUpdate(NewestModPageVersionData newestVersionData)
     {
-        // Note(sewer): filesToUpdate is currently unused, will be used in future code.
-        _numUpdatable = filesToUpdate.Count;
-        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
+        _numUpdatable = newestVersionData.NumToUpdate;
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, newestVersionData.NewestFile.Version);
         UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, _libraryItems.Count, false);
         UpdateAvailable.Value = true;
     }
