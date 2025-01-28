@@ -14,7 +14,9 @@ public interface ILoginManager
     Observable<UserInfo?> UserInfoObservable { get; }
 
     /// <summary>
-    /// Returns true if the user is logged in
+    /// Returns true if the user is logged in.
+    /// There could be a delay between the user logging in and this value being updated.
+    /// Prefer <see cref="GetIsUserLoggedInAsync"/> to get the most up-to-date information.
     /// </summary>
     bool IsLoggedIn => UserInfo is not null;
     
@@ -53,6 +55,11 @@ public interface ILoginManager
     /// Returns the user's information
     /// </summary>
     Task<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Verifies whether the user is logged in or not
+    /// </summary>
+    async Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default) { return await GetUserInfoAsync(token) is not null; }
 
     /// <summary>
     ///  Log out of Nexus Mods
