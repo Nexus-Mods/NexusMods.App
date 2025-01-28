@@ -196,28 +196,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
             Adapter.Activate().AddTo(disposables);
 
-            // Adapter.MessageSubject.SubscribeAwait(
-            //     onNextAsync: async (message, cancellationToken) =>
-            //     {
-            //         if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
-            //         {
-            //             foreach (var id in multipleIds)
-            //             {
-            //                 var libraryItem = LibraryItem.Load(_connection.Db, id);
-            //                 if (!libraryItem.IsValid()) continue;
-            //                 await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-            //             }
-            //         }
-            //         else
-            //         {
-            //             var libraryItem = LibraryItem.Load(_connection.Db, singleId);
-            //             if (!libraryItem.IsValid()) return;
-            //             await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-            //         }
-            //     },
-            //     awaitOperation: AwaitOperation.Parallel,
-            //     configureAwait: false
-            // ).AddTo(disposables);
+            Adapter.MessageSubject.SubscribeAwait(
+                onNextAsync: async (message, cancellationToken) =>
+                {
+                    foreach (var id in message.Ids)
+                    {
+                        var libraryItem = LibraryItem.Load(_connection.Db, id);
+                        if (!libraryItem.IsValid()) continue;
+                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                    }
+                },
+                awaitOperation: AwaitOperation.Parallel,
+                configureAwait: false
+            ).AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
@@ -317,15 +308,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     private LibraryItemId[] GetSelectedIds()
     {
-        var ids1 = Adapter.SelectedModels
-            .OfType<IIsParentLibraryItemModel>()
-            .SelectMany(static model => model.LibraryItemIds);
+        var ids = Adapter.SelectedModels
+            .Select(static model => model.GetOptional<LibraryComponents.InstallAction>(LibraryColumns.Actions.InstallComponentKey))
+            .Where(static optional => optional.HasValue)
+            .SelectMany(static optional => optional.Value.ItemIds)
+            .Distinct()
+            .ToArray();
 
-        var ids2 = Adapter.SelectedModels
-            .OfType<IIsChildLibraryItemModel>()
-            .Select(static model => model.LibraryItemId);
-
-        return ids1.Concat(ids2).Distinct().ToArray();
+        return ids;
     }
 
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -388,20 +378,72 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 public readonly record struct ActionMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload, ActionType Action);
 public enum ActionType { Install, Update }
 
-public class NewLibraryTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
+public readonly record struct Install(LibraryItemId[] Ids);
+
+public class NewLibraryTreeDataGridAdapter :
+    TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
+    ITreeDataGirdMessageAdapter<Install>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
+
+    public Subject<Install> MessageSubject { get; } = new();
+
+    private readonly IDisposable _activationDisposable;
+    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
 
     public NewLibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
+
+        _activationDisposable = this.WhenActivated(static (self, disposables) =>
+        {
+            Disposable.Create(self._commandDisposables,static commandDisposables =>
+            {
+                foreach (var kv in commandDisposables)
+                {
+                    var (_, disposable) = kv;
+                    disposable.Dispose();
+                }
+
+                commandDisposables.Clear();
+            }).AddTo(disposables);
+        });
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         return _libraryDataProviders.Select(x => x.ObserveLibraryItems(_libraryFilter)).MergeChangeSets();
+    }
+
+    protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
+    {
+        base.BeforeModelActivationHook(model);
+
+        var disposable = model.SubscribeToComponent<LibraryComponents.InstallAction, NewLibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.InstallComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, _, component) = state;
+                var ids = component.ItemIds.ToArray();
+
+                self.MessageSubject.OnNext(new Install(ids));
+            })
+        );
+
+        var didAdd = _commandDisposables.TryAdd(model, disposable);
+        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
+    }
+
+    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
+    {
+        base.BeforeModelDeactivationHook(model);
+
+        var didRemove = _commandDisposables.Remove(model, out var disposable);
+        Debug.Assert(didRemove, "subscription for the model should exist");
+        disposable?.Dispose();
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
