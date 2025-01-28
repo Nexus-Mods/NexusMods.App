@@ -15,7 +15,7 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
             this.BindCommand(ViewModel, vm => vm.ApplyCommand, v => v.ApplyButton)
                 .DisposeWith(disposables);
             
-            this.BindCommand(ViewModel, vm => vm.ShowApplyDiffCommand, v => v.ApplyDiffButton)
+            this.BindCommand(ViewModel, vm => vm.ShowApplyDiffCommand, v => v.PreviewChangesButton)
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.LaunchButtonViewModel, v => v.LaunchButtonView.ViewModel)
@@ -29,7 +29,7 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                 .Subscribe(canApply =>
                 {
                     ApplyButton.IsVisible = canApply;
-                    ApplyDiffButton.IsVisible = canApply;
+                    PreviewChangesButton.IsVisible = canApply;
                 })
                 .DisposeWith(disposables);
             
@@ -37,8 +37,9 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                 .OnUI()
                 .Subscribe(isApplying =>
                 {
-                    InProgressBorder.IsVisible = isApplying;
-                    LaunchButtonView.IsVisible = !isApplying;
+                    ProgressBarControl.IsVisible = isApplying;
+                    ApplyButton.IsVisible = !isApplying;
+                    //LaunchButtonView.IsVisible = !isApplying;
                 })
                 .DisposeWith(disposables);
             

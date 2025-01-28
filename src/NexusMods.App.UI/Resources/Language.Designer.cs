@@ -123,7 +123,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Apply.
+        ///   Looks up a localized string similar to APPLY.
         /// </summary>
         public static string ApplyControlViewModel__APPLY {
             get {
@@ -1304,7 +1304,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Play.
+        ///   Looks up a localized string similar to PLAY.
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
             get {
@@ -1313,7 +1313,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Running....
+        ///   Looks up a localized string similar to GAME RUNNING....
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_RUNNING {
             get {
