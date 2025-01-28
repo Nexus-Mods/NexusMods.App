@@ -272,6 +272,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             var isCollectionInstalledObservable = collectionDownloader
                 .IsCollectionInstalledObservable(_revision, collectionGroupObservable)
                 .Prepend(false);
+            var hasInstalledAllOptionalItems = collectionDownloader
+                .IsCollectionInstalledObservable(_revision, collectionGroupObservable, CollectionDownloader.ItemType.Optional)
+                .Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -303,13 +306,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 }).AddTo(disposables);
 
             numDownloadedOptionalItemsObservable
+                .CombineLatest(hasInstalledAllOptionalItems)
                 .OnUI()
-                .Subscribe(numDownloadedOptionalItems =>
+                .Subscribe(tuple =>
                 {
+                    var (numDownloadedOptionalItems, hasInstalledAllOptionals) = tuple;
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
 
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
-                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0);
+                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0 && !hasInstalledAllOptionals);
                     _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
 
