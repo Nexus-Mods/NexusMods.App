@@ -153,8 +153,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
 
                     ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
-                    ButtonInstallOptionalItems.IsVisible = !isInstalled && false; // TODO: implement this button
-                    // ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional;
+                    ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems;
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel)

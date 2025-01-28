@@ -106,8 +106,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        // TODO: implement this button
-        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>();
+        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(executeAsync: async (_, _) => { await InstallCollectionJob.Create(
+                serviceProvider,
+                targetLoadout,
+                source: libraryFile,
+                revisionMetadata,
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Optional)
+            ); },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
 
         CommandInstallRequiredItems = IsInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) => { await InstallCollectionJob.Create(
