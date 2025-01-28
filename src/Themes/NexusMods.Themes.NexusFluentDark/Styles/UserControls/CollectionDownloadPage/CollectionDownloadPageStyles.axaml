@@ -242,7 +242,7 @@
                 <!-- header padding -->
                 <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
                     <!-- negative bottom margin to pull up the toolbar below -->
-                    <Setter Property="Margin" Value="24,0,0,-2" />
+                    <Setter Property="Margin" Value="24,12,0,-2" />
                 </Style>
             </Style>
 
