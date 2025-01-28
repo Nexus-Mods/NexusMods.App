@@ -27,18 +27,19 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
             isRunning.BindToUi(this, view => view.LaunchSpinner.IsVisible)
                 .DisposeWith(d);
             
-            // Show progress bar when running
+            // Show icon when not running
             isNotRunning.BindToUi(this, view => view.LaunchIcon.IsVisible)
                 .DisposeWith(d);
             
-            // bind the launch button
-            this.OneWayBind(ViewModel, vm => vm.Command, v => v.LaunchButton.Command)
+            // Bind the 'launch' button.
+            this.WhenAnyValue(view => view.ViewModel!.Command)
+                .BindToUi(this, view => view.LaunchButton.Command)
                 .DisposeWith(d);
-
+            
             // Set the 'play' / 'running' text.
-            this.OneWayBind(ViewModel, vm => vm.Label, v => v.LaunchText.Text)
+            this.WhenAnyValue(view => view.ViewModel!.Label)
+                .BindToUi(this, view => view.LaunchText.Text)
                 .DisposeWith(d);
-
         });
     }
 }
