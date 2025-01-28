@@ -623,7 +623,7 @@
 		<value>Moje zestawy</value>
 	</data>
 	<data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
-		<value>Twórz zestawy gier, które będą zawierały indywidualne preferencje oraz ustawienia modów.&#xA;Przełączaj się między zestawami i zastosuj swój ulubiony zestaw, aby z nim zagrać.</value>
+		<value>Twórz zestawy dla gier, które będą zawierały ustawienia i mody.&#xA;Przełączaj się między zestawami i wybierz swój ulubiony, aby zagrać.</value>
 	</data>
 	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
 		<value>Zestawy {0}</value>
@@ -645,7 +645,7 @@
 		<value>Tworzenie...</value>
 	</data>
 	<data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
-		<value>Zestawy oferują płynne przełączanie się między rozmaitymi stylami gry poprzez precyzyjne dostosowywanie każdego z nich za sprawą niezliczonych modów i konfiguracji.</value>
+		<value>Twórz własne zestawy i łatwo przełączaj się między różnymi stylami gry.</value>
 	</data>
 	<data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
 		<value>Dodaj grę przed użyciem zestawów</value>
