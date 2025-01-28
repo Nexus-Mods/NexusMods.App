@@ -92,7 +92,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 if (!loginManager.IsLoggedIn)
                 {
                     await loginManager.LoginAsync(cancellationToken);
-                    if (await loginManager.GetIsUserLoggedInAsync(cancellationToken)) return;
+                    if (!await loginManager.GetIsUserLoggedInAsync(cancellationToken)) return;
                 }
                 if (!loginManager.IsPremium)
                 {
