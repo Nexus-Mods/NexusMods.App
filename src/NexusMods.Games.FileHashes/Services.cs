@@ -16,6 +16,7 @@ public static class Services
             .AddPathHashRelationModel()
             .AddGogBuildModel()
             .AddSteamManifestModel()
+            .AddGameVersionModel()
             .AddSingleton<IFileHashesService, FileHashesService>()
             .AddSettings<FileHashesServiceSettings>()
             .AddHashRelationModel();

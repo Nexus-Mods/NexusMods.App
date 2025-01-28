@@ -3,20 +3,29 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.ProxyConsole.Abstractions;
+using YamlDotNet.Serialization;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
 
@@ -32,14 +41,15 @@ public class BuildHashesDb : IAsyncDisposable
     
     private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
     private readonly Backend _backend;
+    private readonly ILocatableGame[] _locatableGames;
 
-    public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager)
+    public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager, IEnumerable<ILocatableGame> locatableGames)
     {
         Provider = provider;
         _renderer = renderer;
         _tempFolder = temporaryFileManager.CreateFolder();
         _jsonOptions = provider.GetRequiredService<JsonSerializerOptions>();
-        
+        _locatableGames = locatableGames.ToArray();
         
         
         _backend = new Backend();
@@ -58,6 +68,9 @@ public class BuildHashesDb : IAsyncDisposable
         await AddHashes(path);
         await AddGogData(path);
         await AddSteamData(path);
+        await AddGogVersions();
+        await AddSteamVersions();
+        await AddVersionAliases(path);
         
         await _renderer.TextLine("Exporting database");
         await _connection.FlushAndCompact();
@@ -95,6 +108,129 @@ public class BuildHashesDb : IAsyncDisposable
         await JsonSerializer.SerializeAsync(manifestStream, manifest, _jsonOptions);
 
         await _renderer.TextLine("Database built and exported to {0}. Final size {1}. Hash: {2}", output, hashesDbPath.FileInfo.Size, zipHash);
+    }
+
+    private async Task AddVersionAliases(AbsolutePath baseFolder)
+    {
+        var aliasesFile = baseFolder / "contrib/version_aliases.yaml";
+
+        var deserializer = new DeserializerBuilder().Build();
+        var aliases = deserializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(await aliasesFile.ReadAllTextAsync());
+        
+        using var tx = _connection.BeginTransaction();
+
+        var aliasesLoaded = 0;
+        foreach (var version in GameVersion.All(_connection.Db))
+        {
+            var gameName = _locatableGames.First(g => g.GameId == version.GameId).Name;
+            if (aliases.TryGetValue(gameName, out var gameAliases) && gameAliases.TryGetValue(version.Name, out var alias))
+            {
+                tx.Add(version.Id, GameVersion.Alias, alias);
+                aliasesLoaded++;
+            }
+        }
+        await tx.Commit();
+        
+        await _renderer.TextLine("Loaded {0} version aliases", aliasesLoaded);
+        
+    }
+
+    private async Task AddGogVersions()
+    {
+        List<(GameId, string, GogBuild.ReadOnly)> versions = [];
+        var indexedGames = (from game in _locatableGames.OfType<IGogGame>()
+                from gogId in game.GogIds
+                select KeyValuePair.Create(gogId, (IGame)game))
+            .ToLookup(x => x.Key, x => x.Value);
+        
+        foreach (var build in GogBuild.All(_connection.Db).OrderBy(d => d.VersionName))
+        {
+            var name = build.VersionName;
+
+            foreach (var game in indexedGames[(long)build.ProductId.Value])
+            {
+                versions.Add((game.GameId, name, build));
+                await _renderer.TextLine("Found GOG version {0} for game {1}", name, game.Name);
+            }
+        }
+
+        Dictionary<string, EntityId> versionIds = [];
+        using var tx = _connection.BeginTransaction();
+        
+        foreach (var (gameId, versionName, build) in versions)
+        {
+            // first look for an existing version 
+            if (GameVersion.FindByName(_connection.Db, versionName)
+                .Where(g => g.GameId == gameId)
+                .TryGetFirst(out var existing))
+            {
+                versionIds[versionName] = existing.Id;
+            }
+            else
+            {
+                var newVersion = new GameVersion.New(tx)
+                {
+                    GameId = gameId,
+                    Name = versionName,
+                };
+                versionIds[versionName] = newVersion.Id;
+            }
+
+            tx.Add(versionIds[versionName], GameVersion.GogBuildsIds, build.Id);
+        }
+        
+        await tx.Commit();
+        await _renderer.TextLine("Added {0} GOG versions", versions.Count);
+        
+    }
+    
+    private async Task AddSteamVersions()
+    {
+        List<(GameId, string, SteamManifest.ReadOnly)> versions = [];
+        var indexedGames = (from game in _locatableGames.OfType<ISteamGame>()
+                from gogId in game.SteamIds
+                select KeyValuePair.Create(gogId, (IGame)game))
+            .ToLookup(x => x.Key, x => x.Value);
+        
+        foreach (var manifest in SteamManifest.All(_connection.Db).OrderBy(d => d.Name))
+        {
+            var name = manifest.Name;
+
+            foreach (var game in indexedGames[manifest.DepotId.Value])
+            {
+                versions.Add((game.GameId, name, manifest));
+                await _renderer.TextLine("Found Steam version {0} for game {1}", name, game.Name);
+            }
+        }
+
+        Dictionary<string, EntityId> versionIds = [];
+        using var tx = _connection.BeginTransaction();
+        
+        foreach (var (gameId, versionName, build) in versions)
+        {
+            // first look for an existing version 
+            if (GameVersion.FindByName(_connection.Db, versionName)
+                .Where(g => g.GameId == gameId)
+                .TryGetFirst(out var existing))
+            {
+                versionIds[versionName] = existing.Id;
+            }
+            else
+            {
+                var newVersion = new GameVersion.New(tx)
+                {
+                    GameId = gameId,
+                    Name = versionName,
+                };
+                versionIds[versionName] = newVersion.Id;
+            }
+
+            tx.Add(versionIds[versionName], GameVersion.SteamManifestsIds, build.Id);
+        }
+        
+        await tx.Commit();
+        await _renderer.TextLine("Added {0} Steam versions", versions.Count);
+        
     }
 
     private async Task AddSteamData(AbsolutePath path)

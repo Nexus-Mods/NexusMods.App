@@ -33,4 +33,9 @@ public partial class SteamManifest : IModelDefinition
     /// The files in this manifest
     /// </summary>
     public static readonly ReferencesAttribute<PathHashRelation> Files = new(Namespace, nameof(Files));
+    
+    /// <summary>
+    /// The human friendly version names this build is for.
+    /// </summary>
+    public static readonly ReferencesAttribute<GameVersion> GameVersions = new(Namespace, nameof(GameVersions));
 }

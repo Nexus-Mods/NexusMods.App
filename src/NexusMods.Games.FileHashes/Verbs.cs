@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Games.FileHashes.VerbImpls;
@@ -25,7 +26,7 @@ public static class Verbs
         [Injected] IServiceProvider serviceProvider,
         [Injected] CancellationToken token)
     {
-        await using var builder = new BuildHashesDb(renderer, serviceProvider, temporaryFileManager);
+        await using var builder = new BuildHashesDb(renderer, serviceProvider, temporaryFileManager, serviceProvider.GetServices<ILocatableGame>());
         
         await builder.BuildFrom(path, output);
         return 0;
