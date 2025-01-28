@@ -495,7 +495,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
 
-                var writeTimeUtc = register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc;
+                var writeTimeUtc = new DateTimeOffset(register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc);
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
