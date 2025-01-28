@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x28AB9598ED8F34A4
-   - Total attributes: 153
-   - Total namespaces: 59
+   - Fingerprint: 0xC51CC7B4FEBE569E
+   - Total attributes: 156
+   - Total namespaces: 60
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -22,7 +22,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Collections.NexusCollectionLoadoutGroup/Collection                       | Reference               | True    | False | False     | 
 | NexusMods.Collections.NexusCollectionLoadoutGroup/LibraryFile                      | Reference               | False   | False | False     | 
 | NexusMods.Collections.NexusCollectionLoadoutGroup/Revision                         | Reference               | True    | False | False     | 
-| NexusMods.DataModel.SchemaVersioning.SchemaVersionModel/Fingerprint                | UInt64                  | False   | False | False     | 
+| NexusMods.DataModel.SchemaVersioning.SchemaVersionModel/CurrentVersion             | UInt16                  | False   | False | False     | 
+| NexusMods.DataModel.SchemaVersions.MigrationLogItem/MigrationId                    | UInt16                  | False   | False | False     | 
+| NexusMods.DataModel.SchemaVersions.MigrationLogItem/RunAt                          | Int64                   | False   | False | False     | 
+| NexusMods.DataModel.SchemaVersions.MigrationLogItem/WasRun                         | UInt8                   | False   | False | False     | 
 | NexusMods.DataModel.Settings/Name                                                  | Utf8                    | True    | False | False     | 
 | NexusMods.DataModel.Settings/Value                                                 | Utf8                    | False   | False | False     | 
 | NexusMods.Games.FOMOD.EmptyDirectory/EmptyDirectory                                | UInt8                   | False   | False | False     | 
