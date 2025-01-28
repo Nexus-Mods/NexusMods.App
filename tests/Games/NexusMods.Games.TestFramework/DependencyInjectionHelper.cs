@@ -79,6 +79,10 @@ public static class DependencyInjectionHelper
                     new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                 ],
             })
+            .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
+            {
+                HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashes"),
+            })
             .AddSettingsManager()
             .AddFileHashes()
             .AddFileExtractors();

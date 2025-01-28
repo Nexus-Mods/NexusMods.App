@@ -52,16 +52,7 @@ public class FileHashesService : IFileHashesService, IDisposable
             path.DeleteDirectory(true);
         }
 
-        OpenLatest();
-        
-        // Trigger an update
-        Task.Run(() => Task.FromResult(CheckForUpdate()));
-    }
 
-    private void OpenLatest()
-    {
-        if (_currentDb is not null)
-            return;
         
         // Open the latest database
         var latest = ExistingDBs().FirstOrDefault();
@@ -69,8 +60,11 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             _currentDb = OpenDb(latest.PublishTime, latest.Path);
         }
+        
+        // Trigger an update
+        Task.Run(() => Task.FromResult(CheckForUpdate()));
     }
-    
+
     private ConnectedDb OpenDb(DateTimeOffset timestamp, AbsolutePath path)
     {
         lock (_databases)
@@ -143,7 +137,6 @@ public class FileHashesService : IFileHashesService, IDisposable
             if (gameHashesReleseFileName.FileExists && gameHashesReleseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
             {
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
-                OpenLatest();
                 return;
             }
             
@@ -155,10 +148,7 @@ public class FileHashesService : IFileHashesService, IDisposable
             var existingReleases = ExistingDBs().ToList();
 
             if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
-            {
-                OpenLatest();
                 return;
-            }
 
             var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.tmp.zip";
 
