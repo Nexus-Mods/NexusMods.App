@@ -13,11 +13,13 @@
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <PackageReference Include="Polly.Core" />
       <PackageReference Include="SmartFormat" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
       <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />

@@ -101,7 +101,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="FluentAssertions" Version="6.12.2" />
+    <PackageVersion Include="FluentAssertions" Version="7.1.0" />
     <PackageVersion Include="FluentAssertions.OneOf" Version="0.0.5" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>

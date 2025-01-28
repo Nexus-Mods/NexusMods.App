@@ -18,12 +18,14 @@ internal class ChunkedStreamSource : IChunkedStreamSource
     private readonly Chunk[] _chunks;
     private readonly ulong[] _offsets;
     private readonly SecureUrl _secureUrl;
+    private readonly bool _putInCache;
 
-    public ChunkedStreamSource(Client client, Chunk[] chunks, Size size, SecureUrl url)
+    public ChunkedStreamSource(Client client, Chunk[] chunks, Size size, SecureUrl url, bool putInCache = false)
     {
         _secureUrl = url;
         _client = client;
         _chunks = chunks;
+        _putInCache = putInCache;
         
         _offsets = new ulong[_chunks.Length];
         ulong offset = 0;
@@ -61,21 +63,27 @@ internal class ChunkedStreamSource : IChunkedStreamSource
             return;
         }
         
-        var parameters = _secureUrl.Parameters;
-        var md5s = chunk.CompressedMd5.ToString().ToLower();
-        parameters = parameters with {path = parameters.path + $"/{md5s[..2]}/{md5s[2..4]}/{md5s}"};
-        var url = Smart.Format(_secureUrl.UrlFormat, parameters);
-        
-        await using var chunkStream = await _client.HttpClient.GetStreamAsync(url, token);
-        await using var zlibStream = new ZLibStream(chunkStream, CompressionMode.Decompress);
-        await zlibStream.ReadExactlyAsync(buffer, token); 
-        
+        await _client._pipeline.ExecuteAsync(async token =>
+            {
+                var parameters = _secureUrl.Parameters;
+                var md5s = chunk.CompressedMd5.ToString().ToLower();
+                parameters = parameters with { path = parameters.path + $"/{md5s[..2]}/{md5s[2..4]}/{md5s}" };
+                var url = Smart.Format(_secureUrl.UrlFormat, parameters);
+
+                await using var chunkStream = await _client.HttpClient.GetStreamAsync(url, token);
+                await using var zlibStream = new ZLibStream(chunkStream, CompressionMode.Decompress);
+
+                await zlibStream.ReadExactlyAsync(buffer, token);
+            }
+        );
+
         #if DEBUG
-        var md5 = Md5.From(System.Security.Cryptography.MD5.HashData(buffer.Span));
+        var md5 = Md5.From(MD5.HashData(buffer.Span));
         Debug.Assert(md5.Equals(chunk.Md5));
         #endif
         
-        _client.AddCachedBlock(chunk.CompressedMd5, buffer.ToArray());
+        if (_putInCache) 
+            _client.AddCachedBlock(chunk.CompressedMd5, buffer.ToArray());
     }
     
 
