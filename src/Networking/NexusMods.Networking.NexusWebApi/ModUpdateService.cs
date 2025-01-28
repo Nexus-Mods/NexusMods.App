@@ -88,6 +88,7 @@ public class ModUpdateService : IModUpdateService
         {
             var newestDate = DateTimeOffset.MinValue;
             NexusModsFileMetadata.ReadOnly newestItem = default;
+            var newestItemOldVersion = "";
             var numToUpdate = 0;
             var isAnyOnModPageNewer = false;
 
@@ -107,6 +108,7 @@ public class ModUpdateService : IModUpdateService
                 numToUpdate++;
                 newestDate = mostRecentItem.UploadedAt;
                 newestItem = mostRecentItem;
+                newestItemOldVersion = modFile.Version;
                 isAnyOnModPageNewer = true;
             }
 
@@ -114,7 +116,7 @@ public class ModUpdateService : IModUpdateService
             {
                 var kvp = new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(
                     modPage, 
-                    new NewestModPageVersionData(newestItem, numToUpdate));
+                    new NewestModPageVersionData(newestItem, newestItemOldVersion, numToUpdate));
                 _newestModOnAnyPageCache.AddOrUpdate(kvp);
             }
         }

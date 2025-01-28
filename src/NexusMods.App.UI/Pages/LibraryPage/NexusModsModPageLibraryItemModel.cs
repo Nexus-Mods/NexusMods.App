@@ -121,8 +121,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         
         var setVersionDisposable = versionObservable.Subscribe(ver =>
         {
-            _preUpdateVersion = ver!.ToString();
-            Version.Value = _preUpdateVersion;
+            Version.Value = ver!.ToString();
         });
 
         _modelDisposable = Disposable.Combine(
@@ -155,8 +154,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
-    private string _preUpdateVersion = string.Empty;
-    
+
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
 
@@ -203,7 +201,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public void InformAvailableUpdate(NewestModPageVersionData newestVersionData)
     {
         _numUpdatable = newestVersionData.NumToUpdate;
-        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, newestVersionData.NewestFile.Version);
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(newestVersionData.NewestFileLastVersion, newestVersionData.NewestFile.Version);
         UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, _libraryItems.Count, false);
         UpdateAvailable.Value = true;
     }
