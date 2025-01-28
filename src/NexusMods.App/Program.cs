@@ -67,7 +67,7 @@ public class Program
             var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
             var fileSystem = services.GetRequiredService<IFileSystem>();
 
-            var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).FileExists;
+            var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).DirectoryExists();
             
             // This will startup the MnemonicDb connection
             var migration = services.GetRequiredService<MigrationService>();
