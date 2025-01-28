@@ -132,14 +132,14 @@ public static class LibraryComponents
         }
 
         public InstallAction(
-            ValueComponent<(int NumInstalled, int NumTotal)> numChildren,
+            ValueComponent<MatchesData> matches,
             IObservable<IChangeSet<LibraryItemId, EntityId>> childrenItemIdsObservable)
         {
-            _source = numChildren;
+            _source = matches;
             _ids = new ObservableHashSet<LibraryItemId>();
 
-            IsInstalled = numChildren.Value
-                .Select(static tuple => tuple.NumInstalled > 0)
+            IsInstalled = matches.Value
+                .Select(static data => data.NumMatches > 0)
                 .ToReadOnlyBindableReactiveProperty();
 
             CommandInstall = IsInstalled
@@ -147,9 +147,9 @@ public static class LibraryComponents
                 .Select(static isInstalled => !isInstalled)
                 .ToReactiveCommand<Unit>();
 
-            ButtonText = numChildren.Value
+            ButtonText = matches.Value
                 .Select(static tuple => GetButtonText(tuple, isExpanded: false))
-                .ToReadOnlyBindableReactiveProperty(initialValue: GetButtonText(numChildren.Value.Value, isExpanded: false));
+                .ToReadOnlyBindableReactiveProperty(initialValue: GetButtonText(matches.Value.Value, isExpanded: false));
 
             _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
             {
@@ -168,9 +168,9 @@ public static class LibraryComponents
 
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
-        private static string GetButtonText((int NumInstalled, int NumTotal) numChildren, bool isExpanded)
+        private static string GetButtonText(MatchesData matchesData, bool isExpanded)
         {
-            var (numInstalled, numTotal) = numChildren;
+            var (numInstalled, numTotal) = matchesData;
 
             if (numInstalled > 0)
             {

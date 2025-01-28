@@ -374,7 +374,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
 
-        var s = libraryItems
+        var matchesObservable = libraryItems
             .TransformOnObservable(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id).IsNotEmpty())
             .QueryWhenChanged(query =>
             {
@@ -385,10 +385,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     numTotal++;
                 }
 
-                return new ValueTuple<int, int>(numInstalled, numTotal);
+                return new MatchesData(numInstalled, numTotal);
             });
 
-        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, s, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
 
         return parentItemModel;
     }

@@ -94,13 +94,13 @@ public static class LibraryDataProviderHelper
 
     public static void AddInstallActionComponent(
         CompositeItemModel<EntityId> parentItemModel,
-        IObservable<ValueTuple<int, int>> observable,
+        IObservable<MatchesData> matchesObservable,
         IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
     {
         parentItemModel.Add(LibraryColumns.Actions.InstallComponentKey, new LibraryComponents.InstallAction(
-            numChildren: new ValueComponent<(int NumInstalled, int NumTotal)>(
-                initialValue: (0, 0),
-                valueObservable: observable,
+            matches: new ValueComponent<MatchesData>(
+                initialValue: default(MatchesData),
+                valueObservable: matchesObservable,
                 subscribeWhenCreated: true
             ),
             childrenItemIdsObservable: libraryItemsObservable.TransformImmutable(static x => x.LibraryItemId)
