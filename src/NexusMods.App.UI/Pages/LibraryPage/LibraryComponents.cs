@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.UI;
+using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 
@@ -11,21 +11,25 @@ public static class LibraryComponents
 
 public static class LibraryColumns
 {
-    // public sealed class ItemVersion : ICompositeColumnDefinition<ItemVersion>
-    // {
-    //     public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
-    //     {
-    //         // var aValue = a.GetOptional<SizeComponent>(key: ComponentKey);
-    //         // var bValue = b.GetOptional<SizeComponent>(key: ComponentKey);
-    //         // return aValue.Compare(bValue);
-    //     }
-    //
-    //     public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(ItemSize);
-    //     // public static readonly ComponentKey ComponentKey = typeof(SizeComponent);
-    //     public static string GetColumnHeader() => "Size";
-    //     public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
-    // }
+    [UsedImplicitly]
+    public sealed class ItemVersion : ICompositeColumnDefinition<ItemVersion>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var bValue = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            return aValue.Compare(bValue);
+        }
 
+        public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(ItemVersion);
+        public static readonly ComponentKey CurrentVersionComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ItemVersion) + "_" + "Current");
+        public static readonly ComponentKey NewVersionComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ItemVersion) + "_" + "New");
+
+        public static string GetColumnHeader() => "Version";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+
+    [UsedImplicitly]
     public sealed class DownloadedDate : ICompositeColumnDefinition<DownloadedDate>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
@@ -42,6 +46,7 @@ public static class LibraryColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
+    [UsedImplicitly]
     public sealed class ItemSize : ICompositeColumnDefinition<ItemSize>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull

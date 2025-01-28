@@ -379,6 +379,16 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             )
         );
 
+        // TODO: select latest version
+        var currentVersionObservable = libraryItems
+            .TransformImmutable(static item => item.FileMetadata.Version)
+            .QueryWhenChanged(query => query.Items.First());
+
+        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(
+            initialValue: string.Empty,
+            valueObservable: currentVersionObservable
+        ));
+
         return parentItemModel;
     }
 
@@ -399,6 +409,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
+
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
 
         return itemModel;
     }
