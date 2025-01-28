@@ -34,7 +34,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
 
     public NexusModsModPageLibraryItemModel(
         IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<NewestModPageVersionData> hasUpdateObservable, IObservable<bool> hasChildrenObservable,
-        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IServiceProvider serviceProvider) : base(hasChildrenObservable, childrenObservable)
+        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IObservable<string> versionObservable, IServiceProvider serviceProvider) : base(hasChildrenObservable, childrenObservable)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
@@ -119,31 +119,11 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             state.hasUpdateObservable.Subscribe(self.InformAvailableUpdate).AddTo(disposables);
         });
         
-        var setVersionDisposable = childrenObservable
-            .ToCollection()
-            .Subscribe(items =>
-            {
-                // N20250116
-                // Note(sewer): Design says put highest version of child here.
-                //
-                // There is no 'standard' for version fields, as some sources
-                // like the Nexus website allow you to specify anything in the version field.
-                // We do a 'best effort' here by trying to parse as SemVer and using
-                // that. There are some possible alternatives, e.g. 'by upload date',
-                // however; that then requires additional logic, to not pick up other
-                // mods on the same mod page, etc. So we go for something simple for now.
-                var maxVersion = items
-                    .OfType<ILibraryItemWithVersion>()
-                    .Max(x => NuGetVersion.TryParse(x.Version.Value, out var version) 
-                        ? version : new NuGetVersion(0, 0, 0));
-
-                if (maxVersion != null)
-                {
-                    // SAFETY: Not null because >= 1 item.
-                    _preUpdateVersion = maxVersion!.ToString();
-                    Version.Value = _preUpdateVersion;
-                } 
-            });
+        var setVersionDisposable = versionObservable.Subscribe(ver =>
+        {
+            _preUpdateVersion = ver!.ToString();
+            Version.Value = _preUpdateVersion;
+        });
 
         _modelDisposable = Disposable.Combine(
             datesDisposable,
