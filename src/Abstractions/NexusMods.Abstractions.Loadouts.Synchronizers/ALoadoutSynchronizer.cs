@@ -906,7 +906,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             var fileInfo = file.FileInfo;
 
                             // If the files don't match, update the entry
-                            if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
+                            if (fileInfo.LastWriteTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
