@@ -1,4 +1,3 @@
-using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -6,7 +5,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
-using R3;
 namespace NexusMods.Networking.NexusWebApi;
 
 public class ModUpdateService : IModUpdateService
