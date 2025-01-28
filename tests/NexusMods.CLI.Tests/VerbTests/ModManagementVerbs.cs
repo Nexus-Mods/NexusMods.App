@@ -23,12 +23,12 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log.TableCellsWith(0, listName).Should().NotBeEmpty();
 
         log = await Run("loadout groups list", "-l", listName);
-        log.LastTable.Rows.Length.Should().Be(2);
+        log.LastTable.Rows.Length.Should().Be(1);
 
         log = await Run("loadout install", "-l", listName, "-f", Data7ZipLZMA2.ToString(), "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
 
         log = await Run("loadout groups list", "-l", listName);
-        log.LastTable.Rows.Length.Should().Be(3);
+        log.LastTable.Rows.Length.Should().Be(2);
 
         log = await Run("loadout group list", "-l", listName, "-g", Data7ZipLZMA2.FileName);
         log.LastTable.Rows.Length.Should().Be(3);
