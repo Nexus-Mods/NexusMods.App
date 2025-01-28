@@ -312,10 +312,10 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 {
                     var (numDownloadedOptionalItems, hasInstalledAllOptionals) = tuple;
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
-
+                    
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
                     HasInstalledAllOptionalItems.Value = hasInstalledAllOptionals;
-                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0 && !hasInstalledAllOptionals);
+                    _canInstallOptionalItems.OnNext(hasDownloadedAllOptionalItems && !hasInstalledAllOptionals);
                     _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
 
