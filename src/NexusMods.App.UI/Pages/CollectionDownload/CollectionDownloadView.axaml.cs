@@ -135,7 +135,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 })
                 .DisposeWith(d);
-
+            
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
                 view => view.ViewModel!.CountDownloadedOptionalItems,
@@ -146,12 +146,12 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, filter) = tuple;
                     var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
                     var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
-
+            
                     ButtonViewCollection.IsVisible = isInstalled;
-
+            
                     ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
                     ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
-
+            
                     ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
                     ButtonInstallOptionalItems.IsVisible = !isInstalled && false; // TODO: implement this button
                     // ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional;

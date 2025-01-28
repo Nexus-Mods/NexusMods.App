@@ -70,9 +70,13 @@
         <!-- <Setter Property="HorizontalAlignment" Value="Stretch" /> -->
 
         <!-- tab item headers text -->
+        <!-- header padding -->
+        <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="Margin" Value="0,0,0,0" />
+        </Style>
 
         <Style Selector="^ TabItem">
-            <Setter Property="Padding" Value="12,0,12,0" />
+            <Setter Property="Padding" Value="0,0,24,0" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
@@ -155,8 +159,8 @@
             <Setter Property="Padding" Value="0,0" />
             
             <!-- header padding -->
-            <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="Margin" Value="0,0" />
+            <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+                <Setter Property="Margin" Value="0" />
             </Style>
             
             <Style Selector="^ TabItem">
