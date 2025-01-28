@@ -503,12 +503,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
 
+                
+                var fullPath = register.GetResolvedPath(entry.Path);
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, fullPath.FileInfo.LastWriteTimeUtc);
                 }
                 else
                 {
@@ -517,7 +519,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
-                        LastModified = DateTime.UtcNow,
+                        LastModified = fullPath.FileInfo.LastWriteTimeUtc,
                         GameId = gameMetadataId,
                     };
                 }
@@ -600,7 +602,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
                     
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
                     continue;
                 }
             }
@@ -633,7 +635,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutFileEntry = loadoutFile,
                 }
             );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
         }
 
         if (added.Count > 0)
@@ -968,8 +970,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private static bool AreDifferentModifiedDates(IFileEntry fileInfo, DiskStateEntry.ReadOnly entry)
     {
-        var diskFileTime = fileInfo.LastWriteTimeUtc.ToFileTime();
-        var entryFileTime = entry.LastModified.ToFileTime();
         return fileInfo.LastWriteTimeUtc.Date.ToFileTimeUtc() > entry.LastModified.Date.ToFileTimeUtc();
     }
 

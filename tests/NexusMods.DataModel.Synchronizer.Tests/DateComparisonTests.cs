@@ -31,12 +31,8 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
 
         var diskEntry = loadoutA.Installation.DiskStateEntries
             .First(f => f.Path.Item2 == pathToTest.LocationId && f.Path.Item3 == pathToTest.Path);
-
-        var diskEntryTime = diskEntry.LastModified;
-        var onDisktime = resolvedPath.FileInfo.LastWriteTimeUtc;
-
-        onDisktime.ToDateTimeOffset();
-
+        
+        // Sanity check to make sure dates are exactly as expected once they are ingested
         diskEntry.LastModified.Should().Be(resolvedPath.FileInfo.LastWriteTimeUtc);
 
     }
