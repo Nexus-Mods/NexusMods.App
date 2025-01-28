@@ -11,5 +11,5 @@ public partial class SchemaVersion : IModelDefinition
     /// The current fingerprint of the database. This is used to detect when schema updates do not need to be performend,
     /// and the app can start without the rather expensive upgrade process.
     /// </summary>
-    public static readonly HashAttribute Fingerprint = new(Namespace, "Fingerprint");
+    public static readonly MigrationIdAttribute CurrentVersion = new(Namespace, "CurrentVersion");
 }

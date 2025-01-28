@@ -503,12 +503,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
 
+                var writeTimeUtc = new DateTimeOffset(register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc);
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, writeTimeUtc);
                 }
                 else
                 {
@@ -517,7 +518,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
-                        LastModified = DateTime.UtcNow,
+                        LastModified = writeTimeUtc,
                         GameId = gameMetadataId,
                     };
                 }
@@ -599,8 +600,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
-                    
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
                     continue;
                 }
             }
@@ -633,7 +633,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutFileEntry = loadoutFile,
                 }
             );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
         }
 
         if (added.Count > 0)
@@ -912,19 +912,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         if (inState.TryGetValue(gamePath, out var entry))
                         {
                             var fileInfo = file.FileInfo;
-                            
-                            // Dates in computers are so utterly borked it's not even funny. Turns out here there's an issue, a DateTimeOffset
-                            // when run through DateTime and/or an ulong conversion will lose a very small amount of precision, about 150μs worth. 
-                            // But this precision loss is negated if everything just uses a long. So convert both sides to a long and compare.
-                            // If you ever want to try and fix this, simply subtract one from the other, and you'll see a timespan that does not
-                            // equal zero. This is the precision loss, I (halgari) am not sure how else to fix it.
-                            if (fileInfo.LastWriteTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
+                            var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
+
+                            // If the files don't match, update the entry
+                            if (writeTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
-                                // If the files don't match, update the entry
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, writeTimeUtc);
                                 changes = true;
                             }
                         }

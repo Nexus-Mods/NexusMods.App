@@ -15,7 +15,7 @@ namespace NexusMods.Games.FileHashes;
 
 public class FileHashesService : IFileHashesService, IDisposable
 {
-    private readonly SemaphoreSlim _updateLock = new(1, 1);
+    private readonly ScopedAsyncLock _lock = new();
     private readonly FileHashesServiceSettings _settings;
     private readonly IFileSystem _fileSystem;
     private readonly HttpClient _httpClient;
@@ -67,11 +67,11 @@ public class FileHashesService : IFileHashesService, IDisposable
 
     private ConnectedDb OpenDb(DateTimeOffset timestamp, AbsolutePath path)
     {
-        lock (_databases)
+        try
         {
             if (_databases.TryGetValue(path, out var existing))
                 return existing;
-            
+
             _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
             var backend = new Backend(readOnly: true);
             var settings = new DatomStoreSettings
@@ -79,12 +79,21 @@ public class FileHashesService : IFileHashesService, IDisposable
                 Path = path,
             };
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, []);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider,
+                []
+            , readOnlyMode: true);
 
 
-            var connectedDb = new ConnectedDb(connection.Db, connection, store, backend, timestamp, path);
+            var connectedDb = new ConnectedDb(connection.Db, connection, store,
+                backend, timestamp, path
+            );
             _databases[path] = connectedDb;
             return connectedDb;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error opening database at {Path}", path);
+            throw;
         }
     }
     
@@ -112,95 +121,82 @@ public class FileHashesService : IFileHashesService, IDisposable
         diskPath.Position = 0;
         return (await JsonSerializer.DeserializeAsync<Manifest>(diskPath, _jsonSerializerOptions))!;
     }
-
-    public async Task ForceUpdate()
-    {
-        try
-        {
-            if (GameHashesReleseFileName.FileExists)
-                GameHashesReleseFileName.Delete();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during force update");
-        }
-        await CheckForUpdate();
-    }
     
-    public async Task CheckForUpdate()
+    public async Task CheckForUpdate(bool forceUpdate = false)
     {
-        try
+        using var _ = await _lock.LockAsync();
+
+        await CheckForUpdateCore(forceUpdate);
+    }
+
+    private async Task CheckForUpdateCore(bool forceUpdate)
+    {
+        var gameHashesReleaseFileName = GameHashesReleaseFileName;
+        if (!forceUpdate)
         {
-            await _updateLock.WaitAsync();
-            
-            var gameHashesReleseFileName = GameHashesReleseFileName;
-            if (gameHashesReleseFileName.FileExists && gameHashesReleseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
+            if (gameHashesReleaseFileName.FileExists && gameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
             {
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
                 return;
             }
-            
-            
-            var release = await GetRelease(gameHashesReleseFileName);
-            
-            _logger.LogTrace("Checking for new hash database release");
-
-            var existingReleases = ExistingDBs().ToList();
-
-            if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
-                return;
-
-            var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.tmp.zip";
-
-            var asset = release.Assets.First(a => a.Type == AssetType.GameHashDb);
-
-            {
-                // download the database
-                await using var stream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
-                await using var fileStream = tempZipPath.Create();
-                await stream.CopyToAsync(fileStream);
-            }
-
-
-            var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
-            {
-                // extact it 
-                tempDir.CreateDirectory();
-                using var archive = new ZipArchive(tempZipPath.Read(), ZipArchiveMode.Read, leaveOpen: false);
-                foreach (var file in archive.Entries)
-                {
-                    var filePath = tempDir.Combine(file.FullName);
-                    filePath.Parent.CreateDirectory();
-                    await using var entryStream = file.Open();
-                    await using var fileStream = filePath.Create();
-                    await entryStream.CopyToAsync(fileStream);
-                }
-            }
-
-            // rename the temp folder
-            var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.CreatedAt.ToUnixTimeSeconds().ToString();
-            Directory.Move(tempDir.ToString(), finalDir.ToString());
-
-            // delete the temp files
-            tempZipPath.Delete();
-            
-            // open the new database
-            _currentDb = OpenDb(release.CreatedAt, finalDir);
         }
-        finally
+        
+        var release = await GetRelease(gameHashesReleaseFileName);
+        
+        _logger.LogTrace("Checking for new hash database release");
+
+        var existingReleases = ExistingDBs().ToList();
+
+        if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
+            return;
+
+        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.tmp.zip";
+        
         {
-            _updateLock.Release();
+            // download the database
+            await using var stream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
+            await using var fileStream = tempZipPath.Create();
+            await stream.CopyToAsync(fileStream);
         }
+
+
+        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
+        {
+            // extact it 
+            tempDir.CreateDirectory();
+            using var archive = new ZipArchive(tempZipPath.Read(), ZipArchiveMode.Read, leaveOpen: false);
+            foreach (var file in archive.Entries)
+            {
+                var filePath = tempDir.Combine(file.FullName);
+                filePath.Parent.CreateDirectory();
+                await using var entryStream = file.Open();
+                await using var fileStream = filePath.Create();
+                await entryStream.CopyToAsync(fileStream);
+            }
+        }
+
+        // rename the temp folder
+        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.CreatedAt.ToUnixTimeSeconds().ToString();
+        Directory.Move(tempDir.ToString(), finalDir.ToString());
+
+        // delete the temp files
+        tempZipPath.Delete();
+        
+        // open the new database
+        _currentDb = OpenDb(release.CreatedAt, finalDir);
     }
 
-    private AbsolutePath GameHashesReleseFileName => _settings.HashDatabaseLocation.ToPath(_fileSystem) / _settings.ReleaseFilePath;
+    private AbsolutePath GameHashesReleaseFileName => _settings.HashDatabaseLocation.ToPath(_fileSystem) / _settings.ReleaseFilePath;
 
+    /// <inheritdoc />
     public async ValueTask<IDb> GetFileHashesDb()
     {
+        using var _ = await _lock.LockAsync();
         if (_currentDb is not null)
             return _currentDb.Db;
 
-        await ForceUpdate();
+        // Call core since we're already inside a lock
+        await CheckForUpdateCore(false);
 
         return _currentDb!.Db;
     }
