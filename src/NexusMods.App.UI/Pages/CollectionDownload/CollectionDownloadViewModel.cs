@@ -314,6 +314,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
 
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
+                    HasInstalledAllOptionalItems.Value = hasInstalledAllOptionals;
                     _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0 && !hasInstalledAllOptionals);
                     _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
@@ -375,6 +376,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     }
 
     public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
+    
+    public BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; } = new(value: false);
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);

@@ -93,6 +93,7 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     BindableReactiveProperty<bool> IsInstalling { get; }
     BindableReactiveProperty<bool> IsDownloading { get; }
     BindableReactiveProperty<bool> IsUpdateAvailable { get; }
+    BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; }
     BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; }
 
     ReactiveCommand<NavigationInformation> CommandViewCollection { get; }
