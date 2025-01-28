@@ -8,12 +8,13 @@ namespace NexusMods.DataModel.SchemaVersions;
 public interface IMigration
 {
     /// <summary>
-    /// The unique sequential id of this migration and the human friendly name
+    /// The unique sequential id of this migration and the human friendly name. These values are stored in this way
+    /// so that they can be easily extracted from the class name.
     /// </summary>
     public static abstract (MigrationId Id, string Name) IdAndName { get; }
     
     /// <summary>
-    /// Do any initial processing required to start the migration. Data can be stored 
+    /// Perform initial lookups and prepare for the migration
     /// </summary>
-    public void Prepare(IDb db);
+    void Prepare(IDb db);
 }

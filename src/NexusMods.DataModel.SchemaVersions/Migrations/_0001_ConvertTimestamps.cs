@@ -12,7 +12,8 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
 /// <summary>
 /// Converts timestamps from Unix file times to Ticks. No data shape changes
-/// just the conversion of the data itself.
+/// just the conversion of the data itself. This was a change done to make precision
+/// of times more consistent when converted to and from filesystem times.
 /// </summary>
 public class _0001_ConvertTimestamps : IScanningMigration
 {
@@ -41,6 +42,9 @@ public class _0001_ConvertTimestamps : IScanningMigration
         return ScanResultType.Update;
     }
     
+    /// <summary>
+    /// Perform the actual data conversion
+    /// </summary>
     private static long ConvertTimestamps(long oldTimestamp)
     {
         try

@@ -63,7 +63,7 @@ public class MigrationService
     }
 
     /// <summary>
-    /// Perfrom the DB migration
+    /// Perform all  the DB migrations
     /// </summary>
     public async Task MigrateAll()
     {
