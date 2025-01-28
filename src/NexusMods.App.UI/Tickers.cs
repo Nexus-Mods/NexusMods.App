@@ -12,6 +12,7 @@ public static class Tickers
         var observable = Observable
             .Interval(period: Period, timeProvider: ObservableSystem.DefaultTimeProvider)
             .ObserveOnUIThreadDispatcher()
+            .Prepend(Unit.Default)
             .Select(_ => TimeProvider.System.GetLocalNow())
             .Replay(bufferSize: 1);
 
