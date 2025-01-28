@@ -188,15 +188,15 @@ public class BuildHashesDb : IAsyncDisposable
     {
         List<(GameId, string, SteamManifest.ReadOnly)> versions = [];
         var indexedGames = (from game in _locatableGames.OfType<ISteamGame>()
-                from gogId in game.SteamIds
-                select KeyValuePair.Create(gogId, (IGame)game))
+                from steamAppId in game.SteamIds
+                select KeyValuePair.Create(steamAppId, (IGame)game))
             .ToLookup(x => x.Key, x => x.Value);
         
         foreach (var manifest in SteamManifest.All(_connection.Db).OrderBy(d => d.Name))
         {
             var name = manifest.Name;
 
-            foreach (var game in indexedGames[manifest.DepotId.Value])
+            foreach (var game in indexedGames[manifest.AppId.Value])
             {
                 versions.Add((game.GameId, name, manifest));
                 await _renderer.TextLine("Found Steam version {0} for game {1}", name, game.Name);
