@@ -26,34 +26,40 @@
         <DockPanel Margin="24">
 
             <!-- header with pictogram -->
-            <StackPanel Spacing="8" DockPanel.Dock="Top">
+            <DockPanel DockPanel.Dock="Top">
+                <Border Width="60"
+                        Height="60"
+                        Margin="0,0,8,0"
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Top">
+                    <icons:UnifiedIcon Size="60" x:Name="Icon" Value="{x:Static icons:IconValues.PictogramHealth}" />
+                </Border>
 
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Border Width="48" Height="48">
-                        <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramHealth}" />
-                    </Border>
-                    <TextBlock Text="Health Check:"
-                               Theme="{StaticResource HeadingSMSemiTheme}"
+                <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock x:Name="TitleTextBlock"
+                                   Text="Health Check:"
+                                   Theme="{StaticResource HeadingSMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="SeverityTitleTextBlock"
+                                   Theme="{StaticResource HeadingSMSemiTheme}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock x:Name="DescriptionTextBlock"
+                               Text="Review your Loadout for any issues and learn how to resolve them if needed."
+                               Theme="{StaticResource BodyMDNormalTheme}"
                                Foreground="{StaticResource NeutralStrongBrush}"
-                               VerticalAlignment="Center" />
-                    <TextBlock x:Name="SeverityTitleTextBlock"
-                               Theme="{StaticResource HeadingSMSemiTheme}"
-                               VerticalAlignment="Center" />
+                               TextWrapping="Wrap" />
                 </StackPanel>
+            </DockPanel>
 
-                <TextBlock
-                    x:Name="SeverityExplanationTextBlock"
-                    Text="Review your Loadout for any issues and learn how to resolve them if needed."
-                    Theme="{StaticResource BodyMDNormalTheme}"
-                    Foreground="{StaticResource NeutralStrongBrush}"
-                    TextWrapping="Wrap" />
-            </StackPanel>
-
-            <Border DockPanel.Dock="Top" Classes="Toolbar" 
-                    Background="Transparent" 
+            <Border DockPanel.Dock="Top" Classes="Toolbar"
+                    Background="Transparent"
                     BorderThickness="0">
-                
-                <StackPanel HorizontalAlignment="Left" 
+
+                <StackPanel HorizontalAlignment="Left"
                             Margin="0,20,0,0">
                     <controls:StandardButton x:Name="SwitchView"
                                              Text="Back"
@@ -62,7 +68,7 @@
                                              Fill="Weak"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.ArrowBack}"
-                                             IsEnabled="False"/>
+                                             IsEnabled="False" />
 
                     <controls:StandardButton x:Name="DeleteButton"
                                              Type="Tertiary"
@@ -71,12 +77,13 @@
                                              ShowIcon="Left"
                                              ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.Copy}"
-                                             IsEnabled="False"/>
+                                             IsEnabled="False" />
                 </StackPanel>
             </Border>
 
             <Border
                 x:Name="MarkdownWrapperBorder"
+                VerticalAlignment="Top"
                 Margin="0,12,0,0"
                 CornerRadius="4"
                 BorderThickness="2"
@@ -84,9 +91,7 @@
                 Background="#0D93C5FD"
                 BorderBrush="#6693C5FD">
 
-
-                    <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
-
+                <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
             </Border>
 
         </DockPanel>

@@ -292,6 +292,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GOG"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Logging", "src\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj", "{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games.FileHashes", "src\Abstractions\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj", "{E2DB1DF4-9934-4119-BA90-196FDDB0904A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FileHashes", "src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj", "{71D8CF63-A287-45AB-B251-676A54576C1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -770,6 +774,14 @@ Global
 		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2DB1DF4-9934-4119-BA90-196FDDB0904A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2DB1DF4-9934-4119-BA90-196FDDB0904A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2DB1DF4-9934-4119-BA90-196FDDB0904A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2DB1DF4-9934-4119-BA90-196FDDB0904A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D8CF63-A287-45AB-B251-676A54576C1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D8CF63-A287-45AB-B251-676A54576C1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D8CF63-A287-45AB-B251-676A54576C1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D8CF63-A287-45AB-B251-676A54576C1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -906,6 +918,8 @@ Global
 		{F7FD18A7-2F00-4EB6-84FC-15C57326FDEB} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
 		{03AC4F34-E69A-41E3-9F00-EE5A558D01B9} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{9DE1C2AC-927A-4BC6-B2A1-7016902F8BAE} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{E2DB1DF4-9934-4119-BA90-196FDDB0904A} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{71D8CF63-A287-45AB-B251-676A54576C1D} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

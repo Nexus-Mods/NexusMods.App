@@ -3,13 +3,34 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x28AB9598ED8F34A4
-   - Total attributes: 153
-   - Total namespaces: 59
+   - Fingerprint: 0xAAB7BD338184F68B
+   - Total attributes: 174
+   - Total namespaces: 63
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
 | ---------------------------------------------------------------------------------- | ----------------------- | ------- | ----- | --------- | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/BuildId                           | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Files                             | Reference               | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/OperatingSystem                   | UInt8                   | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/ProductId                         | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Public                            | UInt8                   | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Tags                              | Utf8                    | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Version                           | Utf8                    | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/Crc32                         | UInt32                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/Md5                           | UInt128                 | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/MinimalHash                   | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/Sha1                          | Blob                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/Size                          | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/XxHash3                       | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.HashRelation/XxHash64                      | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.PathHashRelation/Hash                      | Reference               | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.PathHashRelation/Path                      | Utf8Insensitive         | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.SteamManifest/AppId                        | UInt32                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.SteamManifest/DepotId                      | UInt32                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.SteamManifest/Files                        | Reference               | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.SteamManifest/ManifestId                   | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.SteamManifest/Name                         | Utf8                    | True    | False | False     | 
 | NexusMods.App.UI.Windows.WindowData/Data                                           | Utf8                    | False   | False | False     | 
 | NexusMods.ArchiveContents.ArchivedFileContainer/Path                               | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.ArchivedFile/Container                                                   | Reference               | False   | False | False     | 

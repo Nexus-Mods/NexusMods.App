@@ -23,7 +23,6 @@ public class Startup
             .AddBaldursGate3()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
             .Validate();
     }

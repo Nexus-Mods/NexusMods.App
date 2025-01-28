@@ -10,6 +10,11 @@ namespace NexusMods.Abstractions.Steam;
 public interface ISteamSession
 {
     /// <summary>
+    /// Connect to the Steam session, performing any necessary setup.
+    /// </summary>
+    public Task Connect(CancellationToken token);
+    
+    /// <summary>
     /// Get the product info for the specified app ID
     /// </summary>
     public Task<ProductInfo> GetProductInfoAsync(AppId appId, CancellationToken cancellationToken = default);
