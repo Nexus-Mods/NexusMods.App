@@ -495,12 +495,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
 
+                var writeTimeUtc = register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc;
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, writeTimeUtc);
                 }
                 else
                 {
@@ -509,7 +510,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
-                        LastModified = DateTime.UtcNow,
+                        LastModified = writeTimeUtc,
                         GameId = gameMetadataId,
                     };
                 }
@@ -591,8 +592,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
-                    
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
                     continue;
                 }
             }
@@ -625,7 +625,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutFileEntry = loadoutFile,
                 }
             );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
         }
 
         if (added.Count > 0)
