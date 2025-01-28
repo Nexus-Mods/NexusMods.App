@@ -1034,7 +1034,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
             {
-                var initialState = await GetOrCreateInitialDiskState(installation);
+                //var initialState = await GetOrCreateInitialDiskState(installation);
                 var existingLoadoutNames = Loadout.All(Connection.Db)
                     .Where(l => l.IsVisible()
                                 && l.InstallationInstance.LocationsRegister[LocationId.Game]
@@ -1049,6 +1049,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 using var tx = Connection.BeginTransaction();
 
+                List<string> locatorMetadata = [];
+                if (installation.LocatorResultMetadata != null)
+                {
+                    locatorMetadata.Add(installation.LocatorResultMetadata.ToCommonString());
+                }
+
                 var loadout = new Loadout.New(tx)
                 {
                     Name = suggestedName ?? "Loadout " + shortName,
@@ -1056,41 +1062,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     InstallationId = installation.GameMetadataId,
                     Revision = 0,
                     LoadoutKind = LoadoutKind.Default,
+                    LocatorIds = locatorMetadata,
                 };
-
-                var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-
-                // Backup the files
-                var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-
-                foreach (var file in initialState)
-                {
-                    GamePath path = file.Path;
-
-                    if (!IsIgnoredBackupPath(path))
-                        filesToBackup.Add((path, file.Hash, file.Size));
-
-                    _ = new LoadoutFile.New(tx, out var loadoutFileId)
-                    {
-                        Hash = file.Hash,
-                        Size = file.Size,
-                        LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                        {
-                            TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                            LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                            {
-                                Name = path.FileName,
-                                LoadoutId = loadout,
-                                ParentId = gameFiles.Id,
-                            },
-                        },
-                    };
-                }
-
-                await ctx.YieldAsync();
-
-                await BackupNewFiles(installation, filesToBackup);
-
+                
+                // Create the user's default collection
                 _ = new CollectionGroup.New(tx, out var userCollectionId)
                 {
                     IsReadOnly = false,
@@ -1108,7 +1083,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // Commit the transaction as of this point the loadout is live
                 var result = await tx.Commit();
 
-                // Remap the ids
+                // Remap the id
                 var remappedLoadout = result.Remap(loadout);
 
                 // If this is the only loadout, activate it
@@ -1317,64 +1292,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Execute the garbage collector
         _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
-
-    /// <summary>
-    ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
-    ///     state of the game folder.
-    ///
-    ///     This loadout is created when the last applied loadout for a game
-    ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
-    ///     It should be a singleton.
-    /// </summary>
-    private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
-    {
-        var initialState = await GetOrCreateInitialDiskState(installation);
-
-        using var tx = Connection.BeginTransaction();
-        var loadout = new Loadout.New(tx)
-        {
-            Name = $"Vanilla State Loadout for {installation.Game.Name}",
-            ShortName = "-",
-            InstallationId = installation.GameMetadataId,
-            Revision = 0,
-            LoadoutKind = LoadoutKind.VanillaState,
-        };
-
-        var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-
-        // Backup the files
-        // 1. Because we need to backup the files for every created loadout.
-        // 2. Because in practice this is the first loadout created.
-        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-        foreach (var file in initialState)
-        {
-            GamePath path = file.Path;
-
-            if (!IsIgnoredBackupPath(path))
-                filesToBackup.Add((path, file.Hash, file.Size));
-
-            _ = new LoadoutFile.New(tx, out var loadoutFileId)
-            {
-                Hash = file.Hash,
-                Size = file.Size,
-                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                {
-                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                    {
-                        Name = path.FileName,
-                        LoadoutId = loadout,
-                        ParentId = gameFiles.Id,
-                    },
-                },
-            };
-        }
-
-        await BackupNewFiles(installation, filesToBackup);
-        var result = await tx.Commit();
-
-        return result.Remap(loadout);
-    }
+    
     
     /// <inheritdoc />
     public async Task ResetToOriginalGameState(GameInstallation installation)

@@ -12,4 +12,7 @@ public record EADesktopLocatorResultMetadata : IGameLocatorResultMetadata
     /// The specific ID of the found game.
     /// </summary>
     public required string SoftwareId { get; init; }
+
+    /// <inheritdoc />
+    public string ToCommonString() => SoftwareId;
 }

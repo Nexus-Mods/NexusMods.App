@@ -53,7 +53,12 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         
         grandChildFileFullPath.FileExists.Should().BeFalse();
         parentFileFullPath.FileExists.Should().BeTrue();
-        
-        
+    }
+
+    [Fact]
+    public async Task LoadoutsContainLocatorMetadata()
+    {
+        var loadout = await CreateLoadout(false);
+        loadout.LocatorIds.Should().BeEquivalentTo(["Unknown"]);
     }
 }

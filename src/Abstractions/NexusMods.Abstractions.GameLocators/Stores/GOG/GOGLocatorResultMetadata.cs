@@ -12,6 +12,9 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// The specific ID of the found game.
     /// </summary>
     public required long Id { get; init; }
+    
+    /// <inheritdoc />
+    public string ToCommonString() => Id.ToString();
 }
 
 [PublicAPI]

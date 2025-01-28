@@ -18,4 +18,8 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     /// Optional absolute path to the cloud saves directory for the game.
     /// </summary>
     public AbsolutePath? CloudSavesDirectory { get; init; }
+
+
+    /// <inheritdoc />
+    public string ToCommonString() => AppId.ToString();
 }
