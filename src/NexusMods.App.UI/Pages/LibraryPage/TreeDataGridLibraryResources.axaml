@@ -245,5 +245,40 @@
         </controls:ComponentControl>
     </DataTemplate>
 
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+Actions.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+InstallAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+InstallAction}">
+
+                            <Button Command="{CompiledBinding CommandInstall}"
+                                    Classes="Standard"
+                                    Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                                    Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                                       IsVisible="{CompiledBinding IsInstalled.Value}" />
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                                </StackPanel>
+                            </Button>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
 </ResourceDictionary>
 

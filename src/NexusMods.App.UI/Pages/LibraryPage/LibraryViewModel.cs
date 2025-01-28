@@ -415,6 +415,7 @@ public class NewLibraryTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMo
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }
 

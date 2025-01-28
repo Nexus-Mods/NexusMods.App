@@ -326,6 +326,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Transform(datom => NexusModsLibraryItem.Load(_connection.Db, datom.E))
             .RefCount();
 
+        var linkedLoadoutItemsObservable = libraryItems.MergeManyChangeSets(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id));
+
         var hasChildrenObservable = libraryItems.IsNotEmpty();
         var childrenObservable = libraryItems.Transform(libraryItem => ToLibraryItemModel2(libraryItem, libraryFilter));
 
@@ -360,25 +362,6 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             valueObservable: downloadedDateObservable
         ));
 
-        // Installed date: most recent installed file date
-        var installedDateObservable = libraryItems
-            .MergeManyChangeSets(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id))
-            .TransformImmutable(static loadoutItem => loadoutItem.GetCreatedAt())
-            .QueryWhenChanged(query =>
-            {
-                if (query.Count == 0) return Optional<DateTimeOffset>.None;
-                return query.Items.Max();
-            });
-
-        parentItemModel.AddObservable(
-            key: SharedColumns.InstalledDate.ComponentKey,
-            observable: installedDateObservable,
-            componentFactory: static (valueObservable, initialValue) => new DateComponent(
-                initialValue,
-                valueObservable
-            )
-        );
-
         // TODO: select latest version
         var currentVersionObservable = libraryItems
             .TransformImmutable(static item => item.FileMetadata.Version)
@@ -388,6 +371,24 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
+
+        LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
+
+        var s = libraryItems
+            .TransformOnObservable(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id).IsNotEmpty())
+            .QueryWhenChanged(query =>
+            {
+                var (numInstalled, numTotal) = (0, 0);
+                foreach (var isInstalled in query.Items)
+                {
+                    numInstalled += isInstalled ? 1 : 0;
+                    numTotal++;
+                }
+
+                return new ValueTuple<int, int>(numInstalled, numTotal);
+            });
+
+        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, s, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
 
         return parentItemModel;
     }
@@ -404,13 +405,13 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
 
         if (libraryItem.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
-
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
 
         return itemModel;
     }

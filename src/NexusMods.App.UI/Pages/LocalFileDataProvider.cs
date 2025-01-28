@@ -111,6 +111,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         parentItemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
 
         return parentItemModel;
     }

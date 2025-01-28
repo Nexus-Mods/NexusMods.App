@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
@@ -74,6 +75,36 @@ public static class LibraryDataProviderHelper
                 valueObservable
             )
         );
+    }
+
+    public static void AddInstallActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        LibraryItem.ReadOnly libraryItem,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        itemModel.Add(LibraryColumns.Actions.InstallComponentKey, new LibraryComponents.InstallAction(
+            isInstalled: new ValueComponent<bool>(
+                initialValue: false,
+                valueObservable: linkedItemsObservable.IsNotEmpty(),
+                subscribeWhenCreated: true
+            ),
+            itemId: libraryItem
+        ));
+    }
+
+    public static void AddInstallActionComponent(
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<ValueTuple<int, int>> observable,
+        IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
+    {
+        parentItemModel.Add(LibraryColumns.Actions.InstallComponentKey, new LibraryComponents.InstallAction(
+            numChildren: new ValueComponent<(int NumInstalled, int NumTotal)>(
+                initialValue: (0, 0),
+                valueObservable: observable,
+                subscribeWhenCreated: true
+            ),
+            childrenItemIdsObservable: libraryItemsObservable.TransformImmutable(static x => x.LibraryItemId)
+        ));
     }
 }
 
