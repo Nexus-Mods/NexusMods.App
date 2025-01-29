@@ -1,3 +1,26 @@
+# v0.7.3 - 2024-02-XX
+The release adds collections to the Library, introduces thumbnails for mods, and include significant usability improvements for the left menu. 
+
+- Added mod Thumbnails to Modlist and Library
+- Collections improvements:
+	- Added Collections section in the Library page
+	- Significantly improved Collection download and install experience
+	- Added Check for Collection Revision Updates and support to download them
+	- Better UI for showing different states of collections and collection items
+	- Added a new page for viewing installed nexus collections
+- Left Menu overhaul:
+	- Active and Selected states based on active and selected Pages
+	- Toggles for installed collection items
+	- Icons for Health Check item
+	- Count badge for new downloads in Library item
+	- Added Tooltips
+- Added an Error dialog to notify users when exceptions occur during app operations
+	- The dialog can be disabled in the settings
+- Fixes:
+	- Fixed Health Checks not refreshing properly on Loadout changes
+	- Fixed bug when installing Baldur's Gate 3 Script Extender on Linux
+	- Added CLI commands to allows users with compromised setups to delete files from the hidden Override folder
+
 # v0.7.2 - 2024-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
