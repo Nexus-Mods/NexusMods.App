@@ -209,7 +209,7 @@ public class SynchronizerService : ISynchronizerService
 
                     return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
                 },
-                awaitOperation: AwaitOperation.Sequential
+                awaitOperation: AwaitOperation.Switch
             )
             .Replay(1)
             .RefCount();
