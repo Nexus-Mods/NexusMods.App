@@ -71,9 +71,20 @@ public partial class NexusModsLibrary
         var modInfo = await _gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)modId.Value, cancellationToken);
         EntityId first = default;
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
-        {
             first = node.Resolve(_connection.Db, tx);
-        }
+        
+        // Note(sewer):
+        // Make sure to also fetch all files on the mod page.
+        // The update code refreshes file info only on changes of the mod page.
+        // If our initial mod page item does not contain info on all the files,
+        // then updates are not visible unless an actual change is made to the
+        // mod page, this is somewhat undesireable.
+        var modIdString = uid.ModId.Value.ToString();
+        var gameIdString = uid.GameId.Value.ToString();
+        var filesByUid = await _gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
+        filesByUid.EnsureNoErrors();
+        foreach (var node in filesByUid.Data!.ModFiles)
+            node.Resolve(_connection.Db, tx, first);
         
         var txResults = await tx.Commit();
         return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);

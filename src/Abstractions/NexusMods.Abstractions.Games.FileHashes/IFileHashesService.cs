@@ -10,7 +10,7 @@ public interface IFileHashesService
     /// <summary>
     /// Force an update of the file hashes database
     /// </summary>
-    public Task ForceUpdate();
+    public Task CheckForUpdate(bool forceUpdate = false);
     
     /// <summary>
     /// Get the file hashes database, downloading it if necessary

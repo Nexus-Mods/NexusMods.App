@@ -741,6 +741,9 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
         <value>{0} of {1} required mods downloaded</value>
     </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>Update All</value>
+    </data>
     <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
         <value>INSTALLED MODS</value>
     </data>
@@ -749,6 +752,15 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
         <value>Ready to play - All required mods installed</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Update ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>Update All</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>

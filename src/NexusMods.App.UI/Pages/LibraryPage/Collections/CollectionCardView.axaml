@@ -33,6 +33,8 @@
                         <TextBlock Grid.Row="0" x:Name="TitleText" />
                         <Border Grid.Row="1" x:Name="CategoryTextBorder">
                             <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock x:Name="RevisionNumberText" />
+                                <Ellipse Width="4" Height="4" />
                                 <TextBlock x:Name="CategoryText" />
                                 <StackPanel x:Name="AdultStackPanel" Orientation="Horizontal" Spacing="8">
                                     <Ellipse Width="4" Height="4" />

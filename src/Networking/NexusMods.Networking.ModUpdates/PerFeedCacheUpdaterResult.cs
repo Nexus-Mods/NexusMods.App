@@ -40,4 +40,9 @@ public class PerFeedCacheUpdaterResult<TUpdateableItem> where TUpdateableItem : 
         UpToDateItems.AddRange(other.UpToDateItems);
         UndeterminedItems.AddRange(other.UndeterminedItems);
     }
+    
+    /// <summary>
+    /// Determines if any item in the underlying datastore needs updating.
+    /// </summary>
+    public bool AnyItemNeedsUpdate() => (OutOfDateItems.Count + UndeterminedItems.Count) > 0;
 }

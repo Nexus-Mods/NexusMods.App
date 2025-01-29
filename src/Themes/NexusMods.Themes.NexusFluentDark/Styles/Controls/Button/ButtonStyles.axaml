@@ -18,6 +18,11 @@
                         </icons:UnifiedIcon.Value>
                     </icons:UnifiedIcon>
                 </Button>
+                <!-- Disabled for now as it's broken due to code restructure -->
+                <!-- 
+                <loadout:LeftMenuCollectionView>
+                    <items:IconViewModel Icon="{x:Static icons:IconValues.Home}" Name="Some Text" />
+                </loadout:LeftMenuCollectionView> -->
                 <Button Classes="Invisible" HorizontalAlignment="Center">
                     <TextBlock Text="Invisible" />
                 </Button>

@@ -4,10 +4,10 @@
 
     <Design.PreviewWith>
         <StackPanel Orientation="Horizontal">
-            <Border Padding="20">
+            <Border Padding="8" Width="50" Height="50">
                 <spinner:Spinner/>
             </Border>
-            <Border Padding="20">
+            <Border Padding="8">
                 <spinner:Spinner Height="48" Width="48" />
             </Border>
         </StackPanel>
@@ -16,8 +16,6 @@
     <!-- Styles Definitions -->
     <Style Selector="spinner|Spinner">
         <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
-        <Setter Property="Height" Value="60" />
-        <Setter Property="Width" Value="60" />
         
         <Style Selector="^ Path">
             <Style.Animations>

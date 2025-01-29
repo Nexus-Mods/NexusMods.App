@@ -73,6 +73,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public string Summary => _collection.Summary;
     public string Category => _collection.Category.Name;
     public int NumDownloads => _revision.Downloads.Count;
+    public RevisionNumber RevisionNumber => _revision.RevisionNumber;
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;

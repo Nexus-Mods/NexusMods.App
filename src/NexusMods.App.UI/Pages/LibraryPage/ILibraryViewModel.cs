@@ -13,6 +13,8 @@ public interface ILibraryViewModel : IPageViewModelInterface
 
     string EmptyLibrarySubtitleText { get; }
 
+    public ReactiveCommand<Unit> UpdateAllCommand { get; }
+    public ReactiveCommand<Unit> RefreshUpdatesCommand { get; }
     ReactiveCommand<Unit> SwitchViewCommand { get; }
 
     ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
