@@ -40,7 +40,7 @@ internal class CommandHandler(IServiceProvider serviceProvider, List<Func<Invoca
         catch (Exception ex)
         {
             serviceProvider.GetRequiredService<ILogger<CommandHandler>>().LogError(ex, "An error occurred while executing the command {0}", methodInfo.Name);
-            await serviceProvider.GetRequiredService<IRenderer>().Text("An error occurred while executing the command {0}", ex.ToString());
+            await context.BindingContext.GetRequiredService<IRenderer>().Error(ex, "An error occurred while executing the command");
             return -1;
         }
     }

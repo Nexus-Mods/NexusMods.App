@@ -217,7 +217,8 @@
                 <Setter Property="Padding" Value="24, 12" />
                 <Setter Property="panels:Flex.Grow" Value="0" />
                 <Setter Property="panels:Flex.Shrink" Value="0" />
-                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                <!-- can't do a bottom border on the tab header items -->
+                <Setter Property="BorderThickness" Value="0,1,0,1" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
 
                 <Style Selector="^ panels|FlexPanel#ListHeaderRow">
@@ -235,7 +236,14 @@
 
             <Style Selector="^ TabControl">
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
                 <Setter Property="Padding" Value="0" />
+                
+                <!-- header padding -->
+                <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <!-- negative bottom margin to pull up the toolbar below -->
+                    <Setter Property="Margin" Value="24,12,0,-2" />
+                </Style>
             </Style>
 
             <!-- NOTE(erri120): Hide the tab strip when there's only one tab -->

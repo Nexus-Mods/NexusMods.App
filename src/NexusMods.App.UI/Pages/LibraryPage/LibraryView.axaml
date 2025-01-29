@@ -65,15 +65,18 @@
                 </StackPanel>
             </Expander.Header>
             <!-- Empty State -->
-
-            
-
                 <Grid RowDefinitions="Auto, *">
-
                     <!-- Toolbar -->
                     <Border Grid.Row="0" Classes="Toolbar">
                         <StackPanel Orientation="Horizontal">
 
+                            <!-- 'Updates' button. -->
+                            <!-- This button's text is updated at runtime to set number of mods -->
+                            <SplitButton x:Name="UpdateAll" IsVisible="False" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                            <controls:StandardButton x:Name="Refresh" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                
+                            <Line />
+                        
                             <controls:StandardButton x:Name="SwitchView"
                                                      Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
                                                      Type="Tertiary"

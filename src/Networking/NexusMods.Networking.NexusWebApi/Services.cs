@@ -50,6 +50,7 @@ public static class Services
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
+            .AddAllSingleton<IModUpdateService, ModUpdateService>()
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
 

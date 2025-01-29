@@ -45,7 +45,7 @@ public static class Services
             }
         );
         services.AddSteam();
-        services.AddSingleton<IAuthInterventionHandler, LoggingAuthInterventionHandler>();
+        services.AddSingleton<IAuthInterventionHandler, RenderingAuthenticationHandler>();
         services.AddLocalAuthFileStorage();
         services.AddSteamVerbs();
         return services;

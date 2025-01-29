@@ -46,6 +46,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public BindableReactiveProperty<bool> IsDownloading { get; } = new();
     public BindableReactiveProperty<bool> IsInstalling { get; } = new();
     public BindableReactiveProperty<bool> IsUpdateAvailable { get; } = new();
+    public BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; } = new(value: false);
     public BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; } = new();
 
     public ReactiveCommand<NavigationInformation> CommandViewCollection { get; } = new();

@@ -30,7 +30,7 @@ public class HashJsonConverter : JsonConverter<Hash>
     public override void Write(Utf8JsonWriter writer, Hash value, JsonSerializerOptions options)
     {
         Span<byte> buffer = stackalloc byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(buffer, value.Value);
+        MemoryMarshal.Write(buffer, value.Value);
         
         Span<char> span = stackalloc char[sizeof(ulong) * 2];
         ((ReadOnlySpan<byte>)buffer).ToHex(span);

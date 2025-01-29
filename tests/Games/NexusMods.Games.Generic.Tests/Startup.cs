@@ -15,7 +15,6 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddSerializationAbstractions()
             .Validate();
     }
 }

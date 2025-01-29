@@ -135,26 +135,26 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 })
                 .DisposeWith(d);
-
+            
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
                 view => view.ViewModel!.CountDownloadedOptionalItems,
-                view => view.ViewModel!.IsInstalled.Value)
-                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, b))
+                view => view.ViewModel!.IsInstalled.Value,
+                view => view.ViewModel!.HasInstalledAllOptionalItems.Value)
+                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, a.Item4, b))
                 .Subscribe(tuple =>
                 {
-                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, filter) = tuple;
+                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, hasInstalledAllOptionals, filter ) = tuple;
                     var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
                     var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
-
+            
                     ButtonViewCollection.IsVisible = isInstalled;
-
+            
                     ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
                     ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
-
+            
                     ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
-                    ButtonInstallOptionalItems.IsVisible = !isInstalled && false; // TODO: implement this button
-                    // ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional;
+                    ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems && !hasInstalledAllOptionals;
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel)

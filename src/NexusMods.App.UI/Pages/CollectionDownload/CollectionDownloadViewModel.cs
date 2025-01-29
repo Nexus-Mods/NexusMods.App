@@ -106,8 +106,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        // TODO: implement this button
-        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>();
+        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(executeAsync: async (_, _) => { await InstallCollectionJob.Create(
+                serviceProvider,
+                targetLoadout,
+                source: libraryFile,
+                revisionMetadata,
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Optional)
+            ); },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
 
         CommandInstallRequiredItems = IsInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) => { await InstallCollectionJob.Create(
@@ -264,6 +272,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             var isCollectionInstalledObservable = collectionDownloader
                 .IsCollectionInstalledObservable(_revision, collectionGroupObservable)
                 .Prepend(false);
+            var hasInstalledAllOptionalItems = collectionDownloader
+                .IsCollectionInstalledObservable(_revision, collectionGroupObservable, CollectionDownloader.ItemType.Optional)
+                .Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -295,13 +306,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 }).AddTo(disposables);
 
             numDownloadedOptionalItemsObservable
+                .CombineLatest(hasInstalledAllOptionalItems)
                 .OnUI()
-                .Subscribe(numDownloadedOptionalItems =>
+                .Subscribe(tuple =>
                 {
+                    var (numDownloadedOptionalItems, hasInstalledAllOptionals) = tuple;
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
-
+                    
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
-                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0);
+                    HasInstalledAllOptionalItems.Value = hasInstalledAllOptionals;
+                    _canInstallOptionalItems.OnNext(hasDownloadedAllOptionalItems && !hasInstalledAllOptionals);
                     _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
 
@@ -362,6 +376,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     }
 
     public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
+    
+    public BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; } = new(value: false);
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);

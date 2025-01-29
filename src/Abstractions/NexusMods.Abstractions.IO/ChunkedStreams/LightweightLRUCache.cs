@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.IO.ChunkedStreams;
 /// An extremely lightweight LRU cache that is not thread safe. All values are expected
 /// to be unused by the time the next method on this struct is called.
 /// </summary>
-public struct LightweightLRUCache<TK, TV>
+public struct LightweightLRUCache<TK, TV> : IDisposable
     where TK : IEquatable<TK>
 {
     private readonly int _size;
@@ -126,6 +126,17 @@ public struct LightweightLRUCache<TK, TV>
             _count++;
             keys[0] = key;
             values[0] = val;
+        }
+    }
+
+    /// <summary>
+    /// Disposes all values in the cache.
+    /// </summary>
+    public void Dispose()
+    {
+        for (var i = 0; i < _count; i++)
+        {
+            (_values[i] as IDisposable)?.Dispose();
         }
     }
 }

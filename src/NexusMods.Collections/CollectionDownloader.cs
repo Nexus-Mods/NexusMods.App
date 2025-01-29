@@ -245,10 +245,13 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the collection is installed.
     /// </summary>
-    public IObservable<bool> IsCollectionInstalledObservable(CollectionRevisionMetadata.ReadOnly revision, IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
+    public IObservable<bool> IsCollectionInstalledObservable(
+        CollectionRevisionMetadata.ReadOnly revision, 
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable, 
+        ItemType itemType = ItemType.Required)
     {
         var observables = revision.Downloads
-            .Where(download => DownloadMatchesItemType(download, ItemType.Required))
+            .Where(download => DownloadMatchesItemType(download, itemType))
             .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)));
 
         return observables.CombineLatest(static list => list.All(static installed => installed));

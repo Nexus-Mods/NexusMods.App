@@ -21,7 +21,9 @@ public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryIte
     IHasLinkedLoadoutItems,
     IIsParentLibraryItemModel
 {
-    public LocalFileParentLibraryItemModel(LocalFile.ReadOnly localFile, IServiceProvider serviceProvider)
+    public LocalFileParentLibraryItemModel(LocalFile.ReadOnly localFile, IServiceProvider serviceProvider,
+        IObservable<bool> hasChildrenObservable, IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable) 
+        : base(hasChildrenObservable, childrenObservable)
     {
         LibraryItemIds = [localFile.Id];
 

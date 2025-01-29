@@ -10,6 +10,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.FileHashes;
 using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
@@ -49,8 +50,8 @@ public class Startup
                     ],
                 })
                 .AddFileExtractors()
+                .AddFileHashes()
                 .AddCLI()
-                .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
                 .AddNexusWebApi(true)
                 .AddLoadoutAbstractions()
