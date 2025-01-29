@@ -1,6 +1,34 @@
 # v0.7.3 - 2024-02-XX
 The release adds collections to the Library, introduces thumbnails for mods, and include significant usability improvements for the left menu. 
 
+## Collections in the Library
+**Important: If you are updating from 0.7.1, you will need to remove and re-add any collections to your library.**
+
+## Workspace Improvements
+We've made several improvements to the behaviour of the left menu in your Workspaces:
+* The left menu has been reorganised with the Library at the top, the mods in your loadout in the middle, and the extra utilities at the bottom. 
+* Collections can be toggled on and off from the left menu.
+* Pages in the left menu will now show active/selected states based on which panels/tabs are open and in view. 
+* Tooltips have been added to the left menu items so you can always see the full name. 
+
+## Technical Changes
+* Added a new error pop-up when the app encounters an unexpected error. This can be turned off in the Settings. 
+* Added CLI commands to allows users to delete files from the hidden Override folder where this has compromised their setup. 
+
+## Bug Fixes
+* Fixed Health Checks not refreshing properly when the Loadout changes.
+* Fixed an issue when installing Baldur's Gate 3 Script Extender on Linux.
+
+
+## Known Issues
+* 
+* Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
+* Bundled mods included with collections do not appear in the UI but are still applied to your game. 
+* The success rating for collections is not showing the correct value. 
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The "Switch View" option does not persist in the Library/Installed Mods view.
+* The "Load Order" heading toggle does not persist in the Load Order view. 
+
 - Added mod Thumbnails to Modlist and Library
 - Collections improvements:
 	- Added Collections section in the Library page
@@ -14,12 +42,6 @@ The release adds collections to the Library, introduces thumbnails for mods, and
 	- Icons for Health Check item
 	- Count badge for new downloads in Library item
 	- Added Tooltips
-- Added an Error dialog to notify users when exceptions occur during app operations
-	- The dialog can be disabled in the settings
-- Fixes:
-	- Fixed Health Checks not refreshing properly on Loadout changes
-	- Fixed bug when installing Baldur's Gate 3 Script Extender on Linux
-	- Added CLI commands to allows users with compromised setups to delete files from the hidden Override folder
 
 # v0.7.2 - 2024-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
