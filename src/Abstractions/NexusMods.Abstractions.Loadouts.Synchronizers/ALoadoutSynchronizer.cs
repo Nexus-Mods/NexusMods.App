@@ -1139,8 +1139,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public virtual IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
+
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
             {
+                await _fileHashService.GetFileHashesDb();
                 //var initialState = await GetOrCreateInitialDiskState(installation);
                 var existingLoadoutNames = Loadout.All(Connection.Db)
                     .Where(l => l.IsVisible()
@@ -1214,7 +1216,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
-        await ResetToOriginalGameState(installation);
+        await ResetToOriginalGameState(installation, []);
     }
 
     /// <inheritdoc />
@@ -1402,8 +1404,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     
     /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation)
+    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
     {
+        var gameState = _fileHashService.GetGameFiles(_fileHashService.Current, installation, commonIds);
         throw new NotImplementedException();
         /*
         var metaData = await ReindexState(installation, Connection);
