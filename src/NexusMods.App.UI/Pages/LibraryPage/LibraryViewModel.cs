@@ -223,64 +223,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .Bind(out _collections)
                 .Subscribe()
                 .AddTo(disposables);
-
-            // Note(sewer)
-            // Begin an asynchronous update check on entering the view.
-            // Since this can take a bit with libraries that have 1000s of (uncached) items,
-            // we do this in the background and update the items as needed.
-            _ = RefreshUpdates(CancellationToken.None);
         });
     }
-    // private async Task HandleInstallMessage(ActionMessage message, CancellationToken cancellationToken)
-    // {
-    //     if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
-    //     {
-    //         foreach (var id in multipleIds)
-    //         {
-    //             var libraryItem = LibraryItem.Load(_connection.Db, id);
-    //             if (!libraryItem.IsValid()) continue;
-    //             await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         var libraryItem = LibraryItem.Load(_connection.Db, singleId);
-    //         if (!libraryItem.IsValid()) return;
-    //         await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-    //     }
-    // }
-    
-    // private void HandleUpdateMessage(ActionMessage message, CancellationToken cancellationToken)
-    // {
-    //     void StartLibraryItemUpdate(LibraryItemId id)
-    //     {
-    //         // By definition, only works on Nexus library items.
-    //         var nexusLibraryItem = NexusModsLibraryItem.Load(_connection.Db, id);
-    //         if (!nexusLibraryItem.IsValid())
-    //             return;
-    //
-    //         // Reuse known newest version in local storage, obtained via
-    //         // call to make starting this update possible in first place.
-    //         var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(nexusLibraryItem.FileMetadata);
-    //         var mostRecentVersion = newerItems.FirstOrDefault();
-    //         if (!mostRecentVersion.IsValid()) // Catch case of no newer items.
-    //             return;
-    //
-    //         var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
-    //         var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-    //         osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
-    //     }
-    //
-    //     if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
-    //     {
-    //         foreach (var id in multipleIds)
-    //             StartLibraryItemUpdate(id);
-    //     }
-    //     else
-    //     {
-    //         StartLibraryItemUpdate(singleId);
-    //     }
-    // }
+
+    private void HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
+    {
+        var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(fileMetadata);
+        var mostRecentVersion = newerItems.FirstOrDefault();
+        if (!mostRecentVersion.IsValid()) return;
+
+        var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
+        var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+        osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+    }
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
