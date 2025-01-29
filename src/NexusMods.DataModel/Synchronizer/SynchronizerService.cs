@@ -135,7 +135,7 @@ public class SynchronizerService : ISynchronizerService
             .Select(e => e.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
     } 
     
-    private readonly Dictionary<LoadoutId, IObservable<LoadoutSynchronizerState>> _statusObservables = new();
+    private readonly Dictionary<LoadoutId, Observable<LoadoutSynchronizerState>> _statusObservables = new();
     private readonly SemaphoreSlim _statusSemaphore = new(1, 1);
 
     /// <inheritdoc />
@@ -145,11 +145,11 @@ public class SynchronizerService : ISynchronizerService
         try
         {
             // This observable may perform heavy diffing operation, so it needs to be shared between all subscribers
-            if (_statusObservables.TryGetValue(loadoutId, out var observable)) return observable;
+            if (_statusObservables.TryGetValue(loadoutId, out var observable)) return observable.AsSystemObservable();
 
             observable = CreateStatusObservable(loadoutId);
             _statusObservables[loadoutId] = observable;
-            return observable;
+            return observable.AsSystemObservable();
         }
         finally
         {
@@ -157,27 +157,27 @@ public class SynchronizerService : ISynchronizerService
         }
     }
 
-    private IObservable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
+    private Observable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
-        var isBusy = loadoutState.ObservableForProperty(l => l.Busy, skipInitial: false)
-            .Select(e => e.Value);
+        var isBusy = loadoutState.ObservePropertyChanged(l => l.Busy);
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
+            .ToObservable()
             .Where(last => last != default(LoadoutWithTxId));
 
         var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId)
+            .ToObservable()
             // Use DB transaction, since child updates are not part of the loadout
             .Select(rev => (loadout: rev, revDbTx: _conn.Db.BasisTxId));
 
         var statusObservable = isBusy.CombineLatest(lastApplied,
                 revisions,
                 (busy, last, rev) => (busy, last, rev.loadout, rev.revDbTx)
-            )
+            )            
             .DistinctUntilChanged()
-            .ToObservable()
             .SelectAwait(
                 async (tuple, cancellationToken) =>
                 {
@@ -214,7 +214,7 @@ public class SynchronizerService : ISynchronizerService
             .Replay(1)
             .RefCount();
 
-        return statusObservable.AsSystemObservable();
+        return statusObservable;
     }
     
     private void ThrowIfMainBinaryInUse(Loadout.ReadOnly loadout)
