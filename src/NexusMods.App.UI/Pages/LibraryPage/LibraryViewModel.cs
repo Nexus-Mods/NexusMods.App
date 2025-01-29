@@ -403,10 +403,10 @@ public class LibraryTreeDataGridAdapter :
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
-            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(),
+            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }
