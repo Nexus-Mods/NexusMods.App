@@ -5,66 +5,13 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                                xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
     <Design.DataContext>
         <items:ApplyControlDesignViewModel />
     </Design.DataContext>
-
-
-    <reactiveUi:ReactiveUserControl.Styles>
-
-        <!-- apply button styles -->
-
-        <Style Selector="Button#ApplyButton">
-            <Setter Property="Background" Value="{StaticResource PrimaryModerateBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-
-            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-
-            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-            
-            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
-                <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-        </Style>
-
-        <!-- progress bar styles -->
-
-        <Style Selector="ProgressBar#ProgressBarControl">
-            <Setter Property="Foreground" Value="#EA580C" />
-            <Setter Property="Background" Value="#33EA580C" />
-            <Setter Property="Height" Value="44" />
-
-            <!-- needs this more specific selector to override the default template values -->
-            <Style Selector="^:horizontal">
-                <Setter Property="MinWidth" Value="100" />
-                <Setter Property="MinHeight" Value="4" />
-            </Style>
-
-            <!-- text block -->
-            <Style Selector="^ /template/ LayoutTransformControl#PART_LayoutTransformControl TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                <Setter Property="TextAlignment" Value="Left" />
-            </Style>
-        </Style>
-
-    </reactiveUi:ReactiveUserControl.Styles>
 
     <Border
         Background="{StaticResource SurfaceLowBrush}"
@@ -92,8 +39,7 @@
             <Button x:Name="ApplyButton"
                     HorizontalAlignment="Stretch"
                     Height="44"
-                    ToolTip.Tip="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}"
-                    >
+                    ToolTip.Tip="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}">
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             Spacing="{StaticResource Spacing-1}">
@@ -103,7 +49,7 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            
+
             <!-- Progress bar -->
             <ProgressBar x:Name="ProgressBarControl"
                          IsIndeterminate="True"

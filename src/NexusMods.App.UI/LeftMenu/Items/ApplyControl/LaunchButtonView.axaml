@@ -18,35 +18,7 @@
     </Design.DataContext>
 
 
-    <reactiveUi:ReactiveUserControl.Styles>
-
-        <!-- play button styles -->
-        <Style Selector="Button#LaunchButton">
-            <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-
-            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource NeutralModerateBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-
-            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-            
-            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
-                <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-        </Style>
-        
-        <Style Selector="spinner|Spinner#LaunchSpinner">
-            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-        </Style>
-        
-    </reactiveUi:ReactiveUserControl.Styles>
+    
 
     <StackPanel>
         <Button
