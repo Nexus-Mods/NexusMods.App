@@ -193,6 +193,9 @@
                 </controls:ComponentTemplate>
             </controls:ComponentControl.ComponentTemplate>
 
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
 
@@ -213,6 +216,9 @@
                 </controls:ComponentTemplate>
             </controls:ComponentControl.ComponentTemplate>
 
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
 

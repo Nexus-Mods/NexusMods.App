@@ -8,6 +8,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -23,6 +24,7 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NuGet.Versioning;
+using NexusMods.Paths;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 
@@ -335,6 +337,47 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+
+        // Size: sum of library files
+        var sizeObservable = libraryItems
+            .TransformImmutable(static item => LibraryFile.Size.GetOptional(item).ValueOr(() => Size.Zero))
+            .ForAggregation()
+            .Sum(static size => (long)size.Value)
+            .Select(static size => Size.FromLong(size));
+
+        parentItemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(
+            initialValue: Size.Zero,
+            valueObservable: sizeObservable
+        ));
+
+        // Downloaded date: most recent downloaded file date
+        var downloadedDateObservable = libraryItems
+            .TransformImmutable(static item => item.GetCreatedAt())
+            .QueryWhenChanged(query => query.Items.Max());
+
+        parentItemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(
+            initialValue: modPage.GetCreatedAt(),
+            valueObservable: downloadedDateObservable
+        ));
+
+        // Installed date: most recent installed file date
+        var installedDateObservable = libraryItems
+            .MergeManyChangeSets(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id))
+            .TransformImmutable(static loadoutItem => loadoutItem.GetCreatedAt())
+            .QueryWhenChanged(query =>
+            {
+                if (query.Count == 0) return Optional<DateTimeOffset>.None;
+                return query.Items.Max();
+            });
+
+        parentItemModel.AddObservable(
+            key: SharedColumns.InstalledDate.ComponentKey,
+            observable: installedDateObservable,
+            componentFactory: static (valueObservable, initialValue) => new DateComponent(
+                initialValue,
+                valueObservable
+            )
+        );
 
         return parentItemModel;
     }
