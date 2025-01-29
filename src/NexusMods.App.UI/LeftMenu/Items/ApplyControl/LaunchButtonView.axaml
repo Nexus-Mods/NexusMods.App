@@ -12,7 +12,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
-    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <items:LaunchButtonDesignViewModel />
     </Design.DataContext>
@@ -25,7 +26,7 @@
             x:Name="LaunchButton"
             HorizontalAlignment="Stretch"
             Height="44"
-            ToolTip.Tip="Click to Play">
+            ToolTip.Tip="{x:Static resources:Language.LaunchButtonViewModel_LaunchGame_ToolTip}">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Spacing="{StaticResource Spacing-1}">
