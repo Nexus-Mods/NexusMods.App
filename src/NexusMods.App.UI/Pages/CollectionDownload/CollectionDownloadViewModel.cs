@@ -89,11 +89,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandDownloadRequiredItems = _isDownloadingRequiredItems.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
-                if (!loginManager.IsLoggedIn)
-                {
-                    await loginManager.LoginAsync(cancellationToken);
-                    if (!await loginManager.GetIsUserLoggedInAsync(cancellationToken)) return;
-                }
+                if (!await loginManager.EnsureLoggedIn( "Download Collection",cancellationToken)) return;
+                
                 if (!loginManager.IsPremium)
                 {
                     overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());

@@ -59,7 +59,14 @@ public interface ILoginManager
     /// <summary>
     /// Verifies whether the user is logged in or not
     /// </summary>
-    async Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default) { return await GetUserInfoAsync(token) is not null; }
+    Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Ensures that the user is logged in by showing a message if they are not prompting them to do so
+    /// </summary>
+    /// <param name="message">Message describing the operation that requires the user to be logged in</param>
+    /// <Returns>Returns false if user is not logged or cancels the log in operation</Returns>
+    public Task<bool> EnsureLoggedIn(string message, CancellationToken token = default);
 
     /// <summary>
     ///  Log out of Nexus Mods

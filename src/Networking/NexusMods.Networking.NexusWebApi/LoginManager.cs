@@ -103,6 +103,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         return await Verify(token);
     }
 
+    /// <inheritdoc />
+    public async Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default)
+    {
+        return await GetUserInfoAsync(token) is not null;
+    }
+
     /// <summary>
     /// Show a browser and log into Nexus Mods
     /// </summary>
@@ -159,6 +165,18 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
 
         await _conn.Excise(tokenEntities);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> EnsureLoggedIn(string message, CancellationToken token = default)
+    {
+        if (await GetIsUserLoggedInAsync(token)) return true;
+        
+        // TODO: Improve this to show a special dialog to inform the user they need to log in to perform the operation
+        // https://github.com/Nexus-Mods/NexusMods.App/issues/2562
+        _logger.LogWarning("This operation requires login: {Message}", message);
+        await LoginAsync(token);
+        return await GetIsUserLoggedInAsync(token);
     }
     
     
