@@ -31,7 +31,6 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
-using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -68,7 +67,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly Loadout.ReadOnly _loadout;
     private readonly IModUpdateService _modUpdateService;
 
-    public NewLibraryTreeDataGridAdapter Adapter { get; }
+    public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
@@ -112,8 +111,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             gameObservable: gameObservable
         );
 
-        // Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
-        Adapter = new NewLibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
+        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
         LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
@@ -233,56 +231,56 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             _ = RefreshUpdates(CancellationToken.None);
         });
     }
-    private async Task HandleInstallMessage(ActionMessage message, CancellationToken cancellationToken)
-    {
-        if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
-        {
-            foreach (var id in multipleIds)
-            {
-                var libraryItem = LibraryItem.Load(_connection.Db, id);
-                if (!libraryItem.IsValid()) continue;
-                await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-            }
-        }
-        else
-        {
-            var libraryItem = LibraryItem.Load(_connection.Db, singleId);
-            if (!libraryItem.IsValid()) return;
-            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-        }
-    }
+    // private async Task HandleInstallMessage(ActionMessage message, CancellationToken cancellationToken)
+    // {
+    //     if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+    //     {
+    //         foreach (var id in multipleIds)
+    //         {
+    //             var libraryItem = LibraryItem.Load(_connection.Db, id);
+    //             if (!libraryItem.IsValid()) continue;
+    //             await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         var libraryItem = LibraryItem.Load(_connection.Db, singleId);
+    //         if (!libraryItem.IsValid()) return;
+    //         await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+    //     }
+    // }
     
-    private void HandleUpdateMessage(ActionMessage message, CancellationToken cancellationToken)
-    {
-        void StartLibraryItemUpdate(LibraryItemId id)
-        {
-            // By definition, only works on Nexus library items.
-            var nexusLibraryItem = NexusModsLibraryItem.Load(_connection.Db, id);
-            if (!nexusLibraryItem.IsValid()) 
-                return;
-
-            // Reuse known newest version in local storage, obtained via
-            // call to make starting this update possible in first place.
-            var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(nexusLibraryItem.FileMetadata);
-            var mostRecentVersion = newerItems.FirstOrDefault();
-            if (!mostRecentVersion.IsValid()) // Catch case of no newer items.
-                return;
-
-            var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
-            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-            osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
-        }
-        
-        if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
-        {
-            foreach (var id in multipleIds)
-                StartLibraryItemUpdate(id);
-        }
-        else
-        {
-            StartLibraryItemUpdate(singleId);
-        }
-    }
+    // private void HandleUpdateMessage(ActionMessage message, CancellationToken cancellationToken)
+    // {
+    //     void StartLibraryItemUpdate(LibraryItemId id)
+    //     {
+    //         // By definition, only works on Nexus library items.
+    //         var nexusLibraryItem = NexusModsLibraryItem.Load(_connection.Db, id);
+    //         if (!nexusLibraryItem.IsValid())
+    //             return;
+    //
+    //         // Reuse known newest version in local storage, obtained via
+    //         // call to make starting this update possible in first place.
+    //         var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(nexusLibraryItem.FileMetadata);
+    //         var mostRecentVersion = newerItems.FirstOrDefault();
+    //         if (!mostRecentVersion.IsValid()) // Catch case of no newer items.
+    //             return;
+    //
+    //         var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
+    //         var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+    //         osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+    //     }
+    //
+    //     if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+    //     {
+    //         foreach (var id in multipleIds)
+    //             StartLibraryItemUpdate(id);
+    //     }
+    //     else
+    //     {
+    //         StartLibraryItemUpdate(singleId);
+    //     }
+    // }
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
@@ -375,24 +373,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 }
 
-public readonly record struct ActionMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload, ActionType Action);
-public enum ActionType { Install, Update }
+public readonly record struct InstallMessage(LibraryItemId[] Ids);
 
-public readonly record struct Install(LibraryItemId[] Ids);
-
-public class NewLibraryTreeDataGridAdapter :
+public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<Install>
+    ITreeDataGirdMessageAdapter<InstallMessage>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
 
-    public Subject<Install> MessageSubject { get; } = new();
+    public Subject<InstallMessage> MessageSubject { get; } = new();
 
     private readonly IDisposable _activationDisposable;
     private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
 
-    public NewLibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
+    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
@@ -421,7 +416,7 @@ public class NewLibraryTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var disposable = model.SubscribeToComponent<LibraryComponents.InstallAction, NewLibraryTreeDataGridAdapter>(
+        var disposable = model.SubscribeToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
@@ -429,7 +424,7 @@ public class NewLibraryTreeDataGridAdapter :
                 var (self, _, component) = state;
                 var ids = component.ItemIds.ToArray();
 
-                self.MessageSubject.OnNext(new Install(ids));
+                self.MessageSubject.OnNext(new InstallMessage(ids));
             })
         );
 
@@ -469,137 +464,6 @@ public class NewLibraryTreeDataGridAdapter :
         {
             if (disposing)
             {
-
-            }
-
-            _isDisposed = true;
-        }
-
-        base.Dispose(disposing);
-    }
-}
-
-public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel, EntityId>,
-    ITreeDataGirdMessageAdapter<ActionMessage>
-{
-    private readonly ILibraryDataProvider[] _libraryDataProviders;
-    private readonly ConnectableObservable<DateTimeOffset> _ticker;
-    private readonly LibraryFilter _libraryFilter;
-
-    public Subject<ActionMessage> MessageSubject { get; } = new();
-    public ObservableList<ILibraryItemModel> GetRoots() => Roots;
-    private readonly Dictionary<ILibraryItemModel, IDisposable> _commandDisposables = new();
-
-    private readonly IDisposable _activationDisposable;
-    public LibraryTreeDataGridAdapter(
-        IServiceProvider serviceProvider,
-        ConnectableObservable<DateTimeOffset> ticker,
-        LibraryFilter libraryFilter)
-    {
-        _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
-        _ticker = ticker;
-        _libraryFilter = libraryFilter;
-
-        _activationDisposable = this.WhenActivated(static (adapter, disposables) =>
-        {
-            Disposable.Create(adapter._commandDisposables, static commandDisposables =>
-            {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
-    }
-
-    protected override void BeforeModelActivationHook(ILibraryItemModel model)
-    {
-        if (model is IHasTicker hasTicker)
-        {
-            hasTicker.Ticker = _ticker;
-        }
-
-        static OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> GetPayload(object model) => model switch
-        {
-            IIsParentLibraryItemModel parent => OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId>.FromT0(parent.LibraryItemIds),
-            IIsChildLibraryItemModel child => child.LibraryItemId,
-            _ => throw new NotSupportedException(),
-        };
-
-        var disposable = model switch 
-        {
-            ILibraryItemWithUpdateAction updateAction => updateAction.UpdateItemCommand.Subscribe(
-                MessageSubject, 
-                static (model, subject) => subject.OnNext(new ActionMessage(GetPayload(model), ActionType.Update))
-            ),
-            ILibraryItemWithInstallAction installAction => installAction.InstallItemCommand.Subscribe(
-                MessageSubject, 
-                static (model, subject) => subject.OnNext(new ActionMessage(GetPayload(model), ActionType.Install))
-            ),
-            _ => null
-        };
-
-        if (disposable != null)
-        {
-            var didAdd = _commandDisposables.TryAdd(model, disposable);
-            Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-        }
-
-        base.BeforeModelActivationHook(model);
-    }
-
-    protected override void BeforeModelDeactivationHook(ILibraryItemModel model)
-    {
-        if (model is IHasTicker hasTicker)
-        {
-            hasTicker.Ticker = null;
-        }
-
-        if (model is ILibraryItemWithAction)
-        {
-            var didRemove = _commandDisposables.Remove(model, out var disposable);
-            Debug.Assert(didRemove, "subscription for the model should exist");
-            disposable?.Dispose();
-        }
-
-        base.BeforeModelDeactivationHook(model);
-    }
-
-    protected override IObservable<IChangeSet<ILibraryItemModel, EntityId>> GetRootsObservable(bool viewHierarchical)
-    {
-        var observables = viewHierarchical
-            ? _libraryDataProviders.Select(provider => provider.ObserveNestedLibraryItems(_libraryFilter))
-            : _libraryDataProviders.Select(provider => provider.ObserveFlatLibraryItems(_libraryFilter));
-
-        return observables.MergeChangeSets();
-    }
-
-    protected override IColumn<ILibraryItemModel>[] CreateColumns(bool viewHierarchical)
-    {
-        var nameColumn = ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithThumbnailAndName>();
-
-        return
-        [
-            viewHierarchical ? ILibraryItemModel.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithVersion>(),
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithSize>(),
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithDownloadedDate>(),
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithInstalledDate>(),
-            ColumnCreator.CreateColumn<ILibraryItemModel, ILibraryItemWithAction>(),
-        ];
-    }
-
-    private bool _isDisposed;
-    protected override void Dispose(bool disposing)
-    {
-        if (!_isDisposed)
-        {
-            if (disposing)
-            {
-                Disposable.Dispose(_activationDisposable, MessageSubject);
             }
 
             _isDisposed = true;

@@ -1,11 +1,9 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Runtime.Versioning;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
@@ -26,7 +24,6 @@ using NexusMods.Networking.NexusWebApi;
 using NuGet.Versioning;
 using NexusMods.Paths;
 using R3;
-using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
@@ -37,7 +34,6 @@ public enum CollectionDownloadsFilter
     OnlyOptional,
 }
 
-[UsedImplicitly]
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
@@ -190,117 +186,6 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = externalDownload.AsCollectionDownload().Name;
         model.ItemSize.Value = externalDownload.Size;
-        return model;
-    }
-
-    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
-    {
-        // NOTE(erri120): For the flat library view, we display each NexusModsLibraryFile
-        return NexusModsLibraryItem
-            .ObserveAll(_connection)
-            // only show library files for the currently selected game
-            .FilterOnObservable((file, _) => libraryFilter.GameObservable.Select(game => file.ModPageMetadata.Uid.GameId.Equals(game.GameId)))
-            .Transform((file, _) => ToLibraryItemModel(file, libraryFilter, true));
-    }
-
-    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
-    {
-        // NOTE(erri120): For the nested library view, the parents are "fake" library
-        // models that represent the Nexus Mods mod page, with each child being a
-        // NexusModsLibraryFile that links to the mod page.
-        return NexusModsModPageMetadata
-            .ObserveAll(_connection)
-            // only show mod pages for the currently selected game
-            .FilterOnObservable((modPage, _) => libraryFilter.GameObservable.Select(game => modPage.Uid.GameId.Equals(game.GameId)))
-            // only show mod pages that have library files
-            .FilterOnObservable((_, e) => _connection
-                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, e)
-                .IsNotEmpty()
-            )
-            .Transform((modPage, _) => ToLibraryItemModel(modPage, libraryFilter));
-    }
-
-    [Obsolete]
-    private ILibraryItemModel ToLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, LibraryFilter libraryFilter, bool showThumbnails)
-    {
-        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
-
-        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
-        var hasUpdateObservable = updateService.GetNewestFileVersionObservable(nexusModsLibraryItem.FileMetadata);
-        
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, hasUpdateObservable, _serviceProvider, showThumbnails)
-        {
-            LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
-        };
-
-        if (nexusModsLibraryItem.FileMetadata.Size.TryGet(out var size))
-            model.ItemSize.Value = size;
-
-        return model;
-    }
-
-    [Obsolete]
-    private ILibraryItemModel ToLibraryItemModel(
-        NexusModsModPageMetadata.ReadOnly modPageMetadata,
-        LibraryFilter libraryFilter)
-    {
-        // TODO: dispose
-        var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
-        var disposable = _connection
-            .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPageMetadata.Id)
-            .AsEntityIds()
-            .Adapt(new SourceCacheAdapter<Datom, EntityId>(cache))
-            .SubscribeWithErrorLogging();
-
-        var hasChildrenObservable = cache.Connect().IsNotEmpty();
-        var childrenLibraryItemsObservable = cache.Connect().Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e));
-        var childrenObservable = childrenLibraryItemsObservable.Transform(libraryItem => ToLibraryItemModel(libraryItem, libraryFilter, false));
-        
-        var linkedLoadoutItemsObservable = cache.Connect()
-            // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
-            .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
-            .FilterInObservableLoadout(_connection, libraryFilter)
-            .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e));
-
-        var libraryFilesObservable = cache.Connect()
-            .Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e));
-
-        var numInstalledObservable = cache.Connect().TransformOnObservable((_, e) => _connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e)
-            .AsEntityIds()
-            .FilterInObservableLoadout(_connection, libraryFilter)
-            .QueryWhenChanged(query => query.Count > 0)
-            .Prepend(false)
-        ).QueryWhenChanged(static query => query.Items.Count(static b => b));
-
-        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
-        var hasUpdateObservable = updateService.GetNewestModPageVersionObservable(modPageMetadata);
-        var versionObservable = childrenLibraryItemsObservable
-            .ToCollection()
-            .Select(items =>
-            {
-                // Note(sewer): Design says put highest version of child here.
-                //
-                // There is no 'standard' for version fields, as some sources
-                // like the Nexus website allow you to specify anything in the version field.
-                // We do a 'best effort' here by trying to parse as SemVer and using
-                // that. There are some possible alternatives, e.g. 'by upload date',
-                // however; that then requires additional logic, to not pick up other
-                // mods on the same mod page, etc. So we go for something simple for now.
-                var maxVersion = items
-                    .Max(x => NuGetVersion.TryParse(x.FileMetadata.Version, out var version) 
-                        ? version : new NuGetVersion(0, 0, 0));
-
-                return maxVersion?.ToString() ?? string.Empty;
-            });
-        
-        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, hasUpdateObservable, hasChildrenObservable, childrenObservable, versionObservable, _serviceProvider)
-        {
-            LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
-            NumInstalledObservable = numInstalledObservable,
-        };
-
-        model.Name.Value = modPageMetadata.Name;
         return model;
     }
 
