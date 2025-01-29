@@ -8,6 +8,8 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using SystemObservable = System.Reactive.Linq.Observable;
+using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -34,17 +36,43 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .GetLinkedLoadoutItems(_connection, libraryFilter, localFile.Id)
             .RefCount();
 
-        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id);
+        var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
+        {
+            var itemModel = new CompositeItemModel<EntityId>(localFile.Id);
+            SetupLibraryItemModel(itemModel, localFile, linkedLoadoutItemsObservable);
 
-        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+            return new ChangeSet<CompositeItemModel<EntityId>, EntityId>([
+                new Change<CompositeItemModel<EntityId>, EntityId>(
+                    reason: ChangeReason.Add,
+                    key: localFile.Id,
+                    current: itemModel
+                )]
+            );
+        });
+
+        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
+        {
+            HasChildrenObservable = SystemObservable.Return(true),
+            ChildrenObservable = childrenObservable,
+        };
+
+        SetupLibraryItemModel(parentItemModel, localFile, linkedLoadoutItemsObservable);
+
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
-        parentItemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: localFile.GetCreatedAt()));
-        parentItemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
-
-        LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
-        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
-
         return parentItemModel;
+    }
+
+    private static void SetupLibraryItemModel(
+        CompositeItemModel<EntityId> itemModel,
+        LocalFile.ReadOnly localFile,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
+    {
+        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+        itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: localFile.GetCreatedAt()));
+        itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
+
+        LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
