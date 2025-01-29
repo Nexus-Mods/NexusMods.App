@@ -8,12 +8,9 @@
             <Border.Resources>
                 <items:LaunchButtonDesignViewModel x:Key="LaunchButtonDesignViewModel" />
             </Border.Resources>
-
             <items:LaunchButtonView DataContext="{StaticResource LaunchButtonDesignViewModel}" />
         </Border>
     </Design.PreviewWith>
-
-    <!-- -->
 
     <Style Selector="items|LaunchButtonView">
 

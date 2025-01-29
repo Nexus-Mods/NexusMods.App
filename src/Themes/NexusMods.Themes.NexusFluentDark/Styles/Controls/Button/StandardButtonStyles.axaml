@@ -494,4 +494,214 @@
         </Style>
 
     </Style>
+    
+    <!-- Obsolete Button.Standard class styles, use StandardButton instead -->
+    <!-- Base Standard Button (only use with additional qualifiers)-->
+    <Style Selector="Button.Standard">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Height" Value="36" />
+
+        <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
+        <Setter Property="Padding" Value="8, 0" />
+
+        <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
+        <Setter Property="BorderThickness" Value="1" />
+
+        <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
+        <Setter Property="ClipToBounds" Value="False" />
+
+        <!-- If text is at top level -->
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
+        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
+            <Setter Property="Size" Value="20" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+        </Style>
+
+        <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <!-- ReSharper disable once Xaml.InvalidResourceType -->
+            <Setter Property="BoxShadow" Value="{StaticResource FocusBoxShadow}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard Primary -->
+    <Style Selector="Button.Standard.Primary">
+        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+
+    </Style>
+
+
+    <!-- Standard PrimaryOutlined -->
+    <Style Selector="Button.Standard.PrimaryOutlined">
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryStrongBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimarySubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard Secondary -->
+    <Style Selector="Button.Standard.Secondary">
+        <Setter Property="Background" Value="{DynamicResource NeutralModerateBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
+
+            <!-- Pointerover uses a different foreground color, so we need to set it again here. -->
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
+
+            <!-- Disabled uses a different foreground color, so we need to set it again here. -->
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard SecondaryOutlined -->
+    <Style Selector="Button.Standard.SecondaryOutlined">
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrong}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate }" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard Tertiary -->
+    <Style Selector="Button.Standard.Tertiary">
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        </Style>
+    </Style>
+
+    <!-- Standard Tertiary Weak -->
+    <Style Selector="Button.Standard.Tertiary.Weak">
+        <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard Success -->
+    <Style Selector="Button.Standard.Success">
+        <Setter Property="Background" Value="{DynamicResource SuccessSubduedBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SuccessModerateBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
+        </Style>
+    </Style>
+
+
+    <!-- Standard Info -->
+    <Style Selector="Button.Standard.Info">
+        <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource InfoSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandInfo900}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
+        </Style>
+    </Style>
+
 </Styles>

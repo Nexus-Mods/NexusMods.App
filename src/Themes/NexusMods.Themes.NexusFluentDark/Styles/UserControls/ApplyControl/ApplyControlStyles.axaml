@@ -7,19 +7,15 @@
             <Border.Resources>
                 <items:ApplyControlDesignViewModel x:Key="ApplyControlDesignViewModel" />
             </Border.Resources>
-
             <items:ApplyControlView DataContext="{StaticResource ApplyControlDesignViewModel}" />
         </Border>
     </Design.PreviewWith>
 
-    <!-- APPLY AND LAUNCH -->
     <Style Selector="items|ApplyControlView">
 
         <!-- apply button styles -->
-
         <Style Selector="^ Button#ApplyButton">
             <Setter Property="Background" Value="{StaticResource PrimaryModerateBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -40,7 +36,6 @@
         </Style>
 
         <!-- progress bar styles -->
-
         <Style Selector="^ ProgressBar#ProgressBarControl">
             <!-- these colors are only used here which is why they are raw hex -->
             <Setter Property="Foreground" Value="#EA580C" />
@@ -62,6 +57,4 @@
             </Style>
         </Style>
     </Style>
-
-
 </Styles>
