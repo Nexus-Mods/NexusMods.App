@@ -1,7 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
     
     <!-- Thumbnail + Name column -->
     <DataTemplate x:Key="{x:Static local:ILibraryItemWithThumbnailAndName.ColumnTemplateResourceKey}"
@@ -173,5 +175,46 @@
             </ContentControl.DataTemplates>
         </ContentControl>
     </DataTemplate>
+
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:DateComponent"
+                                            ComponentKey="{x:Static local:LibraryColumns+DownloadedDate.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:DateComponent}">
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemSize.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:SizeComponent"
+                                            ComponentKey="{x:Static local:LibraryColumns+ItemSize.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:SizeComponent}">
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+        </controls:ComponentControl>
+    </DataTemplate>
+
 </ResourceDictionary>
 

@@ -23,6 +23,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NuGet.Versioning;
 using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
@@ -296,6 +297,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         model.Name.Value = modPageMetadata.Name;
         return model;
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    {
+        return Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>();
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)

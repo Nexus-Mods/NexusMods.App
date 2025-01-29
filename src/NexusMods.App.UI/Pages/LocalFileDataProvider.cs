@@ -90,6 +90,31 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             });
     }
 
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    {
+        return LocalFile
+            .ObserveAll(_connection)
+            .Transform(localFile => ToLibraryItemModel(libraryFilter, localFile));
+    }
+
+    private CompositeItemModel<EntityId> ToLibraryItemModel(LibraryFilter libraryFilter, LocalFile.ReadOnly localFile)
+    {
+        var linkedLoadoutItemsObservable = LibraryDataProviderHelper
+            .GetLinkedLoadoutItems(_connection, libraryFilter, localFile.Id)
+            .RefCount();
+
+        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id);
+
+        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
+        parentItemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: localFile.GetCreatedAt()));
+        parentItemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
+
+        LibraryDataProviderHelper.AddDateComponent(parentItemModel, localFile.GetCreatedAt(), linkedLoadoutItemsObservable);
+
+        return parentItemModel;
+    }
+
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
     {
         return LocalFile.ObserveAll(_connection)

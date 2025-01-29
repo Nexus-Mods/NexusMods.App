@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
@@ -67,7 +68,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly Loadout.ReadOnly _loadout;
     private readonly IModUpdateService _modUpdateService;
 
-    public LibraryTreeDataGridAdapter Adapter { get; }
+    public NewLibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
@@ -111,7 +112,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             gameObservable: gameObservable
         );
 
-        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
+        // Adapter = new LibraryTreeDataGridAdapter(serviceProvider, ticker, libraryFilter);
+        Adapter = new NewLibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
         LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
@@ -194,24 +196,28 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
             Adapter.Activate().AddTo(disposables);
 
-            Adapter.MessageSubject.SubscribeAwait(
-                onNextAsync: async (message, cancellationToken) =>
-                {
-                    switch (message.Action)
-                    {
-                        case ActionType.Install:
-                            await HandleInstallMessage(message, cancellationToken);
-                            break;
-                        case ActionType.Update:
-                            HandleUpdateMessage(message, cancellationToken);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                },
-                awaitOperation: AwaitOperation.Parallel,
-                configureAwait: false
-            ).AddTo(disposables);
+            // Adapter.MessageSubject.SubscribeAwait(
+            //     onNextAsync: async (message, cancellationToken) =>
+            //     {
+            //         if (message.Payload.TryPickT0(out var multipleIds, out var singleId))
+            //         {
+            //             foreach (var id in multipleIds)
+            //             {
+            //                 var libraryItem = LibraryItem.Load(_connection.Db, id);
+            //                 if (!libraryItem.IsValid()) continue;
+            //                 await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             var libraryItem = LibraryItem.Load(_connection.Db, singleId);
+            //             if (!libraryItem.IsValid()) return;
+            //             await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+            //         }
+            //     },
+            //     awaitOperation: AwaitOperation.Parallel,
+            //     configureAwait: false
+            // ).AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
@@ -381,6 +387,53 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
 public readonly record struct ActionMessage(OneOf<IReadOnlyList<LibraryItemId>, LibraryItemId> Payload, ActionType Action);
 public enum ActionType { Install, Update }
+
+public class NewLibraryTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
+{
+    private readonly ILibraryDataProvider[] _libraryDataProviders;
+    private readonly LibraryFilter _libraryFilter;
+
+    public NewLibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
+    {
+        _libraryFilter = libraryFilter;
+        _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
+    }
+
+    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
+    {
+        return _libraryDataProviders.Select(x => x.ObserveLibraryItems(_libraryFilter)).MergeChangeSets();
+    }
+
+    protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
+    {
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
+
+        return
+        [
+            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
+            ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
+            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(),
+        ];
+    }
+
+    private bool _isDisposed;
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
+    }
+}
 
 public class LibraryTreeDataGridAdapter : TreeDataGridAdapter<ILibraryItemModel, EntityId>,
     ITreeDataGirdMessageAdapter<ActionMessage>

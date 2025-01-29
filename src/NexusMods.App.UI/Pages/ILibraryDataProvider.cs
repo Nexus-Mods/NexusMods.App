@@ -3,6 +3,7 @@ using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
@@ -15,6 +16,8 @@ public interface ILibraryDataProvider
     IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter);
 
     IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter);
+
+    IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter);
 }
 
 public class LibraryFilter
@@ -27,6 +30,42 @@ public class LibraryFilter
     {
         LoadoutObservable = loadoutObservable;
         GameObservable = gameObservable;
+    }
+}
+
+public static class LibraryDataProviderHelper
+{
+    public static IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> GetLinkedLoadoutItems(
+        IConnection connection,
+        LibraryFilter libraryFilter,
+        LibraryItemId libraryItemId)
+    {
+        return connection
+            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId)
+            .AsEntityIds()
+            .Transform(datom => LoadoutItem.Load(connection.Db, datom.E))
+            .FilterOnObservable(loadoutItem =>
+                libraryFilter.LoadoutObservable.Select(loadoutId =>
+                    loadoutItem.LoadoutId.Equals(loadoutId)
+                )
+            );
+    }
+
+    public static void AddDateComponent(
+        CompositeItemModel<EntityId> parentItemModel,
+        DateTimeOffset initialValue,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        var dateObservable = linkedItemsObservable
+            .QueryWhenChanged(query => query.Items
+                .Select(static item => item.GetCreatedAt())
+                .Min()
+            );
+
+        parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(
+            initialValue: initialValue,
+            valueObservable: dateObservable
+        ));
     }
 }
 

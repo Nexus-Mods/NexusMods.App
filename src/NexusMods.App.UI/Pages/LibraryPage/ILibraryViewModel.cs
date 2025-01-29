@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public interface ILibraryViewModel : IPageViewModelInterface
 {
-    LibraryTreeDataGridAdapter Adapter { get; }
+    NewLibraryTreeDataGridAdapter Adapter { get; }
     ReadOnlyObservableCollection<ICollectionCardViewModel> Collections { get; }
 
     string EmptyLibrarySubtitleText { get; }
