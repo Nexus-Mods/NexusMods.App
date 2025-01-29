@@ -1,6 +1,5 @@
 ﻿{
   mods: [
-    Game Files,
     Halgari's Helper,
     My Mods
   ],

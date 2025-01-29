@@ -2,8 +2,13 @@ using System.IO.Compression;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -200,6 +205,42 @@ public class FileHashesService : IFileHashesService, IDisposable
 
         return _currentDb!.Db;
     }
+
+    public IEnumerable<GameFileRecord> GetGameFiles(IDb db, GameInstallation installation, string[] commonIds)
+    {
+        var game = (IGame)installation.Game;
+        if (installation.Store == GameStore.GOG)
+        {
+            foreach (var id in commonIds)
+            {
+                if (!ulong.TryParse(id, out var parsedId))
+                    continue;
+                
+                var gogId = BuildId.From(parsedId);
+
+                if (!GogBuild.FindByBuildId(db, gogId).TryGetFirst(out var firstBuild))
+                    continue;
+
+                foreach (var file in firstBuild.Files)
+                {
+                    yield return new GameFileRecord
+                    {
+                        Path = new GamePath(LocationId.Game, file.Path),
+                        Size = file.Hash.Size,
+                        MinimalHash = file.Hash.MinimalHash,
+                        Hash = file.Hash.XxHash3,
+                    };
+                }
+            }
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <inheritdoc />
+    public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
 
     public void Dispose()
     {

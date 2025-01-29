@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games.FileHashes;
@@ -16,4 +17,14 @@ public interface IFileHashesService
     /// Get the file hashes database, downloading it if necessary
     /// </summary>
     public ValueTask<IDb> GetFileHashesDb();
+
+    /// <summary>
+    /// Get the files associated with a specific game
+    /// </summary>
+    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, string[] commonIds);
+    
+    /// <summary>
+    /// The current file hashes database, will thrown an error if not initialized via GetFileHashesDb first.
+    /// </summary>
+    public IDb Current { get; }
 }
