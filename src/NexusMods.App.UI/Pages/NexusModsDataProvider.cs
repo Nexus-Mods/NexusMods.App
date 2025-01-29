@@ -204,10 +204,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
                 .IsNotEmpty()
             )
-            .Transform(modPage => ToLibraryItemModel2(modPage, libraryFilter));
+            .Transform(modPage => ToLibraryItemModel(modPage, libraryFilter));
     }
 
-    private CompositeItemModel<EntityId> ToLibraryItemModel2(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
+    private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
     {
         var libraryItems = _connection
             .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
@@ -218,7 +218,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         var linkedLoadoutItemsObservable = libraryItems.MergeManyChangeSets(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id));
 
         var hasChildrenObservable = libraryItems.IsNotEmpty();
-        var childrenObservable = libraryItems.Transform(libraryItem => ToLibraryItemModel2(libraryItem, libraryFilter));
+        var childrenObservable = libraryItems.Transform(libraryItem => ToLibraryItemModel(libraryItem, libraryFilter));
 
         var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
         {
@@ -308,7 +308,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return parentItemModel;
     }
 
-    private CompositeItemModel<EntityId> ToLibraryItemModel2(NexusModsLibraryItem.ReadOnly libraryItem, LibraryFilter libraryFilter)
+    private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsLibraryItem.ReadOnly libraryItem, LibraryFilter libraryFilter)
     {
         var linkedLoadoutItemsObservable = LibraryDataProviderHelper
             .GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id)
