@@ -3,7 +3,10 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -24,6 +27,7 @@ using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using OneOf;
@@ -102,8 +106,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        // TODO: implement this button
-        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>();
+        CommandInstallOptionalItems = IsInstalling.CombineLatest(_canInstallOptionalItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(executeAsync: async (_, _) => { await InstallCollectionJob.Create(
+                serviceProvider,
+                targetLoadout,
+                source: libraryFile,
+                revisionMetadata,
+                items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Optional)
+            ); },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
 
         CommandInstallRequiredItems = IsInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) => { await InstallCollectionJob.Create(
@@ -117,7 +129,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             configureAwait: false
         );
 
-        CommandDeleteCollection = new ReactiveCommand(
+        CommandDeleteCollectionRevision = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
                 var pageData = new PageData
@@ -134,7 +146,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
 
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
-                await nexusModsLibrary.DeleteCollection(_collection, cancellationToken: CancellationToken.None);
+                await collectionDownloader.DeleteRevision(_revision);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false,
@@ -195,6 +207,28 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         });
 
         IsDownloading = _isDownloadingRequiredItems.CombineLatest(_isDownloadingOptionalItems, static (a, b) => a || b).ToBindableReactiveProperty();
+        IsUpdateAvailable = NewestRevisionNumber.Select(static optional => optional.HasValue).ToBindableReactiveProperty();
+
+        CommandUpdateCollection = IsUpdateAvailable.ToReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var newestRevisionNumber = NewestRevisionNumber.Value.Value;
+                var revision = await collectionDownloader.GetOrAddRevision(_collection.Slug, newestRevisionNumber, cancellationToken);
+
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext
+                    {
+                        TargetLoadout = targetLoadout,
+                        CollectionRevisionMetadataId = revision,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                workspaceController.OpenPage(WorkspaceId, pageData, new OpenPageBehavior.ReplaceTab(PanelId, TabId));
+            }, awaitOperation: AwaitOperation.Drop, configureAwait: false
+        );
 
         this.WhenActivated(disposables =>
         {
@@ -238,6 +272,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             var isCollectionInstalledObservable = collectionDownloader
                 .IsCollectionInstalledObservable(_revision, collectionGroupObservable)
                 .Prepend(false);
+            var hasInstalledAllOptionalItems = collectionDownloader
+                .IsCollectionInstalledObservable(_revision, collectionGroupObservable, CollectionDownloader.ItemType.Optional)
+                .Prepend(false);
 
             numDownloadedRequiredItemsObservable.CombineLatest(isCollectionInstalledObservable)
                 .OnUI()
@@ -269,13 +306,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 }).AddTo(disposables);
 
             numDownloadedOptionalItemsObservable
+                .CombineLatest(hasInstalledAllOptionalItems)
                 .OnUI()
-                .Subscribe(numDownloadedOptionalItems =>
+                .Subscribe(tuple =>
                 {
+                    var (numDownloadedOptionalItems, hasInstalledAllOptionals) = tuple;
                     var hasDownloadedAllOptionalItems = numDownloadedOptionalItems == OptionalDownloadsCount;
-
+                    
                     CountDownloadedOptionalItems = numDownloadedOptionalItems;
-                    _canInstallOptionalItems.OnNext(numDownloadedOptionalItems > 0);
+                    HasInstalledAllOptionalItems.Value = hasInstalledAllOptionals;
+                    _canInstallOptionalItems.OnNext(hasDownloadedAllOptionalItems && !hasInstalledAllOptionals);
                     _canDownloadOptionalItems.OnNext(!hasDownloadedAllOptionalItems);
                 }).AddTo(disposables);
 
@@ -308,6 +348,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
+
+            R3.Observable.Return(_revision)
+                .ObserveOnThreadPool()
+                .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetNewerRevisionNumbers(revision, cancellationToken))
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (newerRevisions, self) =>
+                {
+                    self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
+                    self.NewestRevisionNumber.Value = newerRevisions.First();
+                }).AddTo(disposables);
         });
     }
 
@@ -326,6 +376,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     }
 
     public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
+    
+    public BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; } = new(value: false);
 
     private readonly BehaviorSubject<bool> _canDownloadRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canDownloadOptionalItems = new(initialValue: false);
@@ -336,6 +388,9 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     private readonly BehaviorSubject<bool> _canInstallRequiredItems = new(initialValue: false);
     private readonly BehaviorSubject<bool> _canInstallOptionalItems = new(initialValue: false);
     public BindableReactiveProperty<bool> IsInstalling { get; } = new(value: false);
+
+    public BindableReactiveProperty<bool> IsUpdateAvailable { get; }
+    public BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; } = new();
 
     public string Name => _collection.Name;
     public string Summary => _collection.Summary;
@@ -367,11 +422,12 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
     public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; }
     public ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
+    public ReactiveCommand<Unit> CommandUpdateCollection { get; }
 
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
     public ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
-    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; }
 }
 
 public record DownloadMessage(DownloadableItem Item);

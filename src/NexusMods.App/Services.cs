@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
@@ -15,6 +16,7 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
+using NexusMods.Games.FileHashes;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
@@ -93,12 +95,12 @@ public static class Services
                 .AddHttpDownloader()
                 // .AddAdvancedHttpDownloader()
                 .AddTestHarness()
-                .AddSingleton<HttpClient>()
                 .AddFileSystem()
                 .AddDownloaders()
                 .AddCleanupVerbs()
                 .AddSteamCli()
-                .AddGOG();
+                .AddGOG()
+                .AddFileHashes();
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);

@@ -46,7 +46,7 @@ public sealed class ImageDecoder<TResourceIdentifier> : ANestedResourceLoader<TR
                 height: qoiImage.Height,
                 colorType: SKColorType.Rgba8888,
                 alphaType: SKAlphaType.Unpremul,
-                colorspace: SKColorSpace.CreateSrgbLinear()
+                colorspace: SKColorSpace.CreateSrgb()
             );
 
             var skBitmap = new SKBitmap(skImageInfo);

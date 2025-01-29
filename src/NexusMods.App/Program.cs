@@ -64,9 +64,23 @@ public class Program
 
         if (startupMode.RunAsMain)
         {
-            // Run the migrations
+            var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
+            var fileSystem = services.GetRequiredService<IFileSystem>();
+
+            var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).DirectoryExists();
+            
+            // This will startup the MnemonicDb connection
             var migration = services.GetRequiredService<MigrationService>();
-            migration.Run().Wait();
+            if (modelExists)
+            {
+                // Run the migrations
+                migration.MigrateAll().Wait();
+            }
+            else
+            {
+                // Otherwise, perform the initial setup
+                migration.InitialSetup().Wait();
+            }
         }
 
         // Okay to do wait here, as we are in the main process thread.

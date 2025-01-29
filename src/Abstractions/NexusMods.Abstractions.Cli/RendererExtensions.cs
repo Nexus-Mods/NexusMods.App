@@ -74,6 +74,16 @@ public static class RendererExtensions
     }
     
     /// <summary>
+    /// Renders the given text to the renderer and follows it up with a newline
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="text"></param>
+    public static async ValueTask TextLine(this IRenderer renderer, string text)
+    {
+        await renderer.RenderAsync(Renderable.Text(text + "\n"));
+    }
+    
+    /// <summary>
     /// Starts a progress bar box in the renderer that will be stopped when the returned disposable is disposed
     /// </summary>
     public static async Task<IAsyncDisposable> WithProgress(this IRenderer renderer)
@@ -101,6 +111,17 @@ public static class RendererExtensions
     {
         // Todo: implement custom conversion and formatting for the arguments
         await renderer.RenderAsync(Renderable.Text(template, args.Select(a => a.ToString()!).ToArray()));
+    }
+    
+    /// <summary>
+    /// Renders the text to the renderer with the given arguments and template, followed by a newline
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="text"></param>
+    public static async ValueTask TextLine(this IRenderer renderer, string template, params object[] args)
+    {
+        // Todo: implement custom conversion and formatting for the arguments
+        await renderer.RenderAsync(Renderable.Text(template + "\n", args.Select(a => a.ToString()!).ToArray()));
     }
     
     /// <summary>
@@ -138,6 +159,18 @@ public static class RendererExtensions
         await renderer.Text(template, args);
         await renderer.Text("Error: {0}", ex);
     }
+    
+    /// <summary>
+    /// Prints an error message to the renderer, and returns an error code
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="ex"></param>
+    /// <param name="template"></param>
+    /// <param name="args"></param>
+    public static async Task Error(this IRenderer renderer, string template, params object[] args)
+    {
+        await renderer.Text(template, args);
+    }
 
     /// <summary>
     /// Creates a new progress task with the given text, the task will be deleted when the returned disposable is disposed
@@ -158,6 +191,22 @@ public static class RendererExtensions
         await using var task = await renderer.StartProgressTask(text);
         
         foreach (var item in items)
+        {
+            await task.IncrementProgress(increment);
+            yield return item;
+        }
+    }
+    
+    /// <summary>
+    /// Wraps the enumeration in a progress task that will update the progress bar as the items are enumerated
+    /// </summary>
+    public static async IAsyncEnumerable<T> WithProgress<T>(this IEnumerable<T> items, IRenderer renderer, string text)
+    {
+        var array = items.ToArray();
+        var increment = 1.0 / array.Length;
+        await using var task = await renderer.StartProgressTask(text);
+        
+        foreach (var item in array)
         {
             await task.IncrementProgress(increment);
             yield return item;

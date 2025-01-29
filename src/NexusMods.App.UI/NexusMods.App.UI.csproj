@@ -71,6 +71,7 @@
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="NuGet.Versioning" />
         <PackageReference Include="ObservableCollections.R3" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
@@ -743,6 +744,10 @@
         </Compile>
         <Compile Update="Pages\LoadoutPage\CollectionLoadoutDesignViewModel.cs">
           <DependentUpon>ICollectionLoadoutViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\PageHeader\PageHeader.axaml.cs">
+          <DependentUpon>PageHeader.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 

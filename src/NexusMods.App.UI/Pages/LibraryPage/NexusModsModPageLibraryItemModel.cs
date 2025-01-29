@@ -8,7 +8,9 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NuGet.Versioning;
 using ObservableCollections;
 using R3;
 
@@ -22,19 +24,25 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
-    ILibraryItemWithInstallAction,
+    ILibraryItemWithUpdateAction,
+    ILibraryItemWithVersion, // Inherited from child, per design request
     IHasLinkedLoadoutItems,
     IIsParentLibraryItemModel
 {
     public required IObservable<int> NumInstalledObservable { get; init; }
-    private ObservableHashSet<NexusModsLibraryItem.ReadOnly> LibraryItems { get; set; } = [];
+    private ObservableHashSet<NexusModsLibraryItem.ReadOnly> _libraryItems = [];
 
-    public NexusModsModPageLibraryItemModel(IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IServiceProvider serviceProvider)
+    public NexusModsModPageLibraryItemModel(
+        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItemsObservable, IObservable<NewestModPageVersionData> hasUpdateObservable, IObservable<bool> hasChildrenObservable,
+        IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable, IObservable<string> versionObservable, IServiceProvider serviceProvider) : base(hasChildrenObservable, childrenObservable)
     {
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
+        UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
+        _numUpdatable = 1;
+        UpdateButtonText = new(value: ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, 1, false));
 
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
@@ -45,8 +53,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         var libraryItemsDisposable = libraryItemsObservable.OnUI()
             .Select(changeset =>
                 {
-                    LibraryItems.ApplyChanges(changeset);
-                    return LibraryItems.FirstOrDefault();
+                    _libraryItems.ApplyChanges(changeset);
+                    return _libraryItems.FirstOrDefault();
                 }
             )
             .Where(item => item.IsValid())
@@ -69,19 +77,20 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
         // ReSharper disable once NotDisposedResource
-        var modelActivationDisposable = this.WhenActivated(linkedLoadoutItemsDisposable, static (self, linkedLoadoutItemsDisposable, disposables) =>
+        var state = (linkedLoadoutItemsDisposable, hasUpdateObservable);
+        var modelActivationDisposable = this.WhenActivated(state, static (self, state, disposables) =>
         {
             // ReSharper disable once NotDisposedResource
-            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
+            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, state.linkedLoadoutItemsDisposable).AddTo(disposables);
 
-            self.LibraryItems
+            self._libraryItems
                 .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(self, static (count, self) =>
                 {
                     if (count > 0)
                     {
-                        self.DownloadedDate.Value = self.LibraryItems.Max(static item => item.GetCreatedAt());
-                        self.ItemSize.Value = self.LibraryItems.Sum(static item => item.AsLibraryItem().TryGetAsLibraryFile(out var libraryFile) ? libraryFile.Size : Size.Zero);
+                        self.DownloadedDate.Value = self._libraryItems.Max(static item => item.GetCreatedAt());
+                        self.ItemSize.Value = self._libraryItems.Sum(static item => item.AsLibraryItem().TryGetAsLibraryFile(out var libraryFile) ? libraryFile.Size : Size.Zero);
                     }
                     else
                     {
@@ -93,7 +102,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             self.NumInstalledObservable
                 .ToObservable()
                 .CombineLatest(
-                    source2: self.LibraryItems.ObserveCountChanged(notifyCurrentCount: true),
+                    source2: self._libraryItems.ObserveCountChanged(notifyCurrentCount: true),
                     source3: ReactiveUI.WhenAnyMixin.WhenAnyValue(self, static self => self.IsExpanded).ToObservable(),
                     source4: self.IsInstalled,
                     static (numInstalled,numTotal,isExpanded , _) => (numInstalled, numTotal, isExpanded)
@@ -103,14 +112,23 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
                 {
                     var (numInstalled, numTotal, isExpanded) = tuple;
                     self.InstallButtonText.Value = ILibraryItemWithInstallAction.GetButtonText(numInstalled, numTotal, isExpanded);
+                    self.UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(self._numUpdatable, numTotal, isExpanded);
                 })
                 .AddTo(disposables);
+
+            state.hasUpdateObservable.Subscribe(self.InformAvailableUpdate).AddTo(disposables);
+        });
+        
+        var setVersionDisposable = versionObservable.Subscribe(ver =>
+        {
+            Version.Value = ver!.ToString();
         });
 
         _modelDisposable = Disposable.Combine(
             datesDisposable,
             modelActivationDisposable,
             libraryItemsDisposable,
+            setVersionDisposable,
             Name,
             ItemSize,
             FormattedSize,
@@ -120,12 +138,14 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             FormattedInstalledDate,
             InstallItemCommand,
             IsInstalled,
-            InstallButtonText
+            InstallButtonText,
+            linkedLoadoutItemsDisposable
         );
     }
 
-    public IReadOnlyList<LibraryItemId> LibraryItemIds => LibraryItems.Select(static x => (LibraryItemId)x.Id).ToArray();
-
+    public IReadOnlyList<LibraryItemId> LibraryItemIds => _libraryItems.Select(static x => (LibraryItemId)x.Id).ToArray();
+    public NexusModsLibraryItem.ReadOnly[] LibraryItems => _libraryItems.ToArray();
+    
     public Observable<DateTimeOffset>? Ticker { get; set; }
 
     public required IObservable<IChangeSet<LibraryLinkedLoadoutItem.ReadOnly, EntityId>> LinkedLoadoutItemsObservable { get; init; }
@@ -134,6 +154,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<Bitmap> Thumbnail { get; } = new();
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
+    public BindableReactiveProperty<string> Version { get; } = new(value: "-");
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
@@ -148,8 +169,13 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
     public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
 
+    public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
+    public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
+    public BindableReactiveProperty<string> UpdateButtonText { get; } 
+    
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
+    private int _numUpdatable = 0;
 
     protected override void Dispose(bool disposing)
     {
@@ -161,7 +187,7 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             }
 
             LinkedLoadoutItems = null!;
-            LibraryItems = null!;
+            _libraryItems = null!;
             _isDisposed = true;
         }
 
@@ -169,4 +195,15 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
     }
 
     public override string ToString() => $"Nexus Mods Mod Page: {Name.Value}";
+
+    /// <summary>
+    /// Informs the mod page model of an available update to the item.
+    /// </summary>
+    public void InformAvailableUpdate(NewestModPageVersionData newestVersionData)
+    {
+        _numUpdatable = newestVersionData.NumToUpdate;
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(newestVersionData.NewestFileLastVersion, newestVersionData.NewestFile.Version);
+        UpdateButtonText.Value = ILibraryItemWithUpdateAction.GetButtonText(_numUpdatable, _libraryItems.Count, false);
+        UpdateAvailable.Value = true;
+    }
 }

@@ -13,7 +13,9 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -58,6 +60,29 @@ public class CollectionDownloader
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+    }
+
+    /// <summary>
+    /// Gets or adds a revision.
+    /// </summary>
+    public async ValueTask<CollectionRevisionMetadata.ReadOnly> GetOrAddRevision(CollectionSlug slug, RevisionNumber revisionNumber, CancellationToken cancellationToken)
+    {
+        var revisions = CollectionRevisionMetadata
+            .FindByRevisionNumber(_connection.Db, revisionNumber)
+            .Where(r => r.Collection.Slug == slug);
+
+        if (revisions.TryGetFirst(out var revision)) return revision;
+
+        await using var destination = _temporaryFileManager.CreateFile();
+        var downloadJob = _nexusModsLibrary.CreateCollectionDownloadJob(destination, slug, revisionNumber, CancellationToken.None);
+
+        var libraryFile = await _libraryService.AddDownload(downloadJob);
+
+        if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out var collectionFile))
+            throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+
+        revision = await _nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, slug, revisionNumber, cancellationToken);
+        return revision;
     }
 
     private async ValueTask<bool> CanDirectDownload(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
@@ -220,10 +245,13 @@ public class CollectionDownloader
     /// <summary>
     /// Checks whether the collection is installed.
     /// </summary>
-    public IObservable<bool> IsCollectionInstalledObservable(CollectionRevisionMetadata.ReadOnly revision, IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
+    public IObservable<bool> IsCollectionInstalledObservable(
+        CollectionRevisionMetadata.ReadOnly revision, 
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable, 
+        ItemType itemType = ItemType.Required)
     {
         var observables = revision.Downloads
-            .Where(download => DownloadMatchesItemType(download, ItemType.Required))
+            .Where(download => DownloadMatchesItemType(download, itemType))
             .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)));
 
         return observables.CombineLatest(static list => list.All(static installed => installed));
@@ -558,6 +586,50 @@ public class CollectionDownloader
                 return Optional<CollectionGroup.ReadOnly>.None;
             })
             .Prepend(GetCollectionGroup(revision, targetLoadout, _connection.Db).Convert(static x => x.AsCollectionGroup()));
+    }
+
+    /// <summary>
+    /// Deletes a revision and all downloaded entities.
+    /// </summary>
+    public async ValueTask DeleteRevision(CollectionRevisionMetadataId revisionId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId);
+        foreach (var downloadId in downloadIds)
+        {
+            tx.Delete(downloadId.E, recursive: false);
+        }
+
+        tx.Delete(revisionId, recursive: false);
+
+        await tx.Commit();
+    }
+
+    /// <summary>
+    /// Deletes a collection, all revisions, and all download entities of all revisions.
+    /// </summary>
+    public async ValueTask DeleteCollection(CollectionMetadataId collectionMetadataId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
+        foreach (var revisionId in revisionIds)
+        {
+            var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId.E);
+            foreach (var downloadId in downloadIds)
+            {
+                tx.Delete(downloadId.E, recursive: false);
+            }
+
+            tx.Delete(revisionId.E, recursive: false);
+        }
+
+        tx.Delete(collectionMetadataId, recursive: false);
+
+        await tx.Commit();
     }
 }
 

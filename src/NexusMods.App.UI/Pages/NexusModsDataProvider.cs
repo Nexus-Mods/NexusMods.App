@@ -21,6 +21,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NuGet.Versioning;
 using R3;
 
 namespace NexusMods.App.UI.Pages;
@@ -219,14 +220,13 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider, showThumbnails)
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
+        var hasUpdateObservable = updateService.GetNewestFileVersionObservable(nexusModsLibraryItem.FileMetadata);
+        
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, hasUpdateObservable, _serviceProvider, showThumbnails)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
-
-        model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
-        model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
-        model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
 
         if (nexusModsLibraryItem.FileMetadata.Size.TryGet(out var size))
             model.ItemSize.Value = size;
@@ -247,12 +247,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .SubscribeWithErrorLogging();
 
         var hasChildrenObservable = cache.Connect().IsNotEmpty();
-        var childrenObservable = cache.Connect().Transform((_, e) =>
-        {
-            var libraryFile = NexusModsLibraryItem.Load(_connection.Db, e);
-            return ToLibraryItemModel(libraryFile, libraryFilter, false);
-        });
-
+        var childrenLibraryItemsObservable = cache.Connect().Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e));
+        var childrenObservable = childrenLibraryItemsObservable.Transform(libraryItem => ToLibraryItemModel(libraryItem, libraryFilter, false));
+        
         var linkedLoadoutItemsObservable = cache.Connect()
             // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
@@ -270,11 +267,29 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, _serviceProvider)
-        {
-            HasChildrenObservable = hasChildrenObservable,
-            ChildrenObservable = childrenObservable,
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
+        var hasUpdateObservable = updateService.GetNewestModPageVersionObservable(modPageMetadata);
+        var versionObservable = childrenLibraryItemsObservable
+            .ToCollection()
+            .Select(items =>
+            {
+                // Note(sewer): Design says put highest version of child here.
+                //
+                // There is no 'standard' for version fields, as some sources
+                // like the Nexus website allow you to specify anything in the version field.
+                // We do a 'best effort' here by trying to parse as SemVer and using
+                // that. There are some possible alternatives, e.g. 'by upload date',
+                // however; that then requires additional logic, to not pick up other
+                // mods on the same mod page, etc. So we go for something simple for now.
+                var maxVersion = items
+                    .Max(x => NuGetVersion.TryParse(x.FileMetadata.Version, out var version) 
+                        ? version : new NuGetVersion(0, 0, 0));
 
+                return maxVersion?.ToString() ?? string.Empty;
+            });
+        
+        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, hasUpdateObservable, hasChildrenObservable, childrenObservable, versionObservable, _serviceProvider)
+        {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             NumInstalledObservable = numInstalledObservable,
         };

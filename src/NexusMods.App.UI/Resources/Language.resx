@@ -231,6 +231,9 @@
     <data name="MyGamesView__Detected_games" xml:space="preserve">
         <value>Supported Games</value>
     </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>Add games to get started</value>
+    </data>
     <data name="Button_Manage" xml:space="preserve">
         <value>Manage</value>
     </data>
@@ -601,6 +604,12 @@
         <value>Download {0} mods from Nexus Mods</value>
         <comment>{0} is the name of the currently managed game</comment>
     </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>Health Check</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value>Review your Loadout for any issues and learn how to resolve them if needed</value>
+    </data>
     <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
         <value>Your loadout passed the health check without issues</value>
     </data>
@@ -625,6 +634,8 @@
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
         <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
+    
+    
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
@@ -730,6 +741,9 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
         <value>{0} of {1} required mods downloaded</value>
     </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>Update All</value>
+    </data>
     <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
         <value>INSTALLED MODS</value>
     </data>
@@ -738,6 +752,15 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
         <value>Ready to play - All required mods installed</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Update ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>Update All</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>

@@ -10,6 +10,7 @@
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
     <Design.DataContext>
@@ -19,30 +20,20 @@
 
     <ScrollViewer>
 
-        <controls:EmptyState x:Name="MyLoadoutsEmptyState"
-                             Header="{x:Static resources:Language.MyLoadoutsEmptyState_Header}"
-                             Subtitle="{x:Static resources:Language.MyLoadoutsEmptyState_Subtitle}">
+        
 
             <StackPanel Margin="24"
                         Orientation="Vertical"
                         Spacing="24">
 
-                <StackPanel Spacing="8">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Border Width="48" Height="48">
-                            <icons:UnifiedIcon Size="48" Value="{x:Static icons:IconValues.PictogramBox2}" />
-                        </Border>
-                        <TextBlock Text="My Loadouts"
-                                   Theme="{StaticResource HeadingSMSemiTheme}"
-                                   Foreground="{StaticResource NeutralStrongBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-
-                    <TextBlock Text="{x:Static resources:Language.MyLoadoutsPageDescriptionText}"
-                               Theme="{StaticResource BodyMDNormalTheme}"
-                               Foreground="{StaticResource NeutralStrongBrush}"
-                               TextWrapping="Wrap" />
-                </StackPanel>
+                <pageHeader:PageHeader 
+                    Title="My Loadouts"
+                    Description="{x:Static resources:Language.MyLoadoutsPageDescriptionText}"
+                    Icon="{x:Static icons:IconValues.PictogramBox2}"/> 
+                
+                <controls:EmptyState x:Name="MyLoadoutsEmptyState"
+                                     Header="{x:Static resources:Language.MyLoadoutsEmptyState_Header}"
+                                     Subtitle="{x:Static resources:Language.MyLoadoutsEmptyState_Subtitle}">
 
                 <ItemsControl x:Name="GameSectionsItemsControl">
                     <ItemsControl.ItemsPanel>
@@ -83,7 +74,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+                </controls:EmptyState>
             </StackPanel>
-        </controls:EmptyState>
     </ScrollViewer>
 </reactiveUi:ReactiveUserControl>

@@ -1,6 +1,7 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
@@ -37,6 +38,24 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
+                .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.IsCollection, view => view.CollectionToolbar.IsVisible)
+                .AddTo(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.CollectionToggleCommand, view => view.CollectionToggle)
+                .AddTo(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.IsCollectionEnabled)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(isEnabled =>
+                {
+                    CollectionToggle.IsChecked = isEnabled;
+                    ToolbarEnabled.IsVisible = isEnabled;
+                    ToolbarDisabled.IsVisible = !isEnabled;
+                    
+                    CollectionToolbar.Classes.ToggleIf("Warning", !isEnabled);
+                })
                 .AddTo(disposables);
         });
     }

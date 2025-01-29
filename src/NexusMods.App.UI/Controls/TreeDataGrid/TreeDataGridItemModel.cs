@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
@@ -57,10 +58,10 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    public IObservable<bool> HasChildrenObservable { get; init; } = Observable.Return(false);
+    public IObservable<bool> HasChildrenObservable { get; init; }
     public BindableReactiveProperty<bool> HasChildren { get; } = new();
 
-    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; } = Observable.Empty<IChangeSet<TModel, TKey>>();
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; }
 
     private ObservableList<TModel> _children = [];
     private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
@@ -93,8 +94,11 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     private readonly SerialDisposable _childrenCollectionInitializationSerialDisposable = new();
     private readonly SerialDisposable _childrenObservableSerialDisposable = new();
 
-    protected TreeDataGridItemModel()
+    protected TreeDataGridItemModel(IObservable<bool>? hasChildrenObservable = null,
+        IObservable<IChangeSet<TModel, TKey>>? childrenObservable = null)
     {
+        HasChildrenObservable = hasChildrenObservable ?? Observable.Return(false);
+        ChildrenObservable = childrenObservable ?? Observable.Empty<IChangeSet<TModel, TKey>>();
         _childrenView = _children.ToNotifyCollectionChanged();
 
         _modelActivationDisposable = WhenModelActivated(this, static (model, disposables) =>
