@@ -56,7 +56,7 @@
             ToolTip.Tip="Click to Play">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        Spacing="{StaticResource Spacing-2}">
+                        Spacing="{StaticResource Spacing-1}">
                 <spinner:Spinner x:Name="LaunchSpinner" IsVisible="True" Height="16" Width="16" />
                 <icons:UnifiedIcon x:Name="LaunchIcon"
                                    Size="24"

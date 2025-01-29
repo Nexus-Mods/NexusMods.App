@@ -38,8 +38,6 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                 .Subscribe(isApplying =>
                 {
                     ProgressBarControl.IsVisible = isApplying;
-                    ApplyButton.IsVisible = !isApplying;
-                    //LaunchButtonView.IsVisible = !isApplying;
                 })
                 .DisposeWith(disposables);
             
