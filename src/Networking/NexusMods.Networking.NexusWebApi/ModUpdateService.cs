@@ -1,4 +1,5 @@
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
@@ -121,20 +122,18 @@ public class ModUpdateService : IModUpdateService
     }
 
     /// <inheritdoc />
-    public IObservable<NexusModsFileMetadata.ReadOnly> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<NexusModsFileMetadata.ReadOnly>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
     {
         return _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
-            .WatchValue(current.Id);
-        // Note(sewer): Value is valid by definition, we only beam valid values
+            .QueryWhenChanged(query => query.Lookup(current.Id));
     }
-    
+
     /// <inheritdoc />
-    public IObservable<NewestModPageVersionData> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<NewestModPageVersionData>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
     {
         return _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
-            .WatchValue(current.Id);
-        // Note(sewer): Value is valid by definition, we only beam valid values
+            .QueryWhenChanged(query => query.Lookup(current.Id));
     }
 }

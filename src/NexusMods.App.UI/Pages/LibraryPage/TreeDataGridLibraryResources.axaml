@@ -70,42 +70,6 @@
         </ContentControl>
     </DataTemplate>
 
-    <!-- Downloaded Date column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithDownloadedDate.ColumnTemplateResourceKey}"
-                  DataType="local:ILibraryItemModel">
-        <ContentControl Content="{CompiledBinding}">
-            <ContentControl.DataTemplates>
-                <!-- with downloaded date -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadedDate}">
-                    <TextBlock Text="{CompiledBinding FormattedDownloadedDate.Value}" />
-                </DataTemplate>
-
-                <!-- fallback -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
-                    <TextBlock Text="-" />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-    </DataTemplate>
-
-    <!-- Installed Date column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithInstalledDate.ColumnTemplateResourceKey}"
-                  DataType="local:ILibraryItemModel">
-        <ContentControl Content="{CompiledBinding}">
-            <ContentControl.DataTemplates>
-                <!-- with installed date -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithInstalledDate}">
-                    <TextBlock Text="{CompiledBinding FormattedInstalledDate.Value}" />
-                </DataTemplate>
-
-                <!-- fallback -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
-                    <TextBlock Text="-" />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-    </DataTemplate>
-
     <!-- Action column -->
     <DataTemplate x:Key="{x:Static local:ILibraryItemWithAction.ColumnTemplateResourceKey}"
                   DataType="local:ILibraryItemModel">
@@ -176,6 +140,7 @@
         </ContentControl>
     </DataTemplate>
 
+    <!-- Downloaded Date -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
@@ -199,6 +164,7 @@
         </controls:ComponentControl>
     </DataTemplate>
 
+    <!-- Size -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemSize.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
@@ -222,29 +188,52 @@
         </controls:ComponentControl>
     </DataTemplate>
 
+    <!-- Version -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemVersion.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                            ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:StringComponent}">
-                            <TextBlock Text="{CompiledBinding Value.Value}"/>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
+        <StackPanel Orientation="Horizontal">
+            <!-- Current version -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <TextBlock Text="{CompiledBinding Value.Value}"/>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
 
-            <controls:ComponentControl.Fallback>
-                <TextBlock Text="-"/>
-            </controls:ComponentControl.Fallback>
-        </controls:ComponentControl>
+                <controls:ComponentControl.Fallback>
+                    <TextBlock Text="-"/>
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+
+            <!-- Newest version -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
+                                    <TextBlock Text="{CompiledBinding Value.Value}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+            </controls:ComponentControl>
+        </StackPanel>
+
     </DataTemplate>
 
+    <!-- Actions -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+Actions.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />

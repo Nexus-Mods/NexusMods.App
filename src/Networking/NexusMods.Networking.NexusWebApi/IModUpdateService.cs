@@ -33,13 +33,13 @@ public interface IModUpdateService
     /// Returns an observable for the newest version of a file.
     /// </summary>
     /// <returns>An observable that signals the newest version of a file.</returns>
-    IObservable<NexusModsFileMetadata.ReadOnly> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current);
+    IObservable<Optional<NexusModsFileMetadata.ReadOnly>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current);
 
     /// <summary>
     /// Returns an observable when any file on a mod page is updated. 
     /// </summary>
     /// <param name="current">The current mod page to listen for changes in.</param>
-    IObservable<NewestModPageVersionData> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current);
+    IObservable<Optional<NewestModPageVersionData>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current);
 }
 
 /// <summary>

@@ -464,6 +464,7 @@ public class LibraryTreeDataGridAdapter :
         {
             if (disposing)
             {
+                Disposable.Dispose(_activationDisposable, MessageSubject);
             }
 
             _isDisposed = true;

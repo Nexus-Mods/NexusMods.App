@@ -36,18 +36,22 @@ public enum CollectionDownloadsFilter
 
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly IJobMonitor _jobMonitor;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IModUpdateService _modUpdateService;
     private readonly CollectionDownloader _collectionDownloader;
     private readonly IResourceLoader<EntityId, Bitmap> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
+
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
+
         _collectionDownloader = new CollectionDownloader(serviceProvider);
-        _serviceProvider = serviceProvider;
         _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 
@@ -247,15 +251,41 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             valueObservable: downloadedDateObservable
         ));
 
-        // TODO: select latest version
+        // Version: highest version number
         var currentVersionObservable = libraryItems
-            .TransformImmutable(static item => item.FileMetadata.Version)
-            .QueryWhenChanged(query => query.Items.First());
+            .TransformImmutable(static item =>
+            {
+                // NOTE(erri120, sewer): simplest version parsing for now
+                var rawVersion = item.FileMetadata.Version;
+                _ = NuGetVersion.TryParse(rawVersion, out var parsedVersion);
+
+                return (rawVersion, parsedVersion: Optional<NuGetVersion>.Create(parsedVersion));
+            })
+            .QueryWhenChanged(static query =>
+            {
+                var max = query.Items.MaxByOptional(static tuple => tuple.parsedVersion.ValueOr(new NuGetVersion(0, 0, 0)));
+                if (!max.HasValue) return string.Empty;
+                return max.Value.rawVersion;
+            });
 
         parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
+
+        // Update available
+        var newestVersionObservable = _modUpdateService
+            .GetNewestModPageVersionObservable(modPage)
+            .Select(static optional => optional.Convert(static versionData => versionData.NewestFile.Version));
+
+        parentItemModel.AddObservable(
+            key: LibraryColumns.ItemVersion.NewVersionComponentKey,
+            observable: newestVersionObservable,
+            componentFactory: static (valueObservable, initialValue) => new StringComponent(
+                initialValue,
+                valueObservable
+            )
+        );
 
         LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
 
@@ -297,6 +327,20 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+
+        // Update available
+        var newestVersionObservable = _modUpdateService
+            .GetNewestFileVersionObservable(fileMetadata)
+            .Select(static optional => optional.Convert(static fileMetadata => fileMetadata.Version));
+
+        itemModel.AddObservable(
+            key: LibraryColumns.ItemVersion.NewVersionComponentKey,
+            observable: newestVersionObservable,
+            componentFactory: static (valueObservable, initialValue) => new StringComponent(
+                initialValue,
+                valueObservable
+            )
+        );
 
         return itemModel;
     }

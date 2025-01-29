@@ -635,12 +635,6 @@
         <Compile Update="Pages\LibraryPage\ILibraryItemWithSize.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithDownloadedDate.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithInstalledDate.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LibraryPage\ILibraryItemWithAction.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
