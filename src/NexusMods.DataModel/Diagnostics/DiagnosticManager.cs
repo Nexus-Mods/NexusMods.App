@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -11,6 +12,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using Observable = R3.Observable;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -78,43 +80,36 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         try
         {
-            var nested = await diagnosticEmitters
-                .OfType<ILoadoutDiagnosticEmitter>()
-                .SelectAsync(async emitter =>
+            ConcurrentBag<Diagnostic> diagnostics = new();
+            
+            await Parallel.ForEachAsync(diagnosticEmitters.OfType<ILoadoutDiagnosticEmitter>(), cancellationToken, async (emitter, token) =>
+            {
+                var start = DateTimeOffset.UtcNow;
+
+                try
                 {
-                    var start = DateTimeOffset.UtcNow;
+                    await foreach (var diagnostic in emitter.Diagnose(loadout, token))
+                        diagnostics.Add(diagnostic);
+                }
+                catch (TaskCanceledException)
+                {
+                    // ignore
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
+                }
+                finally
+                {
+                    var end = DateTimeOffset.UtcNow;
+                    var duration = end - start;
+                    _logger.LogTrace("Emitter {Emitter} took {Duration} ms", emitter.GetType(), duration.TotalMilliseconds);
+                }
+            });
 
-                    try
-                    {
-                        var res = await emitter
-                            .Diagnose(loadout, cancellationToken)
-                            .ToListAsync(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return [];
 
-                        return (IList<Diagnostic>)res;
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        // ignore
-                        return Array.Empty<Diagnostic>();
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
-                        return Array.Empty<Diagnostic>();
-                    }
-                    finally
-                    {
-                        var end = DateTimeOffset.UtcNow;
-                        var duration = end - start;
-                        _logger.LogTrace("Emitter {Emitter} took {Duration} ms", emitter.GetType(), duration.TotalMilliseconds);
-                    }
-                })
-                .ToListAsync(cancellationToken);
-
-            if (cancellationToken.IsCancellationRequested) return Array.Empty<Diagnostic>();
-
-            var flattened = nested
-                .SelectMany(many => many)
+            var flattened = diagnostics
                 .OrderByDescending(x => x.Severity)
                 .ThenBy(x => x.Id)
                 .ToArray();
