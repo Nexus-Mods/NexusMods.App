@@ -763,6 +763,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
     {
+        // Make sure the file hashes are up to date
+        await _fileHashService.GetFileHashesDb();
         return await ReindexState(gameInstallation, Connection);
     }
 

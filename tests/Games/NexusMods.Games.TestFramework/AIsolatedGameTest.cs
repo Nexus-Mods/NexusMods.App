@@ -118,7 +118,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (ConfigOptions.RegisterNullGuidedInstaller)
             services.AddSingleton<IGuidedInstaller, NullGuidedInstaller>();
         
-        return services.AddDefaultServicesForTesting()
+        return services
+            .AddDefaultServicesForTesting()
             .AddFomod()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()

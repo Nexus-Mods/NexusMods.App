@@ -235,7 +235,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
         else
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("No way to get game files for: " + installation.Store);
         }
     }
 
