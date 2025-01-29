@@ -172,46 +172,55 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
 
-    public Dictionary<GamePath, SyncTreeNode> BuildSyncTree(DiskState currentState, DiskState previousTree, Loadout.ReadOnly loadout)
+    public Dictionary<GamePath, SyncTreeNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
     {
         var referenceDb = _fileHashService.Current;
-        Dictionary<GamePath, LoadoutSourceItem> results = new();
+        Dictionary<GamePath, SyncTreeNode> results = new();
         
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            results.Add(gameFile.Path, gameFile);
+            results.Add(gameFile.Path, new SyncTreeNode
+                {
+                    Loadout = new SyncNodePart
+                    {
+                        Hash = gameFile.Hash,
+                        Size = gameFile.Size,
+                    },
+                    SourceItemType = LoadoutSourceItemType.Game,
+                }
+            );
         }
         
         var disabledGroups = GetDisabledGroups(loadout);
 
         foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
         {
+            var targetPath = loadoutItem.TargetPath;
             // Ignore disabled Items
             if (disabledGroups.Contains(loadoutItem.AsLoadoutItem().Parent))
                 continue;
 
-            LoadoutSourceItem sourceItem;
+            SyncNodePart sourceItem;
+            LoadoutSourceItemType sourceItemType;
             if (loadoutItem.TryGetAsLoadoutFile(out var loadutFile))
             {
-                sourceItem = new LoadoutSourceItem
+                sourceItem = new SyncNodePart()
                 {
-                    Path = loadoutItem.TargetPath,
                     Size = loadutFile.Size,
                     Hash = loadutFile.Hash,
-                    SourceId = loadutFile.Id,
-                    Type = LoadoutSourceItemType.Loadout,
+                    EntityId = loadutFile.Id,
                 };
+                sourceItemType = LoadoutSourceItemType.Loadout;
             }
             else if (loadoutItem.TryGetAsDeletedFile(out var deletedFile))
             {
-                sourceItem = new LoadoutSourceItem
+                sourceItem = new SyncNodePart
                 {
-                    Path = loadoutItem.TargetPath,
                     Size = Size.Zero,
                     Hash = Hash.Zero,
-                    SourceId = deletedFile.Id,
-                    Type = LoadoutSourceItemType.Deleted,
+                    EntityId = deletedFile.Id,
                 };
+                sourceItemType = LoadoutSourceItemType.Deleted;
             }
             else
             {
@@ -221,14 +230,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(results, loadoutItem.TargetPath, out var exists);
             if (!exists)
             {
-                existing = sourceItem;
-                
+                existing = new SyncTreeNode
+                {
+                    Loadout = sourceItem,
+                    SourceItemType = sourceItemType,
+                };
             }
             else
             {
-                if (ShouldWin(existing, sourceItem))
+                if (ShouldWin(targetPath, existing.Loadout, sourceItem))
                 {
-                    existing = sourceItem;
+                    existing.Loadout = sourceItem;
                 }
             }
         }
@@ -236,20 +248,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Remove deleted files. I'm not super happy with this requiring a full scan of
         // the loadout, but we have to somehow mark the deleted files and then delete them. 
         // And we can't modify the dictionary while iterating over it.
-        HashSet<GamePath> deletedFiles = [];
+        List<GamePath> deletedFiles = [];
         foreach (var (key, value) in results)
         {
-            if (value.Type == LoadoutSourceItemType.Deleted)
-            {
+            if (value.SourceItemType == LoadoutSourceItemType.Deleted) 
                 deletedFiles.Add(key);
-            }
         }
         foreach (var file in deletedFiles)
         {
             results.Remove(file);
         }
         
-        return MergeStates(currentState, previousTree, results);
+        return MergeStates(currentState, previousState, results);
     }
 
     /// <summary>
@@ -293,58 +303,40 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Dictionary<GamePath, SyncTreeNode> MergeStates(DiskState currentState, DiskState previousTree, Dictionary<GamePath, LoadoutSourceItem> loadoutItems)
+    public Dictionary<GamePath, SyncTreeNode> MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncTreeNode> loadoutItems)
     {
-        var tree = new Dictionary<GamePath, SyncTreeNode>();
-        
-        foreach (var (_, item) in loadoutItems)
-        {
-            
-            tree.Add(item.Path, new SyncTreeNode
-                {
-                    Path = item.Path,
-                    LoadoutFileHash = item.Hash,
-                    LoadoutFileSize = item.Size,
-                    LoadoutFileId = item.SourceId,
-                }
-            );
-        }
-
         foreach (var node in previousTree)
         {
-            if (tree.TryGetValue(node.Path, out var found))
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(loadoutItems, node.Path, out var exists);
+            if (exists)
             {
-                found.Previous = node;
+                existing.Previous = node.Part;
             }
             else
             {
-                tree.Add(node.Path, new SyncTreeNode
-                    {
-                        Path = node.Path,
-                        Previous = node,
-                    }
-                );
+                existing = new SyncTreeNode
+                {
+                    Previous = node.Part,
+                };
             }
         }
-
+        
         foreach (var node in currentState)
         {
-            if (tree.TryGetValue(node.Path, out var found))
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(loadoutItems, node.Path, out var exists);
+            if (exists)
             {
-                found.Disk = node;
+                existing.Disk = node.Part;
             }
             else
             {
-                tree.Add(node.Path, new SyncTreeNode
-                    {
-                        Path = node.Path,
-                        Disk = node,
-                    }
-                );
+                existing = new SyncTreeNode
+                {
+                    Disk = node.Part,
+                };
             }
         }
-
-        return tree;
+        return loadoutItems;
     }
 
     /// <summary>
@@ -818,7 +810,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Return true if the replacement should win over the existing item.
     /// </summary>
-    protected virtual bool ShouldWin(in LoadoutSourceItem existing, in LoadoutSourceItem replacement)
+    protected virtual bool ShouldWin(in GamePath path, in SyncNodePart existing, in SyncNodePart replacement)
     {
         return true;
     }

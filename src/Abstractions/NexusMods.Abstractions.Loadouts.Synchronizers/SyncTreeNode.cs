@@ -52,22 +52,22 @@ public readonly struct SyncNodePart
 /// <summary>
 /// A node in the synchronization tree. 24 bytes for each part, and two ushorts for the other fields. So 76 bytes total.
 /// </summary>
-public readonly record struct SyncTreeNode
+public record struct SyncTreeNode
 {
     /// <summary>
     /// The current disk state
     /// </summary>
-    public SyncNodePart Disk { get; init; }
+    public SyncNodePart Disk { get; set; }
 
     /// <summary>
     /// The previously applied state
     /// </summary>
-    public SyncNodePart Previous { get; init; }
+    public SyncNodePart Previous { get; set; }
     
     /// <summary>
     /// The loadout state
     /// </summary>
-    public SyncNodePart Loadout { get; init; }
+    public SyncNodePart Loadout { get; set; }
 
     /// <summary>
     /// True if the disk state is present.
@@ -83,6 +83,11 @@ public readonly record struct SyncTreeNode
     /// True if the loadout state is present.
     /// </summary>
     public bool HaveLoadout => Loadout.Hash != Hash.Zero;
+    
+    /// <summary>
+    /// The type of thing that the data from the loadout came from. Game state, deleted file, loadout file, etc.
+    /// </summary>
+    public LoadoutSourceItemType SourceItemType { get; init; }
     
     /// <summary>
     /// Sync state signature.
