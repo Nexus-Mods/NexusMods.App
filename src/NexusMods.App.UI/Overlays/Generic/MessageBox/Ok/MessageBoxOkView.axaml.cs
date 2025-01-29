@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using R3;
 using ReactiveUI;
@@ -28,7 +29,7 @@ public partial class MessageBoxOkView : ReactiveUserControl<IMessageBoxOkViewMod
             
             this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
                 .Select(vm => vm != null)
-                .BindTo(this, v => v.MarkdownRendererViewModelViewHost.IsVisible)
+                .BindTo(this, v => v.DetailsSection.IsVisible)
                 .DisposeWith(disposables);
             
             // Bind commands
@@ -40,6 +41,11 @@ public partial class MessageBoxOkView : ReactiveUserControl<IMessageBoxOkViewMod
             CloseButton.Command = ReactiveCommand.Create(() =>
             {
                 ViewModel!.Complete(Unit.Default);
+            });
+            
+            CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () =>
+            {
+                await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents);
             });
         });
     }
