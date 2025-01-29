@@ -107,6 +107,7 @@ public static class LibraryComponents
 
         private readonly ReactiveR3Object _source;
         private readonly IDisposable _activationDisposable;
+        private readonly IDisposable? _idsObservable;
 
         public InstallAction(
             ValueComponent<bool> isInstalled,
@@ -154,14 +155,9 @@ public static class LibraryComponents
             _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
             {
                 self._source.Activate().AddTo(disposables);
-
-                var childrenItemIdsObservable = state;
-                childrenItemIdsObservable
-                    .SubscribeWithErrorLogging(changeSet => self._ids.AsT0.ApplyChanges(changeSet))
-                    .AddTo(disposables);
-
-                Disposable.Create(self._ids.AsT0, static set => set.Clear()).AddTo(disposables);
             });
+
+            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
         private static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
@@ -199,7 +195,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, CommandInstall, ButtonText, _source);
+                    Disposable.Dispose(_activationDisposable, _idsObservable ?? Disposable.Empty, CommandInstall, ButtonText, _source);
                 }
 
                 _isDisposed = true;
