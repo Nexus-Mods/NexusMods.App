@@ -80,7 +80,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         try
         {
-            ConcurrentBag<Diagnostic> diagnostics = new();
+            List<Diagnostic> diagnostics = [];
             
             await Parallel.ForEachAsync(diagnosticEmitters.OfType<ILoadoutDiagnosticEmitter>(), cancellationToken, async (emitter, token) =>
             {
@@ -89,7 +89,12 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                 try
                 {
                     await foreach (var diagnostic in emitter.Diagnose(loadout, token))
-                        diagnostics.Add(diagnostic);
+                    {
+                        lock(diagnostics)
+                        {
+                            diagnostics.Add(diagnostic);
+                        }
+                    }
                 }
                 catch (TaskCanceledException)
                 {
