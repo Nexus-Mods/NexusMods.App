@@ -13,8 +13,21 @@ public interface ILoginManager
     /// </summary>
     Observable<UserInfo?> UserInfoObservable { get; }
 
+    /// <summary>
+    /// Returns true if the user is logged in.
+    /// There could be a delay between the user logging in and this value being updated.
+    /// Prefer <see cref="GetIsUserLoggedInAsync"/> to get the most up-to-date information.
+    /// </summary>
+    bool IsLoggedIn => UserInfo is not null;
+    
+    /// <summary>
+    /// Returns true if the user is logged in and is a premium member
+    /// </summary>
     bool IsPremium => UserInfo?.IsPremium ?? false;
-
+    
+    /// <summary>
+    /// Returns the users login information
+    /// </summary>
     UserInfo? UserInfo { get; }
 
     /// <summary>
@@ -42,6 +55,18 @@ public interface ILoginManager
     /// Returns the user's information
     /// </summary>
     Task<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Verifies whether the user is logged in or not
+    /// </summary>
+    Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Ensures that the user is logged in by showing a message if they are not prompting them to do so
+    /// </summary>
+    /// <param name="message">Message describing the operation that requires the user to be logged in</param>
+    /// <Returns>Returns false if user is not logged or cancels the log in operation</Returns>
+    public Task<bool> EnsureLoggedIn(string message, CancellationToken token = default);
 
     /// <summary>
     ///  Log out of Nexus Mods

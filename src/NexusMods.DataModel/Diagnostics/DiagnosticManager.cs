@@ -42,7 +42,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var existingObservable = _observableCache.Lookup(loadoutId);
             if (existingObservable.HasValue) return existingObservable.Value;
 
-            var connectableObservable = _connection.ObserveDatoms(loadoutId)
+            var connectableObservable = Loadout.RevisionsWithChildUpdates(_connection, loadoutId)
                 .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
                 .SelectMany(async _ =>
                 {

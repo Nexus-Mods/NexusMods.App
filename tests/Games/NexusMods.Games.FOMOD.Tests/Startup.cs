@@ -28,7 +28,6 @@ public class Startup
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddGames()
-            .AddSerializationAbstractions()
             .Validate();
     }
 }

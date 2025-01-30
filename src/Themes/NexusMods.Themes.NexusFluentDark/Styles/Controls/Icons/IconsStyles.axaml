@@ -112,7 +112,14 @@
                     <icons:UnifiedIcon Classes="Cardiology" />
                     <icons:UnifiedIcon Classes="LibraryOutline" />
                     <icons:UnifiedIcon Classes="CollectionsOutline" />
+                    <icons:UnifiedIcon Classes="ModsOutline" />
                     <icons:UnifiedIcon Classes="InfoFilled" />
+                    <icons:UnifiedIcon Classes="NexusColor" />
+                    <icons:UnifiedIcon Classes="Account" />
+                    <icons:UnifiedIcon Classes="FormatListBullet" />
+                    <icons:UnifiedIcon Classes="FormatListCheckbox" />
+                    <icons:UnifiedIcon Classes="DotsGrid" />
+                    <icons:UnifiedIcon Classes="FormatAlignJustify" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -586,23 +593,41 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramHealth">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramHealth}" />
-    </Style>    
+    </Style>
     <Style Selector="icons|UnifiedIcon.Cardiology">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Cardiology}" />
-    </Style> 
+    </Style>
     <Style Selector="icons|UnifiedIcon.LibraryOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.LibraryOutline}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.Swap">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Swap}" />
-    </Style> 
+    </Style>
     <Style Selector="icons|UnifiedIcon.CollectionsOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.CollectionsOutline}" />
     </Style>
-    <Style Selector="icons|UnifiedIcon.InfoFilled">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
+    <Style Selector="icons|UnifiedIcon.ModsOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ModsOutline}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.InfoFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.InfoFilled}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.NexusColor">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.NexusColor}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Account">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Account}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FormatListBullet">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FormatListBullet}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FormatListCheckbox">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FormatListCheckbox}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.DotsGrid">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.DotsGrid}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FormatAlignJustify">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FormatAlignJustify}" />
     </Style>
 </Styles>

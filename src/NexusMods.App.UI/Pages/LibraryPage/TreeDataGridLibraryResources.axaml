@@ -109,6 +109,39 @@
                   DataType="local:ILibraryItemModel">
         <ContentControl Content="{CompiledBinding}">
             <ContentControl.DataTemplates>
+                
+                <!-- Update action -->
+                <!-- Must be places above install since it inherits from install -->
+                <DataTemplate DataType="{x:Type local:ILibraryItemWithUpdateAction}">
+                    
+                    <StackPanel Orientation="Horizontal">
+                        
+                        <!-- Install Button, Same as Above -->
+                        <Button Command="{CompiledBinding InstallItemCommand}"
+                                Classes="Standard"
+                                Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                                Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                                HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                                   IsVisible="{CompiledBinding IsInstalled.Value}" />
+                                <TextBlock Text="{CompiledBinding InstallButtonText.Value}" />
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Update Button, New -->
+                        <!-- TODO: Update the styles -->
+                        <Button Command="{CompiledBinding UpdateItemCommand}"
+                                Classes="Standard"
+                                HorizontalAlignment="Center"
+                                IsVisible="{CompiledBinding UpdateAvailable.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{CompiledBinding UpdateButtonText.Value}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+                
                 <!-- Install action -->
                 <DataTemplate DataType="{x:Type local:ILibraryItemWithInstallAction}">
                     <Button Command="{CompiledBinding InstallItemCommand}"

@@ -12,6 +12,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public class LocalFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,

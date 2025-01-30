@@ -8,29 +8,13 @@ namespace NexusMods.DataModel.SchemaVersions;
 public interface IMigration
 {
     /// <summary>
-    /// The name of the migration
+    /// The unique sequential id of this migration and the human friendly name. These values are stored in this way
+    /// so that they can be easily extracted from the class name.
     /// </summary>
-    public string Name { get; }
+    public static abstract (MigrationId Id, string Name) IdAndName { get; }
     
     /// <summary>
-    /// A long description of the migration
+    /// Perform initial lookups and prepare for the migration
     /// </summary>
-    public string Description { get; }
-    
-    /// <summary>
-    /// A date for the migration's creation. Not used for anything other than sorting. Migrations
-    /// will be run in order of this date.
-    /// </summary>
-    public DateTimeOffset CreatedAt { get; }
-    
-    /// <summary>
-    /// Returns true if the migration should run. This function should do any sort of querying and processing to make sure
-    /// data is in the format expected by the migration.
-    /// </summary>
-    public bool ShouldRun(IDb db);
-
-    /// <summary>
-    /// Runs the migration
-    /// </summary>
-    public void Migrate(IDb basis, ITransaction tx);
+    void Prepare(IDb db);
 }

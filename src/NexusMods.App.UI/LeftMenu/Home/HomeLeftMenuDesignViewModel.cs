@@ -1,5 +1,5 @@
-using System.Collections.ObjectModel;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -13,12 +13,12 @@ public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, I
     
     public ILeftMenuItemViewModel LeftMenuItemMyGames { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = Language.MyGames,
+        Text = new StringComponent(Language.MyGames),
         Icon = IconValues.GamepadOutline,
     };
     public ILeftMenuItemViewModel LeftMenuItemMyLoadouts { get; } = new LeftMenuItemDesignViewModel
     {
-        Text = Language.MyLoadoutsPageTitle,
+        Text = new StringComponent(Language.MyLoadoutsPageTitle),
         Icon = IconValues.Package,
     };
     

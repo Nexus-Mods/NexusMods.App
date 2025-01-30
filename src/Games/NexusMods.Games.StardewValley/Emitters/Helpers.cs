@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
@@ -20,7 +21,7 @@ internal static class Helpers
         var foundSMAPI = loadout.Items
             .OfTypeLoadoutItemGroup()
             .OfTypeSMAPILoadoutItem()
-            .TryGetFirst(x => !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled, out smapi);
+            .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled(), out smapi);
 
         return foundSMAPI;
     }
@@ -35,7 +36,7 @@ internal static class Helpers
         var asyncEnumerable = loadout.Items
             .OfTypeLoadoutItemGroup()
             .OfTypeSMAPIModLoadoutItem()
-            .Where(x => !onlyEnabledMods || !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
+            .Where(x => !onlyEnabledMods || x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled())
             .ToAsyncEnumerable()
             .ConfigureAwait(continueOnCapturedContext: false)
             .WithCancellation(cancellationToken);

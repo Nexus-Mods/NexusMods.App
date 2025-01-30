@@ -27,7 +27,6 @@ public class Startup
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
             .AddLoadoutAbstractions()
-            .AddSerializationAbstractions()
             .Validate();
     }
 }

@@ -4,6 +4,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithThumbnailAndName : ILibraryItemModel, IComparable<ILibraryItemWithThumbnailAndName>, IColumnDefinition<ILibraryItemModel, ILibraryItemWithThumbnailAndName>
 {
     BindableReactiveProperty<Bitmap> Thumbnail { get; }

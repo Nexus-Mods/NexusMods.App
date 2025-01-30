@@ -1,7 +1,9 @@
 using Avalonia.Media.Imaging;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using R3;
@@ -87,18 +89,24 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     bool CanDownloadAutomatically { get; }
 
+    BindableReactiveProperty<bool> IsInstalled { get; }
     BindableReactiveProperty<bool> IsInstalling { get; }
     BindableReactiveProperty<bool> IsDownloading { get; }
+    BindableReactiveProperty<bool> IsUpdateAvailable { get; }
+    BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; }
+    BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; }
 
+    ReactiveCommand<NavigationInformation> CommandViewCollection { get; }
     ReactiveCommand<Unit> CommandDownloadRequiredItems { get; }
     ReactiveCommand<Unit> CommandInstallRequiredItems { get; }
 
     ReactiveCommand<Unit> CommandDownloadOptionalItems { get; }
     ReactiveCommand<Unit> CommandInstallOptionalItems { get; }
 
+    ReactiveCommand<Unit> CommandUpdateCollection { get; }
+
     ReactiveCommand<Unit> CommandViewOnNexusMods { get; }
-    ReactiveCommand<Unit> CommandViewInLibrary { get; }
     ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
-    ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; }
 }

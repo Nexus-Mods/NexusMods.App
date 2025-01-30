@@ -10,18 +10,19 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.Resources;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LibraryPage;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.Collections;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NuGet.Versioning;
 using R3;
-using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
@@ -39,6 +40,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     private readonly IJobMonitor _jobMonitor;
     private readonly IServiceProvider _serviceProvider;
     private readonly CollectionDownloader _collectionDownloader;
+    private readonly IResourceLoader<EntityId, Bitmap> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
@@ -46,6 +48,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _collectionDownloader = new CollectionDownloader(serviceProvider);
         _serviceProvider = serviceProvider;
+        _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 
     public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveCollectionItems(
@@ -217,14 +220,13 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     {
         var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, nexusModsLibraryItem.Id, libraryFilter);
 
-        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, _serviceProvider, showThumbnails)
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
+        var hasUpdateObservable = updateService.GetNewestFileVersionObservable(nexusModsLibraryItem.FileMetadata);
+        
+        var model = new NexusModsFileLibraryItemModel(nexusModsLibraryItem, hasUpdateObservable, _serviceProvider, showThumbnails)
         {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
         };
-
-        model.Name.Value = nexusModsLibraryItem.FileMetadata.Name;
-        model.DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
-        model.Version.Value = nexusModsLibraryItem.FileMetadata.Version;
 
         if (nexusModsLibraryItem.FileMetadata.Size.TryGet(out var size))
             model.ItemSize.Value = size;
@@ -245,12 +247,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .SubscribeWithErrorLogging();
 
         var hasChildrenObservable = cache.Connect().IsNotEmpty();
-        var childrenObservable = cache.Connect().Transform((_, e) =>
-        {
-            var libraryFile = NexusModsLibraryItem.Load(_connection.Db, e);
-            return ToLibraryItemModel(libraryFile, libraryFilter, false);
-        });
-
+        var childrenLibraryItemsObservable = cache.Connect().Transform((_, e) => NexusModsLibraryItem.Load(_connection.Db, e));
+        var childrenObservable = childrenLibraryItemsObservable.Transform(libraryItem => ToLibraryItemModel(libraryItem, libraryFilter, false));
+        
         var linkedLoadoutItemsObservable = cache.Connect()
             // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
             .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
@@ -268,11 +267,29 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Prepend(false)
         ).QueryWhenChanged(static query => query.Items.Count(static b => b));
 
-        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, _serviceProvider)
-        {
-            HasChildrenObservable = hasChildrenObservable,
-            ChildrenObservable = childrenObservable,
+        var updateService = _serviceProvider.GetRequiredService<IModUpdateService>();
+        var hasUpdateObservable = updateService.GetNewestModPageVersionObservable(modPageMetadata);
+        var versionObservable = childrenLibraryItemsObservable
+            .ToCollection()
+            .Select(items =>
+            {
+                // Note(sewer): Design says put highest version of child here.
+                //
+                // There is no 'standard' for version fields, as some sources
+                // like the Nexus website allow you to specify anything in the version field.
+                // We do a 'best effort' here by trying to parse as SemVer and using
+                // that. There are some possible alternatives, e.g. 'by upload date',
+                // however; that then requires additional logic, to not pick up other
+                // mods on the same mod page, etc. So we go for something simple for now.
+                var maxVersion = items
+                    .Max(x => NuGetVersion.TryParse(x.FileMetadata.Version, out var version) 
+                        ? version : new NuGetVersion(0, 0, 0));
 
+                return maxVersion?.ToString() ?? string.Empty;
+            });
+        
+        var model = new NexusModsModPageLibraryItemModel(libraryFilesObservable, hasUpdateObservable, hasChildrenObservable, childrenObservable, versionObservable, _serviceProvider)
+        {
             LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
             NumInstalledObservable = numInstalledObservable,
         };
@@ -281,11 +298,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return model;
     }
 
-    public IObservable<IChangeSet<LoadoutItemModel, EntityId>> ObserveNestedLoadoutItems(LoadoutFilter loadoutFilter)
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        // NOTE(erri120): For the nested loadout view, we create "fake" models for
-        // the mod pages as parents. Each child will be a LibraryLinkedLoadoutItem
-        // that links to a NexusModsLibraryFile that links to the mod page.
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             .FilterOnObservable((_, modPageEntityId) => _connection
@@ -297,69 +311,33 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     .IsNotEmpty())
                 .IsNotEmpty()
             )
-            .TransformAsync(async modPage =>
+            .Transform(modPage =>
             {
-                // TODO: dispose
-                var cache = new SourceCache<Datom, EntityId>(static datom => datom.E);
-                var disposable = _connection
+                var linkedItemsObservable = _connection
                     .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id).AsEntityIds()
                     .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
                     // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
                     .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
                     .FilterInStaticLoadout(_connection, loadoutFilter)
-                    .Adapt(new SourceCacheAdapter<Datom, EntityId>(cache))
-                    .SubscribeWithErrorLogging();
+                    .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
+                    .RefCount();
 
-                var hasChildrenObservable = cache.Connect().IsNotEmpty();
-                var childrenObservable = cache.Connect().Transform(libraryLinkedLoadoutItemDatom =>
+                var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
+                var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+
+                var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
                 {
-                    var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(_connection.Db, libraryLinkedLoadoutItemDatom.E);
-                    return LoadoutDataProviderHelper.ToLoadoutItemModel(_connection, libraryLinkedLoadoutItem, _serviceProvider, false);
-                });
-
-                var installedAtObservable = cache.Connect()
-                    .Transform((_, e) => LibraryLinkedLoadoutItem.Load(_connection.Db, e).GetCreatedAt())
-                    .QueryWhenChanged(query =>
-                    {
-                        if (query.Count == 0) return DateTimeOffset.MinValue;
-                        return query.Items.Max();
-                    });
-
-                var loadoutItemIdsObservable = cache.Connect().Transform((_, e) => (LoadoutItemId) e);
-
-                var isEnabledObservable = cache.Connect()
-                    .TransformOnObservable(datom => LoadoutItem.Observe(_connection, datom.E).Select(item => !item.IsDisabled))
-                    .QueryWhenChanged(query =>
-                    {
-                        var isEnabled = Optional<bool>.None;
-                        foreach (var isItemEnabled in query.Items)
-                        {
-                            if (!isEnabled.HasValue)
-                            {
-                                isEnabled = isItemEnabled;
-                            }
-                            else
-                            {
-                                if (isEnabled.Value != isItemEnabled) return (bool?)null;
-                            }
-                        }
-
-                        return isEnabled.HasValue ? isEnabled.Value : null;
-                    }).DistinctUntilChanged(x => x is null ? -1 : x.Value ? 1 : 0);
-
-                var modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(_serviceProvider);
-                Bitmap? bitmap = null;
-                try { bitmap = (await modPageThumbnailPipeline.LoadResourceAsync(modPage.Id, CancellationToken.None)).Data; }
-                catch (Exception) { /* Ignore missing thumbnail errors, in case user is e.g. migrating from older version */ }
-                
-                LoadoutItemModel model = new FakeParentLoadoutItemModel(loadoutItemIdsObservable, _serviceProvider, hasChildrenObservable, childrenObservable, bitmap)
-                {
-                    NameObservable = System.Reactive.Linq.Observable.Return(modPage.Name),
-                    InstalledAtObservable = installedAtObservable,
-                    IsEnabledObservable = isEnabledObservable,
+                    HasChildrenObservable = hasChildrenObservable,
+                    ChildrenObservable = childrenObservable,
                 };
 
-                return model;
+                parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+                parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+
+                LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
+                LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+
+                return parentItemModel;
             });
     }
 }

@@ -7,21 +7,21 @@
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
-                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="120"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutBadge.LoadoutBadge"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top">
+    
     <Design.DataContext>
         <loadoutBadge:LoadoutBadgeDesignViewModel />
     </Design.DataContext>
 
-    <panels:FlexPanel x:Name="ContentsFlexPanel">
-        <Border>
-            <spinner:Spinner x:Name="Spinner" />
-        </Border>
-        <icons:UnifiedIcon x:Name="Icon"
-                           Classes="Check" />
-        <TextBlock x:Name="ShortName"/>
-    </panels:FlexPanel>
+    <DockPanel>
+        <TextBlock x:Name="ShortName"
+                           DockPanel.Dock="Right"/>
+        <spinner:Spinner x:Name="Spinner" />
+        <icons:UnifiedIcon x:Name="Icon" Value="{x:Static icons:IconValues.Check}" />
+        
+    </DockPanel>
+    
 </reactiveUi:ReactiveUserControl>

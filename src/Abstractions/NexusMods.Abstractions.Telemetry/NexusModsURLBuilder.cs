@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Telemetry;
 
@@ -47,6 +48,8 @@ public static class NexusModsUrlBuilder
     /// </remarks>
     public static Uri CreateGenericUri(string baseUrl) => CreateUri(baseUrl);
 
+    public static Uri CreateModFileDownloadUri(FileId fileId, GameId gameId) => CreateUri($"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}");
+    
     public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
     public static Uri LearAboutPremiumUri => CreateUri("https://next.nexusmods.com/premium");

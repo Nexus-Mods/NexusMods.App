@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
+using NexusMods.Networking.ModUpdates.Traits;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using StrawberryShake;
 namespace NexusMods.Networking.NexusWebApi;
@@ -33,7 +34,7 @@ public static class RunUpdateCheck
         foreach (var gameId in gameIds)
         {
             // Note (sewer): We need to update to V2 stat.
-            var gameDomain = (await mappingCache.TryGetDomainAsync(gameId, default(CancellationToken))).Value.Value;
+            var gameDomain = (await mappingCache.TryGetDomainAsync(gameId, CancellationToken.None)).Value.Value;
             var modUpdates = await apiClient.ModUpdatesAsync(gameDomain, PastTime.Month);
             var updateResults = ModFeedItemUpdateMixin.FromUpdateResults(modUpdates.Data, gameId);
             updater.Update(updateResults);
@@ -95,6 +96,9 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all files which have a 'newer' date than the current one.
     /// </summary>
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
     public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, UidForFile uid)
     {
         var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
@@ -104,8 +108,43 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all files which have a 'newer' date than the current one.
     /// </summary>
-    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(NexusModsFileMetadata.ReadOnly file)
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(NexusModsFileMetadata.ReadOnly file) 
+        => GetNewerFilesForExistingFile(new ModFileMetadataMixin(file)).Select(x => ((ModFileMetadataMixin)x).Metadata);
+
+    /// <summary>
+    /// Returns all files which have a 'newer' date than the current one,
+    /// using fuzzy name matching to handle variations in file naming.
+    /// </summary>
+    /// <remarks>
+    ///     The returned items are returned in descending order, from newest to oldest.
+    /// </remarks>
+    public static IEnumerable<IAmAModFile> GetNewerFilesForExistingFile(IAmAModFile file)
     {
-        return file.ModPage.Files.Where(x => x.UploadedAt > file.UploadedAt);
-    } 
+        // Get the normalized name for the current file
+        var normalizedName = FuzzySearch.NormalizeFileName(file.Name, file.Version);
+        
+        // Get all other files from the same mod page
+        return file.OtherFilesInSameModPage
+            .Where(otherFile => 
+                // Must be uploaded later
+                // Note(sewer):
+                //
+                //     In future we might check version too, but this may
+                //     be a bit unreliable in cases where versions have
+                //     a suffix and non-suffix variants. So these items would
+                //     need to be put into a different group/pool to match from.
+                //
+                //     Because, when mapped to SemVer, the suffix would be
+                //     interpreted as a pre-release, and an item without a suffix
+                //     may be assumed as a more recent version.
+                otherFile.UploadedAt > file.UploadedAt &&
+                // Must have matching normalized name
+                FuzzySearch.NormalizeFileName(otherFile.Name, otherFile.Version)
+                    .Equals(normalizedName, StringComparison.OrdinalIgnoreCase)
+            )
+            .OrderByDescending(x => x.UploadedAt);
+    }
 }

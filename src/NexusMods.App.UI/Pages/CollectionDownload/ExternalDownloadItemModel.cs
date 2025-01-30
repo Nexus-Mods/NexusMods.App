@@ -11,6 +11,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
+[Obsolete("Use CompositeItemModel instead")]
 public class ExternalDownloadItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,

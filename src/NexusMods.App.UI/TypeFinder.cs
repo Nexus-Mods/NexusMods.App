@@ -37,6 +37,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
         typeof(LoadOrdersWIPPageContext),
+        typeof(CollectionLoadoutPageContext),
 
         // workspace context
         typeof(EmptyContext),

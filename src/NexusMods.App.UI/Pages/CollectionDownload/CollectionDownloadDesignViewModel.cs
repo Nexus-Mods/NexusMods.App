@@ -1,7 +1,9 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -40,17 +42,22 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public int CountDownloadedRequiredItems { get; } = 1;
     public bool CanDownloadAutomatically { get; } = false;
 
+    public BindableReactiveProperty<bool> IsInstalled { get; } = new(value: false);
     public BindableReactiveProperty<bool> IsDownloading { get; } = new();
     public BindableReactiveProperty<bool> IsInstalling { get; } = new();
+    public BindableReactiveProperty<bool> IsUpdateAvailable { get; } = new();
+    public BindableReactiveProperty<bool> HasInstalledAllOptionalItems { get; } = new(value: false);
+    public BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; } = new();
 
+    public ReactiveCommand<NavigationInformation> CommandViewCollection { get; } = new();
     public ReactiveCommand<Unit> CommandDownloadOptionalItems { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDownloadRequiredItems { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandInstallOptionalItems { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandInstallRequiredItems { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandUpdateCollection { get; } = new ReactiveCommand();
 
     public ReactiveCommand<Unit> CommandViewOnNexusMods { get; } = new ReactiveCommand();
-    public ReactiveCommand<Unit> CommandViewInLibrary { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandOpenJsonFile { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; } = new ReactiveCommand();
-    public ReactiveCommand<Unit> CommandDeleteCollection { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; } = new ReactiveCommand();
 }

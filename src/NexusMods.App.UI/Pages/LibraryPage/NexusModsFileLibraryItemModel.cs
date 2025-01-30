@@ -16,23 +16,30 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 /// <summary>
 ///     This is used for individual files (archives) linked to a download page.
 /// </summary>
+[Obsolete("Use CompositeItemModel instead")]
 public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithVersion,
     ILibraryItemWithSize,
     ILibraryItemWithDates,
-    ILibraryItemWithInstallAction,
+    ILibraryItemWithUpdateAction,
     IHasLinkedLoadoutItems,
     IIsChildLibraryItemModel
 {
-    public NexusModsFileLibraryItemModel(NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IServiceProvider serviceProvider, bool showThumbnail = true)
+    public NexusModsFileLibraryItemModel(
+        NexusModsLibraryItem.ReadOnly nexusModsLibraryItem, IObservable<NexusModsFileMetadata.ReadOnly> hasUpdateObservable, IServiceProvider serviceProvider, bool showThumbnail = true)
     {
-        LibraryItemId = nexusModsLibraryItem.Id;
-
+        LibraryItem = nexusModsLibraryItem;
         FormattedSize = ItemSize.ToFormattedProperty();
         FormattedDownloadedDate = DownloadedDate.ToFormattedProperty();
         FormattedInstalledDate = InstalledDate.ToFormattedProperty();
+        Name.Value = nexusModsLibraryItem.FileMetadata.Name;
+        DownloadedDate.Value = nexusModsLibraryItem.GetCreatedAt();
+        _preUpdateVersion = nexusModsLibraryItem.FileMetadata.Version;
+        Version.Value = _preUpdateVersion;
+        
         InstallItemCommand = ILibraryItemWithInstallAction.CreateCommand(this);
+        UpdateItemCommand = ILibraryItemWithUpdateAction.CreateCommand(this);
 
         var imageDisposable = Disposable.Empty;
         ShowThumbnail.Value = showThumbnail;
@@ -46,14 +53,15 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         
         // ReSharper disable once NotDisposedResource
         var datesDisposable = ILibraryItemWithDates.SetupDates(this);
-
         var linkedLoadoutItemsDisposable = new SerialDisposable();
 
         // ReSharper disable once NotDisposedResource
-        var modelActivationDisposable = this.WhenActivated(linkedLoadoutItemsDisposable, static (self, linkedLoadoutItemsDisposable, disposables) =>
+        var state = (hasUpdateObservable, linkedLoadoutItemsDisposable);
+        var modelActivationDisposable = this.WhenActivated(state, static (self, tuple, disposables) =>
         {
             // ReSharper disable once NotDisposedResource
-            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, linkedLoadoutItemsDisposable).AddTo(disposables);
+            IHasLinkedLoadoutItems.SetupLinkedLoadoutItems(self, tuple.linkedLoadoutItemsDisposable).AddTo(disposables);
+            tuple.hasUpdateObservable.Subscribe(self.InformUpdateAvailable).AddTo(disposables);
         });
 
         _modelDisposable = Disposable.Combine(
@@ -75,7 +83,8 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
         );
     }
 
-    public LibraryItemId LibraryItemId { get; }
+    public LibraryItemId LibraryItemId => LibraryItem.Id;
+    public NexusModsLibraryItem.ReadOnly LibraryItem { get; }
 
     public Observable<DateTimeOffset>? Ticker { get; set; }
 
@@ -86,6 +95,7 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public BindableReactiveProperty<bool> ShowThumbnail { get; } = new(value: true);
     public BindableReactiveProperty<string> Name { get; } = new(value: "-");
     public BindableReactiveProperty<string> Version { get; } = new(value: "-");
+    private string _preUpdateVersion;
 
     public ReactiveProperty<Size> ItemSize { get; } = new();
     public BindableReactiveProperty<string> FormattedSize { get; }
@@ -99,6 +109,10 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     public ReactiveCommand<Unit, ILibraryItemModel> InstallItemCommand { get; }
     public BindableReactiveProperty<bool> IsInstalled { get; } = new();
     public BindableReactiveProperty<string> InstallButtonText { get; } = new(value: ILibraryItemWithInstallAction.GetButtonText(isInstalled: false));
+
+    public ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
+    public BindableReactiveProperty<bool> UpdateAvailable { get; } = new(value: false);
+    public BindableReactiveProperty<string> UpdateButtonText { get; } = new(value: ILibraryItemWithUpdateAction.GetButtonText(1, 1, false));
 
     private bool _isDisposed;
     private readonly IDisposable _modelDisposable;
@@ -120,4 +134,14 @@ public class NexusModsFileLibraryItemModel : TreeDataGridItemModel<ILibraryItemM
     }
 
     public override string ToString() => $"Nexus Mods File: {Name.Value}";
+    
+    /// <summary>
+    /// Informs the mod page model of an available update to the item.
+    /// </summary>
+    /// <param name="mostRecentFile">The most recent file of any of the page's children.</param>
+    public void InformUpdateAvailable(NexusModsFileMetadata.ReadOnly mostRecentFile)
+    {
+        Version.Value = LibraryItemModelCommon.FormatModVersionUpdate(_preUpdateVersion, mostRecentFile.Version);
+        UpdateAvailable.Value = true;
+    }
 }

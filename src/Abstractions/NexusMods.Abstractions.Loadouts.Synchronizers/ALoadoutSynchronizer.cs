@@ -1,12 +1,16 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
@@ -49,6 +53,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     protected readonly IConnection Connection;
 
     private readonly IJobMonitor _jobMonitor;
+    private readonly IFileHashesService _fileHashService;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -60,10 +65,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ISorter sorter,
         IConnection conn,
         IOSInformation os,
+        IFileHashesService fileHashService,
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _fileHashService = fileHashService;
 
         _logger = logger;
         _fileStore = fileStore;
@@ -84,6 +91,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>(),
+        provider.GetRequiredService<IFileHashesService>(),
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
@@ -495,12 +503,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
                 }
 
+                var writeTimeUtc = new DateTimeOffset(register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc);
                 // Reuse the old disk state entry if it exists
                 if (entry.Disk.HasValue)
                 {
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
                     tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, writeTimeUtc);
                 }
                 else
                 {
@@ -509,7 +518,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
                         Hash = entry.LoadoutFileHash.Value,
                         Size = entry.LoadoutFileSize.Value,
-                        LastModified = DateTime.UtcNow,
+                        LastModified = writeTimeUtc,
                         GameId = gameMetadataId,
                     };
                 }
@@ -591,8 +600,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
                     tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
-                    
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
                     continue;
                 }
             }
@@ -625,7 +633,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutFileEntry = loadoutFile,
                 }
             );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, DateTime.UtcNow);
+            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
         }
 
         if (added.Count > 0)
@@ -904,14 +912,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         if (inState.TryGetValue(gamePath, out var entry))
                         {
                             var fileInfo = file.FileInfo;
+                            var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
 
                             // If the files don't match, update the entry
-                            if (fileInfo.LastWriteTimeUtc > entry.LastModified || fileInfo.Size != entry.Size)
+                            if (writeTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
                                 var newHash = await file.XxHash3Async();
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                                tx.Add(entry.Id, DiskStateEntry.LastModified, fileInfo.LastWriteTimeUtc);
+                                tx.Add(entry.Id, DiskStateEntry.LastModified, writeTimeUtc);
                                 changes = true;
                             }
                         }
@@ -952,13 +961,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         return changes;
     }
-        
+    
+
     /// <summary>
     /// Index the game state and create the initial disk state
     /// </summary>
     public async Task IndexNewState(GameInstallation installation, ITransaction tx)
     {
         var metaDataId = installation.GameMetadataId;
+
+        var hashDb = await _fileHashService.GetFileHashesDb();
         
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
@@ -967,24 +979,54 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
                 {
-                    var gamePath = installation.LocationsRegister.ToGamePath(file);
-                    if (IsIgnoredPath(gamePath))
-                    {
-                        return;
-                    }
-
-                    var newHash = await file.XxHash3Async(token: token);
+                    var (gamePath, newHash) = await HashGameFile(hashDb, installation, file, token);
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
                         Path = gamePath.ToGamePathParentTuple(metaDataId),
                         Hash = newHash,
                         Size = file.FileInfo.Size,
                         LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = metaDataId
+                        GameId = metaDataId,
                     };
                 }
             );
         }
+    }
+
+    /// <summary>
+    /// Hash a file but first check the hash database for a matching size and minimal hash, and use that to reduce
+    /// the amount of work needed to produce the hash.
+    /// </summary>
+    private static async ValueTask<(GamePath gamePath, Hash newHash)> HashGameFile(IDb hashDb, GameInstallation installation, AbsolutePath file, CancellationToken token)
+    {
+        var gamePath = installation.LocationsRegister.ToGamePath(file);
+        
+        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash. 
+        // File sizes are actually fairly unique. Of-course they collide a lot, but since most games have different
+        // types of file and pack their assets in archives, the number of collisions are fairly low. Using a path
+        // first is more expensive due to it being a insensitive string comparsion, and we'd have to hash the file
+        // on disk to get the minimal hash. 
+        // So we do size -> minimal hash -> path (path being uses mostly as a doublecheck at the end).
+        var relation = HashRelation.FindBySize(hashDb, file.FileInfo.Size);
+        if (relation.Count != 0)
+        {
+            // We have a size match, so minimal hash it, and see if we have a match
+            var minimalHash = await MultiHasher.MinimalHash(file, token);
+            foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
+            {
+                // Match on the relative path as well as the minimal hash
+                foreach (var path in matchingHash.Paths)
+                {
+                    if (path.Path == gamePath.Path)
+                        return (gamePath, matchingHash.XxHash3);
+                }
+                
+            }
+        }
+        
+        // No other matches, so do a full hash
+        var newHash = await file.XxHash3Async(token: token);
+        return (gamePath, newHash);
     }
 
     /// <inheritdoc />

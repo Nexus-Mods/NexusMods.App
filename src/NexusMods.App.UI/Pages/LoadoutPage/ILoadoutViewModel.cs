@@ -16,4 +16,10 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     R3.ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
 
     R3.ReactiveCommand<R3.Unit> RemoveItemCommand { get; }
+    
+    R3.ReactiveCommand<R3.Unit> CollectionToggleCommand { get; }
+    
+    bool IsCollection { get; }
+    
+    bool IsCollectionEnabled { get; }
 }

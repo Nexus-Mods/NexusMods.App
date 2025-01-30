@@ -12,6 +12,7 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+[Obsolete("Use CompositeItemModel instead")]
 public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryItemModel, EntityId>,
     ILibraryItemWithThumbnailAndName,
     ILibraryItemWithSize,
@@ -20,7 +21,9 @@ public class LocalFileParentLibraryItemModel : TreeDataGridItemModel<ILibraryIte
     IHasLinkedLoadoutItems,
     IIsParentLibraryItemModel
 {
-    public LocalFileParentLibraryItemModel(LocalFile.ReadOnly localFile, IServiceProvider serviceProvider)
+    public LocalFileParentLibraryItemModel(LocalFile.ReadOnly localFile, IServiceProvider serviceProvider,
+        IObservable<bool> hasChildrenObservable, IObservable<IChangeSet<ILibraryItemModel, EntityId>> childrenObservable) 
+        : base(hasChildrenObservable, childrenObservable)
     {
         LibraryItemIds = [localFile.Id];
 
