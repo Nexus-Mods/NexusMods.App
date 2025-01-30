@@ -32,7 +32,7 @@ public static class EnumerableExtensions
         return new ReadOnlyObservableCollection<T>(source.ToObservableCollection());
     }
 
-    public static Optional<TItem> MaxByOptional<TItem, TValue>(this IEnumerable<TItem> source, Func<TItem, TValue> selector)
+    public static Optional<TItem> OptionalMaxBy<TItem, TValue>(this IEnumerable<TItem> source, Func<TItem, TValue> selector)
         where TItem : notnull
         where TValue : IComparable<TValue>
     {
@@ -60,5 +60,35 @@ public static class EnumerableExtensions
         }
 
         return maxItem;
+    }
+    
+    public static Optional<TItem> OptionalMinBy<TItem, TValue>(this IEnumerable<TItem> source, Func<TItem, TValue> selector)
+        where TItem : notnull
+        where TValue : IComparable<TValue>
+    {
+        var minItem = Optional<TItem>.None;
+        var minValue = Optional<TValue>.None;
+
+        foreach (var item in source)
+        {
+            if (!minItem.HasValue)
+            {
+                minItem = item;
+                minValue = selector(item);
+                continue;
+            }
+
+            var value = selector(item);
+            var result = value.CompareTo(minValue.Value);
+
+            // Smaller than zero: value comes before minValue
+            if (result < 0)
+            {
+                minItem = item;
+                minValue = value;
+            }
+        }
+
+        return minItem;
     }
 }
