@@ -7,7 +7,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using OperationResultExtension = StrawberryShake.OperationResultExtensions
+using OperationResultExtension = StrawberryShake.OperationResultExtensions;
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
