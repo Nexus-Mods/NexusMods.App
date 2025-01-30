@@ -6,11 +6,11 @@ The release adds collections to the Library, introduces thumbnails for mods, and
 
 Collections are now available at the top of the Library. The new section appears once you have at least one collection installed and can be collapsed. In addition, installed collections can be easily toggled on and off from the left menu. 
 
-![The Library showing the new Collections section at the top of the page](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738233302-36795729.png)
+![The Library showing the new Collections section at the top of the page](./docs/changelog-assets/475066721f26a68fee15c2dd8509e017.webp)
 
 All collections downloaded from Nexus Mods will be in a read-only state when added to your loadout which ensures you get the full experience the curator intended. In future, users will be able make copies of existing collections in order to edit them. 
 
-![The read-only view for an installed collection](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738232800-1748036907.png)
+![The read-only view for an installed collection](./docs/changelog-assets/f8f271ed8e206e0411823a6f760107eb.webp)
 
 We're also made improvements to the experience of downloading and installing collections by adding more useful information to the Collection Download page and the Collection tiles in the library. 
 
@@ -22,7 +22,7 @@ We've made several improvements to the behaviour of the left menu in your Worksp
 * Pages in the left menu will now show active/selected states based on which panels/tabs are open and in view. 
 * Tooltips have been added to the left menu items so you can always see the full name. 
 
-![The app with two panels open side-by-side showcasing the the active/selected states in the left menu.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738232561-2130448519.png)
+![The app with two panels open side-by-side showcasing the the active/selected states in the left menu.](./docs/changelog-assets/3ff23a43da45da8f216d1d9ba20b7bd9.webp)
 
 ## Technical Changes
 * Added a new error pop-up when the app encounters an unexpected error. This can be turned off in the Settings. 
