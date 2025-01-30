@@ -6,6 +6,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.UI.Extensions;
@@ -38,6 +39,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CollectionToggleCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
+    public ILibraryService _LibraryService;
     
     [Reactive] public bool IsCollection { get; private set; } 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
@@ -52,6 +54,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
+        _LibraryService = serviceProvider.GetRequiredService<ILibraryService>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
         if (collectionGroupId.HasValue)
@@ -127,14 +130,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .ToHashSet();
 
                 if (ids.Count == 0) return;
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in ids)
-                {
-                    tx.Delete(id, recursive: true);
-                }
-
-                await tx.Commit();
+                await _LibraryService.RemoveLibraryItemFromLoadout(ids);
             },
             awaitOperation: AwaitOperation.Sequential,
             initialCanExecute: false,
