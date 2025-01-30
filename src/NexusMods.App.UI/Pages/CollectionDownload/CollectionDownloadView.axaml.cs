@@ -195,11 +195,25 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
                 }).DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.InstructionsRenderer)
-                .Subscribe(instructionsRenderer =>
+            this.WhenAnyValue(
+                    view => view.ViewModel!.InstructionsRenderer,
+                    view => view.ViewModel!.RequiredModsInstructions,
+                    view => view.ViewModel!.OptionalModsInstructions)
+                .Subscribe(tuple =>
                 {
-                    Instructions.IsVisible = instructionsRenderer is not null;
-                    InstructionsRendererHost.ViewModel = instructionsRenderer;
+                    var (instructionsRenderer, requiredModsInstructions, optionalModsInstructions) = tuple;
+
+                    var hasInstructions = instructionsRenderer is not null || requiredModsInstructions.Length > 0 || optionalModsInstructions.Length > 0;
+                    InstructionsTab.IsVisible = hasInstructions;
+
+                    CollectionInstructionsExpander.IsVisible = instructionsRenderer is not null;
+                    CollectionInstructionsRendererHost.ViewModel = instructionsRenderer;
+
+                    RequiredModsInstructionsExpander.IsVisible = requiredModsInstructions.Length > 0;
+                    RequiredModsInstructions.ItemsSource = requiredModsInstructions;
+
+                    OptionalModsInstructionsExpander.IsVisible = optionalModsInstructions.Length > 0;
+                    OptionalModsInstructions.ItemsSource = optionalModsInstructions;
                 }).DisposeWith(d);
         });
     }
