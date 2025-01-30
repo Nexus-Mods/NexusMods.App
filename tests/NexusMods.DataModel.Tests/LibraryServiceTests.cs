@@ -2,11 +2,14 @@ using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Xunit.Abstractions;
 
@@ -16,11 +19,13 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
 {
     private readonly ILibraryService _libraryService;
     private readonly IFileStore _fileStore;
-    
+    private readonly IConnection _connection;
+
     public LibraryServiceTests(ITestOutputHelper helper) : base(helper)
     {
         _libraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         _fileStore = ServiceProvider.GetRequiredService<IFileStore>();
+        _connection = ServiceProvider.GetRequiredService<IConnection>();
     }
 
     [Fact]
@@ -102,4 +107,52 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         return result.ToString();
     }
 
+    [Fact]
+    public async Task LoadoutsWithLibraryItem_ShouldReturnCorrectLoadouts()
+    {
+        // Arrange the DB
+        // Create a new loadout
+        using var tx = _connection.BeginTransaction();
+        var loadoutNew = new Loadout.New(tx)
+        {
+            Name = "Test Loadout",
+            ShortName = "Test",
+            InstallationId = GameInstallation.GameMetadataId,
+            LoadoutKind = LoadoutKind.Default,
+            Revision = 0,
+            GameVersion = VanityVersion.From("Unknown"),
+        };
+        _ = new CollectionGroup.New(tx, out var userCollectionId)
+        {
+            IsReadOnly = false,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, userCollectionId)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, userCollectionId)
+                {
+                    Name = "My Mods",
+                    LoadoutId = loadoutNew.LoadoutId,
+                },
+            },
+        };
+
+        // Commit the loadout to the DB.
+        var result = await tx.Commit();
+        var loadout = result.Remap(loadoutNew);
+        
+        // Act
+        // Create a new library item (e.g., add a local file)
+        var nestedArchivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
+            .Combine("Resources")
+            .Combine("nested_archive.zip");
+        var libraryItem = (await _libraryService.AddLocalFile(nestedArchivePath)).AsLibraryFile().AsLibraryItem();
+
+        // Add it to our new loadout.
+        await _libraryService.InstallItem(libraryItem, loadout.LoadoutId);
+        var loadouts = _libraryService.LoadoutsWithLibraryItem(libraryItem, _connection.Db);
+
+        // Assert that we have a single item.
+        loadouts.Should().ContainSingle()
+            .Which.LoadoutId.Should().Be(loadout.LoadoutId);
+    }
 }

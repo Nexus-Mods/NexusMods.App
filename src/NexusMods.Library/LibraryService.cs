@@ -47,6 +47,17 @@ public sealed class LibraryService : ILibraryService
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
+    public IEnumerable<Loadout.ReadOnly> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem, IDb? db = null)
+    {
+        var dbToUse = db ?? libraryItem.Db;
+        // Start with a backref.
+        // We're making a small assumption here that number of loadouts will be fairly small.
+        // That may not always be true, but I believe
+        return LibraryLinkedLoadoutItem
+            .FindByLibraryItem(dbToUse, libraryItem)
+            .Select(x => x.AsLoadoutItem().Loadout);
+    }
+
     public async Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source)
     {
         return await AddLibraryFileJob.Create(_serviceProvider, transaction, filePath: source);
