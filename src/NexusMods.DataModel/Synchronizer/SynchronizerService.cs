@@ -176,7 +176,8 @@ public class SynchronizerService : ISynchronizerService
         var statusObservable = isBusy.CombineLatest(lastApplied,
                 revisions,
                 (busy, last, rev) => (busy, last, rev.loadout, rev.revDbTx)
-            )            
+            )
+            
             .DistinctUntilChanged()
             .SelectAwait(
                 async (tuple, cancellationToken) =>
@@ -209,7 +210,7 @@ public class SynchronizerService : ISynchronizerService
 
                     return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
                 },
-                awaitOperation: AwaitOperation.Switch
+                awaitOperation: AwaitOperation.ThrottleFirstLast
             )
             .Replay(1)
             .RefCount();
