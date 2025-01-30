@@ -13,6 +13,11 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 public readonly record struct PathPartPair(GamePath Path, SyncNodePart Part);
 
 /// <summary>
+/// A pairing of a path and a sync tree node.
+/// </summary>
+public readonly record struct PathNodePair(GamePath Path, SyncTreeNode Node);
+
+/// <summary>
 /// A grouping of (optional) entityId, hash, size. 8bytes for each, so 24 bytes total.
 /// </summary>
 public readonly struct SyncNodePart
@@ -42,6 +47,11 @@ public readonly struct SyncNodePart
     /// The size of the file.
     /// </summary>
     public required Size Size { get; init; }
+    
+    /// <summary>
+    /// The last modified time of the file in UTC ticks.
+    /// </summary>
+    public required long LastModifiedTicks { get; init; }
 
     /// <summary>
     /// True if the entity ID has a value.
@@ -92,10 +102,10 @@ public record struct SyncTreeNode
     /// <summary>
     /// Sync state signature.
     /// </summary>
-    public Signature Signature { get; init; }
+    public Signature Signature { get; set; }
     
     /// <summary>
     /// Actions that can be performed on this node.
     /// </summary>
-    public Actions Actions { get; init; }
+    public Actions Actions { get; set; }
 }

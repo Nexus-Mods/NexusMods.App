@@ -31,12 +31,12 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, return a groupings object for the tree
     /// </summary>
-    SyncActionGroupings<SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> syncTree);
+    Dictionary<GamePath, SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> syncTree);
     
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SyncTreeNode> tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly install);
+    Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SyncTreeNode> tree, Dictionary<GamePath, SyncTreeNode> groupings, Loadout.ReadOnly install);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
