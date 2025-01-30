@@ -239,8 +239,25 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
+        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:MultiComponentControl.AvailableTemplates>
+                <!-- Update -->
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+
+                            <Button Command="{CompiledBinding CommandUpdate}"
+                                    Classes="Standard"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="{CompiledBinding ButtonText}"/>
+                            </Button>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
+                <!-- Install -->
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+InstallAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
@@ -261,12 +278,9 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
+            </controls:MultiComponentControl.AvailableTemplates>
+        </controls:MultiComponentControl>
 
-            <controls:ComponentControl.Fallback>
-                <TextBlock Text="-"/>
-            </controls:ComponentControl.Fallback>
-        </controls:ComponentControl>
     </DataTemplate>
 
 </ResourceDictionary>

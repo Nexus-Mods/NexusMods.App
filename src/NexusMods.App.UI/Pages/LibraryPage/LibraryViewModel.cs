@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using System.Reflection.Metadata;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -31,6 +32,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
+using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -197,11 +199,18 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
                 {
-                    foreach (var id in message.Ids)
+                    if (message.TryPickT0(out var installMessage, out var updateMessage))
                     {
-                        var libraryItem = LibraryItem.Load(_connection.Db, id);
-                        if (!libraryItem.IsValid()) continue;
-                        await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                        foreach (var id in installMessage.Ids)
+                        {
+                            var libraryItem = LibraryItem.Load(_connection.Db, id);
+                            if (!libraryItem.IsValid()) continue;
+                            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        await HandleUpdateMessage(updateMessage.NewFile, cancellationToken);
                     }
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -226,15 +235,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private void HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
     {
-        var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(fileMetadata);
-        var mostRecentVersion = newerItems.FirstOrDefault();
-        if (!mostRecentVersion.IsValid()) return;
-
-        var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(mostRecentVersion.Uid.FileId, mostRecentVersion.Uid.GameId);
+        var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(fileMetadata.Uid.FileId, fileMetadata.Uid.GameId);
         var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-        osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+        await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
     }
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
@@ -329,15 +334,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
+public readonly record struct UpdateMessage(NexusModsFileMetadata.ReadOnly NewFile);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<InstallMessage>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
 
-    public Subject<InstallMessage> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateMessage>> MessageSubject { get; } = new();
 
     private readonly IDisposable _activationDisposable;
     private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
@@ -371,7 +377,7 @@ public class LibraryTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var disposable = model.SubscribeToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
+        var installActionDisposable = model.SubscribeToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
@@ -382,6 +388,20 @@ public class LibraryTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new InstallMessage(ids));
             })
         );
+
+        var updateActionDisposable = model.SubscribeToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.UpdateComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandUpdate.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, _, component) = state;
+                var newFile = component.NewFile.Value;
+
+                self.MessageSubject.OnNext(new UpdateMessage(newFile));
+            })
+        );
+
+        var disposable = Disposable.Combine(installActionDisposable, updateActionDisposable);
 
         var didAdd = _commandDisposables.TryAdd(model, disposable);
         Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");

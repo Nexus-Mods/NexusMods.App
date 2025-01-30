@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
@@ -152,7 +153,7 @@ public static class LibraryComponents
                 .Select(static tuple => GetButtonText(tuple, isExpanded: false))
                 .ToReadOnlyBindableReactiveProperty(initialValue: GetButtonText(matches.Value.Value, isExpanded: false));
 
-            _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
+            _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
                 self._source.Activate().AddTo(disposables);
             });
@@ -196,6 +197,72 @@ public static class LibraryComponents
                 if (disposing)
                 {
                     Disposable.Dispose(_activationDisposable, _idsObservable ?? Disposable.Empty, CommandInstall, ButtonText, _source);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    public sealed class UpdateAction : ReactiveR3Object, IItemModelComponent<UpdateAction>, IComparable<UpdateAction>
+    {
+        public ReactiveCommand<Unit> CommandUpdate { get; } = new();
+
+        private readonly BindableReactiveProperty<NexusModsFileMetadata.ReadOnly> _newFile;
+        public IReadOnlyBindableReactiveProperty<NexusModsFileMetadata.ReadOnly> NewFile => _newFile;
+
+        private readonly BindableReactiveProperty<string> _buttonText;
+        public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
+
+        public int CompareTo(UpdateAction? other)
+        {
+            if (other is null) return 1;
+            return NewFile.Value.UploadedAt.CompareTo(other.NewFile.Value.UploadedAt);
+        }
+
+        private readonly IDisposable _activationDisposable;
+        public UpdateAction(
+            NexusModsFileMetadata.ReadOnly initialValue,
+            Observable<NexusModsFileMetadata.ReadOnly> valueObservable)
+        {
+            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue);
+            _buttonText = new BindableReactiveProperty<string>(value: "Update");
+
+            _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
+            {
+                observable.Subscribe(self, static (value, self) => self._newFile.Value = value).AddTo(disposables);
+            });
+        }
+
+        public UpdateAction(
+            NexusModsFileMetadata.ReadOnly[] initialValue,
+            Observable<NexusModsFileMetadata.ReadOnly[]> valuesObservable)
+        {
+            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue.First());
+            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.Length));
+
+            _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
+            {
+                observable.Subscribe(self, static (values, self) =>
+                {
+                    self._newFile.Value = values.First();
+                    self._buttonText.Value = GetButtonText(values.Length);
+                }).AddTo(disposables);
+            });
+        }
+
+        private static string GetButtonText(int count) => $"Update ({count})";
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(_activationDisposable, CommandUpdate);
                 }
 
                 _isDisposed = true;

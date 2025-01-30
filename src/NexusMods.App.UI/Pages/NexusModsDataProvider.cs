@@ -287,6 +287,18 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             )
         );
 
+        // Update button
+        var newestFiles = _modUpdateService.GetNewestModPageVersionObservable(modPage);
+
+        parentItemModel.AddObservable(
+            key: LibraryColumns.Actions.UpdateComponentKey,
+            observable: newestFiles,
+            componentFactory: static (valueObservable, initialValue) => new LibraryComponents.UpdateAction(
+                initialValue,
+                valueObservable
+            )
+        );
+
         LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
 
         var matchesObservable = libraryItems
@@ -337,6 +349,18 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: static (valueObservable, initialValue) => new StringComponent(
+                initialValue,
+                valueObservable
+            )
+        );
+
+        // Update button
+        var newestFile = _modUpdateService.GetNewestFileVersionObservable(fileMetadata);
+
+        itemModel.AddObservable(
+            key: LibraryColumns.Actions.UpdateComponentKey,
+            observable: newestFile,
+            componentFactory: static (valueObservable, initialValue) => new LibraryComponents.UpdateAction(
                 initialValue,
                 valueObservable
             )
