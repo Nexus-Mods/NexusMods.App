@@ -16,12 +16,12 @@ public interface ILoadoutSynchronizer
 {
     
     #region Synchronization Methods
-    
+
     /// <summary>
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
     /// sync tree contains a matching of all the files in all 3 sources based on their path.
     /// </summary>
-    Dictionary<GamePath, SyncTreeNode> MergeStates(DiskState currentState, DiskState previousTree, Dictionary<GamePath, LoadoutSourceItem> loadoutTree);
+    void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncTreeNode> loadoutItems);
     
     /// <summary>
     /// Builds a sync tree from a loadout and the current state of the game folder.
@@ -29,14 +29,14 @@ public interface ILoadoutSynchronizer
     Task<Dictionary<GamePath, SyncTreeNode>> BuildSyncTree(Loadout.ReadOnly loadoutTree);
     
     /// <summary>
-    /// Processes the sync tree to create the signature and actions for each file, return a groupings object for the tree
+    /// Processes the sync tree to create the signature and actions for each file, changes are made in-place on the tree.
     /// </summary>
-    Dictionary<GamePath, SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> syncTree);
+    void ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> syncTree);
     
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SyncTreeNode> tree, Dictionary<GamePath, SyncTreeNode> groupings, Loadout.ReadOnly install);
+    Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SyncTreeNode> syncTree, Loadout.ReadOnly loadout);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any

@@ -97,7 +97,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
-    private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskState newState, GameInstallation installation)
+    private void CleanDirectories(IEnumerable<(GamePath GamePath, AbsolutePath ResolvedPath)> toDelete, DiskState newState, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
@@ -109,11 +109,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         ).ToHashSet();
 
-        foreach (var entry in toDelete)
+        foreach (var (gamePath, fullPath) in toDelete)
         {
-            var parentPath = entry.Parent;
+            var parentPath = gamePath.Parent;
             GamePath? emptyStructureRoot = null;
-            while (parentPath != entry.GetRootComponent)
+            while (parentPath != gamePath.GetRootComponent)
             {
                 if (seenDirectories.Contains(parentPath))
                 {
@@ -307,7 +307,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Dictionary<GamePath, SyncTreeNode> MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncTreeNode> loadoutItems)
+    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncTreeNode> loadoutItems)
     {
         foreach (var node in previousTree)
         {
@@ -340,7 +340,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 };
             }
         }
-        return loadoutItems;
     }
 
     /// <summary>
@@ -364,7 +363,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="entries"></param>
     /// <returns></returns>
-    private IEnumerable<PathPartPair> DiskStateToPathPartPair(IEnumerable<DiskStateEntry.ReadOnly> entries)
+    private IEnumerable<PathPartPair> DiskStateToPathPartPair<T>(T entries) 
+        where T : IEnumerable<DiskStateEntry.ReadOnly>
     {
         foreach (var entry in entries)
         {
@@ -376,13 +376,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     EntityId = entry.Id,
                     Hash = entry.Hash,
                     Size = entry.Size,
+                    LastModifiedTicks = entry.LastModified.UtcTicks,
                 },
             };
         }
     }
 
     /// <inheritdoc />
-    public Dictionary<GamePath, SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> tree)
+    public void ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> tree)
     {
         foreach (var path in tree.Keys)
         {
@@ -390,7 +391,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(tree, path);
             
             var signature = SignatureBuilder.Build(
-            
                 diskHash: item.HaveDisk ? item.Disk.Hash : Optional<Hash>.None,
                 prevHash: item.HavePrevious ? item.Previous.Hash : Optional<Hash>.None,
                 loadoutHash: item.HaveLoadout && item.Loadout.Hash != Hash.Zero ? item.Loadout.Hash : Optional<Hash>.None,
@@ -403,8 +403,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
         }
-
-        return tree;
     }
 
     /// <inheritdoc />
@@ -413,6 +411,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
+        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = new();
         
         foreach (var action in ActionsInOrder)
         {
@@ -430,7 +429,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
@@ -464,60 +463,54 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var newState = loadout.Installation.DiskStateEntries;
 
         // Clean up empty directories
-        var deletedFiles = groupings[Actions.DeleteFromDisk];
-        if (deletedFiles.Count > 0)
+        if (foldersWithDeletedFiles.Count > 0)
         {
-            CleanDirectories(deletedFiles.Select(f => f.Path), newState, loadout.InstallationInstance);
+            CleanDirectories(foldersWithDeletedFiles, newState, loadout.InstallationInstance);
         }
 
         return loadout;
     }
     
     /// <inheritdoc />
-    public async Task RunGroupings(Dictionary<GamePath, SyncTreeNode> tree, SyncActionGroupings<SyncTreeNode> groupings, GameInstallation gameInstallation)
+    public async Task RunGroupings(Dictionary<GamePath, SyncTreeNode> syncTree, GameInstallation gameInstallation)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
+        var deletedFiles = new HashSet<(GamePath GamePath, AbsolutePath FullPath)>();
 
         foreach (var action in ActionsInOrder)
         {
-            var items = groupings[action];
-            if (items.Count == 0)
-                continue;
-
             switch (action)
             {
                 case Actions.DoNothing:
                     break;
 
                 case Actions.BackupFile:
-                    await ActionBackupFiles(groupings, gameInstallation);
+                    await ActionBackupNewFiles(gameInstallation, syncTree);
                     break;
 
                 case Actions.IngestFromDisk:
                     throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(groupings, register, tx);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, deletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(groupings, register, tx,
-                        gameMetadataId
-                    );
+                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
                     break;
 
                 case Actions.AddReifiedDelete:
                     throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
 
                 case Actions.WarnOfUnableToExtract:
-                    WarnOfUnableToExtract(groupings);
+                    WarnOfUnableToExtract(syncTree);
                     break;
 
                 case Actions.WarnOfConflict:
-                    WarnOfConflict(groupings);
+                    WarnOfConflict(syncTree);
                     break;
 
                 default:
@@ -652,21 +645,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId)
+    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
     {
         // Delete files from disk
         foreach (var (path, node) in groupings)
         {
             if (!node.Actions.HasFlag(Actions.DeleteFromDisk))
                 continue;
-            var gamePath = register.GetResolvedPath(path);
-            gamePath.Delete();
+            var resolvedPath = register.GetResolvedPath(path);
+            resolvedPath.Delete();
+            foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
 
+            
             // Don't delete the entry if we're just going to replace it
             if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
                 var id = node.Disk.EntityId;
-                throw new NotImplementedException();
                 tx.Retract(id, DiskStateEntry.Path, ((EntityId)gameMetadataId, path.LocationId, path.Path));
                 tx.Retract(id, DiskStateEntry.Hash, node.Disk.Hash);
                 tx.Retract(id, DiskStateEntry.Size, node.Disk.Size);
@@ -674,23 +668,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 tx.Retract(id, DiskStateEntry.Game, (EntityId)gameMetadataId);
             }
         }
-    }
-
-    private async Task ActionBackupFiles(Dictionary<GamePath, SyncTreeNode> grouping, GameInstallation gameInstallation)
-    {
-        _logger.LogDebug("Backing up {Count} files", grouping.Count);
-        
-        List<(GamePath Path, Hash Hash, Size Size)> files = [];
-
-        foreach (var (path, node) in grouping)
-        {
-            
-        }
-
-        await BackupNewFiles(gameInstallation, grouping.Select(item =>
-                (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)
-            )
-        );
     }
 
     public record struct AddedEntry
@@ -779,8 +756,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         var tree = await BuildSyncTree(loadout);
-        var groupings = ProcessSyncTree(tree);
-        return await RunGroupings(tree, groupings, loadout);
+        ProcessSyncTree(tree);
+        return await RunGroupings(tree, loadout);
     }
 
     public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
@@ -857,66 +834,66 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
     {
-        var syncTree = BuildSyncTree(diskState, diskState, loadout);
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(diskState), DiskStateToPathPartPair(diskState), loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
 
-        List<DiskDiffEntry> diffs = new();
+        List<KeyValuePair<GamePath, DiskDiffEntry>> diffs = [];
 
-        foreach (var (_, node) in syncTree)
+        foreach (var (path, node) in syncTree)
         {
             var syncNode = node;
             var actions = syncNode.Actions;
+            DiskDiffEntry entry;
             
             if (actions.HasFlag(Actions.DoNothing))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.LoadoutFileHash.Value,
-                    Size = node.LoadoutFileSize.Value,
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
                     ChangeType = FileChangeType.None,
-                    GamePath = node.Path,
+                    GamePath = path,
                 };
-                diffs.Add(entry);
+                diffs.Add(KeyValuePair.Create(path, entry));
             }
             else if (actions.HasFlag(Actions.ExtractToDisk))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.LoadoutFileHash.Value,
-                    Size = node.LoadoutFileSize.Value,
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
                     // If paired with a delete action, this is a modified file not a new one
                     ChangeType = actions.HasFlag(Actions.DeleteFromDisk) ? FileChangeType.Modified : FileChangeType.Added,
-                    GamePath = node.Path,
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
             else if (actions.HasFlag(Actions.DeleteFromDisk))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.Disk.Value.Hash,
-                    Size = node.Disk.Value.Size,
+                    Hash = node.Disk.Hash,
+                    Size = node.Disk.Size,
                     ChangeType = FileChangeType.Removed,
-                    GamePath = node.Path,
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
             else
             {
                 // This really should become some sort of error state
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
                     Hash = Hash.Zero,
                     Size = Size.Zero,
                     ChangeType = FileChangeType.None,
-                    GamePath = node.Path,
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
+            
+            diffs.Add(KeyValuePair.Create(path, entry));
         }
 
-        return FileDiffTree.Create(diffs.Select(d => KeyValuePair.Create(d.GamePath, d)));
+        return FileDiffTree.Create(diffs);
     }
 
     /// <summary>
@@ -1261,9 +1238,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var reindexed = await ReindexState(loadout.InstallationInstance, Connection);
         
-        var tree = BuildSyncTree(reindexed.DiskStateEntries, reindexed.DiskStateEntries, loadout);
-        var groupings = ProcessSyncTree(tree);
-        await RunGroupings(tree, groupings, loadout);
+        var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
+        ProcessSyncTree(tree);
+        await RunGroupings(tree, loadout);
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)
