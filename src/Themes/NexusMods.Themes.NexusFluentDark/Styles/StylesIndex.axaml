@@ -1,5 +1,17 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- Styles Definitions 
+    
+    The order of these does matter as they overwrite each other in the order they are defined.
+    
+    As a rule, the simpler and more basic the control, the higher up it should go. When that control is used later on 
+    in more complex controls, they should be below and the styles will override as expected.
+    
+    For example, the basic Spinner control should be defined first with a basic size and color. The Spinner is
+    then used in a more complex control (LoadoutBadge) where it's size and colors are based on it's usage and will be defined later.
+    
+    -->
 
     <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml"/>
@@ -33,6 +45,8 @@
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml"/>
+    
+    <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>
@@ -49,7 +63,6 @@
     <StyleInclude Source="/Styles/UserControls/MyLoadoutsView/MyLoadoutsViewStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Spine/SpineStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml"/>

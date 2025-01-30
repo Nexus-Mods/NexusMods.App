@@ -745,6 +745,10 @@
         <Compile Update="Pages\LoadoutPage\CollectionLoadoutDesignViewModel.cs">
           <DependentUpon>ICollectionLoadoutViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\PageHeader\PageHeader.axaml.cs">
+          <DependentUpon>PageHeader.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

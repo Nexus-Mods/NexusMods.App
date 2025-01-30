@@ -95,6 +95,24 @@ public unsafe struct Md5 : IEquatable<Md5>
             }
         }
     }
+
+    /// <summary>
+    /// Convert the hash to a UInt128.
+    /// </summary>
+    public UInt128 ToUInt128()
+    {
+        return MemoryMarshal.Read<UInt128>(WritableSpan);
+    }
+
+    /// <summary>
+    /// Create a new MD5 hash from a UInt128.
+    /// </summary>
+    public static Md5 FromUInt128(UInt128 value)
+    {
+        var md5 = new Md5();
+        MemoryMarshal.Write(md5.WritableSpan, value);
+        return md5;
+    }
 }
 
 internal class Md5JsonConverter : JsonConverter<Md5>

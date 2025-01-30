@@ -138,7 +138,8 @@ public class NexusModsModPageLibraryItemModel : TreeDataGridItemModel<ILibraryIt
             FormattedInstalledDate,
             InstallItemCommand,
             IsInstalled,
-            InstallButtonText
+            InstallButtonText,
+            linkedLoadoutItemsDisposable
         );
     }
 

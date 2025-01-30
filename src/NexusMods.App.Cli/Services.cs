@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CLI.OptionParsers;
@@ -30,6 +31,7 @@ public static class Services
                 .AddOptionParser<Version>(v => (Version.Parse(v), null))
                 .AddOptionParser<string>(s => (s, null))
                 .AddOptionParser<Matcher, MatcherParser>()
+                .AddOptionParser<ILocatableGame, LocatableGameParser>()
                 .AddOptionParser<ITool, ToolParser>();
 
         // Protocol Handlers

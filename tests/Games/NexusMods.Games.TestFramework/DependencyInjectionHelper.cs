@@ -5,11 +5,13 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.FileHashes;
 using NexusMods.Games.Generic;
 using NexusMods.Jobs;
 using NexusMods.Library;
@@ -53,10 +55,10 @@ public static class DependencyInjectionHelper
 
         return serviceCollection
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
+            .AddSerializationAbstractions()
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddNexusModsCollections()
@@ -77,7 +79,12 @@ public static class DependencyInjectionHelper
                     new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                 ],
             })
+            .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
+            {
+                HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashes"),
+            })
             .AddSettingsManager()
+            .AddFileHashes()
             .AddFileExtractors();
     }
 

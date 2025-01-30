@@ -88,6 +88,18 @@ public class MultiHasher
 
         return result;
     }
+
+
+    /// <summary>
+    /// Hash a file with the minimal hash algorithm.
+    /// </summary>
+    public static async Task<Hash> MinimalHash(AbsolutePath path, CancellationToken token = default)
+    {
+        var hasher = new XxHash3();
+        await using var stream = path.Read();
+        await MinimalHash(hasher, stream, token);
+        return Hash.From(hasher.GetCurrentHashAsUInt64());
+    }
     
     /// <summary>
     /// Calculates a minimal hash of the stream.

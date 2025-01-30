@@ -213,20 +213,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
-            CollectionMetadata.ObserveAll(_connection)
-                .FilterImmutable(collection =>
-                {
-                    if (!CollectionMetadata.GameId.TryGetValue(collection, out var collectionGameId)) return true;
-                    return collectionGameId == game.GameId;
-                })
+            CollectionRevisionMetadata.ObserveAll(_connection)
+                .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
                 .OnUI()
-                .Transform(ICollectionCardViewModel (coll) => new CollectionCardViewModel(
+                .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,
                     workspaceId: WorkspaceId,
                     connection: _connection,
-                    revision: coll.Revisions.First().RevisionId,
+                    revision: revision.RevisionId,
                     targetLoadout: _loadout)
                 )
                 .Bind(out _collections)

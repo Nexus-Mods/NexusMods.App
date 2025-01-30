@@ -19,6 +19,8 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
+using Polly;
+using Polly.Retry;
 
 namespace NexusMods.Networking.GOG;
 
@@ -59,7 +61,9 @@ internal class Client : IClient
     /// A channel for incoming auth URLs.
     /// </summary>
     private Channel<NXMGogAuthUrl> _authUrls = Channel.CreateUnbounded<NXMGogAuthUrl>();
-    
+
+    internal readonly ResiliencePipeline _pipeline;
+
     /// <summary>
     /// Standard DI constructor.
     /// </summary>
@@ -77,6 +81,11 @@ internal class Client : IClient
         };
 
         _blockCache = new FastCache<Md5, Memory<byte>>();
+        
+        _pipeline = new ResiliencePipelineBuilder()
+            .AddRetry(new RetryStrategyOptions())
+            .AddTimeout(TimeSpan.FromSeconds(10))
+            .Build();
     }
     
     /// <summary>
@@ -239,18 +248,27 @@ internal class Client : IClient
     /// </summary>
     public async Task<Build[]> GetBuilds(ProductId productId, OS os, CancellationToken token)
     {
-        var msg = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId}/os/{os}/builds?generation=2"), CancellationToken.None);
-        using var response = await _client.SendAsync(msg, token);
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Failed to get builds for {productId} on {os}. {response.StatusCode}");
+        return await _pipeline.ExecuteAsync(async token =>
+        {
+            var msg = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId}/os/{os}/builds?generation=2"), CancellationToken.None);
+            using var response = await _client.SendAsync(msg, token);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return [];
+                else
+                    throw new Exception($"Failed to get builds for {productId} on {os}. {response.StatusCode}");
+            }
 
-        await using var responseStream = await response.Content.ReadAsStreamAsync(token);
-        var content = await JsonSerializer.DeserializeAsync<BuildListResponse>(responseStream, _jsonSerializerOptions, token);
-        
-        if (content == null)
-            throw new Exception("Failed to deserialize the builds response.");
-        
-        return content.Items;
+
+            await using var responseStream = await response.Content.ReadAsStreamAsync(token);
+            var content = await JsonSerializer.DeserializeAsync<BuildListResponse>(responseStream, _jsonSerializerOptions, token);
+
+            if (content == null)
+                throw new Exception("Failed to deserialize the builds response.");
+
+            return content.Items;
+        }, token);
     }
 
     /// <summary>
@@ -275,56 +293,66 @@ internal class Client : IClient
     /// </summary>
     public async Task<DepotInfo> GetDepot(Build build, CancellationToken token)
     {
-        using var result = await _client.GetAsync(build.Link, token);
-        if (!result.IsSuccessStatusCode)
-            throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
-        
-        await using var responseStream = await result.Content.ReadAsStreamAsync(token);
-        await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
-        //var streamReader = (new StreamReader(deflateStream)).ReadToEnd();
-        var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
+        return await _pipeline.ExecuteAsync(async token =>
+            {
+                using var result = await _client.GetAsync(build.Link, token);
+                if (!result.IsSuccessStatusCode)
+                    throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
 
-        var firstDepot = buildDetails!.Depots.First();
+                await using var responseStream = await result.Content.ReadAsStreamAsync(token);
+                await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
+                //var streamReader = (new StreamReader(deflateStream)).ReadToEnd();
+                var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
 
-        var id = firstDepot.Manifest.ToString();
-        using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id), token);
-        if (!depotResult.IsSuccessStatusCode)
-            throw new Exception($"Failed to get the depot for {build.BuildId}. {depotResult.StatusCode}");
-        
-        await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
-        await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
+                var firstDepot = buildDetails!.Depots.First();
 
-        var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
-        return depot!.Depot;
+                var id = firstDepot.Manifest.ToString();
+                using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id), token);
+                if (!depotResult.IsSuccessStatusCode)
+                    throw new Exception($"Failed to get the depot for {build.BuildId}. {depotResult.StatusCode}");
+
+                await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
+                await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
+
+                var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
+                return depot!.Depot;
+            }
+        );
     }
 
     /// <summary>
     /// Given a depot, a build, and a path, return a stream to the file.
     /// </summary>
     public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
-    {
-        var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
-        if (itemInfo == null)
-            throw new KeyNotFoundException($"The path {path} was not found in the depot.");
-        
-        var secureUrl = await GetSecureUrl(build.ProductId, token);
+    { 
+        return await _pipeline.ExecuteAsync(async token =>
+            {
+                var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
+                if (itemInfo == null)
+                    throw new KeyNotFoundException($"The path {path} was not found in the depot.");
 
-        if (itemInfo.SfcRef == null)
-        {
-            // No small file container, just return a stream to the chunks
-            var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
-            var source = new ChunkedStreamSource(this, itemInfo.Chunks, size, secureUrl);
-            return new ChunkedStream<ChunkedStreamSource>(source);
-        }
-        else
-        {
-            // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
-            var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
-            var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize, secureUrl);
-            var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
-            var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
-            return subStream;
-        }
+                var secureUrl = await GetSecureUrl(build.ProductId, token);
+
+                if (itemInfo.SfcRef == null)
+                {
+                    // No small file container, just return a stream to the chunks
+                    var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
+                    var source = new ChunkedStreamSource(this, itemInfo.Chunks, size,
+                        secureUrl
+                    );
+                    return (Stream)new ChunkedStream<ChunkedStreamSource>(source);
+                }
+                else
+                {
+                    // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
+                    var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
+                    var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize,
+                        secureUrl, putInCache: true);
+                    var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
+                    var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
+                    return subStream;
+                }
+            }, token);
     }
 
 

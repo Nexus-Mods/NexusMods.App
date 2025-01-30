@@ -68,13 +68,22 @@ public sealed class ImageEncoder<TResourceIdentifier> : ANestedResourceLoader<TR
         // TODO: check if input is already in the correct layout, then we can skip this transposing step
         var skImageInfo = skBitmap.Info
             .WithAlphaType(SKAlphaType.Unpremul)
-            .WithColorSpace(SKColorSpace.CreateSrgbLinear())
-            .WithColorType(SKColorType.Rgba8888);
+            .WithColorType(SKColorType.Rgba8888)
+            .WithColorSpace(SKColorSpace.CreateSrgb());
 
         using var outputSkBitmap = new SKBitmap(skImageInfo);
-        skBitmap.CopyTo(outputSkBitmap);
 
-        return skBitmap.GetPixelSpan().ToArray();
+        using (var skCanvas = new SKCanvas(outputSkBitmap))
+        using (var skPaint = new SKPaint())
+        {
+            skCanvas.DrawBitmap(
+                bitmap: skBitmap,
+                dest: skImageInfo.Rect,
+                paint: skPaint
+            );
+        }
+
+        return outputSkBitmap.GetPixelSpan().ToArray();
     }
 }
 

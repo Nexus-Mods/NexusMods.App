@@ -367,6 +367,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review your Loadout for any issues and learn how to resolve them if needed.
+        /// </summary>
+        public static string DiagnosticListView_Page_Description {
+            get {
+                return ResourceManager.GetString("DiagnosticListView.Page_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Health Check.
+        /// </summary>
+        public static string DiagnosticListView_Page_Title {
+            get {
+                return ResourceManager.GetString("DiagnosticListView.Page_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics {
@@ -1727,6 +1745,15 @@ namespace NexusMods.App.UI.Resources {
         public static string MyGamesView__NoGamesManagedText {
             get {
                 return ResourceManager.GetString("MyGamesView__NoGamesManagedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add games to get started.
+        /// </summary>
+        public static string MyGamesView__Page_Description {
+            get {
+                return ResourceManager.GetString("MyGamesView__Page_Description", resourceCulture);
             }
         }
         

@@ -17,8 +17,9 @@ public class PerFeedCacheUpdaterTests
         act.Should().NotThrow();
     }
 
+    #if DEBUG
     [Fact]
-    [Conditional("DEBUG")]
+    // [Conditional("DEBUG")] 👈 this doesn't work right, sadly, so we do debug if.
     public void Constructor_WithItemsFromDifferentGames_ShouldThrowArgumentException_InDebug()
     {
         // Arrange
@@ -36,6 +37,7 @@ public class PerFeedCacheUpdaterTests
         // Assert
         act.Should().Throw<ArgumentException>();
     }
+    #endif
 
     [Fact]
     public void Constructor_ShouldSetOldItemsToNeedUpdate()
