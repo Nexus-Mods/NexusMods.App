@@ -352,19 +352,39 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = await ReindexState(loadout.InstallationInstance, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
-        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout);
+        return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
+    }
+
+    /// <summary>
+    /// Converts Mnemonic db disk state entries to path part pairs.
+    /// </summary>
+    /// <param name="entries"></param>
+    /// <returns></returns>
+    private IEnumerable<PathPartPair> DiskStateToPathPartPair(IEnumerable<DiskStateEntry.ReadOnly> entries)
+    {
+        foreach (var entry in entries)
+        {
+            yield return new PathPartPair
+            {
+                Path = entry.Path,
+                Part = new SyncNodePart
+                {
+                    EntityId = entry.Id,
+                    Hash = entry.Hash,
+                    Size = entry.Size,
+                },
+            };
+        }
     }
 
     /// <inheritdoc />
-    public SyncActionGroupings<SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> tree)
+    public Dictionary<GamePath, SyncTreeNode> ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> tree)
     {
-        var groupings = new SyncActionGroupings<SyncTreeNode>();
-
         foreach (var (_, item) in tree)
         {
             var signature = new SignatureBuilder
             {
-                DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
+                DiskHash = item.HaveDisk ? item.Disk.Value.Hash : Optional<Hash>.None,
                 PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
                 LoadoutHash = item.LoadoutFileHash.HasValue ? item.LoadoutFileHash.Value : Optional<Hash>.None,
                 DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
