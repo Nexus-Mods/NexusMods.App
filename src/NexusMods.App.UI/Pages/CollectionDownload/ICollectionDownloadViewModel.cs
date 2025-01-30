@@ -3,6 +3,7 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -37,6 +38,8 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     /// <inheritdoc cref="CollectionRevisionMetadata.IsAdult"/>
     bool IsAdult { get; }
+
+    IMarkdownRendererViewModel? InstructionsRenderer { get; }
 
     /// <summary>
     /// The collection's revision number
