@@ -24,6 +24,9 @@ We've made several improvements to the behaviour of the left menu in your Worksp
 
 ![The app with two panels open side-by-side showcasing the the active/selected states in the left menu.](./docs/changelog-assets/3ff23a43da45da8f216d1d9ba20b7bd9.webp)
 
+## Mod Thumbnails
+We've added the mod page image as a thumbnail in the Library, My Mods, and Collection Download pages. It's a small change, but we think it makes a big difference. 
+
 ## Technical Changes
 * Added a new error pop-up when the app encounters an unexpected error. This can be turned off in the Settings. 
 * Added CLI commands to allows users to delete files from the hidden Override folder where this has compromised their setup. 
