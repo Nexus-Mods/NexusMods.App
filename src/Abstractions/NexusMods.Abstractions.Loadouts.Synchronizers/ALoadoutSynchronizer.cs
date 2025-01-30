@@ -1,13 +1,11 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
@@ -175,12 +173,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Dictionary<GamePath, SyncTreeNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
     {
         var referenceDb = _fileHashService.Current;
-        Dictionary<GamePath, SyncTreeNode> results = new();
+        Dictionary<GamePath, SyncTreeNode> syncTree = new();
         
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            results.Add(gameFile.Path, new SyncTreeNode
+            syncTree.Add(gameFile.Path, new SyncTreeNode
                 {
                     Loadout = new SyncNodePart
                     {
@@ -231,7 +229,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 throw new NotSupportedException("Only files and deleted files are supported");
             }
             
-            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(results, loadoutItem.TargetPath, out var exists);
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
             if (!exists)
             {
                 existing = new SyncTreeNode
@@ -253,17 +251,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // the loadout, but we have to somehow mark the deleted files and then delete them. 
         // And we can't modify the dictionary while iterating over it.
         List<GamePath> deletedFiles = [];
-        foreach (var (key, value) in results)
+        foreach (var (key, value) in syncTree)
         {
             if (value.SourceItemType == LoadoutSourceItemType.Deleted) 
                 deletedFiles.Add(key);
         }
         foreach (var file in deletedFiles)
         {
-            results.Remove(file);
+            syncTree.Remove(file);
         }
         
-        return MergeStates(currentState, previousState, results);
+        MergeStates(currentState, previousState, syncTree);
+        return syncTree;
     }
 
     /// <summary>
