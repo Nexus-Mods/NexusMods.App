@@ -59,6 +59,7 @@ public class StubbedFileHasherService : IFileHashesService
             var hasher = new MultiHasher();
             var hashResult = await hasher.HashStream(memoryStream);
 
+            memoryStream.Position = 0;
             archiveFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(entry.FullName), memoryStream), hashResult.XxHash3, hashResult.Size));
 
             var relation = new HashRelation.New(tx)

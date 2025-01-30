@@ -491,7 +491,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
+                    #if DEBUG
+                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
+                        throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
+                    #endif
+                    break;
 
                 case Actions.DeleteFromDisk:
                     ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, deletedFiles);
@@ -502,7 +506,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.AddReifiedDelete:
-                    throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
+                    #if DEBUG
+                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
+                        throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
+                    #endif
+                    break;
 
                 case Actions.WarnOfUnableToExtract:
                     WarnOfUnableToExtract(syncTree);
@@ -1408,25 +1416,49 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
     {
         var gameState = _fileHashService.GetGameFiles(_fileHashService.Current, installation, commonIds);
-        throw new NotImplementedException();
-        /*
         var metaData = await ReindexState(installation, Connection);
-        if (!metaData.Contains(GameInstallMetadata.InitialDiskStateTransaction))
-            throw new InvalidOperationException("No initial state transaction found for game");
         
-        var currentState = metaData.DiskStateEntries;
-        var initialState = metaData.DiskStateAsOf(metaData.InitialDiskStateTransaction);
-        var prevState = metaData.GetLastAppliedDiskState();
-        
-        // Bit strange, but we're setting the "loadout" to the initial state here.
-        // previous state is the last applied state. This then tells the sync system that we don't want integrate any disk changes into the loadout
-        // but instead want a "hard reset" to a previous state. 
-        
-        var syncTree = BuildSyncTree(currentState, prevState, initialState);
-        var groups = ProcessSyncTree(syncTree);
+        List<PathPartPair> diskState = [];
 
-        await RunGroupings(syncTree, groups, installation);
-        */
+        foreach (var diskFile in metaData.DiskStateEntries)
+        {
+            diskState.Add(new PathPartPair(diskFile.Path, new SyncNodePart
+            {   
+                EntityId = metaData.Id,
+                Hash = diskFile.Hash,
+                Size = diskFile.Size,
+                LastModifiedTicks = diskFile.LastModified.UtcTicks,
+            }));
+        }
+
+        Dictionary<GamePath, SyncTreeNode> desiredState = new();
+
+        foreach (var gameFile in gameState)
+        {
+            var part = new SyncNodePart
+            {
+                Hash = gameFile.Hash,
+                Size = gameFile.Size,
+                LastModifiedTicks = 0,
+            };
+            var syncNode = new SyncTreeNode
+            {
+                Loadout = part,
+                SourceItemType = LoadoutSourceItemType.Game,
+            };
+            desiredState.Add(gameFile.Path, syncNode);
+        }
+
+        // Merge the states into a tree. Passing in the current state as the current and previous state. 
+        // This fakes the synchronizer into thinking that there are no changes on disk and we only want to do a
+        // hard reset to the desired state.
+        MergeStates(diskState, diskState, desiredState);
+        
+        // Process the tree
+        ProcessSyncTree(desiredState);
+
+        // Run the groupings
+        await RunGroupings(desiredState, installation);
     }
 }
 
