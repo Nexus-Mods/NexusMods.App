@@ -4,12 +4,25 @@ The release adds collections to the Library, introduces thumbnails for mods, and
 ## Collections in the Library
 **Important: If you are updating from 0.7.1, you will need to remove and re-add any collections to your library.**
 
+Collections are now available at the top of the Library. The new section appears once you have at least one collection installed and can be collapsed. In addition, installed collections can be easily toggled on and off from the left menu. 
+
+![The Library showing the new Collections section at the top of the page](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738233302-36795729.png)
+
+All collections downloaded from Nexus Mods will be in a read-only state when added to your loadout which ensures you get the full experience the curator intended. In future, users will be able make copies of existing collections in order to edit them. 
+
+![The read-only view for an installed collection](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738232800-1748036907.png)
+
+We're also made improvements to the experience of downloading and installing collections by adding more useful information to the Collection Download page and the Collection tiles in the library. 
+
+As an added bonus, a button will show in the UI when a collection has been updated allowing the latest revision to be downloaded - mod updates are coming soon! 
+
 ## Workspace Improvements
 We've made several improvements to the behaviour of the left menu in your Workspaces:
 * The left menu has been reorganised with the Library at the top, the mods in your loadout in the middle, and the extra utilities at the bottom. 
-* Collections can be toggled on and off from the left menu.
 * Pages in the left menu will now show active/selected states based on which panels/tabs are open and in view. 
 * Tooltips have been added to the left menu items so you can always see the full name. 
+
+![The app with two panels open side-by-side showcasing the the active/selected states in the left menu.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1738232561-2130448519.png)
 
 ## Technical Changes
 * Added a new error pop-up when the app encounters an unexpected error. This can be turned off in the Settings. 
@@ -19,9 +32,9 @@ We've made several improvements to the behaviour of the left menu in your Worksp
 * Fixed Health Checks not refreshing properly when the Loadout changes.
 * Fixed an issue when installing Baldur's Gate 3 Script Extender on Linux.
 
-
 ## Known Issues
-* 
+* On Windows, a Command Prompt window will appear behind the app while it is running. 
+* When viewing a read-only collection, it is still possible to toggle individual mods on and off, but this has no effect on your loadout. 
 * Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
 * Bundled mods included with collections do not appear in the UI but are still applied to your game. 
 * The success rating for collections is not showing the correct value. 
@@ -29,19 +42,6 @@ We've made several improvements to the behaviour of the left menu in your Worksp
 * The "Switch View" option does not persist in the Library/Installed Mods view.
 * The "Load Order" heading toggle does not persist in the Load Order view. 
 
-- Added mod Thumbnails to Modlist and Library
-- Collections improvements:
-	- Added Collections section in the Library page
-	- Significantly improved Collection download and install experience
-	- Added Check for Collection Revision Updates and support to download them
-	- Better UI for showing different states of collections and collection items
-	- Added a new page for viewing installed nexus collections
-- Left Menu overhaul:
-	- Active and Selected states based on active and selected Pages
-	- Toggles for installed collection items
-	- Icons for Health Check item
-	- Count badge for new downloads in Library item
-	- Added Tooltips
 
 # v0.7.2 - 2024-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
