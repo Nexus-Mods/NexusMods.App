@@ -82,10 +82,56 @@ public sealed class LibraryService : ILibraryService
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
         using var tx = _connection.BeginTransaction();
+        RemoveLibraryItemsFromAllLoadouts(libraryItems, tx);
+
         foreach (var item in libraryItems)
-            tx.Delete(item.Id, true);
+            tx.Delete(item.Id, recursive:true);
 
         await tx.Commit();
         await _gcRunner.RunWithMode(gcRunMode);
+    }
+
+    public async Task RemoveLibraryItemFromLoadout(LoadoutItemId itemId)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveLibraryItemFromLoadout(itemId, tx);
+        await tx.Commit();
+    }
+
+    public async Task RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveLibraryItemFromLoadout(itemIds, tx);
+        await tx.Commit();
+    }
+
+    public void RemoveLibraryItemFromLoadout(LoadoutItemId itemId, ITransaction tx)
+        => RemoveLibraryItemFromLoadout([itemId], tx);
+
+    public void RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx)
+    {
+        foreach (var itemId in itemIds)
+            tx.Delete(itemId, recursive: true);
+    }
+
+    public void RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx)
+    {
+        foreach (var item in libraryItems)
+        {
+            foreach (var loadout in LoadoutsWithLibraryItem(item))
+            {
+                foreach (var loadoutItem in loadout.GetLoadoutItemsByLibraryItem(item))
+                {
+                    tx.Delete(loadoutItem.Id, recursive: true);
+                }
+            }
+        }
+    }
+
+    public async Task RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveLibraryItemsFromAllLoadouts(libraryItems, tx);
+        await tx.Commit();
     }
 }

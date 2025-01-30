@@ -46,6 +46,7 @@ public interface ILibraryService
 
     /// <summary>
     /// Installs a library item into a target loadout.
+    /// To remove an item, use <see cref="RemoveLibraryItemFromLoadout(LoadoutItemId)"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
@@ -61,8 +62,50 @@ public interface ILibraryService
 
     /// <summary>
     /// Removes a number of items from the library.
+    /// This will automatically unlink the loadouts from the items are part of.
     /// </summary>
     /// <param name="libraryItems">The items to remove from the library.</param>
     /// <param name="gcRunMode">Defines how the garbage collector should be run</param>
     Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously);
+
+    /// <summary>
+    /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
+    /// </summary>
+    /// <param name="itemId">The item to remove from the loadout.</param>
+    Task RemoveLibraryItemFromLoadout(LoadoutItemId itemId);
+
+    /// <summary>
+    /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
+    /// </summary>
+    /// <param name="itemIds">The items to remove from the loadout.</param>
+    Task RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds);
+
+    /// <summary>
+    /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
+    /// </summary>
+    /// <param name="itemId">The item to remove from the loadout.</param>
+    /// <param name="tx">Existing transaction to use</param>
+    void RemoveLibraryItemFromLoadout(LoadoutItemId itemId, ITransaction tx);
+
+    /// <summary>
+    /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
+    /// </summary>
+    /// <param name="itemIds">The items to remove</param>
+    /// <param name="tx">Existing transaction to use</param>
+    void RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx);
+
+    /// <summary>
+    /// Removes library items (originally installed via <see cref="InstallItem"/>) from all
+    /// loadouts using an existing transaction
+    /// </summary>
+    /// <param name="libraryItems">The library items to remove from the loadouts</param>
+    /// <param name="tx">Existing transaction to use</param>
+    void RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx);
+
+    /// <summary>
+    /// Removes library items (originally installed via <see cref="InstallItem"/>) from all
+    /// loadouts with automatic transaction
+    /// </summary>
+    /// <param name="libraryItems">The library items to remove from the loadouts</param>
+    Task RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems);
 }
