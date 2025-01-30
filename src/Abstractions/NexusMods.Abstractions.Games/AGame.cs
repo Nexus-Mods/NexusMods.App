@@ -152,6 +152,9 @@ public abstract class AGame : IGame
     /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
     public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
+    /// <inheritdoc/>
+    public virtual GamePath GetFallbackCollectionInstallDirectory() => new(LocationId.Game, "");
+
     /// <inheritdoc />
     public override string ToString() => Name;
 }

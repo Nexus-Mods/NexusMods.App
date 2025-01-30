@@ -60,6 +60,16 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         );
     }
 
+    public override GamePath GetFallbackCollectionInstallDirectory()
+    {
+        // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/2553
+        return _osInformation.MatchPlatform(
+            onWindows: () => new GamePath(LocationId.Game, "Mods"),
+            onLinux: () => new GamePath(LocationId.Game, "Mods"),
+            onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/Mods")
+        );
+    }
+
     protected override Version GetVersion(GameLocatorResult installation)
     {
         try

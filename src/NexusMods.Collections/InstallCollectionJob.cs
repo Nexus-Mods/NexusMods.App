@@ -4,9 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -127,13 +129,17 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             collectionGroup = groupResult.Remap(group);
         }
 
+        var loadout = Loadout.Load(Connection.Db, TargetLoadout);
+        var game = (loadout.InstallationInstance.Game as IGame)!;
+        var fallbackInstaller = new FallbackCollectionDownloadInstaller(ServiceProvider, game);
+
         var installed = new ConcurrentBag<(ModAndDownload, LoadoutItemGroup.ReadOnly)>();
         await Parallel.ForEachAsync(modsAndDownloads, context.CancellationToken, async (modAndDownload, _) =>
         {
             try
             {
                 Logger.LogDebug("Installing `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
-                var result = await InstallMod(modAndDownload, collectionGroup);
+                var result = await InstallMod(modAndDownload, collectionGroup, fallbackInstaller);
                 installed.Add((modAndDownload, result));
             }
             catch (Exception e)
@@ -156,7 +162,10 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         return collectionGroup;
     }
 
-    private IJobTask<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly> InstallMod(ModAndDownload modAndDownload, NexusCollectionLoadoutGroup.ReadOnly collectionGroup)
+    private IJobTask<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly> InstallMod(
+        ModAndDownload modAndDownload,
+        NexusCollectionLoadoutGroup.ReadOnly collectionGroup,
+        ILibraryItemInstaller? fallbackInstaller)
     {
         var monitor = ServiceProvider.GetRequiredService<IJobMonitor>();
 
@@ -172,6 +181,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             Connection = Connection,
             FileStore = FileStore,
             LibraryService = LibraryService,
+
+            FallbackInstaller = fallbackInstaller,
         };
 
         return monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
