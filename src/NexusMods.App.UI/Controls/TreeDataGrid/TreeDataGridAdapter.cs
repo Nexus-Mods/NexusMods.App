@@ -44,11 +44,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 {
                     var (model, isActivating) = tuple;
 
-                    if (isActivating)
+                    if (isActivating && !model.IsActivated)
                     {
                         self.BeforeModelActivationHook(model);
                         model.Activate();
-                    } else
+                    } else if (!isActivating && model.IsActivated)
                     {
                         self.BeforeModelDeactivationHook(model);
                         model.Deactivate();
