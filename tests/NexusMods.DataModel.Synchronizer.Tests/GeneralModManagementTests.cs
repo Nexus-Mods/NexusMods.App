@@ -29,7 +29,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
             """
             The initial state of the game, no loadout has been created yet.
             """);
-        var loadoutA = await CreateLoadout(false);
+        var loadoutA = await CreateLoadout();
 
         LogDiskState(sb, "## 2 - Loadout Created (A) - Synced",
             """

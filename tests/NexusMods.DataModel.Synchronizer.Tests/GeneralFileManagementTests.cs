@@ -13,7 +13,7 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         var sb = new StringBuilder();
         
         await Synchronizer.RescanGameFiles(GameInstallation);
-        var loadoutA = await CreateLoadout(false);
+        var loadoutA = await CreateLoadout();
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         await Synchronizer.RescanGameFiles(GameInstallation);
         
@@ -46,7 +46,7 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         
         LogDiskState(sb, "## 2 - Updated the file - Synced",
             """
-            Updated the new file file and synced it.
+            Updated the new file and synced it.
             """, [loadoutA]);
         
         await Verify(sb.ToString(), extension: "md");

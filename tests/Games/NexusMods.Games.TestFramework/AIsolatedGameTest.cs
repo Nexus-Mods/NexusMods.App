@@ -304,14 +304,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// <summary>
     /// Creates a new loadout and returns the <see cref="Loadout.ReadOnly"/> of it.
     /// </summary>
-    protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
+    protected async Task<Loadout.ReadOnly> CreateLoadout()
     {
-        if (!_gameFilesWritten)
-        {
-            await GenerateGameFiles();
-            _gameFilesWritten = true;
-        }
-        return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+        return await GameInstallation
+            .GetGame()
+            .Synchronizer
+            .CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
     
     /// <summary>

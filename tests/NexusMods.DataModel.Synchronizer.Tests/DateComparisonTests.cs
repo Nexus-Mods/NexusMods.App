@@ -15,7 +15,7 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         
         // Setup the game files 
         await Synchronizer.RescanGameFiles(GameInstallation);
-        var loadoutA = await CreateLoadout(false);
+        var loadoutA = await CreateLoadout();
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         
         

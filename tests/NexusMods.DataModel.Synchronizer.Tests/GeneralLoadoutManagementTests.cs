@@ -24,7 +24,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """
             The initial state of the game folder should contain the game files as they were created by the game store. No loadout has been created yet.
             """);
-        var loadoutA = await CreateLoadout(false);
+        var loadoutA = await CreateLoadout();
 
         LogDiskState(sb, "## 2 - Loadout Created (A) - Synced",
             """
@@ -57,7 +57,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA]);
         
         
-        var loadoutB = await CreateLoadout(false);
+        var loadoutB = await CreateLoadout();
 
         LogDiskState(sb, "## 7 - New Loadout (B) Created - No Sync",
             """
