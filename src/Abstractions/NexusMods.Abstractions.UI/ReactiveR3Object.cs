@@ -9,6 +9,7 @@ namespace NexusMods.Abstractions.UI;
 public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
 {
     Observable<bool> Activation { get; }
+    bool IsActivated { get; }
     IDisposable Activate();
     void Deactivate();
 }
@@ -22,6 +23,7 @@ public class ReactiveR3Object : IReactiveR3Object
 {
     private readonly BehaviorSubject<bool> _activation = new(initialValue: false);
     public Observable<bool> Activation => _activation;
+    public bool IsActivated => _activation.Value;
 
     public IDisposable Activate()
     {
