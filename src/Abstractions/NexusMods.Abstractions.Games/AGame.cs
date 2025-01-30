@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -153,7 +154,7 @@ public abstract class AGame : IGame
     public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
     /// <inheritdoc/>
-    public virtual GamePath GetFallbackCollectionInstallDirectory() => new(LocationId.Game, "");
+    public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory() => Optional<GamePath>.None;
 
     /// <inheritdoc />
     public override string ToString() => Name;

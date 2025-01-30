@@ -131,7 +131,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         var loadout = Loadout.Load(Connection.Db, TargetLoadout);
         var game = (loadout.InstallationInstance.Game as IGame)!;
-        var fallbackInstaller = new FallbackCollectionDownloadInstaller(ServiceProvider, game);
+        var fallbackInstaller = FallbackCollectionDownloadInstaller.Create(ServiceProvider, game);
 
         var installed = new ConcurrentBag<(ModAndDownload, LoadoutItemGroup.ReadOnly)>();
         await Parallel.ForEachAsync(modsAndDownloads, context.CancellationToken, async (modAndDownload, _) =>

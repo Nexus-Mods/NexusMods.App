@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -13,10 +14,17 @@ internal class FallbackCollectionDownloadInstaller : ALibraryArchiveInstaller
 {
     private readonly GamePath _defaultPath;
 
-    public FallbackCollectionDownloadInstaller(IServiceProvider serviceProvider, IGame game)
+    private FallbackCollectionDownloadInstaller(IServiceProvider serviceProvider, GamePath defaultPath)
         : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<FallbackCollectionDownloadInstaller>>())
     {
-        _defaultPath = game.GetFallbackCollectionInstallDirectory();
+        _defaultPath = defaultPath;
+    }
+
+    public static ILibraryItemInstaller? Create(IServiceProvider serviceProvider, IGame game)
+    {
+        var defaultPath = game.GetFallbackCollectionInstallDirectory();
+        if (!defaultPath.HasValue) return null;
+        return new FallbackCollectionDownloadInstaller(serviceProvider, defaultPath.Value);
     }
 
     public override ValueTask<InstallerResult> ExecuteAsync(
