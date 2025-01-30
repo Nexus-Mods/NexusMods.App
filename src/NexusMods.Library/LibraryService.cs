@@ -46,7 +46,18 @@ public sealed class LibraryService : ILibraryService
     {
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
-    
+
+    public IEnumerable<Loadout.ReadOnly> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem, IDb? db = null)
+    {
+        var dbToUse = db ?? libraryItem.Db;
+        // Start with a backref.
+        // We're making a small assumption here that number of loadouts will be fairly small.
+        // That may not always be true, but I believe
+        return LibraryLinkedLoadoutItem
+            .FindByLibraryItem(dbToUse, libraryItem)
+            .Select(x => x.AsLoadoutItem().Loadout);
+    }
+
     public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? itemInstaller = null)
     {
         if (!parent.HasValue)
@@ -58,6 +69,7 @@ public sealed class LibraryService : ILibraryService
 
         return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller);
     }
+
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {
         using var tx = _connection.BeginTransaction();
