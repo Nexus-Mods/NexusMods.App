@@ -19,7 +19,9 @@
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top" >
+    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="52" VerticalAlignment="Top" ShowGridLines="True">
+
+        <!-- left column (Game and Loadout) -->
 
         <StackPanel Grid.Column="0"
                     Orientation="Horizontal"
@@ -34,15 +36,10 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
+        <!-- center column -->
+
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            
-            <controls:StandardButton x:Name="WeWantFeedback"
-                                     Text="We Want Feedback"
-                                     Type="Secondary"
-                                     Fill="Weak"
-                                     HorizontalAlignment="Center"
-                                     LeftIcon="{x:Static icons:IconValues.PictogramGame3D}"
-                                     ShowIcon="Left"/>
+
             <controls:StandardButton x:Name="GoBackInHistory"
                                      ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
                                      ShowLabel="False"
@@ -59,7 +56,12 @@
                                      LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
         </StackPanel>
 
-        <Menu Grid.Column="2" Margin="12 0">
+        <!-- right column (Menus and Buttons) -->
+
+        <Menu Grid.Column="2" Margin="12 0" >
+
+            <!-- Panel split button -->
+            
             <MenuItem Classes="TopBarNoStyleMenuItem">
                 <MenuItem.Header>
                     <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
@@ -68,12 +70,16 @@
 
             <Separator Width="1" Height="40" />
 
+            <!-- Settings button -->
+            
             <navigation:NavigationMenuItem Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem"
                                            ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}">
                 <navigation:NavigationMenuItem.Header>
                     <icons:UnifiedIcon Classes="Cog" />
                 </navigation:NavigationMenuItem.Header>
             </navigation:NavigationMenuItem>
+
+            <!-- Help dropdown -->
 
             <MenuItem Classes="TopBarMenuItem" Width="64"
                       ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
@@ -84,14 +90,30 @@
                     </StackPanel>
                 </MenuItem.Header>
 
+                <!-- Help menu -->
                 <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
                                                x:Name="ViewChangelogMenuItem" />
-
                 <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
                           x:Name="ViewAppLogsMenuItem" />
                 <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
                           x:Name="GiveFeedbackMenuItem" />
             </MenuItem>
+
+            <!-- Feedback button -->
+            
+            <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="FeedbackMenuItem">
+                <MenuItem.Header>
+                    <controls:StandardButton x:Name="GiveFeedbackButton"
+                                             Text="Give Feedback"
+                                             Type="Secondary"
+                                             Fill="Weak"
+                                             HorizontalAlignment="Center"
+                                             LeftIcon="{x:Static icons:IconValues.ThumbsUpDown}"
+                                             ShowIcon="Left" />
+                </MenuItem.Header>
+            </MenuItem>
+            
+            <!-- Login button -->
 
             <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
                 <MenuItem.Header>

@@ -8,12 +8,11 @@
 
     <!-- Element Opacity levels -->
     <StaticResource x:Key="OpacitySolid" ResourceKey="Alpha100"/>
-    <StaticResource x:Key="OpacityTransparent" ResourceKey="Alpha0"/>
-
     <StaticResource x:Key="OpacityModerate" ResourceKey="Alpha30"/>
     <StaticResource x:Key="OpacitySubdued" ResourceKey="Alpha20"/>
     <StaticResource x:Key="OpacityWeak" ResourceKey="Alpha10"/>
-
+    <StaticResource x:Key="OpacityTransparent" ResourceKey="Alpha0"/>
+    
     <!-- Disabled Opacity level -->
     <StaticResource x:Key="OpacityDisabledElement" ResourceKey="Alpha40"/>
 

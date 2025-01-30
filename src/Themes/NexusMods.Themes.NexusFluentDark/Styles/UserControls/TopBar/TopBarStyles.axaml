@@ -3,17 +3,14 @@
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Width="720" Height="200">
+        <Border Width="1280" Height="200">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
 
-    <Styles.Resources>
-        <SolidColorBrush x:Key="White10" Color="White" Opacity="{StaticResource OpacityWeak}" />
-    </Styles.Resources>
-
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
+        
         <Style Selector="^ Menu">
             <Setter Property="Height" Value="40" />
 
@@ -24,8 +21,8 @@
             <Style Selector="^ Separator">
                 <Setter Property="Margin" Value="0" />
                 <Setter Property="Width" Value="1" />
-                <Setter Property="Height" Value="40" />
-                <Setter Property="Background" Value="{StaticResource White10}" />
+                <Setter Property="Height" Value="10" />
+                <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             </Style>
 
             <Style Selector="^ MenuItem.TopBarNoStyleMenuItem">
@@ -70,7 +67,7 @@
                 <Style Selector="^ /template/ Border#PART_LayoutRoot">
                     <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
                     <Setter Property="BorderThickness" Value="1" />
-                    <Setter Property="BorderBrush" Value="{StaticResource White10}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource BrandTranslucentLight50}" />
                 </Style>
 
                 <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">

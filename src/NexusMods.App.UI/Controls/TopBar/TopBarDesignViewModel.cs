@@ -13,8 +13,8 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
-    [Reactive] public bool IsLoggedIn { get; set; }
-    [Reactive] public bool IsPremium { get; set; } = true;
+    [Reactive] public bool IsLoggedIn { get; set; } = true;
+    [Reactive] public bool IsPremium { get; set; } = false;
     [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
     [Reactive] public string ActiveWorkspaceTitle { get; set; } = "Home";

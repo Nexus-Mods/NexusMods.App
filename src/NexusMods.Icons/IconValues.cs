@@ -121,6 +121,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/thumb-up/
     public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
 
+    // https://pictogrammers.com/library/mdi/icon/thumbs-up-down/
+    public static readonly IconValue ThumbsUpDown = new ProjektankerIcon("mdi-thumbs-up-down");
+        
     // https://pictogrammers.com/library/mdi/icon/magnfiy/
     public static readonly IconValue Search = new ProjektankerIcon("mdi-magnify");
 
