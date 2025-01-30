@@ -7,6 +7,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="550"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
@@ -87,18 +88,15 @@
                     BorderThickness="0,1,0,0"
                     Classes="Footer OutlineWeak">
                 <StackPanel>
-                    <Button Classes="Standard Tertiary"
-                            x:Name="CancelButton">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Static resources:Language.DialogButton_Discard}" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Primary"
-                            x:Name="SaveButton">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Static resources:Language.DialogButton_SAVE}" />
-                        </StackPanel>
-                    </Button>
+                    <controls:StandardButton x:Name="CancelButton"
+                                    Text="{x:Static resources:Language.DialogButton_Discard}"
+                                    />
+                    <controls:StandardButton x:Name="SaveButton"
+                                             Text="{x:Static resources:Language.DialogButton_SAVE}"
+                                             Type="Primary"
+                                             Fill="Strong"
+                    />
+                    
                 </StackPanel>
             </Border>
         </Grid>

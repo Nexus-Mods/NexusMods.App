@@ -9,10 +9,10 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
-    public ReactiveCommand<Unit,Unit> ApplyCommand { get; }
-    public ReactiveCommand<Unit,Unit> IngestCommand { get; }
-    
-    public ReactiveCommand<NavigationInformation,Unit> ShowApplyDiffCommand { get; }
+    public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
+    public ReactiveCommand<Unit, Unit> IngestCommand { get; }
+
+    public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
     [Reactive] public bool CanApply { get; private set; } = true;
     [Reactive] public bool IsApplying { get; private set; } = false;
     public bool IsIngesting { get; private set; }
@@ -25,26 +25,28 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     {
         ShowApplyDiffCommand = ReactiveCommand.Create<NavigationInformation>(_ => { });
 
-        ApplyCommand = ReactiveCommand.CreateFromTask( async () =>
-        {
-            IsApplying = true;
-            CanApply = false;
+        ApplyCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                IsApplying = true;
+                CanApply = false;
 
-            await Task.Delay(3000);
+                await Task.Delay(3000);
 
-            IsApplying = false;
-            CanApply = true;
-        });
-        
-        IngestCommand = ReactiveCommand.CreateFromTask( async () =>
-        {
-            IsIngesting = true;
-            CanApply = false;
+                IsApplying = false;
+                CanApply = true;
+            }
+        );
 
-            await Task.Delay(3000);
+        IngestCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                IsIngesting = true;
+                CanApply = false;
 
-            IsIngesting = false;
-            CanApply = true;
-        });
+                await Task.Delay(3000);
+
+                IsIngesting = false;
+                CanApply = true;
+            }
+        );
     }
 }

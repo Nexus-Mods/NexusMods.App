@@ -112,10 +112,13 @@
         <value>STATUS</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
-        <value>Running...</value>
+        <value>GAME RUNNING...</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-        <value>Play</value>
+        <value>PLAY</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_ToolTip" xml:space="preserve">
+        <value>Click to launch the game</value>
     </data>
     <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
         <value>{0} secs</value>
@@ -319,7 +322,7 @@
         <value>Activate &amp; Apply</value>
     </data>
     <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-        <value>Apply</value>
+        <value>APPLY</value>
     </data>
     <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
         <value>Applying...</value>
