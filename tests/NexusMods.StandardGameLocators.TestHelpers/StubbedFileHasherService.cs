@@ -5,6 +5,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.Hashes;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
@@ -19,10 +21,14 @@ public class StubbedFileHasherService : IFileHashesService
     private DatomStore _datomStore;
     private Connection _connection;
     private IDb? _current;
+    private readonly IFileStore _fileStore;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    public StubbedFileHasherService(IServiceProvider provider)
+    public StubbedFileHasherService(IServiceProvider provider, IFileStore fileStore, TemporaryFileManager temporaryFileManager)
     {
         _provider = provider;
+        _fileStore = fileStore;
+        _temporaryFileManager = temporaryFileManager;
     }
 
     private async Task SetupDb()
@@ -40,24 +46,30 @@ public class StubbedFileHasherService : IFileHashesService
         
         using var tx = _connection.BeginTransaction();
         
+        List<ArchivedFileEntry> archiveFiles = [];
         
         foreach (var entry in zipArchive.Entries)
         {
+            if (entry.Length == 0)
+                continue;
+            
             await using var stream = entry.Open();
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
             var hasher = new MultiHasher();
-            var result = await hasher.HashStream(memoryStream);
+            var hashResult = await hasher.HashStream(memoryStream);
+
+            archiveFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(entry.FullName), memoryStream), hashResult.XxHash3, hashResult.Size));
 
             var relation = new HashRelation.New(tx)
             {
-                MinimalHash = result.MinimalHash,
-                XxHash3 = result.XxHash3,
-                Sha1 = result.Sha1,
-                XxHash64 = result.XxHash64,
-                Md5 = result.Md5,
-                Size = result.Size,
-                Crc32 = result.Crc32,
+                MinimalHash = hashResult.MinimalHash,
+                XxHash3 = hashResult.XxHash3,
+                Sha1 = hashResult.Sha1,
+                XxHash64 = hashResult.XxHash64,
+                Md5 = hashResult.Md5,
+                Size = hashResult.Size,
+                Crc32 = hashResult.Crc32,
             };
 
             var path = new PathHashRelation.New(tx)
@@ -66,6 +78,8 @@ public class StubbedFileHasherService : IFileHashesService
                 HashId = relation,
             };
         }
+
+        await _fileStore.BackupFiles(archiveFiles);
         
         var results = await tx.Commit();
         _current = results.Db;

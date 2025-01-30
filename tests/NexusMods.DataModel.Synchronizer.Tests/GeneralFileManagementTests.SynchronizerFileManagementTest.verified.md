@@ -36,7 +36,7 @@ Added a new file to the game and synced it.
 
 
 ## 2 - Updated the file - Synced:
-Updated the new file file and synced it.
+Updated the new file and synced it.
 ### Initial State - (0)
 | Path | Hash | Size |
 | --- | --- | --- |

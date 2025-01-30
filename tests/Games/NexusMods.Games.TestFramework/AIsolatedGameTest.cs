@@ -311,7 +311,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .Synchronizer
             .CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
-    
+
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
@@ -430,6 +430,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         }
         
         sb.AppendLine("\n\n");
+
+        
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
