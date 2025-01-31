@@ -6,6 +6,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -58,8 +59,8 @@ public static class LibraryDataProviderHelper
                 if (query.Count == 0) return Optional<DateTimeOffset>.None;
 
                 return query.Items
-                    .Select(static item => item.GetCreatedAt())
-                    .Min();
+                        .Select(static item => item.GetCreatedAt())
+                        .OptionalMinBy(item => item);
             });
 
         itemModel.AddObservable(
