@@ -26,15 +26,15 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         {
 
             _task.WhenAnyValue(t => t.Downloaded)
-                .OnUI()
                 .Select(s => s.Value)
+                .OnUI()
                 .BindTo(this, x => x.DownloadedBytes)
                 .DisposeWith(d);
 
 
             _task.WhenAnyValue(t => t.Bandwidth)
-                .OnUI()
                 .Select(b => b.Value)
+                .OnUI()
                 .BindTo(this, x => x.Throughput)
                 .DisposeWith(d);
             
