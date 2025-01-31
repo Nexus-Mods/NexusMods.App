@@ -47,7 +47,8 @@ public interface ILibraryService
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="parent">If specified the installed item will be placed in this group, otherwise it will default to the user's local collection</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
-    IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null);
+    /// <param name="transaction">The transaction to attach the installation to. Install is only completed when transaction is completed.</param>
+    IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null, ITransaction? transaction = null);
 
     /// <summary>
     /// Removes a number of items from the library.
@@ -97,4 +98,40 @@ public interface ILibraryService
     /// </summary>
     /// <param name="libraryItems">The library items to remove from the loadouts</param>
     Task RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+
+    /// <summary>
+    /// Replaces all occurrences of a library item with a new version in all loadouts
+    /// </summary>
+    /// <param name="oldItem">The library item to be replaced</param>
+    /// <param name="newItem">The replacement library item</param>
+    /// <param name="tx">The transaction to use</param>
+    /// <returns>
+    ///     If an error occurs at any step of the way, this returns a 'fail' enum.
+    /// </returns>
+    ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ITransaction tx);
+
+    /// <summary>
+    /// Replaces all occurrences of a library item with a new version in all loadouts
+    /// </summary>
+    /// <param name="replacements">The replacements to perform</param>
+    /// <returns>
+    ///     If an error occurs at any step of the way, this returns a 'fail' enum.
+    /// </returns>
+    ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements);
+}
+
+/// <summary>
+/// Represents the result of a <see cref="ILibraryService.ReplaceLibraryItemInAllLoadouts(IEnumerable{ValueTuple{LibraryItem.ReadOnly, LibraryItem.ReadOnly}})"/> operation.
+/// </summary>
+public enum LibraryItemReplacementResult
+{
+    /// <summary>
+    /// The operation was successful.
+    /// </summary>
+    Success,
+
+    /// <summary>
+    /// The operation failed (unknown reason).
+    /// </summary>
+    FailedUnknownReason,
 }

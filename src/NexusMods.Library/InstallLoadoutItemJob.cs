@@ -17,25 +17,28 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public LibraryItem.ReadOnly LibraryItem { get; init; }
     public LoadoutItemGroupId ParentGroupId { get; init; }
     public LoadoutId LoadoutId { get; init; }
+    public required ITransaction Transaction { get; init; }
     internal required IConnection Connection { get; init; }
     internal required IServiceProvider ServiceProvider { get; init; }
+    internal required bool OwnsTransaction { get; init; }
     
-    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(IServiceProvider serviceProvider, LibraryItem.ReadOnly libraryItem, LoadoutItemGroupId groupId, ILibraryItemInstaller? installer = null)
+    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(IServiceProvider serviceProvider, LibraryItem.ReadOnly libraryItem, LoadoutItemGroupId groupId, ILibraryItemInstaller? installer = null, ITransaction? transaction = null)
     {
         var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
+        var connection = serviceProvider.GetRequiredService<IConnection>();
         var job = new InstallLoadoutItemJob
         {
             Installer = installer,
             LibraryItem = libraryItem,
             ParentGroupId = groupId,
             LoadoutId = group.AsLoadoutItem().LoadoutId,
-            Connection = serviceProvider.GetRequiredService<IConnection>(),
+            Connection = connection,
             ServiceProvider = serviceProvider,
+            Transaction = transaction ?? connection.BeginTransaction(),
+            OwnsTransaction = transaction is null,
         };
         return serviceProvider.GetRequiredService<IJobMonitor>().Begin<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>(job);
     }
-
-
 
     public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallLoadoutItemJob> context)
     {
@@ -87,7 +90,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var isSupported = installer.IsSupportedLibraryItem(LibraryItem);
             if (!isSupported) continue;
 
-            var transaction = Connection.BeginTransaction();
+            var transaction = context.Definition.Transaction;
             var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
             {
                 IsGroup = true,
@@ -103,7 +106,6 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
             if (result.IsNotSupported)
             {
-                transaction.Dispose();
                 continue;
             }
 
