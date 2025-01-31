@@ -100,6 +100,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
+            .ObserveOnUIThreadDispatcher()
             .ToReactiveCommand<NavigationInformation>( info =>
                 {
                     var group = viewModFilesArgumentsSubject.Value;
@@ -120,7 +121,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 false
             );
 
-        RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, _) =>
+        RemoveItemCommand = hasSelection.ObserveOnUIThreadDispatcher()
+            .ToReactiveCommand<Unit>(async (_, _) =>
             {
                 var ids = Adapter.SelectedModels
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
@@ -174,7 +176,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
                     return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
-                .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)
                 .AddTo(disposables);
             

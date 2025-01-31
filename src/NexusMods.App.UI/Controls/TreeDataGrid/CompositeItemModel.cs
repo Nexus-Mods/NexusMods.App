@@ -153,9 +153,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
                 if (!optionalValue.HasValue) return;
                 var component = componentFactory(
                     observable
-                        .ObserveOnUIThreadDispatcher()
                         .Where(static optionalValue => optionalValue.HasValue)
-                        .Select(static optionalValue => optionalValue.Value),
+                        .Select(static optionalValue => optionalValue.Value)
+                        .ObserveOnUIThreadDispatcher(),
                     optionalValue.Value
                 );
 
