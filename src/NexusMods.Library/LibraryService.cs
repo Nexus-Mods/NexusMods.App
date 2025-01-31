@@ -23,7 +23,6 @@ public sealed class LibraryService : ILibraryService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
-    private readonly IJobMonitor _monitor;
     private readonly IGarbageCollectorRunner _gcRunner;
 
     /// <summary>
@@ -33,7 +32,6 @@ public sealed class LibraryService : ILibraryService
     {
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
-        _monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _gcRunner = serviceProvider.GetRequiredService<IGarbageCollectorRunner>();
     }
 
