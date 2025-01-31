@@ -112,33 +112,8 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
     {
         // Arrange the DB
         // Create a new loadout
-        using var tx = _connection.BeginTransaction();
-        var loadoutNew = new Loadout.New(tx)
-        {
-            Name = "Test Loadout",
-            ShortName = "Test",
-            InstallationId = GameInstallation.GameMetadataId,
-            LoadoutKind = LoadoutKind.Default,
-            Revision = 0,
-            GameVersion = VanityVersion.From("Unknown"),
-        };
-        _ = new CollectionGroup.New(tx, out var userCollectionId)
-        {
-            IsReadOnly = false,
-            LoadoutItemGroup = new LoadoutItemGroup.New(tx, userCollectionId)
-            {
-                IsGroup = true,
-                LoadoutItem = new LoadoutItem.New(tx, userCollectionId)
-                {
-                    Name = "My Mods",
-                    LoadoutId = loadoutNew.LoadoutId,
-                },
-            },
-        };
-
-        // Commit the loadout to the DB.
-        var result = await tx.Commit();
-        var loadout = result.Remap(loadoutNew);
+        var loadout = await CreateTestLoadout("Test Loadout");
+        var collection = await CreateCollectionInLoadout(loadout, "Test Collection");
         
         // Act
         // Create a new library item (e.g., add a local file)
@@ -148,11 +123,118 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var libraryItem = (await _libraryService.AddLocalFile(nestedArchivePath)).AsLibraryFile().AsLibraryItem();
 
         // Add it to our new loadout.
-        await _libraryService.InstallItem(libraryItem, loadout.LoadoutId);
+        await _libraryService.InstallItem(libraryItem, loadout.LoadoutId, parent: collection.AsLoadoutItemGroup().LoadoutItemGroupId);
         var loadouts = _libraryService.LoadoutsWithLibraryItem(libraryItem, _connection.Db);
 
         // Assert that we have a single item.
         loadouts.Should().ContainSingle()
-            .Which.LoadoutId.Should().Be(loadout.LoadoutId);
+            .Which.loadout.LoadoutId.Should().Be(loadout.LoadoutId);
+    }
+
+    [Fact]
+    public async Task ReplaceLibraryItemsInAllLoadouts_ShouldReplaceItemsAcrossLoadouts()
+    {
+        // Arrange
+        // Create two loadouts
+        var loadout1 = await CreateTestLoadout("Loadout1");
+        var loadout2 = await CreateTestLoadout("Loadout2");
+        var collection1 = await CreateCollectionInLoadout(loadout1, "Test Collection 1");
+        var collection2 = await CreateCollectionInLoadout(loadout2, "Test Collection 2");
+        
+        // Create test files to use as our library items
+        var firstArchivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
+            .Combine("Resources")
+            .Combine("nested_archive.zip");
+        var secondArchivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
+            .Combine("Resources")
+            .Combine("nested_game_archive.zip");
+
+        // Add files to library
+        var oldItem1 = (await _libraryService.AddLocalFile(firstArchivePath)).AsLibraryFile().AsLibraryItem();
+        var oldItem2 = (await _libraryService.AddLocalFile(secondArchivePath)).AsLibraryFile().AsLibraryItem();
+
+        // Install old items in both loadouts
+        await _libraryService.InstallItem(oldItem1, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await _libraryService.InstallItem(oldItem2, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await _libraryService.InstallItem(oldItem1, loadout2.LoadoutId, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+
+        // Act
+        // Replace both items across all loadouts
+        var newItem1 = (await _libraryService.AddLocalFile(firstArchivePath)).AsLibraryFile().AsLibraryItem(); // Same content but different LibraryItem instance
+        var newItem2 = (await _libraryService.AddLocalFile(secondArchivePath)).AsLibraryFile().AsLibraryItem();
+        var replacements = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>
+        {
+            (oldItem1, newItem1),
+            (oldItem2, newItem2),
+        };
+
+        var options = new ReplaceLibraryItemsOptions
+        {
+            IgnoreReadOnlyCollections = false,
+        };
+        var result = await _libraryService.ReplaceLibraryItemsInAllLoadouts(replacements, options);
+
+        // Assert
+        result.Should().Be(LibraryItemReplacementResult.Success);
+
+        // Verify that the old items are no longer in any loadout
+        var loadoutsWithOldItem1 = _libraryService.LoadoutsWithLibraryItem(oldItem1, _connection.Db);
+        var loadoutsWithOldItem2 = _libraryService.LoadoutsWithLibraryItem(oldItem2, _connection.Db);
+
+        loadoutsWithOldItem1.Should().BeEmpty();
+        loadoutsWithOldItem2.Should().BeEmpty();
+
+        // Verify that new items are now in the appropriate loadouts
+        var loadoutsWithNewItem1 = _libraryService.LoadoutsWithLibraryItem(newItem1, _connection.Db);
+        var loadoutsWithNewItem2 = _libraryService.LoadoutsWithLibraryItem(newItem2, _connection.Db);
+
+        loadoutsWithNewItem1.Should().HaveCount(2)
+            .And.Contain(l => l.loadout.LoadoutId == loadout1.LoadoutId)
+            .And.Contain(l => l.loadout.LoadoutId == loadout2.LoadoutId);
+
+        loadoutsWithNewItem2.Should().ContainSingle()
+            .Which.loadout.LoadoutId.Should().Be(loadout1.LoadoutId);
+    }
+
+    private async Task<Loadout.ReadOnly> CreateTestLoadout(string name)
+    {
+        using var tx = _connection.BeginTransaction();
+        var loadoutNew = new Loadout.New(tx)
+        {
+            Name = name,
+            ShortName = name,
+            InstallationId = GameInstallation.GameMetadataId,
+            LoadoutKind = LoadoutKind.Default,
+            Revision = 0,
+            GameVersion = VanityVersion.From("Unknown"),
+        };
+
+        var result = await tx.Commit();
+        return result.Remap(loadoutNew);
+    }
+
+    private async Task<CollectionGroup.ReadOnly> CreateCollectionInLoadout(
+        LoadoutId loadoutId,
+        string name = "My Mods",
+        bool isReadOnly = false)
+    {
+        using var tx = _connection.BeginTransaction();
+
+        var group = new CollectionGroup.New(tx, out var collectionId)
+        {
+            IsReadOnly = isReadOnly,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, collectionId)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, collectionId)
+                {
+                    Name = name,
+                    LoadoutId = loadoutId,
+                },
+            },
+        };
+
+        var result = await tx.Commit();
+        return result.Remap(group);
     }
 }
