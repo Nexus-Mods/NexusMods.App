@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="50"
+    d:DesignHeight="88"
     d:DesignWidth="184"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
@@ -10,31 +10,34 @@
     xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <items:LaunchButtonDesignViewModel />
     </Design.DataContext>
+
+
+    
+
     <StackPanel>
         <Button
-            IsVisible="True"
-            Classes="Standard Secondary"
-            HorizontalAlignment="Stretch"
-            ClipToBounds="False"
             x:Name="LaunchButton"
-            Height="44">
-            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <icons:UnifiedIcon Classes="Play" x:Name="LaunchIcon" />
-                <TextBlock x:Name="LaunchText" Classes="TitleSMSemi" />
+            HorizontalAlignment="Stretch"
+            Height="44"
+            ToolTip.Tip="{x:Static resources:Language.LaunchButtonViewModel_LaunchGame_ToolTip}">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="{StaticResource Spacing-1}">
+                <spinner:Spinner x:Name="LaunchSpinner" IsVisible="True" Height="16" Width="16" />
+                <icons:UnifiedIcon x:Name="LaunchIcon"
+                                   Size="24"
+                                   Value="{x:Static icons:IconValues.PlayArrow}" />
+                <TextBlock x:Name="LaunchText"
+                           Theme="{StaticResource TitleSMSemiTheme}"
+                           VerticalAlignment="Center" />
             </StackPanel>
         </Button>
-        <ProgressBar
-            Classes="LaunchButton"
-            x:Name="ProgressBarControl"
-            IsVisible="False"
-            ShowProgressText="True"
-            Height="44"
-            Minimum="0"
-            Maximum="1"
-            HorizontalAlignment="Stretch" />
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

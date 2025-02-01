@@ -161,7 +161,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         
         if (process.ExitCode != 0)
-            _logger.LogError("While Running {Filename}", program);
+            _logger.LogWarning("Application closed with a non-zero exit code ({ExitCode}): {Application}", process.ExitCode, program);
         return process;
     }
 

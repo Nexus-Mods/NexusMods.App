@@ -261,7 +261,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             InnerHandler = new SocketsHttpHandler
             {
-                ConnectTimeout = TimeSpan.FromSeconds(10),
+                ConnectTimeout = TimeSpan.FromSeconds(30),
                 KeepAlivePingPolicy = HttpKeepAlivePingPolicy.WithActiveRequests,
                 KeepAlivePingDelay = TimeSpan.FromSeconds(5),
                 KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
@@ -270,7 +270,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
         var client = new HttpClient(handler)
         {
-            Timeout = TimeSpan.FromSeconds(5),
+            Timeout = TimeSpan.FromSeconds(20),
             DefaultRequestVersion = HttpVersion.Version11,
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
         };

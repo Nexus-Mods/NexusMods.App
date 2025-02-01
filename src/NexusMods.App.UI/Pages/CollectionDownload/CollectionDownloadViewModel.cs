@@ -3,10 +3,8 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -14,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
@@ -27,7 +26,6 @@ using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using OneOf;
@@ -365,6 +363,22 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
                     self.NewestRevisionNumber.Value = newerRevisions.First();
                 }).AddTo(disposables);
+
+            R3.Observable.Return(collectionJsonFile)
+                .ObserveOnThreadPool()
+                .SelectAwait((jsonFile, cancellationToken) => nexusModsLibrary.ParseCollectionJsonFile(jsonFile, cancellationToken))
+                .Select(static collectionRoot => collectionRoot.Info.InstallInstructions)
+                .Where(static instructions => !string.IsNullOrWhiteSpace(instructions))
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe((this, serviceProvider), static (instructionsText, state) =>
+                {
+                    var (self, serviceProvider) = state;
+
+                    var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+                    markdownRendererViewModel.Contents = instructionsText;
+
+                    self.InstructionsRenderer = markdownRendererViewModel;
+                }).AddTo(disposables);
         });
     }
 
@@ -411,6 +425,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public bool IsAdult => _revision.IsAdult;
     public CollectionSlug Slug => _collection.Slug;
     public RevisionNumber RevisionNumber => _revision.RevisionNumber;
+
+    [Reactive] public IMarkdownRendererViewModel? InstructionsRenderer { get; set; }
 
     public int RequiredDownloadsCount { get; }
     public int OptionalDownloadsCount { get; }

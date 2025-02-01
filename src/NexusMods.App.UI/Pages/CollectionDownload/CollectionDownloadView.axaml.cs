@@ -124,18 +124,24 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
-                .Select(selectedItem =>
+                .Subscribe(selectedItem =>
                 {
-                    if (ReferenceEquals(selectedItem, RequiredTab)) return CollectionDownloadsFilter.OnlyRequired;
-                    if (ReferenceEquals(selectedItem, OptionalTab)) return CollectionDownloadsFilter.OnlyOptional;
-                    throw new UnreachableException();
-                })
-                .Subscribe(filter =>
-                {
+                    CollectionDownloadsFilter filter;
+
+                    if (ReferenceEquals(selectedItem, RequiredTab))
+                    {
+                        filter = CollectionDownloadsFilter.OnlyRequired;
+                    } else if (ReferenceEquals(selectedItem, OptionalTab))
+                    {
+                        filter = CollectionDownloadsFilter.OnlyOptional;
+                    } else
+                    {
+                        return;
+                    }
+
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
-                })
-                .DisposeWith(d);
-            
+                }).DisposeWith(d);
+
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
                 view => view.ViewModel!.CountDownloadedOptionalItems,
@@ -144,7 +150,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, a.Item4, b))
                 .Subscribe(tuple =>
                 {
-                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, hasInstalledAllOptionals, filter ) = tuple;
+                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, hasInstalledAllOptionals, filter) = tuple;
                     var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
                     var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
             
@@ -157,15 +163,16 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems && !hasInstalledAllOptionals;
                 }).DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel)
-                .WhereNotNull()
-                .Select(static vm => vm.OptionalDownloadsCount > 0)
-                .Subscribe(hasOptionalDownloads =>
+            this.WhenAnyValue(
+                    view => view.ViewModel!.OptionalDownloadsCount,
+                    view => view.ViewModel!.InstructionsRenderer,
+                    static (count, renderer) => count == 0 && renderer is null)
+                .Subscribe(hasSingleTab =>
                 {
-                    if (hasOptionalDownloads) TabControl.Classes.Remove("SingleTab");
-                    else TabControl.Classes.Add("SingleTab");
+                    if (hasSingleTab) TabControl.Classes.Add("SingleTab");
+                    else TabControl.Classes.Remove("SingleTab");
 
-                    if (!hasOptionalDownloads) TabControl.SelectedItem = RequiredTab;
+                    if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
                 }).DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.OverallRating)
@@ -186,6 +193,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 {
                     ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
                     ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+                }).DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.InstructionsRenderer)
+                .Subscribe(instructionsRenderer =>
+                {
+                    Instructions.IsVisible = instructionsRenderer is not null;
+                    InstructionsRendererHost.ViewModel = instructionsRenderer;
                 }).DisposeWith(d);
         });
     }

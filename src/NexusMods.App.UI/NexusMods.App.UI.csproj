@@ -635,12 +635,6 @@
         <Compile Update="Pages\LibraryPage\ILibraryItemWithSize.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithDownloadedDate.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithInstalledDate.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LibraryPage\ILibraryItemWithAction.cs">
             <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
@@ -748,6 +742,18 @@
         <Compile Update="Controls\PageHeader\PageHeader.axaml.cs">
           <DependentUpon>PageHeader.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControl\LaunchButtonDesignViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControl\LaunchButtonViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

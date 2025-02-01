@@ -121,6 +121,7 @@ public interface ILibraryItemWithDownloadAction : ILibraryItemWithAction
 /// Extends the 'Install' action with the update capabilities; allowing install and update
 /// on some menus and only 'Install' on others.
 /// </summary>
+[Obsolete("Use CompositeItemModel instead")]
 public interface ILibraryItemWithUpdateAction : ILibraryItemWithInstallAction
 {
     ReactiveCommand<Unit, ILibraryItemModel> UpdateItemCommand { get; }
