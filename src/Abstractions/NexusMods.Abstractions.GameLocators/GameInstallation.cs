@@ -14,12 +14,7 @@ public class GameInstallation : IEquatable<GameInstallation>
     /// Empty game installation, used for testing and some cases where a property must be set.
     /// </summary>
     public static GameInstallation Empty => new();
-
-    /// <summary>
-    /// The Version installed.
-    /// </summary>
-    public Version Version { get; init; } = new();
-
+    
     /// <summary>
     /// Contains the manual install destinations for AdvancedInstaller and friends.
     /// </summary>
@@ -99,6 +94,6 @@ public class GameInstallation : IEquatable<GameInstallation>
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{Game.Name} {GameMetadataId} v{Version} ({Store.Value})";
+        return $"{Game.Name} {GameMetadataId} ({Store.Value})";
     }
 }

@@ -38,7 +38,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
+        var gameVersion = new SemanticVersion(loadout.GameVersion);
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi)) yield break;
         if (!SMAPILoadoutItem.Version.TryGetValue(smapi, out var smapiStrVersion)) yield break;
