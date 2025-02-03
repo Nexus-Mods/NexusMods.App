@@ -52,6 +52,19 @@ public static class RunUpdateCheck
         // caused by programmer error, so we should log these whenever possible,
         // but they should not cause a critical error; in case it's simply the result
         // of mod removal such as DMCA takedown.
+        
+        // Note(sewer): The semaphore below limits the maximum number of requests to the Nexus API
+        // (UpdateModPage) that can be in transit at any time. i.e., We will process max
+        // 'semaphoreCount' requests at a time. The number specified in the constructor
+        // is the maximum number of requests that can be in transit at any given time.
+        // It is completely arbitrary and can be safely changed. If the API ever adds 
+        // rate limits, this may need tweaking.
+        //
+        // When this code is important is if the user doesn't use the App for a long time,
+        // i.e. past the cache expiry time. Currently, that's 28 days. Past that point,
+        // when checking for an update, all the mod pages will need refreshing; 
+        // which will kick in this rate limiter. Otherwise, outside of that, concurrent
+        // requests here are very unlikely.
         using var semaphore = new SemaphoreSlim(16);
         var tasks = new List<Task>();
 
