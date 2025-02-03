@@ -39,6 +39,8 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";
     public IMarkdownRendererViewModel? InstructionsRenderer { get; }
+    public ModInstructions[] RequiredModsInstructions { get; set; } = [];
+    public ModInstructions[] OptionalModsInstructions { get; set; } = [];
 
     public int CountDownloadedOptionalItems { get; } = 0;
     public int CountDownloadedRequiredItems { get; } = 1;
