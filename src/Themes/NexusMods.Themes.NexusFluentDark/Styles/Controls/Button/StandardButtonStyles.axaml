@@ -27,14 +27,14 @@
                         </StackPanel>
                         <controls:StandardButton>
                             <StackPanel>
-                                <TextBlock>Test 1</TextBlock>
+                                <TextBlock Text="Test 1"/>
                                 <StackPanel Orientation="Horizontal" Background="Chocolate">
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
                                 </StackPanel>
-                                <TextBlock Background="DarkRed">Test 2</TextBlock>
-                                <TextBlock>Test 3</TextBlock>
+                                <TextBlock Background="DarkRed" Text="Test 2"/>
+                                <TextBlock Text="Test 3"/>
                             </StackPanel>
                         </controls:StandardButton>
                         <controls:StandardButton IsEnabled="False" ShowIcon="Left"
@@ -198,214 +198,9 @@
                         </StackPanel>
                     </Grid>
                 </StackPanel>
-
             </Border>
-
-            <!-- Obsolete Button.Standard class styles -->
-            <StackPanel Orientation="Vertical" Margin="10">
-                <TextBlock Text="Obsolete Button.Standard class styles" Theme="{StaticResource TitleMDSemiTheme}" />
-                <!-- Setup -->
-                <StackPanel.Styles>
-                    <Style Selector="StackPanel.HorizontalShowcase">
-                        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                    </Style>
-
-                    <Style Selector="StackPanel.VerticalTwoButtonStack">
-                        <Setter Property="VerticalAlignment" Value="Bottom" />
-                        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-                    </Style>
-
-                    <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
-                        <Setter Property="TextAlignment" Value="Center" />
-                        <Setter Property="TextWrapping" Value="Wrap" />
-                        <Setter Property="Width" Value="100" />
-                    </Style>
-
-                    <Style Selector="StackPanel.VerticalTwoButtonStack > Button">
-                        <Setter Property="HorizontalAlignment" Value="Center" />
-                    </Style>
-                </StackPanel.Styles>
-
-                <!-- Standard Buttons -->
-                <StackPanel Classes="HorizontalShowcase" Orientation="Horizontal">
-
-                    <!-- Standard Primary -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Primary + Icon</TextBlock>
-                        <Button Classes="Standard Primary">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Primary" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Primary + Image</TextBlock>
-                        <Button Classes="Standard Primary">
-                            <StackPanel>
-                                <icons:UnifiedIcon>
-                                    <icons:UnifiedIcon.Value>
-                                        <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
-                                    </icons:UnifiedIcon.Value>
-                                </icons:UnifiedIcon>
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Primary" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon>
-                                    <icons:UnifiedIcon.Value>
-                                        <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
-                                    </icons:UnifiedIcon.Value>
-                                </icons:UnifiedIcon>
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Primary</TextBlock>
-                        <Button Classes="Standard Primary">
-                            <TextBlock Text="Button" />
-                        </Button>
-                        <Button Classes="Standard Primary" IsEnabled="False">
-                            <TextBlock Text="Button" />
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Primary Outline -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Primary Outline</TextBlock>
-                        <Button Classes="Standard PrimaryOutlined">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Secondary -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Secondary</TextBlock>
-                        <Button Classes="Standard Secondary">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Secondary" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard SecondaryOutlined -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Secondary Outline</TextBlock>
-                        <Button Classes="Standard SecondaryOutlined">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Tertiary -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Tertiary</TextBlock>
-                        <Button Classes="Standard Tertiary">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Tertiary" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Tertiary -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Tertiary Weak</TextBlock>
-                        <Button Classes="Standard Tertiary Weak">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Tertiary Weak" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Success -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Success</TextBlock>
-                        <Button Classes="Standard Success">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Success" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Standard Info -->
-                    <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                        <TextBlock>Standard Info</TextBlock>
-                        <Button Classes="Standard Info">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Standard Info" IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="Play" />
-                                <TextBlock Text="Button" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
-                </StackPanel>
-
-            </StackPanel>
         </StackPanel>
-
     </Design.PreviewWith>
-
 
     <!-- Style Definitions-->
     
@@ -699,9 +494,6 @@
         </Style>
 
     </Style>
-
-    
-    
     
     <!-- Obsolete Button.Standard class styles, use StandardButton instead -->
     <!-- Base Standard Button (only use with additional qualifiers)-->

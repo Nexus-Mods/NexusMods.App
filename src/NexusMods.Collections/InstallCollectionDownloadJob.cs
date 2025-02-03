@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.IO.Hashing;
 using System.Security.Cryptography;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections.Types;
@@ -10,6 +11,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -40,6 +42,8 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     public required IConnection Connection { get; init; }
     public required IFileStore FileStore { get; init; }
     public required ILibraryService LibraryService { get; init; }
+
+    public ILibraryItemInstaller? FallbackInstaller { get; init; }
 
     public static async ValueTask<InstallCollectionDownloadJob> Create(
         IServiceProvider serviceProvider,
@@ -93,7 +97,16 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         }
 
         var libraryFile = GetLibraryFile(Item, Connection.Db);
-        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), TargetLoadout, parent: Group.AsLoadoutItemGroup().LoadoutItemGroupId);
+        return await LibraryService.InstallItem(
+            libraryFile.AsLibraryItem(),
+            TargetLoadout,
+            parent: Group.AsLoadoutItemGroup().LoadoutItemGroupId,
+            // NOTE(erri120): https://github.com/Nexus-Mods/NexusMods.App/issues/2553
+            // The advanced installer shouldn't appear when installing collections,
+            // the decision was made that the app should behave similar to Vortex,
+            // which installs unknown stuff into a "default folder"
+            fallbackInstaller: FallbackInstaller
+        );
     }
 
     private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download)

@@ -21,7 +21,6 @@ public static class LoadoutComponents
         public BindableReactiveProperty<bool?> Value => _valueComponent.Value;
 
         private readonly OneOf<ObservableHashSet<LoadoutItemId>, LoadoutItemId[]> _ids;
-
         public IEnumerable<LoadoutItemId> ItemIds => _ids.Match(
             f0: static x => x.AsEnumerable(),
             f1: static x => x.AsEnumerable()
@@ -48,7 +47,7 @@ public static class LoadoutComponents
             _valueComponent = valueComponent;
             _ids = new[] { itemId };
 
-            _activationDisposable = this.WhenActivated((self, disposables) =>
+            _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
                 self._valueComponent.Activate().AddTo(disposables);
             });
@@ -77,9 +76,13 @@ public static class LoadoutComponents
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
-            if (disposing && !_isDisposed)
+            if (!_isDisposed)
             {
-                Disposable.Dispose(_activationDisposable, _valueComponent);
+                if (disposing)
+                {
+                    Disposable.Dispose(_activationDisposable, _valueComponent);
+                }
+
                 _isDisposed = true;
             }
 
@@ -100,7 +103,7 @@ public static class LoadoutColumns
         }
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
-        public static readonly ComponentKey ComponentKey = typeof(LoadoutComponents.IsEnabled);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
         public static string GetColumnHeader() => "Enabled";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

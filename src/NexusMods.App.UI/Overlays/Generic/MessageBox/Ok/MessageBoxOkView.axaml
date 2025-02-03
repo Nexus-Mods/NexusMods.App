@@ -45,8 +45,15 @@
                                Text="Description" />
 
                     <!-- Supporting Markdown -->
-                    <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640"
-                                                  MaxWidth="600" />
+                    <StackPanel Orientation="Vertical" x:Name="DetailsSection">
+                        <controls:StandardButton x:Name="CopyDetailsButton" 
+                                                 LeftIcon="{x:Static icons:IconValues.Copy}"
+                                                 ShowIcon="Left" 
+                                                 ShowLabel="False"/>
+                        <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640"
+                                                      MaxWidth="600" />
+                    </StackPanel>
+                    
                 </StackPanel>
 
             </DockPanel>

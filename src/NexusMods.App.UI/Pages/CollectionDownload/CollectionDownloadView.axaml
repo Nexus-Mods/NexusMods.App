@@ -190,6 +190,13 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
+            <TabItem x:Name="Instructions" IsVisible="False">
+                <TabItem.Header>
+                    <TextBlock Text="Additional Instructions"/>
+                </TabItem.Header>
+
+                <reactiveUi:ViewModelViewHost x:Name="InstructionsRendererHost"/>
+            </TabItem>
         </TabControl>
     </DockPanel>
 
