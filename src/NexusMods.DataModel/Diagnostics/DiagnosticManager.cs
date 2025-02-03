@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -9,10 +8,9 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
-using Observable = R3.Observable;
+using R3;
+using CompositeDisposable = R3.CompositeDisposable;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -23,7 +21,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private readonly ILogger<DiagnosticManager> _logger;
 
     private static readonly object Lock = new();
-    private readonly SourceCache<IConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
+    private readonly SourceCache<ConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
 
     private bool _isDisposed;
     private readonly CompositeDisposable _compositeDisposable = new();
@@ -42,35 +40,38 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         lock (Lock)
         {
             var existingObservable = _observableCache.Lookup(loadoutId);
-            if (existingObservable.HasValue) return existingObservable.Value;
+            if (existingObservable.HasValue) return existingObservable.Value.AsSystemObservable();
 
             var connectableObservable = Loadout.RevisionsWithChildUpdates(_connection, loadoutId)
-                .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
-                .SelectMany(async _ =>
-                {
-                    var db = _connection.Db;
-                    var loadout = Loadout.Load(db, loadoutId);
-                    if (!loadout.IsValid()) return [];
-
-                    try
+                .ToObservable()
+                .Debounce(TimeSpan.FromMilliseconds(250))
+                .SelectAwait(async (_, cancellationToken) =>
                     {
-                        // TODO: cancellation token
-                        // TODO: optimize this a bit so we don't load the model twice, we have the datoms above, we should be able to use them
+                        var db = _connection.Db;
+                        var loadout = Loadout.Load(db, loadoutId);
+                        if (!loadout.IsValid()) return [];
 
-                        var cancellationToken = CancellationToken.None;
-                        return await GetLoadoutDiagnostics(loadout, cancellationToken);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
-                        return [];
-                    }
-                })
+                        try
+                        {
+                            return await GetLoadoutDiagnostics(loadout, cancellationToken);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            return [];
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
+                            return [];
+                        }
+                    },
+                    AwaitOperation.Switch
+                )
                 .Replay(bufferSize: 1);
             
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
-            return connectableObservable;
+            return connectableObservable.AsSystemObservable();
         }
     }
 
@@ -96,7 +97,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                         }
                     }
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                     // ignore
                 }

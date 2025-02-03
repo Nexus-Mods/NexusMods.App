@@ -361,7 +361,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .Subscribe(this, static (newerRevisions, self) =>
                 {
                     self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
-                    self.NewestRevisionNumber.Value = newerRevisions.First();
+                    self.NewestRevisionNumber.Value = newerRevisions.FirstOrOptional(_ => true);
                 }).AddTo(disposables);
 
             R3.Observable.Return(collectionJsonFile)

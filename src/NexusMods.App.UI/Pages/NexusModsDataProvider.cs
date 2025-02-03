@@ -244,7 +244,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Downloaded date: most recent downloaded file date
         var downloadedDateObservable = libraryItems
             .TransformImmutable(static item => item.GetCreatedAt())
-            .QueryWhenChanged(query => query.Items.Max());
+            .QueryWhenChanged(query => query.Items.OptionalMaxBy(item => item).ValueOr(DateTimeOffset.MinValue));
 
         parentItemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(
             initialValue: modPage.GetCreatedAt(),
@@ -263,7 +263,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             })
             .QueryWhenChanged(static query =>
             {
-                var max = query.Items.MaxByOptional(static tuple => tuple.parsedVersion.ValueOr(new NuGetVersion(0, 0, 0)));
+                var max = query.Items.OptionalMaxBy(static tuple => tuple.parsedVersion.ValueOr(new NuGetVersion(0, 0, 0)));
                 if (!max.HasValue) return string.Empty;
                 return max.Value.rawVersion;
             });
