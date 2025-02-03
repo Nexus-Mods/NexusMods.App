@@ -69,6 +69,7 @@ public partial class NexusModsLibrary
         using var tx = _connection.BeginTransaction();
 
         var modInfo = await _gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)modId.Value, cancellationToken);
+        modInfo.EnsureNoErrors();
         EntityId first = default;
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
             first = node.Resolve(_connection.Db, tx);

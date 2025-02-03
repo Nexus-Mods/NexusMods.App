@@ -34,7 +34,13 @@ public interface ILibraryService
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="parent">If specified the installed item will be placed in this group, otherwise it will default to the user's local collection</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
-    IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null);
+    /// <param name="fallbackInstaller">Fallback installer instead of the default advanced installer</param>
+    IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null);
 
     /// <summary>
     /// Removes a number of items from the library.

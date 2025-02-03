@@ -257,7 +257,7 @@ public class LoadoutTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
-                var (self, itemModel, component) = tuple;
+                var (self, _, component) = tuple;
                 var isEnabled = component.Value.Value;
                 var ids = component.ItemIds.ToArray();
                 var shouldEnable = !isEnabled ?? false;

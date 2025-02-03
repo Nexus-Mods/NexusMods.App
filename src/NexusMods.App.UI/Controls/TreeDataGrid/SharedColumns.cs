@@ -40,20 +40,4 @@ public static class SharedColumns
         public static string GetColumnHeader() => "Installed";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
-
-    public sealed class DownloadedDate : ICompositeColumnDefinition<DownloadedDate>
-    {
-        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
-        {
-            var aValue = a.GetOptional<DateComponent>(ComponentKey);
-            var bValue = b.GetOptional<DateComponent>(ComponentKey);
-            return aValue.Compare(bValue);
-        }
-
-        public const string ColumnTemplateResourceKey = Prefix + "DownloadedDate";
-        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(DateComponent));
-
-        public static string GetColumnHeader() => "Downloaded";
-        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
-    }
 }

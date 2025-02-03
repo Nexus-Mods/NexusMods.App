@@ -93,6 +93,13 @@
 
             <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom"/>
         </DockPanel>
+
+        <DataTemplate x:Key="InstructionsTemplate" DataType="collectionDownload:ModInstructions">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{CompiledBinding ModName, Mode=OneTime}"/>
+                <TextBlock Text="{CompiledBinding Instructions, Mode=OneTime}"/>
+            </StackPanel>
+        </DataTemplate>
     </reactiveUi:ReactiveUserControl.Resources>
 
     <DockPanel x:Name="Body">
@@ -189,6 +196,37 @@
                         </Border>
                     </StackPanel>
                 </TabItem.Header>
+            </TabItem>
+            <TabItem x:Name="InstructionsTab" IsVisible="False">
+                <TabItem.Header>
+                    <TextBlock Text="Additional Instructions"/>
+                </TabItem.Header>
+
+                <StackPanel Orientation="Vertical">
+                    <Expander Header="Collection Instructions" x:Name="CollectionInstructionsExpander" IsVisible="False" IsExpanded="True">
+                        <reactiveUi:ViewModelViewHost x:Name="CollectionInstructionsRendererHost" />
+                    </Expander>
+
+                    <Expander Header="Mod Instructions" x:Name="RequiredModsInstructionsExpander" IsVisible="False" IsExpanded="True">
+                        <ItemsControl x:Name="RequiredModsInstructions" ItemTemplate="{StaticResource InstructionsTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-3}"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Expander>
+
+                    <Expander Header="Mod Instructions" x:Name="OptionalModsInstructionsExpander" IsVisible="False" IsExpanded="True">
+                        <ItemsControl x:Name="OptionalModsInstructions" ItemTemplate="{StaticResource InstructionsTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-3}"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Expander>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </DockPanel>
