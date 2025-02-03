@@ -71,18 +71,10 @@ public static class RunUpdateCheck
         // Helper function to process a single mixin with error handling
         async Task ProcessMixin(SemaphoreSlim sema, PageMetadataMixin mixin, bool isUndetermined)
         {
+            var isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
             try
             {
-                var isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
-                try
-                {
-                    await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
-                }
-                finally
-                {
-                    if (isTaken)
-                        sema.Release();
-                }
+                await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
             }
             catch (Exception e)
             {
@@ -96,6 +88,11 @@ public static class RunUpdateCheck
                     // Rethrow for non-undetermined items as these should be truly exceptional
                     throw;
                 }
+            }
+            finally
+            {
+                if (isTaken)
+                    sema.Release();
             }
         }
 
