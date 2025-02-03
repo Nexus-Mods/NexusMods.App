@@ -71,9 +71,10 @@ public static class RunUpdateCheck
         // Helper function to process a single mixin with error handling
         async Task ProcessMixin(SemaphoreSlim sema, PageMetadataMixin mixin, bool isUndetermined)
         {
-            var isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
+            var isTaken = false;
             try
             {
+                isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
                 await UpdateModPage(db, tx, gqlClient,
                     cancellationToken, mixin
                 );
