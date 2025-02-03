@@ -23,15 +23,15 @@ public struct PageMetadataMixin : IModFeedItem
     public EntityId GetModPageEntityId() => _metadata.Id;
     
     /// <inheritdoc/>
-    public DateTime GetLastUpdatedDateUtc()
+    public DateTimeOffset GetLastUpdatedDate()
     {
         // Local update time in database. Not on remote server.
         if (NexusModsModPageMetadata.DataUpdatedAt.TryGetValue(_metadata, out var result))
-            return result.DateTime;
+            return result;
         
         // If not in DB for whatever reason, default to min, will be refreshed on next
         // update check.
-        return DateTime.MinValue;
+        return DateTimeOffset.UtcNow;
     }
 
     /// <summary>

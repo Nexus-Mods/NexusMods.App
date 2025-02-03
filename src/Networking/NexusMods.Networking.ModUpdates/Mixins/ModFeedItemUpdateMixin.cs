@@ -8,7 +8,7 @@ namespace NexusMods.Networking.ModUpdates.Mixins;
 /// </summary>
 public readonly struct ModFeedItemUpdateMixin : IModFeedItem
 {
-    private readonly DateTime _lastUpdatedDate;
+    private readonly DateTimeOffset _lastUpdatedDate;
     private readonly GameId _gameId;
     private readonly ModId _modId;
 
@@ -29,7 +29,7 @@ public readonly struct ModFeedItemUpdateMixin : IModFeedItem
     public static IEnumerable<ModFeedItemUpdateMixin> FromUpdateResults(IEnumerable<ModUpdate> updates, GameId gameId) => updates.Select(update => new ModFeedItemUpdateMixin(update, gameId));
 
     /// <inheritdoc />
-    public DateTime GetLastUpdatedDateUtc() => _lastUpdatedDate;
+    public DateTimeOffset GetLastUpdatedDate() => _lastUpdatedDate;
 
     /// <inheritdoc />
     public UidForMod GetModPageId() => new()

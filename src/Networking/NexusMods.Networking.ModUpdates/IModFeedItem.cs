@@ -18,5 +18,5 @@ public interface IModFeedItem
     /// Retrieves the time the item was last updated.
     /// This date is in UTC.
     /// </summary>
-    public DateTime GetLastUpdatedDateUtc();
+    public DateTimeOffset GetLastUpdatedDate();
 }
