@@ -1,5 +1,5 @@
 # v0.7.3 - 2024-02-03
-The release adds collections to the Library, introduces thumbnails for mods, and include significant usability improvements for the left menu. 
+The release adds collections to the Library, introduces thumbnails for mods, and includes significant usability improvements for the left menu. 
 
 ## Collections in the Library
 **Important: If you are updating from 0.7.1, you will need to remove and re-add any collections to your library.**
