@@ -73,7 +73,7 @@ public static class RunUpdateCheck
         {
             try
             {
-                var isTaken = await sema.WaitAsync(-1, cancellationToken);
+                var isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
                 try
                 {
                     await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
