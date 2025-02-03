@@ -135,21 +135,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .ObserveCountChanged()
             .Select(count => count > 0);
 
-        InstallSelectedItemsCommand = hasSelection.ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit>(
+        InstallSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: false, cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
             configureAwait: false
         );
 
-        InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit>(
+        InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
             configureAwait: false
         );
 
-        RemoveSelectedItemsCommand = hasSelection.ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit>(
+        RemoveSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => RemoveSelectedItems(cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
@@ -161,7 +161,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .WhereNotNull()
             .Select(x => x.CanOpen);
 
-        OpenFilePickerCommand = canUseFilePicker.ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit>(
+        OpenFilePickerCommand = canUseFilePicker.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => AddFilesFromDisk(StorageProvider!, cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: true,

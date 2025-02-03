@@ -121,7 +121,6 @@ public static class LibraryComponents
 
             CommandInstall = isInstalled.Value
                 .Select(static isInstalled => !isInstalled)
-                .ObserveOnUIThreadDispatcher()
                 .ToReactiveCommand<Unit>();
 
             ButtonText = isInstalled.Value
@@ -148,7 +147,6 @@ public static class LibraryComponents
             CommandInstall = IsInstalled
                 .AsObservable()
                 .Select(static isInstalled => !isInstalled)
-                .ObserveOnUIThreadDispatcher()
                 .ToReactiveCommand<Unit>();
 
             ButtonText = matches.Value
