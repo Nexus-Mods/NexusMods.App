@@ -53,6 +53,7 @@ public static class OptionalExtensions
         };
     }
 
+    /// <inheritdoc cref="IComparer{T}.Compare"/>
     public static int Compare<T>(this Optional<T> a, Optional<T> b)
         where T : IComparable<T>
     {
