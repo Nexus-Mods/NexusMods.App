@@ -17,8 +17,9 @@ public class PerFeedCacheUpdaterTests
         act.Should().NotThrow();
     }
 
+    #if DEBUG
     [Fact]
-    [Conditional("DEBUG")]
+    // [Conditional("DEBUG")] 👈 this doesn't work right, sadly, so we do debug if.
     public void Constructor_WithItemsFromDifferentGames_ShouldThrowArgumentException_InDebug()
     {
         // Arrange
@@ -36,6 +37,7 @@ public class PerFeedCacheUpdaterTests
         // Assert
         act.Should().Throw<ArgumentException>();
     }
+    #endif
 
     [Fact]
     public void Constructor_ShouldSetOldItemsToNeedUpdate()
@@ -53,8 +55,9 @@ public class PerFeedCacheUpdaterTests
         };
 
         // Act
-        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
-        var result = updater.Build();
+        var expiry = TimeSpan.FromDays(30);
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, expiry);
+        var result = updater.Build(expiry);
 
         // Assert
         // input items [0] and [2] should be out of date 
@@ -64,14 +67,18 @@ public class PerFeedCacheUpdaterTests
     }
 
     [Fact]
-    public void Update_ShouldMarkMissingItemsAsUndetermined()
+    public void Update_ShouldCorrectlyHandleMissingItems()
     {
         // Items that are missing from the 'updated' payload
         // may be 'inaccessible', such as deleted or taken down
         // due to a DMCA. We should notice the mods which fall
-        // under this category. The external code doing the actual
-        // mod page querying can determine what to do with these based
-        // on extra info from the API.
+        // under this category. Items that have not been updated
+        // within the expiry date are marked as out of date, items
+        // updated within expiry are up to date.
+        
+        // A more robust mechanism to detach may be derived later,
+        // but this situation is rare in practice as Nexus does not
+        // delete mod pages outside very special reasons
 
         // Arrange
         var now = DateTime.UtcNow;
@@ -79,10 +86,12 @@ public class PerFeedCacheUpdaterTests
         {
             Create(1, 1, now.AddDays(-10)),
             Create(1, 2, now.AddDays(-5)),
-            Create(1, 3, now.AddDays(-15)),
+            Create(1, 3, now.AddDays(-31)), // cached, but out of date, is undetermined
+            Create(1, 4, now.AddDays(-15)), // cached, but in date, we can keep it.
         };
 
-        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30);
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, expiry);
 
         var updateItems = new[]
         {
@@ -92,14 +101,17 @@ public class PerFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.Build();
+        var result = updater.Build(expiry);
 
         // Assert
         // item[2] is not in 'update' feed/result, but is within
         // the expiry date. This means the mod page may have been archived
         // or taken down due to a DMCA.
-        result.UndeterminedItems.Should().ContainSingle();
-        result.UndeterminedItems.Should().Contain(items[2]);
+        result.OutOfDateItems.Should().HaveCount(2);
+        result.OutOfDateItems.Should().Contain(items[2]);
+
+        result.UpToDateItems.Should().HaveCount(2);
+        result.UpToDateItems.Should().Contain(items[3]);
     }
 
     [Fact]
@@ -118,7 +130,8 @@ public class PerFeedCacheUpdaterTests
             Create(1, 2, now.AddDays(-5)),
         };
 
-        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30);
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, expiry);
         var updateItems = new[]
         {
             Create(1, 1, now.AddDays(-8)),  // Newer, needs update
@@ -127,7 +140,7 @@ public class PerFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.Build();
+        var result = updater.Build(expiry);
 
         // Assert
         // item[0] is out of date, item[1] is up-to-date
@@ -151,10 +164,10 @@ public class PerFeedCacheUpdaterTests
         {
             Create(1, 1, now.AddDays(-10)),
             Create(1, 2, now.AddDays(-5)),
-            Create(1, 3, now.AddDays(-15)),
         };
 
-        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30);
+        var updater = new PerFeedCacheUpdater<TestModFeedItem>(items, expiry);
 
         var updateItems = new[]
         {
@@ -168,14 +181,14 @@ public class PerFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.Build();
+        var result = updater.Build(expiry);
 
         // Assert
         // item[0] is out of date, item[1] is up-to-date
         result.OutOfDateItems.Should().ContainSingle();
         result.OutOfDateItems.Should().Contain(items[0]);
 
-        result.UpToDateItems.Should().ContainSingle();
+        result.UpToDateItems.Should().HaveCount(1);
         result.UpToDateItems.Should().Contain(items[1]);
     }
 }
