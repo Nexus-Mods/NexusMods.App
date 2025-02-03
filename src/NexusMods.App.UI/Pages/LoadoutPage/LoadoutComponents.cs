@@ -39,6 +39,7 @@ public static class LoadoutComponents
         }
 
         private readonly IDisposable _activationDisposable;
+        private readonly IDisposable? _idsObservable;
 
         public IsEnabled(
             ValueComponent<bool?> valueComponent,
@@ -62,15 +63,10 @@ public static class LoadoutComponents
 
             _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
             {
-                var childrenItemIdsObservable = state;
                 self._valueComponent.Activate().AddTo(disposables);
-
-                childrenItemIdsObservable
-                    .SubscribeWithErrorLogging(changeSet => self._ids.AsT0.ApplyChanges(changeSet))
-                    .AddTo(disposables);
-
-                Disposable.Create(self._ids.AsT0, static set => set.Clear()).AddTo(disposables);
             });
+            
+            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
         private bool _isDisposed;
@@ -80,7 +76,7 @@ public static class LoadoutComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _valueComponent);
+                    Disposable.Dispose(_activationDisposable, _valueComponent, _idsObservable ?? Disposable.Empty);
                 }
 
                 _isDisposed = true;

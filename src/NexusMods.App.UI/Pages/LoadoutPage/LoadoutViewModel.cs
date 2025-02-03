@@ -120,7 +120,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 false
             );
 
-        RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, _) =>
+        RemoveItemCommand = hasSelection
+            .ToReactiveCommand<Unit>(async (_, _) =>
             {
                 var ids = Adapter.SelectedModels
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
