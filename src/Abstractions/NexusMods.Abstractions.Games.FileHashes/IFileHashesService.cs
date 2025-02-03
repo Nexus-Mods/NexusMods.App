@@ -27,4 +27,9 @@ public interface IFileHashesService
     /// The current file hashes database, will thrown an error if not initialized via GetFileHashesDb first.
     /// </summary>
     public IDb Current { get; }
+
+    /// <summary>
+    /// Lookup a game version string from a given game installation and locator metadata
+    /// </summary>
+    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata);
 }

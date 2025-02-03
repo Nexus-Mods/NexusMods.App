@@ -1151,8 +1151,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
             {
+                // Prime the hash database to make sure it's loaded
                 await _fileHashService.GetFileHashesDb();
-                //var initialState = await GetOrCreateInitialDiskState(installation);
+                
                 var existingLoadoutNames = Loadout.All(Connection.Db)
                     .Where(l => l.IsVisible()
                                 && l.InstallationInstance.LocationsRegister[LocationId.Game]
@@ -1173,6 +1174,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     locatorMetadata.Add(installation.LocatorResultMetadata.ToCommonString());
                 }
 
+                var version = _fileHashService.GetGameVersion(installation, locatorMetadata);
+
                 var loadout = new Loadout.New(tx)
                 {
                     Name = suggestedName ?? "Loadout " + shortName,
@@ -1181,6 +1184,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     Revision = 0,
                     LoadoutKind = LoadoutKind.Default,
                     LocatorIds = locatorMetadata,
+                    GameVersion = version,
                 };
                 
                 // Create the user's default collection

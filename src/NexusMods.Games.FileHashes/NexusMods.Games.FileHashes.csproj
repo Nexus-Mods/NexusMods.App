@@ -5,6 +5,7 @@
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB" />
       <PackageReference Include="NexusMods.Paths" />
+      <PackageReference Include="YamlDotNet" />
     </ItemGroup>
 
     <ItemGroup>

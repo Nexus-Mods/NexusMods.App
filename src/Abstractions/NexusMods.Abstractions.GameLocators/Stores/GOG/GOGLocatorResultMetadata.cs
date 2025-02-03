@@ -13,8 +13,13 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required long Id { get; init; }
     
+    /// <summary>
+    /// The build ID of the found game.
+    /// </summary>
+    public required string BuildId { get; init; }
+    
     /// <inheritdoc />
-    public string ToCommonString() => Id.ToString();
+    public string ToCommonString() => BuildId;
 }
 
 [PublicAPI]

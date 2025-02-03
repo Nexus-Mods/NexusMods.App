@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -241,6 +242,45 @@ public class FileHashesService : IFileHashesService, IDisposable
 
     /// <inheritdoc />
     public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
+
+    /// <inheritdoc />
+    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    {
+        if (installation.Store == GameStore.GOG)
+        {
+            List<GogBuild.ReadOnly> gogBuilds = [];
+
+            foreach (var gogId in locatorMetadata)
+            {
+                if (!ulong.TryParse(gogId, out var parsedId))
+                    throw new InvalidOperationException("GOG locator metadata is not a valid ulong");
+
+                var gogBuild = GogBuild.FindByBuildId(Current, BuildId.From(parsedId))
+                    .FirstOrDefault();
+                gogBuilds.Add(gogBuild);
+            }
+            if (gogBuilds.Count == 0)
+                throw new InvalidOperationException("No GOG builds found for locator metadata");
+
+            var wasFound = VersionDefinition.All(_currentDb!.Db)
+                .Select(version =>
+                    {
+                        var matchingIdCount = gogBuilds.Count(g => version.GogBuildsIds.Contains(g));
+                        return (matchingIdCount, version);
+                    })
+                .Where(row => row.matchingIdCount > 0)
+                .OrderByDescending(row => row.matchingIdCount)
+                .TryGetFirst(out var found);
+            if (!wasFound)
+                throw new InvalidOperationException("No version found for locator metadata");
+
+            return found.version.Name;
+        }
+        else
+        {
+            throw new NotImplementedException("No way to get game version for: " + installation.Store);
+        }
+    }
 
     public void Dispose()
     {

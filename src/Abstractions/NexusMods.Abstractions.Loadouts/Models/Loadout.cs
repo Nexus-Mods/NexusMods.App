@@ -34,6 +34,11 @@ public partial class Loadout : IModelDefinition
     public static readonly StringsAttribute LocatorIds = new(Namespace, nameof(LocatorIds));
     
     /// <summary>
+    /// The game version that this loadout is tied to, based on the LocatorIds.
+    /// </summary>
+    public static readonly StringAttribute GameVersion = new(Namespace, nameof(GameVersion));
+    
+    /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
     public static readonly ReferenceAttribute<GameInstallMetadata> Installation = new(Namespace, nameof(Installation));
