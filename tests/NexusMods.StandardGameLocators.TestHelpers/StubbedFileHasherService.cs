@@ -119,4 +119,15 @@ public class StubbedFileHasherService : IFileHashesService
             return "StubbedVersion";
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
+
+    public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    {
+        if (version != "StubbedVersion")
+        {
+            commonIds = [];
+            return false;
+        }
+        commonIds = ["Unknown"];
+        return true;
+    }
 }
