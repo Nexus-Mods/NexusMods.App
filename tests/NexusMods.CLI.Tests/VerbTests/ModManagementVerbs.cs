@@ -14,7 +14,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         
         var install = await CreateInstall();
 
-        var log = await Run("loadout create", "-g", $"{uint.MaxValue}", "-v", "Unknown", "-n", listName);
+        var log = await Run("loadout create", "-g", $"{uint.MaxValue}", "-v", "StubbedVersion", "-n", listName);
 
         log = await Run("loadouts list");
 

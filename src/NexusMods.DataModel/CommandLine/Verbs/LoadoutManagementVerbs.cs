@@ -207,7 +207,7 @@ public static class LoadoutManagementVerbs
     [Verb("loadout create", "Create a Loadout for a given game")]
     private static async Task<int> CreateLoadout([Injected] IRenderer renderer,
         [Option("g", "game", "Game to create a loadout for")] IGame game,
-        [Option("v", "version", "Version of the game to manage")] Version version,
+        [Option("v", "version", "Version of the game to manage")] string version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] IGameRegistry registry,
         [Injected] CancellationToken token)

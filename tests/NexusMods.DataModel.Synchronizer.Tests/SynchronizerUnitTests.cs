@@ -59,6 +59,6 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
     public async Task LoadoutsContainLocatorMetadata()
     {
         var loadout = await CreateLoadout();
-        loadout.LocatorIds.Should().BeEquivalentTo(["Unknown"]);
+        loadout.LocatorIds.Should().BeEquivalentTo(["42"]);
     }
 }
