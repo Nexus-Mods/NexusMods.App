@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Controls;
 /// Item model that allows for composition over inheritance with components.
 /// </summary>
 [PublicAPI]
-public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
+public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel<TKey>, TKey>
     where TKey : notnull
 {
     /// <summary>
