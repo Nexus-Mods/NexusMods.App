@@ -100,7 +100,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
-            .ObserveOnUIThreadDispatcher()
             .ToReactiveCommand<NavigationInformation>( info =>
                 {
                     var group = viewModFilesArgumentsSubject.Value;
@@ -176,6 +175,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
                     return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
+                .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)
                 .AddTo(disposables);
             
