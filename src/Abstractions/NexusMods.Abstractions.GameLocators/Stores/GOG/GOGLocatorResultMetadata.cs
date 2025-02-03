@@ -19,7 +19,7 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     public required string BuildId { get; init; }
     
     /// <inheritdoc />
-    public string ToCommonString() => BuildId;
+    public IEnumerable<string> ToCommonStrings() => [BuildId];
 }
 
 [PublicAPI]

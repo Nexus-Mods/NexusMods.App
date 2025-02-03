@@ -9,5 +9,5 @@ namespace NexusMods.StandardGameLocators.Unknown;
 [PublicAPI]
 public record UnknownLocatorResultMetadata : IGameLocatorResultMetadata
 {
-    public string ToCommonString() => "Unknown";
+    public IEnumerable<string> ToCommonStrings() => ["Unknown"];
 }

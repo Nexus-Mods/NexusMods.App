@@ -21,5 +21,5 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
 
 
     /// <inheritdoc />
-    public string ToCommonString() => AppId.ToString();
+    public IEnumerable<string> ToCommonStrings() => [AppId.ToString()];
 }

@@ -14,5 +14,5 @@ public record EpicLocatorResultMetadata : IGameLocatorResultMetadata
     public required string CatalogItemId { get; init; }
 
     /// <inheritdoc />
-    public string ToCommonString() => CatalogItemId;
+    public IEnumerable<string> ToCommonStrings() => [CatalogItemId];
 }

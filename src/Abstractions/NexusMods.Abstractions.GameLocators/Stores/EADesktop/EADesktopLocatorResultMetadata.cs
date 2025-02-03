@@ -14,5 +14,5 @@ public record EADesktopLocatorResultMetadata : IGameLocatorResultMetadata
     public required string SoftwareId { get; init; }
 
     /// <inheritdoc />
-    public string ToCommonString() => SoftwareId;
+    public IEnumerable<string> ToCommonStrings() => [SoftwareId];
 }

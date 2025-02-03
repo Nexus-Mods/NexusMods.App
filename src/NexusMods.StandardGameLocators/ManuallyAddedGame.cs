@@ -32,6 +32,6 @@ public partial class ManuallyAddedGame : IModelDefinition
     public partial struct ReadOnly : IGameLocatorResultMetadata
     {
         /// <inheritdoc />
-        public string ToCommonString() => "NONE";
+        public IEnumerable<string> ToCommonStrings() => ["NONE"];
     }
 }

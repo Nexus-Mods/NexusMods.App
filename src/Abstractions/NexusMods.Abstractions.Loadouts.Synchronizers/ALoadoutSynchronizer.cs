@@ -1171,7 +1171,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 List<string> locatorMetadata = [];
                 if (installation.LocatorResultMetadata != null)
                 {
-                    locatorMetadata.Add(installation.LocatorResultMetadata.ToCommonString());
+                    locatorMetadata.AddRange(installation.LocatorResultMetadata.ToCommonStrings());
                 }
 
                 var version = _fileHashService.GetGameVersion(installation, locatorMetadata);
@@ -1229,7 +1229,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
-        await ResetToOriginalGameState(installation, []);
+        var commonIds = installation.LocatorResultMetadata?.ToCommonStrings().ToArray() ?? [];
+        await ResetToOriginalGameState(installation, commonIds);
     }
 
     /// <inheritdoc />
