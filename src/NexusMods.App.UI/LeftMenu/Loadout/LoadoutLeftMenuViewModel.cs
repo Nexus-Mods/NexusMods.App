@@ -203,12 +203,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
                 LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
                     .RemoveKey()
-                    .OnUI()
                     .WhereReasonsAre(ListChangeReason.Add,
                         ListChangeReason.AddRange,
                         ListChangeReason.Remove,
                         ListChangeReason.RemoveRange
                     )
+                    .OnUI()
                     .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount = Math.Max(0, NewDownloadModelCount + (changeSet.Adds - changeSet.Removes)))
                     .DisposeWith(disposable);
 

@@ -120,7 +120,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 false
             );
 
-        RemoveItemCommand = hasSelection.ToReactiveCommand<Unit>(async (_, _) =>
+        RemoveItemCommand = hasSelection
+            .ToReactiveCommand<Unit>(async (_, _) =>
             {
                 var ids = Adapter.SelectedModels
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
@@ -257,7 +258,7 @@ public class LoadoutTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
-                var (self, itemModel, component) = tuple;
+                var (self, _, component) = tuple;
                 var isEnabled = component.Value.Value;
                 var ids = component.ItemIds.ToArray();
                 var shouldEnable = !isEnabled ?? false;

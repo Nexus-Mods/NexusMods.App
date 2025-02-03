@@ -2,6 +2,7 @@ using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
 
@@ -45,7 +46,12 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// Number of files/mods to download.
     /// </summary>
     int NumDownloads { get; }
-
+    
+    /// <summary>
+    /// The collection's revision number
+    /// </summary>
+    RevisionNumber RevisionNumber { get; }
+    
     /// <summary>
     /// The name of the author of the collection.
     /// </summary>

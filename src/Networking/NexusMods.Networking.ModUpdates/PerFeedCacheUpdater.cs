@@ -55,7 +55,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
     {
         _items = items;
         DebugVerifyAllItemsAreFromSameGame();
-        
+
         _actions = new CacheUpdaterAction[items.Length];
         _itemToIndex = new Dictionary<ModId, int>(items.Length);
         for (var x = 0; x < _items.Length; x++)
@@ -66,7 +66,8 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
         var minCachedDate = utcNow - expiry; 
         for (var x = 0; x < _items.Length; x++)
         {
-            if (_items[x].GetLastUpdatedDateUtc() < minCachedDate)
+            var lastUpdatedDate = _items[x].GetLastUpdatedDate();
+            if (lastUpdatedDate < minCachedDate)
                 _actions[x] = CacheUpdaterAction.NeedsUpdate;
         }
     }
@@ -96,7 +97,7 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
         var existingItem = _items[index];
             
         // If the file timestamp is newer than our cached copy, the item needs updating.
-        if (item.GetLastUpdatedDateUtc() > existingItem.GetLastUpdatedDateUtc())
+        if (item.GetLastUpdatedDate() > existingItem.GetLastUpdatedDate())
             _actions[index] = CacheUpdaterAction.NeedsUpdate;
         else
             _actions[index] = CacheUpdaterAction.UpdateLastCheckedTimestamp;
@@ -106,18 +107,37 @@ public class PerFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFe
     /// Determines the actions needed to taken on the items in the <see cref="PerFeedCacheUpdater{TUpdateableItem}"/>;
     /// returning the items whose actions have to be taken grouped by the action that needs performed.
     /// </summary>
-    public PerFeedCacheUpdaterResult<TUpdateableItem> Build()
+    /// <param name="expiry"></param>
+    public PerFeedCacheUpdaterResult<TUpdateableItem> Build(TimeSpan expiry)
     {
         // We now have files in 3 categories:
         // - Up-to-date mods. (Determined in `Update` method) a.k.a. CacheUpdaterAction.UpdateLastCheckedTimestamp
         // - Out of date mods. (Determined in `Update` method and constructor) a.k.a. CacheUpdaterAction.NeedsUpdate
-        // - Undetermined Mods. (Mods with CacheUpdaterAction.Default)
-        //      - This is the case for mods that are not in the `updated.json` payload
-        //        which for some reason are in our cache and are not out of date (not greater than expiry).
-        //      - Alternatively, they are in our cache but not in the `updated.json` payload.
-        //      - This can be the case if the expiry field is changed between calls, or the maxAge of the
-        //        request whose results we feed to `Update` is inconsistent due to programmer error.
-        //      - We return these in a separate category, but the consumer should treat them as 'Out of Date'
+        // - Undetermined Mods. (Mods with CacheUpdaterAction.Default, not yet determined)
+        //      - Mods within 'expiry' date are up to date (see below)
+        //      - Mods out of 'expiry' date are undetermined but should be treated as 'Out of Date'
+        //          - This forces a refresh of the data from the Nexus servers.
+        //          - This also includes no longer existing mod pages, e.g., those that had a DMCA Takedown.
+        
+        // Mark all currently undetermined mods (CacheUpdaterAction.Default) as 'in date'
+        // if they fit within the given expiry window. This is a cache hit.
+        // - The mod was not in `updated.json` (Update method call) meaning that it did not 
+        //   get updated in last 'expiry' days.
+        // - But the mod entry was last updated within 'expiry' days.
+        //
+        // This means that by definition, the cached version of the mod is up to date.
+        // It was not updated within 'expiry', but we fetched its data within 'expiry'.
+        var utcNow = DateTime.UtcNow;
+        var minCachedDate = utcNow - expiry; 
+        for (var x = 0; x < _actions.Length; x++)
+        {
+            if (_actions[x] != CacheUpdaterAction.Default)
+                continue;
+
+            if (_items[x].GetLastUpdatedDate() >= minCachedDate)
+                _actions[x] = CacheUpdaterAction.UpdateLastCheckedTimestamp;
+        }
+        
         var result = new PerFeedCacheUpdaterResult<TUpdateableItem>();
         for (var x = 0; x < _actions.Length; x++)
         {

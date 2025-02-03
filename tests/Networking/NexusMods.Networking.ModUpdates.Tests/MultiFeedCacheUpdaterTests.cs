@@ -33,8 +33,9 @@ public class MultiFeedCacheUpdaterTests
         };
 
         // Act
-        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
-        var result = updater.BuildFlattened();
+        var expiry = TimeSpan.FromDays(30); 
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, expiry);
+        var result = updater.BuildFlattened(expiry);
 
         // Assert
         // items [0] and [2] should be out of date 
@@ -44,12 +45,18 @@ public class MultiFeedCacheUpdaterTests
     }
 
     [Fact]
-    public void Update_ShouldMarkMissingItemsAsUndetermined()
+    public void Update_ShouldCorrectlyMarkMissingItems()
     {
         // Items that are missing from the 'updated' payload
         // may be 'inaccessible', such as deleted or taken down
         // due to a DMCA. We should notice the mods which fall
-        // under this category across multiple feeds.
+        // under this category. Items that have not been updated
+        // within the expiry date are marked as out of date, items
+        // updated within expiry are up to date.
+        
+        // A more robust mechanism to detach may be derived later,
+        // but this situation is rare in practice as Nexus does not
+        // delete mod pages outside very special reasons
 
         // Arrange
         var now = DateTime.UtcNow;
@@ -58,10 +65,11 @@ public class MultiFeedCacheUpdaterTests
             Create(1, 1, now.AddDays(-10)),
             Create(1, 2, now.AddDays(-5)),
             Create(2, 1, now.AddDays(-15)),
-            Create(2, 2, now.AddDays(-8)),
+            Create(2, 2, now.AddDays(-8)), // missing from update payload, but is up to date.
         };
 
-        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30); 
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, expiry);
 
         var updateItems = new[]
         {
@@ -72,14 +80,14 @@ public class MultiFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.BuildFlattened();
+        var result = updater.BuildFlattened(expiry);
 
         // Assert
         // item[3] is not in 'update' feed/result, but is within
         // the expiry date. This means the mod page may have been archived
         // or taken down due to a DMCA.
-        result.UndeterminedItems.Should().ContainSingle();
-        result.UndeterminedItems.Should().Contain(items[3]);
+        result.UpToDateItems.Should().HaveCount(2);
+        result.UpToDateItems.Should().Contain(items[3]);
     }
 
     [Fact]
@@ -99,7 +107,8 @@ public class MultiFeedCacheUpdaterTests
             Create(2, 2, now.AddDays(-7)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30); 
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, expiry);
         var updateItems = new[]
         {
             Create(1, 1, now.AddDays(-8)),  // Newer, needs update
@@ -110,7 +119,7 @@ public class MultiFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.BuildFlattened();
+        var result = updater.BuildFlattened(expiry);
 
         // Assert
         // items[0] and items[2] are out of date, items[1] and items[3] are up-to-date
@@ -140,7 +149,8 @@ public class MultiFeedCacheUpdaterTests
             Create(2, 2, now.AddDays(-7)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30); 
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, expiry);
 
         var updateItems = new[]
         {
@@ -156,7 +166,7 @@ public class MultiFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.BuildFlattened();
+        var result = updater.BuildFlattened(expiry);
 
         // Assert
         // items[0] and items[2] are out of date, items[1] and items[3] are up-to-date
@@ -182,11 +192,11 @@ public class MultiFeedCacheUpdaterTests
             Create(1, 1, now.AddDays(-10)),
             Create(1, 2, now.AddDays(-5)),
             Create(2, 1, now.AddDays(-12)),
-            Create(2, 2, now.AddDays(-7)),
             Create(3, 1, now.AddDays(-15)),
         };
 
-        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, TimeSpan.FromDays(30));
+        var expiry = TimeSpan.FromDays(30); 
+        var updater = new MultiFeedCacheUpdater<TestModFeedItem>(items, expiry);
 
         var updateItems = new[]
         {
@@ -198,7 +208,7 @@ public class MultiFeedCacheUpdaterTests
 
         // Act
         updater.Update(updateItems);
-        var result = updater.BuildFlattened();
+        var result = updater.BuildFlattened(expiry);
 
         // Assert
         result.OutOfDateItems.Should().HaveCount(2);
@@ -207,9 +217,6 @@ public class MultiFeedCacheUpdaterTests
 
         result.UpToDateItems.Should().HaveCount(2);
         result.UpToDateItems.Should().Contain(items[1]);
-        result.UpToDateItems.Should().Contain(items[4]);
-
-        result.UndeterminedItems.Should().ContainSingle();
-        result.UndeterminedItems.Should().Contain(items[3]);
+        result.UpToDateItems.Should().Contain(items[3]);
     }
 }

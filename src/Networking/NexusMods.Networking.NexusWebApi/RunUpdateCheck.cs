@@ -40,7 +40,7 @@ public static class RunUpdateCheck
             updater.Update(updateResults);
         }
         
-        return updater.BuildFlattened();
+        return updater.BuildFlattened(v1Timespan);
     }
 
     /// <summary>
@@ -49,28 +49,74 @@ public static class RunUpdateCheck
     public static async Task UpdateModFilesForOutdatedPages(IDb db, ITransaction tx, ILogger logger, INexusGraphQLClient gqlClient, PerFeedCacheUpdaterResult<PageMetadataMixin> result, CancellationToken cancellationToken)
     {
         // Note(sewer): Undetermined items may be removed items from the site; or
-        // caused by programmer error, so wr should log these whenever possible,
+        // caused by programmer error, so we should log these whenever possible,
         // but they should not cause a critical error; in case it's simply the result
         // of mod removal such as DMCA takedown.
-        foreach (var mixin in result.UndeterminedItems)
+        
+        // Note(sewer): The semaphore below limits the maximum number of requests to the Nexus API
+        // (UpdateModPage) that can be in transit at any time. i.e., We will process max
+        // 'semaphoreCount' requests at a time. The number specified in the constructor
+        // is the maximum number of requests that can be in transit at any given time.
+        // It is completely arbitrary and can be safely changed. If the API ever adds 
+        // rate limits, this may need tweaking.
+        //
+        // When this code is important is if the user doesn't use the App for a long time,
+        // i.e. past the cache expiry time. Currently, that's 28 days. Past that point,
+        // when checking for an update, all the mod pages will need refreshing; 
+        // which will kick in this rate limiter. Otherwise, outside of that, concurrent
+        // requests here are very unlikely.
+        using var semaphore = new SemaphoreSlim(16);
+        var tasks = new List<Task>();
+
+        // Helper function to process a single mixin with error handling
+        async Task ProcessMixin(SemaphoreSlim sema, PageMetadataMixin mixin, bool isUndetermined)
         {
+            var isTaken = false;
             try
             {
-                await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+                isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
+                await UpdateModPage(db, tx, gqlClient,
+                    cancellationToken, mixin
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignored.
             }
             catch (Exception e)
             {
-                var id = mixin.GetModPageId();
-                logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
+                if (isUndetermined)
+                {
+                    var id = mixin.GetModPageId();
+                    logger.LogError(e, "Failed to update metadata for Mod (GameID: {Page}, ModId: {ModId})", id.GameId, id.ModId);
+                }
+                else
+                {
+                    // Rethrow for non-undetermined items as these should be truly exceptional
+                    throw;
+                }
+            }
+            finally
+            {
+                if (isTaken)
+                    sema.Release();
             }
         }
 
-        // Note(sewer): But I'm not sure where to put this yet, all the GraphQL stuff is source generated.
+        // Process undetermined items
+        foreach (var mixin in result.UndeterminedItems)
+        {
+            tasks.Add(ProcessMixin(semaphore, mixin, true));
+        }
+
+        // Process out of date items
         foreach (var mixin in result.OutOfDateItems)
         {
-            // For the remaining items, failure to obtain result here should be truly exceptional.
-            await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+            tasks.Add(ProcessMixin(semaphore, mixin, false));
         }
+
+        // Wait for all tasks to complete
+        await Task.WhenAll(tasks);
     }
 
     private static async Task UpdateModPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
@@ -81,6 +127,7 @@ public static class RunUpdateCheck
         
         // Update Mod
         var modInfo = await gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)uid.ModId.Value, cancellationToken);
+        modInfo.EnsureNoErrors();
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
             node.Resolve(db, tx);
         

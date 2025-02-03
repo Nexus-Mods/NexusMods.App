@@ -1,7 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
     
     <!-- Thumbnail + Name column -->
     <DataTemplate x:Key="{x:Static local:ILibraryItemWithThumbnailAndName.ColumnTemplateResourceKey}"
@@ -58,42 +60,6 @@
                 <!-- with size -->
                 <DataTemplate DataType="{x:Type local:ILibraryItemWithSize}">
                     <TextBlock Text="{CompiledBinding FormattedSize.Value}" />
-                </DataTemplate>
-
-                <!-- fallback -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
-                    <TextBlock Text="-" />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-    </DataTemplate>
-
-    <!-- Downloaded Date column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithDownloadedDate.ColumnTemplateResourceKey}"
-                  DataType="local:ILibraryItemModel">
-        <ContentControl Content="{CompiledBinding}">
-            <ContentControl.DataTemplates>
-                <!-- with downloaded date -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithDownloadedDate}">
-                    <TextBlock Text="{CompiledBinding FormattedDownloadedDate.Value}" />
-                </DataTemplate>
-
-                <!-- fallback -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemModel}">
-                    <TextBlock Text="-" />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
-    </DataTemplate>
-
-    <!-- Installed Date column -->
-    <DataTemplate x:Key="{x:Static local:ILibraryItemWithInstalledDate.ColumnTemplateResourceKey}"
-                  DataType="local:ILibraryItemModel">
-        <ContentControl Content="{CompiledBinding}">
-            <ContentControl.DataTemplates>
-                <!-- with installed date -->
-                <DataTemplate DataType="{x:Type local:ILibraryItemWithInstalledDate}">
-                    <TextBlock Text="{CompiledBinding FormattedInstalledDate.Value}" />
                 </DataTemplate>
 
                 <!-- fallback -->
@@ -173,5 +139,149 @@
             </ContentControl.DataTemplates>
         </ContentControl>
     </DataTemplate>
+
+    <!-- Downloaded Date -->
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:DateComponent"
+                                            ComponentKey="{x:Static local:LibraryColumns+DownloadedDate.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:DateComponent}">
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Size -->
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemSize.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:SizeComponent"
+                                            ComponentKey="{x:Static local:LibraryColumns+ItemSize.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:SizeComponent}">
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Version -->
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemVersion.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <StackPanel Orientation="Horizontal">
+            <!-- Current version -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <TextBlock Text="{CompiledBinding Value.Value}"/>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <TextBlock Text="-"/>
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+
+            <!-- Newest version -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
+                                    <TextBlock Text="{CompiledBinding Value.Value}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+            </controls:ComponentControl>
+        </StackPanel>
+
+    </DataTemplate>
+
+    <!-- Actions -->
+    <DataTemplate x:Key="{x:Static local:LibraryColumns+Actions.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:MultiComponentControl.AvailableTemplates>
+                <!-- Update -->
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+
+                            <Button Command="{CompiledBinding CommandUpdate}"
+                                    Classes="Standard"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="{CompiledBinding ButtonText}"/>
+                            </Button>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
+                <!-- Install -->
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+InstallAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+InstallAction}">
+
+                            <Button Command="{CompiledBinding CommandInstall}"
+                                    Classes="Standard"
+                                    Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                                    Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                                       IsVisible="{CompiledBinding IsInstalled.Value}" />
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                                </StackPanel>
+                            </Button>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:MultiComponentControl.AvailableTemplates>
+        </controls:MultiComponentControl>
+
+    </DataTemplate>
+
 </ResourceDictionary>
 

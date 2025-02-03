@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xED28E75DBCAF9876
+   - Fingerprint: 0x93DB364E6966A6EA
    - Total attributes: 178
    - Total namespaces: 64
    
@@ -83,7 +83,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.Loadout/Installation                                            | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/LastAppliedDateTime                                     | Int64                   | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/LoadoutKind                                             | UInt8                   | False   | False | False     | 
-| NexusMods.Loadouts.Loadout/LocatorIds                                              | Utf8                    | False   | True  | False     | 
 | NexusMods.Loadouts.Loadout/Name                                                    | Utf8                    | True    | False | False     | 
 | NexusMods.Loadouts.Loadout/Revision                                                | UInt64                  | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/ShortName                                               | Utf8                    | True    | False | False     | 
@@ -163,6 +162,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.NexusModsFileMetadata/Version                           | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsLibraryItem/FileMetadata                       | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsLibraryItem/ModPageMetadata                    | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.NexusModsModPageMetadata/DataUpdatedAt                  | Int64                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsModPageMetadata/FullSizedPictureUri            | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsModPageMetadata/GameDomain                     | Ascii                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsModPageMetadata/Name                           | Utf8                    | False   | False | False     | 

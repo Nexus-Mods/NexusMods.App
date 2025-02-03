@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.IO;
@@ -61,4 +62,10 @@ public interface IGame : ILocatableGame
     /// </summary>
     /// <param name="store">The store used for the game.</param>
     public GamePath GetPrimaryFile(GameStore store);
+
+    /// <summary>
+    /// Gets the fallback directory for mods in collections that don't have matching installers.
+    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2553 for details.
+    /// </summary>
+    Optional<GamePath> GetFallbackCollectionInstallDirectory();
 }
