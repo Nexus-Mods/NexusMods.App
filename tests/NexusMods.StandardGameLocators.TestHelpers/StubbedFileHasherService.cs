@@ -115,7 +115,7 @@ public class StubbedFileHasherService : IFileHashesService
     public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
     {
         var firstMetadata = locatorMetadata.First();
-        if (firstMetadata == "Unknown")
+        if (firstMetadata == "42")
             return "StubbedVersion";
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
@@ -127,7 +127,7 @@ public class StubbedFileHasherService : IFileHashesService
             commonIds = [];
             return false;
         }
-        commonIds = ["Unknown"];
+        commonIds = ["42"];
         return true;
     }
 }
