@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
@@ -30,6 +31,8 @@ public static class LoadoutManagementVerbs
             .AddModule("loadout groups", "Commands for managing the file groups in a loadout")
             .AddModule("loadout group", "Commands for managing a specific group of files in a loadout")
             .AddModule("loadout group items", "Commands for managing the items in a group of files in a loadout")
+            .AddModule("loadout version", "Commands for managing the version of a loadout")
+            .AddVerb(() => SetVersion)
             .AddVerb(() => Synchronize)
             .AddVerb(() => InstallMod)
             .AddVerb(() => ListLoadouts)
@@ -37,6 +40,41 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListGroups)
             .AddVerb(() => DeleteGroupItems)
             .AddVerb(() => CreateLoadout);
+    
+    [Verb("loadout version set", "Sets the game version for a loadout")]
+    private static async Task<int> SetVersion([Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to set the version for")] Loadout.ReadOnly loadout,
+        [Option("v", "version", "Version to set")] string version,
+        [Injected] IFileHashesService hasherService)
+    {
+        if (!hasherService.TryGetCommonIdsForVersion(loadout.InstallationInstance, version, out var newCommonIds))
+        {
+            await renderer.Error("Version {0} not found", version);
+            return -1;
+        }
+        
+        // Get the actual version from the ids, so that we can sanitize the version string, and collapse multiple
+        // versions into a single version string
+        var actualVersion = hasherService.GetGameVersion(loadout.InstallationInstance, newCommonIds);
+        
+        using var tx = loadout.Db.Connection.BeginTransaction();
+        
+        // Retract the old ids
+        foreach (var existingId in loadout.LocatorIds)
+            tx.Retract(loadout, Loadout.LocatorIds, existingId);
+        // And the old version
+        tx.Retract(loadout, Loadout.GameVersion, loadout.GameVersion);
+        
+        // Add the new ids and version
+        foreach (var newId in newCommonIds)
+            tx.Add(loadout, Loadout.LocatorIds, newId);
+        
+        tx.Add(loadout, Loadout.GameVersion, actualVersion);
+        
+        await tx.Commit();
+        
+        return 0;
+    }
 
     [Verb("loadout synchronize", "Synchronize the loadout with the game folders, adding any changes in the game folder to the loadout and applying any new changes in the loadout to the game folder")]
     private static async Task<int> Synchronize([Injected] IRenderer renderer,
@@ -73,8 +111,8 @@ public static class LoadoutManagementVerbs
         var db = conn.Db;
         await Loadout.All(db)
             .Where(x => x.IsVisible())
-            .Select(list => (list.Name, list.Installation.Name, list.LoadoutId, list.Items.Count))
-            .RenderTable(renderer, "Name", "Game", "Id", "Items");
+            .Select(list => (list.LoadoutId, list.Name, list.Installation.Name, list.GameVersion, list.Items.Count))
+            .RenderTable(renderer, "Id", "Name", "Game", "Version", "Items");
         return 0;
     }
 

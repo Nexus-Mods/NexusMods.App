@@ -282,6 +282,26 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
     }
 
+    /// <inheritdoc />
+    public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    {
+        if (gameInstallation.Store == GameStore.GOG)
+        {
+            if (!VersionDefinition.FindByName(Current, version).TryGetFirst(out var versionDef))
+            {
+                commonIds = [];
+                return false;
+            }
+
+            commonIds = versionDef.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+            return true;
+        }
+        else
+        {
+            throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
+        }
+    }
+
     public void Dispose()
     {
         foreach (var connection in _databases.Values)
