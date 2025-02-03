@@ -8,11 +8,11 @@ Collections are now available at the top of the Library. The new section appears
 
 ![The Library showing the new Collections section at the top of the page](./docs/changelog-assets/475066721f26a68fee15c2dd8509e017.webp)
 
-All collections downloaded from Nexus Mods will be in a read-only state when added to your loadout which ensures you get the full experience the curator intended. In future, users will be able make copies of existing collections in order to edit them. 
+All collections downloaded from Nexus Mods will be in a read-only state when added to your loadout which ensures you get the full experience the curator intended. In future, users will be able to make copies of existing collections to edit them. 
 
 ![The read-only view for an installed collection](./docs/changelog-assets/f8f271ed8e206e0411823a6f760107eb.webp)
 
-We're also made improvements to the experience of downloading and installing collections by adding more useful information to the Collection Download page and the Collection tiles in the library. 
+We've also made improvements to the experience of downloading and installing collections by adding more useful information to the Collection Download page and the Collection tiles in the library. 
 
 As an added bonus, a button will show in the UI when a collection has been updated allowing the latest revision to be downloaded - mod updates are coming soon! 
 
@@ -37,10 +37,10 @@ We've added the mod page image as a thumbnail in the Library, My Mods, and Colle
 
 ## Known Issues
 * On Windows, a Command Prompt window will appear behind the app while it is running. 
-* When viewing a read-only collection, it is still possible to toggle individual mods on and off, but this has no effect on your loadout. 
+* When viewing a read-only collection, it is still possible to toggle individual mods on and off, but this does not affect your loadout. 
 * Stardew Valley (Native Linux version) is not detected when installed via Heroic Launcher on Linux. The Windows version of the game can be used instead until this issue is fixed. 
 * Bundled mods included with collections do not appear in the UI but are still applied to your game. 
-* The success rating for collections is not showing the correct value. 
+* The success rating for collections does not show the correct value. 
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * The "Switch View" option does not persist in the Library/Installed Mods view.
 * The "Load Order" heading toggle does not persist in the Load Order view. 
