@@ -112,4 +112,11 @@ public class StubbedFileHasherService : IFileHashesService
     }
 
     public IDb Current => _current!;
+    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    {
+        var firstMetadata = locatorMetadata.First();
+        if (firstMetadata == "Unknown")
+            return "StubbedVersion";
+        throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
+    }
 }
