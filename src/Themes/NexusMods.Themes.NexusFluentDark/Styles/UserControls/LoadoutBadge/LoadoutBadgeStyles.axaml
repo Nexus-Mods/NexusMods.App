@@ -6,14 +6,37 @@
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
 
     <Design.PreviewWith>
-        <WrapPanel Margin="20" Height="120" Width="120">
-            <WrapPanel.Resources >
-                <loadoutBadge:LoadoutBadgeDesignViewModel x:Key="LoadoutBadgeDesignViewModel"/>
-            </WrapPanel.Resources>
-            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"/>
-            <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"
-                                       Classes="CardSize" />
-        </WrapPanel>
+        <Border Padding="16">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Width="48" 
+                        Height="48" 
+                        CornerRadius="8" 
+                        VerticalAlignment="Top"
+                        ClipToBounds="True">
+                    <Border.Background>
+                        <ImageBrush Source="/Assets/DesignTime/cyberpunk_game.png"/>
+                    </Border.Background>
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <loadoutBadge:LoadoutBadgeDesignViewModel x:Key="LoadoutBadgeDesignViewModel" />
+                        </StackPanel.Resources>
+                        <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}" />
+                    </StackPanel>
+                </Border>
+                <Border Width="128" Height="128" CornerRadius=" 8" VerticalAlignment="Top">
+                    <Border.Background>
+                        <ImageBrush Source="/Assets/DesignTime/cyberpunk_game.png"/>
+                    </Border.Background>
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <loadoutBadge:LoadoutBadgeDesignViewModel x:Key="LoadoutBadgeDesignViewModel" />
+                        </StackPanel.Resources>
+                        <loadoutBadge:LoadoutBadge DataContext="{StaticResource LoadoutBadgeDesignViewModel}"
+                                                   Classes="CardSize" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
@@ -21,33 +44,28 @@
         <Setter Property="Background" Value="{StaticResource NeutralStrong}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         <Setter Property="CornerRadius" Value="0,8,0,4" />
-
+        <Setter Property="Padding" Value="4,0,6,0" />
         <Setter Property="Height" Value="24" />
-        <Setter Property="MinWidth" Value="24" />
-        <Setter Property="Padding" Value="1,2,4,2" />
-
-        <Style Selector="^ panels|FlexPanel#ContentsFlexPanel">
-            <Setter Property="JustifyContent" Value="Center" />
-            <Setter Property="AlignItems" Value="Stretch" />
-        </Style>
 
         <Style Selector="^ spinner|Spinner#Spinner">
             <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
             <Setter Property="IsVisible" Value="False" />
-
             <Setter Property="Height" Value="12" />
             <Setter Property="Width" Value="12" />
-            <Setter Property="Margin" Value="2" />
+            <Setter Property="Margin" Value="0" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#Icon">
             <Setter Property="IsVisible" Value="False" />
             <Setter Property="Size" Value="16" />
+            <Setter Property="Margin" Value="0" />
         </Style>
 
         <Style Selector="^ TextBlock#ShortName">
             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="2,0,0,0" />
         </Style>
 
         <!-- Selected state -->
@@ -57,8 +75,14 @@
 
         <!-- Applied state -->
         <Style Selector="^:applied:not(:in-progress)">
+            <Setter Property="Padding" Value="2,0,6,0" />
+            
             <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="True" />
+            </Style>
+            
+            <Style Selector="^ TextBlock#ShortName">
+                <Setter Property="Margin" Value="0,0,0,0" />
             </Style>
         </Style>
 
@@ -71,6 +95,7 @@
             <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="False" />
             </Style>
+            
         </Style>
 
     </Style>
@@ -78,25 +103,37 @@
 
     <!-- Large version (for LoadoutCards) -->
     <Style Selector="loadoutBadge|LoadoutBadge.CardSize">
-        <Setter Property="Height" Value="NaN" />
-        <Setter Property="Padding" Value="12,4" />
-
-        <Style Selector="^ panels|FlexPanel#ContentsFlexPanel">
-            <Setter Property="ColumnSpacing" Value="4" />
-        </Style>
+        <Setter Property="Padding" Value="8,0,10,0" />
+        <Setter Property="Height" Value="36" />
 
         <Style Selector="^ spinner|Spinner#Spinner">
-            <Setter Property="Height" Value="16" />
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Margin" Value="4" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Margin" Value="0" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#Icon">
-            <Setter Property="Size" Value="20" />
+            <Setter Property="Size" Value="18" />
         </Style>
 
         <Style Selector="^ TextBlock#ShortName">
             <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}" />
+            <Setter Property="Margin" Value="4,0,0,0" />
         </Style>
+        
+        <!-- Applied state -->
+        <Style Selector="^:applied:not(:in-progress)">
+            
+            <Setter Property="Padding" Value="5,0,10,0" />
+            
+            <Style Selector="^ icons|UnifiedIcon#Icon">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            
+            <Style Selector="^ TextBlock#ShortName">
+                <Setter Property="Margin" Value="3,0,0,0" />
+            </Style>
+        </Style>
+        
     </Style>
 </Styles>

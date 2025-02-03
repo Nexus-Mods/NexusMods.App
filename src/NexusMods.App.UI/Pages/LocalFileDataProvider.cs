@@ -8,7 +8,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using Observable = System.Reactive.Linq.Observable;
+using SystemObservable = System.Reactive.Linq.Observable;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
@@ -17,77 +17,62 @@ namespace NexusMods.App.UI.Pages;
 internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
-    private readonly IServiceProvider _serviceProvider;
 
     public LocalFileDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
-        _serviceProvider = serviceProvider;
     }
 
-    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveFlatLibraryItems(LibraryFilter libraryFilter)
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
     {
-        // NOTE(erri120): For the flat library view, we just get all LocalFiles
-        return _connection
-            .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .AsEntityIds()
-            .Transform((_, entityId) =>
-            {
-                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
-                return ToLibraryItemModel(libraryFile, libraryFilter);
-            });
+        return LocalFile
+            .ObserveAll(_connection)
+            .Transform(localFile => ToLibraryItemModel(libraryFilter, localFile));
     }
 
-    private ILibraryItemModel ToLibraryItemModel(LibraryFile.ReadOnly libraryFile, LibraryFilter libraryFilter)
+    private CompositeItemModel<EntityId> ToLibraryItemModel(LibraryFilter libraryFilter, LocalFile.ReadOnly localFile)
     {
-        var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, libraryFile.Id, libraryFilter);
+        var linkedLoadoutItemsObservable = LibraryDataProviderHelper
+            .GetLinkedLoadoutItems(_connection, libraryFilter, localFile.Id)
+            .RefCount();
 
-        var model = new LocalFileLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id), _serviceProvider)
+        var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
         {
-            LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
-        };
-        
-        model.Name.Value = libraryFile.AsLibraryItem().Name;
-        model.DownloadedDate.Value = libraryFile.GetCreatedAt();
-        model.ItemSize.Value = libraryFile.Size;
+            var itemModel = new CompositeItemModel<EntityId>(localFile.Id);
+            SetupLibraryItemModel(itemModel, localFile, linkedLoadoutItemsObservable);
 
-        return model;
+            return new ChangeSet<CompositeItemModel<EntityId>, EntityId>([
+                new Change<CompositeItemModel<EntityId>, EntityId>(
+                    reason: ChangeReason.Add,
+                    key: localFile.Id,
+                    current: itemModel
+                )]
+            );
+        });
+
+        var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
+        {
+            HasChildrenObservable = SystemObservable.Return(true),
+            ChildrenObservable = childrenObservable,
+        };
+
+        SetupLibraryItemModel(parentItemModel, localFile, linkedLoadoutItemsObservable);
+
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
+        return parentItemModel;
     }
 
-    public IObservable<IChangeSet<ILibraryItemModel, EntityId>> ObserveNestedLibraryItems(LibraryFilter libraryFilter)
+    private static void SetupLibraryItemModel(
+        CompositeItemModel<EntityId> itemModel,
+        LocalFile.ReadOnly localFile,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
     {
-        // NOTE(erri120): For the nested library view, design wanted to have a
-        // parent for the LocalFile, we create a parent with one child that will
-        // both be the same.
-        return _connection
-            .ObserveDatoms(LocalFile.PrimaryAttribute)
-            .AsEntityIds()
-            .Transform((_, entityId) =>
-            {
-                var libraryFile = LibraryFile.Load(_connection.Db, entityId);
+        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
+        itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: localFile.GetCreatedAt()));
+        itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
 
-                var childrenObservable = UIObservableExtensions.ReturnFactory(() => new ChangeSet<ILibraryItemModel, EntityId>([
-                    new Change<ILibraryItemModel, EntityId>(
-                        reason: ChangeReason.Add,
-                        key: entityId,
-                        current: ToLibraryItemModel(libraryFile, libraryFilter)
-                    ),
-                ]));
-
-                var linkedLoadoutItemsObservable = QueryHelper.GetLinkedLoadoutItems(_connection, entityId, libraryFilter);
-
-                var model = new LocalFileParentLibraryItemModel(new LocalFile.ReadOnly(libraryFile.Db, libraryFile.IndexSegment, libraryFile.Id), _serviceProvider,
-                    hasChildrenObservable: Observable.Return(true), childrenObservable)
-                {
-                    LinkedLoadoutItemsObservable = linkedLoadoutItemsObservable,
-                };
-
-                model.Name.Value = libraryFile.AsLibraryItem().Name;
-                model.DownloadedDate.Value = libraryFile.GetCreatedAt();
-                model.ItemSize.Value = libraryFile.Size;
-
-                return (ILibraryItemModel)model;
-            });
+        LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)

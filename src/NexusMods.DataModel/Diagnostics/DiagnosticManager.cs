@@ -8,9 +8,9 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
+using R3;
+using CompositeDisposable = R3.CompositeDisposable;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -21,7 +21,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private readonly ILogger<DiagnosticManager> _logger;
 
     private static readonly object Lock = new();
-    private readonly SourceCache<IConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
+    private readonly SourceCache<ConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
 
     private bool _isDisposed;
     private readonly CompositeDisposable _compositeDisposable = new();
@@ -40,35 +40,38 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         lock (Lock)
         {
             var existingObservable = _observableCache.Lookup(loadoutId);
-            if (existingObservable.HasValue) return existingObservable.Value;
+            if (existingObservable.HasValue) return existingObservable.Value.AsSystemObservable();
 
             var connectableObservable = Loadout.RevisionsWithChildUpdates(_connection, loadoutId)
-                .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
-                .SelectMany(async _ =>
-                {
-                    var db = _connection.Db;
-                    var loadout = Loadout.Load(db, loadoutId);
-                    if (!loadout.IsValid()) return [];
-
-                    try
+                .ToObservable()
+                .Debounce(TimeSpan.FromMilliseconds(250))
+                .SelectAwait(async (_, cancellationToken) =>
                     {
-                        // TODO: cancellation token
-                        // TODO: optimize this a bit so we don't load the model twice, we have the datoms above, we should be able to use them
+                        var db = _connection.Db;
+                        var loadout = Loadout.Load(db, loadoutId);
+                        if (!loadout.IsValid()) return [];
 
-                        var cancellationToken = CancellationToken.None;
-                        return await GetLoadoutDiagnostics(loadout, cancellationToken);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
-                        return [];
-                    }
-                })
+                        try
+                        {
+                            return await GetLoadoutDiagnostics(loadout, cancellationToken);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            return [];
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
+                            return [];
+                        }
+                    },
+                    AwaitOperation.Switch
+                )
                 .Replay(bufferSize: 1);
             
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
-            return connectableObservable;
+            return connectableObservable.AsSystemObservable();
         }
     }
 
@@ -78,43 +81,41 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         try
         {
-            var nested = await diagnosticEmitters
-                .OfType<ILoadoutDiagnosticEmitter>()
-                .SelectAsync(async emitter =>
+            List<Diagnostic> diagnostics = [];
+            
+            await Parallel.ForEachAsync(diagnosticEmitters.OfType<ILoadoutDiagnosticEmitter>(), cancellationToken, async (emitter, token) =>
+            {
+                var start = DateTimeOffset.UtcNow;
+
+                try
                 {
-                    var start = DateTimeOffset.UtcNow;
-
-                    try
+                    await foreach (var diagnostic in emitter.Diagnose(loadout, token))
                     {
-                        var res = await emitter
-                            .Diagnose(loadout, cancellationToken)
-                            .ToListAsync(cancellationToken);
+                        lock(diagnostics)
+                        {
+                            diagnostics.Add(diagnostic);
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // ignore
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
+                }
+                finally
+                {
+                    var end = DateTimeOffset.UtcNow;
+                    var duration = end - start;
+                    _logger.LogTrace("Emitter {Emitter} took {Duration} ms", emitter.GetType(), duration.TotalMilliseconds);
+                }
+            });
 
-                        return (IList<Diagnostic>)res;
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        // ignore
-                        return Array.Empty<Diagnostic>();
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
-                        return Array.Empty<Diagnostic>();
-                    }
-                    finally
-                    {
-                        var end = DateTimeOffset.UtcNow;
-                        var duration = end - start;
-                        _logger.LogTrace("Emitter {Emitter} took {Duration} ms", emitter.GetType(), duration.TotalMilliseconds);
-                    }
-                })
-                .ToListAsync(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return [];
 
-            if (cancellationToken.IsCancellationRequested) return Array.Empty<Diagnostic>();
-
-            var flattened = nested
-                .SelectMany(many => many)
+            var flattened = diagnostics
                 .OrderByDescending(x => x.Severity)
                 .ThenBy(x => x.Id)
                 .ToArray();

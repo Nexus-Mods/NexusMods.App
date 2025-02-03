@@ -322,12 +322,21 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Parses the collection json file.
     /// </summary>
-    public async ValueTask<CollectionRoot> ParseCollectionJsonFile(
+    public ValueTask<CollectionRoot> ParseCollectionJsonFile(
         NexusModsCollectionLibraryFile.ReadOnly collectionLibraryFile,
         CancellationToken cancellationToken)
     {
         var jsonFileEntity = GetCollectionJsonFile(collectionLibraryFile);
+        return ParseCollectionJsonFile(jsonFileEntity, cancellationToken);
+    }
 
+    /// <summary>
+    /// Parses the collection json file.
+    /// </summary>
+    public async ValueTask<CollectionRoot> ParseCollectionJsonFile(
+        LibraryArchiveFileEntry.ReadOnly jsonFileEntity,
+        CancellationToken cancellationToken)
+    {
         await using var data = await _fileStore.GetFileStream(jsonFileEntity.AsLibraryFile().Hash, token: cancellationToken);
         var root = await JsonSerializer.DeserializeAsync<CollectionRoot>(data, _jsonSerializerOptions, cancellationToken: cancellationToken);
 

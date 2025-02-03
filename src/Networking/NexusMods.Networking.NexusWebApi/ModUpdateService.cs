@@ -1,4 +1,5 @@
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
@@ -16,10 +17,8 @@ public class ModUpdateService : IModUpdateService
     private readonly NexusGraphQLClient _gqlClient;
     
     // Use SourceCache to maintain latest values per key
-    private readonly SourceCache<KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>, EntityId> _newestModVersionCache = 
-        new (x => x.Key.Id);
-    private readonly SourceCache<KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>, EntityId> _newestModOnAnyPageCache 
-        = new(x => x.Key.Id);
+    private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, NexusModsFileMetadata.ReadOnly>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
+    private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, NexusModsFileMetadata.ReadOnly[]>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
 
     public ModUpdateService(
         IConnection connection,
@@ -66,75 +65,56 @@ public class ModUpdateService : IModUpdateService
     /// <inheritdoc />
     public void NotifyForUpdates()
     {
-        // Notify every file of its update.
-        var allLibraryItems = NexusModsLibraryItem.All(_connection.Db).ToDictionary(x => x.FileMetadata.Id);
-        foreach (var libraryItem in allLibraryItems.Values)
-        {
-            var metadata = libraryItem.FileMetadata;
-            var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(metadata);
-            var mostRecentItem = newerItems.FirstOrDefault();
-            if (!mostRecentItem.IsValid()) // Catch case of no newer items.
-                continue;
+        var filesInLibrary = NexusModsLibraryItem
+            .All(_connection.Db)
+            .Select(static libraryItem => libraryItem.FileMetadata)
+            .DistinctBy(static fileMetadata => fileMetadata.Id)
+            .ToDictionary(static x => x.Id, static x => x);
 
-            // Notify the file of its update.                                                                                                                                                                                                         
-            var kvp = new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly>(metadata, mostRecentItem);
+        var existingFileToNewerFiles = filesInLibrary
+            .Select(kv =>
+            {
+                var newerFiles = RunUpdateCheck
+                    .GetNewerFilesForExistingFile(kv.Value)
+                    .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
+                    .ToArray();
+
+                return new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]>(kv.Value, newerFiles);
+            })
+            .Where(static kv => kv.Value.Length > 0)
+            .ToArray();
+
+        foreach (var kv in existingFileToNewerFiles)
+        {
+            var kvp = new KeyValuePair<NexusModsFileMetadataId, NexusModsFileMetadata.ReadOnly>(kv.Key, kv.Value.First());
             _newestModVersionCache.AddOrUpdate(kvp);
         }
 
-        // Check every mod page, and notify it of its update.
-        foreach (var modPage in NexusModsModPageMetadata.All(_connection.Db))
+        var modPageToNewerFiles = existingFileToNewerFiles
+            .SelectMany(static kv => kv.Value)
+            .DistinctBy(static fileMetadata => fileMetadata.Id)
+            .GroupBy(static fileMetadata => fileMetadata.ModPageId)
+            .ToDictionary(static group => group.Key, static group => group.ToArray());
+
+        foreach (var kv in modPageToNewerFiles)
         {
-            var newestDate = DateTimeOffset.MinValue;
-            NexusModsFileMetadata.ReadOnly newestItem = default;
-            var newestItemOldVersion = "";
-            var numToUpdate = 0;
-            var isAnyOnModPageNewer = false;
-
-            // Check all mods within the mod page that are in our library.
-            // By matching file metadata ID.
-            foreach (var modFile in modPage.Files.Where(x => allLibraryItems.ContainsKey(x.Id)))
-            {
-                var newerItems = RunUpdateCheck.GetNewerFilesForExistingFile(modFile);
-                var mostRecentItem = newerItems.FirstOrDefault();
-                if (!mostRecentItem.IsValid()) // Catch case of no newer items.
-                    continue;
-
-                var isNewestOnModPage = mostRecentItem.UploadedAt > newestDate;
-                if (!isNewestOnModPage)
-                    continue;
-
-                numToUpdate++;
-                newestDate = mostRecentItem.UploadedAt;
-                newestItem = mostRecentItem;
-                newestItemOldVersion = modFile.Version;
-                isAnyOnModPageNewer = true;
-            }
-
-            if (isAnyOnModPageNewer)
-            {
-                var kvp = new KeyValuePair<NexusModsModPageMetadata.ReadOnly, NewestModPageVersionData>(
-                    modPage, 
-                    new NewestModPageVersionData(newestItem, newestItemOldVersion, numToUpdate));
-                _newestModOnAnyPageCache.AddOrUpdate(kvp);
-            }
+            _newestModOnAnyPageCache.AddOrUpdate(kv);
         }
     }
 
     /// <inheritdoc />
-    public IObservable<NexusModsFileMetadata.ReadOnly> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<NexusModsFileMetadata.ReadOnly>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
     {
         return _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
-            .WatchValue(current.Id);
-        // Note(sewer): Value is valid by definition, we only beam valid values
+            .QueryWhenChanged(query => query.Lookup(current.Id));
     }
-    
+
     /// <inheritdoc />
-    public IObservable<NewestModPageVersionData> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<NexusModsFileMetadata.ReadOnly[]>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
     {
         return _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
-            .WatchValue(current.Id);
-        // Note(sewer): Value is valid by definition, we only beam valid values
+            .QueryWhenChanged(query => query.Lookup(current.Id));
     }
 }

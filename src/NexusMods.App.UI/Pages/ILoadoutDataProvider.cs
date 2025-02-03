@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
@@ -87,7 +88,8 @@ public static class LoadoutDataProviderHelper
         var dateObservable = linkedItemsObservable
             .QueryWhenChanged(query => query.Items
                 .Select(static item => item.GetCreatedAt())
-                .Min()
+                .OptionalMinBy(item => item)
+                .ValueOr(DateTimeOffset.MinValue)
             );
 
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(

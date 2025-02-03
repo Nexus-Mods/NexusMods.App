@@ -7,7 +7,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-
+using OperationResultExtension = StrawberryShake.OperationResultExtensions;
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -118,6 +118,7 @@ public class NexusApiClient : INexusApiClient
     public async Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision, bool viewAdultContent = true, CancellationToken token = default)
     {
         var linksLocation = await _graphQLClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
+        OperationResultExtension.EnsureNoErrors(linksLocation);
         
         var msg = await _factory.Create(HttpMethod.Get, new Uri($"https://api.nexusmods.com" +linksLocation.Data!.CollectionRevision.DownloadLink));
         return await SendAsync<CollectionDownloadLinks>(msg, token);

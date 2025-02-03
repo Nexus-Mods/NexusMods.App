@@ -1,0 +1,60 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Padding="8" Classes="Low" Width="250" Height="200">
+            <Border.Resources>
+                <items:ApplyControlDesignViewModel x:Key="ApplyControlDesignViewModel" />
+            </Border.Resources>
+            <items:ApplyControlView DataContext="{StaticResource ApplyControlDesignViewModel}" />
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="items|ApplyControlView">
+
+        <!-- apply button styles -->
+        <Style Selector="^ Button#ApplyButton">
+            <Setter Property="Background" Value="{StaticResource PrimaryModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+                <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+            </Style>
+        </Style>
+
+        <!-- progress bar styles -->
+        <Style Selector="^ ProgressBar#ProgressBarControl">
+            <!-- these colors are only used here which is why they are raw hex -->
+            <Setter Property="Foreground" Value="#EA580C" />
+            <Setter Property="Background" Value="#33EA580C" />
+            <Setter Property="Height" Value="44" />
+
+            <!-- needs this more specific selector to override the default template values -->
+            <Style Selector="^:horizontal">
+                <Setter Property="MinWidth" Value="100" />
+                <Setter Property="MinHeight" Value="4" />
+            </Style>
+
+            <!-- text block -->
+            <Style Selector="^ /template/ LayoutTransformControl#PART_LayoutTransformControl TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="TextAlignment" Value="Left" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>
