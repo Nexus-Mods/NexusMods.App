@@ -1,4 +1,4 @@
-# v0.7.3 - 2024-02-XX
+# v0.7.3 - 2024-02-03
 The release adds collections to the Library, introduces thumbnails for mods, and include significant usability improvements for the left menu. 
 
 ## Collections in the Library
