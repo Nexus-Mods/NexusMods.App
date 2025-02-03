@@ -74,7 +74,13 @@ public static class RunUpdateCheck
             var isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
             try
             {
-                await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
+                await UpdateModPage(db, tx, gqlClient,
+                    cancellationToken, mixin
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignored.
             }
             catch (Exception e)
             {
