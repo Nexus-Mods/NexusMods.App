@@ -73,14 +73,15 @@ public static class RunUpdateCheck
         {
             try
             {
-                await sema.WaitAsync(cancellationToken);
+                var isTaken = await sema.WaitAsync(-1, cancellationToken);
                 try
                 {
                     await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
                 }
                 finally
                 {
-                    sema.Release();
+                    if (isTaken)
+                        sema.Release();
                 }
             }
             catch (Exception e)
