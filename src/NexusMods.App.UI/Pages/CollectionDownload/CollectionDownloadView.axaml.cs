@@ -18,7 +18,8 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, DownloadsTree, vm => vm.TreeDataGridAdapter);
+        // TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, ILibraryItemModel, EntityId>(this, DownloadsTree, vm => vm.TreeDataGridAdapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<CollectionDownloadView, ICollectionDownloadViewModel, CompositeItemModel<EntityId>, EntityId>(this, DownloadsTree, vm => vm.TreeDataGridAdapter);
 
         this.WhenActivated(d =>
         {

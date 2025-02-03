@@ -14,7 +14,7 @@ namespace NexusMods.App.UI.Pages.CollectionDownload;
 
 public interface ICollectionDownloadViewModel : IPageViewModelInterface
 {
-    CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
+    NewCollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     /// <inheritdoc cref="CollectionMetadata.Name"/>
     string Name { get; }
