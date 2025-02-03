@@ -69,18 +69,18 @@ public static class RunUpdateCheck
         var tasks = new List<Task>();
 
         // Helper function to process a single mixin with error handling
-        async Task ProcessMixin(PageMetadataMixin mixin, bool isUndetermined)
+        async Task ProcessMixin(SemaphoreSlim sema, PageMetadataMixin mixin, bool isUndetermined)
         {
             try
             {
-                await semaphore.WaitAsync(cancellationToken);
+                await sema.WaitAsync(cancellationToken);
                 try
                 {
                     await UpdateModPage(db, tx, gqlClient, cancellationToken, mixin);
                 }
                 finally
                 {
-                    semaphore.Release();
+                    sema.Release();
                 }
             }
             catch (Exception e)
@@ -101,13 +101,13 @@ public static class RunUpdateCheck
         // Process undetermined items
         foreach (var mixin in result.UndeterminedItems)
         {
-            tasks.Add(ProcessMixin(mixin, true));
+            tasks.Add(ProcessMixin(semaphore, mixin, true));
         }
 
         // Process out of date items
         foreach (var mixin in result.OutOfDateItems)
         {
-            tasks.Add(ProcessMixin(mixin, false));
+            tasks.Add(ProcessMixin(semaphore, mixin, false));
         }
 
         // Wait for all tasks to complete
