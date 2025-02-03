@@ -383,10 +383,13 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     var optionalModsInstructions = modsInstructions.Where(static x => x.ItemType == CollectionDownloader.ItemType.Optional).ToArray();
                     var requiredModsInstructions = modsInstructions.Where(static x => x.ItemType == CollectionDownloader.ItemType.Required).ToArray();
 
-                    var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-                    markdownRendererViewModel.Contents = collectionInstructionsText;
+                    if (!string.IsNullOrWhiteSpace(collectionInstructionsText))
+                    {
+                        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+                        markdownRendererViewModel.Contents = collectionInstructionsText;
+                        self.InstructionsRenderer = markdownRendererViewModel;
+                    }
 
-                    self.InstructionsRenderer = markdownRendererViewModel;
                     self.RequiredModsInstructions = requiredModsInstructions;
                     self.OptionalModsInstructions = optionalModsInstructions;
                 }).AddTo(disposables);
