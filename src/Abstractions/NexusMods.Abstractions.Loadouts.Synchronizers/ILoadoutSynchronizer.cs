@@ -46,9 +46,10 @@ public interface ILoadoutSynchronizer
     
     
     /// <summary>
-    /// Rescan the game files, bringing the current cached state up to date.
+    /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
+    /// whatever is on disk.
     /// </summary>
-    Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation);
+    Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation);
     
     #endregion
     

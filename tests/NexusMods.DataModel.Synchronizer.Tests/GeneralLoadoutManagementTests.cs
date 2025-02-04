@@ -18,7 +18,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 1 - Initial State",
             """
@@ -36,7 +36,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         LogDiskState(sb, "## 4 - New File Added to Game Folder",
             """
             New files have been added to the game folder by the user or the game, but the loadout hasn't been synchronized yet.

@@ -764,7 +764,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return await RunGroupings(tree, loadout);
     }
 
-    public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
+    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
     {
         // Make sure the file hashes are up to date
         await _fileHashService.GetFileHashesDb();

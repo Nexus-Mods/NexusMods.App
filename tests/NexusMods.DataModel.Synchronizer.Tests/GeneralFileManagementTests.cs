@@ -12,10 +12,10 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
     {
         var sb = new StringBuilder();
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 1 - Loadout Created (A) - Synced",
             """
@@ -28,9 +28,9 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         newFileFullPath.Parent.CreateDirectory();
         await newFileFullPath.WriteAllTextAsync("Hello World!");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 2 - Added bin/newFile - Synced",
             """
@@ -40,9 +40,9 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         // Update the new file contents
         await newFileFullPath.WriteAllTextAsync("Hello World! Updated!");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 2 - Updated the file - Synced",
             """

@@ -14,7 +14,7 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
     {
         
         // Setup the game files 
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         
@@ -24,7 +24,7 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         resolvedPath.Parent.CreateDirectory();
         await resolvedPath.WriteAllTextAsync("Hello World!");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         
         resolvedPath.FileExists.Should().BeTrue("The file shouldn't be deleted via the sync process");
