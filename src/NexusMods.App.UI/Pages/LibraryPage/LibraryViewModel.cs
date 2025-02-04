@@ -92,12 +92,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
-        var ticker = R3.Observable
-            .Interval(period: TimeSpan.FromSeconds(30), timeProvider: ObservableSystem.DefaultTimeProvider)
-            .ObserveOnUIThreadDispatcher()
-            .Select(_ => TimeProvider.System.GetLocalNow())
-            .Publish(initialValue: TimeProvider.System.GetLocalNow());
-
         var loadoutObservable = LoadoutSubject
             .Where(static id => id.HasValue)
             .Select(static id => id.Value)
@@ -120,9 +114,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.LibraryOutline;
-
-        ticker.Connect();
-
+        
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = _loadout.InstallationInstance.Game;
 

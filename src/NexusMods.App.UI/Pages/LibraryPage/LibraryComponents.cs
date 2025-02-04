@@ -72,9 +72,18 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
-            var bValue = b.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
-            return aValue.Compare(bValue);
+            var aInstall = a.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
+            var bInstall = b.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
+
+            if (aInstall.HasValue && bInstall.HasValue) return aInstall.Value.CompareTo(bInstall.Value);
+            if (aInstall.HasValue) return -1;
+            if (bInstall.HasValue) return 1;
+
+            var aUpdate = a.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
+            var bUpdate = b.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
+            if (aUpdate.HasValue && bUpdate.HasValue) return aUpdate.Value.CompareTo(bUpdate.Value);
+
+            return 0;
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Actions);
