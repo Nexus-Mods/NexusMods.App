@@ -94,7 +94,15 @@ public class ModUpdateService : IModUpdateService
             .SelectMany(static kv => kv.Value)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .GroupBy(static fileMetadata => fileMetadata.ModPageId)
-            .ToDictionary(static group => group.Key, static group => group.ToArray());
+            .ToDictionary(static group => group.Key, static group =>
+                {
+                    // Sort by date (latest to oldest), as per design.
+                    // https://github.com/Nexus-Mods/NexusMods.App/pull/2559#discussion_r1934250741
+                    var itemsArray = group.ToArray();
+                    Array.Sort(itemsArray, (a, b) => b.UploadedAt.CompareTo(a.UploadedAt));
+                    return itemsArray;
+                }
+            );
 
         foreach (var kv in modPageToNewerFiles)
         {
