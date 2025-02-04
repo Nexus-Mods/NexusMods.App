@@ -629,15 +629,6 @@
         <Compile Update="Pages\LibraryPage\Collections\CollectionCardViewModel.cs">
           <DependentUpon>ICollectionCardViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithVersion.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithSize.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithAction.cs">
-            <DependentUpon>ILibraryItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\Alerts\Alert.axaml.cs">
           <DependentUpon>Alert.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -700,9 +691,6 @@
         </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LibraryPage\ILibraryItemWithThumbnailAndName.cs">
-          <DependentUpon>ILibraryItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlView.axaml.cs">
           <DependentUpon>ApplyControlView.axaml</DependentUpon>
