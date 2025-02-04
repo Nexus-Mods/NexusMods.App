@@ -7,6 +7,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.Paths;
 using R3;
 
@@ -38,11 +39,15 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";
-    public IMarkdownRendererViewModel? InstructionsRenderer { get; }
-    public ModInstructions[] RequiredModsInstructions { get; set; } = [];
-    public ModInstructions[] OptionalModsInstructions { get; set; } = [];
+    public IMarkdownRendererViewModel? InstructionsRenderer { get; } = new MarkdownRendererDesignViewModel("This is a collection of mods that make the game better. Please read the instructions carefully.");
+    public ModInstructions[] RequiredModsInstructions { get; set; } = [ 
+        new ModInstructions("Mod 1", "This required mod needs special instructions", CollectionDownloader.ItemType.Required),
+        new ModInstructions("Mod 4", "This required mod also needs some special instructions. This does need to be really long so that we can test that it wraps correctly.", CollectionDownloader.ItemType.Required) ];
+    public ModInstructions[] OptionalModsInstructions { get; set; } = [ 
+        new ModInstructions("Mod 2", "This optional mod might need something special to happen", CollectionDownloader.ItemType.Optional),
+        new ModInstructions("Mod 3", "This ANOTHER optional mod needs some love", CollectionDownloader.ItemType.Optional)];
 
-    public int CountDownloadedOptionalItems { get; } = 0;
+    public int CountDownloadedOptionalItems { get; } = 1;
     public int CountDownloadedRequiredItems { get; } = 1;
     public bool CanDownloadAutomatically { get; } = false;
 
