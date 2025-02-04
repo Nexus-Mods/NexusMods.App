@@ -235,7 +235,7 @@
                             </Grid>
                         </Expander>
 
-                        <Expander Header="Mod Instructions" x:Name="OptionalModsInstructionsExpander" IsVisible="False"
+                        <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander" IsVisible="False"
                                   IsExpanded="True">
                             <Grid>
                                 <Grid.ColumnDefinitions>
