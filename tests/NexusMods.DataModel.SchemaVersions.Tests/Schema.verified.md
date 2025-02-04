@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xEB51C9365F54A7FD
-   - Total attributes: 185
+   - Fingerprint: 0x968A3CCFC829BC57
+   - Total attributes: 187
    - Total namespaces: 65
    
 ## Attributes
@@ -36,6 +36,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GogBuilds                | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/Name                     | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/OperatingSystem          | UInt8                   | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/Steam                    | Utf8                    | True    | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/SteamManifests           | Reference               | False   | True  | False     | 
 | NexusMods.App.UI.Windows.WindowData/Data                                           | Utf8                    | False   | False | False     | 
 | NexusMods.ArchiveContents.ArchivedFileContainer/Path                               | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.ArchivedFile/Container                                                   | Reference               | False   | False | False     | 
