@@ -5,6 +5,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;

@@ -34,7 +34,17 @@ public partial class VersionDefinition : IModelDefinition
     public static readonly StringsAttribute GOG = new(Namespace, nameof(GOG)) { IsIndexed = true };
     
     /// <summary>
+    /// The associated Steam ManifestIDs for this version
+    /// </summary>
+    public static readonly StringsAttribute Steam = new(Namespace, nameof(Steam)) { IsIndexed = true };
+    
+    /// <summary>
     /// The resolved gog builds for this version (if they exist)
     /// </summary>
     public static readonly ReferencesAttribute<GogBuild> GogBuilds = new(Namespace, nameof(GogBuilds));
+    
+    /// <summary>
+    /// The resolved steam manfiests builds for this version (if they exist)
+    /// </summary>
+    public static readonly ReferencesAttribute<SteamManifest> SteamManifests = new(Namespace, nameof(SteamManifests));
 }

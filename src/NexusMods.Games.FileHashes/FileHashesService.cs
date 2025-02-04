@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.MnemonicDB;
@@ -209,7 +210,6 @@ public class FileHashesService : IFileHashesService, IDisposable
 
     public IEnumerable<GameFileRecord> GetGameFiles(IDb db, GameInstallation installation, string[] commonIds)
     {
-        var game = (IGame)installation.Game;
         if (installation.Store == GameStore.GOG)
         {
             foreach (var id in commonIds)
@@ -226,7 +226,31 @@ public class FileHashesService : IFileHashesService, IDisposable
                 {
                     yield return new GameFileRecord
                     {
-                        Path = new GamePath(LocationId.Game, file.Path),
+                        Path = (LocationId.Game, file.Path),
+                        Size = file.Hash.Size,
+                        MinimalHash = file.Hash.MinimalHash,
+                        Hash = file.Hash.XxHash3,
+                    };
+                }
+            }
+        }
+        else if (installation.Store == GameStore.Steam)
+        {
+            foreach (var id in commonIds)
+            {
+                if (!ulong.TryParse(id, out var parsedId))
+                    continue;
+                
+                var manifestId = ManifestId.From(parsedId);
+
+                if (!SteamManifest.FindByManifestId(db, manifestId).TryGetFirst(out var firstManifest))
+                    continue;
+
+                foreach (var file in firstManifest.Files)
+                {
+                    yield return new GameFileRecord
+                    {
+                        Path = (LocationId.Game, file.Path),
                         Size = file.Hash.Size,
                         MinimalHash = file.Hash.MinimalHash,
                         Hash = file.Hash.XxHash3,
@@ -246,6 +270,12 @@ public class FileHashesService : IFileHashesService, IDisposable
     /// <inheritdoc />
     public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
     {
+        var definition = GetGameVersionDefinition(installation, locatorMetadata);
+        return definition.Name;
+    }
+    private VersionDefinition.ReadOnly GetGameVersionDefinition(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    {
+        VersionDefinition.ReadOnly versionDefinition;
         if (installation.Store == GameStore.GOG)
         {
             List<GogBuild.ReadOnly> gogBuilds = [];
@@ -270,16 +300,48 @@ public class FileHashesService : IFileHashesService, IDisposable
                     })
                 .Where(row => row.matchingIdCount > 0)
                 .OrderByDescending(row => row.matchingIdCount)
-                .TryGetFirst(out var found);
+                .Select(t => t.version)
+                .TryGetFirst(out versionDefinition);
             if (!wasFound)
                 throw new InvalidOperationException("No version found for locator metadata");
+        }
+        else if (installation.Store == GameStore.Steam)
+        {
+            List<SteamManifest.ReadOnly> steamManifests = [];
+            
+            foreach (var steamId in locatorMetadata)
+            {
+                if (!ulong.TryParse(steamId, out var parsedId))
+                    throw new InvalidOperationException("Steam locator metadata is not a valid ulong");
 
-            return found.version.Name;
+                var steamManifest = SteamManifest.FindByManifestId(Current, ManifestId.From(parsedId))
+                    .FirstOrDefault();
+                steamManifests.Add(steamManifest);
+            }
+            
+            if (steamManifests.Count == 0)
+                throw new InvalidOperationException("No Steam manifests found for locator metadata");
+            
+            var wasFound = VersionDefinition.All(_currentDb!.Db)
+                .Select(version =>
+                    {
+                        var matchingIdCount = steamManifests.Count(g => version.SteamManifestsIds.Contains(g));
+                        return (matchingIdCount, version);
+                    })
+                .Where(row => row.matchingIdCount > 0)
+                .OrderByDescending(row => row.matchingIdCount)
+                .Select(t => t.version)
+                .TryGetFirst(out versionDefinition);
+
+            if (!wasFound)
+                throw new InvalidOperationException("No version found for locator metadata");
         }
         else
         {
             throw new NotImplementedException("No way to get game version for: " + installation.Store);
         }
+
+        return versionDefinition;
     }
 
     /// <inheritdoc />
@@ -294,6 +356,17 @@ public class FileHashesService : IFileHashesService, IDisposable
             }
 
             commonIds = versionDef.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+            return true;
+        }
+        else if (gameInstallation.Store == GameStore.Steam)
+        {
+            if (!VersionDefinition.FindByName(Current, version).TryGetFirst(out var versionDef))
+            {
+                commonIds = [];
+                return false;
+            }
+
+            commonIds = versionDef.SteamManifests.Select(manifest => manifest.ManifestId.ToString()).ToArray();
             return true;
         }
         else

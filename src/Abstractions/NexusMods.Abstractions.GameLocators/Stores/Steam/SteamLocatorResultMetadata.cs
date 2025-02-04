@@ -19,7 +19,11 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public AbsolutePath? CloudSavesDirectory { get; init; }
 
-
+    /// <summary>
+    /// The build ID of the game, according to Steam's download records
+    /// </summary>
+    public ulong[] ManifestIds { get; set; } = [];
+    
     /// <inheritdoc />
-    public IEnumerable<string> ToCommonStrings() => [AppId.ToString()];
+    public IEnumerable<string> ToCommonStrings() => ManifestIds.Select(m => m.ToString());
 }

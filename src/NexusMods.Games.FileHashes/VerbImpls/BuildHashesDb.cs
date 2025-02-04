@@ -10,6 +10,7 @@ using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
@@ -64,12 +65,18 @@ public class BuildHashesDb : IAsyncDisposable
 
     public async Task BuildFrom(AbsolutePath path, AbsolutePath output)
     {
+        try
+        {
+            await AddHashes(path);
+            await AddGogData(path);
+            await AddSteamData(path);
+            await AddVersions(path);
+        }
+        catch (Exception ex)
+        {
+            await _renderer.Error(ex, "Failed to build database");
+        }
 
-        await AddHashes(path);
-        await AddGogData(path);
-        await AddSteamData(path);
-        await AddVersions(path);
-        
         await _renderer.TextLine("Exporting database");
         await _connection.FlushAndCompact();
         
@@ -144,18 +151,28 @@ public class BuildHashesDb : IAsyncDisposable
                 Name = definition.Name,
                 OperatingSystem = os,
                 GameId = gameObject.GameId,
-                GOG = definition.GOG,
+                GOG = definition.GOG ?? [],
+                Steam = definition.Steam ?? [],
             };
 
             var productIds = ((IGogGame)gameObject).GogIds.Select(id => ProductId.From((ulong)id));
 
-            foreach (var id in definition.GOG)
+            // ?? is needed here because the parser 
+            foreach (var id in definition.GOG ?? [])
             {
                 var build = GogBuild
                     .FindByVersionName(referenceDb, id)
                     .Where(g => g.OperatingSystem == os)
                     .Single(g => productIds.Contains(g.ProductId));
                 tx.Add(versionDef, VersionDefinition.GogBuildsIds, build.Id);
+            }
+
+            foreach (var id in definition.Steam ?? [])
+            {
+                var manifest = SteamManifest
+                    .FindByManifestId(referenceDb, ManifestId.From(ulong.Parse(id)))
+                    .Single();
+                tx.Add(versionDef, VersionDefinition.SteamManifestsIds, manifest.Id);
             }
         }
 
@@ -199,7 +216,9 @@ public class BuildHashesDb : IAsyncDisposable
                             throw new Exception($"Sha1 not found in the reference database for path {file.Path} and hash {file.Hash}");
                         }
 
-                        var relationId = EnsureHashPathRelation(tx, refDb, file.Path, file.Hash);
+                        // The paths from steam can be in a format that isn't directly valid, so we sanitize them
+                        var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
+                        var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath, file.Hash);
                         pathIds.Add(relationId);
                         pathCounts++;
                     }
