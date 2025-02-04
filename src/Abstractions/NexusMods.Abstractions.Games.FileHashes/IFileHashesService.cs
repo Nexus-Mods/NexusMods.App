@@ -19,9 +19,10 @@ public interface IFileHashesService
     public ValueTask<IDb> GetFileHashesDb();
 
     /// <summary>
-    /// Get the files associated with a specific game
+    /// Get the files associated with a specific game. The LocatorIds are opaque ids that come from a game locator.
+    /// For steam these will be manifestIDs, for GOG they will be buildIDs, etc.
     /// </summary>
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, string[] commonIds);
+    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, IEnumerable<string> locatorIds);
     
     /// <summary>
     /// The current file hashes database, will thrown an error if not initialized via GetFileHashesDb first.
@@ -29,9 +30,9 @@ public interface IFileHashesService
     public IDb Current { get; }
 
     /// <summary>
-    /// Lookup a game version string from a given game installation and locator metadata
+    /// Lookup a game version string from a given game installation and locator Ids
     /// </summary>
-    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata);
+    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorIds);
 
     /// <summary>
     /// Get the common IDs for a specific version of a given game installation

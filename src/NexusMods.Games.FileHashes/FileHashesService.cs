@@ -208,11 +208,11 @@ public class FileHashesService : IFileHashesService, IDisposable
         return _currentDb!.Db;
     }
 
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb db, GameInstallation installation, string[] commonIds)
+    public IEnumerable<GameFileRecord> GetGameFiles(IDb db, GameInstallation installation, IEnumerable<string> locatorIds)
     {
         if (installation.Store == GameStore.GOG)
         {
-            foreach (var id in commonIds)
+            foreach (var id in locatorIds)
             {
                 if (!ulong.TryParse(id, out var parsedId))
                     continue;
@@ -236,7 +236,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
         else if (installation.Store == GameStore.Steam)
         {
-            foreach (var id in commonIds)
+            foreach (var id in locatorIds)
             {
                 if (!ulong.TryParse(id, out var parsedId))
                     continue;

@@ -97,7 +97,7 @@ public class StubbedFileHasherService : IFileHashesService
         return _current!;
     }
 
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, string[] commonIds)
+    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, IEnumerable<string> locatorIds)
     {
         foreach (var file in PathHashRelation.All(referenceDb))
         {
