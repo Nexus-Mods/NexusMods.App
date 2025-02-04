@@ -60,6 +60,18 @@ public static class Services
                             InstallationDirectory = gamePath,
                             StateFlags = StateFlags.FullyInstalled,
                             ManifestPath = gamePath.Parent.Parent.Combine("steam_game.acf"),
+                            InstalledDepots = new Dictionary<DepotId, InstalledDepot>()
+                            {
+                                {
+                                    DepotId.From(4200),
+                                    new InstalledDepot
+                                    {
+                                        DepotId = DepotId.From(7200),
+                                        SizeOnDisk = Size.GB * 2,
+                                        ManifestId = ManifestId.From(4200),
+                                    }
+                                }
+                            }
                         },
                         LibraryFolder = new LibraryFolder
                         {

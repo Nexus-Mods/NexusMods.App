@@ -115,7 +115,7 @@ public class StubbedFileHasherService : IFileHashesService
     public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
     {
         var firstMetadata = locatorMetadata.First();
-        if (firstMetadata == "42")
+        if (firstMetadata is "42" or "4200")
             return "StubbedVersion";
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
