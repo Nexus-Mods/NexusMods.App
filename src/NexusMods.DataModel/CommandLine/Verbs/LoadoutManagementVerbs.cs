@@ -4,8 +4,12 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -36,6 +40,7 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => Synchronize)
             .AddVerb(() => InstallMod)
             .AddVerb(() => ListLoadouts)
+            .AddVerb(() => BackupFiles)
             .AddVerb(() => ListGroupContents)
             .AddVerb(() => ListGroups)
             .AddVerb(() => DeleteGroupItems)
@@ -82,6 +87,29 @@ public static class LoadoutManagementVerbs
         [Injected] ISynchronizerService syncService)
     {
         await syncService.Synchronize(loadout);
+        return 0;
+    }
+
+    [Verb("loadout backup-game-files", "Archives all the files on disk that are otherwise not backed up")]
+    private static async Task<int> BackupFiles(
+        [Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to backup files for")]
+        Loadout.ReadOnly loadout,
+        [Injected] IFileStore fileStore)
+    {
+        var game = loadout.InstallationInstance.GetGame();
+        var gameInstallation = loadout.InstallationInstance;
+        var tree = await game.Synchronizer.BuildSyncTree(loadout);
+        game.Synchronizer.ProcessSyncTree(tree);
+        var toBackup = tree.Where(f => f.Value.HaveDisk && 
+                                       !f.Value.Signature.HasFlag(Signature.DiskArchived) && 
+                                       f.Value.SourceItemType == LoadoutSourceItemType.Game)
+            .Select(f => (Path: gameInstallation.LocationsRegister.GetResolvedPath(f.Key), f.Value.Disk.Size, f.Value.Disk.Hash))
+            .ToArray();
+        await renderer.TextLine("Backing up {0} files for a total of {1}", toBackup.Length, toBackup.Aggregate(Size.Zero, (a, b) => a + b.Size));
+        
+        var entries = toBackup.Select(f => new ArchivedFileEntry(new NativeFileStreamFactory(f.Path), f.Hash, f.Size)).ToArray();
+        await fileStore.BackupFiles(entries);
         return 0;
     }
 
