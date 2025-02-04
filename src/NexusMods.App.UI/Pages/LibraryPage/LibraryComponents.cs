@@ -8,6 +8,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -249,18 +250,18 @@ public static class LibraryComponents
 
         // Mod page (row)
         public UpdateAction(
-            NexusModsFileMetadata.ReadOnly[] initialValue,
-            Observable<NexusModsFileMetadata.ReadOnly[]> valuesObservable)
+            NewerFilesOnModPage initialValue,
+            Observable<NewerFilesOnModPage> valuesObservable)
         {
-            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue.First());
-            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.Length));
+            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue.NewestFile());
+            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.files.Length));
 
             _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
             {
                 observable.Subscribe(self, static (values, self) =>
                 {
-                    self._newFile.Value = values.First();
-                    self._buttonText.Value = GetButtonText(values.Length);
+                    self._newFile.Value = values.NewestFile();
+                    self._buttonText.Value = GetButtonText(values.files.Length);
                 }).AddTo(disposables);
             });
         }
