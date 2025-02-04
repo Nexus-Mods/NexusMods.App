@@ -370,8 +370,9 @@ public class CollectionDownloader
         var directDownloads = _connection.ObserveDatoms(SliceDescriptor.Create(DirectDownloadLibraryFile.Md5, download.Md5, _connection.AttributeCache));
         var locallyAdded = _connection.ObserveDatoms(SliceDescriptor.Create(LocalFile.Md5, download.Md5, _connection.AttributeCache));
 
-        return directDownloads.MergeChangeSets(locallyAdded)
+        return directDownloads.MergeChangeSets(locallyAdded, equalityComparer: DatomEntityIdEqualityComparer.Instance)
             .QueryWhenChanged(query => query.Items.FirstOrOptional(static _ => true))
+            .Prepend(Optional<Datom>.None)
             .DistinctUntilChanged(OptionalDatomComparer.Instance)
             .SelectMany(optional =>
             {
@@ -775,6 +776,21 @@ public readonly struct CollectionDownloadStatus : IEquatable<CollectionDownloadS
 
     /// <inheritdoc/>
     public override int GetHashCode() => Value.GetHashCode();
+}
+
+file class DatomEntityIdEqualityComparer : IEqualityComparer<Datom>
+{
+    public static readonly IEqualityComparer<Datom> Instance = new DatomEntityIdEqualityComparer();
+
+    public bool Equals(Datom x, Datom y)
+    {
+        return x.E == y.E;
+    }
+
+    public int GetHashCode(Datom obj)
+    {
+        return obj.E.GetHashCode();
+    }
 }
 
 internal class OptionalDatomComparer : IEqualityComparer<Optional<Datom>>
