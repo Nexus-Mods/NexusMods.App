@@ -280,7 +280,6 @@
                 </controls:ComponentTemplate>
             </controls:MultiComponentControl.AvailableTemplates>
         </controls:MultiComponentControl>
-
     </DataTemplate>
 
 </ResourceDictionary>

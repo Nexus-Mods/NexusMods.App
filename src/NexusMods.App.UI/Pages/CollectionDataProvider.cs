@@ -94,36 +94,22 @@ public class CollectionDataProvider
         if (download.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
-        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable);
+        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
+        var downloadJobStatusObservable = GetJobStatusObservable<NexusModsDownloadJob>(job => job.FileMetadata.Id == download.FileMetadata);
 
-        var downloadJobStatusObservable = _jobMonitor
-            .GetObservableChangeSet<NexusModsDownloadJob>()
-            .FilterImmutable(job =>
-            {
-                if (job.Definition is not NexusModsDownloadJob definition) return false;
-                return definition.FileMetadata.Id == download.FileMetadata;
-            })
-            .QueryWhenChanged(static query => query.Items.OptionalMaxBy(static job => job.Status, JobStatusComparer.Instance))
-            .Where(static optional => optional.HasValue)
-            .Select(static optional => optional.Value)
-            .SelectMany(static job => job.ObservableStatus)
-            .ToObservable()
-            .ObserveOnUIThreadDispatcher();
-
-        itemModel.AddObservable(
+        AddDownloadAction(
+            itemModel: itemModel,
+            downloadEntity: download.AsCollectionDownload(),
+            statusObservable: statusObservable,
             key: CollectionColumns.Actions.NexusModsDownloadComponentKey,
-            shouldAddObservable: statusObservable.Select(status => status.IsNotDownloaded()).ToObservable(),
             componentFactory: () => new CollectionComponents.NexusModsDownloadAction(
                 downloadEntity: download,
-                downloadJobStatusObservable: downloadJobStatusObservable
+                downloadJobStatusObservable: downloadJobStatusObservable,
+                isDownloadedObservable: statusObservable.Select(status => status.IsDownloaded())
             )
         );
 
-        itemModel.AddObservable(
-            key: CollectionColumns.Actions.NexusModsDownloadComponentKey,
-            shouldAddObservable: statusObservable.Select(status => status.IsDownloaded()).ToObservable(),
-            componentFactory: () => new CollectionComponents.InstallAction()
-        );
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable);
 
         return itemModel;
     }
@@ -139,6 +125,100 @@ public class CollectionDataProvider
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.Md5.ToString()));
         itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: download.Size));
 
+        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
+        var downloadJobStatusObservable = GetJobStatusObservable<ExternalDownloadJob>(job => job.ExpectedMd5 == download.Md5);
+
+        AddDownloadAction(
+            itemModel: itemModel,
+            downloadEntity: download.AsCollectionDownload(),
+            statusObservable: statusObservable,
+            key: CollectionColumns.Actions.ExternalDownloadComponentKey,
+            componentFactory: () => new CollectionComponents.ExternalDownloadAction(
+                downloadEntity: download,
+                downloadJobStatusObservable: downloadJobStatusObservable,
+                isDownloadedObservable: statusObservable.Select(status => status.IsDownloaded())
+            )
+        );
+
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable);
+
         return itemModel;
+    }
+
+    private static Observable<bool> ShouldAddObservable(
+        CollectionDownloadEntity.ReadOnly downloadEntity,
+        Observable<CollectionDownloadStatus> statusObservable)
+    {
+        return statusObservable.Select(downloadEntity, static (status, downloadEntity) =>
+        {
+            var (isDownloaded, isInstalled, isOptional) = (status.IsDownloaded(), status.IsInstalled(out _), downloadEntity.IsOptional);
+            return (isDownloaded, isInstalled, isOptional) switch
+            {
+                (isDownloaded: false, _, _) => false,
+                (_, isInstalled: true, _) => true,
+                (_, isInstalled: false, isOptional: true) => true,
+                _ => false,
+            };
+        });
+    }
+
+    private static void AddInstallAction(
+        CompositeItemModel<EntityId> itemModel,
+        CollectionDownloadEntity.ReadOnly downloadEntity,
+        Observable<CollectionDownloadStatus> statusObservable)
+    {
+        itemModel.AddObservable(
+            key: CollectionColumns.Actions.InstallComponentKey,
+            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable),
+            componentFactory: () => new CollectionComponents.InstallAction(
+                downloadEntity: downloadEntity,
+                isInstalledObservable: statusObservable.Select(status => status.IsInstalled(out _))
+            )
+        );
+    }
+
+    private static void AddDownloadAction<TComponent>(
+        CompositeItemModel<EntityId> itemModel,
+        CollectionDownloadEntity.ReadOnly downloadEntity,
+        Observable<CollectionDownloadStatus> statusObservable,
+        ComponentKey key,
+        Func<TComponent> componentFactory)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        // var shouldAddObservable = statusObservable.Select(downloadEntity, static (status, downloadEntity) =>
+        // {
+        //     var (isDownloaded, isInstalled, isOptional) = (status.IsDownloaded(), status.IsInstalled(out _), downloadEntity.IsOptional);
+        //     return (isDownloaded, isInstalled, isOptional) switch
+        //     {
+        //         (isDownloaded: false, _, _) => true,
+        //         (_, isInstalled: true, _) => false,
+        //         (isDownloaded: true, _, isOptional: false) => true,
+        //         _ => false,
+        //     };
+        // });
+
+        itemModel.AddObservable(
+            key: key,
+            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable).Select(static b => !b),
+            componentFactory: componentFactory
+        );
+    }
+
+    private Observable<JobStatus> GetJobStatusObservable<TJobDefinition>(Func<TJobDefinition, bool> predicate)
+        where TJobDefinition : IJobDefinition
+    {
+        return _jobMonitor
+            .GetObservableChangeSet<TJobDefinition>()
+            .FilterImmutable(job =>
+            {
+                if (job.Definition is not TJobDefinition definition) return false;
+                return predicate(definition);
+            })
+            .QueryWhenChanged(static query => query.Items.OptionalMaxBy(static job => job.Status, JobStatusComparer.Instance))
+            .Where(static optional => optional.HasValue)
+            .Select(static optional => optional.Value)
+            .SelectMany(static job => job.ObservableStatus)
+            .ToObservable()
+            .ObserveOnUIThreadDispatcher();
     }
 }

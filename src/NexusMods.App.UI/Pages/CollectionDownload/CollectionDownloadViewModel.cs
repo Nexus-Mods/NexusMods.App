@@ -511,6 +511,7 @@ public class NewCollectionDownloadTreeDataGridAdapter : TreeDataGridAdapter<Comp
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
             ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
+            ColumnCreator.Create<EntityId, CollectionColumns.Actions>(),
         ];
     }
 }
