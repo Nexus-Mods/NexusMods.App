@@ -232,12 +232,14 @@ public static class LibraryComponents
         }
 
         private readonly IDisposable _activationDisposable;
+        
+        // Single mod (row)
         public UpdateAction(
             NexusModsFileMetadata.ReadOnly initialValue,
             Observable<NexusModsFileMetadata.ReadOnly> valueObservable)
         {
             _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue);
-            _buttonText = new BindableReactiveProperty<string>(value: "Update");
+            _buttonText = new BindableReactiveProperty<string>(value: Resources.Language.LibraryItemButtonUpdate_Single);
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {
@@ -245,6 +247,7 @@ public static class LibraryComponents
             });
         }
 
+        // Mod page (row)
         public UpdateAction(
             NexusModsFileMetadata.ReadOnly[] initialValue,
             Observable<NexusModsFileMetadata.ReadOnly[]> valuesObservable)
@@ -262,7 +265,14 @@ public static class LibraryComponents
             });
         }
 
-        private static string GetButtonText(int count) => $"Update ({count})";
+        private static string GetButtonText(int numUpdatable)
+        {
+            // Note(sewer): These strings in the comments below are accurate, just temporarily changed
+            // as we're shipping 'phase one' for the SDV release. Do not edit.
+
+            // 'Update ({0})'
+            return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
+        }
 
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
