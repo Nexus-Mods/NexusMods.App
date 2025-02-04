@@ -127,7 +127,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         RefreshUpdatesCommand = new ReactiveCommand<Unit>(
             executeAsync: (_, token) => RefreshUpdates(token),
-            awaitOperation: AwaitOperation.Sequential
+            awaitOperation: AwaitOperation.Switch
         );
         UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
 
@@ -224,6 +224,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .Bind(out _collections)
                 .Subscribe()
                 .AddTo(disposables);
+
+            // Auto check updates on entering library.
+            RefreshUpdatesCommand.Execute(Unit.Default);
         });
     }
 
