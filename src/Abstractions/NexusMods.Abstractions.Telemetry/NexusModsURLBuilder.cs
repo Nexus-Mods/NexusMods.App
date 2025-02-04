@@ -48,8 +48,20 @@ public static class NexusModsUrlBuilder
     /// </remarks>
     public static Uri CreateGenericUri(string baseUrl) => CreateUri(baseUrl);
 
-    public static Uri CreateModFileDownloadUri(FileId fileId, GameId gameId) => CreateUri($"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}");
-    
+    /// <summary>
+    /// Creates a Uri that sends the user to the website to download a file.
+    /// This file will be installed via the NXM handler.
+    /// </summary>
+    /// <param name="fileId">Unique ID for a mod file associated with a game, <see cref="FileId"/>.</param>
+    /// <param name="gameId">Unique identifier for an individual game hosted on Nexus.</param>
+    /// <param name="withNxm">True if to use nxm handler, else false.</param>
+    public static Uri CreateModFileDownloadUri(FileId fileId, GameId gameId, bool withNxm = true)
+    {
+        return CreateUri(withNxm
+            ? $"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}&nmm=1"
+            : $"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}");
+    }
+
     public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
     public static Uri LearAboutPremiumUri => CreateUri("https://next.nexusmods.com/premium");
