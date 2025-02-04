@@ -1429,7 +1429,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             diskState.Add(new PathPartPair(diskFile.Path, new SyncNodePart
             {   
-                EntityId = metaData.Id,
+                EntityId = diskFile.Id,
                 Hash = diskFile.Hash,
                 Size = diskFile.Size,
                 LastModifiedTicks = diskFile.LastModified.UtcTicks,
