@@ -48,7 +48,7 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
         }
         else
         {
-            Value = valueObservable.ToBindableReactiveProperty(initialValue: initialValue);
+            Value = valueObservable.ObserveOnUIThreadDispatcher().ToBindableReactiveProperty(initialValue: initialValue);
         }
     }
 

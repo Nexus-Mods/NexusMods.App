@@ -98,11 +98,11 @@ public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IMod
     ///
     /// The results of multiple feeds are flattened here; everything is returned as a single result.
     /// </summary>
-    public PerFeedCacheUpdaterResult<TUpdateableItem> BuildFlattened()
+    public PerFeedCacheUpdaterResult<TUpdateableItem> BuildFlattened(TimeSpan expiry)
     {
         var result = new PerFeedCacheUpdaterResult<TUpdateableItem>();
         foreach (var updater in _updaters)
-            result.AddFrom(updater.Value.Build());
+            result.AddFrom(updater.Value.Build(expiry));
 
         return result;
     }

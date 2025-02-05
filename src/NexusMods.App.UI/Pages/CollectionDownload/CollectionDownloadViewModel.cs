@@ -361,23 +361,37 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .Subscribe(this, static (newerRevisions, self) =>
                 {
                     self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
-                    self.NewestRevisionNumber.Value = newerRevisions.First();
+                    self.NewestRevisionNumber.Value = newerRevisions.FirstOrOptional(_ => true);
                 }).AddTo(disposables);
 
             R3.Observable.Return(collectionJsonFile)
                 .ObserveOnThreadPool()
                 .SelectAwait((jsonFile, cancellationToken) => nexusModsLibrary.ParseCollectionJsonFile(jsonFile, cancellationToken))
-                .Select(static collectionRoot => collectionRoot.Info.InstallInstructions)
-                .Where(static instructions => !string.IsNullOrWhiteSpace(instructions))
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe((this, serviceProvider), static (instructionsText, state) =>
+                .Subscribe((this, serviceProvider), static (collectionRoot, state) =>
                 {
                     var (self, serviceProvider) = state;
 
-                    var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-                    markdownRendererViewModel.Contents = instructionsText;
+                    var collectionInstructionsText = collectionRoot.Info.InstallInstructions;
 
-                    self.InstructionsRenderer = markdownRendererViewModel;
+                    var modsInstructions = collectionRoot.Mods
+                        .Select(static mod => (mod.Name, mod.Instructions, mod.Optional))
+                        .Where(static tuple => !string.IsNullOrWhiteSpace(tuple.Instructions))
+                        .Select(static tuple => new ModInstructions(tuple.Name, tuple.Instructions, tuple.Optional ? CollectionDownloader.ItemType.Optional : CollectionDownloader.ItemType.Required))
+                        .ToArray();
+
+                    var optionalModsInstructions = modsInstructions.Where(static x => x.ItemType == CollectionDownloader.ItemType.Optional).ToArray();
+                    var requiredModsInstructions = modsInstructions.Where(static x => x.ItemType == CollectionDownloader.ItemType.Required).ToArray();
+
+                    if (!string.IsNullOrWhiteSpace(collectionInstructionsText))
+                    {
+                        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+                        markdownRendererViewModel.Contents = collectionInstructionsText;
+                        self.InstructionsRenderer = markdownRendererViewModel;
+                    }
+
+                    self.RequiredModsInstructions = requiredModsInstructions;
+                    self.OptionalModsInstructions = optionalModsInstructions;
                 }).AddTo(disposables);
         });
     }
@@ -427,6 +441,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public RevisionNumber RevisionNumber => _revision.RevisionNumber;
 
     [Reactive] public IMarkdownRendererViewModel? InstructionsRenderer { get; set; }
+    [Reactive] public ModInstructions[] RequiredModsInstructions { get; set; } = [];
+    [Reactive] public ModInstructions[] OptionalModsInstructions { get; set; } = [];
 
     public int RequiredDownloadsCount { get; }
     public int OptionalDownloadsCount { get; }

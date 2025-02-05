@@ -67,6 +67,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
             self.ViewHierarchical
                 .AsObservable()
+                .ObserveOnUIThreadDispatcher()
                 .Do(self, static (viewHierarchical, self) =>
                 {
                     self.Roots.Clear();

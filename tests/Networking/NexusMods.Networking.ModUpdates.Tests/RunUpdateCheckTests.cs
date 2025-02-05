@@ -36,7 +36,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         var loadout = await CreateLoadout();
         
         // Install a version of CET into the loadout.
-        // Name: 'CET 1.23.0'
+        // Name: 'CET 1.18.1'
         var modId = ModId.From(107u); // CET
         var fileId = FileId.From(39639u); // 1.18.1
 
@@ -59,9 +59,9 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         // Creating a placeholder is against TOS/Guidelines, so for now we
         // can only assert some 'general' knowledge.
         // A single mod page got updated here.
-        updates.OutOfDateItems.Should().HaveCount(1);
-        var outOfDateMod = NexusModsModPageMetadata.FindByUid(Connection.Db, updates.OutOfDateItems.First().GetModPageId()).First();
-        var outOfDateFileUid = outOfDateMod.Files.First().Uid;
+        // Since we just fetched the mod, it should be in the 'up to date' list.
+        var modPages = NexusModsModPageMetadata.FindByUid(Connection.Db, updates.UpToDateItems.First().GetModPageId()).First();
+        var outOfDateFileUid = modPages.Files.First().Uid;
 
         // Fetch updated content for mod pages.
         using var tx = Connection.BeginTransaction();

@@ -89,7 +89,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             {
                 gameRegistry.InstalledGames
                     .ToObservableChangeSet()
-                    .OnUI()
                     .Transform(installation =>
                         {
                             var vm = provider.GetRequiredService<IGameWidgetViewModel>();
@@ -141,6 +140,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             return vm;
                         }
                     )
+                    .OnUI()
                     .Bind(out _installedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
