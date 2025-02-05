@@ -15,5 +15,8 @@
         <None Update="Resources\StubbedGameState.zip">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Resources\StubbedGameState_game_v2.zip">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>
