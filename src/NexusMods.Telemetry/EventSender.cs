@@ -140,7 +140,7 @@ internal class EventSender : IEventSender
         sb.Append("&apiv=1"); // API version to use, currently always 1
 
         sb.Append("&ua="); // User agent
-        sb.Append(EncodedUserAgent);
+        AppendBytes(EncodedUserAgent);
 
         sb.Append("&send_image=0"); // Matomo will respond with an HTTP 204 response code instead of a GIF image
 
@@ -165,29 +165,15 @@ internal class EventSender : IEventSender
         }
 
         sb.Append("&e_c="); // Event category
-        {
-            var input = definition.SafeCategory.AsSpan();
-            var destination = sb.GetSpan(sizeHint: input.Length);
-            input.CopyTo(destination);
-            sb.Advance(input.Length);
-        }
+        AppendBytes(definition.SafeCategory);
 
         sb.Append("&e_a="); // Event action
-        {
-            var input = definition.SafeAction.AsSpan();
-            var destination = sb.GetSpan(sizeHint: input.Length);
-            input.CopyTo(destination);
-            sb.Advance(input.Length);
-
-        }
+        AppendBytes(definition.SafeAction);
 
         if (metadata.Name is not null)
         {
             sb.Append("&e_n="); // Event name
-            var input = metadata.SafeName.AsSpan();
-            var destination = sb.GetSpan(sizeHint: input.Length);
-            input.CopyTo(destination);
-            sb.Advance(input.Length);
+            AppendBytes(metadata.SafeName);
         }
 
         sb.Append("&h="); // The current hour (local time)
@@ -202,6 +188,16 @@ internal class EventSender : IEventSender
 
         sb.Append("\"");
         sb.CopyTo(writer);
+
+        return;
+
+        void AppendBytes(byte[] data)
+        {
+            var input = data.AsSpan();
+            var destination = sb.GetSpan(sizeHint: input.Length);
+            input.CopyTo(destination);
+            sb.Advance(input.Length);
+        }
     }
 
     private static async ValueTask SendEvents(ReadOnlyMemory<byte> data, HttpClient httpClient, CancellationToken cancellationToken)
@@ -242,7 +238,7 @@ internal class EventSender : IEventSender
         return input.AsSpan(start: sliceStartIndex);
     }
 
-    private static byte[] CreateUserAgent()
+    internal static byte[] CreateUserAgent()
     {
         var raw = CreateUserAgent(OSInformation.Shared.Platform, Environment.OSVersion, RuntimeInformation.OSArchitecture);
         var bytes = Encoding.UTF8.GetBytes(raw);
