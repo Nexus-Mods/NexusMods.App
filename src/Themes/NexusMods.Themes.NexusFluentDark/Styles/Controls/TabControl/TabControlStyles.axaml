@@ -10,7 +10,10 @@
                     <TabItem Header="Tab 1">
                         <TextBlock Text="Content for Tab 1" />
                     </TabItem>
-                    <TabItem Header="Tab 2">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Tab 2"></TextBlock>
+                        </TabItem.Header>
                         <TextBlock Text="Content for Tab 2" />
                     </TabItem>
                     <TabItem Header="Tab 3">
@@ -98,9 +101,9 @@
                     </Style>
                 </Style>
             </Style>
-
+            
             <!-- this is our secondary way without custom header and only using text -->
-            <Style Selector="^ > AccessText">
+            <Style Selector="^ > AccessText,^ > TextBlock">
                 <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
             </Style>
 
