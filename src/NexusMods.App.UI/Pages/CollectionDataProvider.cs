@@ -185,17 +185,6 @@ public class CollectionDataProvider
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        // var shouldAddObservable = statusObservable.Select(downloadEntity, static (status, downloadEntity) =>
-        // {
-        //     var (isDownloaded, isInstalled, isOptional) = (status.IsDownloaded(), status.IsInstalled(out _), downloadEntity.IsOptional);
-        //     return (isDownloaded, isInstalled, isOptional) switch
-        //     {
-        //         (isDownloaded: false, _, _) => true,
-        //         (_, isInstalled: true, _) => false,
-        //         (isDownloaded: true, _, isOptional: false) => true,
-        //         _ => false,
-        //     };
-        // });
 
         itemModel.AddObservable(
             key: key,
