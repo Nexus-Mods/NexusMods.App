@@ -951,29 +951,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
     }
-
-    private async Task<DiskState> GetOrCreateInitialDiskState(GameInstallation installation)
-    {
-        // Return any existing state
-        var metadata = installation.GetMetadata(Connection);
-        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
-        {
-            return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
-        }
-
-        // Or create a new one
-        using var tx = Connection.BeginTransaction();
-        await IndexNewState(installation, tx);
-        tx.Add(metadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
-        tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
-        await tx.Commit();
-
-        // Rebase the metadata to the new transaction
-        metadata = metadata.Rebase();
-
-        // Return the new state
-        return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
-    }
     
     /// <summary>
     /// Reindex the state of the game, running a transaction if changes are found
@@ -1082,73 +1059,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return changes;
     }
     
-
-    /// <summary>
-    /// Index the game state and create the initial disk state
-    /// </summary>
-    public async Task IndexNewState(GameInstallation installation, ITransaction tx)
-    {
-        var metaDataId = installation.GameMetadataId;
-
-        var hashDb = await _fileHashService.GetFileHashesDb();
-        
-        foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
-        {
-            if (!location.Value.DirectoryExists())
-                continue;
-
-            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
-                {
-                    var (gamePath, newHash) = await HashGameFile(hashDb, installation, file, token);
-                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
-                    {
-                        Path = gamePath.ToGamePathParentTuple(metaDataId),
-                        Hash = newHash,
-                        Size = file.FileInfo.Size,
-                        LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = metaDataId,
-                    };
-                }
-            );
-        }
-    }
-
-    /// <summary>
-    /// Hash a file but first check the hash database for a matching size and minimal hash, and use that to reduce
-    /// the amount of work needed to produce the hash.
-    /// </summary>
-    private static async ValueTask<(GamePath gamePath, Hash newHash)> HashGameFile(IDb hashDb, GameInstallation installation, AbsolutePath file, CancellationToken token)
-    {
-        var gamePath = installation.LocationsRegister.ToGamePath(file);
-        
-        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash. 
-        // File sizes are actually fairly unique. Of-course they collide a lot, but since most games have different
-        // types of file and pack their assets in archives, the number of collisions are fairly low. Using a path
-        // first is more expensive due to it being a insensitive string comparsion, and we'd have to hash the file
-        // on disk to get the minimal hash. 
-        // So we do size -> minimal hash -> path (path being uses mostly as a doublecheck at the end).
-        var relation = HashRelation.FindBySize(hashDb, file.FileInfo.Size);
-        if (relation.Count != 0)
-        {
-            // We have a size match, so minimal hash it, and see if we have a match
-            var minimalHash = await MultiHasher.MinimalHash(file, token);
-            foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
-            {
-                // Match on the relative path as well as the minimal hash
-                foreach (var path in matchingHash.Paths)
-                {
-                    if (path.Path == gamePath.Path)
-                        return (gamePath, matchingHash.XxHash3);
-                }
-                
-            }
-        }
-        
-        // No other matches, so do a full hash
-        var newHash = await file.XxHash3Async(token: token);
-        return (gamePath, newHash);
-    }
-
     /// <inheritdoc />
     public virtual IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
