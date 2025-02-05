@@ -10,47 +10,60 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// <summary>
 /// Migration to add a reference to collection downloads on loadout items.
 /// </summary>
-public class _0002_NexusCollectionItem
+internal class _0002_NexusCollectionItem : ITransactionalMigration
 {
-    private static (NexusCollectionLoadoutGroup.ReadOnly, LoadoutItem.ReadOnly[])[] GetItemsToUpdate(IDb db)
+    public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0002_NexusCollectionItem));
+
+    private Data[] _data = [];
+    public void Prepare(IDb db)
     {
-        return NexusCollectionLoadoutGroup
+        _data = NexusCollectionLoadoutGroup
             .All(db)
             .Select(collectionGroup =>
             {
                 var items = LoadoutItem
                     .FindByParent(db, collectionGroup)
                     .Where(static loadoutItem => !NexusCollectionItemLoadoutGroup.IsRequired.IsIn(loadoutItem))
+                    .ToDictionary(static item => item.Id, static item => item);
+
+                var downloadStatusArray = collectionGroup.Revision.Downloads
+                    .Select(download => new KeyValuePair<CollectionDownload.ReadOnly, CollectionDownloadStatus>(download, CollectionDownloader.GetStatus(download, collectionGroup.AsCollectionGroup(), db)))
                     .ToArray();
 
-                return (collectionGroup, items);
+                return new Data(collectionGroup, items, downloadStatusArray);
             }).ToArray();
     }
 
-    private static void Update(IDb db, ITransaction tx, NexusCollectionLoadoutGroup.ReadOnly group, LoadoutItem.ReadOnly[] loadoutItems)
+    public void Migrate(ITransaction tx, IDb db)
     {
-        var itemsToUpdate = loadoutItems.ToDictionary(static item => item.Id, static item => item);
-
-        var downloadStatusArray = group.Revision.Downloads
-            .Select(download => (download, CollectionDownloader.GetStatus(download, group.AsCollectionGroup(), db)))
-            .ToArray();
-
-        foreach (var tuple in downloadStatusArray)
+        foreach (var data in _data)
         {
-            var (downloadEntity, downloadStatus) = tuple;
-            if (downloadStatus.IsInstalled(out var loadoutItem))
+            var (group, itemsToUpdate, downloadStatusArray) = data;
+
+            foreach (var tuple in downloadStatusArray)
             {
-                tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.Download, downloadEntity);
-                tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.IsRequired, downloadEntity.IsRequired);
-                itemsToUpdate.Remove(loadoutItem.Id);
+                var (downloadEntity, downloadStatus) = tuple;
+                if (downloadStatus.IsInstalled(out var loadoutItem))
+                {
+                    tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.Download, downloadEntity);
+                    tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.IsRequired, downloadEntity.IsRequired);
+                    itemsToUpdate.Remove(loadoutItem.Id);
+                }
+            }
+
+            // NOTE(erri120): We couldn't find associated downloads for these remaining items,
+            // as such, we'll set a default value and hope for the best.
+            foreach (var loadoutItem in itemsToUpdate.Values)
+            {
+                tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.IsRequired, true);
             }
         }
-
-        // NOTE(erri120): We couldn't find associated downloads for these remaining items,
-        // as such, we'll set a default value and hope for the best.
-        foreach (var loadoutItem in loadoutItems)
-        {
-            tx.Add(loadoutItem.Id, NexusCollectionItemLoadoutGroup.IsRequired, true);
-        }
     }
+
+    private record struct Data(
+        NexusCollectionLoadoutGroup.ReadOnly Group,
+        Dictionary<EntityId, LoadoutItem.ReadOnly> ItemsToUpdate,
+        KeyValuePair<CollectionDownload.ReadOnly, CollectionDownloadStatus>[] Downloads
+    );
 }
+
