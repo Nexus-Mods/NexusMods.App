@@ -22,6 +22,7 @@
                     <icons:UnifiedIcon Classes="CheckUnderline" />
                     <icons:UnifiedIcon Classes="ClearAll" />
                     <icons:UnifiedIcon Classes="Cog" />
+                    <icons:UnifiedIcon Classes="CogOutline" />
                     <icons:UnifiedIcon Classes="Download" />
                     <icons:UnifiedIcon Classes="HelpCircle" />
                     <icons:UnifiedIcon Classes="Help" />
@@ -98,6 +99,7 @@
                     <icons:UnifiedIcon Classes="Lightbulb" />
                     <icons:UnifiedIcon Classes="ThumbUp" />
                     <icons:UnifiedIcon Classes="ThumbsUpDown" />
+                    <icons:UnifiedIcon Classes="ThumbsUpDownOutline" />
                     <icons:UnifiedIcon Classes="Database" />
                     <icons:UnifiedIcon Classes="Size" />
                     <icons:UnifiedIcon Classes="Info" />
@@ -218,9 +220,11 @@
     </Style>
 
     <Style Selector="icons|UnifiedIcon.Cog">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.Settings}" />
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Cog}" />
     </Style>
-
+    <Style Selector="icons|UnifiedIcon.CogOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CogOutline}" />
+    </Style>
     <Style Selector="icons|UnifiedIcon.Download">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Download}" />
     </Style>
@@ -543,7 +547,9 @@
     <Style Selector="icons|UnifiedIcon.ThumbsUpDown">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbsUpDown}" />
     </Style>
-
+    <Style Selector="icons|UnifiedIcon.ThumbsUpDownOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbsUpDownOutline}" />
+    </Style>
     <Style Selector="icons|UnifiedIcon.Database">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Database}" />
     </Style>

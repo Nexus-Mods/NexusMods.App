@@ -124,11 +124,17 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/thumbs-up-down/
     public static readonly IconValue ThumbsUpDown = new ProjektankerIcon("mdi-thumbs-up-down");
         
+    // https://pictogrammers.com/library/mdi/icon/thumbs-up-down-outline/
+    public static readonly IconValue ThumbsUpDownOutline = new ProjektankerIcon("mdi-thumbs-up-down-outline");
+    
     // https://pictogrammers.com/library/mdi/icon/magnfiy/
     public static readonly IconValue Search = new ProjektankerIcon("mdi-magnify");
 
     // https://pictogrammers.com/library/mdi/icon/cog/
-    public static readonly IconValue Settings = new ProjektankerIcon("mdi-cog");
+    public static readonly IconValue Cog = new ProjektankerIcon("mdi-cog");
+    
+    // https://pictogrammers.com/library/mdi/icon/cog-outline/
+    public static readonly IconValue CogOutline = new ProjektankerIcon("mdi-cog-outline");
 
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
