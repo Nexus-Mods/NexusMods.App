@@ -68,6 +68,20 @@ public class ModUpdateService : IModUpdateService
     public void NotifyForUpdates()
     {
         // Filter out Read-Only items
+
+        // Note(sewer): Mods can generally be broken down into the following categories:
+        // - Mods installed into a Read-Write CollectionGroup [read-write]
+        //     - e.g. 'My Mods' is a Read-Write CollectionGroup
+        // - Mods in Library but not installed (to any CollectionGroup). [read-write]
+        //     - These are mods downloaded from Nexus Mods or manually added via disk.
+        //     - These can 'only' be installed to Read-Write CollectionGroup(s) like 'My Mods'
+        // - Mods in Collections [read-only]
+        //     - These are the mods installed into a CollectionGroup, they cannot be individually removed
+        //       and their lifetime is bound to the Collection.
+        //     - Mods belonging to a collection get auto installed when the collection is fully downloaded, and cannot
+        //       be 'uninstalled' back into the library.
+        
+        // In this case we're considering all of the mods as [read-write], removing those in the [read-only] set.
         var loadoutModsInReadOnlyCollections = CollectionGroup
             .All(_connection.Db)
             .Where(group => group.IsReadOnly)
