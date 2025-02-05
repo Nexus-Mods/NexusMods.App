@@ -240,9 +240,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
             else
             {
-                if (ShouldWin(targetPath, existing.Loadout, sourceItem))
+                if (ShouldWinWrapper(loadout.Db, targetPath, existing.Loadout, existing.SourceItemType, sourceItem, sourceItemType))
                 {
                     existing.Loadout = sourceItem;
+                    existing.SourceItemType = sourceItemType;
                 }
             }
         }
@@ -405,7 +406,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
@@ -761,7 +762,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
-        return await RunGroupings(tree, loadout);
+        return await RunActions(tree, loadout);
     }
 
     public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
@@ -783,47 +784,50 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return _fileStore.HaveFile(hash).Result;
     }
-
-    /// <summary>
-    /// Given a list of files with duplicate game paths, select the winning file that will be applied to disk.
-    /// </summary>
-    protected virtual LoadoutItemWithTargetPath.ReadOnly SelectWinningFile(IEnumerable<LoadoutItemWithTargetPath.ReadOnly> files)
-    {
-        return files.MaxBy(GetPriority);
-
-        // Placeholder for a more advanced selection algorithm
-        long GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
-        {
-            foreach (var parent in item.AsLoadoutItem().GetThisAndParents())
-            {
-                if (!parent.TryGetAsLoadoutItemGroup(out var group))
-                    continue;
-                
-                // GameFiles always lose
-                if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
-                    return 0;
-                
-                // Overrides should always win
-                if (group.TryGetAsLoadoutOverridesGroup(out var overridesGroup))
-                    return long.MaxValue;
-                
-                // Return a placeholder priority based on creation time of the LoadoutGroup, newest wins.
-                // This allows for some degree of control and predictability in the selection process.
-                return group.GetCreatedAt().ToUnixTimeSeconds();
-            }
-            
-            // Should not happen
-            Debug.Assert(false, "LoadoutItem is not part of a LoadoutItemGroup");
-            return 0;
-        }
-    }
     
     /// <summary>
     /// Return true if the replacement should win over the existing item.
     /// </summary>
-    protected virtual bool ShouldWin(in GamePath path, in SyncNodePart existing, in SyncNodePart replacement)
+    private bool ShouldWinWrapper(IDb db, in GamePath path, in SyncNodePart existing, LoadoutSourceItemType existingItemType, in SyncNodePart replacement, LoadoutSourceItemType replacementItemType)
     {
-        return true;
+        // Game files always lose
+        if (existingItemType == LoadoutSourceItemType.Game)
+            return true;
+        
+        // TODO: we don't often have many files that conflict by name, but we should speed this code up at some point
+        var existingLoadoutItem = LoadoutItem.Load(db, existing.EntityId);
+        var existingInOverrides = existingLoadoutItem
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeLoadoutOverridesGroup()
+            .Any();
+        
+        var replacementLoadoutItem = LoadoutItem.Load(db, replacement.EntityId);
+        var replacementInOverrides = replacementLoadoutItem
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeLoadoutOverridesGroup()
+            .Any();
+        
+        // Overrides always win
+        if (existingInOverrides && !replacementInOverrides)
+            return false;
+        else if (!existingInOverrides && replacementInOverrides)
+            return true;
+        else if (existingInOverrides && replacementInOverrides)
+            return false;
+        
+        // Return the newer one
+        return ShouldWin(path, existingLoadoutItem, replacementLoadoutItem);
+    }
+    
+    /// <summary>
+    /// Override this method to provide custom logic for determining which file should win in a conflict. Return true if the
+    /// replacement should win over the existing item.
+    /// </summary>
+    protected virtual bool ShouldWin(in GamePath path, LoadoutItem.ReadOnly existing, LoadoutItem.ReadOnly replacement)
+    {
+        return replacement.Id > existing.Id;
     }
 
     /// <summary>
@@ -1249,7 +1253,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
         ProcessSyncTree(tree);
-        await RunGroupings(tree, loadout);
+        await RunActions(tree, loadout);
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)

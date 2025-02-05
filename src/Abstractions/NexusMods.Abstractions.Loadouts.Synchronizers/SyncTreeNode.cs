@@ -97,7 +97,7 @@ public record struct SynceNode
     /// <summary>
     /// The type of thing that the data from the loadout came from. Game state, deleted file, loadout file, etc.
     /// </summary>
-    public LoadoutSourceItemType SourceItemType { get; init; }
+    public LoadoutSourceItemType SourceItemType { get; set; }
     
     /// <summary>
     /// Sync state signature.
