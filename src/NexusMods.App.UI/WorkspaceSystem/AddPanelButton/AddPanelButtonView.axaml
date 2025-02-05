@@ -14,13 +14,12 @@
         <workspace:AddPanelButtonDesignViewModel/>
     </Design.DataContext>
 
-    <Border x:Name="BackgroundBorder">
-        <Button x:Name="AddPanelButton">
+        <Button x:Name="AddPanelButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
-                <icons:UnifiedIcon x:Name="ButtonImage"/>
-                <icons:UnifiedIcon x:Name="PlusIcon" Classes="Plus" Size="16"/>
+                <icons:UnifiedIcon x:Name="ButtonImage" />
+                <icons:UnifiedIcon x:Name="PlusIcon" Value="{x:Static icons:IconValues.Add}"/>
             </StackPanel>
         </Button>
-    </Border>
+    
 
 </reactive:ReactiveUserControl>

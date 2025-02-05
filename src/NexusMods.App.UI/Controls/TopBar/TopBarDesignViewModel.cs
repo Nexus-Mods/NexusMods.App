@@ -13,7 +13,7 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
-    [Reactive] public bool IsLoggedIn { get; set; } = true;
+    [Reactive] public bool IsLoggedIn { get; set; } = false;
     [Reactive] public bool IsPremium { get; set; } = false;
     [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
@@ -26,12 +26,12 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand  => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
     public ReactiveCommand<Unit, Unit> ViewAppLogsCommand => Initializers.DisabledReactiveCommand;
-    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand => Initializers.EnabledReactiveCommand;
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand => Initializers.DisabledReactiveCommand;
-    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand => Initializers.EnabledReactiveCommand;
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand => Initializers.DisabledReactiveCommand;
 
     public IPanelTabViewModel? SelectedTab { get; set; }
