@@ -1,4 +1,4 @@
-﻿{
+{
   Name: SDV.4_11_2024.rocksdb.zip,
   NewId: 1,
   LoadoutItemGroups: 201,

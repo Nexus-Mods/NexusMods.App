@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -52,15 +51,6 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
                 var (_, disposables) = tuple;
                 if (change.Value is not IReactiveR3Object reactiveR3Object) return;
                 reactiveR3Object.Activate().AddTo(disposables);
-            }).AddTo(disposables);
-
-            self._components.ObserveDictionaryRemove().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
-            {
-                var (_, disposables) = tuple;
-                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
-                // NOTE(erri120): CompositeDisposable.Remove disposes the object
-                var didRemove = disposables.Remove(reactiveR3Object);
-                Debug.Assert(didRemove);
             }).AddTo(disposables);
         });
     }
@@ -163,9 +153,9 @@ public class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeItemModel
                 if (!optionalValue.HasValue) return;
                 var component = componentFactory(
                     observable
-                        .ObserveOnUIThreadDispatcher()
                         .Where(static optionalValue => optionalValue.HasValue)
-                        .Select(static optionalValue => optionalValue.Value),
+                        .Select(static optionalValue => optionalValue.Value)
+                        .ObserveOnUIThreadDispatcher(),
                     optionalValue.Value
                 );
 

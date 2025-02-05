@@ -53,7 +53,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <summary>
     /// The last time any change was made to the mod page.
     /// </summary>
-    public DateTime LatestModActivityUtc => DateTimeOffset.FromUnixTimeSeconds(LatestModActivity).UtcDateTime;
+    public DateTimeOffset LatestModActivityUtc => DateTimeOffset.FromUnixTimeSeconds(LatestModActivity);
 
     /// <inheritdoc />
     public static JsonTypeInfo<ModUpdate[]> GetArrayTypeInfo() => ModUpdateArrayContext.Default.ModUpdateArray;

@@ -8,7 +8,7 @@ public class TestModFeedItem : IModFeedItem
     public DateTime LastUpdated { get; set; }
     public UidForMod Uid { get; set; }
 
-    public DateTime GetLastUpdatedDateUtc() => LastUpdated;
+    public DateTimeOffset GetLastUpdatedDate() => LastUpdated;
     public UidForMod GetModPageId() => Uid;
     
     // Helper method to create a test item

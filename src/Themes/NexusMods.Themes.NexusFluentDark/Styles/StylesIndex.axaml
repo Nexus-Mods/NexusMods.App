@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
     <!-- Styles Definitions 
     
     The order of these does matter as they overwrite each other in the order they are defined.
@@ -13,61 +13,63 @@
     
     -->
 
-    <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/CheckBox/CheckBoxStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/RadioButton/RadioButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml"/>
-    <StyleInclude Source="/Styles/Controls/Border/FooterBorder.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/ButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/PillStyles.xaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/RoundedButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/BareIconStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/HyperlinkStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxItemStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml"/>
-    <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml"/>
-    
-    <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/CheckBox/CheckBoxStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/RadioButton/RadioButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml" />
+    <StyleInclude Source="/Styles/Controls/Border/FooterBorder.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/ButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/PillStyles.xaml" />
+    <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/RoundedButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/BareIconStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/HyperlinkStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxItemStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
 
-    <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/GroupViewStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/OptionViewStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LoadoutCards/LoadoutCardStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/MyLoadoutsView/MyLoadoutsViewStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/Spine/SpineStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelViewStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/Sorting/LoadOrderStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LeftMenu/LeftMenuStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml" />
+
+    <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/GroupViewStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/OptionViewStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/LoadoutCards/LoadoutCardStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/MyLoadoutsView/MyLoadoutsViewStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/Spine/SpineStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelViewStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/Sorting/LoadOrderStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/LeftMenu/LeftMenuStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/LaunchButton/LaunchButtonStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/ApplyControl/ApplyControlStyles.axaml" />
 
 </Styles>

@@ -5,7 +5,6 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                                xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
@@ -14,62 +13,57 @@
         <items:ApplyControlDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg Low"
-            Padding="12"
-            HorizontalAlignment="Stretch"
-            MinHeight="68">
+    <Border
+        Background="{StaticResource SurfaceLowBrush}"
+        CornerRadius="{StaticResource Rounded-lg}"
+        Padding="12"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Bottom"
+        MinHeight="68">
 
         <StackPanel Orientation="Vertical"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Classes="Spacing-2">
+                    Spacing="{StaticResource Spacing-2}">
 
-            <navigation:NavigationControl x:Name="ApplyDiffButton"
+            <!-- preview changes button -->
+            <navigation:NavigationControl x:Name="PreviewChangesButton"
                                           Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}"
                                           Type="Tertiary"
                                           Fill="Weak"
                                           Size="Small"
                                           ToolTip.Tip="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}"
-                                          HorizontalAlignment="Stretch"/>
-            
+                                          HorizontalAlignment="Stretch" />
+
             <!-- Apply button -->
-            <Button Classes="Standard Primary"
+            <Button x:Name="ApplyButton"
                     HorizontalAlignment="Stretch"
                     Height="44"
-                    x:Name="ApplyButton">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" Foreground="{StaticResource NeutralStrong}" />
-                </ToolTip.Tip>
+                    ToolTip.Tip="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}">
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
-                            Classes="Spacing-1">
-                        <icons:UnifiedIcon Size="24" Classes="Sync" />
-                        <TextBlock Classes="TitleSMSemi"
-                                   x:Name="ApplyButtonTextBlock"
-                                   VerticalAlignment="Center" />
+                            Spacing="{StaticResource Spacing-1}">
+                    <icons:UnifiedIcon Size="24" Value="{x:Static icons:IconValues.Sync}" />
+                    <TextBlock x:Name="ApplyButtonTextBlock"
+                               Theme="{StaticResource TitleSMSemiTheme}"
+                               VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
 
-            <!-- In progress -->
-            <Border HorizontalAlignment="Stretch"
-                    x:Name="InProgressBorder"
-                    VerticalAlignment="Center">
-                <ToolTip.Tip>
-                    <TextBlock Text="{x:Static resources:Language.ApplyControlView__ApplyingToolTip}" />
-                </ToolTip.Tip>
-                <StackPanel Orientation="Horizontal"
-                            Classes="Spacing-1_5">
-                    <progressRing:ProgressRing />
-                    <TextBlock Classes="BodySMNormal ForegroundModerate"
-                               Text="{x:Static resources:Language.ApplyingControlView__ApplyingText}"
-                               VerticalAlignment="Center"
-                               x:Name="ApplyingTextBlock" />
-                </StackPanel>
-            </Border>
+            <!-- Progress bar -->
+            <ProgressBar x:Name="ProgressBarControl"
+                         IsIndeterminate="True"
+                         ShowProgressText="True"
+                         ProgressTextFormat="Applying..."
+                         Minimum="0"
+                         Maximum="1"
+                         ToolTip.Tip="{x:Static resources:Language.ApplyControlView__ApplyingToolTip}" />
 
             <!-- Launch button -->
             <items:LaunchButtonView x:Name="LaunchButtonView"
                                     HorizontalAlignment="Stretch" />
+
+
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>

@@ -46,8 +46,13 @@ public sealed class LibraryService : ILibraryService
     {
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
-    
-    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(LibraryItem.ReadOnly libraryItem, LoadoutId targetLoadout, Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? itemInstaller = null)
+
+    public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? itemInstaller = null,
+        ILibraryItemInstaller? fallbackInstaller = null)
     {
         if (!parent.HasValue)
         {
@@ -56,7 +61,7 @@ public sealed class LibraryService : ILibraryService
             parent = userCollection.AsLoadoutItemGroup().LoadoutItemGroupId;
         }
 
-        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller);
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller, fallbackInstaller);
     }
     public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
     {

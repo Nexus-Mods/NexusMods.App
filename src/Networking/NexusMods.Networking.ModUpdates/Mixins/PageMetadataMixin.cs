@@ -22,8 +22,17 @@ public struct PageMetadataMixin : IModFeedItem
     /// <summary/>
     public EntityId GetModPageEntityId() => _metadata.Id;
     
-    /// <inheritodc/>
-    public DateTime GetLastUpdatedDateUtc() => _metadata.UpdatedAt.DateTime; // <= TODO: Change this with 'last file updated at' when V2 supports this field.
+    /// <inheritdoc/>
+    public DateTimeOffset GetLastUpdatedDate()
+    {
+        // Local update time in database. Not on remote server.
+        if (NexusModsModPageMetadata.DataUpdatedAt.TryGetValue(_metadata, out var result))
+            return result;
+        
+        // If not in DB for whatever reason, default to min, will be refreshed on next
+        // update check.
+        return DateTimeOffset.UtcNow;
+    }
 
     /// <summary>
     /// Returns the database entries containing page metadata(s) as a mixin.

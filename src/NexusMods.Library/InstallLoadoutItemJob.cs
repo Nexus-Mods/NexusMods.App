@@ -14,18 +14,25 @@ namespace NexusMods.Library;
 internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>, IInstallLoadoutItemJob
 {
     public ILibraryItemInstaller? Installer { get; init; }
+    public ILibraryItemInstaller? FallbackInstaller { get; init; }
     public LibraryItem.ReadOnly LibraryItem { get; init; }
     public LoadoutItemGroupId ParentGroupId { get; init; }
     public LoadoutId LoadoutId { get; init; }
     internal required IConnection Connection { get; init; }
     internal required IServiceProvider ServiceProvider { get; init; }
-    
-    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(IServiceProvider serviceProvider, LibraryItem.ReadOnly libraryItem, LoadoutItemGroupId groupId, ILibraryItemInstaller? installer = null)
+
+    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(
+        IServiceProvider serviceProvider,
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutItemGroupId groupId,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null)
     {
         var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
             Installer = installer,
+            FallbackInstaller = fallbackInstaller,
             LibraryItem = libraryItem,
             ParentGroupId = groupId,
             LoadoutId = group.AsLoadoutItem().LoadoutId,
@@ -34,8 +41,6 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         };
         return serviceProvider.GetRequiredService<IJobMonitor>().Begin<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>(job);
     }
-
-
 
     public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallLoadoutItemJob> context)
     {
@@ -53,13 +58,13 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         {
             if (Installer is AdvancedManualInstaller)
                 throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
-            
-            var manualInstaller = AdvancedManualInstaller.Create(ServiceProvider);
-            result = await ExecuteInstallersAsync([manualInstaller], loadout, context);
+
+            var fallbackInstaller = FallbackInstaller ?? AdvancedManualInstaller.Create(ServiceProvider);
+            result = await ExecuteInstallersAsync([fallbackInstaller], loadout, context);
 
             if (!result.HasValue)
             {
-                throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the advanced installer!");
+                throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the fallback installer!");
             }
         }
 

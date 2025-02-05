@@ -79,6 +79,8 @@ public static class FragmentExtensions
 
         if (Uri.TryCreate(modFragment.ThumbnailUrl, UriKind.Absolute, out var thumbnailUri))
             nexusModResolver.Add(NexusModsModPageMetadata.ThumbnailUri, thumbnailUri);
+
+        nexusModResolver.Add(NexusModsModPageMetadata.DataUpdatedAt, DateTimeOffset.UtcNow);
         return nexusModResolver.Id;
     }
 
