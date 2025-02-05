@@ -1,14 +1,17 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
+using System.Text;
 using Cysharp.Text;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Telemetry;
 
@@ -28,6 +31,8 @@ internal class EventSender : IEventSender
     private readonly ILoginManager _loginManager;
     private readonly HttpClient _httpClient;
     private readonly ArrayBufferWriter<byte> _writer;
+
+    private static readonly byte[] EncodedUserAgent = CreateUserAgent();
 
     public EventSender(ILoginManager loginManager, HttpClient httpClient)
     {
@@ -134,11 +139,8 @@ internal class EventSender : IEventSender
         sb.Append("&rec=1"); // Required for tracking, must be set to one
         sb.Append("&apiv=1"); // API version to use, currently always 1
 
-        // NOTE(erri120): The device detector they have really doesn't like us
-        // https://github.com/matomo-org/device-detector
-        // test: https://lx3rzx16x9.csb.app
-        // sb.Append("&ua="); // User agent
-        // sb.Append(ApplicationConstants.UserAgent);
+        sb.Append("&ua="); // User agent
+        sb.Append(EncodedUserAgent);
 
         sb.Append("&send_image=0"); // Matomo will respond with an HTTP 204 response code instead of a GIF image
 
@@ -240,27 +242,45 @@ internal class EventSender : IEventSender
         return input.AsSpan(start: sliceStartIndex);
     }
 
+    private static byte[] CreateUserAgent()
+    {
+        var raw = CreateUserAgent(OSInformation.Shared.Platform, Environment.OSVersion, RuntimeInformation.OSArchitecture);
+        var bytes = Encoding.UTF8.GetBytes(raw);
+        return WebUtility.UrlEncodeToBytes(bytes, offset: 0, count: bytes.Length);
+    }
+
     /// <summary>
     /// Creates a user-agent than Matomo understands.
     /// </summary>
-    internal static string CreateUserAgent(OSPlatform platform, OperatingSystem osVersion)
+    private static string CreateUserAgent(OSPlatform platform, OperatingSystem osVersion, Architecture architecture)
     {
-        // https://lx3rzx16x9.csb.app/#Arch%20Linux%206.12
+        // NOTE(erri120): Matomo user-agent parsing is done via
+        // https://github.com/matomo-org/device-detector
+        // Welcome to the shitty world of user-agents, where due to legacy concerns,
+        // everyone just puts everything into it and nothing makes sense.
+        // As such, the following strings might not make a lot of sense at first,
+        // so check the links to see the parsed results.
+        // The only thing we really care about is the correct OS name (Linux, Windows, Mac)
+        // and the device type (desktop). Everything else is basically irrelevant.
+
+        // https://devicedetector.lw1.at/Mozilla%2F5.0%20(X11;%20Linux%20x86_64)
         if (platform == OSPlatform.Linux)
         {
-            return $"Arch Linux {osVersion.Version.ToString(fieldCount: 2)}";
+            return "Mozilla/5.0 (X11; Linux x86_64)";
         }
 
-        // https://lx3rzx16x9.csb.app/#Windows%20NT%2010.0
+        // https://devicedetector.lw1.at/Mozilla%2F5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)
         if (platform == OSPlatform.Windows)
         {
-            return $"Windows NT {osVersion.Version.ToString(fieldCount: 2)}";
+            Debug.Assert(osVersion.Version.Major == 10);
+            Debug.Assert(architecture == Architecture.X64);
+            return $"Mozilla/5.0 (Windows NT {osVersion.Version.ToString(fieldCount: 2)}; Win64; x64)";
         }
 
-        // https://lx3rzx16x9.csb.app/#Macintosh;%20Intel%20Mac%20OS%20X%2010_1
+        // https://devicedetector.lw1.at/Mozilla%2F5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2014.7)
         if (platform == OSPlatform.OSX)
         {
-            return $"Macintosh; Intel Mac OS X {osVersion.Version.Major}_{osVersion.Version.Minor}";
+            return $"Mozilla/5.0 (Macintosh; Intel Mac OS X {osVersion.Version.ToString(fieldCount: 2)})";
         }
 
         throw new NotSupportedException();
