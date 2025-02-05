@@ -57,9 +57,7 @@ public static class NexusModsUrlBuilder
     /// <param name="withNxm">True if to use nxm handler, else false.</param>
     public static Uri CreateModFileDownloadUri(FileId fileId, GameId gameId, bool withNxm = true)
     {
-        return CreateUri(withNxm
-            ? $"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}&nmm=1"
-            : $"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}");
+        return CreateUri($"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={fileId}&game_id={gameId}&nmm={Convert.ToInt32(withNxm)}");
     }
 
     public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
