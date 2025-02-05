@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -48,6 +49,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ILibraryService LibraryService;
     protected readonly IFileStore FileStore;
+    protected readonly IFileExtractor FileExtractor;
     protected readonly IGameRegistry GameRegistry;
     protected readonly NexusModsLibrary NexusModsLibrary;
 
@@ -89,6 +91,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
         FileStore = ServiceProvider.GetRequiredService<IFileStore>();
+        FileExtractor = ServiceProvider.GetRequiredService<IFileExtractor>();
         TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = ServiceProvider.GetRequiredService<IConnection>();
 

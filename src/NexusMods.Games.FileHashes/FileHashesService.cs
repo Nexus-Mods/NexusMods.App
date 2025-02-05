@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.FileHashes.DTOs;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
@@ -136,6 +137,15 @@ public class FileHashesService : IFileHashesService, IDisposable
         await CheckForUpdateCore(forceUpdate);
     }
 
+    /// <inheritdoc />
+    public IEnumerable<string> GetGameVersions(GameInstallation installation)
+    {
+        return VersionDefinition.All(Current)
+            .Where(v => v.GameId == installation.Game.GameId)
+            .Select(v => v.Name)
+            .ToList();
+    }
+
     private async Task CheckForUpdateCore(bool forceUpdate)
     {
         var gameHashesReleaseFileName = GameHashesReleaseFileName;
@@ -207,8 +217,7 @@ public class FileHashesService : IFileHashesService, IDisposable
 
         return _currentDb!.Db;
     }
-
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb db, GameInstallation installation, IEnumerable<string> locatorIds)
+    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
     {
         if (installation.Store == GameStore.GOG)
         {
@@ -219,7 +228,7 @@ public class FileHashesService : IFileHashesService, IDisposable
                 
                 var gogId = BuildId.From(parsedId);
 
-                if (!GogBuild.FindByBuildId(db, gogId).TryGetFirst(out var firstBuild))
+                if (!GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
                     continue;
 
                 foreach (var file in firstBuild.Files)
@@ -243,7 +252,7 @@ public class FileHashesService : IFileHashesService, IDisposable
                 
                 var manifestId = ManifestId.From(parsedId);
 
-                if (!SteamManifest.FindByManifestId(db, manifestId).TryGetFirst(out var firstManifest))
+                if (!SteamManifest.FindByManifestId(Current, manifestId).TryGetFirst(out var firstManifest))
                     continue;
 
                 foreach (var file in firstManifest.Files)
@@ -373,6 +382,29 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
         }
+    }
+
+    /// <inheritdoc />
+    public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    {
+        var filesSet = files.ToHashSet();
+
+        List<(string Version, int Matches)> versionMatches = [];
+        foreach (var version in GetGameVersions(gameInstallation))
+        {
+            if (!TryGetCommonIdsForVersion(gameInstallation, version, out var commonIds))
+                continue;
+
+            var matchingCount = GetGameFiles(gameInstallation, commonIds)
+                .Count(file => filesSet.Contains((file.Path, file.Hash)));
+            
+            versionMatches.Add((version, matchingCount));
+        }
+        
+        return versionMatches
+            .OrderByDescending(t => t.Matches)
+            .Select(t => t.Version)
+            .FirstOrDefault()!;
     }
 
     public void Dispose()

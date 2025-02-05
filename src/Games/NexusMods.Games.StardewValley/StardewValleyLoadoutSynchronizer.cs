@@ -33,6 +33,9 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         return path.Path.InFolder(ContentFolder.Path);
     }
 
+    // The apis for this are removed for now. Post-beta we will update the structure of the app to support updating config files
+    // in read-only collections as overlay mods.
+    /*
     protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
         var smapiModDirectoryNameToModel = new Dictionary<RelativePath, SMAPIModLoadoutItem.ReadOnly>();
@@ -58,6 +61,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         }
         return ValueTask.CompletedTask;
     }
+    */
 
     private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out SMAPIModLoadoutItem.ReadOnly mod)
     {

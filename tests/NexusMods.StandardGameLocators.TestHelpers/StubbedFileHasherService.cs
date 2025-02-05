@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
@@ -23,12 +24,14 @@ public class StubbedFileHasherService : IFileHashesService
     private IDb? _current;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly Dictionary<string,EntityId[]> _versionFiles;
 
     public StubbedFileHasherService(IServiceProvider provider, IFileStore fileStore, TemporaryFileManager temporaryFileManager)
     {
         _provider = provider;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
+        _versionFiles = new Dictionary<string, EntityId[]>();
     }
 
     private async Task SetupDb()
@@ -40,50 +43,57 @@ public class StubbedFileHasherService : IFileHashesService
         };
         _datomStore = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, []);
-        
-        var stateFile = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/StubbedGameState.zip");
-        var zipArchive = new ZipArchive(stateFile.Read());
-        
-        using var tx = _connection.BeginTransaction();
-        
-        List<ArchivedFileEntry> archiveFiles = [];
-        
-        foreach (var entry in zipArchive.Entries)
+
+
+        foreach (var file in new[] {"StubbedGameState.zip", "StubbedGameState_game_v2.zip"})
         {
-            if (entry.Length == 0)
-                continue;
+            var stateFile = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / file;
+            using var zipArchive = new ZipArchive(stateFile.Read());
+
+            using var tx = _connection.BeginTransaction();
+
+            List<ArchivedFileEntry> archiveFiles = [];
+            List<EntityId> pathIds = [];
             
-            await using var stream = entry.Open();
-            var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            var hasher = new MultiHasher();
-            var hashResult = await hasher.HashStream(memoryStream);
-
-            memoryStream.Position = 0;
-            archiveFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(entry.FullName), memoryStream), hashResult.XxHash3, hashResult.Size));
-
-            var relation = new HashRelation.New(tx)
+            foreach (var entry in zipArchive.Entries)
             {
-                MinimalHash = hashResult.MinimalHash,
-                XxHash3 = hashResult.XxHash3,
-                Sha1 = hashResult.Sha1,
-                XxHash64 = hashResult.XxHash64,
-                Md5 = hashResult.Md5,
-                Size = hashResult.Size,
-                Crc32 = hashResult.Crc32,
-            };
+                if (entry.Length == 0)
+                    continue;
 
-            var path = new PathHashRelation.New(tx)
-            {
-                Path = entry.FullName,
-                HashId = relation,
-            };
+                await using var stream = entry.Open();
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var hasher = new MultiHasher();
+                var hashResult = await hasher.HashStream(memoryStream);
+
+                memoryStream.Position = 0;
+                archiveFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(entry.FullName), memoryStream), hashResult.XxHash3, hashResult.Size));
+
+                var relation = new HashRelation.New(tx)
+                {
+                    MinimalHash = hashResult.MinimalHash,
+                    XxHash3 = hashResult.XxHash3,
+                    Sha1 = hashResult.Sha1,
+                    XxHash64 = hashResult.XxHash64,
+                    Md5 = hashResult.Md5,
+                    Size = hashResult.Size,
+                    Crc32 = hashResult.Crc32,
+                };
+
+                var path = new PathHashRelation.New(tx)
+                {
+                    Path = entry.FullName,
+                    HashId = relation,
+                };
+                pathIds.Add(path.Id);
+            }
+
+            await _fileStore.BackupFiles(archiveFiles);
+
+            var results = await tx.Commit();
+            _versionFiles[file] = pathIds.Select(id => results[id]).ToArray();
+            _current = results.Db;
         }
-
-        await _fileStore.BackupFiles(archiveFiles);
-        
-        var results = await tx.Commit();
-        _current = results.Db;
     }
 
     public Task CheckForUpdate(bool forceUpdate = false)
@@ -91,16 +101,22 @@ public class StubbedFileHasherService : IFileHashesService
         return Task.CompletedTask;
     }
 
+    public IEnumerable<string> GetGameVersions(GameInstallation installation)
+    {
+        return ["1.0.Stubbed", "1.1.Stubbed"];
+    }
+
     public async ValueTask<IDb> GetFileHashesDb()
     {
         await SetupDb();
         return _current!;
     }
-
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, IEnumerable<string> locatorIds)
+    
+    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
     {
-        foreach (var file in PathHashRelation.All(referenceDb))
+        foreach (var fileId in _versionFiles[locatorIds.First()])
         {
+            var file = PathHashRelation.Load(Current, fileId);
             yield return new GameFileRecord
             {
                 Path = new GamePath(LocationId.Game, file.Path),
@@ -115,19 +131,49 @@ public class StubbedFileHasherService : IFileHashesService
     public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
     {
         var firstMetadata = locatorMetadata.First();
-        if (firstMetadata is "42" or "4200")
-            return "StubbedVersion";
+        if (firstMetadata is "StubbedGameState.zip")
+            return "1.0.Stubbed";
+        if (firstMetadata is "StubbedGameState_game_v2.zip")
+            return "1.1.Stubbed";
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
 
     public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
     {
-        if (version != "StubbedVersion")
+        switch (version)
         {
-            commonIds = [];
-            return false;
+            case "1.0.Stubbed":
+                commonIds = ["StubbedGameState.zip"];
+                return true;
+            case "1.1.Stubbed":
+                commonIds = ["StubbedGameState_game_v2.zip"];
+                return true;
+            default:
+                commonIds = [];
+                return false;
         }
-        commonIds = ["42"];
-        return true;
+    }
+
+    public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    {
+        var pathAndHashes = files.ToHashSet();
+        
+        Dictionary<string, int> versionMatches = new();
+        foreach (var (versionName, fileIds) in _versionFiles)
+        {
+            // Count the number of matches
+            var matches = 0;
+            foreach (var fileId in fileIds)
+            {
+                var pathHash = PathHashRelation.Load(Current, fileId);
+                if (pathAndHashes.Contains((new GamePath(LocationId.Game, pathHash.Path), pathHash.Hash.XxHash3)))
+                    matches++;
+            }
+            versionMatches[versionName] = matches;
+        }
+        
+        // Find the version with the most matches
+        var bestMatch = versionMatches.OrderByDescending(kv => kv.Value).First();
+        return GetGameVersion(gameInstallation, [bestMatch.Key]);
     }
 }

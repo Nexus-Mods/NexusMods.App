@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -294,7 +295,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
     {
-        foreach (var item in _fileHashService.GetGameFiles(referenceDb, loadout.InstallationInstance, loadout.LocatorIds.ToArray()))
+        foreach (var item in _fileHashService.GetGameFiles(loadout.InstallationInstance, loadout.LocatorIds.ToArray()))
         {
             yield return new LoadoutSourceItem
             {
@@ -412,6 +413,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
         HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = new();
+        bool ingestedFiles = false;
         
         foreach (var action in ActionsInOrder)
         {
@@ -425,7 +427,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    await ActionIngestFromDisk(syncTree, loadout, tx);
+                    ingestedFiles = ActionIngestFromDisk(syncTree, loadout, tx);
                     break;
 
                 case Actions.DeleteFromDisk:
@@ -468,9 +470,70 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             CleanDirectories(foldersWithDeletedFiles, newState, loadout.InstallationInstance);
         }
 
+        if (ingestedFiles) 
+            loadout = await ReprocessOverrides(loadout);
+
         return loadout;
     }
-    
+
+    private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
+    {
+        loadout = await ReprocessGameUpdates(loadout);
+        return loadout;
+    }
+
+    /// <summary>
+    /// When enough new files show up in overrides, we may need to reprocess them and change out the game version
+    /// to reflect the new files. This will happen when a game store updates the game files, overwriting the existing
+    /// game files.
+    /// </summary>
+    private async ValueTask<Loadout.ReadOnly> ReprocessGameUpdates(Loadout.ReadOnly loadout)
+    {
+        var diskState = loadout.Installation.DiskStateEntries
+            .Select(part => ((GamePath)part.Path, part.Hash));
+        
+        var version = _fileHashService.SuggestGameVersion(loadout.InstallationInstance, diskState);
+        
+        // No reason to change the loadout if the version is the same
+        if (version == loadout.GameVersion)
+            return loadout;
+        
+        // We need to update to the new ids and version
+        if (!_fileHashService.TryGetCommonIdsForVersion(loadout.InstallationInstance, version, out var newLocatorIds))
+            throw new InvalidOperationException($"Unable to find common ids for version: {version}, this should never happen");
+
+        // Make a lookup set of the new files
+        var versionFiles = _fileHashService
+            .GetGameFiles(loadout.InstallationInstance, newLocatorIds)
+            .Select(file => file.Path)
+            .ToHashSet();
+
+        // Find all files in the overrides that match a path in the new files
+        var toDelete = from grp in loadout.Items.OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
+            from item in grp.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath()
+            let path = (GamePath)item.TargetPath
+            where versionFiles.Contains(path)
+            select item;
+
+        using var tx = Connection.BeginTransaction();
+        
+        // Delete all the matching override files
+        foreach (var file in toDelete)
+        {
+            tx.Delete(file, false);
+        }
+        
+        // Update the version and locator ids
+        tx.Add(loadout, Loadout.GameVersion, version);
+        foreach (var id in loadout.LocatorIds) 
+            tx.Retract(loadout, Loadout.LocatorIds, id);
+        foreach (var id in newLocatorIds)
+            tx.Add(loadout, Loadout.LocatorIds, id);
+        
+        var result = await tx.Commit();
+        return loadout.Rebase(result.Db);
+    }
+
     /// <inheritdoc />
     public async Task RunGroupings(Dictionary<GamePath, SynceNode> syncTree, GameInstallation gameInstallation)
     {
@@ -685,12 +748,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private async Task ActionIngestFromDisk(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
-
-        var added = new List<AddedEntry>();
-
+        var ingestedFiles = false;
+        
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
@@ -720,27 +782,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 TargetPath = path.ToGamePathParentTuple(loadout.Id),
             };
 
-            var loadoutFile = new LoadoutFile.New(tx, id)
+            _ = new LoadoutFile.New(tx, id)
             {
                 LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
                 Hash = node.Disk.Hash,
                 Size = node.Disk.Size,
             };
-
-            added.Add(new AddedEntry
-                {
-                    LoadoutItem = loadoutItem,
-                    LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
-                    LoadoutFileEntry = loadoutFile,
-                }
-            );
             tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+            ingestedFiles = true;
         }
 
-        if (added.Count > 0)
-        {
-            await MoveNewFilesToMods(loadout, added, tx);
-        }
+        return ingestedFiles;
     }
 
     /// <inheritdoc />
@@ -829,16 +881,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return replacement.Id > existing.Id;
     }
-
-    /// <summary>
-    /// When new files are added to the loadout from disk, this method will be called to move the files from the override mod
-    /// into any other mod they may belong to.
-    /// </summary>
-    protected virtual ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
-    {
-        return ValueTask.CompletedTask;
-    }
-
+    
     /// <inheritdoc />
     public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
     {
@@ -1334,7 +1377,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
     {
-        var gameState = _fileHashService.GetGameFiles(_fileHashService.Current, installation, commonIds);
+        var gameState = _fileHashService.GetGameFiles(installation, commonIds);
         var metaData = await ReindexState(installation, Connection);
         
         List<PathPartPair> diskState = [];

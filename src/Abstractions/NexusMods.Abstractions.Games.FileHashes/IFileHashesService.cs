@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games.FileHashes;
@@ -14,6 +15,11 @@ public interface IFileHashesService
     public Task CheckForUpdate(bool forceUpdate = false);
     
     /// <summary>
+    /// Get all the supported game versions for a given game installation
+    /// </summary>
+    public IEnumerable<string> GetGameVersions(GameInstallation installation);
+    
+    /// <summary>
     /// Get the file hashes database, downloading it if necessary
     /// </summary>
     public ValueTask<IDb> GetFileHashesDb();
@@ -22,7 +28,7 @@ public interface IFileHashesService
     /// Get the files associated with a specific game. The LocatorIds are opaque ids that come from a game locator.
     /// For steam these will be manifestIDs, for GOG they will be buildIDs, etc.
     /// </summary>
-    public IEnumerable<GameFileRecord> GetGameFiles(IDb referenceDb, GameInstallation installation, IEnumerable<string> locatorIds);
+    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds);
     
     /// <summary>
     /// The current file hashes database, will thrown an error if not initialized via GetFileHashesDb first.
@@ -38,4 +44,10 @@ public interface IFileHashesService
     /// Get the common IDs for a specific version of a given game installation
     /// </summary>
     public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds);
+    
+    /// <summary>
+    /// Suggest a game version based on the files in a game installation
+    /// </summary>
+    public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+
 }
