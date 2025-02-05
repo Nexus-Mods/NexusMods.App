@@ -170,15 +170,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
 
-    public Dictionary<GamePath, SyncTreeNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
+    public Dictionary<GamePath, SynceNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
     {
         var referenceDb = _fileHashService.Current;
-        Dictionary<GamePath, SyncTreeNode> syncTree = new();
+        Dictionary<GamePath, SynceNode> syncTree = new();
         
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            syncTree.Add(gameFile.Path, new SyncTreeNode
+            syncTree.Add(gameFile.Path, new SynceNode
                 {
                     Loadout = new SyncNodePart
                     {
@@ -232,7 +232,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
             if (!exists)
             {
-                existing = new SyncTreeNode
+                existing = new SynceNode
                 {
                     Loadout = sourceItem,
                     SourceItemType = sourceItemType,
@@ -306,7 +306,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncTreeNode> loadoutItems)
+    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SynceNode> loadoutItems)
     {
         foreach (var node in previousTree)
         {
@@ -317,7 +317,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
             else
             {
-                existing = new SyncTreeNode
+                existing = new SynceNode
                 {
                     Previous = node.Part,
                 };
@@ -333,7 +333,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
             else
             {
-                existing = new SyncTreeNode
+                existing = new SynceNode
                 {
                     Disk = node.Part,
                 };
@@ -350,7 +350,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Dictionary<GamePath, SyncTreeNode>> BuildSyncTree(Loadout.ReadOnly loadout)
+    public async Task<Dictionary<GamePath, SynceNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var metadata = await ReindexState(loadout.InstallationInstance, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
@@ -382,7 +382,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public void ProcessSyncTree(Dictionary<GamePath, SyncTreeNode> tree)
+    public void ProcessSyncTree(Dictionary<GamePath, SynceNode> tree)
     {
         foreach (var path in tree.Keys)
         {
@@ -405,7 +405,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SyncTreeNode> syncTree, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunGroupings(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
@@ -471,7 +471,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
     
     /// <inheritdoc />
-    public async Task RunGroupings(Dictionary<GamePath, SyncTreeNode> syncTree, GameInstallation gameInstallation)
+    public async Task RunGroupings(Dictionary<GamePath, SynceNode> syncTree, GameInstallation gameInstallation)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
@@ -535,7 +535,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
     }
 
-    private void WarnOfConflict(Dictionary<GamePath, SyncTreeNode> tree)
+    private void WarnOfConflict(Dictionary<GamePath, SynceNode> tree)
     {
         
         foreach (var (path, node) in tree)
@@ -546,7 +546,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void WarnOfUnableToExtract(Dictionary<GamePath, SyncTreeNode> groupings)
+    private void WarnOfUnableToExtract(Dictionary<GamePath, SynceNode> groupings)
     {
         foreach (var (path, node) in groupings)
         {
@@ -556,7 +556,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
+    private void ActionAddReifiedDelete(Dictionary<GamePath, SynceNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
     {
         LoadoutOverridesGroupId? overridesGroup = null;
 
@@ -584,7 +584,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SynceNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -652,7 +652,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
+    private void ActionDeleteFromDisk(Dictionary<GamePath, SynceNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
     {
         // Delete files from disk
         foreach (var (path, node) in groupings)
@@ -684,7 +684,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private async Task ActionIngestFromDisk(Dictionary<GamePath, SyncTreeNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx)
+    private async Task ActionIngestFromDisk(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx)
     {
         var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
 
@@ -904,7 +904,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncTreeNode> files)
+    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SynceNode> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
@@ -1436,7 +1436,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }));
         }
 
-        Dictionary<GamePath, SyncTreeNode> desiredState = new();
+        Dictionary<GamePath, SynceNode> desiredState = new();
 
         foreach (var gameFile in gameState)
         {
@@ -1446,7 +1446,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = gameFile.Size,
                 LastModifiedTicks = 0,
             };
-            var syncNode = new SyncTreeNode
+            var syncNode = new SynceNode
             {
                 Loadout = part,
                 SourceItemType = LoadoutSourceItemType.Game,
