@@ -742,13 +742,13 @@
 		<value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
 	</data>
 	<data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
-		<value>Zaktualizuj</value>
+		<value>Pobierz aktualizację</value>
 	</data>
 	<data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
-		<value>Zaktualizuj ({0})</value>
+		<value>Pobierz aktualizację ({0})</value>
 	</data>
 	<data name="LibraryItemButtonUpdate_All" xml:space="preserve">
-		<value>Zaktualizuj wszystko</value>
+		<value>Pobierz wszystko</value>
 	</data>
 	<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
 		<value>Wszystkie</value>
