@@ -76,6 +76,7 @@ nav:
       - Downloading a Mod: users/gettingstarted/DownloadAMod.md
       - Downloading a Collection: users/gettingstarted/DownloadACollection.md
     # - Mod Library: users/Library.md
+      - Moving to the App: users/gettingstarted/MovingToTheApp.md
     - Features: 
       - Loadouts: users/features/Loadouts.md
       - Health Check: users/features/HealthCheck.md

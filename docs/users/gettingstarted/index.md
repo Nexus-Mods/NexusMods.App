@@ -1,6 +1,6 @@
 # Getting Started
-!!! warning "Important Notice"
-    The Nexus Mods app is still in development and is not recommend to be used as your primary mod manager. For the latest supported mod manager please see [Vortex](https://www.nexusmods.com/site/mods/1).
+<!-- !!! warning "Important Notice"
+    The Nexus Mods app is still in development and is not recommend to be used as your primary mod manager. For the latest supported mod manager please see [Vortex](https://www.nexusmods.com/site/mods/1). -->
 
 Before installing the app, please ensure that your PC meets the system requirements for both [this app](../SystemRequirements.md) and the game you are modding.
 

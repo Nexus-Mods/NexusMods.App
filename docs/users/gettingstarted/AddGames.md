@@ -3,6 +3,9 @@
 In this guide, we'll cover adding and removing games in the app. 
 
 ## Adding a Game
+!!! tip "Before you start"
+    Modding with the Nexus Mods app works best on a completely clean game installation. It is highly recommended that you remove any existing mods/customisations from your game folder and re-verify the integrity of the game files using your game launcher (e.g. Steam/GOG Galaxy) before modding.
+
 To get started, head to the home screen of the app by clicking the Nexus Mods logo at the top of the spine on the left. From here, click the "My Games" option in the left menu. 
 
 ![The My Games screen with Stardew Valley, Cyberpunk 2077, Baldur's Gate 3 and Bannerlord unmanaged.](../images/0.7.2/AddGame.webp)
