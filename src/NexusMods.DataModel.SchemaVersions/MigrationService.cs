@@ -74,11 +74,11 @@ public class MigrationService
             
             _logger.LogInformation("Running Migration ({Id}){Name}", definition.Id, definition.Name);
 
+            await instance.Prepare(_connection.Db);
             switch (instance)
             {
                 case IScanningMigration scanningMigration:
                 {
-                    scanningMigration.Prepare(_connection.Db);
                     await _connection.ScanUpdate(scanningMigration.Update);
                     using var tx = _connection.BeginTransaction();
                     _ = new MigrationLogItem.New(tx)
