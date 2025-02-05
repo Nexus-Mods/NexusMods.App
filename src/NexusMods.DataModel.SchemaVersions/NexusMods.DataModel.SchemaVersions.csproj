@@ -10,6 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Collections\NexusMods.Abstractions.Collections.csproj" />
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
     </ItemGroup>
 

@@ -1,19 +1,18 @@
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Collections;
+namespace NexusMods.Abstractions.Collections;
 
 /// <summary>
 /// A mod that was bundled with a collection
 /// </summary>
-[Include<LoadoutItemGroup>]
+[Include<NexusCollectionItemLoadoutGroup>]
 public partial class NexusCollectionBundledLoadoutGroup : IModelDefinition
 {
     private const string Namespace = "NexusMods.Collections.NexusCollectionBundledLoadoutGroup";
-    
+
     /// <summary>
     /// The downloaded collection archive that this mod was bundled with
     /// </summary>
