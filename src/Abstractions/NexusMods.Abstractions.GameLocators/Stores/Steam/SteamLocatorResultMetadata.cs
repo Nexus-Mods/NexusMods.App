@@ -20,7 +20,7 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     public AbsolutePath? CloudSavesDirectory { get; init; }
 
     /// <summary>
-    /// The build ID of the game, according to Steam's download records
+    /// The `manifestIds` of the installed depots for a found game, according to Steam's associated `appmanifest` file
     /// </summary>
     public ulong[] ManifestIds { get; set; } = [];
     
