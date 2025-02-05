@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -45,6 +46,7 @@ public static class Services
                 tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path, "4242"),
                 game => game.Id));
 
+        var steamId = "StubbedGameState.zip".xxHash3AsUtf8().Value;
         coll.AddSingleton<AHandler<SteamGame, AppId>>(s =>
             new StubbedGameLocator<SteamGame, AppId>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm =>
@@ -63,12 +65,12 @@ public static class Services
                             InstalledDepots = new Dictionary<DepotId, InstalledDepot>()
                             {
                                 {
-                                    DepotId.From(4200),
+                                    DepotId.From(uint.CreateTruncating(steamId)),
                                     new InstalledDepot
                                     {
-                                        DepotId = DepotId.From(7200),
+                                        DepotId = DepotId.From(uint.CreateTruncating(steamId)),
                                         SizeOnDisk = Size.GB * 2,
-                                        ManifestId = ManifestId.From(4200),
+                                        ManifestId = ManifestId.From(uint.CreateTruncating(steamId)),
                                     }
                                 }
                             }

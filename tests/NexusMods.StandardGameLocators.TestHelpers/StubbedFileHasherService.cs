@@ -114,7 +114,14 @@ public class StubbedFileHasherService : IFileHashesService
     
     public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
     {
-        foreach (var fileId in _versionFiles[locatorIds.First()])
+        var firstLocatorId = locatorIds.First();
+        if (!_versionFiles.TryGetValue(firstLocatorId, out var fileIds))
+        {
+            if (firstLocatorId == "3976631895")
+                fileIds = _versionFiles["StubbedGameState.zip"];
+        }
+        
+        foreach (var fileId in fileIds!)
         {
             var file = PathHashRelation.Load(Current, fileId);
             yield return new GameFileRecord
@@ -135,6 +142,10 @@ public class StubbedFileHasherService : IFileHashesService
             return "1.0.Stubbed";
         if (firstMetadata is "StubbedGameState_game_v2.zip")
             return "1.1.Stubbed";
+        
+        // The stubbed Steam tests use this unit as the locator metadata
+        if (firstMetadata == "3976631895")
+            return "1.0.Stubbed";
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
 
