@@ -14,6 +14,7 @@ Finally, update the `Descriptions.md` file with the new data.
 
 ## Descriptions
 
-| Date             | Database Name                | Description                                                                                  |
-|------------------|----------------------------|----------------------------------------------------------------------------------------------|
-| 2024-11-04 | `SDV.4_11_2024.rocksdb.zip`  | A snapshot of SDV managed and with the "Stardew Valley VERY Expanded" collection installed.  |
+| Date       | Database Name               | Description                                                                                                          |
+|------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------|
+| 2024-11-04 | `SDV.4_11_2024.rocksdb.zip` | A snapshot of SDV managed and with the "Stardew Valley VERY Expanded" collection installed.                          |
+| 2025-02-05 | `SDV.2_5_2025.rocksdb.zip`  | A snapshot of SDV from 0.7.2 with a few mods installed, no collections, before removing game files from the loadout. |

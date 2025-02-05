@@ -144,7 +144,7 @@ public abstract class ALegacyDatabaseTest
     public static IEnumerable<object[]> DatabaseNames()
     {
         var databaseFolder = DatabaseFolder();
-        foreach (var file in databaseFolder.EnumerateFiles("*.zip").Order())
+        foreach (var file in databaseFolder.EnumerateFiles("*.zip").OrderBy(f => f.ToString()))
         {
             yield return [file.Name];
         }
