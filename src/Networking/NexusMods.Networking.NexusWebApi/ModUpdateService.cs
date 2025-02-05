@@ -1,6 +1,8 @@
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
@@ -65,18 +67,41 @@ public class ModUpdateService : IModUpdateService
     /// <inheritdoc />
     public void NotifyForUpdates()
     {
-        var filesInLibrary = NexusModsLibraryItem
+        // Filter out Read-Only items
+        var loadoutModsInReadOnlyCollections = CollectionGroup
             .All(_connection.Db)
+            .Where(group => group.IsReadOnly)
+            .Select(group => group.AsLoadoutItemGroup())
+            .SelectMany(loadoutItemGroup => loadoutItemGroup.Children)
+            .ToDictionary(x => x.Id);
+        var libraryItemsInReadOnlyCollections = LibraryLinkedLoadoutItem
+            .All(_connection.Db)
+            .SelectMany(linkedLoadoutItem =>
+                {
+                    var isDownloadedFile = linkedLoadoutItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem);
+                    if (!isDownloadedFile) return [];
+                    var isInReadOnlyCollection = loadoutModsInReadOnlyCollections.ContainsKey(linkedLoadoutItem.Id);
+                    if (!isInReadOnlyCollection) return (NexusModsLibraryItem.ReadOnly[])[];
+                    return [nexusLibraryItem]; // (sewer): allocates, bleh, but can live with it for now.
+                }
+            )
+            .ToDictionary(x => x.Id);
+
+        var readWritefilesInLibrary = NexusModsLibraryItem
+            .All(_connection.Db)
+            // Exclude read-only items from collections.
+            .Where(libraryItem => !libraryItemsInReadOnlyCollections.ContainsKey(libraryItem.Id))
             .Select(static libraryItem => libraryItem.FileMetadata)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .ToDictionary(static x => x.Id, static x => x);
 
-        var existingFileToNewerFiles = filesInLibrary
+        var existingFileToNewerFiles = readWritefilesInLibrary
             .Select(kv =>
             {
                 var newerFiles = RunUpdateCheck
                     .GetNewerFilesForExistingFile(kv.Value)
-                    .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
+                    // Assert file is NOT in the library (i.e. is a file on Nexus, and NOT locally in App)
+                    .Where(newFile => newFile.IsValid() && !readWritefilesInLibrary.ContainsKey(newFile.Id))
                     .ToArray();
 
                 return new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]>(kv.Value, newerFiles);
