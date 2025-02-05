@@ -256,7 +256,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
-    {                                                                                                                                        
+    {
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
     }
 
