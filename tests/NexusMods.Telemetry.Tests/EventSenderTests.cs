@@ -25,6 +25,8 @@ public class EventSenderTests
             IsSupporter = false,
         });
 
+        var expectedUserAgent = Encoding.UTF8.GetString(EventSender.CreateUserAgent());
+
         var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
         messageHandler
             .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
@@ -42,7 +44,7 @@ public class EventSenderTests
                 using var stream = content!.ReadAsStream();
                 using var textReader = new StreamReader(stream, Encoding.UTF8);
                 var res = textReader.ReadToEnd();
-                ExpectJson("""{ "requests": ["?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1"] }""", res);
+                ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1"] }""", res);
             });
 
         var sender = new EventSender(loginManager, new HttpClient(messageHandler));
