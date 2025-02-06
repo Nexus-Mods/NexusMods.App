@@ -198,7 +198,7 @@ public class ModUpdateService : IModUpdateService
 /// All the files on the mod page that are newer, these are sorted by uploaded date, descending,
 /// meaning that the first file in the array is the newest.
 /// </param>
-public record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] Files)
+public readonly record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] Files)
 {
     /// <summary>
     /// Returns the newest file on the mod page.
