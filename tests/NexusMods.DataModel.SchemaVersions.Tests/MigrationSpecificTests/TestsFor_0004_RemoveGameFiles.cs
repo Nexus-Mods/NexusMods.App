@@ -11,7 +11,7 @@ namespace NexusMods.DataModel.SchemaVersions.Tests.MigrationSpecificTests;
 /// Test the migration to remove game files and add LocatorIds and GameVersions to Loadouts.
 /// </summary>
 /// <param name="provider"></param>
-public class TestsFor_0002_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDatabaseTest(helper)
+public class TestsFor_0004_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDatabaseTest(helper)
 {
     [Theory]
     [MethodData(nameof(DatabaseNames))]

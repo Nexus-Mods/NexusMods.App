@@ -73,8 +73,6 @@ public class MigrationService
             var instance = (IMigration)_provider.GetRequiredService(definition.Type);
 
             _logger.LogInformation("Running Migration ({Id}){Name}", definition.Id, definition.Name);
-            instance.Prepare(_connection.Db);
-
             await instance.Prepare(_connection.Db);
             switch (instance)
             {

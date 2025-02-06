@@ -8,8 +8,10 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.FileSignatures;
@@ -61,6 +63,8 @@ public abstract class ALegacyDatabaseTest
             .AddLoadoutAbstractions()
             .AddFileExtractors()
             .AddStubbedStardewValley()
+            .AddNexusModsCollections()
+            .AddNexusModsLibraryModels()
             .AddStandardGameLocators(registerConcreteLocators:false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();

@@ -10,17 +10,17 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// <summary>
 /// Delete the game files group, and add the loadout version and locatorids
 /// </summary>
-public class _0002_RemoveGameFiles : ITransactionalMigration
+public class _0004_RemoveGameFiles : ITransactionalMigration
 {
     private readonly IFileHashesService _fileHashesService;
     private HashSet<Symbol> _gameGroupAttrs = [];
     private HashSet<IAttribute> _resolvedGroupAttrs = [];
-    public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0002_RemoveGameFiles));
+    public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0004_RemoveGameFiles));
     
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public _0002_RemoveGameFiles(IFileHashesService fileHashService)
+    public _0004_RemoveGameFiles(IFileHashesService fileHashService)
     {
         _fileHashesService = fileHashService;
     }

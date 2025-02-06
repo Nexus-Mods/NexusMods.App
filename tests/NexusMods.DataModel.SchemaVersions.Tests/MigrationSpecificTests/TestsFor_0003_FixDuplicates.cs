@@ -1,14 +1,15 @@
 using FluentAssertions;
 using NexusMods.Abstractions.NexusModsLibrary;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests.MigrationSpecificTests;
 
-public class TestsFor_0003_FixDuplicates(IServiceProvider serviceProvider) : ALegacyDatabaseTest(serviceProvider)
+public class TestsFor_0003_FixDuplicates(ITestOutputHelper helper) : ALegacyDatabaseTest(helper)
 {
     [Fact]
     public async Task No_Duplicates()
     {
-        using var tempConnection = await ConnectionFor("Issue-2608.rocksdb.zip");
+        await using var tempConnection = await ConnectionFor("Issue-2608.rocksdb.zip");
 
         var db = tempConnection.Connection.Db;
 
