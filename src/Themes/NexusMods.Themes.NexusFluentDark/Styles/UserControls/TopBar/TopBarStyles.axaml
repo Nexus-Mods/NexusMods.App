@@ -31,7 +31,15 @@
             </Style>
             
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHighBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+            
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            </Style>
+            
+            <Style Selector="^:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
         </Style>
         

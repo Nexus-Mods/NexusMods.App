@@ -125,5 +125,17 @@
         <Style Selector="^:pressed /template/ Border#Background">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         </Style>
+        
+        <Style Selector="^:disabled /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="^:disabled icons|UnifiedIcon#DropDownIcon">
+            <Setter Property="Foreground">
+                <SolidColorBrush Color="{StaticResource NeutralSubdued}"
+                                 Opacity="{StaticResource OpacityDisabledElement}" />
+            </Setter>
+        </Style>
     </Style>
 </Styles>
