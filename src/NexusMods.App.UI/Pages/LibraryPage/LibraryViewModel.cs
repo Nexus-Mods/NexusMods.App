@@ -63,11 +63,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly INexusApiClient _nexusApiClient;
     private readonly ILibraryItemInstaller _advancedInstaller;
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly Loadout.ReadOnly _loadout;
     private readonly IModUpdateService _modUpdateService;
+    private readonly ILoginManager _loginManager;
+    private readonly NexusModsLibrary _nexusModsLibrary;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
@@ -83,11 +85,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
-        _nexusApiClient = nexusApiClient;
         _gameIdMappingCache = gameIdMappingCache;
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
+        _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
@@ -127,7 +131,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         RefreshUpdatesCommand = new ReactiveCommand<Unit>(
             executeAsync: (_, token) => RefreshUpdates(token),
-            awaitOperation: AwaitOperation.Sequential
+            awaitOperation: AwaitOperation.Switch
         );
         UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
 
@@ -224,19 +228,35 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .Bind(out _collections)
                 .Subscribe()
                 .AddTo(disposables);
+
+            // Auto check updates on entering library.
+            RefreshUpdatesCommand.Execute(Unit.Default);
         });
     }
 
     private async ValueTask HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
     {
-        var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(fileMetadata.Uid.FileId, fileMetadata.Uid.GameId);
-        var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-        await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+        // Note(sewer)
+        // If the user is a free user, they have to go to the website due to API restrictions.
+        // For premium, we can start a download directly.
+        var isPremium = _loginManager.IsPremium;
+        if (!isPremium)
+        {
+            var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(fileMetadata.Uid.FileId, fileMetadata.Uid.GameId);
+            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+            await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+        }
+        else
+        {
+            await using var tempPath = _temporaryFileManager.CreateFile();
+            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, fileMetadata, cancellationToken: cancellationToken);
+            await _libraryService.AddDownload(job);
+        }
     }
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
     private async ValueTask RefreshUpdates(CancellationToken token) 
-    {                                                                                                                                        
+    {
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
     }
 
