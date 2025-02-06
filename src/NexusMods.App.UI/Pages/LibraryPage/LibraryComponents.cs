@@ -254,14 +254,14 @@ public static class LibraryComponents
             Observable<NewerFilesOnModPage> valuesObservable)
         {
             _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue.NewestFile());
-            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.files.Length));
+            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.Files.Length));
 
             _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
             {
                 observable.Subscribe(self, static (values, self) =>
                 {
                     self._newFile.Value = values.NewestFile();
-                    self._buttonText.Value = GetButtonText(values.files.Length);
+                    self._buttonText.Value = GetButtonText(values.Files.Length);
                 }).AddTo(disposables);
             });
         }

@@ -194,11 +194,11 @@ public class ModUpdateService : IModUpdateService
 /// <summary>
 /// Marks all of the files on a mod page that are newer than the current ones.
 /// </summary>
-/// <param name="files">
+/// <param name="Files">
 /// All the files on the mod page that are newer, these are sorted by uploaded date, descending,
 /// meaning that the first file in the array is the newest.
 /// </param>
-public record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] files)
+public record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] Files)
 {
     /// <summary>
     /// Returns the newest file on the mod page.
@@ -207,5 +207,5 @@ public record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] files)
     /// Note(sewer): We by definition don't create this struct with empty arrays,
     /// so the first element is always present. 
     /// </remarks>
-    public NexusModsFileMetadata.ReadOnly NewestFile() => files[0];
+    public NexusModsFileMetadata.ReadOnly NewestFile() => Files[0];
 }
