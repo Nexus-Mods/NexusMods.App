@@ -149,7 +149,7 @@ public class StubbedFileHasherService : IFileHashesService
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
 
-    public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
     {
         switch (version)
         {

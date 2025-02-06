@@ -41,9 +41,9 @@ public interface IFileHashesService
     public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorIds);
 
     /// <summary>
-    /// Get the common IDs for a specific version of a given game installation
+    /// Get the locator IDs for a specific version of a given game installation
     /// </summary>
-    public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds);
+    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds);
     
     /// <summary>
     /// Suggest a game version based on the files in a game installation

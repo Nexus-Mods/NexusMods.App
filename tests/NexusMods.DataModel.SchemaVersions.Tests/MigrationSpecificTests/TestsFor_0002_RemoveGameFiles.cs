@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests.MigrationSpecificTests;
@@ -10,13 +11,13 @@ namespace NexusMods.DataModel.SchemaVersions.Tests.MigrationSpecificTests;
 /// Test the migration to remove game files and add LocatorIds and GameVersions to Loadouts.
 /// </summary>
 /// <param name="provider"></param>
-public class TestsFor_0002_RemoveGameFiles(IServiceProvider provider) : ALegacyDatabaseTest(provider)
+public class TestsFor_0002_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDatabaseTest(helper)
 {
     [Theory]
     [MethodData(nameof(DatabaseNames))]
     public async Task Test(string databaseName)
     {
-        using var tempConnection = await ConnectionFor(databaseName);
+        await using var tempConnection = await ConnectionFor(databaseName);
         var db = tempConnection.Connection.Db;
         foreach (var loadout in Loadout.All(db))
         {

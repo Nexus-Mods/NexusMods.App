@@ -499,7 +499,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             return loadout;
         
         // We need to update to the new ids and version
-        if (!_fileHashService.TryGetCommonIdsForVersion(loadout.InstallationInstance, version, out var newLocatorIds))
+        if (!_fileHashService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, version, out var newLocatorIds))
             throw new InvalidOperationException($"Unable to find common ids for version: {version}, this should never happen");
 
         // Make a lookup set of the new files

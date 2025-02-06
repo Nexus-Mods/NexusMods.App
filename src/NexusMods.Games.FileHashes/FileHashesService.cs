@@ -354,7 +354,7 @@ public class FileHashesService : IFileHashesService, IDisposable
     }
 
     /// <inheritdoc />
-    public bool TryGetCommonIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
     {
         if (gameInstallation.Store == GameStore.GOG)
         {
@@ -392,7 +392,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         List<(string Version, int Matches)> versionMatches = [];
         foreach (var version in GetGameVersions(gameInstallation))
         {
-            if (!TryGetCommonIdsForVersion(gameInstallation, version, out var commonIds))
+            if (!TryGetLocatorIdsForVersion(gameInstallation, version, out var commonIds))
                 continue;
 
             var matchingCount = GetGameFiles(gameInstallation, commonIds)

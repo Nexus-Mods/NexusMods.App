@@ -52,11 +52,31 @@ public class _0002_RemoveGameFiles : ITransactionalMigration
                 .Select(file => ((GamePath)file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash));
             
             var suggestedVersion = _fileHashesService.SuggestGameVersion(loadout.InstallationInstance, files);
-            var locatorIds = _fileHashesService.GetGameVersions(loadout.InstallationInstance).Where(locatorId => locatorId.StartsWith(suggestedVersion)).ToList();
+            if (!_fileHashesService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, suggestedVersion, out var locatorIds))
+                throw new Exception("Could not find locatorIds for version, this should never happen");
             
             tx.Add(loadout, Loadout.GameVersion, suggestedVersion);
             foreach (var locatorId in locatorIds) 
                 tx.Add(loadout, Loadout.LocatorIds, locatorId);
+
+            foreach (var group in gameFilesGroups)
+            {
+                tx.Delete(group, false);
+                DeleteChildren(tx, group.AsLoadoutItem());
+            }
+
+
+            void DeleteChildren(ITransaction tx, LoadoutItem.ReadOnly item)
+            {
+                if (!item.TryGetAsLoadoutItemGroup(out var group))
+                    return;
+                
+                foreach (var child in group.Children)
+                {
+                    tx.Delete(child, false);
+                    DeleteChildren(tx, child);
+                }
+            }
         }
         
     }
