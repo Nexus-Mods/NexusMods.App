@@ -13,8 +13,10 @@ public static class Services
 
 
         // Migrations go here:
-        services.AddMigration<_0001_ConvertTimestamps>();
-        
+        services
+            .AddMigration<_0001_ConvertTimestamps>()
+            .AddMigration<_0002_NexusCollectionItem>();
+
         return services;
     }
 
