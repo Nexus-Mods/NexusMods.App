@@ -21,7 +21,9 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     /// Create a new resolver using the given primary key attribute and value.
     /// </summary>
     public static GraphQLResolver Create<THighLevel>(IDb db, ITransaction tx, 
-        IWritableAttribute<THighLevel> primaryKeyAttribute, THighLevel primaryKeyValue) where THighLevel : notnull
+        IWritableAttribute<THighLevel> primaryKeyAttribute,
+        THighLevel primaryKeyValue)
+        where THighLevel : IEquatable<THighLevel>
     {
         if (!primaryKeyAttribute.IsIndexed) throw new ArgumentException($"Attribute {primaryKeyAttribute.Id} is not indexed", nameof(primaryKeyAttribute));
 
@@ -39,8 +41,8 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model)
     public static GraphQLResolver Create<THighLevel1, THighLevel2>(IDb referenceDb, ITransaction tx, 
         (IWritableAttribute<THighLevel1> A, THighLevel1 V) pair1,
         (IWritableAttribute<THighLevel2> A, THighLevel2 V) pair2) 
-        where THighLevel1 : notnull
-        where THighLevel2 : notnull
+        where THighLevel1 : IEquatable<THighLevel1>
+        where THighLevel2 : IEquatable<THighLevel2>
     {
         if (!pair1.A.IsIndexed) throw new ArgumentException($"Attribute {pair1.A.Id} is not indexed", nameof(pair1));
         if (!pair2.A.IsIndexed) throw new ArgumentException($"Attribute {pair2.A.Id} is not indexed", nameof(pair2));

@@ -140,11 +140,11 @@ public abstract class ALegacyDatabaseTest
         public string Created { get; init; }
     }
     
-
     public static IEnumerable<object[]> DatabaseNames()
     {
         var databaseFolder = DatabaseFolder();
-        foreach (var file in databaseFolder.EnumerateFiles("*.zip").Order())
+        var files = databaseFolder.EnumerateFiles("*.zip").Order(AbsolutePathComparer.Instance).ToArray();
+        foreach (var file in files)
         {
             yield return [file.Name];
         }
@@ -155,5 +155,15 @@ public abstract class ALegacyDatabaseTest
         var basePath = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Parent.Parent.Parent;
         var databaseFolder = basePath.Combine("Resources/Databases");
         return databaseFolder;
+    }
+}
+
+file class AbsolutePathComparer : IComparer<AbsolutePath>
+{
+    public static IComparer<AbsolutePath> Instance => new AbsolutePathComparer();
+
+    public int Compare(AbsolutePath x, AbsolutePath y)
+    {
+        return string.Compare(x.ToString(), y.ToString(), StringComparison.OrdinalIgnoreCase);
     }
 }
