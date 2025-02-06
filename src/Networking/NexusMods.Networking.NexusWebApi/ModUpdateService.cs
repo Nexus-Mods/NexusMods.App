@@ -1,8 +1,6 @@
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
@@ -67,55 +65,18 @@ public class ModUpdateService : IModUpdateService
     /// <inheritdoc />
     public void NotifyForUpdates()
     {
-        // Filter out Read-Only items
-
-        // Note(sewer): Mods can generally be broken down into the following categories:
-        // - Mods installed into a Read-Write CollectionGroup [read-write]
-        //     - e.g. 'My Mods' is a Read-Write CollectionGroup
-        // - Mods in Library but not installed (to any CollectionGroup). [read-write]
-        //     - These are mods downloaded from Nexus Mods or manually added via disk.
-        //     - These can 'only' be installed to Read-Write CollectionGroup(s) like 'My Mods'
-        // - Mods in Collections [read-only]
-        //     - These are the mods installed into a CollectionGroup, they cannot be individually removed
-        //       and their lifetime is bound to the Collection.
-        //     - Mods belonging to a collection get auto installed when the collection is fully downloaded, and cannot
-        //       be 'uninstalled' back into the library.
-        
-        // In this case we're considering all of the mods as [read-write], removing those in the [read-only] set.
-        var loadoutModsInReadOnlyCollections = CollectionGroup
+        var filesInLibrary = NexusModsLibraryItem
             .All(_connection.Db)
-            .Where(group => group.IsReadOnly)
-            .Select(group => group.AsLoadoutItemGroup())
-            .SelectMany(loadoutItemGroup => loadoutItemGroup.Children)
-            .ToDictionary(x => x.Id);
-        var libraryItemsInReadOnlyCollections = LibraryLinkedLoadoutItem
-            .All(_connection.Db)
-            .SelectMany(linkedLoadoutItem =>
-                {
-                    var isDownloadedFile = linkedLoadoutItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem);
-                    if (!isDownloadedFile) return [];
-                    var isInReadOnlyCollection = loadoutModsInReadOnlyCollections.ContainsKey(linkedLoadoutItem.Id);
-                    if (!isInReadOnlyCollection) return (NexusModsLibraryItem.ReadOnly[])[];
-                    return [nexusLibraryItem]; // (sewer): allocates, bleh, but can live with it for now.
-                }
-            )
-            .ToDictionary(x => x.Id);
-
-        var readWritefilesInLibrary = NexusModsLibraryItem
-            .All(_connection.Db)
-            // Exclude read-only items from collections.
-            .Where(libraryItem => !libraryItemsInReadOnlyCollections.ContainsKey(libraryItem.Id))
             .Select(static libraryItem => libraryItem.FileMetadata)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .ToDictionary(static x => x.Id, static x => x);
 
-        var existingFileToNewerFiles = readWritefilesInLibrary
+        var existingFileToNewerFiles = filesInLibrary
             .Select(kv =>
             {
                 var newerFiles = RunUpdateCheck
                     .GetNewerFilesForExistingFile(kv.Value)
-                    // Assert file is NOT in the library (i.e. is a file on Nexus, and NOT locally in App)
-                    .Where(newFile => newFile.IsValid() && !readWritefilesInLibrary.ContainsKey(newFile.Id))
+                    .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
                     .ToArray();
 
                 return new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]>(kv.Value, newerFiles);
