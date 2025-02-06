@@ -29,7 +29,6 @@ public partial class AddPanelDropDownView : ReactiveUserControl<IAddPanelDropDow
                     CreatePanelComboBox.IsEnabled = b;
                     ToolTip.SetTip(this, b ? Language.AddPanelToolTip : Language.MaxPanelsAddedToolTip);
                 })
-                //.BindToView(this, view => view.CreatePanelComboBox.IsVisible)
                 .DisposeWith(disposables);
 
             // close the dropdown when one of the items is pressed
