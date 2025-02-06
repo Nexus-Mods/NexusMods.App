@@ -58,14 +58,13 @@ public static class CollectionComponents
                 downloadJobStatusObservable.CombineLatest(isDownloadedObservable, static (a, b) => (a, b)).Subscribe(self, static (tuple, self) =>
                 {
                     var (downloadStatus, isDownloaded) = tuple;
+                    self._canDownload.OnNext(!isDownloaded && downloadStatus < JobStatus.Running);
                     self._downloadStatus.Value = downloadStatus;
                     self._buttonText.Value = GetButtonText(isDownloading: downloadStatus == JobStatus.Running, isDownloaded);
                 }).AddTo(disposables);
             });
 
-            CommandDownload = _downloadStatus
-                .Select(status => status < JobStatus.Running)
-                .ToReactiveCommand<Unit, TEntity>(_ => downloadEntity);
+            CommandDownload = _canDownload.ToReactiveCommand<Unit, TEntity>(_ => downloadEntity);
 
             IsDownloading = _downloadStatus
                 .Select(status => status == JobStatus.Running)
@@ -74,6 +73,7 @@ public static class CollectionComponents
 
         public ReactiveCommand<Unit, TEntity> CommandDownload { get; }
 
+        private readonly BehaviorSubject<bool> _canDownload = new(initialValue: false);
         private readonly BindableReactiveProperty<JobStatus> _downloadStatus = new(value: JobStatus.None);
         public IReadOnlyBindableReactiveProperty<JobStatus> DownloadStatus => _downloadStatus;
 
@@ -95,7 +95,7 @@ public static class CollectionComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandDownload, IsDownloading, _buttonText, _downloadStatus, _activationDisposable);
+                    Disposable.Dispose(CommandDownload, IsDownloading, _canDownload, _buttonText, _downloadStatus, _activationDisposable);
                 }
 
                 _isDisposed = true;

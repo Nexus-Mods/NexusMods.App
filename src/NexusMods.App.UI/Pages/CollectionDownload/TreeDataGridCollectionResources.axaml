@@ -25,7 +25,7 @@
                                         Classes="Standard"
                                         HorizontalAlignment="Center"
                                         IsVisible="{CompiledBinding !IsDownloading.Value}">
-                                    <TextBlock Text="Download" />
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
                                 </Button>
 
                                 <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
@@ -46,7 +46,7 @@
                                         Classes="Standard"
                                         HorizontalAlignment="Center"
                                         IsVisible="{CompiledBinding !IsDownloading.Value}">
-                                    <TextBlock Text="Download" />
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
                                 </Button>
 
                                 <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>

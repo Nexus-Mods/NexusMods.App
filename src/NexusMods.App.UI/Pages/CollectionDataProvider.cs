@@ -208,6 +208,7 @@ public class CollectionDataProvider
             .Select(static optional => optional.Value)
             .SelectMany(static job => job.ObservableStatus)
             .ToObservable()
+            .Prepend(() => JobStatus.None)
             .ObserveOnUIThreadDispatcher();
     }
 }
