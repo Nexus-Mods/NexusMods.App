@@ -54,14 +54,20 @@
                                    IsVisible="{TemplateBinding SelectionBoxItem, Converter={x:Static ObjectConverters.IsNull}}" />
                         <Border x:Name="ContentControlBackground"
                                 Grid.Column="0">
-                            <ContentControl x:Name="ContentPresenter"
-                                            Content="{TemplateBinding SelectionBoxItem}"
-                                            Grid.Column="0"
-                                            Margin="{TemplateBinding Padding}"
-                                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
-                            </ContentControl>
+                            <Grid>
+                                <ContentControl x:Name="ContentPresenter"
+                                                Content="{TemplateBinding SelectionBoxItem}"
+                                                Grid.Column="0"
+                                                Margin="{TemplateBinding Padding}"
+                                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                </ContentControl>
+                                <icons:UnifiedIcon x:Name="PlaceholderIcon"
+                                                   Size="28"
+                                                   Value="{x:Static icons:IconValues.PanelAllFull}"
+                                                   IsVisible="False"/>
+                            </Grid>
                         </Border>
 
                         <Border x:Name="DropDownOverlay"
@@ -121,17 +127,25 @@
         <Style Selector="^:pointerover /template/ Border#DropDownOverlay">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
-        
+
         <Style Selector="^:pressed /template/ Border#Background">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         </Style>
-        
+
         <Style Selector="^:disabled /template/ Border#Background">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
 
-        <Style Selector="^:disabled icons|UnifiedIcon#DropDownIcon">
+        <Style Selector="^:disabled /template/ icons|UnifiedIcon#DropDownIcon">
+            <Setter Property="Foreground">
+                <SolidColorBrush Color="{StaticResource NeutralSubdued}"
+                                 Opacity="{StaticResource OpacityDisabledElement}" />
+            </Setter>
+        </Style>
+        
+        <Style Selector="^:disabled /template/ icons|UnifiedIcon#PlaceholderIcon">
+            <Setter Property="IsVisible" Value="True" />
             <Setter Property="Foreground">
                 <SolidColorBrush Color="{StaticResource NeutralSubdued}"
                                  Opacity="{StaticResource OpacityDisabledElement}" />

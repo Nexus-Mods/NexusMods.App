@@ -93,7 +93,8 @@
                                      Fill="None"
                                      Size="Small"
                                      LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
-                                     ShowIcon="Left" />
+                                     ShowIcon="Left"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}"/>
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
                                      Fill="None"

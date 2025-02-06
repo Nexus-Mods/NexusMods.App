@@ -527,6 +527,9 @@
     <data name="AddPanelToolTip" xml:space="preserve">
         <value>Add a panel for split screen viewing</value>
     </data>
+    <data name="MaxPanelsAddedToolTip" xml:space="preserve">
+        <value>Max panels reached</value>
+    </data>
     <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
         <value>Add tab</value>
     </data>
@@ -728,6 +731,9 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="TopBar_Back_ToolTip" xml:space="preserve">
         <value>Back</value>
+    </data>
+    <data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+        <value>Click to give feedback and help us improve.</value>
     </data>
     <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
         <value>Connect your Nexus Mods account</value>

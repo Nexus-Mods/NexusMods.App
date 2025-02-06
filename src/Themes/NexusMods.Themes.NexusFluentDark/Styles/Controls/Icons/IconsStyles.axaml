@@ -134,6 +134,9 @@
                     <icons:UnifiedIcon Classes="Epic" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PanelAllFull" />
+                </WrapPanel>
+                <WrapPanel>
                     <icons:UnifiedIcon Classes="PictogramHealth" />
                     <icons:UnifiedIcon Classes="PictogramHealth" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramHealth" Size="48" />
@@ -639,5 +642,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FormatAlignJustify">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FormatAlignJustify}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PanelAllFull">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PanelAllFull}" />
     </Style>
 </Styles>

@@ -1664,6 +1664,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max panels reached.
+        /// </summary>
+        public static string MaxPanelsAddedToolTip {
+            get {
+                return ResourceManager.GetString("MaxPanelsAddedToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         public static string MessageBox_Button_No {
@@ -2078,6 +2087,15 @@ namespace NexusMods.App.UI.Resources {
         public static string TopBar_Forward_ToolTip {
             get {
                 return ResourceManager.GetString("TopBar_Forward_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click to give feedback and help us improve..
+        /// </summary>
+        public static string TopBar_GiveFeedback_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_GiveFeedback_ToolTip", resourceCulture);
             }
         }
         

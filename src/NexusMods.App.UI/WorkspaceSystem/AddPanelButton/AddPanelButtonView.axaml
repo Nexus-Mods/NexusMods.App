@@ -11,15 +11,14 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelButtonView">
 
     <Design.DataContext>
-        <workspace:AddPanelButtonDesignViewModel/>
+        <workspace:AddPanelButtonDesignViewModel />
     </Design.DataContext>
 
-        <Button x:Name="AddPanelButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <StackPanel Orientation="Horizontal">
-                <icons:UnifiedIcon x:Name="ButtonImage" />
-                <icons:UnifiedIcon x:Name="PlusIcon" Value="{x:Static icons:IconValues.Add}"/>
-            </StackPanel>
-        </Button>
-    
+    <Button x:Name="AddPanelButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal">
+            <icons:UnifiedIcon x:Name="ButtonImage" />
+            <icons:UnifiedIcon x:Name="PlusIcon" Value="{x:Static icons:IconValues.Add}" />
+        </StackPanel>
+    </Button>
 
 </reactive:ReactiveUserControl>
