@@ -101,6 +101,7 @@ public class CollectionDataProvider
             itemModel: itemModel,
             downloadEntity: download.AsCollectionDownload(),
             statusObservable: statusObservable,
+            groupObservable: groupObservable.ToObservable(),
             key: CollectionColumns.Actions.NexusModsDownloadComponentKey,
             componentFactory: () => new CollectionComponents.NexusModsDownloadAction(
                 downloadEntity: download,
@@ -109,7 +110,7 @@ public class CollectionDataProvider
             )
         );
 
-        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable);
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable, groupObservable.ToObservable());
 
         return itemModel;
     }
@@ -132,6 +133,7 @@ public class CollectionDataProvider
             itemModel: itemModel,
             downloadEntity: download.AsCollectionDownload(),
             statusObservable: statusObservable,
+            groupObservable: groupObservable.ToObservable(),
             key: CollectionColumns.Actions.ExternalDownloadComponentKey,
             componentFactory: () => new CollectionComponents.ExternalDownloadAction(
                 downloadEntity: download,
@@ -140,23 +142,25 @@ public class CollectionDataProvider
             )
         );
 
-        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable);
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable, groupObservable.ToObservable());
 
         return itemModel;
     }
 
     private static Observable<bool> ShouldAddObservable(
         CollectionDownloadEntity.ReadOnly downloadEntity,
-        Observable<CollectionDownloadStatus> statusObservable)
+        Observable<CollectionDownloadStatus> statusObservable,
+        Observable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
-        return statusObservable.Select(downloadEntity, static (status, downloadEntity) =>
+        return statusObservable.CombineLatest(groupObservable, static (a, b) => (a, b)).Select(downloadEntity, static (tuple, downloadEntity) =>
         {
-            var (isDownloaded, isInstalled, isOptional) = (status.IsDownloaded(), status.IsInstalled(out _), downloadEntity.IsOptional);
-            return (isDownloaded, isInstalled, isOptional) switch
+            var (status, collectionGroup) = tuple;
+            var (isDownloaded, isInstalled, isOptional, hasGroup) = (status.IsDownloaded(), status.IsInstalled(out _), downloadEntity.IsOptional, collectionGroup.HasValue);
+            return (isDownloaded, isInstalled, isOptional, hasGroup) switch
             {
-                (isDownloaded: false, _, _) => false,
-                (_, isInstalled: true, _) => true,
-                (_, isInstalled: false, isOptional: true) => true,
+                (isDownloaded: false, _, _, _) => false,
+                (_, isInstalled: true, _, _) => true,
+                (_, isInstalled: false, isOptional: true, hasGroup: true) => true,
                 _ => false,
             };
         });
@@ -165,11 +169,12 @@ public class CollectionDataProvider
     private static void AddInstallAction(
         CompositeItemModel<EntityId> itemModel,
         CollectionDownloadEntity.ReadOnly downloadEntity,
-        Observable<CollectionDownloadStatus> statusObservable)
+        Observable<CollectionDownloadStatus> statusObservable,
+        Observable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
         itemModel.AddObservable(
             key: CollectionColumns.Actions.InstallComponentKey,
-            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable),
+            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable, groupObservable),
             componentFactory: () => new CollectionComponents.InstallAction(
                 downloadEntity: downloadEntity,
                 isInstalledObservable: statusObservable.Select(status => status.IsInstalled(out _))
@@ -181,6 +186,7 @@ public class CollectionDataProvider
         CompositeItemModel<EntityId> itemModel,
         CollectionDownloadEntity.ReadOnly downloadEntity,
         Observable<CollectionDownloadStatus> statusObservable,
+        Observable<Optional<CollectionGroup.ReadOnly>> groupObservable,
         ComponentKey key,
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
@@ -188,7 +194,7 @@ public class CollectionDataProvider
 
         itemModel.AddObservable(
             key: key,
-            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable).Select(static b => !b),
+            shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable, groupObservable).Select(static b => !b),
             componentFactory: componentFactory
         );
     }
