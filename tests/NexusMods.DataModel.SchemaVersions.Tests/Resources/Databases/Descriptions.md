@@ -14,6 +14,7 @@ Finally, update the `Descriptions.md` file with the new data.
 
 ## Descriptions
 
-| Date             | Database Name                | Description                                                                                  |
-|------------------|----------------------------|----------------------------------------------------------------------------------------------|
-| 2024-11-04 | `SDV.4_11_2024.rocksdb.zip`  | A snapshot of SDV managed and with the "Stardew Valley VERY Expanded" collection installed.  |
+| Date             | Database Name               | Description                                                                                 |
+|------------------|-----------------------------|---------------------------------------------------------------------------------------------|
+| 2024-11-04 | `SDV.4_11_2024.rocksdb.zip` | A snapshot of SDV managed and with the "Stardew Valley VERY Expanded" collection installed. |
+| 2025-02-06 | `Issue-2608.rocksdb.zip`    | A snapshot for testing Issue [#2608](https://github.com/Nexus-Mods/NexusMods.App/issues/2608)                                                      |
