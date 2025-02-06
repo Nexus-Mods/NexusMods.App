@@ -1046,6 +1046,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
         var changes = false;
         
+        
+        var hashDb = await _fileHashService.GetFileHashesDb();
+        
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
             if (!location.Value.DirectoryExists())
@@ -1072,7 +1075,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // If the files don't match, update the entry
                             if (writeTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
-                                var newHash = await file.XxHash3Async();
+                                var newHash = await MaybeHashFile(hashDb, gamePath, file, fileInfo, token);
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
                                 tx.Add(entry.Id, DiskStateEntry.LastModified, writeTimeUtc);
@@ -1082,7 +1085,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         else
                         {
                             // No previous entry found, so create a new one
-                            var newHash = await file.XxHash3Async(token: token);
+                            var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
                             _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                             {
                                 Path = gamePath.ToGamePathParentTuple(metadata.Id),
@@ -1116,7 +1119,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         return changes;
     }
-    
+
+    private async ValueTask<Hash> MaybeHashFile(IDb hashDb, GamePath gamePath, AbsolutePath file, IFileEntry fileInfo, CancellationToken token)
+    {
+        Hash? diskMinimalHash = null;
+        
+        // Look for all known files that match the path
+        foreach (var matchingPath in PathHashRelation.FindByPath(hashDb, gamePath.Path))
+        {
+            // Make sure the size matches
+            var hash = matchingPath.Hash;
+            if (hash.Size.Value != fileInfo.Size)
+                continue;
+            
+            // If the minimal hash matches, then we can use the xxHash3 hash
+            diskMinimalHash ??= await MultiHasher.MinimalHash(file, token);
+
+            if (hash.MinimalHash == diskMinimalHash)
+                return hash.XxHash3;
+        }
+        
+        // If we didn't find a match, then we need to hash the file
+        return await file.XxHash3Async(token: token);
+    }
+
     /// <inheritdoc />
     public virtual IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {

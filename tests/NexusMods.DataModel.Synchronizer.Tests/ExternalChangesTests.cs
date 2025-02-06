@@ -25,7 +25,7 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
             """, [loadoutA]);
 
         var gameFolder = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game];
-        await FileExtractor.ExtractAllAsync(FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources/StubbedGameState_game_v2.zip", gameFolder);
+        await ExtractV2ToGameFolder(gameFolder);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
 
@@ -40,7 +40,8 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
             new GamePath(LocationId.Game, "game/Data/image2.dds"),
         };
         
-        loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Select(i => (GamePath)i.TargetPath)
+        loadoutA.Items.OfTypeLoadoutItemWithTargetPath()
+            .Select(i => (GamePath)i.TargetPath)
             .Should()
             .NotContain(changedFiles, "the files should not go into overrides or mods, but should update the game version");
         
@@ -55,20 +56,8 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
         // Get the game folder
         var gameFolder = GameInstallation.LocationsRegister[LocationId.Game];
         
-        // Extract the game files into the folder so that we trigger a game version update
-        using var zipFile = ZipFile.OpenRead((FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources/StubbedGameState_game_v2.zip").ToString());
-        foreach (var file in zipFile.Entries)
-        {
-            if (!file.FullName.StartsWith("game") || file.Length == 0)
-                continue;
-            var path = RelativePath.FromUnsanitizedInput(string.Join("/", RelativePath.FromUnsanitizedInput(file.FullName).Parts.Skip(1).ToArray()));
-            var gamePath = gameFolder / path;
-            gamePath.Parent.CreateDirectory();
-            await using var stream = gamePath.Create();
-            await using var srcStream = file.Open();
-            await srcStream.CopyToAsync(stream);
-        }
-        
+        await ExtractV2ToGameFolder(gameFolder);
+
         var extraFileName = gameFolder / "someFolder/SomeRandomFile.dds";
         extraFileName.Parent.CreateDirectory();
         await extraFileName.WriteAllTextAsync("Some content");
@@ -97,5 +86,21 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
             .NotContain(extraFileGamePath);
         
     }
-    
+
+    private async Task ExtractV2ToGameFolder(AbsolutePath gameFolder)
+    {
+        // Extract the game files into the folder so that we trigger a game version update
+        using var zipFile = ZipFile.OpenRead((FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources/StubbedGameState_game_v2.zip").ToString());
+        foreach (var file in zipFile.Entries)
+        {
+            if (!file.FullName.StartsWith("game") || file.Length == 0)
+                continue;
+            var path = RelativePath.FromUnsanitizedInput(string.Join("/", RelativePath.FromUnsanitizedInput(file.FullName).Parts.Skip(1).ToArray()));
+            var gamePath = gameFolder / path;
+            gamePath.Parent.CreateDirectory();
+            await using var stream = gamePath.Create();
+            await using var srcStream = file.Open();
+            await srcStream.CopyToAsync(stream);
+        }
+    }
 }
