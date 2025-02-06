@@ -33,7 +33,6 @@
         </Grid.ColumnDefinitions>
 
         <!-- left column (Game and Loadout) -->
-
         <StackPanel Grid.Column="0"
                     Orientation="Horizontal"
                     Spacing="{StaticResource Spacing-1.5}"
@@ -52,7 +51,6 @@
         </StackPanel>
 
         <!-- center column -->
-
         <StackPanel Grid.Column="1" Orientation="Horizontal">
 
             <!-- back / forward buttons -->
@@ -81,9 +79,9 @@
 
             <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
         </StackPanel>
-        
 
-        <!-- right column (Menus and Buttons) -->
+
+        <!-- right column (buttons, settings, login) -->
         <StackPanel Grid.Column="2" Margin="12 0" Orientation="Horizontal" Spacing="12">
 
             <!-- feedback button -->
@@ -94,7 +92,7 @@
                                      Size="Small"
                                      LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
                                      ShowIcon="Left"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}"/>
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
                                      Fill="None"
@@ -103,7 +101,6 @@
                                      ShowIcon="IconOnly"
                                      Size="Medium"
                                      ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
-
                 <controls:StandardButton.Flyout>
                     <MenuFlyout>
                         <navigation:NavigationMenuItem
@@ -127,7 +124,6 @@
                                           Size="Medium"
                                           ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}" />
 
-            
             <StackPanel Orientation="Horizontal" Spacing="0">
 
                 <!-- login button -->
@@ -138,11 +134,9 @@
                                          Size="Small"
                                          ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
 
-
                 <!-- avatar button -->
                 <Button x:Name="AvatarMenuItemButton"
                         ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
-
                     <Button.Flyout>
                         <MenuFlyout>
                             <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}"
@@ -153,7 +147,6 @@
                                       x:Name="SignOutMenuItem" />
                         </MenuFlyout>
                     </Button.Flyout>
-
                     <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"
                                        Value="{x:Static icons:IconValues.AvatarTest}" />
                 </Button>
@@ -164,7 +157,7 @@
                            VerticalAlignment="Center"
                            Margin="12,0,0,0"
                            Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}" />
-                
+
                 <!-- supporter button -->
                 <controls:StandardButton x:Name="SupporterButton"
                                          Type="Tertiary"
@@ -177,7 +170,7 @@
                         VerticalAlignment="Center"
                         Padding="4,4,4,2" />
                 </controls:StandardButton>
-                
+
                 <!-- free button -->
                 <controls:StandardButton x:Name="FreeButton"
                                          Type="Tertiary"
