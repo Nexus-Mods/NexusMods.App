@@ -22,7 +22,12 @@ public record UserInfo
     /// Gets the premium status of the user.
     /// </summary>
     public required bool IsPremium { get; init; }
-
+    
+    /// <summary>
+    /// Gets the supporter status of the user.
+    /// </summary>
+    public required bool IsSupporter { get; init; }
+    
     /// <summary>
     /// Gets the avatar url of the user.
     /// </summary>

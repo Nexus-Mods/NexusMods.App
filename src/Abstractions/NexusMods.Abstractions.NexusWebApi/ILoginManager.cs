@@ -39,6 +39,11 @@ public interface ILoginManager
     /// True if the user is logged in and is a premium member
     /// </summary>
     IObservable<bool> IsPremiumObservable => UserInfoObservable.WhereNotNull().Select(static x => x.IsPremium).DistinctUntilChanged().AsSystemObservable();
+    
+    /// <summary>
+    /// True if the user is a supporter member
+    /// </summary>
+    IObservable<bool> IsSupporterObservable => UserInfoObservable.WhereNotNull().Select(static x => x.IsSupporter).DistinctUntilChanged().AsSystemObservable();
 
     /// <summary>
     /// The user's avatar

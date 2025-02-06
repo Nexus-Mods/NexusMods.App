@@ -70,14 +70,15 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.WhenAnyValue(
                         x => x.ViewModel!.IsLoggedIn,
-                        x => x.ViewModel!.IsPremium
+                        x => x.ViewModel!.IsPremium,
+                        x => x.ViewModel!.IsSupporter
                     )
-                    .Subscribe(tuple =>
+                    .Subscribe(userinfo =>
                         {
-                            var (isLoggedIn, isPremium) = tuple;
+                            var (isLoggedIn, isPremium, isSupporter) = userinfo;
                             PremiumTextBlock.IsVisible = isLoggedIn && isPremium;
-                            FreeButton.IsVisible = isLoggedIn && !isPremium;
-                            FreeButton.IsEnabled = isLoggedIn && !isPremium;
+                            FreeButton.IsVisible = isLoggedIn && !isPremium && !isSupporter;
+                            SupporterButton.IsVisible = isLoggedIn && !isPremium && isSupporter;
                         }
                     )
                     .DisposeWith(d);

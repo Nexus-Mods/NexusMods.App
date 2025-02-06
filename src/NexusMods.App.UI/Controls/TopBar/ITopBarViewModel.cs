@@ -10,7 +10,7 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public interface ITopBarViewModel : IViewModelInterface
 {
     public string ActiveWorkspaceTitle { get; }
-    
+
     public string ActiveWorkspaceSubtitle { get; }
 
     public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
@@ -27,6 +27,7 @@ public interface ITopBarViewModel : IViewModelInterface
 
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
+    public bool IsSupporter { get; }
     public IImage? Avatar { get; }
     public string? Username { get; }
 

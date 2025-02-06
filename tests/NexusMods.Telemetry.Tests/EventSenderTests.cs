@@ -22,6 +22,7 @@ public class EventSenderTests
             Name = "",
             AvatarUrl = null,
             IsPremium = false,
+            IsSupporter = false,
         });
 
         var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();

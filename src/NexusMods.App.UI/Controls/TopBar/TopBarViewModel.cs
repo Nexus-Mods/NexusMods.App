@@ -52,6 +52,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
+    [Reactive] public bool IsSupporter { get; [UsedImplicitly] set; }
 
     private readonly ObservableAsPropertyHelper<IImage?> _avatar;
     public IImage? Avatar => _avatar.Value;
@@ -173,6 +174,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             _loginManager.IsPremiumObservable
                 .OnUI()
                 .BindToVM(this, vm => vm.IsPremium)
+                .DisposeWith(d);
+            
+            _loginManager.IsSupporterObservable
+                .OnUI()
+                .BindToVM(this, vm => vm.IsSupporter)
                 .DisposeWith(d);
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
