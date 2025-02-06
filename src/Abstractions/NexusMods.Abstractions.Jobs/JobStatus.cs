@@ -69,6 +69,26 @@ public enum JobStatus : byte
 }
 
 /// <summary>
+/// Comparer.
+/// </summary>
+[PublicAPI]
+public class JobStatusComparer : IComparer<JobStatus>
+{
+    /// <summary>
+    /// Instance.
+    /// </summary>
+    public static readonly IComparer<JobStatus> Instance = new JobStatusComparer();
+
+    /// <inheritdoc/>
+    public int Compare(JobStatus x, JobStatus y)
+    {
+        var a = (byte)x;
+        var b = (byte)y;
+        return a.CompareTo(b);
+    }
+}
+
+/// <summary>
 /// Extensions for the <see cref="JobStatus"/> type.
 /// </summary>
 public static class JobStatusExtensions

@@ -170,7 +170,7 @@ public static class LibraryComponents
             _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
-        private static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
+        internal static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
 
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
