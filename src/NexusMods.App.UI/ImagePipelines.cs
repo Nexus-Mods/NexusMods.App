@@ -148,8 +148,9 @@ public static class ImagePipelines
             .Decode(decoderType: DecoderType.Skia)
             .ToAvaloniaBitmap()
             .UseFallbackValue(UserAvatarFallback)
-            .EntityIdToIdentifier(
+            .EntityIdToOptionalIdentifier(
                 connection: connection,
+                fallbackValue: UserAvatarFallback,
                 attribute: User.AvatarUri
             );
 
@@ -171,8 +172,9 @@ public static class ImagePipelines
             .Decode(decoderType: DecoderType.Skia)
             .ToAvaloniaBitmap()
             .UseFallbackValue(CollectionTileFallback)
-            .EntityIdToIdentifier(
+            .EntityIdToOptionalIdentifier(
                 connection: connection,
+                fallbackValue: CollectionTileFallback,
                 attribute: CollectionMetadata.TileImageUri
             );
 
@@ -194,8 +196,9 @@ public static class ImagePipelines
             .Decode(decoderType: DecoderType.Skia)
             .ToAvaloniaBitmap()
             .UseFallbackValue(CollectionBackgroundFallback)
-            .EntityIdToIdentifier(
+            .EntityIdToOptionalIdentifier(
                 connection: connection,
+                fallbackValue: CollectionBackgroundFallback,
                 attribute: CollectionMetadata.BackgroundImageUri
             );
 
@@ -230,8 +233,9 @@ public static class ImagePipelines
             // from the pipeline. If the load fails, we show an all transparent fallback;
             // meaning the underlying placeholder from before is still shown.
             .UseFallbackValue(ModPageThumbnailFallback)
-            .EntityIdToIdentifier(
+            .EntityIdToOptionalIdentifier(
                 connection: connection,
+                fallbackValue: ModPageThumbnailFallback,
                 attribute: NexusModsModPageMetadata.ThumbnailUri
             );
 
