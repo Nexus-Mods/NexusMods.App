@@ -114,12 +114,24 @@ public partial class NexusModsLibrary
     {
         var res = new ResolvedEntitiesLookup();
 
+        var modPageIds = new Dictionary<UidForMod, EntityId>();
+
         foreach (var modFile in collectionRevision.ModFiles)
         {
             var file = modFile.File;
             if (file is null) continue;
 
-            var modEntityId = file.Mod.Resolve(db, tx);
+            // NOTE(erri120): Need to re-use the entity ids we get back from the `Resolve`
+            // method. Otherwise, if a collection contains two files from the same mod page
+            // and the mod page isn't in the DB, we'll end up creating two mod pages, one for
+            // each file.
+            var uidForMod = UidForMod.FromV2Api(file.Mod.Uid);
+            if (!modPageIds.TryGetValue(uidForMod, out var modEntityId))
+            {
+                modEntityId = file.Mod.Resolve(db, tx);
+                modPageIds[uidForMod] = modEntityId;
+            }
+
             var fileEntityId = file.Resolve(db, tx, modEntityId);
 
             var id = new UidForFile(
